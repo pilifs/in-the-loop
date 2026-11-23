@@ -1,0 +1,1001 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-223108-qualify-the-ordinary-stock-and-safety-si",
+  "title": "Qualify the ordinary stock and safety-site example tasks",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 10.6s, peak 143.1 MiB (estimated 2m00s, 2.0 GiB); 84 output file(s) changed; signals: example:task-as-expected×4; example:task-as-expected×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-223108-qualify-the-ordinary-stock-and-safety-si.json",
+    "sha256": "01c6268938ef5987982754ee4712fff44f89289732c5399c6c3ec8ffe7e821f3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-223108-qualify-the-ordinary-stock-and-safety-si",
+      "title": "Qualify the ordinary stock and safety-site example tasks",
+      "description": "Check all six registered strict properties through build.py on the actual fixtures and retain the fresh ordinary receipts.",
+      "kind": "example",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:31:08+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Run registered example 397",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B examples/tools/build.py 397 --tasks nonnegative,taken,aliaslaw,unchanged --checker-seconds 60",
+          "cwd": "."
+        },
+        {
+          "name": "Run registered example 398",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B examples/tools/build.py 398 --tasks caught,sum --checker-seconds 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/397-stock-factory-histories/receipts",
+        "examples/398-physical-safety-sites/receipts"
+      ]
+    }
+  },
+  "sourceCommit": "edb82317d3aa1ddb0b0d5631de347361c664a76d",
+  "startedAt": "2026-11-23T22:50:49+00:00",
+  "finishedAt": "2026-11-23T22:54:46+00:00",
+  "wallSeconds": 237.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3562698,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 150036480,
+    "wallSeconds": 10.6,
+    "cpuSeconds": 16.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 208.934,
+      "cpuSeconds": 210.091,
+      "cpuThrottledSeconds": 0.032,
+      "peakMemoryBytes": 2334699520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 9,
+        "bytes": 424,
+        "sha256": "ddf8412f0a280357491760d6cd21820282741bb177cc75b667822fdc4945c467",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling getrandom v0.4.3",
+        "   Compiling rustix v1.1.6",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-223108-qualify-the-ordinary-stock-and-safety-si/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 28s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run registered example 397",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B examples/tools/build.py 397 --tasks nonnegative,taken,aliaslaw,unchanged --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 7.018,
+      "cpuSeconds": 11.377,
+      "cpuThrottledSeconds": 0.806,
+      "peakMemoryBytes": 150036480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-registered-example-397.log",
+        "lines": 8,
+        "bytes": 847,
+        "sha256": "a917e191fa9aed43b6a75fecc00d07f78d51a108e5b1a8f7e00476834e5df2a1",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 4
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "397-stock-factory-histories: task nonnegative: established (completed; as expected), receipt receipts/nonnegative/20261123T225435Z-70400733/result.json",
+          "groups": [
+            "397",
+            "nonnegative",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "397-stock-factory-histories: task taken: established (completed; as expected), receipt receipts/taken/20261123T225437Z-1cb9b50b/result.json",
+          "groups": [
+            "397",
+            "taken",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 6,
+          "text": "397-stock-factory-histories: task aliaslaw: established (completed; as expected), receipt receipts/aliaslaw/20261123T225438Z-d39402c2/result.json",
+          "groups": [
+            "397",
+            "aliaslaw",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 8,
+          "text": "397-stock-factory-histories: task unchanged: refuted (completed; as expected), receipt receipts/unchanged/20261123T225440Z-7754ca01/result.json",
+          "groups": [
+            "397",
+            "unchanged",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "397-stock-factory-histories: running task nonnegative (target route)",
+        "397-stock-factory-histories: task nonnegative: established (completed; as expected), receipt receipts/nonnegative/20261123T225435Z-70400733/result.json",
+        "397-stock-factory-histories: running task taken (target route)",
+        "397-stock-factory-histories: task taken: established (completed; as expected), receipt receipts/taken/20261123T225437Z-1cb9b50b/result.json",
+        "397-stock-factory-histories: running task aliaslaw (target route)",
+        "397-stock-factory-histories: task aliaslaw: established (completed; as expected), receipt receipts/aliaslaw/20261123T225438Z-d39402c2/result.json",
+        "397-stock-factory-histories: running task unchanged (target route)",
+        "397-stock-factory-histories: task unchanged: refuted (completed; as expected), receipt receipts/unchanged/20261123T225440Z-7754ca01/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Run registered example 398",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B examples/tools/build.py 398 --tasks caught,sum --checker-seconds 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.605,
+      "cpuSeconds": 5.569,
+      "cpuThrottledSeconds": 0.4,
+      "peakMemoryBytes": 136654848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-run-registered-example-398.log",
+        "lines": 4,
+        "bytes": 395,
+        "sha256": "24b62df9584c7428eeb91a221145052d25a9bb63947b2654e241d6bda988176d",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "398-physical-safety-sites: task caught: established (completed; as expected), receipt receipts/caught/20261123T225442Z-70bc5647/result.json",
+          "groups": [
+            "398",
+            "caught",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 4,
+          "text": "398-physical-safety-sites: task sum: established (completed; as expected), receipt receipts/sum/20261123T225444Z-1a4925da/result.json",
+          "groups": [
+            "398",
+            "sum",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "398-physical-safety-sites: running task caught (target route)",
+        "398-physical-safety-sites: task caught: established (completed; as expected), receipt receipts/caught/20261123T225442Z-70bc5647/result.json",
+        "398-physical-safety-sites: running task sum (target route)",
+        "398-physical-safety-sites: task sum: established (completed; as expected), receipt receipts/sum/20261123T225444Z-1a4925da/result.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "b4be0bb3f5e737fbcbcbedd2d74b8137b853e8ad9409ee8e3db1aa671df721ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/plan.json",
+      "change": "added",
+      "bytes": 4628,
+      "sha256": "97a2b25f94e0ae3b69e5e28ded32066c0d3a5c43e6610a5b6ecbca626474c001",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "a88d4f4e8f363cb9e91c53cacf3e82103c204b7200179766ea5295ea8062d48c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/controls.json",
+      "change": "added",
+      "bytes": 5875,
+      "sha256": "220d5b12da6ec102ca754b446406a6bce207a67071c15a7754281b903505f9dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/execution.json",
+      "change": "added",
+      "bytes": 17311,
+      "sha256": "4d8c5a8b41403c12bdf2d313b2ddc6cecad2207ba6df2e0388fb7461e8520567",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "7bfe0400c0d6bb5cd95de3e5ef0ecffb1d7d54e93ba13cd9fcbe14d3feabe20d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 207,
+      "sha256": "1a76e2c42587805ccca6b6806b0daeb0835a75f15657ae36a6ac3fe87bcf3077",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier.json",
+      "change": "added",
+      "bytes": 11450,
+      "sha256": "cd7dfce0bf4c780f7af6a9b38f4cccc62cd778e43457f431df955e3a98de59f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4584,
+      "sha256": "42c644432e857c136eaea951667bdace57afec9579fd97afe78fed15760d1529",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/result.json",
+      "change": "added",
+      "bytes": 14962,
+      "sha256": "c5bd2797dfac5e5c1bbe5678574cda3673a2add9cb61f4b5deb04971207c3d22",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/executions/20261123T225438Z-d39402c2/attempt.json",
+      "change": "added",
+      "bytes": 8770,
+      "sha256": "e7e69643350dbbe7db63ef9e60ee05e0c65f28c6f025856f4c4a184433e9c457",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/aliaslaw/executions/20261123T225438Z-d39402c2/checker.json",
+      "change": "added",
+      "bytes": 5734,
+      "sha256": "a9807c42ec756bc3c9058be7a6c1c13a8757a1bf728650019ab147a881790df2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "58c2cef6516702bd65026c21c0e6a6bcd970fbc4949b4a52431aae0527f37609",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/plan.json",
+      "change": "added",
+      "bytes": 4629,
+      "sha256": "f4b9c33d209cc9447cd2ae2bfe417155806cb2a873bf66d8426294a4edd97d9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "a88d4f4e8f363cb9e91c53cacf3e82103c204b7200179766ea5295ea8062d48c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/controls.json",
+      "change": "added",
+      "bytes": 5884,
+      "sha256": "3b1d0558872ba8661cb5400330e8bb4fdc7e36596765c54073f0bcf227638c37",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/execution.json",
+      "change": "added",
+      "bytes": 17334,
+      "sha256": "a082f63c04c7590317228cc393f7f3d852246fd3a01b561b5602313c47a96adb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "30b9fb8eb3a51d762b5d5f52e700289cb8a68a62a065310826aebf445a6002dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 210,
+      "sha256": "c666dd573b288f233ac071effbee7b704e867ff154e9fd6de361d924690dfdb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier.json",
+      "change": "added",
+      "bytes": 11479,
+      "sha256": "0de9befa6bee6f1051ea521d6beeca511dc7b9b3f0297a300350f8980876389e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4579,
+      "sha256": "7e58e764b3c604a72305fa6379ac9328d02041dddf1c344000306132cbc2e79e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/result.json",
+      "change": "added",
+      "bytes": 14960,
+      "sha256": "7b50f22f1c66484700e782e071f557b73caa18b7fcfcd44dde9e1b6a2b96e598",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/executions/20261123T225435Z-70400733/attempt.json",
+      "change": "added",
+      "bytes": 8805,
+      "sha256": "f1907ac3f0177e84cdab35f28076ca7c6073a8ad84440672d25ce29d252f9a84",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/nonnegative/executions/20261123T225435Z-70400733/checker.json",
+      "change": "added",
+      "bytes": 5733,
+      "sha256": "ea301b2ac4582385c17edcbad4424731505625f762c4e77eab6a44e4031b5feb",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "6063b9ed25eef12e9114421fbd26f203a6a24679774028e7d9540290bdd25816",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/plan.json",
+      "change": "added",
+      "bytes": 4585,
+      "sha256": "9881deaca95dae1f8e6a3f81f86bc3c4551a4410f197f9c17c4154e7f740c616",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "a88d4f4e8f363cb9e91c53cacf3e82103c204b7200179766ea5295ea8062d48c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/controls.json",
+      "change": "added",
+      "bytes": 5866,
+      "sha256": "2c56f5cd988afbc4b3addf60222b342307d6f1baabe6256b1185e25e35786c0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/execution.json",
+      "change": "added",
+      "bytes": 17277,
+      "sha256": "11f262f6a689e5ace0f059a8646839848057cab9a3dd7b69d8dcce7c5b912a53",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "b1be0e5bbcd355de4a0f65c620b9a1f376a2736964c618255dc66aaf636ae0bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 204,
+      "sha256": "af9ecee8102fbd1ef898ad11c19e76679b9caa869fcbafa4989ed18feab2e172",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier.json",
+      "change": "added",
+      "bytes": 11410,
+      "sha256": "26f7b97e2e6d070849675d89a313fdf054e9aa65d128267cd423fe04d5057000",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4578,
+      "sha256": "82749c5753c08e902479f76614fa27767d9274ed08fc63066db0f3a79983ea05",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/result.json",
+      "change": "added",
+      "bytes": 14933,
+      "sha256": "8e63676d9d8d5b7f97e53c884f5a00e851d6ac97f9b8239a2b3003045cf05151",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/executions/20261123T225437Z-1cb9b50b/attempt.json",
+      "change": "added",
+      "bytes": 8739,
+      "sha256": "9ced5f9be295c9aaf4ee9447ee394497bf477195bcf6169f4bf3802d53939fb2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/taken/executions/20261123T225437Z-1cb9b50b/checker.json",
+      "change": "added",
+      "bytes": 5724,
+      "sha256": "61457d42b747a2837499006ad32fb7c7f452c0f2e8b3340ab83177f38e5c900d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "8e004743cb2aa6e3f8852599f85eccecb59c0b5232c23e2d552d72e5524700b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/plan.json",
+      "change": "added",
+      "bytes": 4601,
+      "sha256": "234133c5fc9a9fa99d7b43f528bc1e2eab949a0c168e5388aa96430bb2a02428",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 1182,
+      "sha256": "a88d4f4e8f363cb9e91c53cacf3e82103c204b7200179766ea5295ea8062d48c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/controls.json",
+      "change": "added",
+      "bytes": 5878,
+      "sha256": "af38f1ed07a1ae3b9c1d9d95624235fb84992e4bfe6d3c6fd85fad34f3f96c5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/execution.json",
+      "change": "added",
+      "bytes": 19404,
+      "sha256": "7f9e5f3da1167fee25714097cc63eecf78ad9cd0004008114bc90366c9f099d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/streams.json",
+      "change": "added",
+      "bytes": 1983,
+      "sha256": "b3f0e69874f2fcd48a0baecf4a519bcccd98e65e7247ad56442dc1baf592fe66",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 577,
+      "sha256": "4de2299fbf263a1ac9671e6d715214796d1fbbcf4031d37db5fd9df1f67b31d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier.json",
+      "change": "added",
+      "bytes": 13423,
+      "sha256": "d5dee2f459c4ac413119053c3845ec5427428462db6408b20da451ed586e3a47",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier.stdout",
+      "change": "added",
+      "bytes": 6303,
+      "sha256": "e285661cb9424c05f1ad0d176234d105d65b77a2b68cd42c55112080a721f997",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/result.json",
+      "change": "added",
+      "bytes": 17879,
+      "sha256": "d1e050845ed8f86eff3c7aa4d45b1f3fcbf413ef305b7690ac2da91bc005d315",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/executions/20261123T225440Z-7754ca01/attempt.json",
+      "change": "added",
+      "bytes": 8785,
+      "sha256": "bbaed7356b61c5f8046928895b84f42bd91f6659ede065ee0df071c0a387d834",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/397-stock-factory-histories/receipts/unchanged/executions/20261123T225440Z-7754ca01/checker.json",
+      "change": "added",
+      "bytes": 7575,
+      "sha256": "d2454c64ae7a4359eec4f12e43c8abe106f1dca992bfa924480d955327b798c2",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "a4337c1b7972e69f798b877297ee73b35521bee71ad1d8a3cab2374bb68dabe9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/plan.json",
+      "change": "added",
+      "bytes": 4600,
+      "sha256": "c1023e7572b1717d5358767df00458663bf2d500d5d4548465867b2d851f8faf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 452,
+      "sha256": "defb4948ef77763a703d3f294a3f778c74560d09144eb35aeb7dafb347b4a6ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/controls.json",
+      "change": "added",
+      "bytes": 4069,
+      "sha256": "2624ce73c2f7ac4b574dd9bffd0f1029b2b8df89e6ee8bd1a33a01390ed796b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/execution.json",
+      "change": "added",
+      "bytes": 15605,
+      "sha256": "7cc94b17ca6c7b8bdc181d3e2209afa6189344a862d0fa31844e61ed8a2ed3fc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "3e1da2b82cab94e2651fbcb884e25d04742555c79760f9ba59d9b5e4de9ca967",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 191,
+      "sha256": "e4bfd94edbcc8bcdcb886951af13f3f2f996fae48f40a8afcb01a4e64e93f8a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier.json",
+      "change": "added",
+      "bytes": 11534,
+      "sha256": "6ee091b931e79b52b76eb4f65d3763ce2d3bf15194139c62657a4a8a4872e16c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4390,
+      "sha256": "2e8179122cf910bd2309c5bcc60a6b1f1bdfa6576c47ca0b94155d9078e9feef",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/result.json",
+      "change": "added",
+      "bytes": 14554,
+      "sha256": "03fb1f2add3ad461ba1a72abd7f4113cdaa1cbc9ebe2f24b8b6b8a12a8843acf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/executions/20261123T225442Z-70bc5647/attempt.json",
+      "change": "added",
+      "bytes": 9054,
+      "sha256": "9719424c6808934599419899ac45db759169f6e52804a06a1f2a43e3bdca2651",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/caught/executions/20261123T225442Z-70bc5647/checker.json",
+      "change": "added",
+      "bytes": 5526,
+      "sha256": "4275a694f5fa209ff5d3b5bbae16c8cee6840ccf7f0aed399bf4cbb273f59f42",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/completion.json",
+      "change": "added",
+      "bytes": 123,
+      "sha256": "82d654e71a2e95d60d353dd8b21732df0f9a3818ba0436dd1ce39f407462fbe6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/plan.json",
+      "change": "added",
+      "bytes": 4511,
+      "sha256": "c20ba0600fb05185ea203aec1d6ab6cccca9262e1b653d07f11c2fe3338a702e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/control-original-jdk21.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/control-original-jdk21.stdout",
+      "change": "added",
+      "bytes": 452,
+      "sha256": "defb4948ef77763a703d3f294a3f778c74560d09144eb35aeb7dafb347b4a6ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/controls.json",
+      "change": "added",
+      "bytes": 4060,
+      "sha256": "d2e6a614a09e7fc0cf1b17c2425dd708e556eb22794c8bd6f697e7022db19223",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/execution.json",
+      "change": "added",
+      "bytes": 15325,
+      "sha256": "c7025fd2849a7a18081346113a8c124d0dba0ce1448011c78f3626b52cdf30e8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/streams.json",
+      "change": "added",
+      "bytes": 1981,
+      "sha256": "f5014bc0a59b8ffa2515fb42dfb73e770f2e0539f741c0f57212e0d39f89dab5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier-output.txt",
+      "change": "added",
+      "bytes": 178,
+      "sha256": "4dfec46989e60e62cda9f2f11990cd71abb422089608938ba9a2c6c2eb4ecfa0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier.json",
+      "change": "added",
+      "bytes": 11262,
+      "sha256": "da5a6180e85be1aae8fb135e82e17e17769c23ddb6399b5b989ecc2b1b13524e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier.stdout",
+      "change": "added",
+      "bytes": 4180,
+      "sha256": "6e96bc70a249c4097dfdf94b206267878aca288add3c34d3cad5a13bf3638f3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/result.json",
+      "change": "added",
+      "bytes": 14087,
+      "sha256": "0091d8bb093cc639b33f3f992d4026aff1b9a6df4d014a26b94dc950ae227a97",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/executions/20261123T225444Z-1a4925da/attempt.json",
+      "change": "added",
+      "bytes": 9020,
+      "sha256": "5e5352f6da85aeafd951510e51818634de7e116ae57433308eae78d58651bbb1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/398-physical-safety-sites/receipts/sum/executions/20261123T225444Z-1a4925da/checker.json",
+      "change": "added",
+      "bytes": 5298,
+      "sha256": "507c0c49d0e94c13dab0ad18be951d16079cabe2514ce1a566485b05099d44b9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:57:22+00:00",
+    "applied": [
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/completion.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/plan.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/control-original-jdk21.stderr",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/control-original-jdk21.stdout",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/controls.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/execution.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/streams.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier-output.txt",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier.stderr",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/records/verifier.stdout",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/20261123T225438Z-d39402c2/result.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/executions/20261123T225438Z-d39402c2/attempt.json",
+      "examples/397-stock-factory-histories/receipts/aliaslaw/executions/20261123T225438Z-d39402c2/checker.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/completion.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/plan.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/control-original-jdk21.stderr",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/control-original-jdk21.stdout",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/controls.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/execution.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/streams.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier-output.txt",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier.stderr",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/records/verifier.stdout",
+      "examples/397-stock-factory-histories/receipts/nonnegative/20261123T225435Z-70400733/result.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/executions/20261123T225435Z-70400733/attempt.json",
+      "examples/397-stock-factory-histories/receipts/nonnegative/executions/20261123T225435Z-70400733/checker.json",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/completion.json",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/plan.json",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/control-original-jdk21.stderr",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/control-original-jdk21.stdout",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/controls.json",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/execution.json",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/streams.json",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier-output.txt",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier.json",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier.stderr",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/records/verifier.stdout",
+      "examples/397-stock-factory-histories/receipts/taken/20261123T225437Z-1cb9b50b/result.json",
+      "examples/397-stock-factory-histories/receipts/taken/executions/20261123T225437Z-1cb9b50b/attempt.json",
+      "examples/397-stock-factory-histories/receipts/taken/executions/20261123T225437Z-1cb9b50b/checker.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/completion.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/plan.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/control-original-jdk21.stderr",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/control-original-jdk21.stdout",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/controls.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/execution.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/streams.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier-output.txt",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier.stderr",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/records/verifier.stdout",
+      "examples/397-stock-factory-histories/receipts/unchanged/20261123T225440Z-7754ca01/result.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/executions/20261123T225440Z-7754ca01/attempt.json",
+      "examples/397-stock-factory-histories/receipts/unchanged/executions/20261123T225440Z-7754ca01/checker.json",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/completion.json",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/plan.json",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/control-original-jdk21.stderr",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/control-original-jdk21.stdout",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/controls.json",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/execution.json",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/streams.json",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier-output.txt",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier.json",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier.stderr",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/records/verifier.stdout",
+      "examples/398-physical-safety-sites/receipts/caught/20261123T225442Z-70bc5647/result.json",
+      "examples/398-physical-safety-sites/receipts/caught/executions/20261123T225442Z-70bc5647/attempt.json",
+      "examples/398-physical-safety-sites/receipts/caught/executions/20261123T225442Z-70bc5647/checker.json",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/completion.json",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/plan.json",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/control-original-jdk21.stderr",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/control-original-jdk21.stdout",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/controls.json",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/execution.json",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/streams.json",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier-output.txt",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier.json",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier.stderr",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/records/verifier.stdout",
+      "examples/398-physical-safety-sites/receipts/sum/20261123T225444Z-1a4925da/result.json",
+      "examples/398-physical-safety-sites/receipts/sum/executions/20261123T225444Z-1a4925da/attempt.json",
+      "examples/398-physical-safety-sites/receipts/sum/executions/20261123T225444Z-1a4925da/checker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b68aa1dc2bec5e16476d1e8e48e9455a04f20053",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b68aa1dc2bec5e16476d1e8e48e9455a04f20053/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T225446Z-0660880cb9322659",
+      "outputs": "20261123T225446Z-083812bd04dfc97b",
+      "diff": "20261123T225446Z-0994061d43b7c6e0"
+    }
+  }
+}

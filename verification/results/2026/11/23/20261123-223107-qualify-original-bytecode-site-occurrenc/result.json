@@ -1,0 +1,262 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-223107-qualify-original-bytecode-site-occurrenc",
+  "title": "Qualify original bytecode site occurrence escape and completeness",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.2s, peak 99.2 MiB (estimated 2m00s, 2.0 GiB); 11 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-223107-qualify-original-bytecode-site-occurrenc.json",
+    "sha256": "caefd3e27b4bd157c925f72406f6ff94847ec862c7d8a08134c74af0cc4f4af1",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-223107-qualify-original-bytecode-site-occurrenc",
+      "title": "Qualify original bytecode site occurrence escape and completeness",
+      "description": "Check the caught divide, helper, escaping array read, dead and rebound dereference, and short and long unwinds. Require a second execution of every selected violation at the original JVM PC.",
+      "kind": "library",
+      "capabilities": [
+        "receiver-construction",
+        "physical-property-selection"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:31:07+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Run the bound sites controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/qualification.py sites",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/qualification/sites"
+      ]
+    }
+  },
+  "sourceCommit": "edb82317d3aa1ddb0b0d5631de347361c664a76d",
+  "startedAt": "2026-11-23T22:50:49+00:00",
+  "finishedAt": "2026-11-23T22:54:51+00:00",
+  "wallSeconds": 242.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3562698,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104009728,
+    "wallSeconds": 16.2,
+    "cpuSeconds": 21.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the bound sites controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/qualification.py sites",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 16.229,
+      "cpuSeconds": 21.101,
+      "cpuThrottledSeconds": 1.584,
+      "peakMemoryBytes": 104009728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-bound-sites-controls.log",
+        "lines": 9,
+        "bytes": 521,
+        "sha256": "de75d9134f7b07c0d82894a4a64ab835ca4496b63e9babddb7fb925b108570e7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "SafetySites#run 19 division-by-zero occurrence reached refuted",
+        "SafetySites#run 19 division-by-zero escape reached established",
+        "SafetySites#run 44 bounds escape reached refuted",
+        "SafetySites#run 54 null occurrence unreachable unreachable",
+        "SafetySites#run 54 null occurrence reached refuted",
+        "SafetySites#run 77 return return-equals unknown incomplete",
+        "SafetySites#run 77 return return-equals reached established",
+        "SafetySites#run 77 return return-equals reached refuted",
+        "SafetySites#divide 3 division-by-zero escape reached refuted"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/qualification/sites/array-escapes/result.json",
+      "change": "added",
+      "bytes": 21084,
+      "sha256": "2e6f5d2cd943ae14c89b8e8c13ec3b656842ebc83e11f2fe6263bcf5c89d6349",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/checks.json",
+      "change": "added",
+      "bytes": 1442,
+      "sha256": "4a8a109dd1d92cb77fb4cd01b12d3411e883b59b5b15236ef166d1fe7a878e5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/dead/result.json",
+      "change": "added",
+      "bytes": 15923,
+      "sha256": "3798b32903c62a37957a408367f1f79e0f2b4b3a1b7c27081bdbd3f5ddf68755",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/divide-escapes/result.json",
+      "change": "added",
+      "bytes": 18119,
+      "sha256": "9f0df91f8da4fe89b64d68be60a45a2b90586e5b9f760038a12c80f8ed52f340",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/divide-occurs/result.json",
+      "change": "added",
+      "bytes": 19517,
+      "sha256": "e3eac1ad23ea695663e13bfc21a6957f23cdcb1e8bacab7d80091ad855db4b5d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/helper-escapes/result.json",
+      "change": "added",
+      "bytes": 19415,
+      "sha256": "7d3aa0cdc566ecb45dfc1cccfd91647ad6f7bb224377ea5902907f7930420b85",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/measurement.json",
+      "change": "added",
+      "bytes": 1805,
+      "sha256": "01af705427c765764ef1cacd805ead7e8edaabc4750c23373cb2f2e50bb114be",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/short-sum/result.json",
+      "change": "added",
+      "bytes": 16410,
+      "sha256": "7bbb1b9b1d38dc782b04f7a98c9325cc0eb8a1bc0b2876ce69d1835e2a3b7682",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/sum/result.json",
+      "change": "added",
+      "bytes": 16948,
+      "sha256": "30ba88cab7aff7d81ccfb08e63f1cda73ebcae96d3d89cf75d4676b11a1d3724",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/widened/result.json",
+      "change": "added",
+      "bytes": 18299,
+      "sha256": "0ba0ff2d04ab652a7029e3990f1f99372453eb0cf07805ed836d2c75e83b31c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/sites/wrong-sum/result.json",
+      "change": "added",
+      "bytes": 17993,
+      "sha256": "0ef038ce0810d867de4c0a22d913150b9629d6cfeb476ce61628536934f15665",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:57:22+00:00",
+    "applied": [
+      "verification/receiver-discovery/qualification/sites/array-escapes/result.json",
+      "verification/receiver-discovery/qualification/sites/checks.json",
+      "verification/receiver-discovery/qualification/sites/dead/result.json",
+      "verification/receiver-discovery/qualification/sites/divide-escapes/result.json",
+      "verification/receiver-discovery/qualification/sites/divide-occurs/result.json",
+      "verification/receiver-discovery/qualification/sites/helper-escapes/result.json",
+      "verification/receiver-discovery/qualification/sites/measurement.json",
+      "verification/receiver-discovery/qualification/sites/short-sum/result.json",
+      "verification/receiver-discovery/qualification/sites/sum/result.json",
+      "verification/receiver-discovery/qualification/sites/widened/result.json",
+      "verification/receiver-discovery/qualification/sites/wrong-sum/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b68aa1dc2bec5e16476d1e8e48e9455a04f20053",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b68aa1dc2bec5e16476d1e8e48e9455a04f20053/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T225451Z-4319502ed9f09074",
+      "outputs": "20261123T225451Z-4485742c65bfd60b",
+      "diff": "20261123T225451Z-4627462a7119d649"
+    }
+  }
+}

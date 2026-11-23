@@ -1,0 +1,562 @@
+{
+  "schema": "physical-site-investigation/v1",
+  "entry": {
+    "owner": "UpgradeCallerClaim",
+    "method": "matches",
+    "descriptor": "(I)Z",
+    "binding": {
+      "bound_release": 21,
+      "candidates": [
+        {
+          "entry": "UpgradeCallerClaim.class",
+          "provider": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/classes",
+          "sha256": "a5c76e12f46ec73986075c4baec649fe4030e25163b956449df9307b952140ec"
+        }
+      ],
+      "class": "UpgradeCallerClaim",
+      "entry": "UpgradeCallerClaim.class",
+      "index": 0,
+      "manifest": null,
+      "provider": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/classes",
+      "selected_by": "rule",
+      "sha256": "a5c76e12f46ec73986075c4baec649fe4030e25163b956449df9307b952140ec",
+      "shadowed": []
+    }
+  },
+  "subject": {
+    "owner": "UpgradeProbe",
+    "method": "observe",
+    "descriptor": "([Ljava/lang/String;)Ljava/lang/String;",
+    "binding": {
+      "bound_release": 21,
+      "candidates": [
+        {
+          "entry": "UpgradeProbe.class",
+          "provider": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/classes",
+          "sha256": "83a7701cf7e9a3ae6ab085aeb2a86ab8051d6dda112d5734b9615bea780a7d54"
+        }
+      ],
+      "class": "UpgradeProbe",
+      "entry": "UpgradeProbe.class",
+      "index": 0,
+      "manifest": null,
+      "provider": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/classes",
+      "selected_by": "rule",
+      "sha256": "83a7701cf7e9a3ae6ab085aeb2a86ab8051d6dda112d5734b9615bea780a7d54",
+      "shadowed": []
+    }
+  },
+  "site": {
+    "branchTargets": [
+      40
+    ],
+    "followingPc": 36,
+    "handlers": [],
+    "kind": "branch",
+    "line": 9,
+    "opcode": 199,
+    "ordinal": 20,
+    "pc": 33,
+    "selection": "supported"
+  },
+  "policy": "taken",
+  "boundary": "selected method activation",
+  "assume": "arg0 >= 0 && arg0 < 4",
+  "unwind": 64,
+  "maxArrayLength": 128,
+  "checkerSha256": "6d7135bec84a4e2153a48f7d4c71fa28f84e54ebafe627a4add9ee7524fbef4d",
+  "projectionSha256": "056de5a25ae7ddde33f3b86c6b146c80014d56d25b849675a8b8e8212f748c26",
+  "wrapperSha256": "bff4756090fa73a23b3449f29d194c01d9abcd26266a782e8f077952f354e4fe",
+  "expectedReturn": null,
+  "queries": {
+    "complete": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "SelectedSiteQuery#complete",
+      "domain": "arg0: int",
+      "assume": "arg0 >= 0 && arg0 < 4",
+      "assert": "result",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "statement": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/lookup/complete/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "SelectedSiteQuery#complete cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "uri": null,
+          "line": 7
+        }
+      ],
+      "output": "\u2717 SelectedSiteQuery#complete cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+      "work": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/lookup/complete",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.090916162,
+        "properties": 1,
+        "unwind": 64,
+        "max_array_length": 128,
+        "stage": null,
+        "native": {
+          "paths": 10,
+          "merges": 0,
+          "solver_calls": 10,
+          "solving_seconds": 0.000281545,
+          "gates_evaluated": 217,
+          "evaluating_seconds": 1.2733e-05,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 247,
+          "clauses": 660,
+          "seconds": 0.074028615,
+          "loading_seconds": 0.010324654,
+          "decoding_seconds": 0.000904111,
+          "encoding_seconds": 0.001917609,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()",
+            "sites": [
+              "org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406"
+            ],
+            "approximation": "has run already, and threw nothing",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.074,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.01,
+              "lowering": 0.001,
+              "symbolic": 0.061,
+              "encoding": 0.002,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 247,
+              "clauses": 660
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.122,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.074,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.046
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "arg0",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "arg0: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "arg0 >= 0 && arg0 < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    },
+    "absent": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "SelectedSiteQuery#absent",
+      "domain": "arg0: int",
+      "assume": "arg0 >= 0 && arg0 < 4",
+      "assert": "result",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "statement": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/lookup/absent/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "SelectedSiteQuery#absent cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "uri": null,
+          "line": 8
+        }
+      ],
+      "output": "\u2717 SelectedSiteQuery#absent cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+      "work": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/lookup/absent",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.094044507,
+        "properties": 1,
+        "unwind": 64,
+        "max_array_length": 128,
+        "stage": null,
+        "native": {
+          "paths": 10,
+          "merges": 0,
+          "solver_calls": 10,
+          "solving_seconds": 0.000321151,
+          "gates_evaluated": 217,
+          "evaluating_seconds": 1.1902e-05,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 247,
+          "clauses": 660,
+          "seconds": 0.077599638,
+          "loading_seconds": 0.010654002,
+          "decoding_seconds": 0.001049526,
+          "encoding_seconds": 0.001968884,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()",
+            "sites": [
+              "org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406"
+            ],
+            "approximation": "has run already, and threw nothing",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.078,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.011,
+              "lowering": 0.001,
+              "symbolic": 0.064,
+              "encoding": 0.002,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 247,
+              "clauses": 660
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.124,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.078,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.044
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "arg0",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "arg0: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "arg0 >= 0 && arg0 < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    },
+    "safe": {
+      "wire_version": 1,
+      "verdict": "unverifiable",
+      "target": "SelectedSiteQuery#safe",
+      "domain": "arg0: int",
+      "assume": "arg0 >= 0 && arg0 < 4",
+      "assert": "result",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": null,
+      "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "statement": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/lookup/safe/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "unverifiable",
+          "message": "SelectedSiteQuery#safe cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "uri": null,
+          "line": 9
+        }
+      ],
+      "output": "\u2717 SelectedSiteQuery#safe cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption\n",
+      "work": "/home/filip/.cache/in-the-loop/tmp/tmpzmfc4hml/lookup/safe",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.089528064,
+        "properties": 1,
+        "unwind": 64,
+        "max_array_length": 128,
+        "stage": null,
+        "native": {
+          "paths": 10,
+          "merges": 0,
+          "solver_calls": 10,
+          "solving_seconds": 0.000333705,
+          "gates_evaluated": 217,
+          "evaluating_seconds": 1.3404e-05,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 247,
+          "clauses": 660,
+          "seconds": 0.075028746,
+          "loading_seconds": 0.010948127,
+          "decoding_seconds": 0.000928959,
+          "encoding_seconds": 0.001772245,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "gaps": [
+          {
+            "id": "class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V",
+            "kind": "class-initializer",
+            "call": "org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()",
+            "sites": [
+              "org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406"
+            ],
+            "approximation": "has run already, and threw nothing",
+            "treatment": "refused"
+          }
+        ],
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.075,
+            "ended": "no-verdict",
+            "ending": "no-verdict",
+            "phases": {
+              "loading": 0.011,
+              "lowering": 0.001,
+              "symbolic": 0.061,
+              "encoding": 0.002,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 247,
+              "clauses": 660
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.119,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.075,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.041
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "arg0",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "arg0: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "arg0 >= 0 && arg0 < 4",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 64,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  },
+  "originalJvm": {},
+  "reachability": "unknown",
+  "disposition": "incomplete"
+}

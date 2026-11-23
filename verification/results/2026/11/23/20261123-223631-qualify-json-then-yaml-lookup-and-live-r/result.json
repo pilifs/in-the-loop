@@ -1,0 +1,278 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-223631-qualify-json-then-yaml-lookup-and-live-r",
+  "title": "Qualify JSON then YAML lookup and live receiver isolation",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m43s, peak 213.0 MiB (estimated 3m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-223631-qualify-json-then-yaml-lookup-and-live-r.json",
+    "sha256": "72456cba59c56e26b57972d3ae7b8dc36ab1ae9e09483ceb51cb9e8688f80531",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-223631-qualify-json-then-yaml-lookup-and-live-r",
+      "title": "Qualify JSON then YAML lookup and live receiver isolation",
+      "description": "Repeat the original four selector claims on each dependency side through the standard caller route. On the same checker, investigate the lookup result branch and use original JVM breakpoints on all sixteen calls. Construct two fresh configurations, mutate both in either order, then observe both trees and the alias-blind negative control. Keep reached instructions and fully decided public claims separate.",
+      "kind": "real-world",
+      "capabilities": [
+        "receiver-construction",
+        "physical-property-selection"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:36:31+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "18m"
+      },
+      "steps": [
+        {
+          "name": "Check the original JSON public caller",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/configuration.py commons-configuration-565",
+          "cwd": "."
+        },
+        {
+          "name": "Transfer unchanged code to the YAML caller",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/configuration.py commons-configuration-601",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/qualification/commons-configuration-565",
+        "verification/receiver-discovery/qualification/commons-configuration-601"
+      ]
+    }
+  },
+  "sourceCommit": "edb82317d3aa1ddb0b0d5631de347361c664a76d",
+  "startedAt": "2026-11-23T22:50:49+00:00",
+  "finishedAt": "2026-11-23T22:56:18+00:00",
+  "wallSeconds": 329.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3562698,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1080.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 223391744,
+    "wallSeconds": 103.1,
+    "cpuSeconds": 151.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.57
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original JSON public caller",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/configuration.py commons-configuration-565",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 51.923,
+      "cpuSeconds": 75.211,
+      "cpuThrottledSeconds": 10.207,
+      "peakMemoryBytes": 223391744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-json-public.log",
+        "lines": 4,
+        "bytes": 234,
+        "sha256": "954f4655def9aea2a66ca7509c2997ee18998b4a04104728150688f634a3f534",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.configuration2.JSONConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-565 preserved",
+        "UpgradeProbe#observe 33 branch taken unknown incomplete",
+        "UpgradeProbe#observe 33 branch taken unknown incomplete"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Transfer unchanged code to the YAML caller",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/configuration.py commons-configuration-601",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 51.176,
+      "cpuSeconds": 76.676,
+      "cpuThrottledSeconds": 8.552,
+      "peakMemoryBytes": 219119616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-transfer-unchanged-code-to-the.log",
+        "lines": 4,
+        "bytes": 234,
+        "sha256": "8fa56920432ba69163262b191c2d85f45958b9a1b037f4a5a5e57ded9bc050bf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.configuration2.YAMLConfiguration#read(Ljava/io/Reader;)V",
+        "commons-configuration-601 preserved",
+        "UpgradeProbe#observe 33 branch taken unknown incomplete",
+        "UpgradeProbe#observe 33 branch taken unknown incomplete"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-565/measurement.json",
+      "change": "added",
+      "bytes": 56885,
+      "sha256": "66c9bb9f803fd2ba0178f27e73e43893fedc90b5e5936eb8eee389f7bf8af254",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-565/new/lookup/result.json",
+      "change": "added",
+      "bytes": 24201,
+      "sha256": "5de5dcc1c203e6623204561c15a01fe330b79679dfab93d0867e5e6824a9fd2f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-565/old/lookup/result.json",
+      "change": "added",
+      "bytes": 24199,
+      "sha256": "4f0a39760faa1dcaddf0c58e51b19cc58edc8efc28ef7a1dc720566ddf846207",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-565/receipts.tar.gz",
+      "change": "added",
+      "bytes": 14625,
+      "sha256": "d0da9375b3dba8c250347c79add5746077792f5852a502aebd973b7777b40367",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-601/measurement.json",
+      "change": "added",
+      "bytes": 56884,
+      "sha256": "feb8e22a6125e271e61df7b6bdb244f49790dcd965ed23fa063f3c23c4181777",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-601/new/lookup/result.json",
+      "change": "added",
+      "bytes": 24204,
+      "sha256": "bd86e465886a043d7282b46385c5799694917e074b9187fb6060fb0a0fee9105",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-601/old/lookup/result.json",
+      "change": "added",
+      "bytes": 24202,
+      "sha256": "fce7a8e57d28fd2307cec0f913b9fb95f1f2d8ae27f1552de036e24784c303b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/commons-configuration-601/receipts.tar.gz",
+      "change": "added",
+      "bytes": 11388,
+      "sha256": "58bad50ffd945bfb848ed97753121a603bae5d951ce10fa6b12ed4712ea0f6c9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:57:23+00:00",
+    "applied": [
+      "verification/receiver-discovery/qualification/commons-configuration-565/measurement.json",
+      "verification/receiver-discovery/qualification/commons-configuration-565/new/lookup/result.json",
+      "verification/receiver-discovery/qualification/commons-configuration-565/old/lookup/result.json",
+      "verification/receiver-discovery/qualification/commons-configuration-565/receipts.tar.gz",
+      "verification/receiver-discovery/qualification/commons-configuration-601/measurement.json",
+      "verification/receiver-discovery/qualification/commons-configuration-601/new/lookup/result.json",
+      "verification/receiver-discovery/qualification/commons-configuration-601/old/lookup/result.json",
+      "verification/receiver-discovery/qualification/commons-configuration-601/receipts.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b68aa1dc2bec5e16476d1e8e48e9455a04f20053",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b68aa1dc2bec5e16476d1e8e48e9455a04f20053/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T225618Z-388295e5fa107dc6",
+      "outputs": "20261123T225618Z-4196230df14c50c9",
+      "diff": "20261123T225618Z-456247e823267fe1"
+    }
+  }
+}
