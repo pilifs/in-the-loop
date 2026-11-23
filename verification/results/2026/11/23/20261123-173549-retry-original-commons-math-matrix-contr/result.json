@@ -1,0 +1,338 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-173549-retry-original-commons-math-matrix-contr",
+  "title": "Retry original Commons Math matrix contracts with comparator headroom",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m45s, peak 5.6 GiB (estimated 7m00s, 10.0 GiB); 21 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-173549-retry-original-commons-math-matrix-contr.json",
+    "sha256": "d6909a9dee88b4ec9b2e5637100a30f542f8cdea8bf12c3d6133c9c80ee7daba",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-173549-retry-original-commons-math-matrix-contr",
+      "title": "Retry original Commons Math matrix contracts with comparator headroom",
+      "description": "The earlier 4 GiB comparator measurement exhausted its limit at the original Commons Math descriptor. Repeat at the same 120-second claim deadlines and row bounds, with up to 8192 MiB for JBMC. Keep native and integrated outcomes, exact exception fields, measured resources and the first unproved operation.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:35:49+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "10G",
+        "duration": "7m",
+        "memoryLimit": "13G",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Public matrix and original metadata",
+          "run": "JVMCONTRACT_JBMC_MEMORY_MB=8192 python3 -B lib/benchmark/jbmc-fast-follow/matrix_transfer.py --output verification/jbmc-fast-follow/successor/matrix",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/successor/matrix"
+      ]
+    }
+  },
+  "sourceCommit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+  "startedAt": "2026-11-23T17:55:41+00:00",
+  "finishedAt": "2026-11-23T18:01:36+00:00",
+  "wallSeconds": 355.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 710475,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 13958643712,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 10737418240,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 6029623296,
+    "wallSeconds": 345.7,
+    "cpuSeconds": 351.0,
+    "memoryOfEstimate": 0.56,
+    "durationOfEstimate": 0.82
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Public matrix and original metadata",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=8192 python3 -B lib/benchmark/jbmc-fast-follow/matrix_transfer.py --output verification/jbmc-fast-follow/successor/matrix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 345.708,
+      "cpuSeconds": 351.007,
+      "cpuThrottledSeconds": 0.704,
+      "peakMemoryBytes": 6029623296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-public-matrix-and-original-met.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/correct/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/correct/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 11189,
+      "sha256": "63004eefcfb92e51f091bd48b75e1257560f37390cd4aeb8438f7e9ecf825f11",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/correct/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/correct/native/stdout.json",
+      "change": "added",
+      "bytes": 4988,
+      "sha256": "3df49546155103c0fa598585641704dfda9097bb59a159e2791a1533532a7a9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/equal-width/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/equal-width/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 11176,
+      "sha256": "2ff2d26843c183883d29fc2dca636ed7b30d62902330947315c112f632fe66ce",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/equal-width/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/equal-width/native/stdout.json",
+      "change": "added",
+      "bytes": 6485,
+      "sha256": "e0abdc3af8c4b8279c06d0ebbc26a00e821067315495adf379b61bb09626a978",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/measurement.json",
+      "change": "added",
+      "bytes": 13266,
+      "sha256": "3f328830d2de77437235f96eff1394399f3bc6c338048f835056a6b5fefe48d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/singleton-null/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/singleton-null/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 11081,
+      "sha256": "8729ad389934c7758f2f0147bcb67aa40b666863fecdb5909515cfe55bb7edb7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/singleton-null/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/singleton-null/native/stdout.json",
+      "change": "added",
+      "bytes": 6262,
+      "sha256": "b769d3f5899c6b4f647fe141e483b35dbaadd6ace2f60861c98a5aad2fa49039",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/swapped/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/swapped/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 11830,
+      "sha256": "3a09d8beac036c04068e8167fb652915eab411d66f969814b5ead21bb7387af7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/swapped/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/swapped/native/stdout.json",
+      "change": "added",
+      "bytes": 6527,
+      "sha256": "41bbe16cd6706471fc565daef57ab15ab00c086613e81a8fc6c438c330be5d68",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/unequal-width/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/unequal-width/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 11448,
+      "sha256": "b18f5afc4e95ed3ed92447819a3b16b3e70514d4947950c3ef92b2a24523c004",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/unequal-width/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/matrix/unequal-width/native/stdout.json",
+      "change": "added",
+      "bytes": 6826,
+      "sha256": "2d3110845843ba6babd02fac429ad9c4b8b09089a9c0e74934a1575832ac112c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T18:02:06+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/successor/matrix/correct/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/correct/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/correct/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/correct/native/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/equal-width/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/equal-width/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/equal-width/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/equal-width/native/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/measurement.json",
+      "verification/jbmc-fast-follow/successor/matrix/singleton-null/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/singleton-null/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/singleton-null/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/singleton-null/native/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/swapped/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/swapped/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/swapped/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/swapped/native/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/unequal-width/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/unequal-width/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/matrix/unequal-width/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/matrix/unequal-width/native/stdout.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "565c1e1ae507778f5e662c22623357df27a054a5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T180136Z-961740f3cc2daa91",
+      "outputs": "20261123T180136Z-9829175b86594973",
+      "diff": "20261123T180137Z-004361d07db05750"
+    }
+  }
+}
