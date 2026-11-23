@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "ended",
+  "status": "open",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-23T11:23:28.269Z",
-  "duration_seconds": 513945,
+  "ended": "2026-11-23T12:04:37.696Z",
+  "duration_seconds": 516414,
   "stats": {
-    "turns": 158,
-    "api_calls": 1202,
-    "tool_calls": 1118,
+    "turns": 159,
+    "api_calls": 1208,
+    "tool_calls": 1122,
     "tool_errors": 21,
     "compactions": 6,
     "peak_context_tokens": 565519,
     "usage": {
-      "input_tokens": 2822,
-      "output_tokens": 826203,
-      "cache_read_input_tokens": 296963532,
-      "cache_creation_input_tokens": 4008102
+      "input_tokens": 2838,
+      "output_tokens": 829756,
+      "cache_read_input_tokens": 300069009,
+      "cache_creation_input_tokens": 4014803
     }
   },
   "tools": {
-    "Bash": 977,
+    "Bash": 981,
     "Edit": 47,
     "Read": 25,
     "SendMessage": 17,
@@ -163,24 +163,24 @@
     {
       "index": 6,
       "started": "2026-11-21T20:18:11.910Z",
-      "ended": "2026-11-23T11:23:28.269Z",
-      "turns": 31,
-      "api_calls": 337,
+      "ended": "2026-11-23T12:04:37.696Z",
+      "turns": 32,
+      "api_calls": 343,
       "usage": {
-        "input_tokens": 832,
-        "output_tokens": 228092,
-        "cache_read_input_tokens": 102096282,
-        "cache_creation_input_tokens": 970915
+        "input_tokens": 848,
+        "output_tokens": 231645,
+        "cache_read_input_tokens": 105201759,
+        "cache_creation_input_tokens": 977616
       },
-      "peak_context_tokens": 514954
+      "peak_context_tokens": 521655
     }
   ],
   "log": {
-    "sha256": "3a5cdc6be686fc7a132ae54269fc646b7bafb80f9dbcb411b8d695db650fb269",
-    "bytes": 23051618,
-    "lines": 9026,
-    "gzip_bytes": 4165667,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/3a5cdc6be686fc7a132ae54269fc646b7bafb80f9dbcb411b8d695db650fb269.jsonl.gz"
+    "sha256": "421feb3d53a2766e37c6473e61df185fc27280a4691e3ed6e31bb0500d4659bd",
+    "bytes": 23129283,
+    "lines": 9074,
+    "gzip_bytes": 4177870,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/421feb3d53a2766e37c6473e61df185fc27280a4691e3ed6e31bb0500d4659bd.jsonl.gz"
   },
   "subagents": [
     {
@@ -7171,6 +7171,22 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-104845-recheck-conformance-on-the-qualified-jav: passed: 1 passed step(s) in 24m36s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
       "log_sha256": "7556d7b9b47cae327c803bf0e9edee67dcc0c32be5a7d5763f9078ac3f883636"
+    },
+    {
+      "change_id": "kyxrwttytkkqspllqlkzzumqqurtpmox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record VF-055: the native checker took the declaration-order interface default",
+      "body": "The jbmc-java-semantics-gap run found that the native checker selected the first-declared interface default rather than the maximally specific one: example 382's dispatch was falsely refuted and firstDeclared falsely proved, both contradicted by the JVM (counterexample x=0). Fixed in stypsqmy; the brief's 98 statements and the conformance tests were rechecked and unchanged. VF-055 records it and leaves open an audit of earlier native verdicts that dispatch through library defaults. Also the watcher's decision single-jbmc-java-semantics-gap-D001 (continue: 13/13 historical JBMC-only claims, campaign 12/60 to 50/60). Documentation and decision record only.",
+      "log_sha256": "421feb3d53a2766e37c6473e61df185fc27280a4691e3ed6e31bb0500d4659bd"
+    },
+    {
+      "change_id": "rnxpqzpmpkrsxrysyqlpwrwrxyyqktts",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 kept under outputs/, not applied (the job didn't pass). 20261123-114826-qualify-direct-nullable-java-object-arra: failed: 1 failed step(s) in 3.0s, peak 65.5 MiB (estimated 2m00s, 3.0 GiB); 2 output file(s) changed 20261123-115145-recheck-the-other-55-frozen-native-java: failed: 1 failed step(s) in 1.4s, peak 68.1 MiB (estimated 3m00s, 3.0 GiB); 2 output file(s) changed Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "421feb3d53a2766e37c6473e61df185fc27280a4691e3ed6e31bb0500d4659bd"
     }
   ],
   "logs": {
@@ -7377,6 +7393,12 @@
       "lines": 6798,
       "gzip_bytes": 3483031,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/40edb99b7730ce4e5ab371742082cf3e354ded7e324eed7393b296e324c8bca1.jsonl.gz"
+    },
+    "421feb3d53a2766e37c6473e61df185fc27280a4691e3ed6e31bb0500d4659bd": {
+      "bytes": 23129283,
+      "lines": 9074,
+      "gzip_bytes": 4177870,
+      "url": null
     },
     "44c38faaa6d6b92e04b2c70f0e60b5e1b679f26425ed0bae67bd838627a1713f": {
       "bytes": 9800601,
