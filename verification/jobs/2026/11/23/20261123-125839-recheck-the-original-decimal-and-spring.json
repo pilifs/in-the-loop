@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-125839-recheck-the-original-decimal-and-spring",
+  "title": "Recheck the original decimal and Spring transfers on the final Java checker",
+  "description": "Run all four frozen Commons Lang decimal claims and the Spring formatter holdout at ordinary startup on the same checker as the 60 Java semantics statements. Preserve the normal native-selector receipts and each first unresolved operation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "375",
+      "374"
+    ]
+  },
+  "expected": "The normal example runner returns five validated receipts bound to their original guards, ordered classpaths and the final native checker.",
+  "submitted": {
+    "at": "2026-11-23T12:58:39+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "revision": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+  "priority": 14,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "1m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Four original decimal claims",
+      "run": "python3 -B -c \"from public_selectors import run; run('375', 0, [], 'semantics-heap-and-gson', 120)\"",
+      "cwd": "lib/benchmark/spring-java-data"
+    },
+    {
+      "name": "Landed formatter",
+      "run": "python3 -B -c \"from public_selectors import run; run('374', 0, ['annotated-landed'], 'semantics-heap-and-gson', 120)\"",
+      "cwd": "lib/benchmark/spring-java-data"
+    }
+  ],
+  "outputs": [
+    "examples/375-commons-lang-decimal-precision/records/semantics-heap-and-gson",
+    "examples/375-commons-lang-decimal-precision/records/native-selectors",
+    "examples/374-spring-formatter-binding/records/semantics-heap-and-gson",
+    "examples/374-spring-formatter-binding/records/native-selectors"
+  ]
+}
