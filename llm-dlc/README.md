@@ -94,6 +94,8 @@ llm-dlc/
   tools/brief_run.py                the watcher's tools for a brief's run (/multi-agent-brief): preflight, the foundation
                                     stage, start, wait, status, merge (in an order, or early), trial merges, a
                                     stream's rerun, helpers; test_brief_run.py tests it and run-streams.sh's part
+  tools/brief_queue.py              the queue of briefs a watcher runs one after the other, and the handover between
+                                    them; test_brief_queue.py tests it
   tools/single_run.py               the watcher's tools for a single agent's run (/single-agent-run): start, wait,
                                     answer, the continue message, stop, land, a brief's setup phase and its notes;
                                     test_single_run.py tests it and feature-loop.sh's `single-agent` loop
@@ -479,6 +481,16 @@ in files (`llm-dlc/loop-summaries/single-NAME/`), so another session can take a 
   The watcher stops it if it drifts into claims, examples or library code. The first one (2026-11-22, the Spring and
   Java data brief) took two cycles, and the domain agent then scored the whole brief in its first cycle without
   fetching anything.
+- **A queue of briefs** ([`tools/brief_queue.py`](tools/brief_queue.py)). Briefs the user queues run one after the
+  other, each with its setup phase and then its domain run. The queue is data: `llm-dlc/loop-summaries/queue.json`,
+  with every change logged in the committed `loops/queue.jsonl`. A brief copied into the user's inbox
+  (`~/code/scripts/analysis/queue/`) is added in file-name order; `brief_queue.py add` adds any other. Each brief
+  takes the defaults of 2026-11-23 (Opus setup; Codex Astra at max effort, continuing the previous domain session;
+  the "aspirational" texts of [`loops/domain-prompt-aspirational.md`](loops/domain-prompt-aspirational.md)) unless it
+  overrides them. `brief_queue.py next [--finished]` is the whole handover between two briefs: it lands, checkpoints
+  develop, clears failed jobs' work folders whose originals are archived, moves the workspace onto the line and
+  starts the next run. It records each step, so it resumes after a failure. It never promotes `main` or runs the
+  default tests, which stay the user's.
 
 The loop statistics count such a run as a moonshot named `single-NAME`, each text it sent a cycle.
 
