@@ -196,6 +196,81 @@ fn int_to_double(b: &mut Blaster, x: &Bits) -> Bits {
     word
 }
 
+/// Normalize the unsigned magnitude, including abs(MIN_VALUE). The guard bit is exactly
+/// half a unit in the last place. Sticky bits or an odd retained significand round it up.
+fn int_to_float(b: &mut Blaster, x: &Bits) -> Bits {
+    let sign = b.negative(x);
+    let negated = b.neg(x);
+    let magnitude = b.ite_bits(sign, &negated, x);
+    let mut result = b.constant(0, 32);
+    for lead in 0..32 {
+        let mut word = b.constant(((127 + lead) as i64) << 23, 32);
+        if lead <= 23 {
+            word[23 - lead..23].copy_from_slice(&magnitude[..lead]);
+        } else {
+            let discard = lead - 23;
+            word[..23].copy_from_slice(&magnitude[discard..lead]);
+            let sticky = magnitude[..discard-1].iter().fold(FALSE, |seen, &bit| b.or(seen, bit));
+            let above_or_odd = b.or(sticky, magnitude[discard]);
+            let round = b.and(magnitude[discard-1], above_or_odd);
+            // A carry from an all-ones significand advances the exponent too.
+            word = b.add(&word, &b.zext(&vec![round], 32));
+        }
+        result = b.ite_bits(magnitude[lead], &word, &result);
+    }
+    result[31] = sign;
+    result
+}
+
+/// JVM f2i/f2l/d2i/d2l. Align the implicit leading one with the sign position, shift
+/// toward zero, then apply sign and saturation. NaN always converts to integer zero.
+fn float_to_integral(b: &mut Blaster, x: &Bits, width: usize) -> Bits {
+    let fraction = fraction_width(x);
+    let bias = if fraction == 23 { 127 } else { 1023 };
+    let exp = b.zext(&x[fraction..x.len()-1].to_vec(), 32);
+    let cutoff = b.constant(bias + width as i64 - 1, 32);
+    let shift = b.sub(&cutoff, &exp);
+    let mut aligned = b.constant(0, width);
+    let copied = fraction.min(width-1);
+    aligned[width-1-copied..width-1].copy_from_slice(&x[fraction-copied..fraction]);
+    aligned[width-1] = TRUE;
+    let magnitude = b.ushr(&aligned, &shift);
+    let minus = b.neg(&magnitude);
+    let sign = b.negative(x);
+    let signed = b.ite_bits(sign, &minus, &magnitude);
+    let minimum = b.constant(1i64.wrapping_shl((width-1) as u32), width);
+    let maximum = minimum.iter().map(|v| -*v).collect();
+    let clamped = b.ite_bits(sign, &minimum, &maximum);
+    let fits = b.ult(&exp, &cutoff);
+    let integer = b.ite_bits(fits, &signed, &clamped);
+    let tiny = b.ult(&exp, &b.constant(bias,32));
+    let is_nan = nan(b, x);
+    let zero = b.or(tiny, is_nan);
+    b.ite_bits(zero, &b.constant(0,width), &integer)
+}
+
+/// Exact widening for all non-NaN binary32 inputs, including signed zero,
+/// subnormals and infinity. A NaN's binary64 payload is not specified by Java.
+fn float_to_double(b: &mut Blaster, x: &Bits) -> Bits {
+    let exp = x[23..31].to_vec();
+    let wide_exp = b.add(&b.zext(&exp, 11), &b.constant(1023-127,11));
+    let mut normal = b.constant(0,64);
+    normal[29..52].copy_from_slice(&x[..23]);
+    normal[52..63].copy_from_slice(&wide_exp);
+    let mut subnormal = b.constant(0,64);
+    for lead in 0..23 {
+        let mut word = b.constant(((1023-149+lead) as i64) << 52,64);
+        word[52-lead..52].copy_from_slice(&x[..lead]);
+        subnormal = b.ite_bits(x[lead], &word, &subnormal);
+    }
+    let zero_exp = b.is_zero(&exp);
+    let finite = b.ite_bits(zero_exp, &subnormal, &normal);
+    let infinite = b.all(&exp);
+    let mut word = b.ite_bits(infinite, &b.constant(0x7ff0_0000_0000_0000,64), &finite);
+    word[63] = x[31];
+    word
+}
+
 fn raw_in_model(b: &mut Blaster, model: &mut Model, word: &Bits) -> i64 {
     let mut raw = 0u64;
     for (bit, &literal) in word.iter().enumerate() {
@@ -272,6 +347,16 @@ impl Engine<'_> {
     pub(super) fn floating_convert(&mut self, path: &mut Path, from: Kind, to: Kind) -> Result<Val, Stop> {
         let x = self.pop_word(path, from)?;
         if from == Kind::Int && to == Kind::Double { return Ok(Val::J(int_to_double(&mut self.b, &x))); }
+        if from == Kind::Int && to == Kind::Float { return Ok(Val::I(int_to_float(&mut self.b, &x))); }
+        if from == Kind::Float && to == Kind::Double {
+            let is_nan = nan(&mut self.b, &x);
+            self.exclude_float_case(path, is_nan, "Float to Double with an unspecified NaN result encoding")?;
+            return Ok(Val::J(float_to_double(&mut self.b, &x)));
+        }
+        if matches!(from, Kind::Float | Kind::Double) && matches!(to, Kind::Int | Kind::Long) {
+            return Ok(if to == Kind::Long { Val::J(float_to_integral(&mut self.b, &x, 64)) }
+                      else { Val::I(float_to_integral(&mut self.b, &x, 32)) });
+        }
         let wide = matches!(to, Kind::Long | Kind::Double);
         let result = self.finite_operation(path, &format!("{from:?} to {to:?}"), [&x], if wide { 64 } else { 32 }, |[raw]| {
             result_bits(crate::interp::convert(value_of(from, raw), Narrow::To(to)))
@@ -290,6 +375,25 @@ impl Engine<'_> {
             bits
         } else {
             let x = self.pop_word(path, kind)?;
+            // A normal value divided by two stays exact while its exponent remains normal.
+            if op == ArithOp::Div && self.b.constant_value(&y) == Some(if kind == Kind::Float { 0x4000_0000 } else { 0x4000_0000_0000_0000 }) {
+                let fraction = fraction_width(&x);
+                let exp = x[fraction..x.len()-1].to_vec();
+                let small = self.b.ult(&exp, &self.b.constant(2, exp.len()));
+                let special = self.b.all(&exp);
+                let outside = self.b.or(small, special);
+                let mut conditions = path.cond.clone();
+                conditions.push(outside);
+                if outside == FALSE || (outside != TRUE && !self.solve(&conditions)?) {
+                    let lower = self.b.sub(&exp, &self.b.constant(1,exp.len()));
+                    let mut half = x;
+                    let end = half.len()-1;
+                    half[fraction..end].copy_from_slice(&lower);
+                    self.push(path, if kind == Kind::Double { Val::J(half) } else { Val::I(half) });
+                    self.advance(path);
+                    return Ok(None);
+                }
+            }
             self.finite_operation(path, &format!("{kind:?} {op:?}"), [&x, &y], x.len(), |[left, right]| {
                 let value = match kind {
                     Kind::Float => Value::Float(crate::interp::ieee_binary(op, f32::from_bits(left as u32), f32::from_bits(right as u32))),
@@ -302,5 +406,56 @@ impl Engine<'_> {
         self.push(path, if kind == Kind::Double { Val::J(result) } else { Val::I(result) });
         self.advance(path);
         Ok(None)
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn conversion_circuits_cover_ties_subnormals_and_both_saturation_limits() {
+        let mut b = Blaster::new();
+        for lead in 0..32 {
+            let center = 1_i32.wrapping_shl(lead);
+            for delta in [-129, -3, -2, -1, 0, 1, 2, 3, 129] {
+                let n = center.wrapping_add(delta);
+                for i in [n, n.wrapping_neg()] {
+                    let input = b.constant(i64::from(i), 32);
+                    let result = int_to_float(&mut b, &input);
+                    assert_eq!(b.constant_value(&result).unwrap() as u32, (i as f32).to_bits());
+                }
+            }
+        }
+        for exponent in [0_u64, 1, 126, 127, 157, 158, 190, 254, 255] {
+            for mantissa in [0, 1, 0x3fffff, 0x400000, 0x7fffff] {
+                for sign in [0, 1] {
+                    let bits = (sign << 31 | exponent << 23 | mantissa) as u32;
+                    let value = f32::from_bits(bits);
+                    let word = b.constant(i64::from(bits), 32);
+                    if !value.is_nan() {
+                        let wide = float_to_double(&mut b, &word);
+                        assert_eq!(b.constant_value(&wide).unwrap() as u64, f64::from(value).to_bits());
+                    }
+                    let int = float_to_integral(&mut b, &word, 32);
+                    let long = float_to_integral(&mut b, &word, 64);
+                    assert_eq!(b.constant_value(&int).unwrap() as i32, value as i32);
+                    assert_eq!(b.constant_value(&long).unwrap(), value as i64);
+                }
+            }
+        }
+        for exponent in [0_u64, 1, 1022, 1023, 1053, 1054, 1085, 1086, 2046, 2047] {
+            for mantissa in [0, 1, (1_u64 << 51), (1_u64 << 52) - 1] {
+                for sign in [0, 1] {
+                    let bits = sign << 63 | exponent << 52 | mantissa;
+                    let value = f64::from_bits(bits);
+                    let word = b.constant(bits as i64, 64);
+                    let int = float_to_integral(&mut b, &word, 32);
+                    let long = float_to_integral(&mut b, &word, 64);
+                    assert_eq!(b.constant_value(&int).unwrap() as i32, value as i32);
+                    assert_eq!(b.constant_value(&long).unwrap(), value as i64);
+                }
+            }
+        }
     }
 }

@@ -187,6 +187,15 @@ def measure(key, phase, engines, output, method=None):
                   "classpath":["adapter",*records],"jdk":(JDK/"release").read_text().splitlines(),
                   "jvmSha256":digest(JDK/"bin/java"),"modulesSha256":digest(JDK/"lib/modules"),
                   "scope":asdict(subject), "claimsSha256":specs, "originalJvm":jvm_controls(subject,work,cp,env),"runs":[]}
+        extra = {"numbers": "NumericOracle", "endian": "ByteOracle", "surrogates": "SurrogateOracle"}.get(key)
+        if extra:
+            oracle = folder/"controls"/(extra+".java")
+            physical = work/"grid"
+            compile_java([oracle],physical,cp,env)
+            code,out,err,seconds = command([JDK/"bin/java","-ea","-cp",os.pathsep.join(map(str,[physical,*cp])),extra],env,60)
+            if code != 0 or not out.strip():
+                raise ValueError(f"{extra} failed ({code}): {err.decode(errors='replace')}")
+            report["jvmGrid"] = {"sourceSha256":digest(oracle),"seconds":seconds,"observations":out.decode().strip()}
         if engines:
             report["checkerSha256"] = digest(Path(env["JVMCONTRACT"]))
             report["libTree"] = env.get("JVMCONTRACT_LIB_TREE")

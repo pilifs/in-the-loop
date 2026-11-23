@@ -1650,6 +1650,18 @@ impl ClassPath {
             && self.known_concurrent_table()).then_some(usize::from(*expected))
     }
 
+    /// Some JDKs reject a negative offset before dereferencing a null prefix. Qualify that
+    /// observable exception ordering against the actual branch and its false-return target.
+    pub(crate) fn prefix_checks_negative_first(&self) -> bool {
+        use crate::classfile::{Cond, Insn, Kind};
+        let Ok(Some(Loaded {class, origin: Origin::Jdk})) = self.load("java/lang/String") else { return false };
+        let Some(code) = class.method("startsWith", "(Ljava/lang/String;I)Z").and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(insns) = code.instructions() else { return false };
+        let [(_, Insn::Load(Kind::Int, 2)), (_, Insn::If(Cond::Lt, target)), ..] = &insns[..] else { return false };
+        insns.windows(2).any(|pair| matches!(pair,
+            [(at, Insn::IConst(0)), (_, Insn::Return(Some(Kind::Int)))] if at == target))
+    }
+
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
     pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
@@ -1739,6 +1751,12 @@ impl ClassPath {
             | ("java/lang/FdLibm", "__HI" | "__LO", "(D)I" | "(DI)D")
             | ("java/lang/Math", "powerOfTwoD" | "primPowerOfTwoD", "(I)D")
             | ("java/lang/Integer", "bitCount" | "lowestOneBit", "(I)I")
+            | ("java/lang/Integer", "equals", "(Ljava/lang/Object;)Z")
+            | ("java/lang/Integer", "hashCode", "()I" | "(I)I")
+            | ("java/lang/Integer", "reverseBytes", "(I)I")
+            | ("java/lang/Long", "reverseBytes", "(J)J")
+            | ("java/lang/Integer", "compareUnsigned" | "compare", "(II)I")
+            | ("java/lang/Character", "codePointAt" | "codePointBefore", "(Ljava/lang/CharSequence;I)I")
             | ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
             | ("java/math/BigInteger", "<init>", "(J)V" | "([B)V" | "([BII)V")
             | ("java/math/BigInteger", "toMagArray", "(J)[I")
@@ -2015,14 +2033,27 @@ impl ClassPath {
                 break;
             }
         }
-        for iface in self.all_interfaces(owner) {
-            if let Some(class) = bytecode(&iface) {
-                if let Some(m) = class.method(name, descriptor) {
-                    return Some((class.clone(), m.clone()));
-                }
-            }
-        }
-        None
+        self.interface_method_in(owner, name, descriptor, bytecode)
+    }
+
+    /// JVMS 5.4.3.3 and 5.4.6: a subinterface's declaration shadows its ancestors,
+    /// including when it redeclares a default abstract. Among the maximally specific
+    /// declarations only a unique concrete default supplies executable code.
+    fn interface_method_in(&self, owner: &str, name: &str, descriptor: &str,
+        bytecode: &dyn Fn(&str) -> Option<Rc<ClassFile>>) -> Option<(Rc<ClassFile>, Method)> {
+        let declared: Vec<_> = self.all_interfaces(owner).into_iter().filter_map(|iface| {
+            let class = bytecode(&iface).or_else(|| self.load(&iface).ok().flatten().map(|loaded| loaded.class))?;
+            let method = class.method(name, descriptor)?;
+            (!method.is_static() && !method.is_private()).then(|| (iface, method.is_abstract()))
+        }).collect();
+        let maximal: Vec<_> = declared.iter().filter(|(iface, _)|
+            !declared.iter().any(|(other, _)| other != iface && self.is_subtype(other, iface))).collect();
+        let mut defaults = maximal.iter().copied().filter(|(_, abstract_)| !abstract_);
+        let selected = defaults.next().or_else(|| maximal.first().copied())?;
+        if defaults.next().is_some() { return None; }
+        let class = bytecode(&selected.0)?;
+        let method = class.method(name, descriptor)?.clone();
+        Some((class, method))
     }
 
     /// The class that declares the field a reference `owner.name:descriptor` resolves to, by the JVM's field
@@ -2237,15 +2268,7 @@ impl ClassPath {
                 break;
             }
         }
-        // Interfaces, for default methods and abstract declarations.
-        for iface in self.all_interfaces(owner) {
-            if let Ok(Some(loaded)) = self.load(&iface) {
-                if let Some(m) = loaded.class.method(name, descriptor) {
-                    return Some((loaded.class.clone(), m.clone()));
-                }
-            }
-        }
-        None
+        self.interface_method_in(owner, name, descriptor, &|c| self.load(c).ok().flatten().map(|loaded| loaded.class))
     }
 
     /// Every interface a class implements, transitively, through superclasses and superinterfaces.

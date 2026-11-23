@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-101413-qualify-standalone-ordinary-string-and-j",
+  "title": "Qualify standalone ordinary string and JDK deque model profiles",
+  "description": "Re-run the ordinary string, surrogate and eight-class JDK deque profiles with the whole-source guards. JBMC rejects an explicit maximum symbolic string length alongside disabled string refinement, so this profile constrains the caller in Java and sets only the nondeterministic array and tree bounds.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc"
+  ],
+  "links": {},
+  "expected": "The three explicit corrected profiles report target properties and their reachability or the exact residual model boundary.",
+  "submitted": {
+    "at": "2026-11-23T10:14:13+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 11,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "65m"
+  },
+  "steps": [
+    {
+      "name": "No string refinement",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py ordinary prefix radix --output verification/java-semantics-gap/standalone-qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Arbitrary UTF-16 sequence",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged surrogates --output verification/java-semantics-gap/standalone-qualified",
+      "cwd": "."
+    },
+    {
+      "name": "Eight original JDK classes",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py eight-deque deque --output verification/java-semantics-gap/standalone-qualified",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/standalone-qualified"
+  ]
+}

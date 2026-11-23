@@ -717,33 +717,14 @@ impl<'a> Machine<'a> {
         match self.heap.get(r) {
             Object::Instance { .. } => {
                 // The most specific application (or model) implementation, else the JDK method it inherits.
-                let mut current = Some(class.clone());
-                while let Some(c) = current {
-                    let Ok(Some(cf)) = self.cp.bytecode(&c) else { break };
-                    if let Some(m) = cf.method(name, descriptor) {
-                        if m.code.is_some() {
-                            let m = m.clone();
-                            let mut full = vec![receiver];
-                            full.extend(args);
-                            return self.invoke(&cf, &m, full);
-                        }
-                        if m.is_native() {
-                            return Err(Fault::Unsupported(format!("{}.{name} is native", c.replace('/', "."))));
-                        }
+                if let Some((cf, m)) = self.cp.bytecode_method(&class, name, descriptor) {
+                    if m.code.is_some() {
+                        let mut full = vec![receiver];
+                        full.extend(args);
+                        return self.invoke(&cf, &m, full);
                     }
-                    current = cf.super_class.clone();
-                }
-                // Default methods of application interfaces.
-                for iface in self.cp.all_interfaces(&class) {
-                    if let Ok(Some(cf)) = self.cp.bytecode(&iface) {
-                        if let Some(m) = cf.method(name, descriptor) {
-                            if m.code.is_some() {
-                                let m = m.clone();
-                                let mut full = vec![receiver];
-                                full.extend(args);
-                                return self.invoke(&cf, &m, full);
-                            }
-                        }
+                    if m.is_native() {
+                        return Err(Fault::Unsupported(format!("{}.{name} is native", cf.name.replace('/', "."))));
                     }
                 }
                 if let Some((cf, method)) = self.cp.image_default_method(&class, name, descriptor) {
@@ -881,7 +862,13 @@ impl<'a> Machine<'a> {
                 let index = pop!().as_int();
                 let array = pop!();
                 let Some(r) = array.as_ref() else { return Err(self.npe()) };
-                self.check_write(r, "an array element")?;
+                let Object::Array { data, .. } = self.heap.get(r) else {
+                    return Err(Fault::Unsupported("array store on a non-array".into()));
+                };
+                if index < 0 || index as usize >= data.len() {
+                    let message = format!("Index {index} out of bounds for length {}", data.len());
+                    return Err(self.throw("java/lang/ArrayIndexOutOfBoundsException", Some(&message)));
+                }
                 if *kind == ArrayKind::Ref {
                     if let (Value::Ref(v), Object::Array { element, .. }) = (value, self.heap.get(r)) {
                         let element_class = match element {
@@ -894,12 +881,9 @@ impl<'a> Machine<'a> {
                         }
                     }
                 }
+                self.check_write(r, "an array element")?;
                 match self.heap.get_mut(r) {
                     Object::Array { data, element } => {
-                        if index < 0 || index as usize >= data.len() {
-                            let message = format!("Index {index} out of bounds for length {}", data.len());
-                            return Err(self.throw("java/lang/ArrayIndexOutOfBoundsException", Some(&message)));
-                        }
                         data[index as usize] = match (element, value) {
                             (Type::Boolean, Value::Int(v)) => Value::Int(v & 1),
                             (Type::Byte, Value::Int(v)) => Value::Int(v as i8 as i32),

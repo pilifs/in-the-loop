@@ -66,6 +66,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 
 /// Whether the engine models `String.name(descriptor)` here.
 pub fn models(name: &str, descriptor: &str) -> bool {
+    if (name, descriptor) == ("startsWith", "(Ljava/lang/String;I)Z") { return true; }
     matches!(
         (name, descriptor),
         ("intern" | "trim", "()Ljava/lang/String;") | ("isBlank", "()Z") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I" | "(II)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
@@ -171,6 +172,21 @@ impl Engine<'_> {
             unit = self.b.ite_bits(is, cell, &unit);
         }
         unit
+    }
+
+    fn matches_units_at(&mut self, text: &Array, needle: &Array, offset: &Bits, fits: Lit) -> Lit {
+        if fits == FALSE { return FALSE; }
+        let mut agree = fits;
+        for (i, unit) in needle.cells.iter().enumerate() {
+            let k = self.b.constant(i as i64, 32);
+            let active = self.b.slt(&k, &needle.length);
+            let at = self.b.add(offset, &k);
+            let actual = self.unit_at(text, &at);
+            let same = self.b.eq(&actual, unit);
+            let matched = self.b.or(-active, same);
+            agree = self.b.and(agree, matched);
+        }
+        agree
     }
 
     /// A new String of `length` units, `cells`, which is the object `o` under each guard of `same`.
@@ -668,6 +684,24 @@ impl Engine<'_> {
                 self.advance(path);
                 Ok(None)
             }
+            ("startsWith", "(Ljava/lang/String;I)Z", [Val::R(None), Val::I(offset)]) => {
+                let negative = self.b.negative(offset);
+                if negative != FALSE && !self.cp.prefix_checks_negative_first() {
+                    return unsupported("String.startsWith(null, offset) requires the selected JDK's negative-offset branch");
+                }
+                self.branch_throw(path, -negative, "java/lang/NullPointerException", Val::I(self.b.constant(0,32)))
+            }
+            ("startsWith", "(Ljava/lang/String;I)Z", [Val::R(other), Val::I(offset)]) => {
+                let t = match self.string_argument(path, *other, (STRING, name, descriptor)) {
+                    Ok(t) => t, Err(step) => return step,
+                };
+                let last = self.b.sub(&s.length, &t.length);
+                let fits = self.b.sle(offset, &last);
+                let fits = self.b.and(-self.b.negative(offset), fits);
+                let truth = self.matches_units_at(s, &t, offset, fits);
+                self.push_truth(path, truth);
+                Ok(None)
+            }
             ("endsWith", _, [Val::R(other)]) => {
                 let t = match self.string_argument(path, *other, (STRING, name, descriptor)) {
                     Ok(t) => t,
@@ -675,16 +709,7 @@ impl Engine<'_> {
                 };
                 let fits = self.b.sle(&t.length, &s.length);
                 let offset = self.b.sub(&s.length, &t.length);
-                let mut agree = vec![fits];
-                for (k, unit) in t.cells.iter().enumerate() {
-                    let index = self.b.constant(k as i64, 32);
-                    let inside = self.b.slt(&index, &t.length);
-                    let at = self.b.add(&offset, &index);
-                    let mine = self.unit_at(s, &at);
-                    let same = self.b.eq(&mine, unit);
-                    agree.push(self.b.or(-inside, same));
-                }
-                let truth = self.b.all(&agree);
+                let truth = self.matches_units_at(s, &t, &offset, fits);
                 self.push_truth(path, truth);
                 Ok(None)
             }

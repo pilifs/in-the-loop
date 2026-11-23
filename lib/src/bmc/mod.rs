@@ -53,7 +53,7 @@
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again), and a path that needs another iteration goes on from an invariant of the loop where the engine finds one ([`loops`], [`Options::invariants`]); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
 //! | `multianewarray` | implemented for bounded shapes with primitive or reference cells. Each allocated row has a fresh identity, trailing unspecified dimensions stay null, and any negative dimension throws before allocation. |
-//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an `aaload` at an index that is not a constant gives a symbolic reference, the reference of each cell under `index == i` ([`Choice`]), and splits no path; an `aastore` at such an index splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
+//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an `aaload` at an index that is not a constant gives a symbolic reference, the reference of each cell under `index == i` ([`Choice`]), and splits no path; an `aastore` at such an index splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; a null array or invalid index throws before the component check, and an incompatible in-bounds store throws `ArrayStoreException` without changing a cell |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
@@ -71,7 +71,7 @@
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. For hashCode the JDK cache reads one universally quantified int per object. A counterexample that uses a JVM-chosen value needs a scalar input for which the failing paths cover every platform choice. |
-//! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
+//! | `invokestatic` of `List.of` (its fixed and caller-array forms) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`equals`, `hashCode`, `toArray`, `addAll` and `sort`, for example) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | Exact, freshly constructed `new HashMap()` and its key and entry views with a JDK image | Runs the runtime's table, collision chains, entry nodes, iterators and removal on one heap ([`map_views`]). Model-backed and observed maps keep the portable HashMap and its own fields. |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
 //! | `getMessage()`, `getCause()`, `getLocalizedMessage()` and `toString()` of `Throwable` on an exception whose message and cause the engine kept, `getClass()` of an exception of a JDK class no JDK call returned ([`throwables`]) | modelled as `Throwable`'s, where the method the JVM runs is `Throwable`'s own; `getLocalizedMessage()` calls an application's `getMessage()`; the JDK call (a gap) elsewhere |
@@ -2954,8 +2954,16 @@ impl<'a> Engine<'a> {
                 if let Some(step) = self.concrete_ref(path, 2) {
                     return step;
                 }
-                if let Some(Val::R(Some(o))) = path.frames.last().and_then(|f| f.stack.len().checked_sub(3).map(|i| f.stack[i].clone())) {
-                    self.keeps(path, Some(o), "stores into an array made before it was called")?;
+                let stack = &path.frames.last().expect("a frame").stack;
+                if let [.., Val::R(array), Val::I(index), _] = &stack[..] {
+                    let Some(o) = array else { return self.raise(path, "java/lang/NullPointerException"); };
+                    if let Some(target) = path.objects[*o].array.as_ref() {
+                        let fits = self.b.ult(index, &target.length);
+                        // Keep the operands for the in-bounds branch, just as System.arraycopy does.
+                        if fits != TRUE && !path.cond.contains(&fits) {
+                            return self.branch_throw_or(path, -fits, "java/lang/ArrayIndexOutOfBoundsException", |_, valid| valid.resumed = true);
+                        }
+                    }
                 }
                 if !self.stores_without_check(path) {
                     if let Some(step) = self.concrete_ref(path, 0) {
@@ -2983,14 +2991,14 @@ impl<'a> Engine<'a> {
                 };
                 if let Val::R(Some(v)) = value {
                     if !path.objects[v].is_instance(self.cp, &class_of(&array.element)) {
-                        return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[v].class.replace('/', "."), array.element.java_name()));
+                        if path.objects[v].assumed { return self.of_unknown_class(path, v, "an aastore component check"); }
+                        return self.raise(path, "java/lang/ArrayStoreException");
                     }
                 }
-                let in_bounds = self.b.ult(&index, &array.length);
-                self.branch_throw_or(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", move |engine, path| {
-                    path.objects[o].array.as_mut().expect("an array").refs[cell] = value;
-                    engine.advance(path);
-                })
+                self.keeps(path, Some(o), "stores into an array made before it was called")?;
+                path.objects[o].array.as_mut().expect("an array").refs[cell] = value;
+                self.advance(path);
+                Ok(None)
             }
             Insn::ArrayLoad(kind) => {
                 if let Some(step) = self.concrete_ref(path, 1) {
@@ -5177,7 +5185,7 @@ impl<'a> Engine<'a> {
         }
         // A model only for JBMC's class path that the checker runs all the same ([`ClassPath::checker_runs`]:
         // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method, unless
-        // no evidence record samples the call (`List.of(E...)`), which is then the JDK call it names
+        // no evidence record samples the call (`List.toArray`, for example), which is then the JDK call it names
         // ([`gaps::outside_the_list_records`]).
         let runs_model = !self.cp.is_application(&member.owner) && self.cp.checker_runs(&member.owner) && self.cp.checker_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some() && !gaps::outside_the_list_records(caller, &cf.name, &member.name, &member.descriptor));
         if runs_model || (self.cp.is_application(&member.owner) && member.owner != crate::gap_contracts::INTRINSICS) {

@@ -1188,9 +1188,16 @@ fn string_method(m: &mut Machine, s: &JStr, name: &str, descriptor: &str, args: 
             Value::bool(units.starts_with(other.units()))
         }
         ("startsWith", "(Ljava/lang/String;I)Z") => {
-            let other = string_arg(m, args[0])?;
             let offset = args[1].as_int();
-            Value::bool(offset >= 0 && (offset as usize) <= units.len() && units[offset as usize..].starts_with(other.units()))
+            if offset < 0 {
+                if args[0] == Value::Null && !m.cp.prefix_checks_negative_first() {
+                    return unsupported("String.startsWith(null, negative offset) on an unqualified JDK");
+                }
+                Value::bool(false)
+            } else {
+                let other = string_arg(m, args[0])?;
+                Value::bool(units.get(offset as usize..).is_some_and(|tail| tail.starts_with(other.units())))
+            }
         }
         ("endsWith", _) => {
             let other = string_arg(m, args[0])?;
@@ -1520,6 +1527,25 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
     // A list List.of or copyOf made holds no null, and its searches refuse one, as the JDK's do.
     if made.is_some() && matches!(name, "contains" | "indexOf" | "lastIndexOf") && args.first() == Some(&Value::Null) {
         return Err(m.npe());
+    }
+    if let Some(kind) = made {
+        if matches!(name, "contains" | "indexOf" | "lastIndexOf") {
+            let query = args[0];
+            let mut found = -1;
+            for step in 0..len {
+                let i = if name == "lastIndexOf" { len - 1 - step } else { step };
+                // ListN uses Objects.equals(query, element). List12 calls query.equals
+                // even on the identical reference, so an observable override still runs.
+                let same = if matches!(kind, crate::interp::ImmutableList::ListN) && query == elements[i] {
+                    true
+                } else {
+                    m.call_virtual(query, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z", vec![elements[i]])?
+                        .expect("equals returns boolean").as_int() != 0
+                };
+                if same { found = i as i32; break; }
+            }
+            return Ok(Some(if name == "contains" { Value::bool(found >= 0) } else { Value::Int(found) }));
+        }
     }
     let write = |m: &mut Machine| -> Exec<()> {
         if !mutable {

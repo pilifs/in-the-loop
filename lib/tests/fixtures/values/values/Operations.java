@@ -112,6 +112,10 @@ public final class Operations {
         return of(n, a, b, c).startsWith(of(m, d, e, f));
     }
 
+    static boolean prefixAt(int n, int a, int b, int c, int m, int d, int e, int f, int offset) {
+        return of(n, a, b, c).startsWith(of(m, d, e, f), offset);
+    }
+
     static boolean endsWith(int n, int a, int b, int c, int m, int d, int e, int f) {
         return of(n, a, b, c).endsWith(of(m, d, e, f));
     }
@@ -425,6 +429,38 @@ public final class Operations {
         Item x = new Item(v);
         List<Item> l = List.of(x, x, new Item(v));
         return l.size() == 3 && l.get(0) == l.get(1) && l.get(1) != l.get(2);
+    }
+
+    static int callerArray(int size, int nullSlot) {
+        Item first = new Item(3), other = new Item(5);
+        Item[] source = size < 0 ? null : new Item[size];
+        if (source != null) {
+            for (int i = 0; i < size; i++) source[i] = i == nullSlot ? null : (i % 2 == 0 ? first : other);
+        }
+        List<Item> list = List.of(source);
+        if (size == 0) return list == List.<Item>of() ? 1 : 0;
+        source[0] = other;
+        first.value = 11;
+        return list.get(0) == first && list.get(0).value == 11 && list.get(size - 1) == (size % 2 == 0 ? other : first) ? size : 0;
+    }
+
+    static final class Query {
+        int calls;
+        @Override public boolean equals(Object candidate) {
+            calls = calls * 10 + (candidate instanceof Item ? ((Item) candidate).value : 9);
+            return candidate instanceof Item && ((Item) candidate).value == 2;
+        }
+    }
+
+    static int searchOrder(int size, int operation, int mode) {
+        Query q = new Query();
+        Object first = mode == 2 ? q : new Item(1);
+        List<Object> list = size == 0 ? List.of() : size == 1 ? List.of(first)
+                : size == 2 ? List.of(first, new Item(2)) : List.of(first, new Item(2), new Item(2));
+        Object needle = mode == 0 ? null : q;
+        int index = operation == 0 ? (list.contains(needle) ? 1 : 0)
+                : operation == 1 ? list.indexOf(needle) : list.lastIndexOf(needle);
+        return index * 10000 + q.calls;
     }
 
     /** An element is the object given, not a copy: a change through the list is seen through the object. */

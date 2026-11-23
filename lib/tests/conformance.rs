@@ -163,11 +163,11 @@ fn corpus() -> Vec<Case> {
         Case::new("listSizes", &[("0", "returns 1"), ("1", "returns 10"), ("2", "returns 20"), ("3", "returns 30"), ("-4", "returns 30")])
             .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], V)
             .refuted(None, "result >= 10", &[], X),
-        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], U).refuted(None, "result == 5", &[], X),
+        Case::new("listNull", &[("0", NPE), ("1", NPE), ("2", "returns 5")]).holds(Some("n > 1"), "result == 5", &[], V).refuted(None, "result == 5", &[], X),
         Case::new("listChange", &[("0", "returns 1"), ("1", UOE), ("2", UOE), ("3", UOE), ("4", UOE), ("5", UOE), ("6", UOE), ("7", UOE), ("8", "returns 1"), ("10", "returns 3"), ("13", UOE), ("-1", "returns 1")])
             .holds(Some("n == 0 || n == 8"), "result == 1", &[], V)
             .refuted(None, "result >= 1", &[], X),
-        Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], U).refuted(None, "result == 1", &[], U),
+        Case::new("listCopySame", &[("0", "returns 3"), ("1", "returns 3"), ("2", "returns 3")]).holds(None, "result == 3", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("listCopyMutable", &[("0", "returns 1"), ("1", "returns 10"), ("2", NPE), ("9", NPE)])
             .holds(Some("n <= 0"), "result == 1", &[], V)
             .refuted(None, "result <= 10", &[], X),
@@ -175,11 +175,11 @@ fn corpus() -> Vec<Case> {
             .holds(Some("n == 0 || n == 12"), "result == 1", &[], V)
             .refuted(None, "result >= 1", &[], X),
         Case::new("listSearch", &[("0", NPE), ("2", "returns -1089"), ("5", "returns 90"), ("7", "returns -1110")])
-            .holds(Some("n == 5"), "result == 90", &[], U)
-            .refuted(None, "result < 0", &[], U),
+            .holds(Some("n == 5"), "result == 90", &[], V)
+            .refuted(None, "result < 0", &[], X),
         Case::new("listEquals", &[("2", "returns 11"), ("3", "returns 0")]).holds(Some("n != 2"), "result == 0", &[], U).refuted(None, "result == 0", &[], U),
         Case::new("listIterate", &[("0", "returns 6"), ("1", "throws java.util.NoSuchElementException")]).holds(Some("n <= 0"), "result == 6", &[], V).refuted(None, "result == 6", &[], X),
-        Case::new("listOfArray", &[("0", "returns 111"), ("9", NPE)]).holds(Some("n != 9"), "result == 111", &[], U).refuted(None, "result == 111", &[], U),
+        Case::new("listOfArray", &[("0", "returns 111"), ("9", NPE)]).holds(Some("n != 9"), "result == 111", &[], V).refuted(None, "result == 111", &[], X),
         // Exceptions.
         Case::new("finallyWins", &[("0", "returns 2"), ("1", "returns 2")]).holds(None, "result == 2", &[], V).refuted(None, "result == 1", &[], X),
         Case::new("caught", &[("0", "returns -1"), ("5", "returns 2")]).holds(None, "n != 0 || result == -1", &[], V).refuted(None, "result != -1", &[], X)
@@ -774,9 +774,11 @@ fn the_corpus_agrees_with_the_jvm_on_the_tools_own_checker() {
 /// call `remove(Object)` and `addAll`, which no evidence record of `values::OPERATIONS` samples, so the engine meets
 /// them as JDK calls (V3 of `llm-dlc/loops/application-core-values.md`) where an input reaches them.
 /// In listCopyMutable, writes to the new ArrayList are also confined to positive inputs.
+/// In listSearch the query is an Integer. The static scan also visits equals on arbitrary Object receivers.
 const ADVISED_ON_EXCLUDED_PATHS: &[(&str, &str, &[&str])] = &[
     ("listChange", "n == 0 || n == 8", &["jdk-primitive-method:java.util.List.addAll(Ljava/util/Collection;)Z", "jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z"]),
     ("listCopyMutable", "n <= 0", &["jdk-primitive-method:java.util.ArrayList.add(Ljava/lang/Object;)Z"]),
+    ("listSearch", "n == 5", &["jdk-primitive-method:java.lang.Object.equals(Ljava/lang/Object;)Z"]),
 ];
 
 /// The cases whose calls go through the models of `lib/models` that only JBMC runs (`Model::jbmc_only`:

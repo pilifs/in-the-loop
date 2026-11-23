@@ -36,7 +36,7 @@ def layer(work, profile):
     return [dest], layers
 
 
-def decode(out, err, code, method):
+def decode(out, err, code, method, owner="GapAssertions"):
     if code == 124: return {"status":"timeout"}
     try:
         doc = json.loads(out)
@@ -45,7 +45,7 @@ def decode(out, err, code, method):
     props = [r for part in doc for r in part.get("result",[])]
     def target(p):
         return (p.get("sourceLocation",{}).get("propertyClass") == "assertion"
-                and p.get("property","").startswith(f"java::GapAssertions.{method}:"))
+                and p.get("property","").startswith(f"java::{owner}.{method}:"))
     matches = [p for p in props if target(p)]
     others = [p for p in props if not target(p) and p.get("status") != "SUCCESS"]
     def brief(p):
@@ -59,7 +59,7 @@ def decode(out, err, code, method):
     if len(matches)==1:
         summary["inputs"] = {s["inputID"]:s["values"][0] for s in matches[0].get("trace",[])
                              if s.get("stepType")=="input" and len(s.get("values",[]))==1
-                             and s.get("sourceLocation",{}).get("function","").startswith(f"java::GapAssertions.{method}:")}
+                             and s.get("sourceLocation",{}).get("function","").startswith(f"java::{owner}.{method}:")}
     return summary
 
 
@@ -138,8 +138,11 @@ def measure(key, profile, pairing, outdir, only=None):
             cp = os.pathsep.join(map(str,[wrapper_dir,*real_cp,*extra,core]))
             flags = ["--unwind",str(subject.unwind),"--unwinding-assertions","--throw-runtime-exceptions",
                      "--max-nondet-array-length",str(subject.bound),"--max-nondet-tree-depth","4",
-                     "--max-nondet-string-length",str(subject.bound),"--sat-solver","cadical","--trace","--json-ui"]
-            if profile in ("ordinary","eight-deque") or key=="surrogates": flags += ["--no-refine-strings"]
+                     "--sat-solver","cadical","--trace","--json-ui"]
+            if profile in ("ordinary","eight-deque") or key=="surrogates":
+                flags += ["--no-refine-strings"]
+            else:
+                flags += ["--max-nondet-string-length",str(subject.bound)]
             if key=="monitors": flags += ["--java-threading"]
             row = {"method":claim.method,"flags":flags,"wrapperSha256":digest(wrapper_dir/"GapAssertions.class")}
             for method in ("target","reached"):

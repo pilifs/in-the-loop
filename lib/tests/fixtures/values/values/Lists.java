@@ -417,10 +417,13 @@ public final class Lists {
      */
     public static void cellOfAnotherClass(int c) {
         Object[] cells = new Line[1];
+        Line retained = new Line(3, 4);
+        cells[0] = retained;
         Object picked = c == 0 ? (Object) new Line(1, 1) : "not a line";
         try {
             cells[0] = picked;
         } catch (ArrayStoreException e) {
+            if (c == 0 || cells[0] != retained) throw new AssertionError();
             return;
         }
         if (cells[0] != picked) {

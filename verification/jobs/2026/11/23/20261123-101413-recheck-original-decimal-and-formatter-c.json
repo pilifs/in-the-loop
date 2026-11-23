@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-101413-recheck-original-decimal-and-formatter-c",
+  "title": "Recheck original decimal and formatter claims after UTF-16 changes",
+  "description": "Run the same four original decimal parser obligations and one original formatter claim at the opening bounds. Check coefficient, scale, runtime class and exception, recording every strict decision or the new original operation.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "375",
+      "374"
+    ]
+  },
+  "expected": "All five tasks have validated ordinary receipts with the first unproved step or fresh original-JVM replay.",
+  "submitted": {
+    "at": "2026-11-23T10:14:13+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 13,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Decimal original graphs",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 375 --stage semantics-final --seconds 120",
+      "cwd": "."
+    },
+    {
+      "name": "Original formatter",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 374 --stage semantics-final --seconds 120 --only annotated-landed",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/375-commons-lang-decimal-precision/records/semantics-final",
+    "examples/375-commons-lang-decimal-precision/records/native-selectors",
+    "examples/374-spring-formatter-binding/records/semantics-final",
+    "examples/374-spring-formatter-binding/records/native-selectors"
+  ]
+}

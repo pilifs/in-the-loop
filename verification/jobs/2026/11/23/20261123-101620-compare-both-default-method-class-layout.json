@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-101620-compare-both-default-method-class-layout",
+  "title": "Compare both default-method class layouts and direct binary64 entries",
+  "description": "Compile both Java seeds from the frozen brief. Move only the default-dispatch replay helpers, keep both sets of class bytes and run each with both packaged binaries crossed with both model JARs. Replay direct double-typed numeric counterexamples at their exact raw words. All JVM replays use the original historical library.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc"
+  ],
+  "links": {},
+  "expected": "Twenty-four target assertion records preserve package identities, class files, properties, costs and original JVM observations.",
+  "submitted": {
+    "at": "2026-11-23T10:16:20+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 12,
+  "requires": [
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Fresh JVMs and stock JBMC profiles",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/seed_profiles.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/seed-profiles"
+  ]
+}

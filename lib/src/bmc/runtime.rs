@@ -520,8 +520,7 @@ impl Engine<'_> {
         const INTEGER: &str = "java/lang/Integer";
         const CACHE: &str = "java/lang/Integer$IntegerCache";
         const ENTRIES: &str = "<Integer.valueOf entries>";
-        if word.len() != 32 || self.gap_mode != GapMode::Strict
-            || self.previous.is_some() || self.pure.is_some() || self.frame.is_some() { return None; }
+        if word.len() != 32 || self.previous.is_some() || self.pure.is_some() || self.frame.is_some() { return None; }
         let marker = (CACHE.into(), "<symbolic>".into());
         if !path.statics.contains_key(&marker) {
             if !self.cp.known_integer_cache() { return None; }
