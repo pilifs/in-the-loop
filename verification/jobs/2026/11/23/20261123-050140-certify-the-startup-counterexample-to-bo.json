@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-050140-certify-the-startup-counterexample-to-bo",
+  "title": "Certify the startup counterexample to both fluent role claims",
+  "description": "Prove on the original landed Spring Security graph that the A-only selector returns zero for the exact reachable names and the manager decision whenever the JVM starts with a pipe separator. Check the guarded bytecode and replay both unguarded original entries with the public names and grant on pipe, default LF and CRLF launches, binding the classes and runtime.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "ordinary-startup",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "370"
+    ]
+  },
+  "expected": "Two complete native failure implications and a physical active counterexample with selector 1. LF and CRLF give a grant on the same input.",
+  "submitted": {
+    "at": "2026-11-23T05:01:40+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Original fluent caller under three launches",
+      "run": "python3 -B lib/benchmark/spring-java-data/fluent_witness.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/370-spring-role-hierarchy/records/fluent-counterexample"
+  ]
+}
