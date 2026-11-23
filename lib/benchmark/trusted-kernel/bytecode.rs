@@ -60,6 +60,7 @@ pub enum Op {
     Goto(usize),
     Call(u16),
     Return,
+    ReturnVoid,
 }
 pub fn instruction(code: &[u8], pc: usize) -> Result<(Op, usize)> {
     use Op::*;
@@ -105,6 +106,7 @@ pub fn instruction(code: &[u8], pc: usize) -> Result<(Op, usize)> {
         0xa7 => (Goto(target()?), 3),
         0xb8 => (Call(short()?), 3),
         0xac => (Return, 1),
+        0xb1 => (ReturnVoid, 1),
         _ => return Err(unsupported(format!("opcode {b:#04x} at {pc}"))),
     };
     Ok((op, pc + size))

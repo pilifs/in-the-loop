@@ -229,6 +229,7 @@ fn walk(
                 state.stack.push(Answer);
                 obligation(keys, m, pc, &next.to_string(), "resolved-full-range");
             }
+            Op::ReturnVoid => return Err(unsupported("void return in int method")),
             Op::Return => {
                 let result = state.pop()?;
                 if !state.stack.is_empty() {

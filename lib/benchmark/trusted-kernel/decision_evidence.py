@@ -325,7 +325,7 @@ def report():
         for p in folder.rglob("*")
         if p.is_file() and p != EV / "cases.json"
     ]
-    files.extend(sorted(HERE.glob("*.rs")))
+    files.extend(sorted(HERE.rglob("*.rs")))
     files.extend([HERE / "Scalar.lean", HERE / "protocol.md", HERE / "meter.c"])
     manifest = {
         p.relative_to(HERE).as_posix(): {"sha256": digest(p.read_bytes()), "bytes": p.stat().st_size}

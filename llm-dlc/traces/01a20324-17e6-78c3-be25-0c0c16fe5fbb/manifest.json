@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T20:43:55.986Z",
-  "duration_seconds": 117609,
+  "ended": "2026-11-23T20:51:58.250Z",
+  "duration_seconds": 118091,
   "stats": {
     "turns": 24,
-    "api_calls": 4725,
-    "tool_calls": 10848,
-    "tool_errors": 292,
+    "api_calls": 4760,
+    "tool_calls": 10974,
+    "tool_errors": 304,
     "compactions": 19,
     "peak_context_tokens": 550375,
     "usage": {
-      "input_tokens": 6793126,
-      "output_tokens": 2220546,
-      "cache_read_input_tokens": 1283315840,
+      "input_tokens": 6847020,
+      "output_tokens": 2235604,
+      "cache_read_input_tokens": 1288160128,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5826,
-    "exec": 4330,
-    "apply_patch": 421,
+    "Bash": 5913,
+    "exec": 4365,
+    "apply_patch": 425,
     "wait": 157,
     "sleep": 44,
     "send_message": 25,
@@ -148,6 +148,7 @@
     "lib/benchmark/spring-java-data/role_edge.py",
     "lib/benchmark/spring-java-data/scorecard.py",
     "lib/benchmark/spring-java-data/test_spring_startup_evidence.py",
+    "lib/benchmark/trusted-kernel/assurance.md",
     "lib/benchmark/trusted-kernel/bytecode.rs",
     "lib/benchmark/trusted-kernel/classfile.rs",
     "lib/benchmark/trusted-kernel/decision_evidence.py",
@@ -508,24 +509,24 @@
     {
       "index": 19,
       "started": "2026-11-23T20:33:28.261Z",
-      "ended": "2026-11-23T20:43:55.986Z",
+      "ended": "2026-11-23T20:51:58.250Z",
       "turns": 1,
-      "api_calls": 28,
+      "api_calls": 63,
       "usage": {
-        "input_tokens": 102388,
-        "output_tokens": 22519,
-        "cache_read_input_tokens": 2441728,
+        "input_tokens": 156282,
+        "output_tokens": 37577,
+        "cache_read_input_tokens": 7286016,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 113931
+      "peak_context_tokens": 165238
     }
   ],
   "log": {
-    "sha256": "8528b6729e08e3de03a9e80e6a8809f4a76dda8bf729a9f44e590e3efa9d3cec",
-    "bytes": 70376601,
-    "lines": 35712,
-    "gzip_bytes": 13191933,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/8528b6729e08e3de03a9e80e6a8809f4a76dda8bf729a9f44e590e3efa9d3cec.jsonl.gz"
+    "sha256": "820d86fb9ff414ac41c56679dedb13b5c984f68a25bb180f9f746e60b0738ca9",
+    "bytes": 70902377,
+    "lines": 36019,
+    "gzip_bytes": 13278744,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/820d86fb9ff414ac41c56679dedb13b5c984f68a25bb180f9f746e60b0738ca9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2210,20 +2211,20 @@
       "log_sha256": "69f3a02946271ba87404abad5ac5fdfc662a3ca85f1a725700c56e3d52f82237"
     },
     {
-      "change_id": "xuuuxkzvtzmzsvypywtzlmxnpvlloptq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "8528b6729e08e3de03a9e80e6a8809f4a76dda8bf729a9f44e590e3efa9d3cec"
-    },
-    {
       "change_id": "lsvktnvxtnkzvomtnmsyqzkoxtrzrpvy",
       "commit_id": null,
       "immutable": false,
       "summary": "Seal the measured Guava checker before the write-frame transfer",
       "body": "Preserve the seven sources of the checker that accepted both Guava public calls and first refused all three range-fill requests. Replay builds the two measured checker generations from separately verified source archives, so the comparison survives future checker changes.\n\nRebuilt the Guava executable bit for bit, verified the 88-case ledger against the source archive and passed all five selected test groups, including 59 Rust test binaries.",
       "log_sha256": "8528b6729e08e3de03a9e80e6a8809f4a76dda8bf729a9f44e590e3efa9d3cec"
+    },
+    {
+      "change_id": "ntnokzsozulkknryyrpwlqkzwtkpurtr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check JDK range fill and its caller frame (verification pending)",
+      "body": "Starting from the sealed Guava checker, prove the valid-range guards, growing written prefix, unchanged outside heap and signed termination for the released Arrays.fill. Bind the caller and callee separately and prove the observed value for shared and independently sized roots. Rebound controls distinguish missing writes, the wrong cell value, invalid empty-range handling and observing the wrong root.\n\nBuilt the opt-in Rust kernel with warnings denied. Capped probes accepted the original JDK fill and 337 caller, refuted the original extra-write caller on a shared singleton and checked a bounds exception with distinct lengths. The changed suite passed all five groups, including 59 Rust test binaries. Job 20261123-204925-qualify-jdk-range-fill-and-the-independe rebuilds the bundles, rechecks 14 range cases and the 18 previous Guava controls, compares real JVM behavior and measures clean check costs.",
+      "log_sha256": "820d86fb9ff414ac41c56679dedb13b5c984f68a25bb180f9f746e60b0738ca9"
     }
   ],
   "logs": {
@@ -2496,6 +2497,12 @@
       "lines": 4546,
       "gzip_bytes": 4821953,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/80f5d0a00def3daf149a6f0031cd0c6d3efc4470a8b8229ab71866b4cd50258f.jsonl.gz"
+    },
+    "820d86fb9ff414ac41c56679dedb13b5c984f68a25bb180f9f746e60b0738ca9": {
+      "bytes": 70902377,
+      "lines": 36019,
+      "gzip_bytes": 13278744,
+      "url": null
     },
     "83e6784695dc368a51eecd43e86a2c6213509733d615e9e6655f7a7839fa85e5": {
       "bytes": 7687999,

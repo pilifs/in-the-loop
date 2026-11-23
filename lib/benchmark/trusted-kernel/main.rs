@@ -4,6 +4,7 @@ mod classfile;
 #[path = "../../src/digest.rs"]
 mod digest;
 mod index;
+mod range;
 mod scalar;
 mod witness;
 
@@ -29,6 +30,7 @@ struct Request<'a> {
     entry: (&'a str, &'a str),
     companion: (&'a str, &'a str),
     support: Option<(&'a str, &'a str)>,
+    callee: Option<(&'a str, &'a str)>,
 }
 fn parse_request(text: &str) -> Result<Request<'_>> {
     let rows: Vec<Vec<&str>> = text
@@ -53,9 +55,10 @@ fn parse_request(text: &str) -> Result<Request<'_>> {
     let ["companion", peer, peer_desc] = rows[5][..] else {
         return Err(reject("missing companion"));
     };
-    let support = match rows.get(6).map(Vec::as_slice) {
-        None => None,
-        Some(["support", n, h]) => Some((*n, *h)),
+    let (support, callee) = match rows.get(6).map(Vec::as_slice) {
+        None => (None, None),
+        Some(["support", n, h]) => (Some((*n, *h)), None),
+        Some(["callee", n, h]) if theorem == range::CALLER => (None, Some((*n, *h))),
         _ => return Err(reject("bad support")),
     };
     Ok(Request {
@@ -65,6 +68,7 @@ fn parse_request(text: &str) -> Result<Request<'_>> {
         entry: (name, desc),
         companion: (peer, peer_desc),
         support,
+        callee,
     })
 }
 
@@ -93,8 +97,10 @@ fn check(args: &[String]) -> Result<String> {
     if class.owner != req.owner {
         return Err(reject("defining class"));
     }
-    match (req.support, support) {
-        (Some((name, h)), [path]) => {
+    let callee_bytes;
+    let mut callee = None;
+    match (req.support, req.callee, support) {
+        (Some((name, h)), None, [path]) => {
             let parent = read(path)?;
             if name != class.parent
                 || sha256_hex(&parent) != h
@@ -103,7 +109,23 @@ fn check(args: &[String]) -> Result<String> {
                 return Err(reject("support class binding"));
             }
         }
-        (None, []) if class.parent == "java/lang/Object" => (),
+        (None, Some((name, hash)), [path]) if class.parent == "java/lang/Object" => {
+            callee_bytes = read(path)?;
+            if sha256_hex(&callee_bytes) != hash {
+                return Err(reject("external callee class digest"));
+            }
+            let target = Class::parse(&callee_bytes)?;
+            if target.owner != name
+                || target.owner == class.owner
+                || !target.public
+                || target.parent != "java/lang/Object"
+            {
+                return Err(reject("external callee class resolution"));
+            }
+            callee = Some(target);
+        }
+        (None, None, []) if class.parent == "java/lang/Object" => (),
+        (_, Some(_), _) => return Err(reject("expected one external callee class")),
         _ => return Err(reject("superclass resolution")),
     }
     let evidence = read(certificate)?;
@@ -125,6 +147,9 @@ fn check(args: &[String]) -> Result<String> {
     match req.theorem {
         "scalar-equality-v1" => scalar::check(&class, &req, hints, &mut needed)?,
         "least-index-frame-total-v1" => index::check(&class, &req, hints, &mut needed)?,
+        range::DIRECT | range::CALLER => {
+            range::check(&class, callee.as_ref(), &req, hints, &mut needed)?
+        }
         _ => return Err(unsupported("external theorem")),
     }
     if let Some(key) = needed.difference(&actual).next() {

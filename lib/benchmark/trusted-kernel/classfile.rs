@@ -59,6 +59,7 @@ pub struct Code<'a> {
 
 pub struct Class<'a> {
     cp: Vec<Cp<'a>>,
+    pub public: bool,
     pub owner: &'a str,
     pub parent: &'a str,
     methods: Vec<Code<'a>>,
@@ -116,6 +117,7 @@ impl<'a> Class<'a> {
         }
         let mut file = Class {
             cp,
+            public: flags & 1 != 0,
             owner: "",
             parent: "",
             methods: vec![],
@@ -186,6 +188,12 @@ impl<'a> Class<'a> {
         Ok((self.class_name(*class)?, self.utf(*name)?, self.utf(*desc)?))
     }
     pub fn method(&self, name: &str, desc: &str, public: bool) -> Result<&Code<'a>> {
+        self.static_method(name, desc, if public { 1 } else { 2 })
+    }
+    pub fn package_method(&self, name: &str, desc: &str) -> Result<&Code<'a>> {
+        self.static_method(name, desc, 0)
+    }
+    fn static_method(&self, name: &str, desc: &str, access: u16) -> Result<&Code<'a>> {
         let mut found = self
             .methods
             .iter()
@@ -196,7 +204,7 @@ impl<'a> Class<'a> {
         if found.next().is_some() {
             return Err(reject("duplicate method code"));
         }
-        if m.flags & (0x0007 | 0x0008 | 0x0020 | 0x0100 | 0x0400) != (if public { 9 } else { 10 }) {
+        if m.flags & (0x0007 | 0x0008 | 0x0020 | 0x0100 | 0x0400) != (access | 0x0008) {
             return Err(unsupported(
                 "method access, synchronization or implementation",
             ));

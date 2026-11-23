@@ -164,6 +164,7 @@ impl Machine<'_> {
                     }
                 }
                 Op::Return => return Ok(Outcome::Returned(pop(&mut stack)?.int()?)),
+                Op::ReturnVoid => return Err(unsupported("void witness return in int method")),
             }
             pc = next;
         }

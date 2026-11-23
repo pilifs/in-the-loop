@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-204925-qualify-jdk-range-fill-and-the-independe",
+  "title": "Qualify JDK range fill and the independently checked caller frame",
+  "description": "Rebuild the JDK 21 and example 337 evidence and run the Rust checker from isolated inputs on the real range fill, ordinary observing caller, extra-write caller, and five rebound controls. Check per-edge omissions and callee substitutions, compare physical JVM outcomes on shared and independently sized roots, measure clean generation and replay, and recheck all 18 Guava transfer bundles and substitutions.",
+  "kind": "library",
+  "capabilities": [
+    "independent-java-proof",
+    "array-induction",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "337"
+    ]
+  },
+  "expected": "Original fill and caller accepted, two checked caller witnesses, no false acceptance, 14 range and binding controls as expected and all 18 Guava controls reproduced.",
+  "submitted": {
+    "at": "2026-11-23T20:49:25+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "python3",
+    "rustc",
+    "cc",
+    "java",
+    "javac",
+    "javap",
+    "setpriv"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild bundles and qualify the write frame",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_qualification.py --qualify lib/benchmark/trusted-kernel/evidence/range-proof/results.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/range-proof/results.json"
+  ]
+}
