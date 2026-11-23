@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-231314-check-the-ordinary-entries-for-the-flat",
+  "title": "Check the ordinary entries for the flat monitor history",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.6s, peak 88.9 MiB (estimated 2m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-231314-check-the-ordinary-entries-for-the-flat.json",
+    "sha256": "20398ebf359585af451281f95b0bc079a5a8127d6fc3a7c9f13ec0629110c652",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-231314-check-the-ordinary-entries-for-the-flat",
+      "title": "Check the ordinary entries for the flat monitor history",
+      "description": "Recheck the original callable entries and their first unsupported instruction under the same strict native bounds after removing nested synchronized calls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:13:14+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Measure the selected original property",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule native --stage single-monitor",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/single-monitor/schedule/native"
+      ]
+    }
+  },
+  "sourceCommit": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "startedAt": "2026-11-23T23:50:12+00:00",
+  "finishedAt": "2026-11-23T23:50:24+00:00",
+  "wallSeconds": 12.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 93229056,
+    "wallSeconds": 1.6,
+    "cpuSeconds": 2.4,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure the selected original property",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule native --stage single-monitor",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 1.602,
+      "cpuSeconds": 2.406,
+      "cpuThrottledSeconds": 0.22,
+      "peakMemoryBytes": 93229056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-selected-original.log",
+        "lines": 8,
+        "bytes": 1282,
+        "sha256": "ae5f647aad4498be2f270f50592bbd0f1d3370de1201412f1df3cb615bb47ee7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "schedule atomic unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>",
+        "schedule split unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>",
+        "schedule atomicTerminal unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>",
+        "schedule splitTerminal unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/single-monitor/schedule/native/measurement.json",
+      "change": "added",
+      "bytes": 28398,
+      "sha256": "f80407fd43ef18d1c4222a6e716e0feab5248acff4e38c83840df003d6afe236",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:50:35+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/single-monitor/schedule/native/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3f924408a679b585beec4e937902e68399d2c87",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3f924408a679b585beec4e937902e68399d2c87/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T235024Z-928335348f1a9adf",
+      "outputs": "20261123T235024Z-948646e26a1babc2",
+      "diff": "20261123T235024Z-9706105f84233bd3"
+    }
+  }
+}

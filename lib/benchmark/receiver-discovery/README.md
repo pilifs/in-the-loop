@@ -7,6 +7,7 @@
 To investigate the caught divide in example 398, compile its original sources with Temurin 21.0.13, then run the following from the repository root.
 
 ```bash
+JAVA21_HOME="$HOME/.sdkman/candidates/java/21.0.13.0+9-tem"
 R=lib/benchmark/receiver-discovery
 C="$TMPDIR/safety-original"
 mkdir -p "$C"
@@ -21,3 +22,27 @@ python3 -B "$R/investigate.py" --checker lib/target/release/jvmcontract \
 The selected proof runs on a private projection of the bound class. It adds observer-owned state around one instruction. Its first synthetic handler remembers the actual exception and rethrows it inside the original protected region. The last handler checks whether that same object left the selected method activation. Branch policies record the original branch edge. A separate query checks the original backward-edge budget per activation. Reachability, the no-event claim and completeness each retain their strict native result. An original JVM replay uses a breakpoint at the requested byte offset and records actual exception and catch locations, branch successors or the selected return value. The projection assumes a single-threaded history, available VM resources and an isolated observer namespace. [JDK exception-event semantics](https://docs.oracle.com/en/java/javase/21/docs/api/jdk.jdi/com/sun/jdi/event/ExceptionEvent.html)
 
 Run `python3 -B lib/benchmark/receiver-discovery/qualification.py stock --checker lib/target/release/jvmcontract --output "$TMPDIR/stock-history"` for a physical branch on a discovered stock receiver and its independent alias-sensitive histories. The `--null-collaborators` construction policy supplies null for reference inputs and retains arbitrary primitive inputs. With `--fresh-observer-inputs`, primitive arguments after the observer's receiver are independent of the producer arguments.
+
+`jvmcontract prove TARGET --engine native --gaps strict --search-startup-witness` can seek a violating primitive input after an ordinary property proof stops on a literal `System.getProperty` read in a class initializer. The search tries a one-character nonempty value in a disposable harness. A fresh JVM runs the original harness with its normal startup and classpath on the solver’s proposed input. The command reports a violation only if that original harness fails and the original public call returns an observable value. Otherwise it keeps the original refusal. The search currently handles a public static entry with primitive inputs, a primitive return and one unresolved literal property key. Its witness is reproducible on the unchanged public entry. [JavaParser and XZ measurements](../../../verification/receiver-discovery/transfer)
+
+The separately recorded fresh-process experiments call `System.setProperty` or `System.clearProperty` before invoking the original public method. Their receipts keep both the selected process prestate and the fresh-default result for the same input. A successful restricted run supplies a conditional proof. A false return at the unchanged entry supplies a concrete counterexample for an ordinary scope that admits that prestate. [Fresh-process checks](process_states.py) · [Public witness qualification](property_witness.py)
+
+To select the branch reached by an automatically constructed stock, use the generated entry printed by the checker.
+
+```bash
+R=lib/benchmark/receiver-discovery
+J="$HOME/.sdkman/candidates/java/21.0.13.0+9-tem"
+B=lib/target/release/jvmcontract
+S=$(mktemp -d "$TMPDIR/stock-site.XXXXXXXX")
+mkdir "$S/original"
+"$J/bin/javac" -g -parameters -proc:none -d "$S/original" examples/397-*/original/*.java
+JAVA_HOME="$J" JVMCONTRACT_JAR_RELEASE=21 "$B" construct 'Checkout$Pair' \
+  --observer 'InventoryChecks#taken' --classes "$S/original" --output "$S/generated" > "$S/history.json"
+ENTRY=$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["plans"][0]["entry"])' "$S/history.json")
+python3 -B "$R/investigate.py" --checker "$B" --classes "$S/generated" --classes "$S/original" \
+  --entry "$ENTRY" --target 'Checkout$Stock#take' \
+  --sha256 2ad22dd17898c3f447ddb71e9b4ba8a3043d2e61337f70349d346f1e5281dd82 \
+  --pc 4 --kind branch --policy taken --unwind 9 --max-array-length 8 --output "$S/selected"
+```
+
+The resulting receipt contains a witness that the selected edge can be taken. The original JVM replay gives its next instruction offset. The separate unchanged-backup claim replays the shared, positive stock through the same public producer.

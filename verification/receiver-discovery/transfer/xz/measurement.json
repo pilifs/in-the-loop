@@ -1,0 +1,3001 @@
+{
+  "job": "20261123-231925-repeat-xz-cache-profiles-from-the-digest",
+  "source": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "checkerSha256": "1ef8756230ff459470819d822859a2c6e48cd7f60345ed3583ec182914111748",
+  "sides": {
+    "old": {
+      "boundClassSha256": "e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+      "propertyReadPcs": [
+        12
+      ],
+      "profiles": {
+        "absentFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": null,
+          "claim": "frame",
+          "profile": "absent",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#absentFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-absentFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#absentFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 2
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#absentFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-absentFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.026594781,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 10,
+                "merges": 0,
+                "solver_calls": 10,
+                "solving_seconds": 0.000113353,
+                "gates_evaluated": 217,
+                "evaluating_seconds": 9.125e-06,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 247,
+                "clauses": 660,
+                "seconds": 0.01854174,
+                "loading_seconds": 0.003638878,
+                "decoding_seconds": 0.000334832,
+                "encoding_seconds": 0.000364354,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.io.DataInputStream.<init>(java.io.InputStream)",
+                  "sites": [
+                    "org.tukaani.xz.SingleXZInputStream.readStreamHeader:57"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.019,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.004,
+                    "lowering": 0.0,
+                    "symbolic": 0.014,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 247,
+                    "clauses": 660
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.049,
+                "setup": 0.002,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.019,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.028
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "absentCache": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": null,
+          "claim": "cache identity",
+          "profile": "absent",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "verified",
+            "target": "PropertyProfiles#absentCache",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-absentCache/harness/PropertyHarness.java",
+            "findings": [],
+            "output": "\u2713 PropertyProfiles#absentCache satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-absentCache",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.011786669,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.006153526,
+                "loading_seconds": 0.000936556,
+                "decoding_seconds": 4.4065e-05,
+                "encoding_seconds": 1.3295e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.006,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.005,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.025,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.006,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.018
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": true
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null,
+              "vacuity": {
+                "status": "non-vacuous",
+                "basis": "harness",
+                "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+              }
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "dummyFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Dummy",
+          "claim": "frame",
+          "profile": "dummy",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#dummyFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-dummyFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#dummyFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 4
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#dummyFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-dummyFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.021081772,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 10,
+                "merges": 0,
+                "solver_calls": 10,
+                "solving_seconds": 0.000114716,
+                "gates_evaluated": 217,
+                "evaluating_seconds": 6.462e-06,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 247,
+                "clauses": 660,
+                "seconds": 0.014296696,
+                "loading_seconds": 0.002675166,
+                "decoding_seconds": 0.0002121,
+                "encoding_seconds": 0.000231751,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.io.DataInputStream.<init>(java.io.InputStream)",
+                  "sites": [
+                    "org.tukaani.xz.SingleXZInputStream.readStreamHeader:57"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.014,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.003,
+                    "lowering": 0.0,
+                    "symbolic": 0.011,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 247,
+                    "clauses": 660
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.046,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.014,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.031
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "dummyCache": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Dummy",
+          "claim": "cache identity",
+          "profile": "dummy",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "verified",
+            "target": "PropertyProfiles#dummyCache",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-dummyCache/harness/PropertyHarness.java",
+            "findings": [],
+            "output": "\u2713 PropertyProfiles#dummyCache satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-dummyCache",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.012727654,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.00622538,
+                "loading_seconds": 0.000812834,
+                "decoding_seconds": 4.2229e-05,
+                "encoding_seconds": 1.2464e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.006,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.005,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.029,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.006,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.021
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": true
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null,
+              "vacuity": {
+                "status": "non-vacuous",
+                "basis": "harness",
+                "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+              }
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "basicFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Basic",
+          "claim": "frame",
+          "profile": "basic",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#basicFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-basicFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#basicFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 6
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#basicFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-basicFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.019077838,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 10,
+                "merges": 0,
+                "solver_calls": 10,
+                "solving_seconds": 0.000103165,
+                "gates_evaluated": 217,
+                "evaluating_seconds": 7.762e-06,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 247,
+                "clauses": 660,
+                "seconds": 0.013539115,
+                "loading_seconds": 0.002545631,
+                "decoding_seconds": 0.000231653,
+                "encoding_seconds": 0.000223413,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.util.LinkedHashMap.<init>(int, float, boolean)",
+                  "sites": [
+                    "org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.014,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.003,
+                    "lowering": 0.0,
+                    "symbolic": 0.01,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 247,
+                    "clauses": 660
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.033,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.014,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.018
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "basicCache": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Basic",
+          "claim": "cache identity",
+          "profile": "basic",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#basicCache",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-basicCache/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#basicCache cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 7
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#basicCache cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-basicCache",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.012365529,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.006490089,
+                "loading_seconds": 0.000875562,
+                "decoding_seconds": 4.9644e-05,
+                "encoding_seconds": 1.2553e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.util.LinkedHashMap.<init>(int, float, boolean)",
+                  "sites": [
+                    "org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.006,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.006,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.029,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.006,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.022
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "bogusFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Bogus",
+          "claim": "frame",
+          "profile": "bogus",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "violation",
+            "target": "PropertyProfiles#bogusFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": {
+              "input": "bogusFrame(selector=3)",
+              "outcome": "false",
+              "values": [
+                "3"
+              ],
+              "shrink_runs": 0,
+              "inputs": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "value": 3
+                }
+              ],
+              "call": {
+                "class": "PropertyProfiles",
+                "class_file": "PropertyProfiles.class",
+                "classes": "after",
+                "method": "bogusFrame",
+                "descriptor": "(I)Z",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "value": 3,
+                    "from": "selector"
+                  }
+                ]
+              }
+            },
+            "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain selector: int",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-bogusFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "property-violated",
+                "message": "Property of PropertyProfiles#bogusFrame violated: `result` where selector >= 0 && selector < 4:\n  bogusFrame(selector=3)\n    outcome: false",
+                "uri": null,
+                "line": 8
+              }
+            ],
+            "output": "\u2717 Property of PropertyProfiles#bogusFrame violated: `result` where selector >= 0 && selector < 4:\n  bogusFrame(selector=3)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain selector: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-bogusFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.020132588,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": "[0:20]",
+              "native": {
+                "paths": 2,
+                "merges": 0,
+                "solver_calls": 12,
+                "solving_seconds": 0.000131798,
+                "gates_evaluated": 214,
+                "evaluating_seconds": 8.034e-06,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 317,
+                "clauses": 910,
+                "seconds": 0.013243075,
+                "loading_seconds": 0.003292173,
+                "decoding_seconds": 0.000240154,
+                "encoding_seconds": 0.000489308,
+                "witness_seconds": 1.3396e-05,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.013,
+                  "ended": "violation",
+                  "ending": "counterexample",
+                  "phases": {
+                    "loading": 0.003,
+                    "lowering": 0.0,
+                    "symbolic": 0.009,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 317,
+                    "clauses": 910
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.167,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.013,
+                "replay": 0.005,
+                "jvm": 0.116,
+                "other": 0.031
+              }
+            },
+            "replay": {
+              "by": "jvm",
+              "reproduced": true
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ]
+          }
+        },
+        "erroneous": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Bogus",
+          "claim": "first Error and subsequent NoClassDefFoundError",
+          "profile": "bogus",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "verified",
+            "target": "PropertyProfiles#erroneous",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-erroneous/harness/PropertyHarness.java",
+            "findings": [],
+            "output": "\u2713 PropertyProfiles#erroneous satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmpeds1x2d_/native-erroneous",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.009558891,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.004931668,
+                "loading_seconds": 0.000742654,
+                "decoding_seconds": 4.168e-05,
+                "encoding_seconds": 0.000127282,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.005,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.004,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.023,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.005,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.016
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": true
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null,
+              "vacuity": {
+                "status": "non-vacuous",
+                "basis": "harness",
+                "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+              }
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        }
+      },
+      "boundedNonNullSeparator": {},
+      "ordinaryUnmodifiedJvm": {},
+      "classpath": [
+        "305a7e87f16269991957d538cdc5c61ffda733c811b091e7fe7e227797208c03",
+        "8d6feb1da335f3ab13c584c613e23c7b3c61b392e37956872057baf8f0ca1d6f",
+        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+        "0a4077f6aeae2865532a564807af8d30c26acc6f63b7928d93bd7ab1f2190449",
+        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
+        "6f3828a215c920059a5efa2fb55c233d6c54ec5cadca99ce1b1bdd10077c7ddd",
+        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
+      ]
+    },
+    "new": {
+      "boundClassSha256": "e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+      "propertyReadPcs": [
+        12
+      ],
+      "profiles": {
+        "absentFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": null,
+          "claim": "frame",
+          "profile": "absent",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#absentFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-absentFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#absentFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 2
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#absentFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-absentFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.02055322,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 10,
+                "merges": 0,
+                "solver_calls": 10,
+                "solving_seconds": 0.000149733,
+                "gates_evaluated": 217,
+                "evaluating_seconds": 7.645e-06,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 247,
+                "clauses": 660,
+                "seconds": 0.014762381,
+                "loading_seconds": 0.002725713,
+                "decoding_seconds": 0.000215426,
+                "encoding_seconds": 0.000268278,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.io.DataInputStream.<init>(java.io.InputStream)",
+                  "sites": [
+                    "org.tukaani.xz.SingleXZInputStream.readStreamHeader:57"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.015,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.003,
+                    "lowering": 0.0,
+                    "symbolic": 0.011,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 247,
+                    "clauses": 660
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.035,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.015,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.019
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "absentCache": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": null,
+          "claim": "cache identity",
+          "profile": "absent",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "verified",
+            "target": "PropertyProfiles#absentCache",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-absentCache/harness/PropertyHarness.java",
+            "findings": [],
+            "output": "\u2713 PropertyProfiles#absentCache satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-absentCache",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.010411078,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.005405752,
+                "loading_seconds": 0.000789179,
+                "decoding_seconds": 4.2582e-05,
+                "encoding_seconds": 1.2826e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.005,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.005,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.023,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.005,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.017
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": true
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null,
+              "vacuity": {
+                "status": "non-vacuous",
+                "basis": "harness",
+                "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+              }
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "dummyFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Dummy",
+          "claim": "frame",
+          "profile": "dummy",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#dummyFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-dummyFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#dummyFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 4
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#dummyFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13 (java.io.DataInputStream.<init>(java.io.InputStream) at org.tukaani.xz.SingleXZInputStream.readStreamHeader:57). With --gaps assume it assumes instead that java.io.DataInputStream.<init>(java.io.InputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-dummyFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.043043621,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 10,
+                "merges": 0,
+                "solver_calls": 10,
+                "solving_seconds": 0.000221837,
+                "gates_evaluated": 217,
+                "evaluating_seconds": 1.3456e-05,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 247,
+                "clauses": 660,
+                "seconds": 0.035582351,
+                "loading_seconds": 0.003407887,
+                "decoding_seconds": 0.000247053,
+                "encoding_seconds": 0.000386155,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.io.DataInputStream.<init>(Ljava/io/InputStream;)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.io.DataInputStream.<init>(java.io.InputStream)",
+                  "sites": [
+                    "org.tukaani.xz.SingleXZInputStream.readStreamHeader:57"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.036,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.003,
+                    "lowering": 0.0,
+                    "symbolic": 0.031,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 247,
+                    "clauses": 660
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.066,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.036,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.029
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "dummyCache": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Dummy",
+          "claim": "cache identity",
+          "profile": "dummy",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "verified",
+            "target": "PropertyProfiles#dummyCache",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-dummyCache/harness/PropertyHarness.java",
+            "findings": [],
+            "output": "\u2713 PropertyProfiles#dummyCache satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-dummyCache",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.011521303,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.006023778,
+                "loading_seconds": 0.00082294,
+                "decoding_seconds": 4.2511e-05,
+                "encoding_seconds": 1.3126e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.006,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.005,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.024,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.006,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.017
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": true
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null,
+              "vacuity": {
+                "status": "non-vacuous",
+                "basis": "harness",
+                "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+              }
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "basicFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Basic",
+          "claim": "frame",
+          "profile": "basic",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#basicFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-basicFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#basicFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 6
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#basicFrame cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-basicFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.017893928,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 10,
+                "merges": 0,
+                "solver_calls": 10,
+                "solving_seconds": 0.000105429,
+                "gates_evaluated": 217,
+                "evaluating_seconds": 6.583e-06,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 247,
+                "clauses": 660,
+                "seconds": 0.011998362,
+                "loading_seconds": 0.002421325,
+                "decoding_seconds": 0.000211885,
+                "encoding_seconds": 0.000239471,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.util.LinkedHashMap.<init>(int, float, boolean)",
+                  "sites": [
+                    "org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.012,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.002,
+                    "lowering": 0.0,
+                    "symbolic": 0.009,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 247,
+                    "clauses": 660
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.031,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.012,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.018
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "basicCache": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Basic",
+          "claim": "cache identity",
+          "profile": "basic",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "PropertyProfiles#basicCache",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-basicCache/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "PropertyProfiles#basicCache cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 7
+              }
+            ],
+            "output": "\u2717 PropertyProfiles#basicCache cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13 (java.util.LinkedHashMap.<init>(int, float, boolean) at org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124). With --gaps assume it assumes instead that java.util.LinkedHashMap.<init>(int, float, boolean) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-basicCache",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.016444683,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.008807361,
+                "loading_seconds": 0.001294591,
+                "decoding_seconds": 7.2355e-05,
+                "encoding_seconds": 1.8537e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-constructor:java.util.LinkedHashMap.<init>(IFZ)V@jdk-21.0.13",
+                  "kind": "jdk-constructor",
+                  "call": "java.util.LinkedHashMap.<init>(int, float, boolean)",
+                  "sites": [
+                    "org.tukaani.xz.BasicArrayCache$CacheMap.<init>:124"
+                  ],
+                  "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.009,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.007,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.038,
+                "setup": 0.002,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.009,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.027
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        },
+        "bogusFrame": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Bogus",
+          "claim": "frame",
+          "profile": "bogus",
+          "args": 4,
+          "firstSelector": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "violation",
+            "target": "PropertyProfiles#bogusFrame",
+            "domain": "selector: int",
+            "assume": "selector >= 0 && selector < 4",
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": {
+              "input": "bogusFrame(selector=3)",
+              "outcome": "false",
+              "values": [
+                "3"
+              ],
+              "shrink_runs": 0,
+              "inputs": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "value": 3
+                }
+              ],
+              "call": {
+                "class": "PropertyProfiles",
+                "class_file": "PropertyProfiles.class",
+                "classes": "after",
+                "method": "bogusFrame",
+                "descriptor": "(I)Z",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "value": 3,
+                    "from": "selector"
+                  }
+                ]
+              }
+            },
+            "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain selector: int",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-bogusFrame/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "property-violated",
+                "message": "Property of PropertyProfiles#bogusFrame violated: `result` where selector >= 0 && selector < 4:\n  bogusFrame(selector=3)\n    outcome: false",
+                "uri": null,
+                "line": 8
+              }
+            ],
+            "output": "\u2717 Property of PropertyProfiles#bogusFrame violated: `result` where selector >= 0 && selector < 4:\n  bogusFrame(selector=3)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain selector: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-bogusFrame",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.015362199,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": "[0:20]",
+              "native": {
+                "paths": 2,
+                "merges": 0,
+                "solver_calls": 12,
+                "solving_seconds": 0.000106018,
+                "gates_evaluated": 214,
+                "evaluating_seconds": 5.952e-06,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 317,
+                "clauses": 910,
+                "seconds": 0.009735832,
+                "loading_seconds": 0.002479509,
+                "decoding_seconds": 0.000170591,
+                "encoding_seconds": 0.000535066,
+                "witness_seconds": 1.5288e-05,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.01,
+                  "ended": "violation",
+                  "ending": "counterexample",
+                  "phases": {
+                    "loading": 0.002,
+                    "lowering": 0.0,
+                    "symbolic": 0.006,
+                    "encoding": 0.001,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 317,
+                    "clauses": 910
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.154,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.01,
+                "replay": 0.004,
+                "jvm": 0.113,
+                "other": 0.025
+              }
+            },
+            "replay": {
+              "by": "jvm",
+              "reproduced": true
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "selector",
+                    "type": "int",
+                    "kind": "primitive",
+                    "null": false
+                  }
+                ],
+                "shared_arrays": false,
+                "text": "selector: int"
+              },
+              "assumptions": [
+                {
+                  "kind": "precondition",
+                  "text": "selector >= 0 && selector < 4",
+                  "basis": "stated"
+                },
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ],
+            "1": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ],
+            "2": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ],
+            "3": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned false"
+            ]
+          }
+        },
+        "erroneous": {
+          "key": "org.tukaani.xz.ArrayCache",
+          "value": "Bogus",
+          "claim": "first Error and subsequent NoClassDefFoundError",
+          "profile": "bogus",
+          "args": 0,
+          "native": {
+            "wire_version": 1,
+            "verdict": "verified",
+            "target": "PropertyProfiles#erroneous",
+            "domain": "",
+            "assume": null,
+            "assert": "result",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions",
+            "problem": null,
+            "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-erroneous/harness/PropertyHarness.java",
+            "findings": [],
+            "output": "\u2713 PropertyProfiles#erroneous satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 64 times with unwinding assertions)\n",
+            "work": "/home/filip/.cache/in-the-loop/tmp/tmp0a_i02l8/native-erroneous",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.0100106,
+              "properties": 1,
+              "unwind": 64,
+              "max_array_length": 128,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.005153044,
+                "loading_seconds": 0.000739577,
+                "decoding_seconds": 4.0346e-05,
+                "encoding_seconds": 0.000129035,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 0.005,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.004,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 0.023,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.005,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.016
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 64,
+                "max_array_length": null,
+                "complete": true
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null,
+              "vacuity": {
+                "status": "non-vacuous",
+                "basis": "harness",
+                "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+              }
+            }
+          },
+          "originalJvm": {
+            "0": [
+              "hit org.tukaani.xz.ArrayCache#<clinit>()V@12",
+              "class e4d4c134e93b4b53f5b6b3ba829ad04ec35077af871b863f39195c8b44968379",
+              "returned true"
+            ]
+          }
+        }
+      },
+      "boundedNonNullSeparator": {},
+      "ordinaryUnmodifiedJvm": {},
+      "classpath": [
+        "305a7e87f16269991957d538cdc5c61ffda733c811b091e7fe7e227797208c03",
+        "8d6feb1da335f3ab13c584c613e23c7b3c61b392e37956872057baf8f0ca1d6f",
+        "615c0c3efef990d77831104475fba6a1f7971388691d4bad1471ad84101f6d52",
+        "3e158a87bd73d8afb4b6e8239c013b7d049c48563f45860ce99cd2e448cf4a6b",
+        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
+        "6f3828a215c920059a5efa2fb55c233d6c54ec5cadca99ce1b1bdd10077c7ddd",
+        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d",
+        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4"
+      ]
+    }
+  },
+  "ordinary": {
+    "sides": {
+      "old": {
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.tukaani.xz.ArrayCache.<clinit>:78). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "counterexample": null,
+        "rawSha256": "06f48920922b52e75552c1488c87b5d47ee80830e9a457861c3c0de7787927b7",
+        "jvmInputsReached": 4
+      },
+      "new": {
+        "verdict": "unverifiable",
+        "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.tukaani.xz.ArrayCache.<clinit>:78). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "counterexample": null,
+        "rawSha256": "b204c497387971ca7d645615adcc02250452c46aa1849e3529adc1ecba13a5e9",
+        "jvmInputsReached": 4
+      }
+    }
+  }
+}

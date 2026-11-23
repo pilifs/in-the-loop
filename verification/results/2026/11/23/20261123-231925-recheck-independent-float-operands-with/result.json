@@ -1,0 +1,181 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-231925-recheck-independent-float-operands-with",
+  "title": "Recheck independent float operands with exact aligned significands",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.2s, peak 82.7 MiB (estimated 3m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-231925-recheck-independent-float-operands-with.json",
+    "sha256": "62cd304ea161a0740fb16dd1fa50ad82bb260be40be3ea39baada3f5c83a8fe3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-231925-recheck-independent-float-operands-with",
+      "title": "Recheck independent float operands with exact aligned significands",
+      "description": "Verify all six registered two-input measurements on the new guarded arithmetic circuit. Keep the original full cartesian bounds, adjacent range, rounded addition, generated constructor and exact JVM witness bits.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:19:25+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Check original bounds and independent controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float native --stage aligned",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/aligned/float/native"
+      ]
+    }
+  },
+  "sourceCommit": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "startedAt": "2026-11-23T23:50:38+00:00",
+  "finishedAt": "2026-11-23T23:50:54+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 86761472,
+    "wallSeconds": 3.2,
+    "cpuSeconds": 4.2,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check original bounds and independent controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float native --stage aligned",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 3.222,
+      "cpuSeconds": 4.21,
+      "cpuThrottledSeconds": 0.19,
+      "peakMemoryBytes": 86761472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-bounds-and-inde.log",
+        "lines": 9,
+        "bytes": 396,
+        "sha256": "ee64992451afdf06cd48b879f4cc427ecf7a25c763cf89ef904791d280b15836",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "float exact verified ",
+        "float translated violation ",
+        "float afterReturn violation ",
+        "float adjacent verified ",
+        "float rounded verified "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/aligned/float/native/measurement.json",
+      "change": "added",
+      "bytes": 42854,
+      "sha256": "ea8315d627b311fd3d8d5ee2c5ac10310eb7f188651aac9182abb0ecf4772d06",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:56:32+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/aligned/float/native/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3f924408a679b585beec4e937902e68399d2c87",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3f924408a679b585beec4e937902e68399d2c87/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T235054Z-7000422b3c089eb7",
+      "outputs": "20261123T235054Z-746747b97060bb80",
+      "diff": "20261123T235054Z-79357467a17c9464"
+    }
+  }
+}

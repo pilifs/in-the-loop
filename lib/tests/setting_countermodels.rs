@@ -136,3 +136,30 @@ fn startup_setting_reads_refuse_the_observed_initializer() {
     }
     assert_ne!(ids[0], ids[1]);
 }
+
+#[test]
+fn startup_witness_search_requires_a_failed_original_jvm_harness() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return; };
+    let run = |method: &str| {
+        let result = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .args(["prove", &format!("sc.WitnessSettings#{method}"), "--engine", "native", "--gaps", "strict",
+                   "--assert", "result", "--search-startup-witness", "--json", "--classes"])
+            .arg(classes)
+            .arg("--work").arg(PathBuf::from(env!("CARGO_TARGET_TMPDIR")).join("setting-countermodels").join(method))
+            .env_remove("_JAVA_OPTIONS").env_remove("JAVA_TOOL_OPTIONS").env_remove("JDK_JAVA_OPTIONS")
+            .output().expect("checker runs");
+        let json: serde_json::Value = serde_json::from_slice(&result.stdout).expect("JSON property outcome");
+        json[0].clone()
+    };
+    let witness = run("failsOnBoth");
+    assert_eq!(witness["verdict"], "violation", "{witness}");
+    assert_eq!(witness["counterexample"]["inputs"][0]["value"], 7);
+    assert_eq!(witness["replay"]["by"], "jvm");
+    assert_eq!(witness["replay"]["reproduced"], true);
+    for method in ["failsOnlyInProposal", "holdsOnlyInProposal"] {
+        let open = run(method);
+        assert_eq!(open["verdict"], "unverifiable", "{method}: {open}");
+        assert!(open["problem"].as_str().unwrap().contains("System.getProperty"));
+    }
+}

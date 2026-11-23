@@ -1,0 +1,649 @@
+{
+  "schema": "receiver-deep-case/v1",
+  "job": "20261123-231314-check-the-ordinary-entries-for-the-flat",
+  "source": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "classes": {
+    "Duty.class": "627afb9bf09fddf330daef83e4fa5fb76211c6e94fc457681d7f0c7c9e4fdc3d",
+    "Duty$Board.class": "99a20d9ebf36006c03143000c0bbdad7d83a08df5e04ddf8bed3f1a570dd4e97",
+    "Duty$Worker.class": "449379b3f245b7b6ed25ffd765d40d672c738a33e0b239c307d571ee6c737e16",
+    "Duty$Gates.class": "e39e95a5aadcde210de4ea47ea1795ee997f45224c82c9fa04f8853a4d1e04f7"
+  },
+  "jars": [],
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "originalJvm": null,
+  "checker": "1ef8756230ff459470819d822859a2c6e48cd7f60345ed3583ec182914111748",
+  "results": {
+    "atomic": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#atomic",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-atomic/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#atomic cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 53
+          }
+        ],
+        "output": "\u2717 Duty#atomic cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-atomic",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006431176,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 2,
+            "merges": 0,
+            "solver_calls": 1,
+            "solving_seconds": 1.619e-05,
+            "gates_evaluated": 1,
+            "evaluating_seconds": 1.172e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 2,
+            "clauses": 1,
+            "seconds": 0.005514665,
+            "loading_seconds": 0.000591296,
+            "decoding_seconds": 6.2268e-05,
+            "encoding_seconds": 1.112e-06,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.Thread.<init>()",
+              "sites": [
+                "Duty$Worker.<init>:44"
+              ],
+              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.006,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 2,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.019,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.006,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.011
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    },
+    "split": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#split",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-split/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#split cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 54
+          }
+        ],
+        "output": "\u2717 Duty#split cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-split",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006328753,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 2,
+            "merges": 0,
+            "solver_calls": 1,
+            "solving_seconds": 1.6011e-05,
+            "gates_evaluated": 1,
+            "evaluating_seconds": 1.202e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 2,
+            "clauses": 1,
+            "seconds": 0.005581762,
+            "loading_seconds": 0.000451656,
+            "decoding_seconds": 4.9605e-05,
+            "encoding_seconds": 9.11e-07,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.Thread.<init>()",
+              "sites": [
+                "Duty$Worker.<init>:44"
+              ],
+              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.006,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 2,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.018,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.006,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.01
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    },
+    "atomicTerminal": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#atomicTerminal",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-atomicTerminal/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#atomicTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 55
+          }
+        ],
+        "output": "\u2717 Duty#atomicTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-atomicTerminal",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006355323,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 2,
+            "merges": 0,
+            "solver_calls": 1,
+            "solving_seconds": 1.602e-05,
+            "gates_evaluated": 1,
+            "evaluating_seconds": 8.566e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 2,
+            "clauses": 1,
+            "seconds": 0.005497213,
+            "loading_seconds": 0.000382721,
+            "decoding_seconds": 5.6094e-05,
+            "encoding_seconds": 8.31e-07,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.Thread.<init>()",
+              "sites": [
+                "Duty$Worker.<init>:44"
+              ],
+              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.005,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 2,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.018,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.005,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.011
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    },
+    "splitTerminal": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#splitTerminal",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-splitTerminal/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#splitTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "uri": null,
+            "line": 56
+          }
+        ],
+        "output": "\u2717 Duty#splitTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at Duty$Worker.<init>:44). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmp47p33f41/native-splitTerminal",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006362987,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 2,
+            "merges": 0,
+            "solver_calls": 1,
+            "solving_seconds": 1.584e-05,
+            "gates_evaluated": 1,
+            "evaluating_seconds": 1.412e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 2,
+            "clauses": 1,
+            "seconds": 0.005564269,
+            "loading_seconds": 0.000451852,
+            "decoding_seconds": 5.3561e-05,
+            "encoding_seconds": 8.82e-07,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.lang.Thread.<init>()",
+              "sites": [
+                "Duty$Worker.<init>:44"
+              ],
+              "approximation": "constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.006,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 2,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.019,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.006,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.012
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    }
+  }
+}

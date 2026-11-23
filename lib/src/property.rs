@@ -43,8 +43,12 @@ use crate::jbmc::{self, Argument, JbmcResult, JbmcRun};
 use crate::sarif::{self, Finding};
 use crate::{witness, Error, Verdict};
 
+mod startup_witness;
+
 #[derive(Debug, Clone)]
 pub struct Options {
+    /// Use a concrete property prestate to seek an input, and report it only if the original JVM harness refutes it.
+    pub search_startup_witness: bool,
     /// The compiled classes of the method under proof.
     pub classes: Vec<PathBuf>,
     pub classpath: Vec<PathBuf>,
@@ -171,6 +175,7 @@ impl Options {
             java_home: None,
             models: true,
             refine_strings: false,
+            search_startup_witness: false,
             sat_solver: Some("cadical".into()),
             jbmc_staging: crate::deadline::Staging::FullRange,
             engine: crate::Engine::Jbmc,
@@ -279,6 +284,9 @@ pub const WIDENED_DOMAIN: &str = "widened-domain";
 
 /// Runs the property proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
+    if options.search_startup_witness && (options.engine != crate::Engine::Native || options.gaps != crate::bmc::gaps::GapMode::Strict) {
+        return Err(Error::new("--search-startup-witness requires --engine native --gaps strict"));
+    }
     if options.observed_runtime != Default::default() && options.observed_initializers.is_empty()
         && !options.previous.as_ref().is_some_and(|(_, classes)| !classes.is_empty()) {
         return Err(Error::new("--observed-runtime requires an initializer to observe"));
@@ -1041,6 +1049,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // and only those its staging policy picks ([`crate::deadline::Staging`]).
     let mut stages = options.jbmc_staging.stages(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
+    let mut startup_replay = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
     let entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
     // The initializers the checker is to take the observed state of: each run on a JVM now, on this class path.
@@ -1102,8 +1111,27 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
-        let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, options.writes.as_ref().map(|_| (class_internal.clone(), method_name.clone(), method.descriptor.clone())), options.effect, &stubs, &work)?;
+        let mut result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, options.writes.as_ref().map(|_| (class_internal.clone(), method_name.clone(), method.descriptor.clone())), options.effect, &stubs, &work)?;
         runs.push(Run::of(&result, "proof", budget));
+        if options.search_startup_witness && result.verdict == Verdict::Unverifiable
+            && method.is_static() && method.is_public() && descriptor.ret.is_primitive()
+            && !over_objects && !harness.assertion.is_compiled() && pure.is_none() && summaries.is_empty()
+            && stubs.is_empty() && options.writes.is_none() && options.throws.is_empty()
+            && observed.is_empty() && requested.is_empty() && stand_ins.is_empty() && previous.is_none() {
+            let real_entries: Vec<_> = std::iter::once(harness_dir.clone())
+                .chain(options.classes.iter().chain(&options.classpath).cloned()).collect();
+            let direct = crate::jvm_witness::DirectCall { owner: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), ret: descriptor.ret.clone() };
+            let remaining = deadline.left();
+            if let Some(trial) = startup_witness::find(&cp, &result, &entries, &real_entries, &entry_types, &entry_slots,
+                direct, &gap_setting, &parameters, options, remaining, &work)? {
+                let _ = writeln!(out, "{}", trial.note);
+                runs.push(Run::of(&trial.candidate, "startup witness", remaining));
+                if let Some(confirmed) = trial.confirmed {
+                    startup_replay = Some(confirmed);
+                    result = trial.candidate;
+                }
+            }
+        }
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || (widened && !jbmc_rows) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
                 let _ = writeln!(out, "{}", if strings.is_some() { NOT_JBMC_STRINGS } else if !given.is_empty() { NOT_JBMC_GIVEN } else if reference_array && !jbmc_rows { "the integrated JBMC harness does not bind the direct object-array heap" } else if widened && !jbmc_rows { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
@@ -1320,9 +1348,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let found = last.arguments(&entry_types)?;
             let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path))?.with_models(options.models);
             let replay_on = |arguments: &[Argument]| witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
-            let mut replayed = replay_on(&found);
-            // The JDK the witness was run on, when the interpreter could not run it and a JVM did.
-            let mut on_jvm: Option<String> = None;
+            let (mut replayed, mut on_jvm) = match startup_replay.take() {
+                Some((call, jdk)) => (call, Some(jdk)),
+                None => (replay_on(&found), None),
+            };
             let mut jvm_ran = false;
             // The throws clause that applies to an input: the first whose condition holds; `None` when none does
             // or a condition cannot be evaluated outside the harness (it calls the method).

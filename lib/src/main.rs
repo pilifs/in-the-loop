@@ -713,6 +713,9 @@ struct EquivalenceArgs {
 
 #[derive(Args)]
 struct ProveArgs {
+    /// After a refused literal property read at startup, seek a violating input and replay the original harness on a fresh JVM.
+    #[arg(long)]
+    search_startup_witness: bool,
     /// `pkg.Class#method`, a static method with primitive or array parameters; `pkg.Class#method(int, long[])`
     /// names one of several overloads. With --properties, only this target's properties are proved.
     target: Option<String>,
@@ -1051,6 +1054,7 @@ fn run(cli: Cli) -> Result<i32, Error> {
             for (i, declaration) in declarations.iter().enumerate() {
                 let mut options = property::Options::new(&args.classes.classes, &declaration.target);
                 options.classpath = args.classes.classpath_entries();
+                options.search_startup_witness = args.search_startup_witness;
                 options.assume = declaration.assume.clone();
                 options.assert = declaration.assert.clone();
                 options.throws = declaration.throws.clone();

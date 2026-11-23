@@ -1,0 +1,300 @@
+{
+  "job": "20261123-231038-recheck-receiver-cohort-group-02-at-orig",
+  "source": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "checkerSha256": "1ef8756230ff459470819d822859a2c6e48cd7f60345ed3583ec182914111748",
+  "cases": {
+    "compsuite-i-10": {
+      "overloads": {
+        "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+        },
+        "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.util.List)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+        }
+      },
+      "status": "open",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.File.<init>(Ljava/lang/String;)V (java.io.File.<init>(java.lang.String) at UpgradeProbe.observe:7). With --gaps assume it assumes instead that java.io.File.<init>(java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "e83b41d8796c9520777030f39a4ef14cdb3961d02b849b9a6ce13d7e18bf4f67"
+        },
+        "new": {
+          "jvmInputsReached": 0,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.File.<init>(Ljava/lang/String;)V (java.io.File.<init>(java.lang.String) at UpgradeProbe.observe:7). With --gaps assume it assumes instead that java.io.File.<init>(java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "e44a9001d90258a8a4a2785a4b32e867040b2bb2c2fd2ae1a80a845426f6161c"
+        }
+      }
+    },
+    "compsuite-i-103": {
+      "overloads": {
+        "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        }
+      },
+      "status": "open",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.net.InetSocketAddress.<init>(Ljava/lang/String;I)V (java.net.InetSocketAddress.<init>(java.lang.String, int) at UpgradeProbe.observe:29). With --gaps assume it assumes instead that java.net.InetSocketAddress.<init>(java.lang.String, int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "6a3051f931361f3160e9be17fe5667da4c1d6b5fdd054052aab64f0c538e79bd"
+        },
+        "new": {
+          "jvmInputsReached": 0,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.net.InetSocketAddress.<init>(Ljava/lang/String;I)V (java.net.InetSocketAddress.<init>(java.lang.String, int) at UpgradeProbe.observe:29). With --gaps assume it assumes instead that java.net.InetSocketAddress.<init>(java.lang.String, int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "febf84d510067c82d4a9a660ab6e210f5de195a9e0ced5cd34b196086502be3d"
+        }
+      }
+    },
+    "compsuite-i-29": {
+      "overloads": {
+        "com.uber.profiling.Arguments#runConfigProvider()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use"
+        }
+      },
+      "status": "changed",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z (java.util.List.add(java.lang.Object) at com.uber.profiling.Arguments.parseArgs:107). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "97c162637dc616398669838513a8a06f530f5a404a0a5e3a4b28c191e2bf61bb"
+        },
+        "new": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z (java.util.List.add(java.lang.Object) at com.uber.profiling.Arguments.parseArgs:107). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "1bce9592a3ac6202a81236bb4a8d8ef29e6deff1ce5fb44ff39b3ce7d179110d"
+        }
+      }
+    },
+    "compsuite-i-37": {
+      "overloads": {
+        "net.glxn.qrgen.javase.QRCode#file()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        },
+        "net.glxn.qrgen.javase.QRCode#file(java.lang.String)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        }
+      },
+      "status": "preserved",
+      "inputs": 3,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 3,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.io.File.createTempFile(Ljava/lang/String;Ljava/lang/String;)Ljava/io/File; (java.io.File.createTempFile(java.lang.String, java.lang.String) at net.glxn.qrgen.core.AbstractQRCode.createTempFile:90). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "fe4fbbd90ac2a8b9def29ddb5dcb005a0df987a9fc108c8677bbe25cfff239dc"
+        },
+        "new": {
+          "jvmInputsReached": 3,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.io.File.createTempFile(Ljava/lang/String;Ljava/lang/String;)Ljava/io/File; (java.io.File.createTempFile(java.lang.String, java.lang.String) at net.glxn.qrgen.core.AbstractQRCode.createTempFile:90). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "library",
+              "text": "the default locale's language is not Turkish, Azeri or Lithuanian (tr, az, lt): String.toLowerCase() reads Locale.getDefault(), and only those three change how an ASCII letter is lowered",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "5add78eb1199029c0c1f0d5eafa385d424df0a7c7e8a4e25d724cd2eb4ec7266"
+        }
+      }
+    },
+    "compsuite-i-39": {
+      "overloads": {
+        "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        },
+        "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        }
+      },
+      "status": "preserved",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.WeakHashMap.<init>()V (java.util.WeakHashMap.<init>() at com.ea.async.instrumentation.Transformer.<clinit>:136). With --gaps assume it assumes instead that java.util.WeakHashMap.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "fdb5fa2d7da8c41a8fe4e7e5cbd23cb21fa3b75aa1456c6e10b044dd34016943"
+        },
+        "new": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.WeakHashMap.<init>()V (java.util.WeakHashMap.<init>() at com.ea.async.instrumentation.Transformer.<clinit>:136). With --gaps assume it assumes instead that java.util.WeakHashMap.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "fdeccd1a0497435a3e78ee4c1d6ab71903a359c799036dc1f4ebbfeab8352468"
+        }
+      }
+    }
+  },
+  "receiptPackSha256": "82d2c60fde5bccb50dcab599a55df263f5d82294f414ab2273eec9c80c9b34c6"
+}

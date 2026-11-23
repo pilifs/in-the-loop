@@ -141,7 +141,16 @@ public final class CharacterFormats {
     public static boolean expectsUnixContents() { return System.lineSeparator().equals("\n"); }
     public static boolean expectsInternedIdentity() { return System.lineSeparator() == "\n"; }
 
+    public static boolean cachedLong(long word) {
+        if (word < -129 || word > 128) return true;
+        Long first = Long.valueOf(word);
+        Long second = Long.valueOf(word);
+        return first.longValue() == word && first.intValue() == (int) word
+            && (word < -128 || word > 127 || first == second);
+    }
+
     public static void main(String[] args) {
+        for (int i = -129; i <= 128; i++) if (!cachedLong(i)) throw new AssertionError(i);
         if (args.length == 1) {
             if (!tableStartup(Boolean.parseBoolean(args[0]))) throw new AssertionError("table initialization");
             return;

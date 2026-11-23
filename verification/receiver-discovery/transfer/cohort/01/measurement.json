@@ -1,0 +1,216 @@
+{
+  "job": "20261123-231038-recheck-receiver-cohort-group-01-at-orig",
+  "source": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "checkerSha256": "1ef8756230ff459470819d822859a2c6e48cd7f60345ed3583ec182914111748",
+  "cases": {
+    "compsuite-i-1": {
+      "overloads": {
+        "retrofit2.converter.wire.WireResponseBodyConverter#convert(okhttp3.ResponseBody)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+        }
+      },
+      "status": "preserved",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.regex.Matcher.lookingAt()Z (java.util.regex.Matcher.lookingAt() at okhttp3.MediaType.get:54). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "6a4f4ce2bb266b141733332677f4a4b2b9d652f047a8222fbfc1a248b1b7d645"
+        },
+        "new": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.regex.Matcher.lookingAt()Z (java.util.regex.Matcher.lookingAt() at okhttp3.MediaType.get:54). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "26117eea36d21b9ffcad0a2521dcd7e619a10ae99b9c5153bc83c5cfb5025fb1"
+        }
+      }
+    },
+    "compsuite-i-4": {
+      "overloads": {
+        "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(java.lang.String)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it"
+        }
+      },
+      "status": "open",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader; (java.util.ServiceLoader.load(java.lang.Class) at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadAll:18). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "bdc5eb1afb02b4a7f6057c1ac0a268fd47ef1cdc82f97ca94bced01245f8d96b"
+        },
+        "new": {
+          "jvmInputsReached": 0,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.ServiceLoader.load(Ljava/lang/Class;)Ljava/util/ServiceLoader; (java.util.ServiceLoader.load(java.lang.Class) at com.ctrip.framework.foundation.internals.ServiceBootstrap.loadAll:18). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "b3476b080d16955eec4812bdd42a1bd9ff6744b025a4cc61edf4d4ce114aa536"
+        }
+      }
+    },
+    "compsuite-i-70": {
+      "overloads": {
+        "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        }
+      },
+      "status": "open",
+      "inputs": 1,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 1,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path; (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at UpgradeProbe.observe:9). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 1",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "1350366f97569ebd1511f13260b2268c48e9d582d0256c1959583d02b024a593"
+        },
+        "new": {
+          "jvmInputsReached": 0,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path; (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at UpgradeProbe.observe:9). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 1",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "bbfd9340e016717906945602e2dd1f5244b4fcb996bf769e55e0877e8bee6359"
+        }
+      }
+    },
+    "compsuite-i-81": {
+      "overloads": {
+        "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(org.togglz.core.repository.FeatureState, org.togglz.core.user.FeatureUser, java.lang.String)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "changed",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.HashSet.<init>(I)V (java.util.HashSet.<init>(int) at org.togglz.core.util.Strings.<clinit>:11). With --gaps assume it assumes instead that java.util.HashSet.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "cc70942831a2431901a8dbbdb17fd088c4d9d5096b1eb122460e04ad7ab84a45"
+        },
+        "new": {
+          "jvmInputsReached": 2,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.HashSet.<init>(I)V (java.util.HashSet.<init>(int) at org.togglz.core.util.Strings.<clinit>:11). With --gaps assume it assumes instead that java.util.HashSet.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "2a5b1549db6301aa61e21a35d58ba14a8745336c4ec255d10b1158ca803f4163"
+        }
+      }
+    }
+  },
+  "receiptPackSha256": "c9c5c7faf6510a99575025f54002361e30de28501ed6107d0477890384878fe9"
+}

@@ -1,0 +1,207 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-231314-select-the-third-worker-check-with-a-sin",
+  "title": "Select the third-worker check with a single monitor acquisition",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.5s, peak 81.3 MiB (estimated 2m00s, 3.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-231314-select-the-third-worker-check-with-a-sin.json",
+    "sha256": "f1d1d16156dfd27bbbdd14c1acf325277f6466d57787a342f68afe984b3a42a8",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-231314-select-the-third-worker-check-with-a-sin",
+      "title": "Select the third-worker check with a single monitor acquisition",
+      "description": "Compare atomic, split and forced failure on each third commit. The bytecode acquires the shared monitor once per action and calls the same private update in either protocol.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:13:14+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Measure the selected original property",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule standalone --stage single-monitor",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/single-monitor/schedule/standalone"
+      ]
+    }
+  },
+  "sourceCommit": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "startedAt": "2026-11-23T23:50:25+00:00",
+  "finishedAt": "2026-11-23T23:50:44+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 85204992,
+    "wallSeconds": 5.5,
+    "cpuSeconds": 6.6,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure the selected original property",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule standalone --stage single-monitor",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 5.525,
+      "cpuSeconds": 6.563,
+      "cpuThrottledSeconds": 0.197,
+      "peakMemoryBytes": 85204992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-selected-original.log",
+        "lines": 8,
+        "bytes": 630,
+        "sha256": "177d920728092b28113887e31b36469ba591b0ea12079cb7cf7861bf4f6986fc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "schedule packaged atomic [('java::Duty$Board.finish:(IZ)V.assertion.1', 'SUCCESS')] []",
+        "schedule packaged split [('java::Duty$Board.finish:(IZ)V.assertion.1', 'FAILURE')] []",
+        "schedule packaged atomicTerminal [('java::Duty$Board.finish:(IZ)V.assertion.1', 'FAILURE')] []",
+        "schedule packaged splitTerminal [('java::Duty$Board.finish:(IZ)V.assertion.1', 'FAILURE')] []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/measurement.json",
+      "change": "added",
+      "bytes": 3564,
+      "sha256": "477099b9c5c238588c7d84971d2920e45e0d9c70646a74aa3140fc750a7265dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-atomic.json.gz",
+      "change": "added",
+      "bytes": 1352,
+      "sha256": "edf57ba9bc546d34c703183bf26e9b078a2515eefe8e835f7179324c13b4a63a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-atomicTerminal.json.gz",
+      "change": "added",
+      "bytes": 11256,
+      "sha256": "f899b83e0161dadb24f418a982f7e21d2a1ee4b12995813401b929f301e84fa3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-split.json.gz",
+      "change": "added",
+      "bytes": 11500,
+      "sha256": "c9ed80bdbafd144644526751f62154b361442a4bb6970c6b0f6606660e1fc76f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-splitTerminal.json.gz",
+      "change": "added",
+      "bytes": 11700,
+      "sha256": "021513d45efa60ae3a4ce26f2fb378c41d01b9f7f592741c16e628666aacd4ff",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:56:32+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/measurement.json",
+      "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-atomic.json.gz",
+      "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-atomicTerminal.json.gz",
+      "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-split.json.gz",
+      "verification/receiver-discovery/deeper/single-monitor/schedule/standalone/packaged-splitTerminal.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T235045Z-024382f85e0e9035",
+      "outputs": "20261123T235045Z-0849604f401ba50e",
+      "diff": "20261123T235045Z-1074511ff0c5f873"
+    }
+  }
+}
