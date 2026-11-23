@@ -1,0 +1,467 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-175431-compare-the-same-ragged-operations-with",
+  "title": "Compare the same ragged operations with separate assertion drivers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 22.2s, peak 160.4 MiB (estimated 2m00s, 4.0 GiB); 33 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-175431-compare-the-same-ragged-operations-with.json",
+    "sha256": "e9984de8497a3e29136db75b1d80cfe4f51692a92f085c9bbb3118a3d0b8cf40",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-175431-compare-the-same-ragged-operations-with",
+      "title": "Compare the same ragged operations with separate assertion drivers",
+      "description": "Explain the opening difference on the primitive builders by moving javac assertion methods out of RaggedProof. Require identical resolved instructions and exception tables for all six product methods and byte-identical MadeRows. Compare the two engines over the three builders and five direct row entries. Replay every qualified counterexample on both the separated product and the original class. This layout is reported separately from the original 49.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow/builder_layout.py"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:54:31+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 20,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "2m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Separate assertion drivers",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/builder_layout.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/row-layout"
+      ]
+    }
+  },
+  "sourceCommit": "9686d5c7e84382030b7f492573a9037ef54fd650",
+  "startedAt": "2026-11-23T17:58:20+00:00",
+  "finishedAt": "2026-11-23T18:02:40+00:00",
+  "wallSeconds": 260.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 710475,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 168140800,
+    "wallSeconds": 22.2,
+    "cpuSeconds": 31.7,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 229.959,
+      "cpuSeconds": 230.043,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2255233024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "fc033008e3e57a3d888cc500cf8a122e16202354a2ffc5f320c20a9b7cff0ba2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-175431-compare-the-same-ragged-operations-with/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 49s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Separate assertion drivers",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/builder_layout.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 22.248,
+      "cpuSeconds": 31.715,
+      "cpuThrottledSeconds": 1.251,
+      "peakMemoryBytes": 168140800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-separate-assertion-drivers.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 5975,
+      "sha256": "a11f587ebe44df7ff06c7ae0e7790e31a30a225785f72acb6433a153d4b70ec4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/native/stdout.json",
+      "change": "added",
+      "bytes": 6955,
+      "sha256": "e6ead5bbbe96bc8d08a975f92a33b25edd39fbffbfa585b0d59726a772c16233",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-iterator/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-iterator/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 5655,
+      "sha256": "a8bf75f657a7d15dc94bd2ceb5a0fe1795cf72fcf536d835a2aa67ceb6950adf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-iterator/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-iterator/native/stdout.json",
+      "change": "added",
+      "bytes": 4829,
+      "sha256": "825517fc0191e61d4f1bb3deaf769165c905e1c8472a940c427385a58251780b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-reverse/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-reverse/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 5670,
+      "sha256": "0a94d1bffb29da912c63ad2b34481b5b1910184928bc8b9b9797274c768604bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-reverse/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/made-rows-reverse/native/stdout.json",
+      "change": "added",
+      "bytes": 4826,
+      "sha256": "e28fd336bf38ceb80f645b6a0f5fc2d0179932ac8882ea9b83117994fdeabb5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/measurement.json",
+      "change": "added",
+      "bytes": 47945,
+      "sha256": "4e9ee19498c98e6e5facc8d3917777cef2afd82dc2d7c294dfd890c9e8d75c57",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 7223,
+      "sha256": "3b9343d20e15bc0bfba0434c8d7c423ccc3aa7c6a92d4e7de4a34ca46cacbbc7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/native/stdout.json",
+      "change": "added",
+      "bytes": 6427,
+      "sha256": "f1780b047dcf39eed322337d60664331ee27443ce8c18c2e6c9e3fd3b96661a9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6283,
+      "sha256": "3e447da752603861e37a92993de61a7e4cc1b392257dfb58ba5f613356aebf00",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/native/stdout.json",
+      "change": "added",
+      "bytes": 4950,
+      "sha256": "393189912b72aaccd2071b17bb836189af7f8add5d807036cec15a6894d776fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6263,
+      "sha256": "b0c8182fedf54d0f6d3a018a0597425569a1a4903e1afaf36ac1413ddc9260a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/native/stdout.json",
+      "change": "added",
+      "bytes": 4974,
+      "sha256": "c5e3822dcf3a4ca8f41cd90b4de55ad9eb2c9a12652f9065c02d15f9200491c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 7210,
+      "sha256": "8c75743fdde58d63b32fe81874a85513cf8d06de1a78096d39047acf4a1fe50a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/native/stdout.json",
+      "change": "added",
+      "bytes": 6343,
+      "sha256": "320fcae3abc264718aae2f09258e3682197421ed62b0eba3064f9d3687263438",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 7149,
+      "sha256": "adc6da78ac33bbecf4edb91da9c904e9482d3fb0c092c6bdc1f2b87e77f5acdf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/native/stdout.json",
+      "change": "added",
+      "bytes": 6328,
+      "sha256": "bb106ea0d9c8721321434fd6ba52e2310bb7c272746741d34ac8ff4fb8e6ebe5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T18:03:07+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/native/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/made-rows-iterator/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/made-rows-iterator/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/made-rows-iterator/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/made-rows-iterator/native/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/made-rows-reverse/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/made-rows-reverse/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/made-rows-reverse/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/made-rows-reverse/native/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/measurement.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/native/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-iter/native/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/native/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/native/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/native/stderr.txt",
+      "verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/native/stdout.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "25faaaa9f2be38af13e2b30a9d99558cf078b898",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/25faaaa9f2be38af13e2b30a9d99558cf078b898/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T180240Z-9426627a56242d6e",
+      "outputs": "20261123T180240Z-9678678d18141bd8",
+      "diff": "20261123T180240Z-99021699bea194f0"
+    }
+  }
+}

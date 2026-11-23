@@ -1,0 +1,174 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
+    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "assume": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
+    "assert": "true",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
+    "problem": null,
+    "statement": "/tmp/matrix-transfer-2ugqbxht/equal-widthnative/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V satisfies `true` on every input where in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length (jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n  not vacuous: checkRectangular(in=[[\"20\",\"20\"],[\"20\",\"20\"]]) reaches the calls\n",
+    "work": "/tmp/matrix-transfer-2ugqbxht/equal-widthnative",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.011546418,
+      "properties": 1,
+      "unwind": 7,
+      "max_array_length": 2,
+      "stage": null,
+      "native": {
+        "paths": 7,
+        "merges": 0,
+        "solver_calls": 10,
+        "solving_seconds": 0.000156545,
+        "gates_evaluated": 221,
+        "evaluating_seconds": 8.558e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 764,
+        "clauses": 1407,
+        "seconds": 0.008138892,
+        "loading_seconds": 0.000284214,
+        "decoding_seconds": 0.000075942,
+        "encoding_seconds": 0.000321642,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.008,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.007,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 764,
+            "clauses": 1407
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 119.988,
+          "seconds": 0.007,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.007,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1286,
+            "clauses": 3225
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.871,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.015,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.854
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "in",
+            "type": "long[][]",
+            "kind": "array",
+            "null": true,
+            "max_length": 2
+          }
+        ],
+        "shared_arrays": false,
+        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "nothing beyond returning",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 7,
+        "max_array_length": 2,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found checkRectangular(in=[[\"20\",\"20\"],[\"20\",\"20\"]]).",
+        "witness": "checkRectangular(in=[[\"20\",\"20\"],[\"20\",\"20\"]])"
+      }
+    }
+  }
+]

@@ -1,0 +1,200 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-173547-qualify-bounded-utf-16-ordering-and-iden",
+  "title": "Qualify bounded UTF-16 ordering and identity on both release libraries",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.2s, peak 99.9 MiB (estimated 3m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-173547-qualify-bounded-utf-16-ordering-and-iden.json",
+    "sha256": "8fb812fc1718f0d7b2342ed46cb532ac4453f81fe1a455ac833a58f8d86eb2a6",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-173547-qualify-bounded-utf-16-ordering-and-iden",
+      "title": "Qualify bounded UTF-16 ordering and identity on both release libraries",
+      "description": "Measure all seven string callbacks, full unsigned UTF-16 differences, equal-valued distinct ties and the same-reference diagonal. Repeat the 5329-pair JVM grid.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:35:47+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "strings paired engines",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor strings paired",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/successor/strings/paired"
+      ]
+    }
+  },
+  "sourceCommit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+  "startedAt": "2026-11-23T17:52:01+00:00",
+  "finishedAt": "2026-11-23T17:55:35+00:00",
+  "wallSeconds": 214.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 710475,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104751104,
+    "wallSeconds": 5.2,
+    "cpuSeconds": 8.3,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "strings paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor strings paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 5.211,
+      "cpuSeconds": 8.312,
+      "cpuThrottledSeconds": 0.508,
+      "peakMemoryBytes": 104751104,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-strings-paired-engines.log",
+        "lines": 14,
+        "bytes": 512,
+        "sha256": "0525d7d6e627acac1cb0af742c7061defa4aa1e50fdce0f67ee01812f4248431",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ExactOrder#commons native correct",
+        "ExactOrder#commons jbmc unsupported",
+        "ExactOrder#onlySign native correct",
+        "ExactOrder#onlySign jbmc unsupported",
+        "ExactOrder#guava native correct",
+        "ExactOrder#guava jbmc unsupported",
+        "ExactOrder#firstOnTie native correct",
+        "ExactOrder#firstOnTie jbmc unsupported",
+        "ExactOrder#secondOnTie native correct",
+        "ExactOrder#secondOnTie jbmc unsupported",
+        "ExactOrder#direct native correct",
+        "ExactOrder#direct jbmc unsupported",
+        "ExactOrder#sameReference native correct",
+        "ExactOrder#sameReference jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/successor/strings/paired/measurement.json",
+      "change": "added",
+      "bytes": 44389,
+      "sha256": "3581cdfec731c19cbf9dd0265aead399ea558a5e2df5b64e14c40fca7f954686",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/strings/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 8417,
+      "sha256": "ae6da637ee8b76d6d04746ad1f39e05c231ec0dfee4a6b45df39192c1b7bd769",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T17:55:41+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/successor/strings/paired/measurement.json",
+      "verification/jbmc-fast-follow/successor/strings/paired/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "565c1e1ae507778f5e662c22623357df27a054a5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T175535Z-824835e034f346f2",
+      "outputs": "20261123T175535Z-856841170eb51d85",
+      "diff": "20261123T175535Z-877254df30c09b71"
+    }
+  }
+}

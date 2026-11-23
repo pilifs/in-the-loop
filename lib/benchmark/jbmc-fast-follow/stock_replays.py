@@ -1,12 +1,11 @@
 """Reconstruct the actual standalone JBMC inputs, including pointer identity, on the unmodified JVM."""
 import argparse
 import json
-import os
 from pathlib import Path
 import tarfile
 import tempfile
 
-from measure import EVIDENCE, FAMILIES, ROOT, Claim, Subject, digest, javaenv, library_paths, load, original, replay_witness, stock_scalar, write
+from measure import EVIDENCE, FAMILIES, JDK, ROOT, Claim, Subject, classpath, command, digest, javaenv, library_paths, load, original, replay_witness, stock_scalar, write
 
 
 def trace_rows(trace, name, element, bound, driver):
@@ -139,15 +138,85 @@ def audit(evidence):
     return result
 
 
+def assertion_settings(evidence):
+    receipt = load(evidence / "successor/rows/paired/measurement.json")
+    earlier = load(evidence / "final/rows/paired/measurement.json")
+    expected = {
+        r["task"] for r in earlier["rows"] if "a JVM-chosen assertion setting" in r["native"]["firstUnproved"]
+    }
+    if len(expected) != 5:
+        raise ValueError("different first row witness boundary")
+    (folder,) = (ROOT / "examples").glob("394-*")
+    env = javaenv()
+    with tempfile.TemporaryDirectory(prefix="row-jvm-settings-") as tmp:
+        work = Path(tmp)
+        cp, _, _ = original(folder, "rows", work, library_paths(folder, "rows"), work, env)
+        if {f.name: digest(f) for f in cp[0].glob("*.class")} != receipt["productClasses"]:
+            raise ValueError("different row callers")
+        checked = {}
+        for r in receipt["rows"]:
+            if r["task"] not in expected:
+                continue
+            owner, method = r["target"].split("#")
+            claim = Claim(method, r["parameters"])
+            subject = Subject(394, owner, "rows", (claim,), 2, 7)
+            where = work / r["task"]
+            where.mkdir()
+            actual = r["native"]["jvmReplay"]
+            replay = replay_witness(
+                subject, claim, {"counterexample": {"inputs": actual["inputs"]}}, where, cp, env
+            )
+            if replay != actual or replay["outcome"] != "refuted":
+                raise ValueError("changed original JVM witness")
+            code, out, err, _ = command(
+                [
+                    JDK / "bin/java",
+                    "-XX:-UsePerfData",
+                    "-da",
+                    "-cp",
+                    classpath([where / "witness", *cp]),
+                    "OriginalWitness",
+                ],
+                env,
+            )
+            if code != 0 or out.strip() != b"refuted":
+                raise ValueError(f"{method}: assertions disabled: {err.decode()}")
+            checked[r["task"]] = {
+                "inputs": actual["inputs"],
+                "sourceSha256": replay["sourceSha256"],
+                "enabled": "refuted",
+                "disabled": "refuted",
+            }
+    return {
+        "source": receipt["measuredSource"],
+        "job": receipt["job"],
+        "jdkModulesSha256": receipt["jdkModulesSha256"],
+        "replays": checked,
+    }
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--evidence", type=Path, default=EVIDENCE)
     parser.add_argument("--check", action="store_true")
     options = parser.parse_args()
-    report = audit(options.evidence)
-    dest = options.evidence / "standalone-replays.json"
-    if options.check:
-        if report != load(dest): raise SystemExit("standalone witness replay changed")
-    else:
-        write(dest, report)
-    print(sum(len(g["replays"]) for g in report.values()), "standalone counterexamples checked on the original JVM")
+    standalone = audit(options.evidence)
+    reports = {"standalone-replays.json": standalone}
+    if (options.evidence / "successor/rows/paired/measurement.json").is_file():
+        reports["row-settings.json"] = assertion_settings(options.evidence)
+    for name, report in reports.items():
+        dest = options.evidence / name
+        if options.check:
+            if report != load(dest):
+                raise SystemExit(f"original JVM replay changed: {name}")
+        else:
+            write(dest, report)
+    print(
+        sum(len(g["replays"]) for g in standalone.values()),
+        "standalone counterexamples checked on the original JVM",
+    )
+    if "row-settings.json" in reports:
+        print(
+            len(reports["row-settings.json"]["replays"]),
+            "row counterexamples reproduced with assertions enabled and disabled",
+        )

@@ -1,0 +1,196 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "RaggedProof#distinct",
+    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "distinct(a=[[20],{\"sameCell\":0}])",
+      "outcome": "false",
+      "values": [
+        "[[20],{\"sameCell\":0}]"
+      ],
+      "shrink_runs": 0,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "int[][]",
+          "value": [
+            [
+              20
+            ],
+            {
+              "sameCell": 0
+            }
+          ]
+        }
+      ],
+      "call": {
+        "class": "RaggedProof",
+        "class_file": "RaggedProof.class",
+        "classes": "after",
+        "method": "distinct",
+        "descriptor": "([[I)Z",
+        "static": true,
+        "arguments": [
+          {
+            "name": "a",
+            "type": "int[][]",
+            "value": [
+              [
+                20
+              ],
+              {
+                "sameCell": 0
+              }
+            ],
+            "from": "a"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "problem": null,
+    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/native/proof/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[20],{\"sameCell\":0}])\n    outcome: false",
+        "uri": null,
+        "line": 30
+      }
+    ],
+    "output": "✗ Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[20],{\"sameCell\":0}])\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/native/proof",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.007551351,
+      "properties": 1,
+      "unwind": 7,
+      "max_array_length": 2,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 5,
+        "merges": 0,
+        "solver_calls": 9,
+        "solving_seconds": 0.000106689,
+        "gates_evaluated": 157,
+        "evaluating_seconds": 4.527e-6,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 870,
+        "clauses": 2201,
+        "seconds": 0.004639214,
+        "loading_seconds": 0.000102082,
+        "decoding_seconds": 0.000029385,
+        "encoding_seconds": 0.000286888,
+        "witness_seconds": 0.000027872
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.005,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 870,
+            "clauses": 2201
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.162,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.005,
+        "replay": 0.005,
+        "jvm": 0.134,
+        "other": 0.017
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "a",
+            "type": "int[][]",
+            "kind": "array",
+            "null": true,
+            "max_length": 2
+          }
+        ],
+        "shared_arrays": false,
+        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 7,
+        "max_array_length": 2,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

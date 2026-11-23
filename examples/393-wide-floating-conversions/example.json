@@ -30,8 +30,9 @@
     "description": "Jackson and Commons Lang convert wide integer and tiny binary64 inputs to binary32 at independently checked rounding boundaries."
   },
   "target": "target.json",
-  "verdictLabel": "Frozen public caller statements",
+  "verdictLabel": "Ordinary native 8/8",
   "notes": [
-    "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement."
+    "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+    "The Jackson conversions disagree at 16,777,216 of the 2⁵⁴ admitted long values. The direct binary64 underflow interval contains 2⁵² + 1 values, including the halfway input that rounds to positive zero."
   ]
 }

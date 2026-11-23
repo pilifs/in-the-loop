@@ -14,3 +14,20 @@ Jackson and Commons Lang convert wide integer and tiny binary64 inputs to binary
 | `NodeChecks#mantissaSubnormal` | The long-bits adapter checks one exponent bin below the least float. | established |
 
 Inspect the ordinary tasks with `python3 examples/tools/build.py --plan 393`. The comparison uses the same product classes for both engines and replays each qualified refutation on the original JVM. [Campaign brief](../../llm-dlc/loops/jbmc-fast-follow-calls-conversions-and-arrays.md)
+
+## Measured results
+
+Ordinary native 8/8. The Jackson conversions disagree at 16,777,216 of the 2⁵⁴ admitted long values. The direct binary64 underflow interval contains 2⁵² + 1 values, including the halfway input that rounds to positive zero.
+
+| Original entry | Opening native | Final native | Integrated JBMC | Ordinary task receipt |
+|---|---|---|---|---|
+| NodeChecks#direct | open | proved | proved | [established](receipts/node-checks-direct/20261123T175644Z-8930bcde/result.json) |
+| NodeChecks#same | open | refuted | refuted | [refuted](receipts/node-checks-same/20261123T175647Z-adfae7f5/result.json) |
+| NodeChecks#publicSubnormal | entry refused | proved | proved | [established](receipts/node-checks-public-subnormal/20261123T175650Z-67315f52/result.json) |
+| NodeChecks#wrongSubnormal | entry refused | refuted | refuted | [refuted](receipts/node-checks-wrong-subnormal/20261123T175653Z-07357b73/result.json) |
+| NodeChecks#commons | open | proved | proved | [established](receipts/node-checks-commons/20261123T175655Z-932ae667/result.json) |
+| ConversionEquivalence#classified | open | proved | proved | [established](receipts/conversion-equivalence-classified/20261123T175658Z-a06b7e22/result.json) |
+| NodeChecks#intrinsicSubnormal | entry refused | proved | proved | [established](receipts/node-checks-intrinsic-subnormal/20261123T175701Z-4ee8468e/result.json) |
+| NodeChecks#mantissaSubnormal | open | proved | unreproduced witness | [established](receipts/node-checks-mantissa-subnormal/20261123T175703Z-c6c8cecb/result.json) |
+
+[Paired measurements](../../verification/jbmc-fast-follow/successor/numeric/paired/measurement.json) · [Campaign results](../../llm-dlc/loops/jbmc-fast-follow-calls-conversions-and-arrays-results.md)

@@ -1,0 +1,685 @@
+{
+  "task": "matrix-rows-no-null",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "rows",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:rows.jar:libraries/commons-lang3.jar:libraries/commons-collections4.jar:libraries/commons-math3.jar",
+        "Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.064,
+      "stdout": "controls/control-rows-jdk21.stdout",
+      "stderr": "controls/control-rows-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:adapter",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "ae1cfbb8da38c185b620443a127cda8a845c93198f924db3d32dc213aeb662f4",
+            "role": "driver"
+          },
+          {
+            "path": "rows.jar",
+            "sha256": "7d9fc73d76943fbb5a2cdc8df3e9c27d015aa9a024eccdd15a5977f583f6abcf",
+            "role": "original"
+          },
+          {
+            "path": "libraries/commons-lang3.jar",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/commons-collections4.jar",
+            "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/commons-math3.jar",
+            "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver-rows",
+          "main": "Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/original.json",
+          "oracleSha256": "240648da6068876f3fcf6b2b0e5b6b44eabc0f5a3fb0ce6eb35f85e98bf2fbfa"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "entry": "RaggedProof#reversed",
+            "arguments": [
+              "null"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 1,
+          "input": {
+            "entry": "RaggedProof#reversed",
+            "arguments": [
+              "new int[0][]"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 2,
+          "input": {
+            "entry": "RaggedProof#reversed",
+            "arguments": [
+              "new int[][]{new int[0],null}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 3,
+          "input": {
+            "entry": "RaggedProof#reversed",
+            "arguments": [
+              "new int[][]{new int[]{1},new int[]{1}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 4,
+          "input": {
+            "entry": "RaggedProof#wrong",
+            "arguments": [
+              "null"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 5,
+          "input": {
+            "entry": "RaggedProof#wrong",
+            "arguments": [
+              "new int[0][]"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 6,
+          "input": {
+            "entry": "RaggedProof#wrong",
+            "arguments": [
+              "new int[][]{new int[0],null}"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 7,
+          "input": {
+            "entry": "RaggedProof#iter",
+            "arguments": [
+              "null"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 8,
+          "input": {
+            "entry": "RaggedProof#iter",
+            "arguments": [
+              "new int[0][]"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 9,
+          "input": {
+            "entry": "RaggedProof#iter",
+            "arguments": [
+              "new int[][]{new int[0],null}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 10,
+          "input": {
+            "entry": "RaggedProof#iter",
+            "arguments": [
+              "new int[][]{new int[]{1},new int[]{1}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 11,
+          "input": {
+            "entry": "RaggedProof#snapshot",
+            "arguments": [
+              "null"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 12,
+          "input": {
+            "entry": "RaggedProof#snapshot",
+            "arguments": [
+              "new int[0][]"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 13,
+          "input": {
+            "entry": "RaggedProof#snapshot",
+            "arguments": [
+              "new int[][]{new int[0],null}"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 14,
+          "input": {
+            "entry": "RaggedProof#distinct",
+            "arguments": [
+              "null"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 15,
+          "input": {
+            "entry": "RaggedProof#distinct",
+            "arguments": [
+              "new int[0][]"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 16,
+          "input": {
+            "entry": "RaggedProof#distinct",
+            "arguments": [
+              "new int[][]{new int[0],null}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 17,
+          "input": {
+            "entry": "RaggedProof#distinct",
+            "arguments": [
+              "new int[][]{new int[]{1},new int[]{1}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 18,
+          "input": {
+            "entry": "RaggedProof#distinct",
+            "arguments": [
+              "shared()"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 19,
+          "input": {
+            "entry": "RowIdentities#nonNullOuter",
+            "arguments": [
+              "new int[0][]"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 20,
+          "input": {
+            "entry": "RowIdentities#nonNullOuter",
+            "arguments": [
+              "null"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 21,
+          "input": {
+            "entry": "RowIdentities#noEmptyOuter",
+            "arguments": [
+              "null"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 22,
+          "input": {
+            "entry": "RowIdentities#noEmptyOuter",
+            "arguments": [
+              "new int[0][]"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 23,
+          "input": {
+            "entry": "RowIdentities#noDistinctEqualRows",
+            "arguments": [
+              "new int[][]{new int[0],null}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 24,
+          "input": {
+            "entry": "RowIdentities#noDistinctEqualRows",
+            "arguments": [
+              "new int[][]{{Integer.MIN_VALUE},{Integer.MIN_VALUE}}"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 25,
+          "input": {
+            "entry": "MadeRows#reverse",
+            "arguments": [
+              "1",
+              "2",
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 26,
+          "input": {
+            "entry": "MadeRows#reverse",
+            "arguments": [
+              "0",
+              "0",
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 27,
+          "input": {
+            "entry": "MadeRows#iterator",
+            "arguments": [
+              "1",
+              "2",
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 28,
+          "input": {
+            "entry": "MadeRows#iterator",
+            "arguments": [
+              "0",
+              "0",
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 29,
+          "input": {
+            "entry": "MadeRows#alwaysDistinct",
+            "arguments": [
+              "1",
+              "2",
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 30,
+          "input": {
+            "entry": "MadeRows#alwaysDistinct",
+            "arguments": [
+              "0",
+              "0",
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 31,
+          "input": {
+            "entry": "MatrixRows#rectangular",
+            "arguments": [
+              "new long[][]{null}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 32,
+          "input": {
+            "entry": "MatrixRows#rectangular",
+            "arguments": [
+              "new long[][]{{1L},{2L}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 33,
+          "input": {
+            "entry": "MatrixRows#rectangular",
+            "arguments": [
+              "new long[][]{{1L},{}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 34,
+          "input": {
+            "entry": "MatrixRows#singleShape",
+            "arguments": [
+              "new long[][]{null}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 35,
+          "input": {
+            "entry": "MatrixRows#singleShape",
+            "arguments": [
+              "new long[][]{{1L},{2L}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 36,
+          "input": {
+            "entry": "MatrixRows#singleShape",
+            "arguments": [
+              "new long[][]{{1L},{}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 37,
+          "input": {
+            "entry": "MatrixRows#shape",
+            "arguments": [
+              "new long[][]{null}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 38,
+          "input": {
+            "entry": "MatrixRows#shape",
+            "arguments": [
+              "new long[][]{{1L},{2L}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 39,
+          "input": {
+            "entry": "MatrixRows#shape",
+            "arguments": [
+              "new long[][]{{1L},{}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 40,
+          "input": {
+            "entry": "MatrixRows#same",
+            "arguments": [
+              "new long[][]{{1L},{2L}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 41,
+          "input": {
+            "entry": "MatrixRows#same",
+            "arguments": [
+              "new long[][]{{1L},{}}"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 42,
+          "input": {
+            "entry": "MatrixRows#noNull",
+            "arguments": [
+              "new long[][]{{1L},{2L}}"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 43,
+          "input": {
+            "entry": "MatrixRows#noNull",
+            "arguments": [
+              "new long[][]{null}"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        }
+      ],
+      "control": "driver-rows",
+      "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261123-173701-record-all-49-ordinary-native-example-ta/.build-py/examples-yz_e295i/targets/394/matrix-rows-no-null/20261123T175742Z-ea990a08",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261123-173701-record-all-49-ordinary-native-example-ta/.build-py/examples-yz_e295i/targets/394/matrix-rows-no-null/20261123T175742Z-ea990a08/prepare/rows"
+      }
+    }
+  ]
+}

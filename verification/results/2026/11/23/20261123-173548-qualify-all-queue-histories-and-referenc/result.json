@@ -1,0 +1,196 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-173548-qualify-all-queue-histories-and-referenc",
+  "title": "Qualify all queue histories and reference-fill covariance",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 23.4s, peak 186.4 MiB (estimated 3m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-173548-qualify-all-queue-histories-and-referenc.json",
+    "sha256": "63d732bac9b10870d9123213e30b49050c79c1c6666ddd0102ec92fc8d819dc3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-173548-qualify-all-queue-histories-and-referenc",
+      "title": "Qualify all queue histories and reference-fill covariance",
+      "description": "Run all five two-library transfer statements and repeat the 256 original queue histories. Check replacement, subsequent mutation, array identity, and both covariant store cases.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:35:48+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "queue paired engines",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor queue paired",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/successor/queue/paired"
+      ]
+    }
+  },
+  "sourceCommit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+  "startedAt": "2026-11-23T17:52:01+00:00",
+  "finishedAt": "2026-11-23T17:55:54+00:00",
+  "wallSeconds": 233.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 710475,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 195411968,
+    "wallSeconds": 23.4,
+    "cpuSeconds": 26.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "queue paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor queue paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 23.428,
+      "cpuSeconds": 25.96,
+      "cpuThrottledSeconds": 0.297,
+      "peakMemoryBytes": 195411968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-queue-paired-engines.log",
+        "lines": 10,
+        "bytes": 362,
+        "sha256": "7b9d0efac1c19146a58e3987ea4e92db034f9f7e82290b4ae908e20ed5f30a99",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "QueueFill#queue native correct",
+        "QueueFill#queue jbmc unsupported",
+        "QueueFill#fullMeansOccupied native correct",
+        "QueueFill#fullMeansOccupied jbmc correct",
+        "QueueFill#fill native correct",
+        "QueueFill#fill jbmc unsupported",
+        "QueueFill#staleSurvives native correct",
+        "QueueFill#staleSurvives jbmc unsupported",
+        "QueueFill#covariant native correct",
+        "QueueFill#covariant jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/successor/queue/paired/measurement.json",
+      "change": "added",
+      "bytes": 22422,
+      "sha256": "c6a23ab100341769b932607f79c76649dac8edc7148ff7bebf2b736ea69c68fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/queue/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 9587,
+      "sha256": "745bff29f14187a6ddbc80ecf4bea3e55e4bd8e7a8218a74f17cb8286da336bb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T18:01:29+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/successor/queue/paired/measurement.json",
+      "verification/jbmc-fast-follow/successor/queue/paired/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "565c1e1ae507778f5e662c22623357df27a054a5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T175554Z-03171683e4d129f3",
+      "outputs": "20261123T175554Z-064600f86ebab425",
+      "diff": "20261123T175554Z-09625848acba919a"
+    }
+  }
+}

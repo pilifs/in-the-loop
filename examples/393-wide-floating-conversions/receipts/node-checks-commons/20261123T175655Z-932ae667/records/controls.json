@@ -1,0 +1,392 @@
+{
+  "task": "node-checks-commons",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "numeric",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:numeric.jar:libraries/jackson-databind.jar:libraries/jackson-core.jar:libraries/jackson-annotations.jar:libraries/commons-lang3.jar",
+        "Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.166,
+      "stdout": "controls/control-numeric-jdk21.stdout",
+      "stderr": "controls/control-numeric-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:adapter",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "ca0efdf704ed85bac4de0ed40b7e010fb27fa67bc0f8a92d7b28a33f8a863084",
+            "role": "driver"
+          },
+          {
+            "path": "numeric.jar",
+            "sha256": "063f7cdf1f86c58f342a9b3c4871dd749f39634cdf34e75d5f8d1d76290e5dca",
+            "role": "original"
+          },
+          {
+            "path": "libraries/jackson-databind.jar",
+            "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/jackson-core.jar",
+            "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/jackson-annotations.jar",
+            "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/commons-lang3.jar",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver-numeric",
+          "main": "Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/original.json",
+          "oracleSha256": "2f28ff8666924d7e74cbb26012c589a1e13d36948a2ee4812eed75a92f8dbb94"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "entry": "NodeChecks#direct",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 1,
+          "input": {
+            "entry": "NodeChecks#direct",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 2,
+          "input": {
+            "entry": "NodeChecks#direct",
+            "arguments": [
+              "(1L << 55) - 1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 3,
+          "input": {
+            "entry": "NodeChecks#same",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 4,
+          "input": {
+            "entry": "NodeChecks#same",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 5,
+          "input": {
+            "entry": "NodeChecks#publicSubnormal",
+            "arguments": [
+              "0x1p-150"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 6,
+          "input": {
+            "entry": "NodeChecks#publicSubnormal",
+            "arguments": [
+              "Math.nextUp(0x1p-150)"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 7,
+          "input": {
+            "entry": "NodeChecks#publicSubnormal",
+            "arguments": [
+              "0x1p-149"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 8,
+          "input": {
+            "entry": "NodeChecks#wrongSubnormal",
+            "arguments": [
+              "0x1p-149"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 9,
+          "input": {
+            "entry": "NodeChecks#wrongSubnormal",
+            "arguments": [
+              "0x1p-150"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 10,
+          "input": {
+            "entry": "NodeChecks#commons",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 11,
+          "input": {
+            "entry": "NodeChecks#commons",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 12,
+          "input": {
+            "entry": "NodeChecks#commons",
+            "arguments": [
+              "(1L << 55) - 1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 13,
+          "input": {
+            "entry": "ConversionEquivalence#classified",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 14,
+          "input": {
+            "entry": "ConversionEquivalence#classified",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 15,
+          "input": {
+            "entry": "ConversionEquivalence#classified",
+            "arguments": [
+              "(1L << 55) - 1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 16,
+          "input": {
+            "entry": "NodeChecks#intrinsicSubnormal",
+            "arguments": [
+              "0x1p-150"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 17,
+          "input": {
+            "entry": "NodeChecks#intrinsicSubnormal",
+            "arguments": [
+              "Math.nextUp(0x1p-150)"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 18,
+          "input": {
+            "entry": "NodeChecks#intrinsicSubnormal",
+            "arguments": [
+              "0x1p-149"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 19,
+          "input": {
+            "entry": "NodeChecks#mantissaSubnormal",
+            "arguments": [
+              "0L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 20,
+          "input": {
+            "entry": "NodeChecks#mantissaSubnormal",
+            "arguments": [
+              "1L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 21,
+          "input": {
+            "entry": "NodeChecks#mantissaSubnormal",
+            "arguments": [
+              "-1L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        }
+      ],
+      "control": "driver-numeric",
+      "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261123-173701-record-all-49-ordinary-native-example-ta/.build-py/examples-6zkhweio/targets/393/node-checks-commons/20261123T175655Z-932ae667",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261123-173701-record-all-49-ordinary-native-example-ta/.build-py/examples-6zkhweio/targets/393/node-checks-commons/20261123T175655Z-932ae667/prepare/numeric"
+      }
+    }
+  ]
+}

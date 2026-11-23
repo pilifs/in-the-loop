@@ -1,0 +1,185 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "RaggedProof#distinct",
+    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "distinct(a=[[0],{\"sameCell\":0}])",
+      "outcome": "false",
+      "values": [
+        "[[0],{\"sameCell\":0}]"
+      ],
+      "shrink_runs": 0,
+      "inputs": [
+        {
+          "name": "a",
+          "type": "int[][]",
+          "value": [
+            [
+              0
+            ],
+            {
+              "sameCell": 0
+            }
+          ]
+        }
+      ],
+      "call": {
+        "class": "RaggedProof",
+        "class_file": "RaggedProof.class",
+        "classes": "after",
+        "method": "distinct",
+        "descriptor": "([[I)Z",
+        "static": true,
+        "arguments": [
+          {
+            "name": "a",
+            "type": "int[][]",
+            "value": [
+              [
+                0
+              ],
+              {
+                "sameCell": 0
+              }
+            ],
+            "from": "a"
+          }
+        ]
+      }
+    },
+    "proof": "found by JBMC 6.11.0 in 1.4 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "problem": null,
+    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/jbmc/proof/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[0],{\"sameCell\":0}])\n    outcome: false",
+        "uri": null,
+        "line": 30
+      }
+    ],
+    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: JBMC runs 3 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n✗ Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[0],{\"sameCell\":0}])\n    outcome: false\n  (found by JBMC 6.11.0 in 1.4 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/jbmc/proof",
+    "search": {
+      "engine": "jbmc",
+      "checker": "JBMC 6.11.0",
+      "seconds": 1.36507293,
+      "properties": 2,
+      "unwind": 7,
+      "max_array_length": 2,
+      "stage": null,
+      "staging": "staged",
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 119.442,
+          "seconds": 0.803,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.153,
+            "lowering": 0.029,
+            "symbolic": 0.022,
+            "encoding": 0.055,
+            "solving": 0.44,
+            "trace": 0.004,
+            "other": 0.1
+          },
+          "formula": {
+            "steps": 1574,
+            "conditions": 2,
+            "variables": 66476,
+            "clauses": 201428
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 1.547,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.213,
+        "contracts": 0.0,
+        "runs": 0.803,
+        "replay": 0.008,
+        "jvm": 0.144,
+        "other": 0.378
+      }
+    },
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "a",
+            "type": "int[][]",
+            "kind": "array",
+            "null": true,
+            "max_length": 2
+          }
+        ],
+        "shared_arrays": false,
+        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+      },
+      "assumptions": [
+        {
+          "kind": "library",
+          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 7,
+        "max_array_length": 2,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "jbmc",
+        "name": "JBMC 6.11.0",
+        "solver": "cadical",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "3.0.0",
+          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+          "configuration": [
+            "--trace",
+            "--throw-runtime-exceptions",
+            "--unwinding-assertions",
+            "--json-ui",
+            "--timestamp",
+            "monotonic",
+            "--no-refine-strings",
+            "--sat-solver",
+            "cadical"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

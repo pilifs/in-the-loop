@@ -1,0 +1,206 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "MadeRows#alwaysDistinct",
+    "domain": "x: int × y: int × tied: boolean",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "alwaysDistinct(x=0, y=0, tied=true)",
+      "outcome": "false",
+      "values": [
+        "0",
+        "0",
+        "true"
+      ],
+      "shrink_runs": 1,
+      "inputs": [
+        {
+          "name": "x",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "y",
+          "type": "int",
+          "value": 0
+        },
+        {
+          "name": "tied",
+          "type": "boolean",
+          "value": true
+        }
+      ],
+      "call": {
+        "class": "MadeRows",
+        "class_file": "MadeRows.class",
+        "classes": "after",
+        "method": "alwaysDistinct",
+        "descriptor": "(IIZ)Z",
+        "static": true,
+        "arguments": [
+          {
+            "name": "x",
+            "type": "int",
+            "value": 0,
+            "from": "x"
+          },
+          {
+            "name": "y",
+            "type": "int",
+            "value": 0,
+            "from": "y"
+          },
+          {
+            "name": "tied",
+            "type": "boolean",
+            "value": true,
+            "from": "tied"
+          }
+        ]
+      }
+    },
+    "proof": "found by JBMC 6.11.0 in 0.5 s searching inputs in [0:20], replayed in the interpreter; domain x: int × y: int × tied: boolean",
+    "problem": null,
+    "statement": "/tmp/row-layout-shg4iz78/made-rows-always-distinct/jbmc/proof/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of MadeRows#alwaysDistinct violated: `result`:\n  alwaysDistinct(x=0, y=0, tied=true)\n    outcome: false",
+        "uri": null,
+        "line": 5
+      }
+    ],
+    "output": "✗ Property of MadeRows#alwaysDistinct violated: `result`:\n  alwaysDistinct(x=0, y=0, tied=true)\n    outcome: false\n  (found by JBMC 6.11.0 in 0.5 s searching inputs in [0:20], replayed in the interpreter; domain x: int × y: int × tied: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "/tmp/row-layout-shg4iz78/made-rows-always-distinct/jbmc/proof",
+    "search": {
+      "engine": "jbmc",
+      "checker": "JBMC 6.11.0",
+      "seconds": 0.46778671,
+      "properties": 2,
+      "unwind": 7,
+      "max_array_length": 2,
+      "stage": "[0:20]",
+      "staging": "staged",
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": "[0:20]",
+          "budget_seconds": 15.0,
+          "seconds": 0.251,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.135,
+            "lowering": 0.03,
+            "symbolic": 0.005,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.002,
+            "other": 0.078
+          },
+          "formula": {
+            "steps": 235,
+            "conditions": 1,
+            "variables": 2120,
+            "clauses": 970
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.506,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.212,
+        "contracts": 0.0,
+        "runs": 0.251,
+        "replay": 0.009,
+        "jvm": 0.0,
+        "other": 0.033
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "x",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "y",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "tied",
+            "type": "boolean",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "x: int × y: int × tied: boolean"
+      },
+      "assumptions": [
+        {
+          "kind": "library",
+          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 7,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "jbmc",
+        "name": "JBMC 6.11.0",
+        "solver": "cadical",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "3.0.0",
+          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+          "configuration": [
+            "--trace",
+            "--throw-runtime-exceptions",
+            "--unwinding-assertions",
+            "--json-ui",
+            "--timestamp",
+            "monotonic",
+            "--no-refine-strings",
+            "--sat-solver",
+            "cadical"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

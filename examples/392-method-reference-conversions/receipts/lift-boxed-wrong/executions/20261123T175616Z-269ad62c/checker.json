@@ -1,0 +1,265 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "prove",
+    "Lift#boxedWrong",
+    "--classes",
+    "prepare/callbacks/callbacks.jar",
+    "--classpath",
+    "prepare/callbacks/libraries/guava.jar",
+    "--classpath",
+    "prepare/callbacks/libraries/failureaccess.jar",
+    "--classpath",
+    "prepare/callbacks/libraries/listenablefuture.jar",
+    "--classpath",
+    "prepare/callbacks/libraries/jspecify.jar",
+    "--classpath",
+    "prepare/callbacks/libraries/error-prone-annotations.jar",
+    "--classpath",
+    "prepare/callbacks/libraries/j2objc-annotations.jar",
+    "--classpath",
+    "prepare/callbacks/libraries/commons-lang3.jar",
+    "--assert",
+    "result",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "10",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.082,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "violation",
+      "target": "Lift#boxedWrong",
+      "domain": "x: int × y: int",
+      "assume": null,
+      "assert": "result",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": {
+        "input": "boxedWrong(x=-1, y=0)",
+        "outcome": "false",
+        "values": [
+          "-1",
+          "0"
+        ],
+        "found": "boxedWrong(x=-1073676304, y=-1073610768)",
+        "shrink_runs": 437,
+        "inputs": [
+          {
+            "name": "x",
+            "type": "int",
+            "value": -1
+          },
+          {
+            "name": "y",
+            "type": "int",
+            "value": 0
+          }
+        ],
+        "found_inputs": [
+          {
+            "name": "x",
+            "type": "int",
+            "value": -1073676304
+          },
+          {
+            "name": "y",
+            "type": "int",
+            "value": -1073610768
+          }
+        ],
+        "call": {
+          "class": "Lift",
+          "class_file": "Lift.class",
+          "classes": "after",
+          "method": "boxedWrong",
+          "descriptor": "(II)Z",
+          "static": true,
+          "arguments": [
+            {
+              "name": "x",
+              "type": "int",
+              "value": -1,
+              "from": "x"
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "value": 0,
+              "from": "y"
+            }
+          ]
+        }
+      },
+      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s as boxedWrong(x=-1073676304, y=-1073610768), shrunk to the input above in 437 interpreter runs, replayed in the interpreter; domain x: int × y: int",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "property-violated",
+          "message": "Property of Lift#boxedWrong violated: `result`:\n  boxedWrong(x=-1, y=0)\n    outcome: false",
+          "uri": null,
+          "line": 16
+        }
+      ],
+      "output": "✗ Property of Lift#boxedWrong violated: `result`:\n  boxedWrong(x=-1, y=0)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s as boxedWrong(x=-1073676304, y=-1073610768), shrunk to the input above in 437 interpreter runs, replayed in the interpreter; domain x: int × y: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.014340966,
+        "properties": 1,
+        "unwind": 10,
+        "max_array_length": 8,
+        "stage": null,
+        "native": {
+          "paths": 3,
+          "merges": 0,
+          "solver_calls": 10,
+          "solving_seconds": 0.000665136,
+          "gates_evaluated": 507,
+          "evaluating_seconds": 1.5289e-05,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 1562,
+          "clauses": 4971,
+          "seconds": 0.010203571,
+          "loading_seconds": 0.000538282,
+          "decoding_seconds": 5.9663e-05,
+          "encoding_seconds": 0.001293471,
+          "witness_seconds": 3.5585e-05
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.01,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.001,
+              "lowering": 0.0,
+              "symbolic": 0.008,
+              "encoding": 0.001,
+              "solving": 0.001,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 1562,
+              "clauses": 4971
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.072,
+          "setup": 0.002,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.01,
+          "replay": 0.029,
+          "jvm": 0.0,
+          "other": 0.031
+        }
+      },
+      "replay": {
+        "by": "interpreter",
+        "reproduced": true
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "x",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "x: int × y: int"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 10,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6210,
+    "sha256": "ae3e856f13f5e157751dca18d25fd51fd4e6694acfb6949aa97b6ace29c0fe9c"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

@@ -1,0 +1,189 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "QueueFill#staleSurvives",
+    "domain": "value: int",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "staleSurvives(value=0)",
+      "outcome": "false",
+      "values": [
+        "0"
+      ],
+      "found": "staleSurvives(value=20)",
+      "shrink_runs": 1,
+      "inputs": [
+        {
+          "name": "value",
+          "type": "int",
+          "value": 0
+        }
+      ],
+      "found_inputs": [
+        {
+          "name": "value",
+          "type": "int",
+          "value": 20
+        }
+      ],
+      "call": {
+        "class": "QueueFill",
+        "class_file": "QueueFill.class",
+        "classes": "after",
+        "method": "staleSurvives",
+        "descriptor": "(I)Z",
+        "static": true,
+        "arguments": [
+          {
+            "name": "value",
+            "type": "int",
+            "value": 0,
+            "from": "value"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as staleSurvives(value=20), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain value: int",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of QueueFill#staleSurvives violated: `result`:\n  staleSurvives(value=0)\n    outcome: false",
+        "uri": null,
+        "line": 50
+      }
+    ],
+    "output": "✗ Property of QueueFill#staleSurvives violated: `result`:\n  staleSurvives(value=0)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as staleSurvives(value=20), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain value: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.004374308,
+      "properties": 1,
+      "unwind": 8,
+      "max_array_length": 8,
+      "stage": "[0:20]",
+      "native": {
+        "paths": 1,
+        "merges": 0,
+        "solver_calls": 2,
+        "solving_seconds": 0.000012954,
+        "gates_evaluated": 0,
+        "evaluating_seconds": 0.0,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 99,
+        "clauses": 230,
+        "seconds": 0.003076416,
+        "loading_seconds": 0.00032627,
+        "decoding_seconds": 0.00003766,
+        "encoding_seconds": 0.000041719,
+        "witness_seconds": 8.586e-6
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.003,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.003,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 99,
+            "clauses": 230
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.019,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.003,
+        "replay": 0.004,
+        "jvm": 0.0,
+        "other": 0.011
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "value",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "value: int"
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 8,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

@@ -1,0 +1,596 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "d6e1b5dde282d8db",
+    "format": 1,
+    "example": "394",
+    "statement": {
+      "approach": "target",
+      "task": "matrix-rows-same",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "MatrixRows#same",
+      "revisions": [
+        "rows"
+      ],
+      "expected": "refuted",
+      "gaps": "strict",
+      "claim": {
+        "task": "matrix-rows-same",
+        "kind": "prove",
+        "relation": "calibration",
+        "target": "MatrixRows#same",
+        "file": "claims/matrix-rows-same.json",
+        "sha256": "4ac6a6b3325a70d95d039f1bbe5048eb6206b6562458ee30a576d9100ed7f31c",
+        "property": "same",
+        "claimKind": "property",
+        "statement": "All matrices with two non-null rows return normally.",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "nullable": [
+          "a"
+        ],
+        "mayAlias": [],
+        "observations": [
+          "result",
+          "exception"
+        ],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {
+          "unwind": 7,
+          "maxArrayLength": 2
+        },
+        "explicitBounds": {
+          "unwind": 7,
+          "maxArrayLength": 2
+        },
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": "strict",
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-rows",
+            "kind": "driver",
+            "path": "driver/Cases.java",
+            "sha256": "3d0bd7588ad08ca160a39776051788e10aa8690b05f37555b2f339fdcfec9219"
+          },
+          {
+            "id": "oracle-rows",
+            "kind": "oracle",
+            "path": "controls/original.json",
+            "sha256": "240648da6068876f3fcf6b2b0e5b6b44eabc0f5a3fb0ce6eb35f85e98bf2fbfa"
+          }
+        ],
+        "key": "27cff68751740759"
+      }
+    },
+    "scope": {
+      "maxArrayLength": 2
+    },
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "b58f2cefdbe866bbf5c81ae16d8ac100bee23d72272614f81f337318932ef7a5",
+        "files": 4
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "matrix-rows-same",
+      "sidecar": "645dc1cc3918efeef59c93c520c73ca9414663df628231b7ab6117e68592cbc9",
+      "revisions": {
+        "rows": "4965627e7787fb0118d662d945026d428c94703b"
+      },
+      "dependencies": [
+        {
+          "revision": "rows",
+          "position": 0,
+          "role": "driver",
+          "sha256": "ae1cfbb8da38c185b620443a127cda8a845c93198f924db3d32dc213aeb662f4"
+        },
+        {
+          "revision": "rows",
+          "position": 1,
+          "role": "original",
+          "sha256": "7d9fc73d76943fbb5a2cdc8df3e9c27d015aa9a024eccdd15a5977f583f6abcf"
+        },
+        {
+          "revision": "rows",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "coordinates": "org.apache.commons:commons-lang3:3.17.0"
+        },
+        {
+          "revision": "rows",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+          "coordinates": "org.apache.commons:commons-collections4:4.5.0"
+        },
+        {
+          "revision": "rows",
+          "position": 4,
+          "role": "dependency",
+          "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308",
+          "coordinates": "org.apache.commons:commons-math3:3.6.1"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "claims/matrix-rows-same.json": "4ac6a6b3325a70d95d039f1bbe5048eb6206b6562458ee30a576d9100ed7f31c",
+        "controls/original.json": "240648da6068876f3fcf6b2b0e5b6b44eabc0f5a3fb0ce6eb35f85e98bf2fbfa",
+        "driver/Cases.java": "3d0bd7588ad08ca160a39776051788e10aa8690b05f37555b2f339fdcfec9219"
+      },
+      "claimKey": "27cff68751740759"
+    }
+  },
+  "attempt": {
+    "id": "20261123T175740Z-9a40c62b",
+    "claim": "d6e1b5dde282d8db",
+    "startedAt": "2026-11-23T17:57:40+00:00",
+    "seconds": 0.4,
+    "engine": "native",
+    "options": [
+      "prove",
+      "MatrixRows#same",
+      "--classes",
+      "prepare/rows/rows.jar",
+      "--classpath",
+      "prepare/rows/libraries/commons-lang3.jar",
+      "--classpath",
+      "prepare/rows/libraries/commons-collections4.jar",
+      "--classpath",
+      "prepare/rows/libraries/commons-math3.jar",
+      "--assert",
+      "result",
+      "--nullable",
+      "a",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "7",
+      "--max-array-length",
+      "2",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jvmcontract": "b1e0edad5632990ef4797b8aaf23f82fa0beba809c9c8d8cfbd00805cf5ef389"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "f4e2ffabc9052cad14f61e7cfec5b48796c1316c51ed1c64ee4ece2bf85d74d2",
+        "files": 1
+      }
+    },
+    "pipeline": {
+      "jobId": "20261123-173701-record-all-49-ordinary-native-example-ta",
+      "sourceCommit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+      "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261123-173701-record-all-49-ordinary-native-example-ta"
+    },
+    "execution": {
+      "status": "completed",
+      "exitCode": 1,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control rows on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.119,
+        "stdout": "records/control-rows-jdk21.stdout",
+        "stderr": "records/control-rows-jdk21.stderr"
+      },
+      {
+        "name": "verifier rows on JDK 21",
+        "status": "exited",
+        "exitCode": 1,
+        "seconds": 0.274,
+        "stdout": "records/verifier.stdout",
+        "stderr": "records/verifier.stderr"
+      }
+    ],
+    "workspace": null,
+    "exploration": {
+      "unwind": 7,
+      "maxArrayLength": 2,
+      "complete": false
+    }
+  },
+  "conclusion": {
+    "claim": "d6e1b5dde282d8db",
+    "attempt": "20261123T175740Z-9a40c62b",
+    "status": "refuted",
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [
+      {
+        "kind": "property",
+        "name": "property-1",
+        "statement": "result",
+        "status": "refuted",
+        "evidence": {
+          "harness": null,
+          "assert": "result",
+          "assume": null,
+          "verdict": "violation",
+          "domain": "a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+          "problem": null,
+          "vacuous": null,
+          "counterexample": {
+            "input": "same(a=[[\"-1\"],[\"-1\",\"-1\"]])",
+            "contract": "result",
+            "actual": "false",
+            "shrinkRuns": 0,
+            "witness": {
+              "inputs": [
+                {
+                  "name": "a",
+                  "type": "long[][]",
+                  "value": [
+                    [
+                      "-1"
+                    ],
+                    [
+                      "-1",
+                      "-1"
+                    ]
+                  ]
+                }
+              ],
+              "call": {
+                "class": "MatrixRows",
+                "classFile": "MatrixRows.class",
+                "classFileSha256": null,
+                "classes": "after",
+                "method": "same",
+                "descriptor": "([[J)Z",
+                "static": true,
+                "arguments": [
+                  {
+                    "name": "a",
+                    "type": "long[][]",
+                    "value": [
+                      [
+                        "-1"
+                      ],
+                      [
+                        "-1",
+                        "-1"
+                      ]
+                    ],
+                    "from": "a"
+                  }
+                ],
+                "revision": "rows"
+              }
+            }
+          },
+          "statement": null,
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.061,
+            "properties": 1,
+            "unwind": 7,
+            "maxArrayLength": 2,
+            "stage": "[-100000:100000]",
+            "deadlineSeconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budgetSeconds": 120.0,
+                "seconds": 0.057,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.003,
+                  "lowering": 0.002,
+                  "symbolic": 0.045,
+                  "encoding": 0.002,
+                  "solving": 0.005,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 2751,
+                  "clauses": 8151
+                }
+              }
+            ],
+            "native": {
+              "paths": 24,
+              "merges": 0,
+              "solverCalls": 105,
+              "solvingSeconds": 0.00486162,
+              "gatesEvaluated": 1030,
+              "evaluatingSeconds": 5.7289e-05,
+              "divisions": 0,
+              "divisionsBuilt": 0,
+              "multiplications": 0,
+              "multiplicationsBuilt": 0,
+              "variables": 2751,
+              "clauses": 8151,
+              "seconds": 0.056540968,
+              "loadingSeconds": 0.002556378,
+              "decodingSeconds": 0.001856408,
+              "encodingSeconds": 0.002382409,
+              "witnessSeconds": 0.000163927
+            },
+            "gapMode": "strict"
+          },
+          "replay": {
+            "by": "jvm",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "a",
+                  "type": "long[][]",
+                  "kind": "array",
+                  "null": true,
+                  "maxLength": 2
+                }
+              ],
+              "sharedArrays": false,
+              "text": "a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 7,
+              "maxArrayLength": 2,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gapMode": "strict",
+            "confirmation": null
+          }
+        }
+      }
+    ],
+    "label": "✗ Violation",
+    "obligationKeys": {
+      "property": "properties"
+    }
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"rows\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/verifier-output.txt",
+    "statement": null,
+    "counterexamples": [
+      {
+        "input": "same(a=[[\"-1\"],[\"-1\",\"-1\"]])",
+        "contract": "result",
+        "actual": "false",
+        "shrinkRuns": 0,
+        "witness": {
+          "inputs": [
+            {
+              "name": "a",
+              "type": "long[][]",
+              "value": [
+                [
+                  "-1"
+                ],
+                [
+                  "-1",
+                  "-1"
+                ]
+              ]
+            }
+          ],
+          "call": {
+            "class": "MatrixRows",
+            "classFile": "MatrixRows.class",
+            "classFileSha256": null,
+            "classes": "after",
+            "method": "same",
+            "descriptor": "([[J)Z",
+            "static": true,
+            "arguments": [
+              {
+                "name": "a",
+                "type": "long[][]",
+                "value": [
+                  [
+                    "-1"
+                  ],
+                  [
+                    "-1",
+                    "-1"
+                  ]
+                ],
+                "from": "a"
+              }
+            ],
+            "revision": "rows"
+          }
+        }
+      }
+    ],
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "problem": null,
+    "domain": "a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "property": {
+      "assert": "result",
+      "assume": null
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "a",
+            "type": "long[][]",
+            "kind": "array",
+            "null": true,
+            "maxLength": 2
+          }
+        ],
+        "sharedArrays": false,
+        "text": "a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gapMode": "strict",
+      "confirmation": null
+    }
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "d6b659136ca2bfed335af37a2dae32371dab7c4bc0973355c5e51e6ed7c94926",
+        "bytes": 31668
+      },
+      {
+        "path": "records/verifier-output.txt",
+        "sha256": "650b4d8e7a67254f41ee198907a065dd3d24ee63eae0b43f67cec375b765afd7",
+        "bytes": 672
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "a93b262f09788385f8c52a9d5ace279888aaa80e0e6a26ded42e32c13e9750a7",
+        "bytes": 1953
+      },
+      {
+        "path": "records/control-rows-jdk21.stdout",
+        "sha256": "6d205f5fe900d4a5ea15563f2d9efaaaa1473768e001f35311275687aad2c070",
+        "bytes": 5420
+      },
+      {
+        "path": "records/control-rows-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "162fc3e109e109bb6cdb06d06c092f385797035ef819466f0e4bd352fe09b6b6",
+        "bytes": 16101
+      },
+      {
+        "path": "records/verifier.stdout",
+        "sha256": "806d7d04301fb3429776f7b4ceaba9a72dff535385eaf4b67b92302997cd3280",
+        "bytes": 6395
+      },
+      {
+        "path": "records/verifier.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/verifier.json",
+        "sha256": "4f73f6aa3bfc581762fd0743b4cb6da0b0280444c0c913827cdbc3c05c5b143c",
+        "bytes": 15423
+      }
+    ]
+  }
+}

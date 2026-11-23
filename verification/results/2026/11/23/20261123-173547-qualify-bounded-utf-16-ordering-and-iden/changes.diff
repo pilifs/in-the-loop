@@ -1,0 +1,933 @@
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/strings/paired/measurement.json
+@@ -0,0 +1,929 @@
++{
++  "phase": "successor",
++  "family": "strings",
++  "lane": "paired",
++  "predecessor": {
++    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
++    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
++  },
++  "measuredSource": "701ca64e1980b6052b3409b882ff63438b973a6c",
++  "job": "20261123-173547-qualify-bounded-utf-16-ordering-and-iden",
++  "checkerSha256": "b1e0edad5632990ef4797b8aaf23f82fa0beba809c9c8d8cfbd00805cf5ef389",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jars": [
++    {
++      "name": "guava-33.4.8-jre.jar",
++      "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
++    },
++    {
++      "name": "failureaccess-1.0.3.jar",
++      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb"
++    },
++    {
++      "name": "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
++      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
++    },
++    {
++      "name": "jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++    },
++    {
++      "name": "error_prone_annotations-2.36.0.jar",
++      "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
++    },
++    {
++      "name": "j2objc-annotations-3.0.0.jar",
++      "sha256": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
++    },
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    }
++  ],
++  "productClasses": {
++    "ExactOrder.class": "3e4063033bb7de780a425680089c697f0515cda8ba9e53dd03ac640a3dfb92fd"
++  },
++  "driverClasses": {
++    "Cases.class": "4acc8ee353a4020017b6b502c13c315f31f44cc9d0aa4bb7f1de995ad35b9507",
++    "OrderGrid.class": "8b2f8f163c269de0ce3cd4ab85f9f0c797f465ee938344d9e7e933bdd9875b9f",
++    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
++  },
++  "originalJvm": {
++    "Cases": {
++      "sha256": "5a9bccf70c2c56f9c321deae884d53f8a3afc3475d528ac5b73bea194dff076a",
++      "seconds": 0.1,
++      "cases": 24
++    },
++    "OrderGrid": {
++      "sha256": "15e3b09566e33594ec96f43ee5f803a62ad897118f6fea8a4ee5d95055c5b707",
++      "seconds": 0.098
++    }
++  },
++  "rows": [
++    {
++      "task": "exact-order-commons",
++      "cohort": "string-order",
++      "parameters": "String a, String b",
++      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
++      "target": "ExactOrder#commons",
++      "expected": "established",
++      "specSha256": "a1959bcc694c522a0e6718ae2ea24bc6c31763313d1554a119b5837b84bc2129",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.037,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              },
++              {
++                "name": "b",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: String of \u2264 2 code units, not null \u00d7 b: String of \u2264 2 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": null,
++            "complete": true,
++            "max_value_length": 2
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.008,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "commons takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
++      }
++    },
++    {
++      "task": "exact-order-only-sign",
++      "cohort": "string-order",
++      "parameters": "String a, String b",
++      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
++      "target": "ExactOrder#onlySign",
++      "expected": "refuted",
++      "specSha256": "50a0d3c2be5dccd097d2fa69963714d267c7c49a582abba2a9b446e94da84877",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.062,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              },
++              {
++                "name": "b",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: String of \u2264 2 code units, not null \u00d7 b: String of \u2264 2 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 2
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "java.lang.String",
++              "value": {
++                "kind": "string",
++                "units": []
++              }
++            },
++            {
++              "name": "b",
++              "type": "java.lang.String",
++              "value": {
++                "kind": "string",
++                "units": [
++                  97,
++                  97
++                ]
++              }
++            }
++          ],
++          "sourceSha256": "7882714c628e7b9442aa45fd1514ef56217697bfb3c92185bac8c3b50f461a28",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.012,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "onlySign takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
++      }
++    },
++    {
++      "task": "exact-order-guava",
++      "cohort": "string-order",
++      "parameters": "String a, String b",
++      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
++      "target": "ExactOrder#guava",
++      "expected": "established",
++      "specSha256": "22d0d721df8018bf2fbffeea9a7cc96f4c1e1043bc85f15d6c319b117193441a",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.045,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              },
++              {
++                "name": "b",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: String of \u2264 2 code units, not null \u00d7 b: String of \u2264 2 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": null,
++            "complete": true,
++            "max_value_length": 2
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.008,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "guava takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
++      }
++    },
++    {
++      "task": "exact-order-first-on-tie",
++      "cohort": "string-order",
++      "parameters": "String a, String b",
++      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
++      "target": "ExactOrder#firstOnTie",
++      "expected": "established",
++      "specSha256": "7123dc9a37d6007e2cf25ca1215ac17a07a60c598f62bf9ce5054e60586959e5",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.04,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              },
++              {
++                "name": "b",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: String of \u2264 2 code units, not null \u00d7 b: String of \u2264 2 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": null,
++            "complete": true,
++            "max_value_length": 2
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.007,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "firstOnTie takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
++      }
++    },
++    {
++      "task": "exact-order-second-on-tie",
++      "cohort": "string-order",
++      "parameters": "String a, String b",
++      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
++      "target": "ExactOrder#secondOnTie",
++      "expected": "refuted",
++      "specSha256": "53b51c249f3f56d7ce2d261a11f6f9cd32c73bdcabb07f62cbe838c8310cd5ea",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.07,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              },
++              {
++                "name": "b",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: String of \u2264 2 code units, not null \u00d7 b: String of \u2264 2 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 2
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "java.lang.String",
++              "value": {
++                "kind": "string",
++                "units": []
++              }
++            },
++            {
++              "name": "b",
++              "type": "java.lang.String",
++              "value": {
++                "kind": "string",
++                "units": []
++              }
++            }
++          ],
++          "sourceSha256": "2f40f22c29d0a97b971b0f156fff3531b191d57c9a4136746b93c3f90d47d4b4",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.007,
++        "expected": "violation",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "secondOnTie takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
++      }
++    },
++    {
++      "task": "exact-order-direct",
++      "cohort": "string-order",
++      "parameters": "String a, String b",
++      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
++      "target": "ExactOrder#direct",
++      "expected": "established",
++      "specSha256": "06ad3ba679be893122a6fc2611c057b9b87271db225aba56d6058b367cfc6dd1",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "descriptor": "(Ljava/lang/String;Ljava/lang/String;)Z",
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.038,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              },
++              {
++                "name": "b",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: String of \u2264 2 code units, not null \u00d7 b: String of \u2264 2 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": null,
++            "complete": true,
++            "max_value_length": 2
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.01,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "direct takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
++      }
++    },
++    {
++      "task": "exact-order-same-reference",
++      "cohort": "string-alias",
++      "parameters": "String a",
++      "reachGuard": "a != null && a.length() <= 2",
++      "target": "ExactOrder#sameReference",
++      "expected": "established",
++      "specSha256": "468dea702ff2bc29a91206990b00853e8bbdea4518bd1892af6d39cae85ebe61",
++      "bounds": {
++        "unwind": 8,
++        "maxArrayLength": 2
++      },
++      "descriptor": "(Ljava/lang/String;)Z",
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.033,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: String of \u2264 2 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 8,
++            "max_array_length": null,
++            "complete": true,
++            "max_value_length": 2
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.008,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "sameReference takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim"
++      }
++    }
++  ],
++  "classBindings": {
++    "ExactOrder": {
++      "classpathIndex": 0,
++      "entry": "ExactOrder.class",
++      "sha256": "3e4063033bb7de780a425680089c697f0515cda8ba9e53dd03ac640a3dfb92fd"
++    },
++    "org.apache.commons.lang3.ObjectUtils": {
++      "classpathIndex": 7,
++      "entry": "org/apache/commons/lang3/ObjectUtils.class",
++      "sha256": "b0a4151028a26f0d8a6abf967aa2bed3f8871aa431b9dd686e1be98cad4152d0"
++    },
++    "com.google.common.collect.Ordering": {
++      "classpathIndex": 1,
++      "entry": "com/google/common/collect/Ordering.class",
++      "sha256": "54da30a27c04c05b808fa3556098d97a509e10db1730dd22155feea3781b0659"
++    },
++    "com.google.common.collect.NaturalOrdering": {
++      "classpathIndex": 1,
++      "entry": "com/google/common/collect/NaturalOrdering.class",
++      "sha256": "a5b5fd89a1e4676d3ff76e8efae9c33ca4df91e16e8ff9f425fa9e89db2425ea"
++    }
++  },
++  "rawSha256": "ae6da637ee8b76d6d04746ad1f39e05c231ec0dfee4a6b45df39192c1b7bd769"
++}
+Binary file verification/jbmc-fast-follow/successor/strings/paired/raw.tar.gz changed

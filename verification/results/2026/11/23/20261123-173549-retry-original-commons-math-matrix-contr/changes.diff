@@ -1,0 +1,2181 @@
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/correct/jbmc/stdout.json
+@@ -0,0 +1,183 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "MatrixMetadata#correct",
++    "domain": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++    "statement": "/tmp/matrix-transfer-2ugqbxht/correctjbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "MatrixMetadata#correct cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "uri": null,
++        "line": 17
++      }
++    ],
++    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: whether a path reaches the stubs JBMC's symbolic execution enters is not known, since the proof with a probe at their calls could not tell (sh did not finish within 1 s): they stay gaps\nnote: JBMC reaches 4 constructs it approximates (its stubs and unlinked call sites, /tmp/matrix-transfer-2ugqbxht/correctjbmc/proof/jbmc-goto.txt):\n  jbmc gap: jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13: java.util.ArrayList.<init>() is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.<init>:65\n  jbmc gap: jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13: java.util.List.toArray() is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ArgUtils.flatten:53\n  jbmc gap: jdk-primitive-method:java.lang.Number.intValue()I@jdk-21.0.13: java.lang.Number.intValue() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at MatrixMetadata.widths:12\n  jbmc gap: jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13: java.util.List.add(java.lang.Object) is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86\nnote: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.ClassCastException, java.lang.NegativeArraySizeException, java.lang.NullPointerException, org.apache.commons.math3.exception.DimensionMismatchException, org.apache.commons.math3.exception.NullArgumentException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n  jbmc defect: throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>: the initializer of org.apache.commons.math3.exception.MathIllegalNumberException may throw java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ArrayIndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.Error) at PropertyHarness.check, catch (java.lang.IndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.NullPointerException) at PropertyHarness.check, catch (java.lang.RuntimeException) at PropertyHarness.check tell them apart\n✗ MatrixMetadata#correct cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/correctjbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 35.363777615,
++      "properties": 3,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.ArrayList.<init>()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.<init>:65"
++          ],
++          "approximation": "is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.util.List.toArray()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ArgUtils.flatten:53"
++          ],
++          "approximation": "is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-primitive-method:java.lang.Number.intValue()I@jdk-21.0.13",
++          "kind": "jdk-primitive-method",
++          "call": "java.lang.Number.intValue()",
++          "sites": [
++            "MatrixMetadata.widths:12"
++          ],
++          "approximation": "is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
++          "kind": "jdk-primitive-method",
++          "call": "java.util.List.add(java.lang.Object)",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86"
++          ],
++          "approximation": "is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        }
++      ],
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 104.492,
++          "seconds": 19.85,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.596,
++            "lowering": 2.788,
++            "symbolic": 13.097,
++            "encoding": 0.703,
++            "solving": 1.6,
++            "trace": 0.0,
++            "other": 1.066
++          },
++          "formula": {
++            "steps": 92034,
++            "conditions": 3,
++            "variables": 372059,
++            "clauses": 578618
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 35.381,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 15.155,
++        "contracts": 0.0,
++        "runs": 19.85,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.375
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "matrix",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/correct/native/stdout.json
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "MatrixMetadata#correct",
++    "domain": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-transfer-2ugqbxht/correctnative/proof/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ MatrixMetadata#correct satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/correctnative/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.022863887,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 12,
++        "merges": 0,
++        "solver_calls": 35,
++        "solving_seconds": 0.00037967,
++        "gates_evaluated": 562,
++        "evaluating_seconds": 0.00002074,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1130,
++        "clauses": 2563,
++        "seconds": 0.02047454,
++        "loading_seconds": 0.001725667,
++        "decoding_seconds": 0.001476687,
++        "encoding_seconds": 0.000708023,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.02,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.001,
++            "symbolic": 0.016,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1130,
++            "clauses": 2563
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.032,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.02,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.011
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "matrix",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/equal-width/jbmc/stdout.json
+@@ -0,0 +1,177 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
++    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
++    "assert": "true",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++    "statement": "/tmp/matrix-transfer-2ugqbxht/equal-widthjbmc/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "uri": null,
++        "line": 562
++      }
++    ],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\nJBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: which stubs JBMC's paths reach is not known, since its symbolic execution of the proof could not tell (it did not finish within 9.6 s): the gaps are those of its call graph\nnote: JBMC reaches 3 constructs it approximates (its stubs and unlinked call sites, /tmp/matrix-transfer-2ugqbxht/equal-widthjbmc/jbmc-goto.txt):\n  jbmc gap: jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13: java.util.ArrayList.<init>() is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.<init>:65\n  jbmc gap: jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13: java.util.List.toArray() is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ArgUtils.flatten:53\n  jbmc gap: jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13: java.util.List.add(java.lang.Object) is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86\nnote: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.ClassCastException, java.lang.NegativeArraySizeException, java.lang.NullPointerException, org.apache.commons.math3.exception.DimensionMismatchException, org.apache.commons.math3.exception.NullArgumentException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n  jbmc defect: throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>: the initializer of org.apache.commons.math3.exception.MathIllegalNumberException may throw java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ArrayIndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.Error) at PropertyHarness.check, catch (java.lang.IndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.NullPointerException) at PropertyHarness.check, catch (java.lang.RuntimeException) at PropertyHarness.check tell them apart\n✗ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/equal-widthjbmc",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 101.117147257,
++      "properties": 4,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.ArrayList.<init>()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.<init>:65"
++          ],
++          "approximation": "is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.util.List.toArray()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ArgUtils.flatten:53"
++          ],
++          "approximation": "is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
++          "kind": "jdk-primitive-method",
++          "call": "java.util.List.add(java.lang.Object)",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86"
++          ],
++          "approximation": "is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        }
++      ],
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 104.191,
++          "seconds": 85.298,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.749,
++            "lowering": 2.525,
++            "symbolic": 57.427,
++            "encoding": 7.906,
++            "solving": 10.612,
++            "trace": 0.0,
++            "other": 6.08
++          },
++          "formula": {
++            "steps": 998942,
++            "conditions": 10,
++            "variables": 2362310,
++            "clauses": 3051255
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 101.999,
++        "setup": 0.002,
++        "harness": 0.0,
++        "gaps": 15.174,
++        "contracts": 0.0,
++        "runs": 85.298,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.526
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "in",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
++          "basis": "stated"
++        },
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "nothing beyond returning",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/equal-width/native/stdout.json
+@@ -0,0 +1,174 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
++    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
++    "assert": "true",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-transfer-2ugqbxht/equal-widthnative/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V satisfies `true` on every input where in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length (jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n  not vacuous: checkRectangular(in=[[\"20\",\"20\"],[\"20\",\"20\"]]) reaches the calls\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/equal-widthnative",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.011546418,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 7,
++        "merges": 0,
++        "solver_calls": 10,
++        "solving_seconds": 0.000156545,
++        "gates_evaluated": 221,
++        "evaluating_seconds": 8.558e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 764,
++        "clauses": 1407,
++        "seconds": 0.008138892,
++        "loading_seconds": 0.000284214,
++        "decoding_seconds": 0.000075942,
++        "encoding_seconds": 0.000321642,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.008,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.007,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 764,
++            "clauses": 1407
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 119.988,
++          "seconds": 0.007,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.007,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1286,
++            "clauses": 3225
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.871,
++        "setup": 0.002,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.015,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.854
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "in",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "nothing beyond returning",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found checkRectangular(in=[[\"20\",\"20\"],[\"20\",\"20\"]]).",
++        "witness": "checkRectangular(in=[[\"20\",\"20\"],[\"20\",\"20\"]])"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/measurement.json
+@@ -0,0 +1,333 @@
++{
++  "source": "701ca64e1980b6052b3409b882ff63438b973a6c",
++  "job": "20261123-173549-retry-original-commons-math-matrix-contr",
++  "checker": "b1e0edad5632990ef4797b8aaf23f82fa0beba809c9c8d8cfbd00805cf5ef389",
++  "jbmcMemoryMiB": 8192,
++  "jar": "commons-math3-3.6.1.jar",
++  "jarSha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308",
++  "entry": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
++  "direct": {
++    "equal-width": {
++      "native": {
++        "verdict": "verified",
++        "firstUnproved": null,
++        "seconds": 0.877,
++        "stdoutSha256": "e0abdc3af8c4b8279c06d0ebbc26a00e821067315495adf379b61bb09626a978",
++        "guard": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
++        "throws": []
++      },
++      "jbmc": {
++        "verdict": "unverifiable",
++        "firstUnproved": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "seconds": 102.019,
++        "stdoutSha256": "2ff2d26843c183883d29fc2dca636ed7b30d62902330947315c112f632fe66ce",
++        "guard": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length == in[1].length",
++        "throws": []
++      }
++    },
++    "singleton-null": {
++      "native": {
++        "verdict": "verified",
++        "firstUnproved": null,
++        "seconds": 0.566,
++        "stdoutSha256": "b769d3f5899c6b4f647fe141e483b35dbaadd6ace2f60861c98a5aad2fa49039",
++        "guard": "in != null && in.length == 1 && in[0] == null",
++        "throws": []
++      },
++      "jbmc": {
++        "verdict": "unverifiable",
++        "firstUnproved": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "seconds": 85.364,
++        "stdoutSha256": "8729ad389934c7758f2f0147bcb67aa40b666863fecdb5909515cfe55bb7edb7",
++        "guard": "in != null && in.length == 1 && in[0] == null",
++        "throws": []
++      }
++    },
++    "unequal-width": {
++      "native": {
++        "verdict": "verified",
++        "firstUnproved": null,
++        "seconds": 0.641,
++        "stdoutSha256": "2d3110845843ba6babd02fac429ad9c4b8b09089a9c0e74934a1575832ac112c",
++        "guard": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
++        "throws": [
++          "org.apache.commons.math3.exception.DimensionMismatchException when true"
++        ]
++      },
++      "jbmc": {
++        "verdict": "unverifiable",
++        "firstUnproved": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "seconds": 82.895,
++        "stdoutSha256": "b18f5afc4e95ed3ed92447819a3b16b3e70514d4947950c3ef92b2a24523c004",
++        "guard": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
++        "throws": [
++          "org.apache.commons.math3.exception.DimensionMismatchException when true"
++        ]
++      }
++    }
++  },
++  "metadata": {
++    "correct": {
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.036,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "matrix",
++                "type": "long[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "matrix: long[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 35.44,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it"
++      }
++    },
++    "swapped": {
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.179,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "matrix",
++                "type": "long[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "matrix: long[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "matrix",
++              "type": "long[][]",
++              "value": [
++                [
++                  "20"
++                ],
++                [
++                  "20",
++                  "20"
++                ]
++              ]
++            }
++          ],
++          "sourceSha256": "129d23d01fff8e606a2d3adf91262062b225ff9f5ea23224b4e3f6c466ec67fc",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 35.803,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "matrix",
++                "type": "long[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "matrix: long[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "matrix",
++              "type": "long[][]",
++              "value": [
++                [],
++                [
++                  "0"
++                ]
++              ]
++            }
++          ],
++          "sourceSha256": "97bf691f3c63522a8c627b4be4e2ab7634cfadc5c9fd9d00ba51f2e233006e80",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    }
++  },
++  "metadataClassSha256": "e6a6cd0844c9c9996df38c34d6cbe67262262f1d0cf1bb527e4b69df3b50077d",
++  "originalJvmMetadata": "16 two-row shapes; all 6 mismatches distinguish actual and expected widths"
++}
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/singleton-null/jbmc/stdout.json
+@@ -0,0 +1,177 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
++    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": "in != null && in.length == 1 && in[0] == null",
++    "assert": "true",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++    "statement": "/tmp/matrix-transfer-2ugqbxht/singleton-nulljbmc/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "uri": null,
++        "line": 562
++      }
++    ],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\nJBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: which stubs JBMC's paths reach is not known, since its symbolic execution of the proof could not tell (it did not finish within 9.8 s): the gaps are those of its call graph\nnote: JBMC reaches 3 constructs it approximates (its stubs and unlinked call sites, /tmp/matrix-transfer-2ugqbxht/singleton-nulljbmc/jbmc-goto.txt):\n  jbmc gap: jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13: java.util.ArrayList.<init>() is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.<init>:65\n  jbmc gap: jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13: java.util.List.toArray() is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ArgUtils.flatten:53\n  jbmc gap: jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13: java.util.List.add(java.lang.Object) is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86\nnote: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.ClassCastException, java.lang.NegativeArraySizeException, java.lang.NullPointerException, org.apache.commons.math3.exception.DimensionMismatchException, org.apache.commons.math3.exception.NullArgumentException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n  jbmc defect: throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>: the initializer of org.apache.commons.math3.exception.MathIllegalNumberException may throw java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ArrayIndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.Error) at PropertyHarness.check, catch (java.lang.IndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.NullPointerException) at PropertyHarness.check, catch (java.lang.RuntimeException) at PropertyHarness.check tell them apart\n✗ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/singleton-nulljbmc",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 84.749771908,
++      "properties": 4,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.ArrayList.<init>()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.<init>:65"
++          ],
++          "approximation": "is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.util.List.toArray()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ArgUtils.flatten:53"
++          ],
++          "approximation": "is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
++          "kind": "jdk-primitive-method",
++          "call": "java.util.List.add(java.lang.Object)",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86"
++          ],
++          "approximation": "is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        }
++      ],
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 104.334,
++          "seconds": 69.07,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.65,
++            "lowering": 2.788,
++            "symbolic": 45.073,
++            "encoding": 6.213,
++            "solving": 8.321,
++            "trace": 0.0,
++            "other": 6.025
++          },
++          "formula": {
++            "steps": 986965,
++            "conditions": 10,
++            "variables": 2359461,
++            "clauses": 3041927
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 85.321,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 15.179,
++        "contracts": 0.0,
++        "runs": 69.07,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.07
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "in",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "in != null && in.length == 1 && in[0] == null",
++          "basis": "stated"
++        },
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "nothing beyond returning",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/singleton-null/native/stdout.json
+@@ -0,0 +1,174 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
++    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": "in != null && in.length == 1 && in[0] == null",
++    "assert": "true",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-transfer-2ugqbxht/singleton-nullnative/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V satisfies `true` on every input where in != null && in.length == 1 && in[0] == null (jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n  not vacuous: checkRectangular(in=[null]) reaches the calls\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/singleton-nullnative",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.008064373,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 4,
++        "merges": 0,
++        "solver_calls": 5,
++        "solving_seconds": 0.000075291,
++        "gates_evaluated": 126,
++        "evaluating_seconds": 4.568e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 702,
++        "clauses": 1189,
++        "seconds": 0.005899395,
++        "loading_seconds": 0.000212358,
++        "decoding_seconds": 0.000042531,
++        "encoding_seconds": 0.000205784,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.006,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 702,
++            "clauses": 1189
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 119.992,
++          "seconds": 0.006,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1164,
++            "clauses": 2797
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.562,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.012,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.549
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "in",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "in != null && in.length == 1 && in[0] == null",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "nothing beyond returning",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found checkRectangular(in=[null]).",
++        "witness": "checkRectangular(in=[null])"
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/swapped/jbmc/stdout.json
+@@ -0,0 +1,227 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "MatrixMetadata#swapped",
++    "domain": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "swapped(matrix=[[],[\"0\"]])",
++      "outcome": "false",
++      "values": [
++        "[[],[\"0\"]]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "matrix",
++          "type": "long[][]",
++          "value": [
++            [],
++            [
++              "0"
++            ]
++          ]
++        }
++      ],
++      "call": {
++        "class": "MatrixMetadata",
++        "class_file": "MatrixMetadata.class",
++        "classes": "after",
++        "method": "swapped",
++        "descriptor": "([[J)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "matrix",
++            "type": "long[][]",
++            "value": [
++              [],
++              [
++                "0"
++              ]
++            ],
++            "from": "matrix"
++          }
++        ]
++      }
++    },
++    "proof": "found by JBMC 6.11.0 in 35.6 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/matrix-transfer-2ugqbxht/swappedjbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of MatrixMetadata#swapped violated: `result`:\n  swapped(matrix=[[],[\"0\"]])\n    outcome: false",
++        "uri": null,
++        "line": 18
++      }
++    ],
++    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: whether a path reaches the stubs JBMC's symbolic execution enters is not known, since the proof with a probe at their calls could not tell (sh did not finish within 1 s): they stay gaps\nnote: JBMC reaches 4 constructs it approximates (its stubs and unlinked call sites, /tmp/matrix-transfer-2ugqbxht/swappedjbmc/proof/jbmc-goto.txt):\n  jbmc gap: jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13: java.util.ArrayList.<init>() is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.<init>:65\n  jbmc gap: jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13: java.util.List.toArray() is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ArgUtils.flatten:53\n  jbmc gap: jdk-primitive-method:java.lang.Number.intValue()I@jdk-21.0.13: java.lang.Number.intValue() is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments, at MatrixMetadata.widths:12\n  jbmc gap: jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13: java.util.List.add(java.lang.Object) is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86\nnote: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.ClassCastException, java.lang.NegativeArraySizeException, java.lang.NullPointerException, org.apache.commons.math3.exception.DimensionMismatchException, org.apache.commons.math3.exception.NullArgumentException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n  jbmc defect: throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>: the initializer of org.apache.commons.math3.exception.MathIllegalNumberException may throw java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ArrayIndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.Error) at PropertyHarness.check, catch (java.lang.IndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.NullPointerException) at PropertyHarness.check, catch (java.lang.RuntimeException) at PropertyHarness.check tell them apart\n✗ Property of MatrixMetadata#swapped violated: `result`:\n  swapped(matrix=[[],[\"0\"]])\n    outcome: false\n  (found by JBMC 6.11.0 in 35.6 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/swappedjbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 35.595830106,
++      "properties": 3,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.ArrayList.<init>()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.<init>:65"
++          ],
++          "approximation": "is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.util.List.toArray()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ArgUtils.flatten:53"
++          ],
++          "approximation": "is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-primitive-method:java.lang.Number.intValue()I@jdk-21.0.13",
++          "kind": "jdk-primitive-method",
++          "call": "java.lang.Number.intValue()",
++          "sites": [
++            "MatrixMetadata.widths:12"
++          ],
++          "approximation": "is JBMC's stub: it returns any int: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
++          "kind": "jdk-primitive-method",
++          "call": "java.util.List.add(java.lang.Object)",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86"
++          ],
++          "approximation": "is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        }
++      ],
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 104.505,
++          "seconds": 20.02,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.553,
++            "lowering": 2.604,
++            "symbolic": 12.911,
++            "encoding": 0.647,
++            "solving": 1.474,
++            "trace": 0.595,
++            "other": 1.235
++          },
++          "formula": {
++            "steps": 92036,
++            "conditions": 3,
++            "variables": 372060,
++            "clauses": 578619
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 35.763,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 15.149,
++        "contracts": 0.0,
++        "runs": 20.02,
++        "replay": 0.017,
++        "jvm": 0.129,
++        "other": 0.448
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "matrix",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/swapped/native/stdout.json
+@@ -0,0 +1,198 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "MatrixMetadata#swapped",
++    "domain": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "swapped(matrix=[[\"20\"],[\"20\",\"20\"]])",
++      "outcome": "false",
++      "values": [
++        "[[\"20\"],[\"20\",\"20\"]]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "matrix",
++          "type": "long[][]",
++          "value": [
++            [
++              "20"
++            ],
++            [
++              "20",
++              "20"
++            ]
++          ]
++        }
++      ],
++      "call": {
++        "class": "MatrixMetadata",
++        "class_file": "MatrixMetadata.class",
++        "classes": "after",
++        "method": "swapped",
++        "descriptor": "([[J)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "matrix",
++            "type": "long[][]",
++            "value": [
++              [
++                "20"
++              ],
++              [
++                "20",
++                "20"
++              ]
++            ],
++            "from": "matrix"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/matrix-transfer-2ugqbxht/swappednative/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of MatrixMetadata#swapped violated: `result`:\n  swapped(matrix=[[\"20\"],[\"20\",\"20\"]])\n    outcome: false",
++        "uri": null,
++        "line": 18
++      }
++    ],
++    "output": "✗ Property of MatrixMetadata#swapped violated: `result`:\n  swapped(matrix=[[\"20\"],[\"20\",\"20\"]])\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/swappednative/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.025286738,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 9,
++        "merges": 0,
++        "solver_calls": 20,
++        "solving_seconds": 0.000491772,
++        "gates_evaluated": 345,
++        "evaluating_seconds": 0.000013305,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1653,
++        "clauses": 4384,
++        "seconds": 0.020225523,
++        "loading_seconds": 0.001869223,
++        "decoding_seconds": 0.001568431,
++        "encoding_seconds": 0.000828603,
++        "witness_seconds": 0.000041146
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.02,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.002,
++            "symbolic": 0.015,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1653,
++            "clauses": 4384
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.172,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.02,
++        "replay": 0.018,
++        "jvm": 0.111,
++        "other": 0.021
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "matrix",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "matrix: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/unequal-width/jbmc/stdout.json
+@@ -0,0 +1,181 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
++    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
++    "assert": "true",
++    "throws": [
++      "org.apache.commons.math3.exception.DimensionMismatchException when true"
++    ],
++    "throws_checked": [
++      "org.apache.commons.math3.exception.DimensionMismatchException when true"
++    ],
++    "counterexample": null,
++    "proof": null,
++    "problem": "JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++    "statement": "/tmp/matrix-transfer-2ugqbxht/unequal-widthjbmc/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "uri": null,
++        "line": 562
++      }
++    ],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\nJBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: which stubs JBMC's paths reach is not known, since its symbolic execution of the proof could not tell (it did not finish within 10 s): the gaps are those of its call graph\nnote: JBMC reaches 3 constructs it approximates (its stubs and unlinked call sites, /tmp/matrix-transfer-2ugqbxht/unequal-widthjbmc/jbmc-goto.txt):\n  jbmc gap: jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13: java.util.ArrayList.<init>() is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.<init>:65\n  jbmc gap: jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13: java.util.List.toArray() is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ArgUtils.flatten:53\n  jbmc gap: jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13: java.util.List.add(java.lang.Object) is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86\nnote: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.ClassCastException, java.lang.NegativeArraySizeException, java.lang.NullPointerException, org.apache.commons.math3.exception.DimensionMismatchException, org.apache.commons.math3.exception.NullArgumentException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n  jbmc defect: throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>: the initializer of org.apache.commons.math3.exception.MathIllegalNumberException may throw java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ArrayIndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.Error) at PropertyHarness.check, catch (java.lang.IndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.NullPointerException) at PropertyHarness.check, catch (java.lang.RuntimeException) at PropertyHarness.check tell them apart\n✗ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC proved it, but runs 4 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/unequal-widthjbmc",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 82.200240848,
++      "properties": 4,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "gaps": [
++        {
++          "id": "jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13",
++          "kind": "jdk-constructor",
++          "call": "java.util.ArrayList.<init>()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.<init>:65"
++          ],
++          "approximation": "is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13",
++          "kind": "jdk-reference-method",
++          "call": "java.util.List.toArray()",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ArgUtils.flatten:53"
++          ],
++          "approximation": "is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        },
++        {
++          "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
++          "kind": "jdk-primitive-method",
++          "call": "java.util.List.add(java.lang.Object)",
++          "sites": [
++            "org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86"
++          ],
++          "approximation": "is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments",
++          "treatment": "refused",
++          "checker": "jbmc"
++        }
++      ],
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 104.403,
++          "seconds": 66.587,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.524,
++            "lowering": 2.654,
++            "symbolic": 43.033,
++            "encoding": 5.996,
++            "solving": 8.43,
++            "trace": 0.0,
++            "other": 5.95
++          },
++          "formula": {
++            "steps": 998956,
++            "conditions": 10,
++            "variables": 2362412,
++            "clauses": 3051417
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 82.861,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 15.203,
++        "contracts": 0.0,
++        "runs": 66.587,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 1.071
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "in",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
++          "basis": "stated"
++        },
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "nothing beyond returning",
++        "exceptions": "none may be thrown but as a throws clause says: org.apache.commons.math3.exception.DimensionMismatchException when true"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/successor/matrix/unequal-width/native/stdout.json
+@@ -0,0 +1,178 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
++    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
++    "assert": "true",
++    "throws": [
++      "org.apache.commons.math3.exception.DimensionMismatchException when true"
++    ],
++    "throws_checked": [
++      "org.apache.commons.math3.exception.DimensionMismatchException when true"
++    ],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/matrix-transfer-2ugqbxht/unequal-widthnative/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\n✓ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V returns on every input where in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length, and throws org.apache.commons.math3.exception.DimensionMismatchException when true (jvmcontract's own checker (CaDiCaL): 1 properties proved over in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n  not vacuous: checkRectangular(in=[[\"20\"],[\"20\",\"20\"]]) reaches the calls\n",
++    "work": "/tmp/matrix-transfer-2ugqbxht/unequal-widthnative",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.030096051,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 12,
++        "merges": 0,
++        "solver_calls": 34,
++        "solving_seconds": 0.000466507,
++        "gates_evaluated": 561,
++        "evaluating_seconds": 0.000022983,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1130,
++        "clauses": 2563,
++        "seconds": 0.026909469,
++        "loading_seconds": 0.002288062,
++        "decoding_seconds": 0.00212867,
++        "encoding_seconds": 0.000876329,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.027,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.002,
++            "lowering": 0.002,
++            "symbolic": 0.021,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1130,
++            "clauses": 2563
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 119.97,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1286,
++            "clauses": 3225
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.635,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.032,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.601
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "in",
++            "type": "long[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "nothing beyond returning",
++        "exceptions": "none may be thrown but as a throws clause says: org.apache.commons.math3.exception.DimensionMismatchException when true"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found checkRectangular(in=[[\"20\"],[\"20\",\"20\"]]).",
++        "witness": "checkRectangular(in=[[\"20\"],[\"20\",\"20\"]])"
++      }
++    }
++  }
++]

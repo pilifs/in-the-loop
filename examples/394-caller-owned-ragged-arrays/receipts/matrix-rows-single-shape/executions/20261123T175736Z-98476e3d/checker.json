@@ -1,0 +1,193 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "prove",
+    "MatrixRows#singleShape",
+    "--classes",
+    "prepare/rows/rows.jar",
+    "--classpath",
+    "prepare/rows/libraries/commons-lang3.jar",
+    "--classpath",
+    "prepare/rows/libraries/commons-collections4.jar",
+    "--classpath",
+    "prepare/rows/libraries/commons-math3.jar",
+    "--assert",
+    "result",
+    "--nullable",
+    "a",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "7",
+    "--max-array-length",
+    "2",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 0,
+  "seconds": 0.021,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "verified",
+      "target": "MatrixRows#singleShape",
+      "domain": "a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+      "assume": null,
+      "assert": "result",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": null,
+      "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [],
+      "output": "✓ MatrixRows#singleShape satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.005723786,
+        "properties": 1,
+        "unwind": 7,
+        "max_array_length": 2,
+        "stage": null,
+        "native": {
+          "paths": 8,
+          "merges": 0,
+          "solver_calls": 11,
+          "solving_seconds": 0.000114214,
+          "gates_evaluated": 220,
+          "evaluating_seconds": 6.763e-06,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 703,
+          "clauses": 1189,
+          "seconds": 0.003482667,
+          "loading_seconds": 0.000387215,
+          "decoding_seconds": 4.6177e-05,
+          "encoding_seconds": 0.000163519,
+          "witness_seconds": 0.0
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.003,
+            "ended": "verified",
+            "ending": "verified",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.003,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 703,
+              "clauses": 1189
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.015,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.003,
+          "replay": 0.0,
+          "jvm": 0.0,
+          "other": 0.011
+        }
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "a",
+              "type": "long[][]",
+              "kind": "array",
+              "null": true,
+              "max_length": 2
+            }
+          ],
+          "shared_arrays": false,
+          "text": "a: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 7,
+          "max_array_length": 2,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "harness",
+          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+        }
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 4884,
+    "sha256": "417c8dcec7786b6fc5e99f141d2e3e9260795972abf18bfdccd73cc724910aea"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

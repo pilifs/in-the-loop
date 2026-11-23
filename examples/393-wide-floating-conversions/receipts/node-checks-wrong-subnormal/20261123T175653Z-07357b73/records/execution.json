@@ -1,0 +1,796 @@
+{
+  "task": "node-checks-wrong-subnormal",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "numeric",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:numeric.jar:libraries/jackson-databind.jar:libraries/jackson-core.jar:libraries/jackson-annotations.jar:libraries/commons-lang3.jar",
+        "Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.116,
+      "stdout": "controls/control-numeric-jdk21.stdout",
+      "stderr": "controls/control-numeric-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:adapter",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "ca0efdf704ed85bac4de0ed40b7e010fb27fa67bc0f8a92d7b28a33f8a863084",
+            "role": "driver"
+          },
+          {
+            "path": "numeric.jar",
+            "sha256": "063f7cdf1f86c58f342a9b3c4871dd749f39634cdf34e75d5f8d1d76290e5dca",
+            "role": "original"
+          },
+          {
+            "path": "libraries/jackson-databind.jar",
+            "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/jackson-core.jar",
+            "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/jackson-annotations.jar",
+            "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/commons-lang3.jar",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver-numeric",
+          "main": "Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/original.json",
+          "oracleSha256": "2f28ff8666924d7e74cbb26012c589a1e13d36948a2ee4812eed75a92f8dbb94"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261123T175653Z-07357b73",
+        "startedAt": "2026-11-23T17:56:53.029527+00:00"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "entry": "NodeChecks#direct",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 1,
+          "input": {
+            "entry": "NodeChecks#direct",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 2,
+          "input": {
+            "entry": "NodeChecks#direct",
+            "arguments": [
+              "(1L << 55) - 1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 3,
+          "input": {
+            "entry": "NodeChecks#same",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 4,
+          "input": {
+            "entry": "NodeChecks#same",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 5,
+          "input": {
+            "entry": "NodeChecks#publicSubnormal",
+            "arguments": [
+              "0x1p-150"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 6,
+          "input": {
+            "entry": "NodeChecks#publicSubnormal",
+            "arguments": [
+              "Math.nextUp(0x1p-150)"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 7,
+          "input": {
+            "entry": "NodeChecks#publicSubnormal",
+            "arguments": [
+              "0x1p-149"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 8,
+          "input": {
+            "entry": "NodeChecks#wrongSubnormal",
+            "arguments": [
+              "0x1p-149"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 9,
+          "input": {
+            "entry": "NodeChecks#wrongSubnormal",
+            "arguments": [
+              "0x1p-150"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 10,
+          "input": {
+            "entry": "NodeChecks#commons",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 11,
+          "input": {
+            "entry": "NodeChecks#commons",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 12,
+          "input": {
+            "entry": "NodeChecks#commons",
+            "arguments": [
+              "(1L << 55) - 1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 13,
+          "input": {
+            "entry": "ConversionEquivalence#classified",
+            "arguments": [
+              "1L << 54"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 14,
+          "input": {
+            "entry": "ConversionEquivalence#classified",
+            "arguments": [
+              "0x0040000040000001L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 15,
+          "input": {
+            "entry": "ConversionEquivalence#classified",
+            "arguments": [
+              "(1L << 55) - 1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 16,
+          "input": {
+            "entry": "NodeChecks#intrinsicSubnormal",
+            "arguments": [
+              "0x1p-150"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 17,
+          "input": {
+            "entry": "NodeChecks#intrinsicSubnormal",
+            "arguments": [
+              "Math.nextUp(0x1p-150)"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 18,
+          "input": {
+            "entry": "NodeChecks#intrinsicSubnormal",
+            "arguments": [
+              "0x1p-149"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 19,
+          "input": {
+            "entry": "NodeChecks#mantissaSubnormal",
+            "arguments": [
+              "0L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 20,
+          "input": {
+            "entry": "NodeChecks#mantissaSubnormal",
+            "arguments": [
+              "1L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 21,
+          "input": {
+            "entry": "NodeChecks#mantissaSubnormal",
+            "arguments": [
+              "-1L"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        }
+      ],
+      "control": "driver-numeric",
+      "record": "controls/controls.json",
+      "reason": null
+    },
+    {
+      "kind": "verifier",
+      "revision": "numeric",
+      "argv": [
+        "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+        "prove",
+        "NodeChecks#wrongSubnormal",
+        "--classes",
+        "prepare/numeric/numeric.jar",
+        "--classpath",
+        "prepare/numeric/libraries/jackson-databind.jar",
+        "--classpath",
+        "prepare/numeric/libraries/jackson-core.jar",
+        "--classpath",
+        "prepare/numeric/libraries/jackson-annotations.jar",
+        "--classpath",
+        "prepare/numeric/libraries/commons-lang3.jar",
+        "--assert",
+        "result",
+        "--engine",
+        "native",
+        "--gaps",
+        "strict",
+        "--unwind",
+        "10",
+        "--max-array-length",
+        "8",
+        "--timeout",
+        "120",
+        "--work",
+        "verifier/work",
+        "--report",
+        "verifier/report",
+        "--json"
+      ],
+      "status": "exited",
+      "exitCode": 1,
+      "seconds": 0.072,
+      "stdout": "verifier/verifier.stdout",
+      "stderr": "verifier/verifier.stderr",
+      "identities": {
+        "jvmcontract": "b1e0edad5632990ef4797b8aaf23f82fa0beba809c9c8d8cfbd00805cf5ef389",
+        "commit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+        "libTree": "565c1e1ae507778f5e662c22623357df27a054a5",
+        "command": "prove",
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "engine": "native",
+        "gaps": "strict",
+        "bounds": {
+          "unwind": 10,
+          "maxArrayLength": 8
+        },
+        "timeout": 120,
+        "scope": {
+          "label": "constructed-fixture",
+          "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+          "method": "NodeChecks#wrongSubnormal",
+          "revisions": {
+            "numeric": {
+              "commit": "fixture:adapter",
+              "loadedFrom": "numeric.jar",
+              "classSha256": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f",
+              "origin": "built from adapter by the fixture recipe",
+              "parameters": null
+            }
+          },
+          "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+          "models": [],
+          "assumptions": []
+        },
+        "classpath": {
+          "numeric": [
+            {
+              "path": "numeric.jar",
+              "sha256": "063f7cdf1f86c58f342a9b3c4871dd749f39634cdf34e75d5f8d1d76290e5dca",
+              "role": "original"
+            },
+            {
+              "path": "libraries/jackson-databind.jar",
+              "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+              "role": "dependency"
+            },
+            {
+              "path": "libraries/jackson-core.jar",
+              "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+              "role": "dependency"
+            },
+            {
+              "path": "libraries/jackson-annotations.jar",
+              "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+              "role": "dependency"
+            },
+            {
+              "path": "libraries/commons-lang3.jar",
+              "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+              "role": "dependency"
+            }
+          ]
+        },
+        "checkedEntry": "NodeChecks#wrongSubnormal",
+        "entryBindings": {
+          "numeric": {
+            "entry": "NodeChecks#wrongSubnormal",
+            "classSha256": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f",
+            "loadedFrom": "numeric.jar",
+            "subject": "NodeChecks#wrongSubnormal",
+            "subjectClassSha256": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f"
+          }
+        },
+        "recipe": {
+          "kind": "direct-method",
+          "command": "prove",
+          "subject": "NodeChecks#wrongSubnormal",
+          "checkedEntry": "NodeChecks#wrongSubnormal",
+          "arguments": [
+            {
+              "field": "assert",
+              "flag": "--assert",
+              "value": "result"
+            },
+            {
+              "field": "engine",
+              "flag": "--engine",
+              "value": "native"
+            },
+            {
+              "field": "gaps",
+              "flag": "--gaps",
+              "value": "strict"
+            },
+            {
+              "field": "bounds.unwind",
+              "flag": "--unwind",
+              "value": "10"
+            },
+            {
+              "field": "bounds.maxArrayLength",
+              "flag": "--max-array-length",
+              "value": "8"
+            }
+          ],
+          "checkerDefaults": {
+            "observations": {
+              "values": [
+                "result",
+                "exception"
+              ],
+              "evidence": "stated.observations"
+            },
+            "nullable": {
+              "values": [],
+              "evidence": "stated.domain"
+            },
+            "mayAlias": {
+              "values": [],
+              "evidence": "stated.domain"
+            },
+            "assume": {
+              "value": true,
+              "evidence": "absence of a precondition in stated.assumptions"
+            }
+          },
+          "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+        },
+        "commits": {
+          "numeric": "fixture:adapter"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC",
+          "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
+          "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m",
+          "JVMCONTRACT_JAR_RELEASE": "21"
+        },
+        "cwd": "the attempt directory",
+        "probe": {
+          "numeric": {
+            "argv": [
+              "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+              "gaps",
+              "--target",
+              "NodeChecks#wrongSubnormal",
+              "--classes",
+              "prepare/numeric/numeric.jar",
+              "--classpath",
+              "prepare/numeric/libraries/jackson-databind.jar",
+              "--classpath",
+              "prepare/numeric/libraries/jackson-core.jar",
+              "--classpath",
+              "prepare/numeric/libraries/jackson-annotations.jar",
+              "--classpath",
+              "prepare/numeric/libraries/commons-lang3.jar",
+              "--json"
+            ],
+            "status": "exited",
+            "exitCode": 0,
+            "seconds": 0.033,
+            "stdout": "verifier/probe-numeric.stdout",
+            "stderr": "verifier/probe-numeric.stderr",
+            "gaps": []
+          }
+        },
+        "usage": {
+          "cpuSeconds": 0.0628,
+          "peakRssBytes": 82116608,
+          "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+        },
+        "executionId": "20261123T175653Z-07357b73",
+        "startedAt": "2026-11-23T17:56:53.029527+00:00"
+      },
+      "observations": [
+        {
+          "wire_version": 1,
+          "verdict": "violation",
+          "target": "NodeChecks#wrongSubnormal",
+          "domain": "x: double",
+          "assume": null,
+          "assert": "result",
+          "throws": [],
+          "throws_checked": [],
+          "counterexample": {
+            "input": "wrongSubnormal(x=7.006492321624085E-46)",
+            "outcome": "false",
+            "values": [
+              "7.006492321624085E-46"
+            ],
+            "shrink_runs": 2,
+            "inputs": [
+              {
+                "name": "x",
+                "type": "double",
+                "value": "7.006492321624085E-46"
+              }
+            ],
+            "call": {
+              "class": "NodeChecks",
+              "class_file": "NodeChecks.class",
+              "classes": "after",
+              "method": "wrongSubnormal",
+              "descriptor": "(D)Z",
+              "static": true,
+              "arguments": [
+                {
+                  "name": "x",
+                  "type": "double",
+                  "value": "7.006492321624085E-46",
+                  "from": "x"
+                }
+              ]
+            }
+          },
+          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain x: double",
+          "problem": null,
+          "statement": "verifier/work/harness/PropertyHarness.java",
+          "findings": [
+            {
+              "rule_id": "property-violated",
+              "message": "Property of NodeChecks#wrongSubnormal violated: `result`:\n  wrongSubnormal(x=7.006492321624085E-46)\n    outcome: false",
+              "uri": null,
+              "line": 34
+            }
+          ],
+          "output": "✗ Property of NodeChecks#wrongSubnormal violated: `result`:\n  wrongSubnormal(x=7.006492321624085E-46)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter; domain x: double)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+          "work": "verifier/work",
+          "search": {
+            "engine": "native",
+            "checker": "jvmcontract's own checker (CaDiCaL)",
+            "seconds": 0.014329573,
+            "properties": 1,
+            "unwind": 10,
+            "max_array_length": 8,
+            "stage": "[0:20]",
+            "native": {
+              "paths": 2,
+              "merges": 0,
+              "solver_calls": 6,
+              "solving_seconds": 0.000671098,
+              "gates_evaluated": 891,
+              "evaluating_seconds": 2.5849e-05,
+              "divisions": 0,
+              "divisions_built": 0,
+              "multiplications": 0,
+              "multiplications_built": 0,
+              "variables": 1325,
+              "clauses": 4420,
+              "seconds": 0.01006373,
+              "loading_seconds": 0.000640039,
+              "decoding_seconds": 5.7918e-05,
+              "encoding_seconds": 0.001183264,
+              "witness_seconds": 3.1201e-05
+            },
+            "gap_mode": "strict",
+            "deadline_seconds": 120.0,
+            "runs": [
+              {
+                "checker": "native",
+                "purpose": "proof",
+                "stage": null,
+                "budget_seconds": 120.0,
+                "seconds": 0.01,
+                "ended": "violation",
+                "ending": "counterexample",
+                "phases": {
+                  "loading": 0.001,
+                  "lowering": 0.0,
+                  "symbolic": 0.007,
+                  "encoding": 0.001,
+                  "solving": 0.001,
+                  "trace": 0.0,
+                  "other": 0.0
+                },
+                "formula": {
+                  "variables": 1325,
+                  "clauses": 4420
+                }
+              }
+            ],
+            "phases": {
+              "seconds": 0.06,
+              "setup": 0.002,
+              "harness": 0.0,
+              "gaps": 0.0,
+              "contracts": 0.0,
+              "runs": 0.01,
+              "replay": 0.016,
+              "jvm": 0.0,
+              "other": 0.032
+            }
+          },
+          "replay": {
+            "by": "interpreter",
+            "reproduced": true
+          },
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "x",
+                  "type": "double",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "x: double"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 10,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          }
+        }
+      ],
+      "control": null,
+      "record": "verifier/verifier.json",
+      "reason": null
+    }
+  ]
+}

@@ -1,0 +1,4336 @@
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/jbmc/stdout.json
+@@ -0,0 +1,206 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "MadeRows#alwaysDistinct",
++    "domain": "x: int × y: int × tied: boolean",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "alwaysDistinct(x=0, y=0, tied=true)",
++      "outcome": "false",
++      "values": [
++        "0",
++        "0",
++        "true"
++      ],
++      "shrink_runs": 1,
++      "inputs": [
++        {
++          "name": "x",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "y",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "tied",
++          "type": "boolean",
++          "value": true
++        }
++      ],
++      "call": {
++        "class": "MadeRows",
++        "class_file": "MadeRows.class",
++        "classes": "after",
++        "method": "alwaysDistinct",
++        "descriptor": "(IIZ)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "x",
++            "type": "int",
++            "value": 0,
++            "from": "x"
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "value": 0,
++            "from": "y"
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "value": true,
++            "from": "tied"
++          }
++        ]
++      }
++    },
++    "proof": "found by JBMC 6.11.0 in 0.5 s searching inputs in [0:20], replayed in the interpreter; domain x: int × y: int × tied: boolean",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/made-rows-always-distinct/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of MadeRows#alwaysDistinct violated: `result`:\n  alwaysDistinct(x=0, y=0, tied=true)\n    outcome: false",
++        "uri": null,
++        "line": 5
++      }
++    ],
++    "output": "✗ Property of MadeRows#alwaysDistinct violated: `result`:\n  alwaysDistinct(x=0, y=0, tied=true)\n    outcome: false\n  (found by JBMC 6.11.0 in 0.5 s searching inputs in [0:20], replayed in the interpreter; domain x: int × y: int × tied: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/made-rows-always-distinct/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 0.46778671,
++      "properties": 2,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": "[0:20]",
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": "[0:20]",
++          "budget_seconds": 15.0,
++          "seconds": 0.251,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.135,
++            "lowering": 0.03,
++            "symbolic": 0.005,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.002,
++            "other": 0.078
++          },
++          "formula": {
++            "steps": 235,
++            "conditions": 1,
++            "variables": 2120,
++            "clauses": 970
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.506,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.212,
++        "contracts": 0.0,
++        "runs": 0.251,
++        "replay": 0.009,
++        "jvm": 0.0,
++        "other": 0.033
++      }
++    },
++    "replay": {
++      "by": "interpreter",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "x",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "x: int × y: int × tied: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/made-rows-always-distinct/native/stdout.json
+@@ -0,0 +1,235 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "MadeRows#alwaysDistinct",
++    "domain": "x: int × y: int × tied: boolean",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "alwaysDistinct(x=0, y=0, tied=true)",
++      "outcome": "false",
++      "values": [
++        "0",
++        "0",
++        "true"
++      ],
++      "found": "alwaysDistinct(x=20, y=20, tied=true)",
++      "shrink_runs": 3,
++      "inputs": [
++        {
++          "name": "x",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "y",
++          "type": "int",
++          "value": 0
++        },
++        {
++          "name": "tied",
++          "type": "boolean",
++          "value": true
++        }
++      ],
++      "found_inputs": [
++        {
++          "name": "x",
++          "type": "int",
++          "value": 20
++        },
++        {
++          "name": "y",
++          "type": "int",
++          "value": 20
++        },
++        {
++          "name": "tied",
++          "type": "boolean",
++          "value": true
++        }
++      ],
++      "call": {
++        "class": "MadeRows",
++        "class_file": "MadeRows.class",
++        "classes": "after",
++        "method": "alwaysDistinct",
++        "descriptor": "(IIZ)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "x",
++            "type": "int",
++            "value": 0,
++            "from": "x"
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "value": 0,
++            "from": "y"
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "value": true,
++            "from": "tied"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as alwaysDistinct(x=20, y=20, tied=true), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain x: int × y: int × tied: boolean",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/made-rows-always-distinct/native/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of MadeRows#alwaysDistinct violated: `result`:\n  alwaysDistinct(x=0, y=0, tied=true)\n    outcome: false",
++        "uri": null,
++        "line": 5
++      }
++    ],
++    "output": "✗ Property of MadeRows#alwaysDistinct violated: `result`:\n  alwaysDistinct(x=0, y=0, tied=true)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as alwaysDistinct(x=20, y=20, tied=true), shrunk to the input above in 3 interpreter runs, replayed in the interpreter; domain x: int × y: int × tied: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/made-rows-always-distinct/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.007416784,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 3,
++        "solving_seconds": 0.000028084,
++        "gates_evaluated": 1,
++        "evaluating_seconds": 1.182e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 199,
++        "clauses": 462,
++        "seconds": 0.004467462,
++        "loading_seconds": 0.000131848,
++        "decoding_seconds": 0.000043352,
++        "encoding_seconds": 0.000064921,
++        "witness_seconds": 9.378e-6
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.004,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 199,
++            "clauses": 462
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.03,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.004,
++        "replay": 0.007,
++        "jvm": 0.0,
++        "other": 0.018
++      }
++    },
++    "replay": {
++      "by": "interpreter",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "x",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "x: int × y: int × tied: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/made-rows-iterator/jbmc/stdout.json
+@@ -0,0 +1,194 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "MadeRows#iterator",
++    "domain": "x: int × y: int × tied: boolean",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "JBMC 6.11.0: 2 properties proved over x: int × y: int × tied: boolean in 1.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/made-rows-iterator/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ MadeRows#iterator satisfies `result` on every input (JBMC 6.11.0: 2 properties proved over x: int × y: int × tied: boolean in 1.0 s; loops unwound 7 times with unwinding assertions)\n",
++    "work": "/tmp/row-layout-shg4iz78/made-rows-iterator/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.029180226,
++      "properties": 2,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": "[0:20]",
++          "budget_seconds": 15.0,
++          "seconds": 0.251,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.168,
++            "lowering": 0.03,
++            "symbolic": 0.007,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.047
++          },
++          "formula": {
++            "steps": 425,
++            "conditions": 0,
++            "variables": null,
++            "clauses": null
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": "[-100000:100000]",
++          "budget_seconds": 15.0,
++          "seconds": 0.252,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.151,
++            "lowering": 0.03,
++            "symbolic": 0.007,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.063
++          },
++          "formula": {
++            "steps": 425,
++            "conditions": 0,
++            "variables": null,
++            "clauses": null
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 119.226,
++          "seconds": 0.251,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.14,
++            "lowering": 0.029,
++            "symbolic": 0.007,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.075
++          },
++          "formula": {
++            "steps": 423,
++            "conditions": 0,
++            "variables": null,
++            "clauses": null
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.057,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.263,
++        "contracts": 0.0,
++        "runs": 0.754,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.039
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "x",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "x: int × y: int × tied: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/made-rows-iterator/native/stdout.json
+@@ -0,0 +1,157 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "MadeRows#iterator",
++    "domain": "x: int × y: int × tied: boolean",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over x: int × y: int × tied: boolean in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/made-rows-iterator/native/proof/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ MadeRows#iterator satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over x: int × y: int × tied: boolean in 0.0 s; loops unwound 7 times with unwinding assertions)\n",
++    "work": "/tmp/row-layout-shg4iz78/made-rows-iterator/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.008918582,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 1,
++        "solving_seconds": 0.000019036,
++        "gates_evaluated": 1,
++        "evaluating_seconds": 1.343e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 66,
++        "clauses": 1,
++        "seconds": 0.004287922,
++        "loading_seconds": 0.000114989,
++        "decoding_seconds": 0.000068021,
++        "encoding_seconds": 0.00001331,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.004,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 66,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.022,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.004,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.016
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "x",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "x: int × y: int × tied: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/made-rows-reverse/jbmc/stdout.json
+@@ -0,0 +1,194 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "MadeRows#reverse",
++    "domain": "x: int × y: int × tied: boolean",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "JBMC 6.11.0: 3 properties proved over x: int × y: int × tied: boolean in 1.1 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/made-rows-reverse/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ MadeRows#reverse satisfies `result` on every input (JBMC 6.11.0: 3 properties proved over x: int × y: int × tied: boolean in 1.1 s; loops unwound 7 times with unwinding assertions)\n",
++    "work": "/tmp/row-layout-shg4iz78/made-rows-reverse/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.130473061,
++      "properties": 3,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": "[0:20]",
++          "budget_seconds": 15.0,
++          "seconds": 0.301,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.151,
++            "lowering": 0.037,
++            "symbolic": 0.02,
++            "encoding": 0.005,
++            "solving": 0.006,
++            "trace": 0.0,
++            "other": 0.082
++          },
++          "formula": {
++            "steps": 1531,
++            "conditions": 1,
++            "variables": 11388,
++            "clauses": 4084
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": "[-100000:100000]",
++          "budget_seconds": 15.0,
++          "seconds": 0.301,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.163,
++            "lowering": 0.034,
++            "symbolic": 0.02,
++            "encoding": 0.005,
++            "solving": 0.007,
++            "trace": 0.0,
++            "other": 0.072
++          },
++          "formula": {
++            "steps": 1531,
++            "conditions": 1,
++            "variables": 11390,
++            "clauses": 4090
++          }
++        },
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 119.125,
++          "seconds": 0.251,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.137,
++            "lowering": 0.034,
++            "symbolic": 0.019,
++            "encoding": 0.004,
++            "solving": 0.005,
++            "trace": 0.0,
++            "other": 0.052
++          },
++          "formula": {
++            "steps": 1525,
++            "conditions": 1,
++            "variables": 10774,
++            "clauses": 2074
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.155,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.264,
++        "contracts": 0.0,
++        "runs": 0.853,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.037
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "x",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "x: int × y: int × tied: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/made-rows-reverse/native/stdout.json
+@@ -0,0 +1,157 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "MadeRows#reverse",
++    "domain": "x: int × y: int × tied: boolean",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over x: int × y: int × tied: boolean in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/made-rows-reverse/native/proof/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ MadeRows#reverse satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over x: int × y: int × tied: boolean in 0.0 s; loops unwound 7 times with unwinding assertions)\n",
++    "work": "/tmp/row-layout-shg4iz78/made-rows-reverse/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.007692536,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 1,
++        "solving_seconds": 0.000016401,
++        "gates_evaluated": 1,
++        "evaluating_seconds": 1.293e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 66,
++        "clauses": 1,
++        "seconds": 0.004454888,
++        "loading_seconds": 0.000489325,
++        "decoding_seconds": 0.000068427,
++        "encoding_seconds": 0.000015889,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.004,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 66,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.022,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.004,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.017
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "x",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "y",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          },
++          {
++            "name": "tied",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "x: int × y: int × tied: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/measurement.json
+@@ -0,0 +1,1441 @@
++{
++  "job": "20261123-175431-compare-the-same-ragged-operations-with",
++  "source": "9686d5c7e84382030b7f492573a9037ef54fd650",
++  "checkerSha256": "b1e0edad5632990ef4797b8aaf23f82fa0beba809c9c8d8cfbd00805cf5ef389",
++  "jars": {
++    "commons-lang3-3.17.0.jar": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
++    "commons-collections4-4.5.0.jar": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++    "commons-math3-3.6.1.jar": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
++  },
++  "originalClass": "87e4a583c1f1c03fc0aa6f06d300ebdf79b148e184b88e0f5da2502bc75d35a3",
++  "separatedClass": "a141f521d030290799bf9ccd6f7ae7b74af58fea78e01917d5c171d4e34848bb",
++  "assertionClass": "9e65bc38ad13c9bc7433b6ad7fec5936d5fe95cba9b1f56fbe4d4a8b8ef1270a",
++  "builderClass": "29e80e6d0d1b99237e2076c84840dc9213e30a29b776e5a4fe0a6c1b47c71de3",
++  "instructionsAndHandlers": {
++    "reversed([[I)Z": "29567545d47699877b8c0a7d3c84d2397c2c2cc121a4635b4243534907f6f50b",
++    "wrong([[I)Z": "f0bc710aece986eaaeefafc7626441fe43d80b40884529f3593a3f1c978b4bc4",
++    "iter([[I)Z": "d72f5eac11c19682f67b9edefef8c9d3c05834e8fe07fb828e471acc6227fc06",
++    "snapshot([[I)Z": "f7f70417099c79781267a7fee755f49bc10c4b3d07fdd73b58276e9dd6a1d1fd",
++    "distinct([[I)Z": "f6764710c61c369d93763b840011d53fc28e307ab5f395fb86645303d534d006",
++    "choose([[IZ)V": "c1ba36bb9a6121f58a820473eb084353b4875e8822d3b58e567b35226322d043"
++  },
++  "originalJvm": {
++    "graphs": 209,
++    "layouts": 2,
++    "assertionSettings": [
++      "-ea",
++      "-da"
++    ],
++    "observerSha256": "507f35b7fce9dec48243f4ea3b52a0d13288ce83e3dcdc767b743b70e2b12d7a"
++  },
++  "runs": {
++    "ragged-proof-reversed": {
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.026,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 1.678,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it"
++      }
++    },
++    "ragged-proof-wrong": {
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.192,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                null,
++                [
++                  20,
++                  20
++                ]
++              ]
++            }
++          ],
++          "sourceSha256": "e94fda7b3c92c6116ef04f4ea680207fae139d8430419f452d329bc5f870d559",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                null,
++                [
++                  20,
++                  20
++                ]
++              ]
++            }
++          ],
++          "sourceSha256": "e94fda7b3c92c6116ef04f4ea680207fae139d8430419f452d329bc5f870d559",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 1.893,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  0,
++                  0
++                ],
++                null
++              ]
++            }
++          ],
++          "sourceSha256": "3fe3b49bd84f9d37c6978d7c560c75735f201817f078be1323ab993d21fa7fb9",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  0,
++                  0
++                ],
++                null
++              ]
++            }
++          ],
++          "sourceSha256": "3fe3b49bd84f9d37c6978d7c560c75735f201817f078be1323ab993d21fa7fb9",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    },
++    "ragged-proof-iter": {
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.026,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 1.56,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it"
++      }
++    },
++    "ragged-proof-snapshot": {
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.226,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                null,
++                [
++                  20,
++                  20
++                ]
++              ]
++            }
++          ],
++          "sourceSha256": "5dda28f1eac0244f85b8d88661ad9d40ee7394839fb483eb70a8e5abc4926093",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                null,
++                [
++                  20,
++                  20
++                ]
++              ]
++            }
++          ],
++          "sourceSha256": "5dda28f1eac0244f85b8d88661ad9d40ee7394839fb483eb70a8e5abc4926093",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 1.612,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  0,
++                  0
++                ],
++                null
++              ]
++            }
++          ],
++          "sourceSha256": "5415905a2070661df11eecde8e57d84698e33e3dd35ae2b0141b3dc860f84a7c",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  0,
++                  0
++                ],
++                null
++              ]
++            }
++          ],
++          "sourceSha256": "5415905a2070661df11eecde8e57d84698e33e3dd35ae2b0141b3dc860f84a7c",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    },
++    "ragged-proof-distinct": {
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.171,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  20
++                ],
++                {
++                  "sameCell": 0
++                }
++              ]
++            }
++          ],
++          "sourceSha256": "5163d786c3a46b7d0a2934a642c8548510a0530db9a107f7c01db8a53aa849b9",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  20
++                ],
++                {
++                  "sameCell": 0
++                }
++              ]
++            }
++          ],
++          "sourceSha256": "5163d786c3a46b7d0a2934a642c8548510a0530db9a107f7c01db8a53aa849b9",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 1.556,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "a",
++                "type": "int[][]",
++                "kind": "array",
++                "null": true,
++                "max_length": 2
++              }
++            ],
++            "shared_arrays": false,
++            "text": "a: int[][] of length \u2264 2, or null, each row null or of length \u2264 2 with unrestricted elements, any rows may share an array"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": 2,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  0
++                ],
++                {
++                  "sameCell": 0
++                }
++              ]
++            }
++          ],
++          "sourceSha256": "99f79d4f780338d778cd1712c4a24eeddddfd4a3d04553faf5130f8407f85363",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "a",
++              "type": "int[][]",
++              "value": [
++                [
++                  0
++                ],
++                {
++                  "sameCell": 0
++                }
++              ]
++            }
++          ],
++          "sourceSha256": "99f79d4f780338d778cd1712c4a24eeddddfd4a3d04553faf5130f8407f85363",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    },
++    "made-rows-reverse": {
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.026,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 0,
++        "seconds": 1.159,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    },
++    "made-rows-iterator": {
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.026,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 0,
++        "seconds": 1.062,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    },
++    "made-rows-always-distinct": {
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.034,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "y",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "tied",
++              "type": "boolean",
++              "value": true
++            }
++          ],
++          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "y",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "tied",
++              "type": "boolean",
++              "value": true
++            }
++          ],
++          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 0.511,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "tied",
++                "type": "boolean",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 7,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "y",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "tied",
++              "type": "boolean",
++              "value": true
++            }
++          ],
++          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
++          "exit": 0,
++          "diagnostic": ""
++        },
++        "originalClassReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "y",
++              "type": "int",
++              "value": 0
++            },
++            {
++              "name": "tied",
++              "type": "boolean",
++              "value": true
++            }
++          ],
++          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/jbmc/stdout.json
+@@ -0,0 +1,185 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "RaggedProof#distinct",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "distinct(a=[[0],{\"sameCell\":0}])",
++      "outcome": "false",
++      "values": [
++        "[[0],{\"sameCell\":0}]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "a",
++          "type": "int[][]",
++          "value": [
++            [
++              0
++            ],
++            {
++              "sameCell": 0
++            }
++          ]
++        }
++      ],
++      "call": {
++        "class": "RaggedProof",
++        "class_file": "RaggedProof.class",
++        "classes": "after",
++        "method": "distinct",
++        "descriptor": "([[I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "value": [
++              [
++                0
++              ],
++              {
++                "sameCell": 0
++              }
++            ],
++            "from": "a"
++          }
++        ]
++      }
++    },
++    "proof": "found by JBMC 6.11.0 in 1.4 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[0],{\"sameCell\":0}])\n    outcome: false",
++        "uri": null,
++        "line": 30
++      }
++    ],
++    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: JBMC runs 3 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n✗ Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[0],{\"sameCell\":0}])\n    outcome: false\n  (found by JBMC 6.11.0 in 1.4 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.36507293,
++      "properties": 2,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 119.442,
++          "seconds": 0.803,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.153,
++            "lowering": 0.029,
++            "symbolic": 0.022,
++            "encoding": 0.055,
++            "solving": 0.44,
++            "trace": 0.004,
++            "other": 0.1
++          },
++          "formula": {
++            "steps": 1574,
++            "conditions": 2,
++            "variables": 66476,
++            "clauses": 201428
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.547,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.213,
++        "contracts": 0.0,
++        "runs": 0.803,
++        "replay": 0.008,
++        "jvm": 0.144,
++        "other": 0.378
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-distinct/native/stdout.json
+@@ -0,0 +1,196 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "RaggedProof#distinct",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "distinct(a=[[20],{\"sameCell\":0}])",
++      "outcome": "false",
++      "values": [
++        "[[20],{\"sameCell\":0}]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "a",
++          "type": "int[][]",
++          "value": [
++            [
++              20
++            ],
++            {
++              "sameCell": 0
++            }
++          ]
++        }
++      ],
++      "call": {
++        "class": "RaggedProof",
++        "class_file": "RaggedProof.class",
++        "classes": "after",
++        "method": "distinct",
++        "descriptor": "([[I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "value": [
++              [
++                20
++              ],
++              {
++                "sameCell": 0
++              }
++            ],
++            "from": "a"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/native/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[20],{\"sameCell\":0}])\n    outcome: false",
++        "uri": null,
++        "line": 30
++      }
++    ],
++    "output": "✗ Property of RaggedProof#distinct violated: `result`:\n  distinct(a=[[20],{\"sameCell\":0}])\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-distinct/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.007551351,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 5,
++        "merges": 0,
++        "solver_calls": 9,
++        "solving_seconds": 0.000106689,
++        "gates_evaluated": 157,
++        "evaluating_seconds": 4.527e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 870,
++        "clauses": 2201,
++        "seconds": 0.004639214,
++        "loading_seconds": 0.000102082,
++        "decoding_seconds": 0.000029385,
++        "encoding_seconds": 0.000286888,
++        "witness_seconds": 0.000027872
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.005,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.004,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 870,
++            "clauses": 2201
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.162,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.005,
++        "replay": 0.005,
++        "jvm": 0.134,
++        "other": 0.017
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-iter/jbmc/stdout.json
+@@ -0,0 +1,137 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "RaggedProof#iter",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-iter/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "RaggedProof#iter cannot be verified: JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "uri": null,
++        "line": 18
++      }
++    ],
++    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: JBMC runs 3 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException, java.lang.NullPointerException, java.util.NoSuchElementException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n✗ RaggedProof#iter cannot be verified: JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-iter/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.5245717559999998,
++      "properties": 2,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 119.334,
++          "seconds": 0.853,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.157,
++            "lowering": 0.032,
++            "symbolic": 0.028,
++            "encoding": 0.052,
++            "solving": 0.522,
++            "trace": 0.0,
++            "other": 0.062
++          },
++          "formula": {
++            "steps": 1847,
++            "conditions": 2,
++            "variables": 71583,
++            "clauses": 213796
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.556,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.266,
++        "contracts": 0.0,
++        "runs": 0.853,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.435
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-iter/native/stdout.json
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "RaggedProof#iter",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-iter/native/proof/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ RaggedProof#iter satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-iter/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.008625684,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 3,
++        "merges": 0,
++        "solver_calls": 6,
++        "solving_seconds": 0.000068378,
++        "gates_evaluated": 127,
++        "evaluating_seconds": 3.787e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 574,
++        "clauses": 1189,
++        "seconds": 0.005419396,
++        "loading_seconds": 0.000097994,
++        "decoding_seconds": 0.000050113,
++        "encoding_seconds": 0.000176983,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.005,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 574,
++            "clauses": 1189
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.022,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.005,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.015
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/jbmc/stdout.json
+@@ -0,0 +1,137 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "unverifiable",
++    "target": "RaggedProof#reversed",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": null,
++    "problem": "JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-reversed/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "unverifiable",
++        "message": "RaggedProof#reversed cannot be verified: JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
++        "uri": null,
++        "line": 5
++      }
++    ],
++    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: JBMC runs 3 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.NegativeArraySizeException, java.lang.NullPointerException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n✗ RaggedProof#reversed cannot be verified: JBMC proved it, but runs 3 constructs otherwise than the JVM (stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check, stubbed-handler at PropertyHarness.check), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-reversed/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.651454236,
++      "properties": 3,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 119.356,
++          "seconds": 1.004,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.152,
++            "lowering": 0.039,
++            "symbolic": 0.098,
++            "encoding": 0.078,
++            "solving": 0.538,
++            "trace": 0.0,
++            "other": 0.098
++          },
++          "formula": {
++            "steps": 6730,
++            "conditions": 2,
++            "variables": 92999,
++            "clauses": 256611
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.674,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.266,
++        "contracts": 0.0,
++        "runs": 1.004,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.403
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-reversed/native/stdout.json
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "RaggedProof#reversed",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-reversed/native/proof/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ RaggedProof#reversed satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array in 0.0 s; loops unwound 7 times with unwinding assertions)\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-reversed/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.009719685,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "native": {
++        "paths": 8,
++        "merges": 0,
++        "solver_calls": 15,
++        "solving_seconds": 0.000220894,
++        "gates_evaluated": 597,
++        "evaluating_seconds": 0.000013926,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1199,
++        "clauses": 3307,
++        "seconds": 0.006206722,
++        "loading_seconds": 0.000470902,
++        "decoding_seconds": 0.000064701,
++        "encoding_seconds": 0.000527308,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.006,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1199,
++            "clauses": 3307
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.022,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.006,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.015
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/jbmc/stdout.json
+@@ -0,0 +1,183 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "RaggedProof#snapshot",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "snapshot(a=[[0,0],null])",
++      "outcome": "false",
++      "values": [
++        "[[0,0],null]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "a",
++          "type": "int[][]",
++          "value": [
++            [
++              0,
++              0
++            ],
++            null
++          ]
++        }
++      ],
++      "call": {
++        "class": "RaggedProof",
++        "class_file": "RaggedProof.class",
++        "classes": "after",
++        "method": "snapshot",
++        "descriptor": "([[I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "value": [
++              [
++                0,
++                0
++              ],
++              null
++            ],
++            "from": "a"
++          }
++        ]
++      }
++    },
++    "proof": "found by JBMC 6.11.0 in 1.4 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-snapshot/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of RaggedProof#snapshot violated: `result`:\n  snapshot(a=[[0,0],null])\n    outcome: false",
++        "uri": null,
++        "line": 25
++      }
++    ],
++    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: JBMC runs 3 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.IllegalArgumentException, java.lang.NullPointerException, java.util.NoSuchElementException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n✗ Property of RaggedProof#snapshot violated: `result`:\n  snapshot(a=[[0,0],null])\n    outcome: false\n  (found by JBMC 6.11.0 in 1.4 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-snapshot/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.423947635,
++      "properties": 2,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 119.283,
++          "seconds": 0.702,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.143,
++            "lowering": 0.028,
++            "symbolic": 0.024,
++            "encoding": 0.049,
++            "solving": 0.408,
++            "trace": 0.004,
++            "other": 0.048
++          },
++          "formula": {
++            "steps": 1772,
++            "conditions": 2,
++            "variables": 69810,
++            "clauses": 208891
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.602,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.314,
++        "contracts": 0.0,
++        "runs": 0.702,
++        "replay": 0.007,
++        "jvm": 0.137,
++        "other": 0.44
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-snapshot/native/stdout.json
+@@ -0,0 +1,194 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "RaggedProof#snapshot",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "snapshot(a=[null,[20,20]])",
++      "outcome": "false",
++      "values": [
++        "[null,[20,20]]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "a",
++          "type": "int[][]",
++          "value": [
++            null,
++            [
++              20,
++              20
++            ]
++          ]
++        }
++      ],
++      "call": {
++        "class": "RaggedProof",
++        "class_file": "RaggedProof.class",
++        "classes": "after",
++        "method": "snapshot",
++        "descriptor": "([[I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "value": [
++              null,
++              [
++                20,
++                20
++              ]
++            ],
++            "from": "a"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-snapshot/native/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of RaggedProof#snapshot violated: `result`:\n  snapshot(a=[null,[20,20]])\n    outcome: false",
++        "uri": null,
++        "line": 25
++      }
++    ],
++    "output": "✗ Property of RaggedProof#snapshot violated: `result`:\n  snapshot(a=[null,[20,20]])\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-snapshot/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.00719312,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 9,
++        "solving_seconds": 0.000128932,
++        "gates_evaluated": 130,
++        "evaluating_seconds": 6.822e-6,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 844,
++        "clauses": 2123,
++        "seconds": 0.004123477,
++        "loading_seconds": 0.00022994,
++        "decoding_seconds": 0.000058329,
++        "encoding_seconds": 0.00036699,
++        "witness_seconds": 0.000032599
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.004,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.003,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 844,
++            "clauses": 2123
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.216,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.004,
++        "replay": 0.006,
++        "jvm": 0.185,
++        "other": 0.02
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/jbmc/stdout.json
+@@ -0,0 +1,183 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "RaggedProof#wrong",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "wrong(a=[[0,0],null])",
++      "outcome": "false",
++      "values": [
++        "[[0,0],null]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "a",
++          "type": "int[][]",
++          "value": [
++            [
++              0,
++              0
++            ],
++            null
++          ]
++        }
++      ],
++      "call": {
++        "class": "RaggedProof",
++        "class_file": "RaggedProof.class",
++        "classes": "after",
++        "method": "wrong",
++        "descriptor": "([[I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "value": [
++              [
++                0,
++                0
++              ],
++              null
++            ],
++            "from": "a"
++          }
++        ]
++      }
++    },
++    "proof": "found by JBMC 6.11.0 in 1.7 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-wrong/jbmc/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of RaggedProof#wrong violated: `result`:\n  wrong(a=[[0,0],null])\n    outcome: false",
++        "uri": null,
++        "line": 14
++      }
++    ],
++    "output": "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: JBMC runs 3 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.NegativeArraySizeException, java.lang.NullPointerException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n✗ Property of RaggedProof#wrong violated: `result`:\n  wrong(a=[[0,0],null])\n    outcome: false\n  (found by JBMC 6.11.0 in 1.7 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-wrong/jbmc/proof",
++    "search": {
++      "engine": "jbmc",
++      "checker": "JBMC 6.11.0",
++      "seconds": 1.691672426,
++      "properties": 3,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": null,
++      "staging": "staged",
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "jbmc",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 119.37,
++          "seconds": 1.054,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.164,
++            "lowering": 0.038,
++            "symbolic": 0.082,
++            "encoding": 0.088,
++            "solving": 0.539,
++            "trace": 0.016,
++            "other": 0.128
++          },
++          "formula": {
++            "steps": 6325,
++            "conditions": 2,
++            "variables": 86737,
++            "clauses": 238499
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.877,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.268,
++        "contracts": 0.0,
++        "runs": 1.054,
++        "replay": 0.009,
++        "jvm": 0.145,
++        "other": 0.4
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "library",
++          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "jbmc",
++        "name": "JBMC 6.11.0",
++        "solver": "cadical",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "3.0.0",
++          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
++          "configuration": [
++            "--trace",
++            "--throw-runtime-exceptions",
++            "--unwinding-assertions",
++            "--json-ui",
++            "--timestamp",
++            "monotonic",
++            "--no-refine-strings",
++            "--sat-solver",
++            "cadical"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/verification/jbmc-fast-follow/row-layout/ragged-proof-wrong/native/stdout.json
+@@ -0,0 +1,194 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "RaggedProof#wrong",
++    "domain": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "wrong(a=[null,[20,20]])",
++      "outcome": "false",
++      "values": [
++        "[null,[20,20]]"
++      ],
++      "shrink_runs": 0,
++      "inputs": [
++        {
++          "name": "a",
++          "type": "int[][]",
++          "value": [
++            null,
++            [
++              20,
++              20
++            ]
++          ]
++        }
++      ],
++      "call": {
++        "class": "RaggedProof",
++        "class_file": "RaggedProof.class",
++        "classes": "after",
++        "method": "wrong",
++        "descriptor": "([[I)Z",
++        "static": true,
++        "arguments": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "value": [
++              null,
++              [
++                20,
++                20
++              ]
++            ],
++            "from": "a"
++          }
++        ]
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
++    "problem": null,
++    "statement": "/tmp/row-layout-shg4iz78/ragged-proof-wrong/native/proof/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of RaggedProof#wrong violated: `result`:\n  wrong(a=[null,[20,20]])\n    outcome: false",
++        "uri": null,
++        "line": 14
++      }
++    ],
++    "output": "✗ Property of RaggedProof#wrong violated: `result`:\n  wrong(a=[null,[20,20]])\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/row-layout-shg4iz78/ragged-proof-wrong/native/proof",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.009887779,
++      "properties": 1,
++      "unwind": 7,
++      "max_array_length": 2,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 2,
++        "merges": 0,
++        "solver_calls": 12,
++        "solving_seconds": 0.00018112,
++        "gates_evaluated": 529,
++        "evaluating_seconds": 0.000011194,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1342,
++        "clauses": 3800,
++        "seconds": 0.006414611,
++        "loading_seconds": 0.000632463,
++        "decoding_seconds": 0.000056025,
++        "encoding_seconds": 0.000535946,
++        "witness_seconds": 0.00003184
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.006,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.001,
++            "lowering": 0.0,
++            "symbolic": 0.005,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1342,
++            "clauses": 3800
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.184,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.006,
++        "replay": 0.009,
++        "jvm": 0.147,
++        "other": 0.021
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "a",
++            "type": "int[][]",
++            "kind": "array",
++            "null": true,
++            "max_length": 2
++          }
++        ],
++        "shared_arrays": false,
++        "text": "a: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 7,
++        "max_array_length": 2,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
