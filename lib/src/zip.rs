@@ -9,6 +9,8 @@ use crate::Error;
 
 #[derive(Debug, Clone, Copy)]
 struct Entry {
+    flags: u16,
+    crc: u32,
     method: u16,
     compressed_size: u32,
     uncompressed_size: u32,
@@ -19,6 +21,7 @@ struct Entry {
 pub struct ZipArchive {
     data: Vec<u8>,
     entries: BTreeMap<String, Entry>,
+    pub(crate) duplicate_names: bool,
 }
 
 const EOCD: u32 = 0x0605_4b50;
@@ -69,6 +72,7 @@ impl ZipArchive {
             return Err(Error::new("zip: zip64 archives are not supported"));
         }
         let mut entries = BTreeMap::new();
+        let mut duplicate_names = false;
         let mut pos = cd_offset as usize;
         for _ in 0..total {
             if u32_at(&data, pos)? != CENTRAL {
@@ -85,10 +89,12 @@ impl ZipArchive {
                 .get(pos + 46..pos + 46 + name_len)
                 .ok_or_else(|| Error::new("zip: truncated entry name"))?;
             let name = String::from_utf8_lossy(name).into_owned();
-            entries.insert(name, Entry { method, compressed_size, uncompressed_size, local_header_offset });
+            let flags = u16_at(&data, pos + 8)?;
+            let crc = u32_at(&data, pos + 16)?;
+            duplicate_names |= entries.insert(name, Entry { flags, crc, method, compressed_size, uncompressed_size, local_header_offset }).is_some();
             pos += 46 + name_len + extra_len + comment_len;
         }
-        Ok(ZipArchive { data, entries })
+        Ok(ZipArchive { data, entries, duplicate_names })
     }
 
     /// Entry names, sorted.
@@ -100,11 +106,7 @@ impl ZipArchive {
         self.entries.contains_key(name)
     }
 
-    /// The uncompressed content of an entry, or `None` if there is no such entry.
-    pub fn read(&self, name: &str) -> Result<Option<Vec<u8>>, Error> {
-        let Some(entry) = self.entries.get(name) else {
-            return Ok(None);
-        };
+    fn payload(&self, name: &str, entry: &Entry) -> Result<&[u8], Error> {
         let at = entry.local_header_offset as usize;
         if u32_at(&self.data, at)? != LOCAL {
             return Err(Error::new(format!("zip: bad local header for {name}")));
@@ -113,7 +115,35 @@ impl ZipArchive {
         let extra_len = u16_at(&self.data, at + 28)? as usize;
         let start = at + 30 + name_len + extra_len;
         let end = start + entry.compressed_size as usize;
-        let raw = self.data.get(start..end).ok_or_else(|| Error::new(format!("zip: truncated data for {name}")))?;
+        self.data.get(start..end).ok_or_else(|| Error::new(format!("zip: truncated data for {name}")))
+    }
+
+    /// Small class-loader resources must have unambiguous, unencrypted bytes. Limit the
+    /// inflation itself and validate the central-directory size and CRC before using them.
+    pub(crate) fn checked_resource(&self, name: &str, limit: usize) -> Option<Vec<u8>> {
+        let entry = self.entries.get(name)?;
+        if entry.flags & 1 != 0 || entry.uncompressed_size as usize > limit || self.duplicate_names { return None; }
+        let raw = self.payload(name, entry).ok()?;
+        let data = match entry.method {
+            0 if raw.len() <= limit => raw.to_vec(),
+            8 => {
+                let mut out = Vec::new();
+                flate2::read::DeflateDecoder::new(raw).take(limit as u64 + 1).read_to_end(&mut out).ok()?;
+                out
+            }
+            _ => return None,
+        };
+        let mut crc = flate2::Crc::new();
+        crc.update(&data);
+        (entry.uncompressed_size as usize == data.len() && crc.sum() == entry.crc).then_some(data)
+    }
+
+    /// The uncompressed content of an entry, or `None` if there is no such entry.
+    pub fn read(&self, name: &str) -> Result<Option<Vec<u8>>, Error> {
+        let Some(entry) = self.entries.get(name) else {
+            return Ok(None);
+        };
+        let raw = self.payload(name, entry)?;
         match entry.method {
             0 => Ok(Some(raw.to_vec())),
             8 => {
@@ -180,6 +210,18 @@ mod tests {
             }
         }
         !crc
+    }
+
+    #[test]
+    fn classpath_resources_require_bounded_unique_checked_bytes() {
+        let mut data = stored_zip(&[("resource", &[0, 254])]);
+        let zip = ZipArchive::from_bytes(data.clone()).unwrap();
+        assert_eq!(zip.checked_resource("resource", 2), Some(vec![0, 254]));
+        assert_eq!(zip.checked_resource("resource", 1), None);
+        data[30 + "resource".len()] ^= 1;
+        assert_eq!(ZipArchive::from_bytes(data).unwrap().checked_resource("resource", 2), None);
+        let repeated = stored_zip(&[("resource", &[1]), ("resource", &[2])]);
+        assert_eq!(ZipArchive::from_bytes(repeated).unwrap().checked_resource("resource", 2), None);
     }
 
     #[test]

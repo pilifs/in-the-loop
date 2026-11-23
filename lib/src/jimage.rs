@@ -227,6 +227,22 @@ impl JImage {
         self.classes.contains_key(class_name)
     }
 
+    /// Class loaders consult modules before the application paths. Check every module
+    /// for the particular resource, including modules other than java.base.
+    pub(crate) fn contains_resource(&self, name: &str) -> Result<bool, Error> {
+        let (parent, file) = name.rsplit_once('/').unwrap_or(("", name));
+        let slots = (self.locations_start - self.offsets_start) / 4;
+        for index in 0..slots {
+            let loc = self.location(index as u32)?;
+            if self.string(loc.parent)? != parent { continue; }
+            let base = self.string(loc.base)?;
+            let ext = self.string(loc.extension)?;
+            if (ext.is_empty() && base == file) || (!ext.is_empty() && file.strip_prefix(base.as_ref())
+                .and_then(|s| s.strip_prefix('.')) == Some(ext.as_ref())) { return Ok(true); }
+        }
+        Ok(false)
+    }
+
     /// Every class in the image, by internal name.
     pub fn class_names(&self) -> impl Iterator<Item = &str> {
         self.classes.keys().map(String::as_str)

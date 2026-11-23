@@ -589,6 +589,9 @@ their identity. [Two array roots](../examples/197-shared-int-array-poststates/RE
 
 On Temurin 21.0.13 the native checker can follow a fresh thread-local key through `get`, `set` and `remove` on the executing platform thread. It distinguishes an absent binding from a binding to null and checks virtual dispatch before using the JDK's default initializer. It can also read a directly declared public zero-argument method and a declared field from the bytes of a final application class extending Object or Record. The rule checks the types of the other declarations that reflection may resolve. Each successful lookup returns a fresh reflective object. [JVM and native controls](tests/fixtures/claims/claims/SpringStartup.java)
 
+The native checker can build class lookup tables from ordinary initialization on Temurin 21.0.13. It recognizes the bytecode that inverts an identity map of class mirrors, indexes their names, and indexes a temporary union of class mirrors and array types. Conflicting writes to a key, an observable last entry, or a helper with other effects leave the traversal open. Lookups retain the exact class references. A fresh linked hash set runs its backing map and iterators from the JDK image. On the same image the built-in loader can enumerate fixed local JARs for a flat `META-INF` resource. The proof records the ordered providers and content digests. Each URL and opened stream has its own identity, and the checker can follow individual bytes or a complete read. [Class-table, ordered-set and resource controls](tests/fixtures/claims/claims/ClassTableChecks.java)
+
+
 ## Library use
 
 ```rust

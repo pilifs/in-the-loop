@@ -117,6 +117,8 @@ pub mod bitwuzla;
 mod arraycopy;
 mod array_list;
 mod calendar;
+mod class_tables;
+mod jar_resources;
 mod map_views;
 mod enum_universe;
 pub mod bits;
@@ -3714,6 +3716,9 @@ impl<'a> Engine<'a> {
                 if let Some(step) = self.transport_unobserved(path, &class, &insn, &reason) { return step; }
             }
         }
+        if matches!(insn, Insn::GetStatic(_) | Insn::New(_)) {
+            if let Some(step) = self.fold_class_tables(path) { return step; }
+        }
         if matches!(insn, Insn::Load(Kind::Int, _)) {
             if let Some(step) = self.fill_loop(path) { return step; }
         }
@@ -5006,6 +5011,12 @@ impl<'a> Engine<'a> {
             && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ThreadLocal") {
             return unsupported("the VM-assigned internal hash of a fresh ThreadLocal key");
         }
+        if path.objects[o].fields.contains_key(jar_resources::RESOURCE) {
+            return unsupported(format!("the classpath resource does not supply its private field {name}"));
+        }
+        if path.objects[o].fields.contains_key(class_tables::TABLE) {
+            return unsupported(format!("the class lookup table does not supply its internal field {name}"));
+        }
         if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
             return unsupported(format!("the observed WeakHashMap does not supply its internal field {name}"));
         }
@@ -5492,6 +5503,12 @@ impl<'a> Engine<'a> {
             Ok(o) => o.expect("checked"),
             Err(step) => return step,
         };
+        if path.objects[o].fields.contains_key(jar_resources::RESOURCE) {
+            return self.resource_call(path, o, member, &args, special);
+        }
+        if path.objects[o].fields.contains_key(class_tables::TABLE) {
+            return self.class_table_call(path, o, member, &args, special);
+        }
         if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
             return self.null_valued_weak_map_call(path, o, special, member, &args);
         }
@@ -5537,7 +5554,11 @@ impl<'a> Engine<'a> {
         // the call is then the gap it is to a checker with no such model, closed as the contract says.
         if !contracted {
             if special {
+                if let Some(step) = self.class_set_constructor(path, o, member, &args) { return step; }
                 if let Some(step) = self.string_buffer_copy(path, o, member, &args) { return step; }
+            }
+            if !special {
+                if let Some(step) = self.app_resources(path, o, member, &args) { return step; }
             }
             if let Some(step) = self.object_hash(path, o, special, member) { return step; }
             if let Some(step) = self.fresh_thread_local(path, o, special, member, &args) { return step; }

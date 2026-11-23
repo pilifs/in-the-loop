@@ -41,24 +41,26 @@ impl Engine<'_> {
         let image_caller = path.frames.last().is_some_and(|f| self.cp.is_map_image(&f.class));
         let new_map = constructor && class == MAP && owner == MAP
             && (descriptor == "()V" || (image_caller && descriptor == "(I)V"));
+        let new_linked_map = constructor && image_caller && class == "java/util/LinkedHashMap" && owner == class
+            && descriptor == "(IF)V" && path.frames.last()?.class.name == "java/util/HashSet";
         let new_set = constructor && !path.objects[o].given && !path.objects[o].assumed && !path.objects[o].unknown
-            && self.gap_mode == GapMode::Strict && class == "java/util/HashSet"
+            && self.gap_mode == GapMode::Strict && matches!(class.as_str(), "java/util/HashSet" | "java/util/LinkedHashSet")
             && owner == class && matches!(descriptor, "()V" | "(I)V" | "(Ljava/util/Collection;)V");
-        let nested = constructor && image_caller && class.starts_with("java/util/HashMap$") && class == owner;
+        let nested = constructor && image_caller && (class.starts_with("java/util/HashMap$") || class.starts_with("java/util/LinkedHashMap$")) && class == owner;
         // The Commons Collections view itself extends AbstractSet. These two JDK constructors
         // just chain to Object; their actual bodies run on the application's receiver as well.
         let base = constructor && descriptor == "()V" && matches!(owner, "java/util/AbstractCollection" | "java/util/AbstractSet" | "java/util/AbstractMap");
-        if !(marked || new_map || new_set || nested || base) { return None; }
+        if !(marked || new_map || new_linked_map || new_set || nested || base) { return None; }
         let lookup = if special { owner } else { class.as_str() };
         let Some((cf, method)) = self.cp.map_image_method(lookup, name, descriptor) else {
             // A method only in the old model cannot read or mutate these real JDK fields.
-            if marked && self.cp.checker_method(lookup, name, descriptor).is_some_and(|(cf, _)| matches!(cf.name.as_str(), MAP | "java/util/HashMap$Node")) {
+            if marked && self.cp.checker_method(lookup, name, descriptor).is_some_and(|(cf, _)| matches!(cf.name.as_str(), MAP | "java/util/HashMap$Node" | "java/util/LinkedHashMap")) {
                 return Some(unsupported(format!("{}.{}{} is outside the selected JDK HashMap bytecode", lookup.replace('/', "."), name, descriptor)));
             }
             return None;
         };
         if method.is_static() { return None; }
-        if new_map || new_set || nested { path.objects[o].fields.insert(IMAGE.into(), Val::I(self.b.constant(1, 32))); }
+        if new_map || new_linked_map || new_set || nested { path.objects[o].fields.insert(IMAGE.into(), Val::I(self.b.constant(1, 32))); }
         let mut full = vec![Val::R(Some(o))];
         full.extend_from_slice(args);
         Some(self.enter_method(path, owner, cf, method, full))

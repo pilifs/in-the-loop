@@ -761,6 +761,7 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
                 || cp.checked_image_class(&m.owner).is_some()
                 || matches!((m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()),
                     ("java/lang/Class", "getClassLoader", "()Ljava/lang/ClassLoader;")
+                    | ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;")
                     | ("java/util/TimeZone", "getTimeZone", "(Ljava/lang/String;)Ljava/util/TimeZone;")
                     | ("java/util/HashSet", "<init>", "(I)V")
                     | ("java/util/Set", "add", "(Ljava/lang/Object;)Z")

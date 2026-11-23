@@ -66,6 +66,41 @@ fn proved(classes: &Path, target: &str, bound: u32) {
 }
 
 #[test]
+fn class_lookup_folds_and_local_resource_order_match_the_launch() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    let scratch = tempfile::tempdir().unwrap();
+    let entry = "META-INF/ordinal.fixture";
+    std::fs::create_dir(scratch.path().join("META-INF")).unwrap();
+    let mut jars = Vec::new();
+    for (name, bytes) in [("first.jar", &[254, 17][..]), ("second.jar", &[34][..])] {
+        let jar = scratch.path().join(name);
+        std::fs::write(scratch.path().join(entry), bytes).unwrap();
+        assert!(Command::new("jar").arg("cf").arg(&jar).arg("-C").arg(scratch.path()).arg(entry).status().unwrap().success());
+        jars.push(jar);
+    }
+    let cp = std::env::join_paths(std::iter::once(classes).chain(jars.iter().map(PathBuf::as_path))).unwrap();
+    for args in [&[][..], &["-XX:+UnlockExperimentalVMOptions", "-XX:hashCode=2"][..]] {
+        assert!(Command::new("java").args(args).arg("-cp").arg(&cp).arg("claims.ClassTableChecks").status().unwrap().success());
+    }
+    if !String::from_utf8_lossy(&Command::new("java").arg("-version").output().unwrap().stderr).contains("Temurin-21.0.13+9") { return; }
+    for method in ["lookups", "classSet", "orderedSet", "resources", "lastWriter", "exportedOrder"] {
+        let mut o = options(classes, &format!("claims.ClassTableChecks#{method}"), 64, method);
+        o.classpath = jars.clone();
+        let result = run(&o);
+        if matches!(method, "lastWriter" | "exportedOrder") {
+            assert_eq!(result.verdict, Verdict::Unverifiable, "{method}: {}", result.output);
+            assert!(result.output.contains("entrySet"), "{}", result.output);
+        } else {
+            assert_eq!(result.verdict, Verdict::Verified, "{method}: {}", result.output);
+        }
+    }
+    let mut reversed = options(classes, "claims.ClassTableChecks#resources", 64, "reversed-resources");
+    reversed.classpath = jars.into_iter().rev().collect();
+    assert_eq!(run(&reversed).verdict, Verdict::Violation);
+}
+
+#[test]
 fn spring_cache_entries_writers_and_zones_follow_the_original_jvm() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
@@ -709,9 +744,9 @@ fn a_linked_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_d
     let sampled = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).args(["claims.LinkedSets", "5000"]).output().expect("java runs");
     assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
 
-    let unasked = run(&options(classes, "claims.LinkedSets#ordered", 2, "LinkedSets-unasked"));
-    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
-    assert!(unasked.output.contains("java.util.LinkedHashSet.<init>()V"), "{}", unasked.output);
+    let unasked = run(&options(classes, "claims.LinkedSets#iterated", 2, "LinkedSets-unasked"));
+    assert_eq!(unasked.verdict, Verdict::Verified, "{}", unasked.output);
+    assert!(!unasked.stated.as_ref().unwrap().assumptions.iter().any(|a| a.text.contains("--model")));
 
     let asking = |method: &str| {
         let mut o = options(classes, &format!("claims.LinkedSets#{method}"), 3, &format!("LinkedSets-{method}"));

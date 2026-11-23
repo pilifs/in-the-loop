@@ -382,6 +382,8 @@ pub struct ClassPath {
     string_unit_replacement: std::cell::OnceCell<bool>,
     reflection_copies: std::cell::OnceCell<bool>,
     thread_local_keys: std::cell::OnceCell<bool>,
+    class_table_image: std::cell::OnceCell<bool>,
+    jar_resource_image: std::cell::OnceCell<bool>,
     explicit_utc: std::cell::OnceCell<bool>,
     string_buffer_layout: std::cell::OnceCell<Option<bool>>,
     basic_base64: std::cell::OnceCell<bool>,
@@ -410,7 +412,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -493,6 +495,8 @@ impl ClassPath {
         self.string_unit_replacement.take();
         self.reflection_copies.take();
         self.thread_local_keys.take();
+        self.class_table_image.take();
+        self.jar_resource_image.take();
         self.explicit_utc.take();
         self.string_buffer_layout.take();
         self.basic_base64.take();
@@ -544,6 +548,48 @@ impl ClassPath {
             out.push((entry.display(), bytes));
         }
         Ok(out)
+    }
+
+    /// The ordinary built-in loader's base META-INF resources. Decline other providers,
+    /// manifest class paths, signed or indexed archives, duplicate URLs and mutable
+    /// directory resources. The proof states the clean launch and fixed classpath.
+    pub(crate) fn local_jar_resources(&self, name: &str) -> Option<Vec<(usize, Vec<u8>)>> {
+        let tail = name.strip_prefix("META-INF/")?;
+        if tail.is_empty() || tail.starts_with('.') || tail.contains("..") || tail.len() > 128
+            || !tail.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_'))
+            || self.jdk()?.contains_resource(name).ok()? { return None; }
+        let mut seen = std::collections::BTreeSet::new();
+        let mut urls = Vec::new();
+        for (i, entry) in self.entries.iter().enumerate() {
+            let path = match entry { Entry::Dir(dir) => dir, Entry::Jar(_, jar, _) => jar };
+            let real = path.canonicalize().ok()?;
+            if !seen.insert(real) { return None; }
+            match entry {
+                Entry::Dir(dir) => match std::fs::symlink_metadata(dir.join(name)) {
+                    Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                    _ => return None,
+                },
+                Entry::Jar(zip, jar, versions) => {
+                    if zip.duplicate_names || versions.entries.contains_key(name) || !jar.to_str()?.bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_' | b'+' | b'/')) { return None; }
+                    if zip.names().any(|n| {
+                        let upper = n.to_ascii_uppercase();
+                        upper.starts_with("META-INF/") && (upper == "META-INF/INDEX.LIST" || upper.starts_with("META-INF/SIG-")
+                            || [".SF", ".RSA", ".DSA", ".EC"].iter().any(|suffix| upper.ends_with(suffix))
+                            || upper == "META-INF/MANIFEST.MF" && n != upper)
+                    }) { return None; }
+                    if zip.contains("META-INF/MANIFEST.MF") {
+                        let manifest = zip.checked_resource("META-INF/MANIFEST.MF", 65536)?;
+                        if manifest.windows(11).any(|w| w.eq_ignore_ascii_case(b"class-path:")) { return None; }
+                    }
+                    if zip.contains(name) {
+                        if urls.len() == 32 { return None; }
+                        urls.push((i, zip.checked_resource(name, 16384)?));
+                    }
+                }
+            }
+        }
+        Some(urls)
     }
 
     /// Every application class name, in entry order and sorted within an entry.
@@ -1204,6 +1250,28 @@ impl ClassPath {
             &["3c3c4c6a6b22ae5d97b167d5dae2c9a812bd66a6af51b2320c1d51218f490cc8"])) // Temurin 21.0.13
     }
 
+    /// Selected image for class-mirror identity, map folds and immutable-set construction.
+    pub(crate) fn class_table_image(&self) -> bool {
+        *self.class_table_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/IdentityHashMap", "java/util/IdentityHashMap$IdentityHashMapIterator", "java/util/IdentityHashMap$EntrySet",
+              "java/util/IdentityHashMap$EntryIterator", "java/util/IdentityHashMap$EntryIterator$Entry", "java/util/IdentityHashMap$Values",
+              "java/util/IdentityHashMap$ValueIterator", "java/util/HashMap", "java/util/HashMap$Node",
+              "java/util/HashSet", "java/util/AbstractCollection", "java/util/Collections",
+              "java/util/ImmutableCollections$SetN", "java/lang/Class", "java/lang/Object",
+              "java/lang/String"],
+            &["6cf0ee476e559857d5d5703d8fea3ca2a46299cfd6c6c2071fdea3001f33f348"])) // Temurin 21.0.13
+    }
+
+    pub(crate) fn jar_resource_image(&self) -> bool {
+        *self.jar_resource_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/ClassLoader", "java/lang/CompoundEnumeration", "jdk/internal/loader/BuiltinClassLoader",
+              "jdk/internal/loader/BuiltinClassLoader$1", "jdk/internal/loader/ClassLoaders$AppClassLoader", "jdk/internal/loader/URLClassPath",
+              "jdk/internal/loader/URLClassPath$JarLoader", "jdk/internal/loader/URLClassPath$JarLoader$2", "java/net/URL",
+              "java/net/JarURLConnection", "sun/net/www/protocol/jar/Handler", "sun/net/www/protocol/jar/JarURLConnection",
+              "sun/net/www/protocol/jar/JarURLConnection$JarURLInputStream", "java/io/InputStream", "java/io/FilterInputStream"],
+            &["eece9c2f142cba64068daceb85c70c2e8e426132f588ca4a402c53448e758ef0"])) // Temurin 21.0.13
+    }
+
     /// The bounded StringBuffer copy uses this image's growth rule and its actual UTF-16 byte order.
     pub(crate) fn string_buffer_byte_order(&self) -> Option<bool> {
         *self.string_buffer_layout.get_or_init(|| {
@@ -1795,6 +1863,18 @@ impl ClassPath {
     /// static initialization must create one fresh sentinel, used by every set.
     /// An explicitly selected model keeps its own field layout and dispatch.
     fn native_map_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        // These classes are used only on objects marked by the native engine. Standalone
+        // LinkedHashMap model objects and explicitly selected set models keep their layouts.
+        if matches!(name, "java/util/LinkedHashSet" | "java/util/LinkedHashMap" | "java/util/LinkedHashMap$Entry"
+            | "java/util/LinkedHashMap$LinkedKeySet" | "java/util/LinkedHashMap$LinkedHashIterator"
+            | "java/util/LinkedHashMap$LinkedKeyIterator") {
+            if name == "java/util/LinkedHashSet" && (self.runs_model(name) || self.runs_model("java/util/HashSet")
+                || self.observed_initializers.borrow().contains(name) || self.native_map_image_class("java/util/HashSet").is_none()) {
+                return None;
+            }
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return class.method("<clinit>", "()V").is_none().then_some(class);
+        }
         if name != "java/util/HashSet" { return self.map_image_class(name); }
         if self.runs_model(name) || self.observed_initializers.borrow().contains(name) { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
