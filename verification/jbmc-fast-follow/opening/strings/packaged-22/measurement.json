@@ -1,0 +1,806 @@
+{
+  "phase": "opening",
+  "family": "strings",
+  "lane": "packaged-22",
+  "predecessor": {
+    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
+    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
+  },
+  "measuredSource": "1b5d1ce10919f895658810583e6f08abd29b04bc",
+  "job": "20261123-171546-freeze-the-java-strings-reserve-comparis",
+  "checkerSha256": "21f641888609ff2e60ccb8744e175b2ff4ac8f9a6cd8f7ae7e4bea858841b1f2",
+  "jbmcSha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
+  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "jars": [
+    {
+      "name": "guava-33.4.8-jre.jar",
+      "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
+    },
+    {
+      "name": "failureaccess-1.0.3.jar",
+      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb"
+    },
+    {
+      "name": "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+    },
+    {
+      "name": "jspecify-1.0.0.jar",
+      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
+    },
+    {
+      "name": "error_prone_annotations-2.36.0.jar",
+      "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
+    },
+    {
+      "name": "j2objc-annotations-3.0.0.jar",
+      "sha256": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
+    },
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    }
+  ],
+  "productClasses": {
+    "ExactOrder.class": "3e4063033bb7de780a425680089c697f0515cda8ba9e53dd03ac640a3dfb92fd"
+  },
+  "driverClasses": {
+    "Cases.class": "4acc8ee353a4020017b6b502c13c315f31f44cc9d0aa4bb7f1de995ad35b9507",
+    "OrderGrid.class": "8b2f8f163c269de0ce3cd4ab85f9f0c797f465ee938344d9e7e933bdd9875b9f",
+    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
+  },
+  "originalJvm": {
+    "Cases": {
+      "sha256": "5a9bccf70c2c56f9c321deae884d53f8a3afc3475d528ac5b73bea194dff076a",
+      "seconds": 0.081,
+      "cases": 24
+    },
+    "OrderGrid": {
+      "sha256": "15e3b09566e33594ec96f43ee5f803a62ad897118f6fea8a4ee5d95055c5b707",
+      "seconds": 0.082
+    }
+  },
+  "rows": [
+    {
+      "task": "exact-order-commons",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#commons",
+      "expected": "established",
+      "specSha256": "a1959bcc694c522a0e6718ae2ea24bc6c31763313d1554a119b5837b84bc2129",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "packaged-22": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui",
+          "--java-assume-inputs-non-null",
+          "--max-nondet-string-length",
+          "2",
+          "--max-nondet-array-length",
+          "2"
+        ],
+        "driverSha256": "774499c922deaf31ae28c8f3dd8e9973feb26e0cebe8929ad5083b7b9af640e5",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "guava-33.4.8-jre.jar",
+          "failureaccess-1.0.3.jar",
+          "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "jspecify-1.0.0.jar",
+          "error_prone_annotations-2.36.0.jar",
+          "j2objc-annotations-3.0.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "9",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 2.906,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "22",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 2.385,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "exact-order-only-sign",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#onlySign",
+      "expected": "refuted",
+      "specSha256": "50a0d3c2be5dccd097d2fa69963714d267c7c49a582abba2a9b446e94da84877",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "packaged-22": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui",
+          "--java-assume-inputs-non-null",
+          "--max-nondet-string-length",
+          "2",
+          "--max-nondet-array-length",
+          "2"
+        ],
+        "driverSha256": "04691d9f5d6cd609de141a91ab8d6230010aed0c5d649a64cfb2f25781ec9863",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "guava-33.4.8-jre.jar",
+          "failureaccess-1.0.3.jar",
+          "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "jspecify-1.0.0.jar",
+          "error_prone_annotations-2.36.0.jar",
+          "j2objc-annotations-3.0.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "9",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 2.392,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "22",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 2.643,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "exact-order-guava",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#guava",
+      "expected": "established",
+      "specSha256": "22d0d721df8018bf2fbffeea9a7cc96f4c1e1043bc85f15d6c319b117193441a",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "packaged-22": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui",
+          "--java-assume-inputs-non-null",
+          "--max-nondet-string-length",
+          "2",
+          "--max-nondet-array-length",
+          "2"
+        ],
+        "driverSha256": "27fa5dba473755cf0e6c100e63e0c6bf3c78d12781f285118ad4ec4b36ac643f",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "guava-33.4.8-jre.jar",
+          "failureaccess-1.0.3.jar",
+          "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "jspecify-1.0.0.jar",
+          "error_prone_annotations-2.36.0.jar",
+          "j2objc-annotations-3.0.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "9",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 2.469,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "22",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 2.364,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "exact-order-first-on-tie",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#firstOnTie",
+      "expected": "established",
+      "specSha256": "7123dc9a37d6007e2cf25ca1215ac17a07a60c598f62bf9ce5054e60586959e5",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "packaged-22": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui",
+          "--java-assume-inputs-non-null",
+          "--max-nondet-string-length",
+          "2",
+          "--max-nondet-array-length",
+          "2"
+        ],
+        "driverSha256": "d1bbec7d47f1239542389e352df9ea5d47d972bcb07bbf3168bd722a7737a412",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "guava-33.4.8-jre.jar",
+          "failureaccess-1.0.3.jar",
+          "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "jspecify-1.0.0.jar",
+          "error_prone_annotations-2.36.0.jar",
+          "j2objc-annotations-3.0.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "9",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 2.109,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "22",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 2.083,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "exact-order-second-on-tie",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#secondOnTie",
+      "expected": "refuted",
+      "specSha256": "53b51c249f3f56d7ce2d261a11f6f9cd32c73bdcabb07f62cbe838c8310cd5ea",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "packaged-22": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui",
+          "--java-assume-inputs-non-null",
+          "--max-nondet-string-length",
+          "2",
+          "--max-nondet-array-length",
+          "2"
+        ],
+        "driverSha256": "6863bf1a2047c0b234655a8a6d51b566b332f5e1bd4cbfac5eb25e878a7c6e78",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "guava-33.4.8-jre.jar",
+          "failureaccess-1.0.3.jar",
+          "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "jspecify-1.0.0.jar",
+          "error_prone_annotations-2.36.0.jar",
+          "j2objc-annotations-3.0.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "9",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 2.106,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "22",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 2.032,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "exact-order-direct",
+      "cohort": "string-order",
+      "parameters": "String a, String b",
+      "reachGuard": "a != null && b != null && a.length() <= 2 && b.length() <= 2",
+      "target": "ExactOrder#direct",
+      "expected": "established",
+      "specSha256": "06ad3ba679be893122a6fc2611c057b9b87271db225aba56d6058b367cfc6dd1",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "packaged-22": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui",
+          "--java-assume-inputs-non-null",
+          "--max-nondet-string-length",
+          "2",
+          "--max-nondet-array-length",
+          "2"
+        ],
+        "driverSha256": "d7c134956479bdd4c1a9ca43560c29e33ede7529101e80e425346550767cfa18",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "guava-33.4.8-jre.jar",
+          "failureaccess-1.0.3.jar",
+          "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "jspecify-1.0.0.jar",
+          "error_prone_annotations-2.36.0.jar",
+          "j2objc-annotations-3.0.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "9",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 9",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 1.897,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "22",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V bytecode-index 22",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Ljava/lang/String;Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 3,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            },
+            "b": {
+              "data": "dynamic_object$1",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 1.789,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "exact-order-same-reference",
+      "cohort": "string-alias",
+      "parameters": "String a",
+      "reachGuard": "a != null && a.length() <= 2",
+      "target": "ExactOrder#sameReference",
+      "expected": "established",
+      "specSha256": "468dea702ff2bc29a91206990b00853e8bbdea4518bd1892af6d39cae85ebe61",
+      "bounds": {
+        "unwind": 8,
+        "maxArrayLength": 2
+      },
+      "packaged-22": {
+        "flags": [
+          "--unwind",
+          "8",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui",
+          "--java-assume-inputs-non-null",
+          "--max-nondet-string-length",
+          "2",
+          "--max-nondet-array-length",
+          "2"
+        ],
+        "driverSha256": "d6d0f3f4212e8cca968ac9ee12416e995c06599b812a6956be55f4d71c27ab21",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "guava-33.4.8-jre.jar",
+          "failureaccess-1.0.3.jar",
+          "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+          "jspecify-1.0.0.jar",
+          "error_prone_annotations-2.36.0.jar",
+          "j2objc-annotations-3.0.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(Ljava/lang/String;)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(Ljava/lang/String;)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 0.754,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(Ljava/lang/String;)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;)V bytecode-index 15",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "15",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(Ljava/lang/String;)V bytecode-index 15",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(Ljava/lang/String;)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(Ljava/lang/String;)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "a": {
+              "data": "dynamic_object",
+              "name": "pointer",
+              "type": "struct java.lang.String *"
+            }
+          },
+          "seconds": 0.858,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    }
+  ],
+  "rawSha256": "39f693b3bc7b76d2d63cef9a35f01b57195c5c38c33a177cead814aae837164c"
+}

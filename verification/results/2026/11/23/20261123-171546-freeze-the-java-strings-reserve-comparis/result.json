@@ -1,0 +1,363 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-171546-freeze-the-java-strings-reserve-comparis",
+  "title": "Freeze the Java strings reserve comparison",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 1m11s, peak 316.9 MiB (estimated 2m00s, 4.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-171546-freeze-the-java-strings-reserve-comparis.json",
+    "sha256": "c94772c897311becf2328ba4e1ecdb47869fb3a286114347b7a06375cb052b6c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-171546-freeze-the-java-strings-reserve-comparis",
+      "title": "Freeze the Java strings reserve comparison",
+      "description": "Compare exact UTF-16 difference and first-reference tie selection across Commons Lang, Guava and the JDK. Include both packaged JBMC pairs, the strict CLIs and 5329 original JVM inputs.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow/measure.py"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:15:46+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 20,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "2m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "strings paired",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings paired",
+          "cwd": "."
+        },
+        {
+          "name": "strings packaged",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings packaged",
+          "cwd": "."
+        },
+        {
+          "name": "strings packaged-22",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings packaged-22",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/opening/strings/paired",
+        "verification/jbmc-fast-follow/opening/strings/packaged",
+        "verification/jbmc-fast-follow/opening/strings/packaged-22"
+      ]
+    }
+  },
+  "sourceCommit": "1b5d1ce10919f895658810583e6f08abd29b04bc",
+  "startedAt": "2026-11-23T17:32:28+00:00",
+  "finishedAt": "2026-11-23T17:38:07+00:00",
+  "wallSeconds": 339.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 10143,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 332242944,
+    "wallSeconds": 71.8,
+    "cpuSeconds": 80.7,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.6
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 258.884,
+      "cpuSeconds": 259.179,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2297032704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "f126248ddddaeda926a5b392f65f23520659c4523d26c2fceb89ea0f814e1af7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-171546-freeze-the-java-strings-reserve-comparis/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 18s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "strings paired",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 1.805,
+      "cpuSeconds": 2.933,
+      "cpuThrottledSeconds": 0.295,
+      "peakMemoryBytes": 90820608,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-strings-paired.log",
+        "lines": 14,
+        "bytes": 540,
+        "sha256": "5f8525b52ed0adecd3f3b52ca4b28d9947a46e4cb0b6a67759e4da5332663375",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ExactOrder#commons native unsupported",
+        "ExactOrder#commons jbmc unsupported",
+        "ExactOrder#onlySign native unsupported",
+        "ExactOrder#onlySign jbmc unsupported",
+        "ExactOrder#guava native unsupported",
+        "ExactOrder#guava jbmc unsupported",
+        "ExactOrder#firstOnTie native unsupported",
+        "ExactOrder#firstOnTie jbmc unsupported",
+        "ExactOrder#secondOnTie native unsupported",
+        "ExactOrder#secondOnTie jbmc unsupported",
+        "ExactOrder#direct native unsupported",
+        "ExactOrder#direct jbmc unsupported",
+        "ExactOrder#sameReference native unsupported",
+        "ExactOrder#sameReference jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "strings packaged",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings packaged",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 36.267,
+      "cpuSeconds": 40.148,
+      "cpuThrottledSeconds": 0.941,
+      "peakMemoryBytes": 332226560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-strings-packaged.log",
+        "lines": 7,
+        "bytes": 263,
+        "sha256": "432e439916c3c4f4ae55502b8910bdc49dad1751f45315b2c0f6eb3af8fcae39",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ExactOrder#commons packaged SUCCESS",
+        "ExactOrder#onlySign packaged FAILURE",
+        "ExactOrder#guava packaged SUCCESS",
+        "ExactOrder#firstOnTie packaged SUCCESS",
+        "ExactOrder#secondOnTie packaged FAILURE",
+        "ExactOrder#direct packaged SUCCESS",
+        "ExactOrder#sameReference packaged SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "strings packaged-22",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings packaged-22",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 33.696,
+      "cpuSeconds": 37.61,
+      "cpuThrottledSeconds": 0.955,
+      "peakMemoryBytes": 332242944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-strings-packaged-22.log",
+        "lines": 7,
+        "bytes": 284,
+        "sha256": "88394587ce738a713f3e92dfca73868b23bb241c88323e58d5d4fe5028c20825",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ExactOrder#commons packaged-22 SUCCESS",
+        "ExactOrder#onlySign packaged-22 FAILURE",
+        "ExactOrder#guava packaged-22 SUCCESS",
+        "ExactOrder#firstOnTie packaged-22 SUCCESS",
+        "ExactOrder#secondOnTie packaged-22 FAILURE",
+        "ExactOrder#direct packaged-22 SUCCESS",
+        "ExactOrder#sameReference packaged-22 SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/opening/strings/paired/measurement.json",
+      "change": "added",
+      "bytes": 13955,
+      "sha256": "1d40b8c64c354b9beaf2480c090113780015e642b9e859f73bb1d7068d7b6aa0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/strings/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 6358,
+      "sha256": "c5b9f0888215afc8656829bb83eb2d079e96e11dd6bb88da163e9c24228dc198",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/strings/packaged/measurement.json",
+      "change": "added",
+      "bytes": 31797,
+      "sha256": "a022563336491fb9280559083f7d7f2299633bcf1ea9b9eb73198c0dc25cd895",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/strings/packaged/raw.tar.gz",
+      "change": "added",
+      "bytes": 81390,
+      "sha256": "8ff7c530b2a0ded2c7ccba0fdcb0ffce62211ddf79021559969215525023a070",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/strings/packaged-22/measurement.json",
+      "change": "added",
+      "bytes": 31822,
+      "sha256": "875303e89759fc1ee1c944d2320aa60234723bbff7b8c521f777786ee7eabf99",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/strings/packaged-22/raw.tar.gz",
+      "change": "added",
+      "bytes": 81399,
+      "sha256": "39f693b3bc7b76d2d63cef9a35f01b57195c5c38c33a177cead814aae837164c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T17:38:09+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/opening/strings/paired/measurement.json",
+      "verification/jbmc-fast-follow/opening/strings/paired/raw.tar.gz",
+      "verification/jbmc-fast-follow/opening/strings/packaged/measurement.json",
+      "verification/jbmc-fast-follow/opening/strings/packaged/raw.tar.gz",
+      "verification/jbmc-fast-follow/opening/strings/packaged-22/measurement.json",
+      "verification/jbmc-fast-follow/opening/strings/packaged-22/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "74e5c31205248eb58b5ed46e0dc23373e479be5e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/74e5c31205248eb58b5ed46e0dc23373e479be5e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T173807Z-6831461784fdf858",
+      "outputs": "20261123T173807Z-710534fa20e9dc69",
+      "diff": "20261123T173807Z-72960187b830819a"
+    }
+  }
+}
