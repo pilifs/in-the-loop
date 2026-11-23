@@ -1,0 +1,178 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-204925-qualify-jdk-range-fill-and-the-independe",
+  "title": "Qualify JDK range fill and the independently checked caller frame",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.4s, peak 109.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-204925-qualify-jdk-range-fill-and-the-independe.json",
+    "sha256": "32293c8a917f0a7c5b5734480950366d3bf1ff0b8f12616daef39d4877c6f172",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-204925-qualify-jdk-range-fill-and-the-independe",
+      "title": "Qualify JDK range fill and the independently checked caller frame",
+      "description": "Rebuild the JDK 21 and example 337 evidence and run the Rust checker from isolated inputs on the real range fill, ordinary observing caller, extra-write caller, and five rebound controls. Check per-edge omissions and callee substitutions, compare physical JVM outcomes on shared and independently sized roots, measure clean generation and replay, and recheck all 18 Guava transfer bundles and substitutions.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "array-induction",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "337"
+        ]
+      },
+      "expected": "Original fill and caller accepted, two checked caller witnesses, no false acceptance, 14 range and binding controls as expected and all 18 Guava controls reproduced.",
+      "submitted": {
+        "at": "2026-11-23T20:49:25+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "python3",
+        "rustc",
+        "cc",
+        "java",
+        "javac",
+        "javap",
+        "setpriv"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Rebuild bundles and qualify the write frame",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_qualification.py --qualify lib/benchmark/trusted-kernel/evidence/range-proof/results.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/range-proof/results.json"
+      ]
+    }
+  },
+  "sourceCommit": "9e9006dcc7c021a2e46fa633b28666c6a8539b97",
+  "startedAt": "2026-11-23T20:52:37+00:00",
+  "finishedAt": "2026-11-23T20:52:54+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2568314,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 114614272,
+    "wallSeconds": 9.4,
+    "cpuSeconds": 16.7,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Rebuild bundles and qualify the write frame",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_qualification.py --qualify lib/benchmark/trusted-kernel/evidence/range-proof/results.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 9.422,
+      "cpuSeconds": 16.689,
+      "cpuThrottledSeconds": 1.656,
+      "peakMemoryBytes": 114614272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-rebuild-bundles-and-qualify-th.log",
+        "lines": 1,
+        "bytes": 485,
+        "sha256": "0ab856e354373564bcc3e4f4af248c1dc996944567127cc9d9751d4e7efbf77f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('fill-any-length', 'accepted'), ('caller-any-length', 'accepted'), ('caller-extra-any-length', 'rejected'), ('saved-local', 'accepted'), ('missing-store', 'rejected'), ('wrong-value', 'rejected'), ('strict-empty-guard', 'unsupported'), ('wrong-observed-root', 'rejected'), ('omit-caller-frame', 're"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/range-proof/results.json",
+      "change": "added",
+      "bytes": 28463,
+      "sha256": "5a4aaba4f313edb5af30211afc1dd7ce35a8b8f5e6fea8f7dea3c5c5e847fcc8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T20:53:14+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/range-proof/results.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T205254Z-0997994912d31561",
+      "outputs": "20261123T205254Z-12032939d0278155",
+      "diff": "20261123T205254Z-1374867cd1089f3b"
+    }
+  }
+}
