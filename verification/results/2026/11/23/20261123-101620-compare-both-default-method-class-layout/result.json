@@ -1,0 +1,360 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-101620-compare-both-default-method-class-layout",
+  "title": "Compare both default-method class layouts and direct binary64 entries",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 9.0s, peak 85.3 MiB (estimated 4m00s, 3.0 GiB); 25 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-101620-compare-both-default-method-class-layout.json",
+    "sha256": "a9f1ad7988d31452f7209a545d99168798de1a6836b1539e71d885485a3c28bf",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-101620-compare-both-default-method-class-layout",
+      "title": "Compare both default-method class layouts and direct binary64 entries",
+      "description": "Compile both Java seeds from the frozen brief. Move only the default-dispatch replay helpers, keep both sets of class bytes and run each with both packaged binaries crossed with both model JARs. Replay direct double-typed numeric counterexamples at their exact raw words. All JVM replays use the original historical library.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "Twenty-four target assertion records preserve package identities, class files, properties, costs and original JVM observations.",
+      "submitted": {
+        "at": "2026-11-23T10:16:20+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 12,
+      "requires": [
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Fresh JVMs and stock JBMC profiles",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/seed_profiles.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/seed-profiles"
+      ]
+    }
+  },
+  "sourceCommit": "20db45cd35517bfd9c10ee5ec95b46ba1101e490",
+  "startedAt": "2026-11-23T10:23:40+00:00",
+  "finishedAt": "2026-11-23T10:24:11+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4104052,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 89464832,
+    "wallSeconds": 9.0,
+    "cpuSeconds": 11.7,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Fresh JVMs and stock JBMC profiles",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/seed_profiles.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 9.024,
+      "cpuSeconds": 11.72,
+      "cpuThrottledSeconds": 0.416,
+      "peakMemoryBytes": 89464832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-fresh-jvms-and-stock-jbmc-prof.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-installed-installed-dispatch.json.gz",
+      "change": "added",
+      "bytes": 983,
+      "sha256": "23e30e590732e96e05faf43f0b9b50c41162ea084384c33940baae2a5930671b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-installed-installed-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 5019,
+      "sha256": "b9bd05593d129a4e5ca9d4328318e393abfb17deeae0f3624208d8c5a89d61c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-installed-preflight-dispatch.json.gz",
+      "change": "added",
+      "bytes": 5056,
+      "sha256": "ab372a8ffd8f814eb2212d3344bbb1c38276520dc2581f1f61cd24ec4879cd34",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-installed-preflight-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 985,
+      "sha256": "2a09cfccf1bf1feff6d6e4035443557b22c6a62a43cfb0cb09e4064c3ed519b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-preflight-installed-dispatch.json.gz",
+      "change": "added",
+      "bytes": 983,
+      "sha256": "e1a989de759b15080d95268049b80f5907293a52b6670582ea7148f6ccadbcc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-preflight-installed-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 5018,
+      "sha256": "1c2f71058fdad8b61d107fc78ae4f33ddd977b914a39354cfee37c576102b412",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-preflight-preflight-dispatch.json.gz",
+      "change": "added",
+      "bytes": 5056,
+      "sha256": "d66031e031a740d09ae6f49f73587b491ac45825a12217f28f9380833e2376d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/combined-preflight-preflight-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 982,
+      "sha256": "a699399507378c7736bdf86550f3006e6efbd838b0ecce65d079c75f14c32fcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/measurement.json",
+      "change": "added",
+      "bytes": 47878,
+      "sha256": "5e2bbe8a8edbcfa7de789dcb478144307bd919bcb901502ea7d94e75b04ed0bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-floorOnly.json.gz",
+      "change": "added",
+      "bytes": 42998,
+      "sha256": "8dd379405648a9db7f0de272959e85de45c38809f14e8e505ecc0446ad2fa256",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-fraction.json.gz",
+      "change": "added",
+      "bytes": 1077,
+      "sha256": "c81770e4df2cd21e2985c36f3412a81a9940e6d23a3a60a41205ea3802a7ca3c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-narrow.json.gz",
+      "change": "added",
+      "bytes": 981,
+      "sha256": "0d6894911c988c9c7e124cc5b2f1ccc0f703cded0f43ed6beb5d1bf882ac9f26",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-wraps.json.gz",
+      "change": "added",
+      "bytes": 5005,
+      "sha256": "2fd035ce2fcc91a2a9413e482a1494f1e4ec894792ff3d19e6519acb056e8b2b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-floorOnly.json.gz",
+      "change": "added",
+      "bytes": 43000,
+      "sha256": "08ce45cdf0910282a4fb8d514f4136b035c49c09fef568763fd922f8ec943388",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-fraction.json.gz",
+      "change": "added",
+      "bytes": 1075,
+      "sha256": "11d92decc2659f69da58f2fb39fc41965d63040ec4b12d8cb7fb3f60a666cc50",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-narrow.json.gz",
+      "change": "added",
+      "bytes": 978,
+      "sha256": "a35947000724e31f7a361499b5e6884d7c47259b8227d3e23a18d0d83d96e620",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-wraps.json.gz",
+      "change": "added",
+      "bytes": 5005,
+      "sha256": "cf805cef1e67b8ffdeea3dd83954abbe56c91f9053428d1eab04e517cfdb3d89",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-installed-installed-dispatch.json.gz",
+      "change": "added",
+      "bytes": 5053,
+      "sha256": "664597d6a434e4337dbd1a97f89a54a0982adb6dc16e5dfe70dc55553bd4ca84",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-installed-installed-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 984,
+      "sha256": "4e20319137cd4540397fe29245fcf417e0a951eadfd04b94c1c2bc8d74455d03",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-installed-preflight-dispatch.json.gz",
+      "change": "added",
+      "bytes": 983,
+      "sha256": "1e168e5f1ca699f4c2bc6e6c6bd86b2f20754e5307889ea6bceeb99346a2b6ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-installed-preflight-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 5013,
+      "sha256": "6a75e27ecdc7a906e054a89598bb88254efa1d8d75b851e990b787bc8ceb0add",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-preflight-installed-dispatch.json.gz",
+      "change": "added",
+      "bytes": 5051,
+      "sha256": "bc9bdaccb841634015af193f45a225fd11b81815dc834d548aa332252d142c6c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-preflight-installed-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 986,
+      "sha256": "874f56debe5fd43d07f4a291cec7bb02aca589d570b0ae835286d35ca8710a9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-preflight-preflight-dispatch.json.gz",
+      "change": "added",
+      "bytes": 983,
+      "sha256": "756e2e7bc9182460cfa2949b80268da5f531ab0f75120c7f30c6c54e64d24d77",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/seed-profiles/separate-preflight-preflight-firstDeclared.json.gz",
+      "change": "added",
+      "bytes": 5013,
+      "sha256": "30fa671193457a1363e45188a9cc188813f06f2a3d970f48342f7221bd3e2b7f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T10:24:17+00:00",
+    "applied": [
+      "verification/java-semantics-gap/seed-profiles/combined-installed-installed-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/combined-installed-installed-firstDeclared.json.gz",
+      "verification/java-semantics-gap/seed-profiles/combined-installed-preflight-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/combined-installed-preflight-firstDeclared.json.gz",
+      "verification/java-semantics-gap/seed-profiles/combined-preflight-installed-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/combined-preflight-installed-firstDeclared.json.gz",
+      "verification/java-semantics-gap/seed-profiles/combined-preflight-preflight-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/combined-preflight-preflight-firstDeclared.json.gz",
+      "verification/java-semantics-gap/seed-profiles/measurement.json",
+      "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-floorOnly.json.gz",
+      "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-fraction.json.gz",
+      "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-narrow.json.gz",
+      "verification/java-semantics-gap/seed-profiles/numeric-installed-installed-wraps.json.gz",
+      "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-floorOnly.json.gz",
+      "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-fraction.json.gz",
+      "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-narrow.json.gz",
+      "verification/java-semantics-gap/seed-profiles/numeric-preflight-preflight-wraps.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-installed-installed-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-installed-installed-firstDeclared.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-installed-preflight-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-installed-preflight-firstDeclared.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-preflight-installed-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-preflight-installed-firstDeclared.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-preflight-preflight-dispatch.json.gz",
+      "verification/java-semantics-gap/seed-profiles/separate-preflight-preflight-firstDeclared.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T102411Z-798593532ae528c6",
+      "outputs": "20261123T102411Z-8351185820edc6d6",
+      "diff": "20261123T102411Z-8665330579f648a0"
+    }
+  }
+}

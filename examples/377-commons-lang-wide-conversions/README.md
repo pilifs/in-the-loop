@@ -16,3 +16,18 @@ Inspect each strict task with `python3 examples/tools/build.py --plan 377`. The 
 ```sh
 python3 lib/benchmark/java-semantics-gap/campaign.py jvm numbers --output "$TMPDIR/semantics"
 ```
+
+## Measured results
+
+The campaign's ordinary native checker decided 0/6 at opening and 6/6 at qualification, with 4 established and 2 refuted on original-JVM replays.
+
+| Entry | Opening native | Qualified native |
+|---|---|---|
+| numbers/fraction | [open (0.02 s)](../../verification/java-semantics-gap/opening/numbers/measurement.json) | [proved (0.05 s)](../../verification/java-semantics-gap/qualified/numbers/measurement.json) |
+| numbers/fractionOpcode | [open (0.03 s)](../../verification/java-semantics-gap/opening/numbers/measurement.json) | [proved (0.04 s)](../../verification/java-semantics-gap/qualified/numbers/measurement.json) |
+| numbers/floorOnly | [open (0.02 s)](../../verification/java-semantics-gap/opening/numbers/measurement.json) | [refuted (0.10 s)](../../verification/java-semantics-gap/qualified/numbers/measurement.json) |
+| numbers/narrow | [open (0.02 s)](../../verification/java-semantics-gap/opening/numbers/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/numbers/measurement.json) |
+| numbers/narrowOpcode | [open (0.02 s)](../../verification/java-semantics-gap/opening/numbers/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/qualified/numbers/measurement.json) |
+| numbers/wraps | [open (0.01 s)](../../verification/java-semantics-gap/opening/numbers/measurement.json) | [refuted (0.09 s)](../../verification/java-semantics-gap/qualified/numbers/measurement.json) |
+
+[All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

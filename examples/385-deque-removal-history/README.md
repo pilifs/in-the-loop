@@ -14,3 +14,16 @@ Inspect each strict task with `python3 examples/tools/build.py --plan 385`. The 
 ```sh
 python3 lib/benchmark/java-semantics-gap/campaign.py jvm deque --output "$TMPDIR/semantics"
 ```
+
+## Measured results
+
+The campaign's ordinary native checker decided 1/4 at opening and 4/4 at qualification, with 3 established and 1 refuted on original-JVM replays.
+
+| Entry | Opening native | Qualified native |
+|---|---|---|
+| deque/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/deque/measurement.json) |
+| deque/stillReturns | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/qualified/deque/measurement.json) |
+| deque/singleton | [proved (0.03 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/qualified/deque/measurement.json) |
+| deque/filtered | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/qualified/deque/measurement.json) |
+
+[All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

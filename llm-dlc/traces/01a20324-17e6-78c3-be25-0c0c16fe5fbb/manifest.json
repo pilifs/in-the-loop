@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T10:53:55.517Z",
-  "duration_seconds": 82208,
+  "ended": "2026-11-23T11:28:22.297Z",
+  "duration_seconds": 84275,
   "stats": {
     "turns": 17,
-    "api_calls": 3071,
-    "tool_calls": 7105,
-    "tool_errors": 192,
-    "compactions": 12,
-    "peak_context_tokens": 525653,
+    "api_calls": 3188,
+    "tool_calls": 7412,
+    "tool_errors": 195,
+    "compactions": 13,
+    "peak_context_tokens": 550118,
     "usage": {
-      "input_tokens": 4360108,
-      "output_tokens": 1414708,
-      "cache_read_input_tokens": 804389248,
+      "input_tokens": 4497552,
+      "output_tokens": 1467139,
+      "cache_read_input_tokens": 836033152,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 3861,
-    "exec": 2775,
-    "apply_patch": 275,
-    "wait": 102,
+    "Bash": 4035,
+    "exec": 2879,
+    "apply_patch": 292,
+    "wait": 114,
     "sleep": 31,
     "send_message": 23,
     "wait_agent": 16,
@@ -108,10 +108,12 @@
     "lib/benchmark/java-semantics-gap/campaign.py",
     "lib/benchmark/java-semantics-gap/heap_and_monitors.py",
     "lib/benchmark/java-semantics-gap/historical.py",
+    "lib/benchmark/java-semantics-gap/origins.py",
     "lib/benchmark/java-semantics-gap/scorecard.py",
     "lib/benchmark/java-semantics-gap/seed_profiles.py",
     "lib/benchmark/java-semantics-gap/standalone.py",
     "lib/benchmark/java-semantics-gap/subjects.py",
+    "lib/benchmark/java-semantics-gap/test_scorecard.py",
     "lib/benchmark/run.py",
     "lib/benchmark/spring-java-data/domains.py",
     "lib/benchmark/spring-java-data/factory_results.py",
@@ -174,6 +176,7 @@
     "lib/tests/values.rs",
     "llm-dlc/loops/java-domain-proof-campaign-results.md",
     "llm-dlc/loops/java-domain-proof-campaign.md",
+    "llm-dlc/loops/jbmc-java-semantics-gap-brief.md",
     "llm-dlc/loops/spring-and-java-data-workstream-briefs.md",
     "llm-dlc/loops/spring-and-java-data-workstream-results.md"
   ],
@@ -349,24 +352,38 @@
     {
       "index": 12,
       "started": "2026-11-23T07:23:47.826Z",
-      "ended": "2026-11-23T10:53:55.517Z",
+      "ended": "2026-11-23T11:14:33.244Z",
       "turns": 2,
-      "api_calls": 400,
+      "api_calls": 449,
       "usage": {
-        "input_tokens": 567709,
-        "output_tokens": 169989,
-        "cache_read_input_tokens": 131583872,
+        "input_tokens": 608451,
+        "output_tokens": 204434,
+        "cache_read_input_tokens": 157682816,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 513216
+      "peak_context_tokens": 550118
+    },
+    {
+      "index": 13,
+      "started": "2026-11-23T11:14:33.251Z",
+      "ended": "2026-11-23T11:28:22.297Z",
+      "turns": 0,
+      "api_calls": 68,
+      "usage": {
+        "input_tokens": 96702,
+        "output_tokens": 17986,
+        "cache_read_input_tokens": 5544960,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 105423
     }
   ],
   "log": {
-    "sha256": "4ba72282e175623bc18d4f309cfb97dd852fa98e26bf0e21c1c84deede33b361",
-    "bytes": 46324915,
-    "lines": 23250,
-    "gzip_bytes": 8788755,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/4ba72282e175623bc18d4f309cfb97dd852fa98e26bf0e21c1c84deede33b361.jsonl.gz"
+    "sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0",
+    "bytes": 47724289,
+    "lines": 24128,
+    "gzip_bytes": 9052204,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1385,6 +1402,70 @@
       "summary": "Qualify Java lookup and public caller histories (verification pending)",
       "body": "Index the checked enum constants by their UTF-16 names and preserve constant identity. Run an overriding ThreadLocal initializer in its original frame and install its result only on normal return. Follow real JDK deque iterator removal, exact integer formatting and CharSequence slices on known strings. Prove the capacity of a computed local allocation independently of the caller’s input length. Add an explicit reference-array plan control and pause the unchanged monitor caller at its read to realize three real JVM schedules.\n\nCapped native checks proved the Guava parent and fix, nullable StrBuilder construction, enum lookup and Commons FilterIterator removal on the original graphs. JDI observed a write of six before the mixed-lock read and the actual worker blocked on the same class mirror for both protected reads. The changed test selection passed 59 Rust binaries and six Python suites, with the JDK 21 initializer and exception-retry control also passing. The opening scorecard audit checked all 38 historical rows, all 60 new statements and the separate standalone property outputs.\n\nSeven 20261123-104830 jobs repeat the historical and new scopes, the corrected standalone string and deque profiles and the original monitor schedules. Two 20261123-104845 jobs rerun proof-tier conformance and the original decimal and formatter transfers. The earlier standalone Unicode witness launcher failed because its generated main argument shadowed a claim parameter. This change fixes the launcher and the replacement keeps its own source and receipts.",
       "log_sha256": "4ba72282e175623bc18d4f309cfb97dd852fa98e26bf0e21c1c84deede33b361"
+    },
+    {
+      "change_id": "sznqrxvyxrzqysyrmquxwmlyuxrzopmy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-101620-compare-both-default-method-class-layout: passed: 1 passed step(s) in 9.0s, peak 85.3 MiB (estimated 4m00s, 3.0 GiB); 25 output file(s) changed Applied 25 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
+    },
+    {
+      "change_id": "upyxksoovzxprwzowzzuppxkqsswqkmy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 6 job(s)",
+      "body": "Outputs applied for 5 of the 6 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261123-101334-check-prefix-dispatch-array-stores-and-p: passed: 5 passed step(s) in 12.4s, peak 84.6 MiB (estimated 12m00s, 4.0 GiB); 10 output file(s) changed Applied 10 output(s). 20261123-101334-check-wide-arithmetic-and-list-ownership: passed: 4 passed step(s) in 36.5s, peak 301.9 MiB (estimated 12m00s, 4.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261123-101335-recheck-both-historical-public-guava-and: passed: 4 passed step(s) in 1m26s, peak 646.1 MiB (estimated 12m00s, 4.0 GiB); 8 output file(s) changed Applied 8 output(s). 20261123-101335-recheck-other-original-semantic-families: passed: 8 passed step(s) in 27.3s, peak 135.0 MiB (estimated 12m00s, 4.0 GiB); 16 output file(s) changed Applied 16 output(s). 20261123-101413-qualify-standalone-ordinary-string-and-j: failed: 1 passed, 1 failed, 1 skipped step(s) in 14.8s, peak 204.5 MiB (estimated 10m00s, 4.0 GiB); 18 output file(s) changed 20261123-101413-recheck-original-decimal-and-formatter-c: passed: 2 passed step(s) in 26.9s, peak 415.9 MiB (estimated 5m00s, 3.0 GiB); 35 output file(s) changed Applied 35 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
+    },
+    {
+      "change_id": "qpoztqorkonkpqutxyxukywtnknpmylr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-101334-recheck-historic-list-decisions-and-all: passed: 4 passed step(s) in 10m23s, peak 7.1 GiB (estimated 13m00s, 5.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
+    },
+    {
+      "change_id": "uxuvuqtolnspnrpzoyvxzyrruxptnlst",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-101413-check-java-semantics-changes-against-the: passed: 1 passed step(s) in 24m35s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
+    },
+    {
+      "change_id": "lwrxpvuposwnuownrtvovkqztuunkxtz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-104830-replay-corrected-standalone-string-unico: passed: 4 passed step(s) in 18.6s, peak 204.7 MiB (estimated 4m00s, 4.0 GiB); 28 output file(s) changed Applied 28 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
+    },
+    {
+      "change_id": "tyrrspxxkuxypvwznnzwvoxxzosqzkpm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-104830-qualify-all-historical-leads-and-native: passed: 4 passed step(s) in 9m44s, peak 5.8 GiB (estimated 10m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
+    },
+    {
+      "change_id": "uqpntwuqumnotxzvqpluoznsqrvvknkv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-104845-recheck-conformance-on-the-qualified-jav: passed: 1 passed step(s) in 24m36s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
+    },
+    {
+      "change_id": "ltqvmopmplxxtyrzyrvpxxvrptrlxrsw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the matched Java semantics decisions",
+      "body": "Seven previously open historical claims now close at their frozen scope, bringing the thirteen JBMC-only leads from 6 to 13 decisions and preserving all 24 native controls. The 60 separately registered caller statements went from 12 to 50 decisions across 13 improved families, with 29 proofs and 21 original-JVM-replayed refutations. Both previously JVM-contradicted default-method results were corrected. The full Commons Lang intervals and both Guava builds met the stretch criteria.\n\nLink the per-claim results and first unproved operations for all 16 examples, the ordinary decimal and formatter transfers, and the separate standalone model disagreements. The evidence audit checked 283 loaded class bindings across 21 original classpaths, both actual array witnesses, eight default-method witnesses and the original worker schedules. All 16 examples validated, 59 Rust test binaries and 29 Python test files passed, and the source-bound scorecard reproduced all 38 historical rows and 60 caller rows. Both managed proof-tier conformance tests passed. Of 32 campaign jobs, 31 passed and one intermediate Unicode witness launcher failed to compile before its passing replacement.",
+      "log_sha256": "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0"
     }
   ],
   "logs": {
@@ -1560,6 +1641,12 @@
       "bytes": 31777918,
       "lines": 15753,
       "gzip_bytes": 6126362,
+      "url": null
+    },
+    "7833ee0b09fd7cc7c0875f4b3124e3b1ed96a740bfac88b62d5a604f7206d9e0": {
+      "bytes": 47724289,
+      "lines": 24128,
+      "gzip_bytes": 9052204,
       "url": null
     },
     "7e0af2a426fefdbc1639532bb3b6dbcbb35190ceffb1676fd7255a2532121191": {

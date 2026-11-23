@@ -1,0 +1,942 @@
+{
+  "subject": "numbers",
+  "phase": "final",
+  "source": "20db45cd35517bfd9c10ee5ec95b46ba1101e490",
+  "job": "20261123-101334-check-wide-arithmetic-and-list-ownership",
+  "adapterSha256": "e1e89c30bff08ef2fc4488f199a00e8695f806843867568460351458ef66b7aa",
+  "classes": {
+    "WideNumbers.class": "df4fce52a5343bfacbbb0ff5944bb44948509e690795d451e8e45a3e44357999"
+  },
+  "classpath": [
+    "adapter",
+    {
+      "path": "artifacts/commons-lang-5904c573.jar",
+      "sha256": "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+    }
+  ],
+  "jdk": [
+    "IMPLEMENTOR=\"Eclipse Adoptium\"",
+    "IMPLEMENTOR_VERSION=\"Temurin-21.0.13+9\"",
+    "JAVA_RUNTIME_VERSION=\"21.0.13+9-LTS\"",
+    "JAVA_VERSION=\"21.0.13\"",
+    "JAVA_VERSION_DATE=\"2026-10-20\"",
+    "LIBC=\"gnu\"",
+    "MODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom\"",
+    "OS_ARCH=\"x86_64\"",
+    "OS_NAME=\"Linux\"",
+    "SOURCE=\".:git:2ab10ca20c19\"",
+    "BUILD_SOURCE=\"git:1cf43d7a3e77886bfea7d550a902e151a87d724d\"",
+    "BUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"",
+    "SOURCE_REPO=\"https://github.com/adoptium/jdk21u.git\"",
+    "FULL_VERSION=\"21.0.13+9-LTS\"",
+    "SEMANTIC_VERSION=\"21.0.13+9\"",
+    "BUILD_INFO=\"OS: Linux Version: 6.8.0-1070-azure\"",
+    "JVM_VARIANT=\"Hotspot\"",
+    "JVM_VERSION=\"21.0.13+9-LTS\"",
+    "IMAGE_TYPE=\"JDK\""
+  ],
+  "jvmSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "modulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "scope": {
+    "example": 377,
+    "owner": "WideNumbers",
+    "graph": "lang-historical",
+    "claims": [
+      {
+        "method": "fraction",
+        "parameters": "int n",
+        "guard": "n >= 16777216 && n < 33554432",
+        "holds": [
+          [
+            "16777216"
+          ],
+          [
+            "16777217"
+          ],
+          [
+            "16777219"
+          ],
+          [
+            "33554431"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "fractionOpcode",
+        "parameters": "int n",
+        "guard": "n >= 16777216 && n < 33554432",
+        "holds": [
+          [
+            "16777216"
+          ],
+          [
+            "16777217"
+          ],
+          [
+            "16777219"
+          ],
+          [
+            "33554431"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "floorOnly",
+        "parameters": "int n",
+        "guard": "n >= 16777216 && n < 33554432",
+        "holds": [
+          [
+            "16777216"
+          ]
+        ],
+        "fails": [
+          [
+            "16777219"
+          ],
+          [
+            "33554431"
+          ]
+        ],
+        "nullable": ""
+      },
+      {
+        "method": "narrow",
+        "parameters": "long fraction",
+        "guard": "",
+        "holds": [
+          [
+            "0L"
+          ],
+          [
+            "1L"
+          ],
+          [
+            "0xfffffffffffffL"
+          ],
+          [
+            "-1L"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "narrowOpcode",
+        "parameters": "long fraction",
+        "guard": "",
+        "holds": [
+          [
+            "0L"
+          ],
+          [
+            "1L"
+          ],
+          [
+            "0xfffffffffffffL"
+          ],
+          [
+            "-1L"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "wraps",
+        "parameters": "long fraction",
+        "guard": "",
+        "holds": [],
+        "fails": [
+          [
+            "0L"
+          ],
+          [
+            "1L"
+          ],
+          [
+            "0xfffffffffffffL"
+          ],
+          [
+            "-1L"
+          ]
+        ],
+        "nullable": ""
+      }
+    ],
+    "bound": 8,
+    "unwind": 16
+  },
+  "claimsSha256": {
+    "fraction": "880ef8af4ebfd50f62bf35dac0fa9b1ec34e126260ed2e490597da9c8d196616",
+    "fractionOpcode": "76f4296acc3e7dc787c4fb30c578c1c7f8e781c063d00407add9d3c4d8a3bdc3",
+    "floorOnly": "371925ad47c765f3fc3dc7882fc70f7840d140096bfcb5d5c33043fc505e18df",
+    "narrow": "1f5b435b81425def73809aaaef7ab7543de3c4b905306e7f7475b0a0f86b8651",
+    "narrowOpcode": "0850290eb7fb4dac5abbbb4534dc2373de58e649e54d4010e76c8e879147c504",
+    "wraps": "d08de94744c1855729a0650c4bd2e0ce9c48f2a7e4e0759d0c001a422b3cb542"
+  },
+  "originalJvm": {
+    "checks": 23,
+    "sourceSha256": "51385510f15d340b43c5890b84b721aa1c3dcc18cb9ec59d8de5ed8c925d1795",
+    "stdout": "23 original checks passed"
+  },
+  "runs": [
+    {
+      "method": "fraction",
+      "engine": "native",
+      "exit": 0,
+      "seconds": 0.044,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "n: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "n >= 16777216 && n < 33554432",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found fraction(n=33523360).",
+          "witness": "fraction(n=33523360)"
+        }
+      }
+    },
+    {
+      "method": "fraction",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 1.483,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): jdk-static-method:java.util.Objects.hash([Ljava/lang/Object;)I@jdk-21.0.13; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
+    },
+    {
+      "method": "fractionOpcode",
+      "engine": "native",
+      "exit": 0,
+      "seconds": 0.037,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "n: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "n >= 16777216 && n < 33554432",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found fractionOpcode(n=33523360).",
+          "witness": "fractionOpcode(n=33523360)"
+        }
+      }
+    },
+    {
+      "method": "fractionOpcode",
+      "engine": "jbmc",
+      "exit": 0,
+      "seconds": 0.306,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "n: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "n >= 16777216 && n < 33554432",
+            "basis": "stated"
+          },
+          {
+            "kind": "library",
+            "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "jbmc",
+          "name": "JBMC 6.11.0",
+          "solver": "cadical",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "3.0.0",
+            "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+            "configuration": [
+              "--trace",
+              "--throw-runtime-exceptions",
+              "--unwinding-assertions",
+              "--json-ui",
+              "--timestamp",
+              "monotonic",
+              "--no-refine-strings",
+              "--sat-solver",
+              "cadical"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "probe",
+          "text": "Some input in the domain reaches the calls: the tool's own checker found fractionOpcode(n=33523360).",
+          "witness": "fractionOpcode(n=33523360)"
+        }
+      }
+    },
+    {
+      "method": "floorOnly",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.088,
+      "expected": "violation",
+      "verdict": "violation",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "n: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "n >= 16777216 && n < 33554432",
+            "basis": "stated"
+          },
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      },
+      "jvmReplay": {
+        "outcome": "refuted",
+        "inputs": [
+          {
+            "name": "n",
+            "type": "int",
+            "value": 33423355
+          }
+        ],
+        "sourceSha256": "6d89824b2e0f9af91d735c81eff9f3a258635764c035a414f079a1a37d00365f",
+        "exit": 0,
+        "diagnostic": ""
+      }
+    },
+    {
+      "method": "floorOnly",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 1.437,
+      "expected": "violation",
+      "verdict": "violation",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "n: int"
+        },
+        "assumptions": [
+          {
+            "kind": "precondition",
+            "text": "n >= 16777216 && n < 33554432",
+            "basis": "stated"
+          },
+          {
+            "kind": "library",
+            "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "jbmc",
+          "name": "JBMC 6.11.0",
+          "solver": "cadical",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "3.0.0",
+            "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+            "configuration": [
+              "--trace",
+              "--throw-runtime-exceptions",
+              "--unwinding-assertions",
+              "--json-ui",
+              "--timestamp",
+              "monotonic",
+              "--no-refine-strings",
+              "--sat-solver",
+              "cadical"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      },
+      "jvmReplay": {
+        "outcome": "refuted",
+        "inputs": [
+          {
+            "name": "n",
+            "type": "int",
+            "value": 33554431
+          }
+        ],
+        "sourceSha256": "8db722c4ee72f1ee989e9c3409cd2cd841fe767b53f0e4901cfafcc28a618c6b",
+        "exit": 0,
+        "diagnostic": ""
+      }
+    },
+    {
+      "method": "narrow",
+      "engine": "native",
+      "exit": 0,
+      "seconds": 0.026,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "fraction",
+              "type": "long",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "fraction: long"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "harness",
+          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+        }
+      }
+    },
+    {
+      "method": "narrow",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.319,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample narrow(fraction=15) is no reproduction in the interpreter, which cannot run the method on it (unsupported: org.apache.commons.lang3.mutable.MutableDouble extends the JDK class java.lang.Number, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-static-method:java.lang.Double.longBitsToDouble(J)D@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "narrowOpcode",
+      "engine": "native",
+      "exit": 0,
+      "seconds": 0.017,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "fraction",
+              "type": "long",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "fraction: long"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "harness",
+          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+        }
+      }
+    },
+    {
+      "method": "narrowOpcode",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.237,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample narrowOpcode(fraction=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-static-method:java.lang.Double.longBitsToDouble(J)D@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "wraps",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.088,
+      "expected": "violation",
+      "verdict": "violation",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "fraction",
+              "type": "long",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "fraction: long"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      },
+      "jvmReplay": {
+        "outcome": "refuted",
+        "inputs": [
+          {
+            "name": "fraction",
+            "type": "long",
+            "value": "20"
+          }
+        ],
+        "sourceSha256": "aa3193cf3acffccd63f1df7fb91830e38b823f18d16d6fe089bddb3ae274bf17",
+        "exit": 0,
+        "diagnostic": ""
+      }
+    },
+    {
+      "method": "wraps",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.457,
+      "expected": "violation",
+      "verdict": "violation",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "fraction",
+              "type": "long",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "fraction: long"
+        },
+        "assumptions": [
+          {
+            "kind": "library",
+            "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "jbmc",
+          "name": "JBMC 6.11.0",
+          "solver": "cadical",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "3.0.0",
+            "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+            "configuration": [
+              "--trace",
+              "--throw-runtime-exceptions",
+              "--unwinding-assertions",
+              "--json-ui",
+              "--timestamp",
+              "monotonic",
+              "--no-refine-strings",
+              "--sat-solver",
+              "cadical"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      },
+      "jvmReplay": {
+        "outcome": "refuted",
+        "inputs": [
+          {
+            "name": "fraction",
+            "type": "long",
+            "value": "-1"
+          }
+        ],
+        "sourceSha256": "393c27f961b6d93c7fb357c0b7c7662fd0fe2483cbd115f68e3e8733a8239ba4",
+        "exit": 0,
+        "diagnostic": ""
+      }
+    }
+  ],
+  "jvmGrid": {
+    "sourceSha256": "a8d59c3b2c27cbdcbc3e27c107f4267bb7e1af1686ad73191a96f51549acc0db",
+    "seconds": 0.074,
+    "observations": "16777216 rational inputs, 4194304 floor mismatches; 4 binary64 boundary histories"
+  },
+  "checkerSha256": "55186e854eb37c622a561d05aa4c1c7bc5effbd8165f485cecb58b69c96771f4",
+  "libTree": "39141c056e1095b6dfe9ca96a24b667d7ac28561",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "packagedModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "rawSha256": "ccbf8ee3359527b982ed4d611d938b3f81de15cc9eaab80e63d53af903233366"
+}

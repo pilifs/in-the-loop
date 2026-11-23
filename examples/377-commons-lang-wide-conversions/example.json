@@ -30,8 +30,10 @@
     "description": "Fraction rounding covers every numerator in [2\u00b2\u2074, 2\u00b2\u2075). MutableDouble narrowing covers every binary64 value in [2\u00b3\u00b9, 2\u00b3\u00b2), before and after a sign change."
   },
   "target": "target.json",
-  "verdictLabel": "Opening claims frozen",
+  "verdictLabel": "Ordinary native 6/6",
   "notes": [
-    "The numbers JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening numbers."
+    "The numbers JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening numbers.",
+    "The numeric callers run the original Commons Lang revision 5904c573. Its historical change concerned decimal parsing. Fraction.floatValue and MutableDouble.intValue provide independent unchanged consumers.",
+    "The campaign's ordinary native checker decided 0/6 at opening and 6/6 at qualification, with 4 established and 2 refuted on original-JVM replays."
   ]
 }

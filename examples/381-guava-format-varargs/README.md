@@ -14,3 +14,16 @@ Inspect each strict task with `python3 examples/tools/build.py --plan 381`. The 
 ```sh
 python3 lib/benchmark/java-semantics-gap/campaign.py jvm guava-parent guava-fix --output "$TMPDIR/semantics"
 ```
+
+## Measured results
+
+The campaign's ordinary native checker decided 0/4 at opening and 4/4 at qualification, with 2 established and 2 refuted on original-JVM replays.
+
+| Entry | Opening native | Qualified native |
+|---|---|---|
+| guava-parent/retained | [open (0.02 s)](../../verification/java-semantics-gap/opening/guava-parent/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/qualified/guava-parent/measurement.json) |
+| guava-parent/parentBehavior | [open (0.03 s)](../../verification/java-semantics-gap/opening/guava-parent/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/guava-parent/measurement.json) |
+| guava-fix/retained | [open (0.03 s)](../../verification/java-semantics-gap/opening/guava-fix/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/guava-fix/measurement.json) |
+| guava-fix/parentBehavior | [open (0.02 s)](../../verification/java-semantics-gap/opening/guava-fix/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/qualified/guava-fix/measurement.json) |
+
+[All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

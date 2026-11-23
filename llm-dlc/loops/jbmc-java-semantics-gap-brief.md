@@ -443,3 +443,9 @@ historical 13, freezing model hashes for the score), every native and integrated
 and §3's transfer callers. The grids the brief only sketches (#7's patterned inputs, #8's boundary grid, #15's
 schedules) and the #6 classfile-variant comparator regression are not built. Why the models jar flips #6's
 `dispatch` and `firstDeclared` is not investigated.
+
+## Execution results
+
+At the original bounds, the native checker went from 6 to 13 decisions on the 13 historical JBMC-only claims and kept all 24 native regression controls. On 60 separately registered caller statements it went from 12 to 50 decisions, with 29 proofs and 21 refutations replayed on the original JVM. The final checker resolved both opening verdicts that contradicted the JVM.
+
+Both full-interval Commons Lang claims and their negative controls were decided. The original Guava #7955 parent and fix were also distinguished on both array types. Ten direct claims remain open on nullable reference-array inputs, Gson's synchronized-map initialization and thread construction. The results page gives the scope, first unproved operation and original evidence for each, plus separate rechecks of #374 and #375. [Full before-and-after results](jbmc-java-semantics-gap-results.md) · [Machine-readable scorecard](../../verification/java-semantics-gap/scorecard.json)

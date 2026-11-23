@@ -21,3 +21,23 @@ Inspect each strict task with `python3 examples/tools/build.py --plan 379`. The 
 ```sh
 python3 lib/benchmark/java-semantics-gap/campaign.py jvm arrays receiver gson-parent gson-fix --output "$TMPDIR/semantics"
 ```
+
+## Measured results
+
+The campaign's ordinary native checker decided 4/11 at opening and 4/11 at qualification, with 2 established and 2 refuted on original-JVM replays.
+
+| Entry | Opening native | Qualified native |
+|---|---|---|
+| arrays/categories | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [open (0.01 s)](../../verification/java-semantics-gap/qualified/arrays/measurement.json) |
+| arrays/noNullCell | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [open (0.00 s)](../../verification/java-semantics-gap/qualified/arrays/measurement.json) |
+| arrays/noItemCell | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [open (0.00 s)](../../verification/java-semantics-gap/qualified/arrays/measurement.json) |
+| arrays/followsAlias | [proved (0.02 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/qualified/arrays/measurement.json) |
+| arrays/alwaysShares | [refuted (0.02 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/qualified/arrays/measurement.json) |
+| receiver/exact | [proved (0.02 s)](../../verification/java-semantics-gap/opening/receiver/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/receiver/measurement.json) |
+| receiver/parentOrChild | [refuted (0.03 s)](../../verification/java-semantics-gap/opening/receiver/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/qualified/receiver/measurement.json) |
+| gson-parent/compatible | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-parent/measurement.json) | [open (0.03 s)](../../verification/java-semantics-gap/qualified/gson-parent/measurement.json) |
+| gson-parent/syntax | [open (0.03 s)](../../verification/java-semantics-gap/opening/gson-parent/measurement.json) | [open (0.03 s)](../../verification/java-semantics-gap/qualified/gson-parent/measurement.json) |
+| gson-fix/compatible | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-fix/measurement.json) | [open (0.02 s)](../../verification/java-semantics-gap/qualified/gson-fix/measurement.json) |
+| gson-fix/syntax | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-fix/measurement.json) | [open (0.02 s)](../../verification/java-semantics-gap/qualified/gson-fix/measurement.json) |
+
+[All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

@@ -13,3 +13,15 @@ Inspect each strict task with `python3 examples/tools/build.py --plan 386`. The 
 ```sh
 python3 lib/benchmark/java-semantics-gap/campaign.py jvm construction --output "$TMPDIR/semantics"
 ```
+
+## Measured results
+
+The campaign's ordinary native checker decided 2/3 at opening and 3/3 at qualification, with 1 established and 2 refuted on original-JVM replays.
+
+| Entry | Opening native | Qualified native |
+|---|---|---|
+| construction/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/construction/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/construction/measurement.json) |
+| construction/emptySkips | [refuted (0.03 s)](../../verification/java-semantics-gap/opening/construction/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/qualified/construction/measurement.json) |
+| construction/alreadyInitialized | [refuted (0.03 s)](../../verification/java-semantics-gap/opening/construction/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/qualified/construction/measurement.json) |
+
+[All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

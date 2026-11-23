@@ -1,0 +1,292 @@
+--- /dev/null
++++ b/verification/java-semantics-gap/heap-and-monitors/measurement.json
+@@ -0,0 +1,234 @@
++{
++  "job": "20261123-104830-replay-the-actual-jvm-worker-schedules-a",
++  "source": "f17b8fb17723b29b5985e257f420cc3b21d7c2d9",
++  "jvmSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jvm": {
++    "classes": {
++      "MonitorLaunch.class": "5f56d8538a62df473a7a3d4614070d38b6cc4a3b5b68a411fc6268431e598464",
++      "MonitorIdentity.class": "6bfcc992c1d5bd773a7eebe861460b0c871cf62a6b78974c59b0a3e4d9534096",
++      "MonitorIdentity$1.class": "10d18593a4cc6e0703f2841bec8838a662b0921329908e035589aa655bafcdd5",
++      "MonitorIdentity$Worker.class": "50c56bcda12eeeb85a8e6982f14e28caddbb2a79be0c663314624c33f571186e"
++    },
++    "observerSha256": "d371e85c081cb4ad7b523a51b16b90a31ba35e47a7c88127a32019d6a405dcb9",
++    "breakpoint": {
++      "class": "MonitorIdentity",
++      "method": "observe",
++      "line": 18
++    },
++    "runs": {
++      "matched": {
++        "observations": [
++          "matched before the original read=5 workerBlockedOnClass=true",
++          "original result=protected"
++        ],
++        "seconds": 0.191
++      },
++      "mixed": {
++        "observations": [
++          "mixed before the original read=6 workerBlockedOnClass=false",
++          "original result=exposed"
++        ],
++        "seconds": 0.19
++      },
++      "synchronizedMethod": {
++        "observations": [
++          "synchronizedMethod before the original read=5 workerBlockedOnClass=true",
++          "original result=protected"
++        ],
++        "seconds": 0.176
++      }
++    }
++  },
++  "standalone": {
++    "runs": {
++      "matched": {
++        "target": {
++          "status": "SUCCESS",
++          "exit": 0,
++          "target": {
++            "property": "java::MonitorProfiles.matched:()V.assertion.1",
++            "description": "assertion at file MonitorProfiles.java line 13 function java::MonitorProfiles.matched:()V bytecode-index 20",
++            "status": "SUCCESS",
++            "sourceLocation": {
++              "bytecodeIndex": "20",
++              "comment": "assertion at file MonitorProfiles.java line 13 function java::MonitorProfiles.matched:()V bytecode-index 20",
++              "file": "MonitorProfiles.java",
++              "function": "java::MonitorProfiles.matched:()V",
++              "line": "13",
++              "propertyClass": "assertion",
++              "propertyId": "java::MonitorProfiles.matched:()V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.161,
++          "raw": "target-matched.json.gz",
++          "sha256": "9f6fd180eb249951b2e0a3e74145935298b5fb5a723e910f891a3cfbcdce94af",
++          "classSha256": "22f56cc4e709f54bce5b64db9e4b78898676bf5acc338c5ac6a3ef82b7f6b071"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::MonitorProfiles.matched:()V.assertion.1",
++            "description": "assertion at file MonitorProfiles.java line 13 function java::MonitorProfiles.matched:()V bytecode-index 22",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "22",
++              "comment": "assertion at file MonitorProfiles.java line 13 function java::MonitorProfiles.matched:()V bytecode-index 22",
++              "file": "MonitorProfiles.java",
++              "function": "java::MonitorProfiles.matched:()V",
++              "line": "13",
++              "propertyClass": "assertion",
++              "propertyId": "java::MonitorProfiles.matched:()V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.179,
++          "raw": "reached-matched.json.gz",
++          "sha256": "0c74ac5ace508f1a0bbec5eb56cfa67c8e6953481507c0d541c1c74bdb611448",
++          "classSha256": "db49d6e585db203789ba9786d5646ec5f88ef42ef01eef810f3819768d18b6a6"
++        }
++      },
++      "mixed": {
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::MonitorProfiles.mixed:()V.assertion.1",
++            "description": "assertion at file MonitorProfiles.java line 17 function java::MonitorProfiles.mixed:()V bytecode-index 20",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "20",
++              "comment": "assertion at file MonitorProfiles.java line 17 function java::MonitorProfiles.mixed:()V bytecode-index 20",
++              "file": "MonitorProfiles.java",
++              "function": "java::MonitorProfiles.mixed:()V",
++              "line": "17",
++              "propertyClass": "assertion",
++              "propertyId": "java::MonitorProfiles.mixed:()V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.177,
++          "raw": "target-mixed.json.gz",
++          "sha256": "4d71151bef184dba1598135368f38ca19eaa26a1c08281888fadddd73192e06e",
++          "classSha256": "22f56cc4e709f54bce5b64db9e4b78898676bf5acc338c5ac6a3ef82b7f6b071"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::MonitorProfiles.mixed:()V.assertion.1",
++            "description": "assertion at file MonitorProfiles.java line 17 function java::MonitorProfiles.mixed:()V bytecode-index 22",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "22",
++              "comment": "assertion at file MonitorProfiles.java line 17 function java::MonitorProfiles.mixed:()V bytecode-index 22",
++              "file": "MonitorProfiles.java",
++              "function": "java::MonitorProfiles.mixed:()V",
++              "line": "17",
++              "propertyClass": "assertion",
++              "propertyId": "java::MonitorProfiles.mixed:()V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [],
++          "inputs": {},
++          "seconds": 0.159,
++          "raw": "reached-mixed.json.gz",
++          "sha256": "6fe97fcba7c7a384502376ea2d257bcbe4fe834d321fe698ab8691f882d5e939",
++          "classSha256": "db49d6e585db203789ba9786d5646ec5f88ef42ef01eef810f3819768d18b6a6"
++        }
++      },
++      "staticMethod": {
++        "target": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::MonitorProfiles.staticMethod:()V.assertion.1",
++            "description": "assertion at file MonitorProfiles.java line 21 function java::MonitorProfiles.staticMethod:()V bytecode-index 20",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "20",
++              "comment": "assertion at file MonitorProfiles.java line 21 function java::MonitorProfiles.staticMethod:()V bytecode-index 20",
++              "file": "MonitorProfiles.java",
++              "function": "java::MonitorProfiles.staticMethod:()V",
++              "line": "21",
++              "propertyClass": "assertion",
++              "propertyId": "java::MonitorProfiles.staticMethod:()V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [
++            "Java method 'java::MonitorProfiles$Implicit.write:()V' is static and synchronized. This is unsupported, the synchronized keyword will be ignored."
++          ],
++          "inputs": {},
++          "seconds": 0.157,
++          "raw": "target-staticMethod.json.gz",
++          "sha256": "c0c3a3335816de964fa30a5e3c5ef7a5effdd7efb09f278bcfc71a6765c41b17",
++          "classSha256": "22f56cc4e709f54bce5b64db9e4b78898676bf5acc338c5ac6a3ef82b7f6b071"
++        },
++        "reached": {
++          "status": "FAILURE",
++          "exit": 10,
++          "target": {
++            "property": "java::MonitorProfiles.staticMethod:()V.assertion.1",
++            "description": "assertion at file MonitorProfiles.java line 21 function java::MonitorProfiles.staticMethod:()V bytecode-index 22",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "22",
++              "comment": "assertion at file MonitorProfiles.java line 21 function java::MonitorProfiles.staticMethod:()V bytecode-index 22",
++              "file": "MonitorProfiles.java",
++              "function": "java::MonitorProfiles.staticMethod:()V",
++              "line": "21",
++              "propertyClass": "assertion",
++              "propertyId": "java::MonitorProfiles.staticMethod:()V.assertion.1"
++            }
++          },
++          "totalProperties": 2,
++          "otherFailures": [],
++          "warnings": [
++            "Java method 'java::MonitorProfiles$Implicit.write:()V' is static and synchronized. This is unsupported, the synchronized keyword will be ignored."
++          ],
++          "inputs": {},
++          "seconds": 0.196,
++          "raw": "reached-staticMethod.json.gz",
++          "sha256": "aa4e314e1fa6c5ca0ee5fa46107e9cf64c97ffb2d4302e1a1dd502ad8c1b8c5c",
++          "classSha256": "db49d6e585db203789ba9786d5646ec5f88ef42ef01eef810f3819768d18b6a6"
++        }
++      }
++    },
++    "flags": [
++      "--java-threading",
++      "--unwind",
++      "16",
++      "--unwinding-assertions",
++      "--throw-runtime-exceptions",
++      "--sat-solver",
++      "cadical",
++      "--trace",
++      "--json-ui"
++    ],
++    "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++    "modelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de"
++  },
++  "arrayPlan": {
++    "checkerSha256": "3ae4fab339afe1b1aa8348fc88560d70b75fa00d0b2a9212d4f2dff6c9023980",
++    "classSha256": "0d7df293726832dff5e1bf49516c5f1dbe3b974fc8e199f0d7aefd361e83e966",
++    "seconds": 0.003,
++    "planSha256": "df1c0d2b0e0771371befe47517923a673077404cd7bf5476ee3e125ce1ce51c4",
++    "exit": 2,
++    "verdict": "frontend refusal",
++    "diagnostic": "jvmcontract: unsupported (Objects): the previous version's array values has elements of type ReferenceCells$Item: an array leaf is of integral or boolean elements\n"
++  }
++}
+--- /dev/null
++++ b/verification/java-semantics-gap/heap-and-monitors/planned.stderr
+@@ -0,0 +1 @@
++jvmcontract: unsupported (Objects): the previous version's array values has elements of type ReferenceCells$Item: an array leaf is of integral or boolean elements
+Binary file verification/java-semantics-gap/heap-and-monitors/reached-matched.json.gz changed
+Binary file verification/java-semantics-gap/heap-and-monitors/reached-mixed.json.gz changed
+Binary file verification/java-semantics-gap/heap-and-monitors/reached-staticMethod.json.gz changed
+--- /dev/null
++++ b/verification/java-semantics-gap/heap-and-monitors/reference-array-plan.json
+@@ -0,0 +1,42 @@
++{
++  "before": {
++    "nodes": [],
++    "roots": [
++      {
++        "name": "values",
++        "value": {
++          "kind": "array",
++          "path": "values",
++          "element": "ReferenceCells$Item",
++          "max_length": 2,
++          "nullable": true
++        }
++      }
++    ],
++    "bounds": {
++      "nodes": 0,
++      "max_array_length": 2,
++      "setup_calls": 0
++    }
++  },
++  "after": {
++    "nodes": [],
++    "roots": [
++      {
++        "name": "values",
++        "value": {
++          "kind": "array",
++          "path": "values",
++          "element": "ReferenceCells$Item",
++          "max_length": 2,
++          "nullable": true
++        }
++      }
++    ],
++    "bounds": {
++      "nodes": 0,
++      "max_array_length": 2,
++      "setup_calls": 0
++    }
++  }
++}
+Binary file verification/java-semantics-gap/heap-and-monitors/target-matched.json.gz changed
+Binary file verification/java-semantics-gap/heap-and-monitors/target-mixed.json.gz changed
+Binary file verification/java-semantics-gap/heap-and-monitors/target-staticMethod.json.gz changed

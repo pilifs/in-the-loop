@@ -1,0 +1,371 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-101335-recheck-both-historical-public-guava-and",
+  "title": "Recheck both historical public Guava and Gson graphs",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 1m26s, peak 646.1 MiB (estimated 12m00s, 4.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-101335-recheck-both-historical-public-guava-and.json",
+    "sha256": "ffa1304579e6e022030734d060cbee5ec97f25a152e92901ceda5747256b88bd",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-101335-recheck-both-historical-public-guava-and",
+      "title": "Recheck both historical public Guava and Gson graphs",
+      "description": "Compare strict native and staged integrated JBMC on each frozen source and original JAR, with a 120-second deadline per claim. Save raw outputs, the declared domain and actual JVM counterexample replays. The numeric, endian and UTF-16 sources also check their independent JVM grids.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "All named original statements retain both engine outcomes with scope, elapsed time and a first refusal or replayable decision.",
+      "submitted": {
+        "at": "2026-11-23T10:13:35+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 13,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "12m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "guava-parent",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final guava-parent",
+          "cwd": "."
+        },
+        {
+          "name": "guava-fix",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final guava-fix",
+          "cwd": "."
+        },
+        {
+          "name": "gson-parent",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final gson-parent",
+          "cwd": "."
+        },
+        {
+          "name": "gson-fix",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final gson-fix",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/final/guava-parent",
+        "verification/java-semantics-gap/final/guava-fix",
+        "verification/java-semantics-gap/final/gson-parent",
+        "verification/java-semantics-gap/final/gson-fix"
+      ]
+    }
+  },
+  "sourceCommit": "20db45cd35517bfd9c10ee5ec95b46ba1101e490",
+  "startedAt": "2026-11-23T10:23:40+00:00",
+  "finishedAt": "2026-11-23T10:28:50+00:00",
+  "wallSeconds": 310.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4104052,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 677486592,
+    "wallSeconds": 86.6,
+    "cpuSeconds": 89.5,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "guava-parent",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final guava-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 5.009,
+      "cpuSeconds": 5.969,
+      "cpuThrottledSeconds": 0.223,
+      "peakMemoryBytes": 125923328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-guava-parent.log",
+        "lines": 4,
+        "bytes": 191,
+        "sha256": "fba4398623d33d0418782914f37f6d77edba41c585289147cac50aa09648245c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "guava-parent retained-native unsupported 0.026",
+        "guava-parent retained-jbmc correct 1.61",
+        "guava-parent parentBehavior-native unsupported 0.031",
+        "guava-parent parentBehavior-jbmc unsupported 1.584"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "guava-fix",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final guava-fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 5.207,
+      "cpuSeconds": 6.136,
+      "cpuThrottledSeconds": 0.21,
+      "peakMemoryBytes": 123613184,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-guava-fix.log",
+        "lines": 4,
+        "bytes": 179,
+        "sha256": "decb4fd65f99c5fd454a17a213b2407836a444371e5348552ff78e3396bcb2db",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "guava-fix retained-native unsupported 0.021",
+        "guava-fix retained-jbmc unsupported 1.607",
+        "guava-fix parentBehavior-native unsupported 0.023",
+        "guava-fix parentBehavior-jbmc correct 1.79"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "gson-parent",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final gson-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 39.902,
+      "cpuSeconds": 40.481,
+      "cpuThrottledSeconds": 0.13,
+      "peakMemoryBytes": 673312768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-gson-parent.log",
+        "lines": 4,
+        "bytes": 181,
+        "sha256": "7151da44438c081395b73087196feba749d11bdd15c78b1dce55b7221faca6fe",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gson-parent compatible-native unsupported 0.034",
+        "gson-parent compatible-jbmc unsupported 18.69",
+        "gson-parent syntax-native unsupported 0.016",
+        "gson-parent syntax-jbmc unsupported 19.736"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "gson-fix",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final gson-fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 36.482,
+      "cpuSeconds": 36.902,
+      "cpuThrottledSeconds": 0.131,
+      "peakMemoryBytes": 677486592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-gson-fix.log",
+        "lines": 4,
+        "bytes": 170,
+        "sha256": "b7b3e6aa8fc40ab3b0b8e504b686b5a36331d992b737e0ab1452d5e8e93ad5dc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gson-fix compatible-native unsupported 0.024",
+        "gson-fix compatible-jbmc unsupported 17.557",
+        "gson-fix syntax-native unsupported 0.022",
+        "gson-fix syntax-jbmc unsupported 17.584"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/final/guava-parent/measurement.json",
+      "change": "added",
+      "bytes": 10506,
+      "sha256": "297c6f0c34cac1ebe8aef2cfbc0ccfa79f85aa6b14f05e4cdf60965bb45912b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/final/guava-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 6358,
+      "sha256": "d18250596eebd93ddc48275979d98322a7484519a3eff1bc10f7ddcc2eccaf29",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/final/guava-fix/measurement.json",
+      "change": "added",
+      "bytes": 10835,
+      "sha256": "00b7097561b935da7dfbf4629cb4e4d59b1f638181fb0bbc4884cb1a3127947d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/final/guava-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 6804,
+      "sha256": "3369e7463e21dae5634fb4e96911882da54af28279ef292530870b00e19d1cbd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/final/gson-parent/measurement.json",
+      "change": "added",
+      "bytes": 6286,
+      "sha256": "5563f7d2a0a33f58728bcd4b9029417162b0cc4e72dfcb98a7984281aee5c2b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/final/gson-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 12974,
+      "sha256": "bf23a4946eede32ecbd06b0d6631d53556909c90f4060b0f4a5c9e5cb040763e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/final/gson-fix/measurement.json",
+      "change": "added",
+      "bytes": 6276,
+      "sha256": "a6bae76ea104d3db2780cacac8b3572df00e090bc56c937a2532f0673dac8f73",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/final/gson-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 12972,
+      "sha256": "10f68e08e6f2c3eeca846c1c4be01556e8b68471a73c868631e533205aba3c14",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T10:29:03+00:00",
+    "applied": [
+      "verification/java-semantics-gap/final/guava-parent/measurement.json",
+      "verification/java-semantics-gap/final/guava-parent/raw.tar.gz",
+      "verification/java-semantics-gap/final/guava-fix/measurement.json",
+      "verification/java-semantics-gap/final/guava-fix/raw.tar.gz",
+      "verification/java-semantics-gap/final/gson-parent/measurement.json",
+      "verification/java-semantics-gap/final/gson-parent/raw.tar.gz",
+      "verification/java-semantics-gap/final/gson-fix/measurement.json",
+      "verification/java-semantics-gap/final/gson-fix/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "39141c056e1095b6dfe9ca96a24b667d7ac28561",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/39141c056e1095b6dfe9ca96a24b667d7ac28561/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T102850Z-777460bfadd7d13f",
+      "outputs": "20261123T102850Z-801077cfc752a15b",
+      "diff": "20261123T102850Z-8202348ccd0ff271"
+    }
+  }
+}
