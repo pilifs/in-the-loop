@@ -232,4 +232,8 @@ The pre-feature and landed JVMs and four strict native proofs also reproduced th
 
 Both proof-tier conformance tests passed under JBMC, automatic selection and automatic confirmation. [Conformance result](../../verification/results/2026/11/23/20261123-012155-check-spring-startup-changes-against-the/result.json)
 
+All four ordinary startup paths moved again. Both binder graphs now request the factory resources, the fluent builder writes its first role line, both metadata JARs reach iteration of the nine-entry wrapper map, and both formatter slices construct the conversion service. The unguarded primary score is still **4/16**. The original fluent claims hold on all 32 inputs under both standard line endings. With one recorded ClassUtils initializer the native checker decides all 12 historical metadata selectors, including three parent counterexamples replayed on the original JVM. Both registrars now prove their callback order from ordinary startup. [Results and next unproved steps](spring-and-java-data-workstream-results.md#what-the-next-ordinary-startup-check-reached) · [Managed controls](../../verification/results/2026/11/23/20261123-030518-measure-four-spring-startup-boundaries-o/result.json)
+
+The cache and writer changes also passed both managed JBMC and automatic-confirmation corpus tests. [Conformance receipt](../../verification/results/2026/11/23/20261123-024401-check-the-spring-cache-and-writer-semant/result.json)
+
 - Status: done

@@ -42,7 +42,8 @@ def qualify(raw, case):
     if (native_selectors.disposition(row, target, BOUNDS, 0) != ("established", None)
             or row.get("problem") or row.get("counterexample") or row["throws"]
             or row["stated"]["checker"]["fallback"] is not None
-            or any(a["basis"] != "engine" for a in row["stated"]["assumptions"])):
+            or any(a["basis"] != "engine" or a.get("id", "").startswith("observed-initializer:")
+                   for a in row["stated"]["assumptions"])):
         raise ValueError(f"incomplete or differently scoped fluent proof for input {case}")
     return row["stated"]["assumptions"]
 

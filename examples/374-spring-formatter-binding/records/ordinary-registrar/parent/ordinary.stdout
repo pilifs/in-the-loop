@@ -1,0 +1,181 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "springwork.RegistrationTrace#sequence",
+    "domain": "code: int",
+    "assume": "code >= 0 && code <= 1",
+    "assert": "(code == 0 && result == 9) || (code == 1 && result == 978)",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 256 times with unwinding assertions",
+    "problem": null,
+    "statement": "/tmp/registrar-callbacks-c7o3j43i/ordinary/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ springwork.RegistrationTrace#sequence satisfies `(code == 0 && result == 9) || (code == 1 && result == 978)` on every input where code >= 0 && code <= 1 (jvmcontract's own checker (CaDiCaL): 1 properties proved over code: int in 0.1 s; loops unwound 256 times with unwinding assertions)\n  not vacuous: sequence(code=0) reaches the calls\n",
+    "work": "/tmp/registrar-callbacks-c7o3j43i/ordinary",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.082987219,
+      "properties": 1,
+      "unwind": 256,
+      "max_array_length": 16384,
+      "stage": null,
+      "native": {
+        "paths": 210,
+        "merges": 0,
+        "solver_calls": 573,
+        "solving_seconds": 0.027694015,
+        "gates_evaluated": 16134,
+        "evaluating_seconds": 0.000385246,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 7634,
+        "clauses": 21650,
+        "seconds": 0.079046072,
+        "loading_seconds": 0.002021201,
+        "decoding_seconds": 0.000268402,
+        "encoding_seconds": 0.00933056,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 0.079,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.002,
+            "lowering": 0.0,
+            "symbolic": 0.04,
+            "encoding": 0.009,
+            "solving": 0.028,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 7634,
+            "clauses": 21650
+          }
+        },
+        {
+          "checker": "native",
+          "purpose": "probe",
+          "stage": null,
+          "budget_seconds": 59.917,
+          "seconds": 0.004,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.0,
+            "lowering": 0.0,
+            "symbolic": 0.004,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 160,
+            "clauses": 443
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.103,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.083,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.019
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "code",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "code: int"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "code >= 0 && code <= 1",
+          "basis": "stated"
+        },
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against (code == 0 && result == 9) || (code == 1 && result == 978)",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "probe",
+        "text": "Some input in the domain reaches the calls: the tool's own checker found sequence(code=0).",
+        "witness": "sequence(code=0)"
+      }
+    }
+  }
+]
