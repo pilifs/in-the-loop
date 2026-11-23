@@ -1,0 +1,93 @@
+{
+  "schema": "historical-concrete-frame/v1",
+  "solverSha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+  "source": "Original solver obligations restricted to fixed inputs. Each full verification condition is retained.",
+  "cases": [
+    {
+      "originalFormulaSha256": "6cfbfef4efd36c3d2d7292c9442b0c73028d02ee589e8d10e1025835b564a61b",
+      "zeroBasedQuery": 10,
+      "originalScopeSha256": "aeb24a7f2213aec1dc7ef310008610c3ad3f1ef91ff31eb2a968037521c77f43",
+      "obligation": "preserve the input heap",
+      "historicalStatus": "unresolved",
+      "controls": [
+        {
+          "control": "changing-store",
+          "bindings": [
+            "(= length #x00000001)",
+            "(= cursor #x00000000)",
+            "(= k #x00000000)",
+            "(= heap initial)",
+            "(= target #x00000007)",
+            "(= (select initial k) target)"
+          ],
+          "expected": "sat",
+          "actual": "sat",
+          "querySha256": "a76d2253f42328f19ba97773624aae5d74792f4de3b52c3ab662a4b76254249e"
+        },
+        {
+          "control": "same-value-store",
+          "bindings": [
+            "(= length #x00000001)",
+            "(= cursor #x00000000)",
+            "(= k #x00000000)",
+            "(= heap initial)",
+            "(= target #x00000000)",
+            "(= (select initial k) target)"
+          ],
+          "expected": "unsat",
+          "actual": "unsat",
+          "querySha256": "284b0e720cf0eff71e6d14930c2eca4b7e96e65ea4674dc1c457519223c958f1"
+        }
+      ],
+      "classSha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
+      "checkerVersion": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b",
+      "independentWitness": "rejected checked witness [7] target 7: frame changed, return 0, after [0]; first rule: heap frame at store 25"
+    },
+    {
+      "originalFormulaSha256": "d99835a0d93b55cf99cadb7030385b1095da11771618649f7b771404ba6f572d",
+      "zeroBasedQuery": 13,
+      "originalScopeSha256": "c12962afd37da57819b6f9d66cebccaaedb8f7df94c5b5b4b1805eab1f6932a2",
+      "obligation": "caller read follows from the proved frame",
+      "historicalStatus": "unresolved",
+      "controls": [
+        {
+          "control": "shared-empty-range",
+          "bindings": [
+            "(= length #x00000001)",
+            "(= from #x00000000)",
+            "(= to #x00000000)",
+            "(= value #x00000007)",
+            "(= (select initial #x00000000) #x0000000b)",
+            "(= aliases true)",
+            "(= k #x00000000)",
+            "(= otherLength length)",
+            "(= otherInitial initial)"
+          ],
+          "expected": "sat",
+          "actual": "sat",
+          "querySha256": "8d9e60805aed900f6b074d3afb16305eeb81bb1fe4ee1e94774bdd2d8251bf3f"
+        },
+        {
+          "control": "distinct-valid-observation",
+          "bindings": [
+            "(= length #x00000001)",
+            "(= from #x00000000)",
+            "(= to #x00000000)",
+            "(= value #x00000007)",
+            "(= (select initial #x00000000) #x0000000b)",
+            "(= aliases false)",
+            "(= k #x00000001)",
+            "(= otherLength #x00000002)",
+            "(= (select otherInitial k) #x0000001f)"
+          ],
+          "expected": "unsat",
+          "actual": "unsat",
+          "querySha256": "ed26a531d164828a8770ec00efb07eb4200797734b90e54888ffaa729cfafbe7"
+        }
+      ],
+      "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "independentWitness": "rejected checked witness shared [11], from=0 to=0 value=7 k=0: returned 7, after [7], expected 11 and [11]; first rule: callee write interval or arguments at 17: [Root, From, Next, Value]"
+    }
+  ]
+}
