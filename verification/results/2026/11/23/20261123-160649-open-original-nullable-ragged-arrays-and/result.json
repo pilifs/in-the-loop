@@ -1,0 +1,386 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-160649-open-original-nullable-ragged-arrays-and",
+  "title": "Open original nullable ragged arrays and Commons Math matrices",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 1m45s, peak 1.2 GiB (estimated 3m00s, 4.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-160649-open-original-nullable-ragged-arrays-and.json",
+    "sha256": "b5218cfd89ca321c85588b51460a9f2862486a75584d27b4687f6c367d148c34",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-160649-open-original-nullable-ragged-arrays-and",
+      "title": "Open original nullable ragged arrays and Commons Math matrices",
+      "description": "Exercise the direct inputs, independent identity probes, primitive builders and the original long matrix descriptor. Compare stock allocation trees with explicit aliases and fresh JVM controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow/measure.py"
+        ]
+      },
+      "expected": "Opening dispositions, raw named properties, hashed classpath and physical controls for every registered entry.",
+      "submitted": {
+        "at": "2026-11-23T16:06:49+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 18,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "rows paired",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening rows paired",
+          "cwd": "."
+        },
+        {
+          "name": "rows packaged",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening rows packaged",
+          "cwd": "."
+        },
+        {
+          "name": "rows alias",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening rows alias",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/opening/rows/paired",
+        "verification/jbmc-fast-follow/opening/rows/packaged",
+        "verification/jbmc-fast-follow/opening/rows/alias"
+      ]
+    }
+  },
+  "sourceCommit": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
+  "startedAt": "2026-11-23T16:25:11+00:00",
+  "finishedAt": "2026-11-23T16:30:49+00:00",
+  "wallSeconds": 338.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3488092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1292763136,
+    "wallSeconds": 105.0,
+    "cpuSeconds": 116.9,
+    "memoryOfEstimate": 0.3,
+    "durationOfEstimate": 0.58
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 223.147,
+      "cpuSeconds": 223.174,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2280738816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "fbac9c72deddb46c1a62bf1a76b6eac4a2465008860063684c4f8d6ad1b37837",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-160649-open-original-nullable-ragged-arrays-and/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 42s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "rows paired",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening rows paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 6.415,
+      "cpuSeconds": 7.992,
+      "cpuThrottledSeconds": 0.521,
+      "peakMemoryBytes": 117207040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-rows-paired.log",
+        "lines": 32,
+        "bytes": 1244,
+        "sha256": "a17e3bbc226db2df5f7185dbfd0472d69c7d27095da9078cfc174af3be219186",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "RaggedProof#reversed native unsupported",
+        "RaggedProof#reversed jbmc unsupported",
+        "RaggedProof#wrong native unsupported",
+        "RaggedProof#wrong jbmc unsupported",
+        "RaggedProof#iter native unsupported",
+        "RaggedProof#iter jbmc unsupported",
+        "RaggedProof#snapshot native unsupported",
+        "RaggedProof#snapshot jbmc unsupported",
+        "RaggedProof#distinct native unsupported",
+        "RaggedProof#distinct jbmc unsupported",
+        "RowIdentities#nonNullOuter native unsupported",
+        "RowIdentities#nonNullOuter jbmc unsupported",
+        "RowIdentities#noEmptyOuter native unsupported",
+        "RowIdentities#noEmptyOuter jbmc unsupported",
+        "RowIdentities#noDistinctEqualRows native unsupported",
+        "RowIdentities#noDistinctEqualRows jbmc unsupported",
+        "MadeRows#reverse native correct",
+        "MadeRows#reverse jbmc unsupported",
+        "MadeRows#iterator native correct",
+        "MadeRows#iterator jbmc unsupported",
+        "MadeRows#alwaysDistinct native correct",
+        "MadeRows#alwaysDistinct jbmc correct",
+        "MatrixRows#rectangular native unsupported",
+        "MatrixRows#rectangular jbmc unsupported",
+        "MatrixRows#singleShape native unsupported",
+        "MatrixRows#singleShape jbmc unsupported",
+        "MatrixRows#shape native unsupported",
+        "MatrixRows#shape jbmc unsupported",
+        "MatrixRows#same native unsupported",
+        "MatrixRows#same jbmc unsupported",
+        "MatrixRows#noNull native unsupported",
+        "MatrixRows#noNull jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "rows packaged",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening rows packaged",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 94.179,
+      "cpuSeconds": 102.52,
+      "cpuThrottledSeconds": 1.306,
+      "peakMemoryBytes": 1292763136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-rows-packaged.log",
+        "lines": 16,
+        "bytes": 614,
+        "sha256": "9f1a236f81b182134527beda5f2372146ba4394a5c43b6171c12cbfbe03d620b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "RaggedProof#reversed packaged SUCCESS",
+        "RaggedProof#wrong packaged FAILURE",
+        "RaggedProof#iter packaged SUCCESS",
+        "RaggedProof#snapshot packaged FAILURE",
+        "RaggedProof#distinct packaged SUCCESS",
+        "RowIdentities#nonNullOuter packaged FAILURE",
+        "RowIdentities#noEmptyOuter packaged FAILURE",
+        "RowIdentities#noDistinctEqualRows packaged FAILURE",
+        "MadeRows#reverse packaged SUCCESS",
+        "MadeRows#iterator packaged SUCCESS",
+        "MadeRows#alwaysDistinct packaged FAILURE",
+        "MatrixRows#rectangular packaged SUCCESS",
+        "MatrixRows#singleShape packaged SUCCESS",
+        "MatrixRows#shape packaged SUCCESS",
+        "MatrixRows#same packaged FAILURE",
+        "MatrixRows#noNull packaged FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "rows alias",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening rows alias",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 4.411,
+      "cpuSeconds": 6.418,
+      "cpuThrottledSeconds": 0.559,
+      "peakMemoryBytes": 127926272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-rows-alias.log",
+        "lines": 2,
+        "bytes": 70,
+        "sha256": "8d8aa91571bad64d0f3212f1da1454f7c9f691743952b0e17d8309e7b28f1f9c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "RaggedProof#reversed alias SUCCESS",
+        "RaggedProof#distinct alias FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/opening/rows/paired/measurement.json",
+      "change": "added",
+      "bytes": 35440,
+      "sha256": "459550aa7e61d6f7fd78b676f650be60965573791988b02e90d8a03d55426cc1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/rows/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 8580,
+      "sha256": "71d3e117daa0951ad76ae24dc3413a16183d3fb64cb6a603307f7e0e8f8a2e03",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/rows/packaged/measurement.json",
+      "change": "added",
+      "bytes": 62564,
+      "sha256": "623fc7a0ae56033bd4e9474c7b31d423c7df28991d87551784970a8daeb50c6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/rows/packaged/raw.tar.gz",
+      "change": "added",
+      "bytes": 5437079,
+      "sha256": "3e3c745c4dee074d019576b5036bd1847f9abb5a9e9e317ef26120bec172e34c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/rows/alias/measurement.json",
+      "change": "added",
+      "bytes": 10352,
+      "sha256": "3b2249926f16486b7e583d2b4b5fcb4e6231a1503734f039e31212d6656edcea",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/rows/alias/raw.tar.gz",
+      "change": "added",
+      "bytes": 36137,
+      "sha256": "47df67ad7ae486b1a48fdbf7a1713030605a6070cccbd173db42f83824b3ed76",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T16:34:50+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/opening/rows/paired/measurement.json",
+      "verification/jbmc-fast-follow/opening/rows/paired/raw.tar.gz",
+      "verification/jbmc-fast-follow/opening/rows/packaged/measurement.json",
+      "verification/jbmc-fast-follow/opening/rows/packaged/raw.tar.gz",
+      "verification/jbmc-fast-follow/opening/rows/alias/measurement.json",
+      "verification/jbmc-fast-follow/opening/rows/alias/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6f934935ac0808dbe9da7733231f752d1144c779",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6f934935ac0808dbe9da7733231f752d1144c779/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T163049Z-485054d19182d9ad",
+      "outputs": "20261123T163049Z-529441b6e2773f35",
+      "diff": "20261123T163049Z-550912b64a901b2b"
+    }
+  }
+}

@@ -1,0 +1,860 @@
+{
+  "phase": "opening",
+  "family": "numeric",
+  "lane": "packaged",
+  "predecessor": {
+    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
+    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
+  },
+  "measuredSource": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
+  "job": "20261123-160648-open-the-jackson-and-commons-lang-floati",
+  "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+  "jbmcSha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
+  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "jars": [
+    {
+      "name": "jackson-databind-2.19.0.jar",
+      "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a"
+    },
+    {
+      "name": "jackson-core-2.19.0.jar",
+      "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430"
+    },
+    {
+      "name": "jackson-annotations-2.19.0.jar",
+      "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7"
+    },
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    }
+  ],
+  "productClasses": {
+    "ConversionEquivalence.class": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442",
+    "NodeChecks.class": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f"
+  },
+  "driverClasses": {
+    "Cases.class": "b9d3c4667149a8b34a668f1c3d7a6046e4b4ecaf7f5400cc940468abcdbc47c5",
+    "NodeAssertions.class": "9fe33752d57d23e0463230889efea3a9d567e68b1ce125a33624389d205d8eef",
+    "RoundingBoundaries.class": "16e5f4f353d0a7d12ef667530d979f38c1c2e4c1efe98ef71cba1a601fd58090",
+    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
+  },
+  "originalJvm": {
+    "Cases": {
+      "sha256": "4dbb0ca0b9eff64887e2c4bec2e13d7b79c1344efc32795460d7fa3ba77f3e3e",
+      "seconds": 0.06,
+      "cases": 22
+    },
+    "NodeAssertions": {
+      "sha256": "ca164401976b59faf56377db3d3f11ba1d6f6a802739fc27f217c1ff40d31dd2",
+      "seconds": 0.062
+    },
+    "RoundingBoundaries": {
+      "sha256": "41b061ac5ae853044699687d3ff638b38d2b5689a6b011624be1fa008c029d57",
+      "seconds": 0.048
+    }
+  },
+  "rows": [
+    {
+      "task": "node-checks-direct",
+      "cohort": "numeric",
+      "parameters": "long n",
+      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
+      "standalone": "NodeAssertions.direct",
+      "target": "NodeChecks#direct",
+      "expected": "established",
+      "specSha256": "8a1cc8eb2f75969005136efd4fc69a441d451cd51de85834001df45e318dda92",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "b806f2ab51e1d092ed8ba03b0d2c6bbc3fbc1c2f0ccbc114a63d163181dd26f6",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::NodeAssertions.direct:(J)V.assertion.1",
+            "description": "assertion at file NodeAssertions.java line 2 function java::NodeAssertions.direct:(J)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file NodeAssertions.java line 2 function java::NodeAssertions.direct:(J)V bytecode-index 8",
+              "file": "NodeAssertions.java",
+              "function": "java::NodeAssertions.direct:(J)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::NodeAssertions.direct:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 1.339,
+          "entry": "NodeAssertions.direct"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(J)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "17",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(J)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "n": {
+              "binary": "0000000001000000000000000000000000000000000000000000000000000000",
+              "data": "18014398509481984L",
+              "name": "integer",
+              "type": "long",
+              "width": 64
+            }
+          },
+          "seconds": 1.438,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "node-checks-same",
+      "cohort": "numeric",
+      "parameters": "long n",
+      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
+      "standalone": "NodeAssertions.same",
+      "target": "NodeChecks#same",
+      "expected": "refuted",
+      "specSha256": "7dd55f854141ca79839bc7edd8dc809f881df8add332af5ab0ce7d8c9bb6cdc7",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "18f7733257158a59c64ac238221a99db215f1cba6a3dcb2bcdfd2ae00b3ce264",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::NodeAssertions.same:(J)V.assertion.1",
+            "description": "assertion at file NodeAssertions.java line 3 function java::NodeAssertions.same:(J)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file NodeAssertions.java line 3 function java::NodeAssertions.same:(J)V bytecode-index 8",
+              "file": "NodeAssertions.java",
+              "function": "java::NodeAssertions.same:(J)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::NodeAssertions.same:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "n": {
+              "binary": "0000000001000000000000000000000001000000000000000000000000000001",
+              "data": "18014399583223809L",
+              "name": "integer",
+              "type": "long",
+              "width": 64
+            }
+          },
+          "seconds": 1.618,
+          "entry": "NodeAssertions.same",
+          "jvmReplay": {
+            "outcome": "refuted",
+            "inputs": [
+              {
+                "type": "long",
+                "value": 18014399583223809
+              }
+            ],
+            "sourceSha256": "d0c48dfebaf22cb05457ec3bf515e388253cee1546fde02954a3844a437ad4db",
+            "exit": 0,
+            "diagnostic": ""
+          }
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(J)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "17",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(J)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "n": {
+              "binary": "0000000001000000000000000000000000000000000000000000000000000000",
+              "data": "18014398509481984L",
+              "name": "integer",
+              "type": "long",
+              "width": 64
+            }
+          },
+          "seconds": 1.513,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "node-checks-public-subnormal",
+      "cohort": "numeric",
+      "parameters": "double x",
+      "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
+      "standalone": "NodeAssertions.sub",
+      "target": "NodeChecks#publicSubnormal",
+      "expected": "established",
+      "specSha256": "6104b4aa9ecab50a8697922ab6a01cddec3d95bf3188ddde507a50cff773b5bc",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "cfac0f4b97d805ff1db89c5f6678e928408b2c8e766642852a3ddc886bfc3a41",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::NodeAssertions.sub:(D)V.assertion.1",
+            "description": "assertion at file NodeAssertions.java line 4 function java::NodeAssertions.sub:(D)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file NodeAssertions.java line 4 function java::NodeAssertions.sub:(D)V bytecode-index 8",
+              "file": "NodeAssertions.java",
+              "function": "java::NodeAssertions.sub:(D)V",
+              "line": "4",
+              "propertyClass": "assertion",
+              "propertyId": "java::NodeAssertions.sub:(D)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 1.6,
+          "entry": "NodeAssertions.sub"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(D)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(D)V bytecode-index 17",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "17",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(D)V bytecode-index 17",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(D)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(D)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "x": {
+              "binary": "0011011010010000000000000000000000000000000000000000000000000000",
+              "data": "7.006492e-46",
+              "name": "float",
+              "width": 64
+            }
+          },
+          "seconds": 1.466,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "node-checks-wrong-subnormal",
+      "cohort": "numeric",
+      "parameters": "double x",
+      "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
+      "standalone": "NodeAssertions.bad",
+      "target": "NodeChecks#wrongSubnormal",
+      "expected": "refuted",
+      "specSha256": "ffe84c08db9dc9f4c625216ac2cc8e0856814e870ce6123230816deafad7ceca",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "7ac345c4a6f7a49db673ad56f6ee8827aafab962f898ec0bd05f25a14eb0066c",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::NodeAssertions.bad:(D)V.assertion.1",
+            "description": "assertion at file NodeAssertions.java line 5 function java::NodeAssertions.bad:(D)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file NodeAssertions.java line 5 function java::NodeAssertions.bad:(D)V bytecode-index 8",
+              "file": "NodeAssertions.java",
+              "function": "java::NodeAssertions.bad:(D)V",
+              "line": "5",
+              "propertyClass": "assertion",
+              "propertyId": "java::NodeAssertions.bad:(D)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "x": {
+              "binary": "0011011010010000000000000000000000000000000000000000000000000000",
+              "data": "7.006492e-46",
+              "name": "float",
+              "width": 64
+            }
+          },
+          "seconds": 1.626,
+          "entry": "NodeAssertions.bad",
+          "jvmReplay": {
+            "outcome": "refuted",
+            "inputs": [
+              {
+                "type": "double",
+                "value": "7.006492321624085e-46"
+              }
+            ],
+            "sourceSha256": "18e79ef935a3a35785bd61355b390c353248be4b24291412aa77c9fc35de51ad",
+            "exit": 0,
+            "diagnostic": ""
+          }
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(D)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(D)V bytecode-index 17",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "17",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(D)V bytecode-index 17",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(D)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(D)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "x": {
+              "binary": "0011011010010000000000000000000000000000000000000000000000000000",
+              "data": "7.006492e-46",
+              "name": "float",
+              "width": 64
+            }
+          },
+          "seconds": 1.682,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "node-checks-commons",
+      "cohort": "numeric",
+      "parameters": "long n",
+      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
+      "standalone": "NodeAssertions.commons",
+      "target": "NodeChecks#commons",
+      "expected": "established",
+      "specSha256": "481aacfabcd62d9fd88dd80c9b5cc8f1309d7c5775b7a2c227eebe59eb209b89",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "8d10324973ef0cf256b4061db85eef8ac649dd312db0c7efca79f4ed9d055d21",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::NodeAssertions.commons:(J)V.assertion.1",
+            "description": "assertion at file NodeAssertions.java line 7 function java::NodeAssertions.commons:(J)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file NodeAssertions.java line 7 function java::NodeAssertions.commons:(J)V bytecode-index 8",
+              "file": "NodeAssertions.java",
+              "function": "java::NodeAssertions.commons:(J)V",
+              "line": "7",
+              "propertyClass": "assertion",
+              "propertyId": "java::NodeAssertions.commons:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 1.479,
+          "entry": "NodeAssertions.commons"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(J)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "17",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(J)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "n": {
+              "binary": "0000000001000000000000000000000000000000000000000000000000000000",
+              "data": "18014398509481984L",
+              "name": "integer",
+              "type": "long",
+              "width": 64
+            }
+          },
+          "seconds": 1.669,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "conversion-equivalence-classified",
+      "cohort": "classification",
+      "parameters": "long n",
+      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
+      "target": "ConversionEquivalence#classified",
+      "expected": "established",
+      "specSha256": "cecb4ea14eb45147ee03bf4052873f997171f18f04a767a4e992aa29481a1a12",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "adc04694b216effa7f03835900f77ae5dcf05d09d7ac9f3f68484d5d54492f3a",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::FollowAssertions.target:(J)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(J)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(J)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(J)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 1.365,
+          "entry": "FollowAssertions.target"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(J)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "17",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 17",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(J)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "n": {
+              "binary": "0000000001000000000000000000000000000000000000000000000000000000",
+              "data": "18014398509481984L",
+              "name": "integer",
+              "type": "long",
+              "width": 64
+            }
+          },
+          "seconds": 1.42,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "node-checks-intrinsic-subnormal",
+      "cohort": "intrinsic",
+      "parameters": "double x",
+      "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
+      "standalone": "NodeAssertions.intrinsic",
+      "target": "NodeChecks#intrinsicSubnormal",
+      "expected": "established",
+      "specSha256": "6f68007ec2b367a0758ab7ba249dd4a13c2821e19ed6114cd45d5b98efbfa8ae",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "14a3dc0b969e4e19bfc3cd91a71ef049e849e09cbf89eed014f590cf10cc93f2",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "SUCCESS",
+          "exit": 0,
+          "target": {
+            "property": "java::NodeAssertions.intrinsic:(D)V.assertion.1",
+            "description": "assertion at file NodeAssertions.java line 6 function java::NodeAssertions.intrinsic:(D)V bytecode-index 8",
+            "status": "SUCCESS",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file NodeAssertions.java line 6 function java::NodeAssertions.intrinsic:(D)V bytecode-index 8",
+              "file": "NodeAssertions.java",
+              "function": "java::NodeAssertions.intrinsic:(D)V",
+              "line": "6",
+              "propertyClass": "assertion",
+              "propertyId": "java::NodeAssertions.intrinsic:(D)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {},
+          "seconds": 1.644,
+          "entry": "NodeAssertions.intrinsic"
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(D)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(D)V bytecode-index 17",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "17",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(D)V bytecode-index 17",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(D)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(D)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "x": {
+              "binary": "0011011010010000000000000000000000000000000000000000000000000000",
+              "data": "7.006492e-46",
+              "name": "float",
+              "width": 64
+            }
+          },
+          "seconds": 1.479,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    },
+    {
+      "task": "node-checks-mantissa-subnormal",
+      "cohort": "mantissa",
+      "parameters": "long k",
+      "reachGuard": "true",
+      "target": "NodeChecks#mantissaSubnormal",
+      "expected": "established",
+      "specSha256": "2c31466d131e4971009a0b7a1f482b8dec6371e589c05e95c8de05fc900a5ee7",
+      "bounds": {
+        "unwind": 10,
+        "maxArrayLength": 8
+      },
+      "packaged": {
+        "flags": [
+          "--unwind",
+          "7",
+          "--unwinding-assertions",
+          "--throw-runtime-exceptions",
+          "--sat-solver",
+          "cadical",
+          "--trace",
+          "--json-ui"
+        ],
+        "driverSha256": "616f6576e862b68d1abde4d0925572a161f4bfc7f78ff2c598f39b8e3f2d80d8",
+        "classpath": [
+          "assertions",
+          "drivers",
+          "product",
+          "jackson-databind-2.19.0.jar",
+          "jackson-core-2.19.0.jar",
+          "jackson-annotations-2.19.0.jar",
+          "commons-lang3-3.17.0.jar",
+          "core-models.jar"
+        ],
+        "target": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.target:(J)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(J)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 2 function java::FollowAssertions.target:(J)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.target:(J)V",
+              "line": "2",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.target:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "k": {
+              "binary": "0000000000000000000000000000000000000000000000000000000000000000",
+              "data": "0L",
+              "name": "integer",
+              "type": "long",
+              "width": 64
+            }
+          },
+          "seconds": 1.398,
+          "entry": "FollowAssertions.target",
+          "jvmReplay": {
+            "outcome": "held",
+            "inputs": [
+              {
+                "type": "long",
+                "value": 0
+              }
+            ],
+            "sourceSha256": "ba4087149b0927447e0d432126a1fbff92fd52777fcc14bf3ef0de3553a6cbe0",
+            "exit": 0,
+            "diagnostic": ""
+          }
+        },
+        "reached": {
+          "status": "FAILURE",
+          "exit": 10,
+          "target": {
+            "property": "java::FollowAssertions.reached:(J)V.assertion.1",
+            "description": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 8",
+            "status": "FAILURE",
+            "sourceLocation": {
+              "bytecodeIndex": "8",
+              "comment": "assertion at file FollowAssertions.java line 3 function java::FollowAssertions.reached:(J)V bytecode-index 8",
+              "file": "FollowAssertions.java",
+              "function": "java::FollowAssertions.reached:(J)V",
+              "line": "3",
+              "propertyClass": "assertion",
+              "propertyId": "java::FollowAssertions.reached:(J)V.assertion.1"
+            }
+          },
+          "totalProperties": 2,
+          "otherFailures": [],
+          "warnings": [],
+          "inputs": {
+            "k": {
+              "binary": "0000000000000000000000000000000000000000000000000000000000000000",
+              "data": "0L",
+              "name": "integer",
+              "type": "long",
+              "width": 64
+            }
+          },
+          "seconds": 1.575,
+          "entry": "FollowAssertions.reached"
+        }
+      }
+    }
+  ],
+  "rawSha256": "5add55942e962ee108befca21a85912ed8dacb6e513e153754129ae263de10e6"
+}

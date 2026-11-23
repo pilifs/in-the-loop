@@ -1,0 +1,901 @@
+{
+  "phase": "opening",
+  "family": "rows",
+  "lane": "paired",
+  "predecessor": {
+    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
+    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
+  },
+  "measuredSource": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
+  "job": "20261123-160649-open-original-nullable-ragged-arrays-and",
+  "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "jars": [
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    },
+    {
+      "name": "commons-collections4-4.5.0.jar",
+      "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+    },
+    {
+      "name": "commons-math3-3.6.1.jar",
+      "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+    }
+  ],
+  "productClasses": {
+    "MadeRows.class": "29e80e6d0d1b99237e2076c84840dc9213e30a29b776e5a4fe0a6c1b47c71de3",
+    "MatrixRows.class": "8b37921bc877009913616e2e8328ff66c929acdca081d2c86aa69b3415aa383c",
+    "RaggedProof.class": "87e4a583c1f1c03fc0aa6f06d300ebdf79b148e184b88e0f5da2502bc75d35a3",
+    "RowIdentities.class": "1e792f376017596375bd8ae6a27fc007d4e20853b4ec7f8a6d0803d2621b59ae"
+  },
+  "driverClasses": {
+    "Cases.class": "8310b34eea77f06afd434d53ff7ae72e1cb1e8c61573a5ef55407e8b75a0fd65",
+    "MatrixJvm.class": "8171567bb856fd2001526206d09187844859cedefdf9db8fdc22010b0d985b1f",
+    "Ragged.class": "e7df29c8277805ea5537d73cd59f27922c3dbf85d796b99ccb7eacacd078b15c",
+    "RaggedJvm$Op.class": "bf7ef5e45c6493e4cfdf4cf97d30375972514eb0cc7d4f0a93c3cc14d9f57a51",
+    "RaggedJvm.class": "f7a1441e9fea7215ecdac93eee98a960d52a0342566fb7b6dbd8c30bdfc62e15",
+    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
+  },
+  "originalJvm": {
+    "Cases": {
+      "sha256": "6d205f5fe900d4a5ea15563f2d9efaaaa1473768e001f35311275687aad2c070",
+      "seconds": 0.067,
+      "cases": 44
+    },
+    "RaggedJvm": {
+      "sha256": "8dd61149fc0a33a907da56bda24cd55298ef951156b8c1ac2c552862faf5972a",
+      "seconds": 0.059
+    },
+    "MatrixJvm": {
+      "sha256": "44cfcc0c0f2b7c8bbac7434d1ed231021114958f7baa22643a1dbc8e92220e53",
+      "seconds": 0.052
+    }
+  },
+  "rows": [
+    {
+      "task": "ragged-proof-reversed",
+      "cohort": "ragged",
+      "parameters": "int[][] a",
+      "reachGuard": "a != null && a.length == 2",
+      "standalone": "RaggedProof.testReverse",
+      "target": "RaggedProof#reversed",
+      "expected": "established",
+      "specSha256": "68b0b29fca113fd3812a735660d82fa020e2fa453a57b3538cbc3dd60f725560",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.006,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.007,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "ragged-proof-wrong",
+      "cohort": "ragged",
+      "parameters": "int[][] a",
+      "reachGuard": "a != null && a.length == 2",
+      "standalone": "RaggedProof.testWrong",
+      "target": "RaggedProof#wrong",
+      "expected": "refuted",
+      "specSha256": "19a83fc042fde7dd80294010977a2e69f9ad715a9f2ad0e99767b0a66bbc53d2",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "ragged-proof-iter",
+      "cohort": "ragged",
+      "parameters": "int[][] a",
+      "reachGuard": "a != null && a.length == 2",
+      "standalone": "RaggedProof.testIter",
+      "target": "RaggedProof#iter",
+      "expected": "established",
+      "specSha256": "60e1cf017d0f0e30402f30077cad6faa17b460829c2c591b073c3e9a440f44b2",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "ragged-proof-snapshot",
+      "cohort": "ragged",
+      "parameters": "int[][] a",
+      "reachGuard": "a != null && a.length == 2",
+      "standalone": "RaggedProof.testSnapshot",
+      "target": "RaggedProof#snapshot",
+      "expected": "refuted",
+      "specSha256": "a2708c6fa75cd15754f2aa873adf35e399520e372c71fef46647e5fce25931b4",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "ragged-proof-distinct",
+      "cohort": "identity",
+      "parameters": "int[][] a",
+      "reachGuard": "a != null && a.length == 2",
+      "standalone": "RaggedProof.testDistinct",
+      "target": "RaggedProof#distinct",
+      "expected": "refuted",
+      "specSha256": "56f7b7495728db175e6a9336c58b8a650a93c0aedad3426ba667eaffccb1b771",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "row-identities-non-null-outer",
+      "cohort": "identity",
+      "parameters": "int[][] rows",
+      "reachGuard": "true",
+      "target": "RowIdentities#nonNullOuter",
+      "expected": "refuted",
+      "specSha256": "7a3bebe9ed40c357dc68fe9bc2f0b4abe474d0f3dffb37da388a03e4615a8708",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "row-identities-no-empty-outer",
+      "cohort": "identity",
+      "parameters": "int[][] rows",
+      "reachGuard": "true",
+      "target": "RowIdentities#noEmptyOuter",
+      "expected": "refuted",
+      "specSha256": "f3fa67453987964230fa0c573ebf76a97f0b890209906b24b4bef682e73c2bbd",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "row-identities-no-distinct-equal-rows",
+      "cohort": "identity",
+      "parameters": "int[][] rows",
+      "reachGuard": "rows != null && rows.length == 2",
+      "target": "RowIdentities#noDistinctEqualRows",
+      "expected": "refuted",
+      "specSha256": "48dff34114afc8f44944aa6f5f2ac22be5325452a28ad71e7e8719eb3c068903",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter rows has type int[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "made-rows-reverse",
+      "cohort": "builder",
+      "parameters": "int x, int y, boolean tied",
+      "reachGuard": "true",
+      "target": "MadeRows#reverse",
+      "expected": "established",
+      "specSha256": "922412ed4f2121083ea33e8635baaea15f6efcc4df113d61695e9d33eb767a1b",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 0,
+        "seconds": 0.023,
+        "expected": "verified",
+        "verdict": "verified",
+        "disposition": "correct",
+        "firstUnproved": "",
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "tied",
+                "type": "boolean",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 7,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "harness",
+            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+          }
+        }
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 1.486,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
+      }
+    },
+    {
+      "task": "made-rows-iterator",
+      "cohort": "builder",
+      "parameters": "int x, int y, boolean tied",
+      "reachGuard": "true",
+      "target": "MadeRows#iterator",
+      "expected": "established",
+      "specSha256": "4fa23763ed342038d7cb302a3fe6dc35db394b3e0b96388cccee49ba1879c099",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 0,
+        "seconds": 0.02,
+        "expected": "verified",
+        "verdict": "verified",
+        "disposition": "correct",
+        "firstUnproved": "",
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "tied",
+                "type": "boolean",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 7,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "harness",
+            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+          }
+        }
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 1.273,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "JBMC proved it, but reaches 1 construct it approximates without implementing, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it"
+      }
+    },
+    {
+      "task": "made-rows-always-distinct",
+      "cohort": "builder",
+      "parameters": "int x, int y, boolean tied",
+      "reachGuard": "true",
+      "target": "MadeRows#alwaysDistinct",
+      "expected": "refuted",
+      "specSha256": "13b32706e56c0271c801927f4505b1b797f9a07d12ce31f084f66d1307d79273",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.036,
+        "expected": "violation",
+        "verdict": "violation",
+        "disposition": "correct",
+        "firstUnproved": "",
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "tied",
+                "type": "boolean",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 7,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        },
+        "jvmReplay": {
+          "outcome": "refuted",
+          "inputs": [
+            {
+              "name": "x",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "tied",
+              "type": "boolean",
+              "value": true
+            }
+          ],
+          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
+          "exit": 0,
+          "diagnostic": ""
+        }
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.89,
+        "expected": "violation",
+        "verdict": "violation",
+        "disposition": "correct",
+        "firstUnproved": "",
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "tied",
+                "type": "boolean",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: int \u00d7 y: int \u00d7 tied: boolean"
+          },
+          "assumptions": [
+            {
+              "kind": "library",
+              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 7,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "jbmc",
+            "name": "JBMC 6.11.0",
+            "solver": "cadical",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "3.0.0",
+              "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+              "configuration": [
+                "--trace",
+                "--throw-runtime-exceptions",
+                "--unwinding-assertions",
+                "--json-ui",
+                "--timestamp",
+                "monotonic",
+                "--no-refine-strings",
+                "--sat-solver",
+                "cadical"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        },
+        "jvmReplay": {
+          "outcome": "refuted",
+          "inputs": [
+            {
+              "name": "x",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "y",
+              "type": "int",
+              "value": 0
+            },
+            {
+              "name": "tied",
+              "type": "boolean",
+              "value": true
+            }
+          ],
+          "sourceSha256": "d4d3cce8779e1c4bba0c83d658582fdca65e5be97bd3681cc32ae0503b47ca8b",
+          "exit": 0,
+          "diagnostic": ""
+        }
+      }
+    },
+    {
+      "task": "matrix-rows-rectangular",
+      "cohort": "matrix",
+      "parameters": "long[][] a",
+      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null && a[0].length == a[1].length",
+      "standalone": "MatrixRows.good",
+      "target": "MatrixRows#rectangular",
+      "expected": "established",
+      "specSha256": "845ceb4be5038bb6861babd7789eef81d6f19e58873121646d99f073ea9d0538",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.006,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "matrix-rows-single-shape",
+      "cohort": "matrix",
+      "parameters": "long[][] a",
+      "reachGuard": "a != null && a.length == 1 && a[0] == null",
+      "standalone": "MatrixRows.singleGood",
+      "target": "MatrixRows#singleShape",
+      "expected": "established",
+      "specSha256": "637aa3a48fc3b09259460ae31a9da50e594b5853f3dc4bb0785084b0d61c9d08",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "matrix-rows-shape",
+      "cohort": "matrix-exceptions",
+      "parameters": "long[][] a",
+      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
+      "standalone": "MatrixRows.correct",
+      "target": "MatrixRows#shape",
+      "expected": "established",
+      "specSha256": "a599064b103d697aa04b4ddc4c4be31a46c0746fc46ffbecb0a7e51bfdd8e829",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.003,
+        "expected": "verified",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "matrix-rows-same",
+      "cohort": "matrix-exceptions",
+      "parameters": "long[][] a",
+      "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
+      "standalone": "MatrixRows.wrong",
+      "target": "MatrixRows#same",
+      "expected": "refuted",
+      "specSha256": "4ac6a6b3325a70d95d039f1bbe5048eb6206b6562458ee30a576d9100ed7f31c",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.003,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    },
+    {
+      "task": "matrix-rows-no-null",
+      "cohort": "matrix-exceptions",
+      "parameters": "long[][] a",
+      "reachGuard": "a != null && a.length == 1 && a[0] == null",
+      "standalone": "MatrixRows.singleton",
+      "target": "MatrixRows#noNull",
+      "expected": "refuted",
+      "specSha256": "6f4f42bd605198e1976c3df58c769279899dad4b3d4138906b56979cac831233",
+      "bounds": {
+        "unwind": 7,
+        "maxArrayLength": 2
+      },
+      "native": {
+        "engine": "native",
+        "exit": 1,
+        "seconds": 0.004,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      },
+      "jbmc": {
+        "engine": "jbmc",
+        "exit": 1,
+        "seconds": 0.005,
+        "expected": "violation",
+        "verdict": "unverifiable",
+        "disposition": "unsupported",
+        "firstUnproved": "parameter a has type long[][]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+      }
+    }
+  ],
+  "rawSha256": "71d3e117daa0951ad76ae24dc3413a16183d3fb64cb6a603307f7e0e8f8a2e03"
+}

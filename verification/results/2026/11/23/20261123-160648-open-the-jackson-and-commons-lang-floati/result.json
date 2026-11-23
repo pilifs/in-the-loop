@@ -1,0 +1,269 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-160648-open-the-jackson-and-commons-lang-floati",
+  "title": "Open the Jackson and Commons Lang floating conversions",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m11s, peak 418.3 MiB (estimated 3m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-160648-open-the-jackson-and-commons-lang-floati.json",
+    "sha256": "20ccad294a0d1892b67b49b432af0632e1e87d7671bd66276da7baf2594974f6",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-160648-open-the-jackson-and-commons-lang-floati",
+      "title": "Open the Jackson and Commons Lang floating conversions",
+      "description": "Compare the five original conversions, the two separately scoped controls and the parity classification on the released JARs with both project engines and the Ubuntu 22.04 JBMC package.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow/measure.py"
+        ]
+      },
+      "expected": "Opening dispositions, raw named properties, hashed classpath and physical controls for every registered entry.",
+      "submitted": {
+        "at": "2026-11-23T16:06:48+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 18,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "numeric paired",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening numeric paired",
+          "cwd": "."
+        },
+        {
+          "name": "numeric packaged",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening numeric packaged",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/opening/numeric/paired",
+        "verification/jbmc-fast-follow/opening/numeric/packaged"
+      ]
+    }
+  },
+  "sourceCommit": "cc7636786154f7152f1466c13be9fcbe8f30e9c3",
+  "startedAt": "2026-11-23T16:25:11+00:00",
+  "finishedAt": "2026-11-23T16:30:15+00:00",
+  "wallSeconds": 304.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3488092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 438632448,
+    "wallSeconds": 71.6,
+    "cpuSeconds": 78.3,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.4
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "numeric paired",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening numeric paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 40.488,
+      "cpuSeconds": 41.514,
+      "cpuThrottledSeconds": 0.381,
+      "peakMemoryBytes": 408539136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-numeric-paired.log",
+        "lines": 16,
+        "bytes": 656,
+        "sha256": "25eaf6901818d88aa89049c95f2607aa27cf5f11590cffabe627b598f6daa103",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "NodeChecks#direct native unsupported",
+        "NodeChecks#direct jbmc correct",
+        "NodeChecks#same native unsupported",
+        "NodeChecks#same jbmc correct",
+        "NodeChecks#publicSubnormal native unsupported",
+        "NodeChecks#publicSubnormal jbmc correct",
+        "NodeChecks#wrongSubnormal native unsupported",
+        "NodeChecks#wrongSubnormal jbmc correct",
+        "NodeChecks#commons native unsupported",
+        "NodeChecks#commons jbmc correct",
+        "ConversionEquivalence#classified native unsupported",
+        "ConversionEquivalence#classified jbmc correct",
+        "NodeChecks#intrinsicSubnormal native unsupported",
+        "NodeChecks#intrinsicSubnormal jbmc correct",
+        "NodeChecks#mantissaSubnormal native unsupported",
+        "NodeChecks#mantissaSubnormal jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "numeric packaged",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening numeric packaged",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 31.065,
+      "cpuSeconds": 36.771,
+      "cpuThrottledSeconds": 1.056,
+      "peakMemoryBytes": 438632448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-numeric-packaged.log",
+        "lines": 8,
+        "bytes": 334,
+        "sha256": "68d6e02d00fba727f51ef0ed058d4776a3b3dabd87ddd6bbc80b30aeccbbe219",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "NodeChecks#direct packaged SUCCESS",
+        "NodeChecks#same packaged FAILURE",
+        "NodeChecks#publicSubnormal packaged SUCCESS",
+        "NodeChecks#wrongSubnormal packaged FAILURE",
+        "NodeChecks#commons packaged SUCCESS",
+        "ConversionEquivalence#classified packaged SUCCESS",
+        "NodeChecks#intrinsicSubnormal packaged SUCCESS",
+        "NodeChecks#mantissaSubnormal packaged FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/opening/numeric/paired/measurement.json",
+      "change": "added",
+      "bytes": 27911,
+      "sha256": "199d7591009b761ca8d6dbe20be69137353e5e65f1ec2eea6b9d1574c42a93df",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/numeric/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 8462,
+      "sha256": "3e67895f0ec1958ccc11cd8a7f146b3884900e189c0c01cb352a7f0c2e049443",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/numeric/packaged/measurement.json",
+      "change": "added",
+      "bytes": 31448,
+      "sha256": "ca384aacdf356d839ab4ab7e1e20c9778b66b25a6746047c30355a84a9e2d93a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/opening/numeric/packaged/raw.tar.gz",
+      "change": "added",
+      "bytes": 78170,
+      "sha256": "5add55942e962ee108befca21a85912ed8dacb6e513e153754129ae263de10e6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T16:34:50+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/opening/numeric/paired/measurement.json",
+      "verification/jbmc-fast-follow/opening/numeric/paired/raw.tar.gz",
+      "verification/jbmc-fast-follow/opening/numeric/packaged/measurement.json",
+      "verification/jbmc-fast-follow/opening/numeric/packaged/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6f934935ac0808dbe9da7733231f752d1144c779",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6f934935ac0808dbe9da7733231f752d1144c779/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T163015Z-999550cdbf969fba",
+      "outputs": "20261123T163016Z-0248958f3e84b9d8",
+      "diff": "20261123T163016Z-0436203c50efe25b"
+    }
+  }
+}
