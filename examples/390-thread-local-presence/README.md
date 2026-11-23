@@ -20,8 +20,8 @@ The campaign's ordinary native checker decided 1/3 at opening and 3/3 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| locals/kernel | [open (0.02 s)](../../verification/java-semantics-gap/opening/locals/measurement.json) | [proved (0.04 s)](../../verification/java-semantics-gap/qualified/locals/measurement.json) |
-| locals/spring | [open (0.02 s)](../../verification/java-semantics-gap/opening/locals/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/locals/measurement.json) |
-| locals/nullInitializes | [refuted (0.14 s)](../../verification/java-semantics-gap/opening/locals/measurement.json) | [refuted (0.14 s)](../../verification/java-semantics-gap/qualified/locals/measurement.json) |
+| locals/kernel | [open (0.02 s)](../../verification/java-semantics-gap/opening/locals/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/heap-and-gson/locals/measurement.json) |
+| locals/spring | [open (0.02 s)](../../verification/java-semantics-gap/opening/locals/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/locals/measurement.json) |
+| locals/nullInitializes | [refuted (0.14 s)](../../verification/java-semantics-gap/opening/locals/measurement.json) | [refuted (0.13 s)](../../verification/java-semantics-gap/heap-and-gson/locals/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

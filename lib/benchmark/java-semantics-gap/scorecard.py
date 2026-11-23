@@ -13,6 +13,7 @@ import tarfile
 from campaign import CLAIMS, GRAPHS, ROOT, wire
 from historical import FROZEN_SHA, GROUPS, benchmark, digest, freeze, selected
 from standalone import LISTS
+from direct_arrays import PHASE, HISTORIES, check_cells, check_run
 
 BASE = ROOT/"verification/java-semantics-gap"
 PAGE = ROOT/"llm-dlc/loops/jbmc-java-semantics-gap-results.md"
@@ -82,10 +83,13 @@ def native_scope(row,claim,bound,key):
                 key+" changed nullability or parameter")
         if typ=="String" or typ.endswith("[]"):
             require(p["max_length"]==bound,key+" changed input length")
+            if typ.endswith(".Item[]"):
+                require(p["kind"]=="array" and "arbitrary int fields" in s["domain"]["text"]
+                        and "any cells may share an instance" in s["domain"]["text"],key+" narrowed the heap")
         else: require(p["kind"]=="primitive",key+" constructed a different scalar domain")
     environment=[{"kind":"initialization","basis":"engine","text":
                   "every JDK class is initialized already, its static initializer having run and thrown nothing"}]
-    if key.startswith("locals/"):
+    if key.startswith(("locals/", "gson-parent/", "gson-fix/")):
         environment.append({"kind":"library","basis":"engine","text":"fresh ThreadLocal keys are used on the one executing platform thread of the check"})
     actual=[a for a in s["assumptions"] if a["kind"]!="precondition"]
     require(environment[0] in actual and all(a in environment for a in actual),key+" added an environment assumption")
@@ -161,15 +165,17 @@ def historic(phase):
     return results
 
 
-def subject_rows(phase):
+def subject_rows(phase, keys=None, recorded_phase=None, required_engines=None):
     result = {}
     for key,subject in CLAIMS.items():
+        if keys is not None and key not in keys:
+            continue
         p = BASE/phase/key/"measurement.json"
         d = read(p)
         collected(p,d["job"],d["source"])
         raw = p.parent/"raw.tar.gz"
         collected(raw,d["job"],d["source"])
-        require(d["scope"] == json.loads(json.dumps(asdict(subject))) and d["subject"]==key and d["phase"]==phase
+        require(d["scope"] == json.loads(json.dumps(asdict(subject))) and d["subject"]==key and d["phase"]==(recorded_phase or phase)
                 and d["classpath"]==["adapter",*GRAPHS[subject.graph]] and digest(raw)==d["rawSha256"],
                 f"{key}: mismatched scope or raw responses")
         require(d["originalJvm"]["checks"] == sum(len(c.holds)+len(c.fails) for c in subject.claims)
@@ -220,7 +226,8 @@ def subject_rows(phase):
                     "statement":read(folder/t["claim"])["statement"]})[e] = {
                     "status":outcome,"verdict":r["verdict"],"seconds":r["seconds"],
                     "firstUnproved":short_problem(r["firstUnproved"]),"jvmReplay":r.get("jvmReplay")}
-            require(len(seen)==2*len(claims),key+" missing engine rows")
+            engines = ("native",) if phase == PHASE and key not in ("arrays", "gson-parent", "gson-fix") else ("native", "jbmc")
+            require(seen == {(m,e) for m in claims for e in (required_engines or engines)},key+" missing engine rows")
     return result
 
 
@@ -258,13 +265,27 @@ def standalone_rows():
 def compare(phase):
     old,new=historic("opening"),historic(phase)
     before,after=subject_rows("opening"),subject_rows(phase)
+    previous = subject_rows("qualified") if phase == PHASE else {}
+    if previous:
+        separate={s["graph"] for s in after.values() if "jbmc" not in s}
+        comparator_phase=f"{PHASE}/integrated/qualified"
+        for key in separate:
+            native=read(BASE/phase/key/"measurement.json")
+            jbmc=read(BASE/comparator_phase/key/"measurement.json")
+            require(all(native[field]==jbmc[field] for field in ("scope","claimsSha256","source","libTree","adapterSha256","classes",
+                "classpath","originalJvm","checkerSha256","jbmcSha256","packagedModelsSha256","jvmSha256","modulesSha256")),
+                key+" comparator ran a different checker, original caller or scope")
+        for cid,row in subject_rows(comparator_phase,separate,"qualified",("jbmc",)).items():
+            after[cid]["jbmc"] = row["jbmc"]
+            after[cid]["jbmcEvidence"] = row["evidence"]
+        require(all("jbmc" in s for s in after.values()), "missing final integrated result")
     for a,b in [(old,new),(before,after)]:
         require(a.keys()==b.keys(),"changed denominator")
         for key in a:
             for field in ("classes","jvm","inputClasses","oracles","expected","claim","statement"):
                 require(a[key].get(field)==b[key].get(field),f"{key}: before and after differ in {field}")
     environments={}
-    for stage in ("opening",phase):
+    for stage in (("opening","qualified",phase) if previous else ("opening",phase)):
         h=read(BASE/stage/"listOfArray.json")
         c=read(BASE/stage/"numbers/measurement.json")
         list_models={name+".class":h["repositoryModels"][name+".class"] for name in LISTS}
@@ -273,9 +294,16 @@ def compare(phase):
             "benchmarkBinaries":h["binaries"],"callerSource":c["source"],"callerChecker":c["checkerSha256"],
             "callerJdk":c["jdk"],"callerModules":c["modulesSha256"],"callerJbmc":c["jbmcSha256"],
             "callerCoreModels":c["packagedModelsSha256"],"listModels":list_models}
-    return {"phase":phase,"environments":environments,"historical":{k:{"opening":old[k],"final":new[k]} for k in old},
+    card = {"phase":phase,"environments":environments,"historical":{k:{"opening":old[k],"final":new[k]} for k in old},
             "subjects":{k:{"opening":before[k],"final":after[k]} for k in before},"standalone":standalone_rows(),
             "transfers":transfers(phase)}
+    if previous:
+        card["previousNative"] = {key:{"status":r["native"]["status"],"evidence":r["evidence"]} for key,r in previous.items()}
+        outcomes=Counter((r["native"]["status"] in DECIDED, r["jbmc"]["status"] in DECIDED) for r in after.values())
+        card["pairedFinal"]={"both":outcomes[True,True],"nativeOnly":outcomes[True,False],
+                             "integratedJbmcOnly":outcomes[False,True],"neither":outcomes[False,False],
+                             "integratedByStatus":dict(Counter(r["jbmc"]["status"] for r in after.values()))}
+    return card
 
 
 def transfers(phase):
@@ -298,6 +326,7 @@ def transfers(phase):
             final=b["tasks"][task]
             rows.append({"example":num,"task":task,"opening":short_problem(r["firstBlocker"] or ""),
                 "final":short_problem(final["firstBlocker"] or ""),"status":final["status"],
+                "source":b["source"],"checker":b["checkerSha256"],"job":b["job"],
                 "evidence":location(folder/final["receipt"])})
     return rows
 
@@ -326,6 +355,7 @@ def totals(rows,cohort=None):
 CONFORMANCE = "20261123-104845-recheck-conformance-on-the-qualified-jav"
 FAILED_LAUNCHER = "20261123-101413-qualify-standalone-ordinary-string-and-j"
 FIXED_LAUNCHER = "20261123-104830-replay-corrected-standalone-string-unico"
+HEAP_CONFORMANCE = "20261123-121039-run-both-proof-tier-conformance-tests-af"
 
 
 def campaign_jobs(card):
@@ -374,8 +404,13 @@ def qualify_companions(card):
         for r in row.values():
             f=heapfile.parent/r["raw"];collected(f,trace["job"],trace["source"])
             require(digest(f)==r["sha256"],"wrong class monitor property")
-    origins=read(BASE/"origins.json")
+    origin_file = BASE/card["phase"]/"origins.json" if card["phase"] == PHASE else BASE/"origins.json"
+    origins=read(origin_file)
     require(origins["graphs"].keys()==CLAIMS.keys(),"the class-origin audit must cover every graph")
+    repeated=extra_repeated=0
+    def witnesses(d):
+        return {r["method"]:r["jvmReplay"]["sourceSha256"] for r in d["runs"]
+                if r["engine"]=="native" and r["verdict"]=="violation"}
     for key,g in origins["graphs"].items():
         measured=read(BASE/card["phase"]/key/"measurement.json")
         require(g["checkerSha256"]==measured["checkerSha256"] and g["source"]==measured["source"]
@@ -383,14 +418,159 @@ def qualify_companions(card):
                 and g["jvmChecks"]==measured["originalJvm"]["checks"]
                 and g["classes"][CLAIMS[key].owner]["sha256"]==measured["classes"][CLAIMS[key].owner+".class"],
                 key+" mismatched selected class evidence")
+        if card["phase"]==PHASE:
+            require(g["nativeRefutations"]==witnesses(measured),key+" did not repeat every native refutation")
+            repeated+=len(g["nativeRefutations"])
+            if key in ("arrays","gson-parent","gson-fix"):
+                control="histories" if key=="arrays" else key+"/exception-control"
+                require(g["companionRefutations"]==witnesses(read(BASE/PHASE/control/"measurement.json")),
+                        key+" did not repeat the companion witnesses")
+                extra_repeated+=len(g["companionRefutations"])
     require(origins["arrayWitnesses"]["noNullCell"]["cells"][0]=="null"
             and origins["arrayWitnesses"]["noItemCell"]["cells"][0]!="null"
             and all(v["jvm"]=="refuted" for v in origins["arrayWitnesses"].values()),"both actual array witnesses must replay")
     require(len(origins["defaultWitnesses"])==8,"missing default-method witness replay")
-    card["qualifications"]={"seeds":location(seedfile),"schedule":location(heapfile),"origins":location(BASE/"origins.json"),
+    card["qualifications"]={"seeds":location(seedfile),"schedule":location(heapfile),"origins":location(origin_file),
                           "classBindings":sum(len(g["classes"]) for g in origins["graphs"].values()),
                           "plannedArray":trace["arrayPlan"]["diagnostic"],"monitorComparator":trace["standalone"]["runs"],
                           "arrayWitnesses":origins["arrayWitnesses"],"defaultWitnesses":origins["defaultWitnesses"]}
+    if card["phase"]==PHASE:
+        card["qualifications"].update(repeatedNativeRefutations=repeated,repeatedCompanionRefutations=extra_repeated)
+
+
+def qualify_direct_controls(current):
+    controls={}
+    for name,key,source in (("histories","arrays","DirectArrayHistories"),
+                            ("gson-parent/exception-control","gson-parent","GsonExceptionKind"),
+                            ("gson-fix/exception-control","gson-fix","GsonExceptionKind")):
+        file=BASE/PHASE/name/"measurement.json"
+        d=read(file)
+        raw=file.parent/"raw.tar.gz"
+        collected(file,d["job"],current)
+        collected(raw,d["job"],current)
+        ordinary=read(BASE/PHASE/key/"measurement.json")
+        require(all(d[k]==ordinary[k] for k in ("source","job","checkerSha256","jvmSha256","modulesSha256","classpath"))
+                and digest(raw)==d["rawSha256"] and all(d["classes"][n]==v for n,v in ordinary["classes"].items())
+                and digest(ROOT/"examples/379-nullable-reference-arrays/controls"/(source+".java"))==d["sourceSha256"],
+                name+" changed companion or original bytes")
+        if key=="arrays":
+            require(d["scope"]==json.loads(json.dumps(asdict(HISTORIES))),"changed direct mutation scope")
+            check_cells(d["runs"])
+            claims={c.method:c for c in HISTORIES.claims}
+        else:
+            claim=next(c for c in CLAIMS[key].claims if c.method=="syntax")
+            claims={"casts":claim}
+        require({r["method"] for r in d["runs"]}==claims.keys() and len(d["runs"])==len(claims),name+" missing direct control")
+        require(d["originalJvm"]["checks"]==(sum(len(c.holds)+len(c.fails) for c in HISTORIES.claims) if key=="arrays" else 4),
+                name+" missing original JVM controls")
+        with tarfile.open(raw) as archive:
+            for r in d["runs"]:
+                m=r["method"]
+                check_run(r)
+                if key.startswith("gson-"):
+                    require(r["verdict"]==("verified" if key=="gson-parent" else "violation"),"wrong exact exception on "+key)
+                decoder=wire.decode(archive.extractfile("raw/"+m+"/stdout.json").read().decode(),"prove")
+                require(decoder.ok and len(decoder.outcomes)==1,name+" missing ordinary output")
+                row,=decoder.outcomes
+                require(row["target"]==source+"#"+m and row["assert"]=="result" and row["verdict"]==r["verdict"]
+                        and (row.get("assume") or "")==claims[m].guard and r["stated"]==row["stated"]
+                        and row["search"]["engine"]=="native" and row["stated"]["gap_mode"]=="strict"
+                        and not row["stated"]["checker"].get("fallback") and row["search"]["unwind"]==16
+                        and row["search"]["max_array_length"]==CLAIMS[key].bound
+                        and not wire.exit_problem([r["verdict"]],r["exit"]),name+" mismatched native result")
+                native_scope(row,claims[m],CLAIMS[key].bound,key+"/"+m)
+                if r["verdict"]=="violation":
+                    require(row["counterexample"]["inputs"]==r["jvmReplay"]["inputs"],name+" wrong replay inputs")
+        controls[name]=location(file)
+    return controls
+
+
+def qualify_monitor_schedule(card):
+    file = BASE / "monitor-schedules/measurement.json"
+    d = read(file)
+    collected(file, d["job"], d["source"])
+    monitor = read(BASE/PHASE/"monitors/measurement.json")
+    require(d["classes"]==monitor["classes"] and d["jdkModulesSha256"]==monitor["modulesSha256"]
+            and d["adapterSha256"]==monitor["adapterSha256"] and d["modelSha256"]==digest(ROOT/"lib/benchmark/java-semantics-gap/monitor_schedules.py")
+            and d["monitorRulesSha256"]==digest(ROOT/"examples/tools/targets/monitor_histories.py"),
+            "schedule checker, caller or original JVM differs")
+    jvm=d["originalJvm"]
+    require(all(jvm["classes"].get(k)==sha for k,sha in d["classes"].items())
+            and jvm["observerSha256"]==digest(ROOT/"examples/391-class-monitor-identity/controls/ObserveSchedule.java"),
+            "physical schedule ran different classes")
+    for listing in d["listings"].values():
+        path=file.parent/listing["file"]
+        collected(path,d["job"],d["source"])
+        require(digest(path)==listing["sha256"],"monitor disassembly changed")
+    protected={(5,6,True)}
+    mixed=protected|{(6,6,False)}
+    summaries={}
+    for mode,r in {**d["runs"],"ignored static modifier":d["ignoringStaticSynchronized"]}.items():
+        require({(o["read"],o["joinedValue"],o["returned"]) for o in r["outcomes"]}==
+                (mixed if mode in ("mixed","ignored static modifier") else protected)
+                and r["transitions"]>=r["states"]-1 and all(o["instructionSchedules"]>0 and o["witness"] for o in r["outcomes"]),
+                "wrong schedule outcomes for "+mode)
+        summaries[mode]={"states":r["states"],"outcomes":[{k:v for k,v in o.items() if k!="witness"} for o in r["outcomes"]]}
+    require(set(summaries)=={"mixed","matched","synchronizedMethod","ignored static modifier"},"missing monitor scope")
+    for mode,value in (("matched",5),("synchronizedMethod",5),("mixed",6)):
+        require(jvm["runs"][mode]["observations"]==[
+               f"{mode} before the original read={value} workerBlockedOnClass={'false' if mode=='mixed' else 'true'}",
+               "original result="+("exposed" if mode=="mixed" else "protected")],"invalid physical monitor observation")
+    require(jvm["runs"]["mixed-reader-first"]["observations"]==["mixed after the original read=5 saved=true","original result=protected"],
+            "missing reader-first JVM replay")
+    card["qualifications"]["boundedSchedules"]={"evidence":location(file),"scope":d["scope"],"runs":summaries}
+    card["verification"][d["job"]]={"status":"passed","source":d["source"],"receipt":location(receipt_path(d["job"]))}
+
+
+def qualify_followup(card):
+    env=card["environments"][PHASE]
+    current=env["callerSource"]
+    gained=[]
+    for key,old in card["previousNative"].items():
+        now=card["subjects"][key]["final"]["native"]["status"]
+        if old["status"] in DECIDED:
+            require(now==old["status"],key+" lost its preceding qualified verdict")
+        elif now in DECIDED:
+            gained.append(key)
+    expected={"arrays/categories","arrays/noNullCell","arrays/noItemCell",
+              "gson-parent/compatible","gson-parent/syntax","gson-fix/compatible","gson-fix/syntax"}
+    require(set(gained)==expected and len(card["subjects"])==60,"follow-up counts no longer match the reported changes")
+    card["gainedSinceQualification"]=gained
+    require(env["historicalSource"]==current and env["benchmarkBinaries"]["jvmcontract"]==env["callerChecker"],
+            "historical and public entries need the same final checker")
+    jobs={HEAP_CONFORMANCE,read(BASE/PHASE/"integrated/qualified/numbers/measurement.json")["job"]}
+    for transfer in card["transfers"]:
+        require(transfer["source"]==current and transfer["checker"]==env["callerChecker"],
+                transfer["task"]+" transfer ran a different final checker")
+        jobs.add(transfer["job"])
+    for key in CLAIMS:
+        d=read(BASE/PHASE/key/"measurement.json")
+        require((d["source"],d["checkerSha256"],d["modulesSha256"],d["jbmcSha256"],d["packagedModelsSha256"])
+                == (current,env["callerChecker"],env["callerModules"],env["callerJbmc"],env["callerCoreModels"]),
+                key+" used a different checker, JDK or comparator")
+        jobs.add(d["job"])
+    for group in GROUPS:
+        h=read(BASE/PHASE/(group+".json"))
+        require(h["binaries"]==env["benchmarkBinaries"] and h["environment"]["commit"]==current,
+                group+" used a different historical environment")
+        jobs.add(h["environment"]["job"])
+    card["qualifications"]["directControls"]=qualify_direct_controls(current)
+    retries={}
+    for job in sorted(jobs):
+        result=job_receipt(job)
+        spec=read(ROOT/result["job"]["path"])
+        require(result["status"]=="passed" and result["sourceCommit"]==current and result["job"]["spec"]==spec,
+                "unqualified final job "+job)
+        if "supersedes" in spec:
+            retries[spec["supersedes"]]=job
+        card["verification"][job]={"status":"passed","source":current,"receipt":location(receipt_path(job))}
+    initial=read(BASE/"direct-arrays/listOfArray.json")["environment"]["job"]
+    card["scopeRetries"]=retries
+    for job in sorted(retries.keys()|{initial}):
+        result=job_receipt(job)
+        require(result["status"]==("passed" if job==initial else "failed"),"wrong intermediate status "+job)
+        card["verification"][job]={"status":result["status"],"source":result["sourceCommit"],"receipt":location(receipt_path(job))}
+    qualify_monitor_schedule(card)
 
 
 def findings(card):
@@ -416,17 +596,38 @@ def findings(card):
         q=card["qualifications"];heap=q["arrayWitnesses"];m=q["monitorComparator"]
         ordered+=["## Independent comparator checks","",
             f"The original JVM and the measured checker selected the same bytes for {q['classBindings']} loaded application and library classes across 21 classpaths. Each graph also reran its original controls with class loading traced. "
+            +(f"A second JVM pass reconstructed all {q['repeatedNativeRefutations']} frozen native counterexamples and {q['repeatedCompanionRefutations']} separate heap or Gson counterexamples from their saved inputs. " if phase==PHASE else "")
             +link(q["origins"],"Providers, JAR entries and SHA-256 digests"),"",
             "Both packaged binary/model pairs decided the four direct numeric seed assertions, including the original double-typed MutableDouble entry. The long-bits wrapper is recorded independently. Its standalone disagreement does not change either the direct comparator result or the qualified native result. "
             +link(q["seeds"],"Direct seeds and exact numeric witnesses"),"",
             "On a fresh JVM the default-method answers are invariant under moving the replay helpers. The Ubuntu 22.04 models give the correct pair with the helpers separate and reverse both answers with them combined. The installed Ubuntu 24.04 models reverse that pattern. Crossing the two binaries with the model JARs preserves the model-dependent outcomes. The audit replayed the actual arguments of all eight failing named assertions on their original classfiles. The cause inside JBMC remains open. "
             +link(q["seeds"],"Four package pairings and two layouts")+" · "+link(q["origins"],"Original default-method replays"),"",
-            f"Stock JBMC's two opposite false reference-array assertions produced a {heap['noNullCell']['length']}-cell array with a null first element and a {heap['noItemCell']['length']}-cell array with a populated first element. The original JVM reconstructed the trace cells, field values and identities and refuted both assertions. The native constructed alias control covers equal-valued distinct objects and one shared object over every initial int. The direct frontend rejects the Item[] root. Its explicit two-cell construction plan also stops because array leaves admit integral and boolean elements. "
+            f"Stock JBMC's two opposite false reference-array assertions produced a {heap['noNullCell']['length']}-cell array with a null first element and a {heap['noItemCell']['length']}-cell array with a populated first element. The original JVM reconstructed the trace cells, field values and identities and refuted both assertions. "
+            + ("The follow-up checks nullable Item[] directly. The separately requested construction plan still has its own array-leaf limit. " if phase==PHASE else
+               "The native constructed alias control covers equal-valued distinct objects and one shared object over every initial int. The direct frontend rejects the Item[] root. Its explicit two-cell construction plan also stops because array leaves admit integral and boolean elements. ")
             +ref("arrays","Direct native and constructed heaps")+" · "+link(q["schedule"],"Explicit construction plan"),"",
             f"At the unchanged read, the debugger observed 5 with the worker blocked on the very class mirror held by the caller, for both explicit and static synchronization. Holding the instance allowed the worker to write 6 before that read. JBMC's in-lock assertions returned **{m['matched']['target']['status']}** for the explicit shared class monitor, **{m['mixed']['target']['status']}** for mixed monitors and **{m['staticMethod']['target']['status']}** for the static method. The trace records JBMC's warning about the static synchronized modifier. The original joined caller has a separate row in the table. "
             +link(q["schedule"],"Actual JVM schedules, target assertion IDs and warnings"),"",
             "The packaged single-store model accepted the deliberately false incompatible-write assertion. On the original JVM the store throws ArrayStoreException and preserves the typed cell. The portable enum models also have their own standalone lookup and ordinal results. These model disagreements are distinct from the thirteen historical JBMC leads. "
             +ref("stores","Covariant-store caller")+" · "+ref("enum","Constant and exception identities"),""]
+    if phase == PHASE:
+        controls = card["qualifications"]["directControls"]
+        ordered[2:2]=[
+            "At the preceding qualification, 50 of the 60 native statements had decisions. The direct array entry now establishes the classifier range and refutes both opposite first-cell claims. The array may be null or have zero, one or two cells. Populated cells hold fresh exact components with arbitrary signed int fields, including shared and equal-valued distinct objects. The component factory supports final flat classes with a trivial constructor and writable int fields. The separate mutation proof covers every initial int. Its negative controls replayed two distinct objects at Integer.MAX_VALUE and one object referenced twice at the same value. "
+            +ref("arrays","Five frozen array entries")+" · "+link(controls["histories"],"Direct mutation proofs and both JVM heaps"),"",
+            "Both unmodified Gson #719 builds return the expected concrete class for all five compatible selections. On all four incompatible selections the parent throws ClassCastException and the fix throws JsonSyntaxException. A separate public-entry assertion establishes the parent's exact exception and is refuted on the fix. The preceding checker stopped at Collections.synchronizedMap in Gson's constructor at line 116. Capped probes of the compatible fix entry next reached List.addAll at constructor line 205 and Map.getClass() in the selected JDK's Collections.unmodifiableMap at line 1631. The final checker runs the collection bytecode and resolves that class from the allocation. Each Gson statement uses a single calling platform thread for its ThreadLocal cache. "
+            +ref("gson-parent","Parent")+" · "+ref("gson-fix","Fix")+" · "+link(controls["gson-parent/exception-control"],"Parent exception proof")+" · "+link(controls["gson-fix/exception-control"],"Fix counterexample"),""]
+        schedule=card["qualifications"]["boundedSchedules"]
+        ordered+=["## All completed schedules in the two-thread model","",
+                  "The checker executes the original caller and worker instructions under sequential consistency. Platform-thread construction, start and uninterrupted join succeed. Each lifecycle call is one transition. The counts include each ordering of runnable application instructions and exclude idle steps. A debugger replay on the original JVM observed each return value. "+link(schedule["evidence"],"Disassembly, instruction witnesses and JVM observations"),"",
+                  "| Caller and worker lock | Reachable states | Read 5, returned true | Read 6, returned false |",
+                  "|---|---:|---:|---:|"]
+        for mode,label in (("matched","Class / class"),("mixed","Instance / class"),("synchronizedMethod","Class / static synchronized method"),
+                           ("ignored static modifier","Same classfiles with the static modifier ignored in the model")):
+            r=schedule["runs"][mode]
+            counts={v["read"]:v["instructionSchedules"] for v in r["outcomes"]}
+            ordered.append(f"| {label} | {r['states']:,} | {counts.get(5,0):,} | {counts.get(6,0):,} |")
+        ordered+=["","All completed schedules leave the shared field at 6. The ordinary native entry first needs the platform-thread constructor. The three schedule results have their own scope and denominator.",""]
     ordered+=["## Remaining direct native claims","",
               "| Original caller | First unproved step | Open statements |","|---|---|---:|"]
     grouped={}
@@ -439,7 +640,7 @@ def findings(card):
         ordered.append("| "+" | ".join(map(cell,[link(f[keys[0]]["final"]["evidence"],str(number)+" "+", ".join(keys)),
                                                 problem,str(len(keys))]))+" |")
     total=lambda stage: sum(r[stage]["native"]["seconds"] for r in f.values())
-    ordered+=["",f"The sum of native checker times on the sixty statements was {total('opening'):.3f} s at opening and {total('final'):.3f} s at qualification. Compilation, class binding and original-JVM replays are charged separately in the job receipts. All native results use initialized JDK classes. The thread-local proofs additionally state their one-platform-thread scope."]
+    ordered+=["",f"The sum of native checker times on the sixty statements was {total('opening'):.3f} s at opening and {total('final'):.3f} s at qualification. Compilation, class binding and original-JVM replays are charged separately in the job receipts. All native results use initialized JDK classes. The statements that use ThreadLocal also record their one-platform-thread scope."]
     return ordered+[""]
 
 
@@ -470,8 +671,12 @@ def render(card):
         lines.append("| "+" | ".join(map(cell,[key,"`"+b["statement"]+"`",b["historical"],b["expected"],link(a["evidence"],engine(a["native"])),link(b["evidence"],engine(n)),
             engine(a["jbmc"])+" → "+engine(b["jbmc"]),paired,detail]))+" |")
     lines+=["","## Original callers","",
-            "A refutation earns credit when the actual checker input fails on a fresh original JVM. A named refusal, an incomplete bound or a witness that holds on replay stays open. Standalone columns identify the target status, reachability assertion status and accompanying failing properties. Credit requires a failing deliberately false reachability control and successful accompanying properties.","",
-            "| Example and claim | Input scope | Expected | Opening native | Final native | Integrated JBMC, opening → final | Standalone target / reach / other failures | JVM evidence or first open native step |",
+            "A refutation earns credit when the actual checker input fails on a fresh original JVM. A named refusal, an incomplete bound or a witness that holds on replay stays open. Standalone columns identify the target status, reachability assertion status and accompanying failing properties. Credit requires a failing deliberately false reachability control and successful accompanying properties.",""]
+    if card["phase"] == PHASE:
+        p=card["pairedFinal"]
+        j=p["integratedByStatus"]
+        lines+=[f"All 60 final native and integrated JBMC entries used the same checker build, JDK, original class files and 120-second budgets. Both profiles qualified {p['both']} statements, native alone qualified {p['nativeOnly']}, integrated JBMC alone qualified {p['integratedJbmcOnly']}, and {p['neither']} remained open in both. The integrated profile produced {j.get('proved',0)} qualified proofs and {j.get('refuted',0)} replayed refutations. The original JVM contradicted {j.get('JVM-contradicted proof',0)} further integrated proofs. Each comparator result links to its measurement.",""]
+    lines+=["| Example and claim | Input scope | Expected | Opening native | Final native | Integrated JBMC, opening → final | Standalone target / reach / other failures | JVM evidence or first open native step |",
             "|---|---|---|---|---|---|---|---|"]
     for key,pair in sub.items():
         a,b=pair["opening"],pair["final"];n=b["native"]
@@ -483,7 +688,7 @@ def render(card):
         replay=n["jvmReplay"]
         detail=n["firstUnproved"] or (str(replay["inputs"])+" → "+replay["outcome"] if replay else "Original JVM controls passed")
         lines.append("| "+" | ".join(map(cell,[link(b["claim"],f"{b['family']} {key}"),scope,b["expected"],
-            link(a["evidence"],engine(a["native"])),link(b["evidence"],engine(n)),engine(a["jbmc"])+" → "+engine(b["jbmc"]),
+            link(a["evidence"],engine(a["native"])),link(b["evidence"],engine(n)),engine(a["jbmc"])+" → "+link(b.get("jbmcEvidence", b["evidence"]),engine(b["jbmc"])),
             ", ".join(ss) or "Separate seed or upstream control",detail]))+" |")
     lines+=["","## Transfer to existing ordinary callers","",
             "| Example | Frozen claim | Opening first unproved step | Final first unproved step | Ordinary result |",
@@ -494,7 +699,7 @@ def render(card):
     lines+=["","## Recount and replay","",
             "| Measurement | Historical source / checker SHA-256 prefix | Public caller source / checker SHA-256 prefix | Integrated JBMC / packaged core-model SHA-256 prefixes |",
             "|---|---|---|---|"]
-    for phase in ("opening",card["phase"]):
+    for phase in card["environments"]:
         env=card["environments"][phase]
         lines.append(f"| {phase} | `{env['historicalSource'][:12]}` / `{env['benchmarkBinaries']['jvmcontract'][:16]}` | "
                      f"`{env['callerSource'][:12]}` / `{env['callerChecker'][:16]}` | "
@@ -505,11 +710,15 @@ def render(card):
         lines+=["", f"Of {len(jobs)} campaign jobs, {passed} passed. Both proof-tier conformance tests passed on the final measured source. "
                 "One intermediate Unicode witness launcher failed to compile because its parameter and a local variable shared a name. "
                 "The corrected launcher replayed the original witness and completed the string and deque checks. "
-                +link(jobs[CONFORMANCE]["receipt"],"Final conformance")+" · "
+                +link(jobs[HEAP_CONFORMANCE if card["phase"]==PHASE else CONFORMANCE]["receipt"],"Final conformance")+" · "
                 +link(jobs[FAILED_LAUNCHER]["receipt"],"Initial launcher failure")+" · "
                 +link(jobs[FIXED_LAUNCHER]["receipt"],"Passing replacement")]
+        if card["phase"]==PHASE:
+            links=[link(jobs[old]["receipt"],"Initial "+("array" if "array-heaps" in new else "caller")+" check")+" · "+
+                   link(jobs[new]["receipt"],"Passing replacement") for old,new in card["scopeRetries"].items()]
+            lines+=["","Two follow-up jobs stopped at the scope comparison because tuples in memory and arrays in the saved JSON compared differently. The bytecode, claims, JVM and serialized scopes matched. Both replacement jobs passed after the comparison used the serialized scope for both inputs. "+" · ".join(links)]
     lines+=["",
-            "Run `python3 -B lib/benchmark/java-semantics-gap/scorecard.py --check` to validate the source-bound receipt digests, per-engine rows and reported totals. Each numbered example also exposes its original tasks through `examples/tools/build.py --plan NUMBER`. The campaign's `seed` command imports its checksum-verified setup JARs into the normal example cache. "
+            "Run `python3 -B lib/benchmark/java-semantics-gap/scorecard.py --check` to validate the source-bound receipt digests, per-engine rows and reported totals. Run `python3 -B lib/benchmark/java-semantics-gap/origins.py --check` to repeat the original-JVM class bindings. Each numbered example also exposes its original tasks through `examples/tools/build.py --plan NUMBER`. The campaign's `seed` command imports its checksum-verified setup JARs into the normal example cache. "
             +link(location(BASE/"scorecard.json"),"Machine-readable comparison")+" · "
             +link("llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md","Pinned artifacts and setup recipes")]
     return "\n".join(lines)+"\n"
@@ -530,13 +739,28 @@ def example_outputs(card):
         folder,=(ROOT/"examples").glob(f"{number}-*")
         ep=folder/"example.json";example=read(ep)
         example["verdictLabel"]=label
-        example["notes"]=[n for n in example.get("notes",[]) if not n.startswith("The campaign's ordinary native checker decided ")]
+        example["notes"]=[n for n in example.get("notes",[]) if not n.startswith(("The campaign's ordinary native checker decided ", "The direct mutation controls ", "The separate schedule checker "))]
         example["notes"].append(note)
+        extra=None
+        if card["phase"]==PHASE and number==379:
+            extra=("The direct mutation controls reconstructed a shared object and two distinct objects with equal maximal int fields. "
+                   "On every incompatible public Gson call the parent threw ClassCastException and the fix threw JsonSyntaxException. "
+                   "The native checker also verified all five compatible selections on both builds.")
+        if card["phase"]==PHASE and number==391:
+            extra=("The separate schedule checker enumerated every completed sequentially consistent application-bytecode interleaving of the frozen two-thread callers, with successful start and join. "
+                   "Both class-matched callers returned true. The mixed caller returned both false and true, each reproduced on an original JVM.")
+        if extra: example["notes"].append(extra)
         files[ep]=json.dumps(example,indent=2)+"\n"
         rp=folder/"README.md";base=rp.read_text().split("\n## Measured results\n",1)[0].rstrip()
         table=["","## Measured results","",note,"","| Entry | Opening native | Qualified native |","|---|---|---|"]
         for name,row in selected_rows.items():
             table.append("| "+" | ".join([name,*["["+engine(row[s]["native"])+"]("+os.path.relpath(ROOT/row[s]["evidence"],folder)+")" for s in ("opening","final")]])+" |")
+        if extra:
+            table+=["",extra]
+            if number==391:
+                table+=["","[Instruction schedules and original JVM controls](../../verification/java-semantics-gap/monitor-schedules/measurement.json)"]
+            else:
+                table+=["","[Direct mutation controls](../../verification/java-semantics-gap/heap-and-gson/histories/measurement.json) · [Parent exception proof](../../verification/java-semantics-gap/heap-and-gson/gson-parent/exception-control/measurement.json) · [Fix counterexample](../../verification/java-semantics-gap/heap-and-gson/gson-fix/exception-control/measurement.json)"]
         table+=["","[All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)"]
         files[rp]=base+"\n"+"\n".join(table)+"\n"
     return files
@@ -544,15 +768,17 @@ def example_outputs(card):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--phase",choices=("final","qualified"),default="qualified")
+    parser.add_argument("--phase",choices=("final","qualified",PHASE),default=PHASE)
     parser.add_argument("--check",action="store_true")
     args=parser.parse_args()
     card=compare(args.phase)
-    if args.phase=="qualified":
+    if args.phase in ("qualified", PHASE):
         qualify_companions(card)
         card["verification"]=campaign_jobs(card)
+    if args.phase==PHASE:
+        qualify_followup(card)
     outputs={BASE/"scorecard.json":json.dumps(card,indent=1)+"\n",PAGE:render(card)}
-    if args.phase=="qualified": outputs.update(example_outputs(card))
+    if args.phase in ("qualified", PHASE): outputs.update(example_outputs(card))
     for path,contents in outputs.items():
         if args.check: require(path.read_text()==contents,f"stale {path.name}")
         else: path.write_text(contents)

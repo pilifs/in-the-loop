@@ -19,7 +19,7 @@ The campaign's ordinary native checker decided 0/2 at opening and 2/2 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| radix/hex | [open (0.02 s)](../../verification/java-semantics-gap/opening/radix/measurement.json) | [proved (0.06 s)](../../verification/java-semantics-gap/qualified/radix/measurement.json) |
-| radix/lowFirst | [open (0.02 s)](../../verification/java-semantics-gap/opening/radix/measurement.json) | [refuted (0.05 s)](../../verification/java-semantics-gap/qualified/radix/measurement.json) |
+| radix/hex | [open (0.02 s)](../../verification/java-semantics-gap/opening/radix/measurement.json) | [proved (0.08 s)](../../verification/java-semantics-gap/heap-and-gson/radix/measurement.json) |
+| radix/lowFirst | [open (0.02 s)](../../verification/java-semantics-gap/opening/radix/measurement.json) | [refuted (0.05 s)](../../verification/java-semantics-gap/heap-and-gson/radix/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

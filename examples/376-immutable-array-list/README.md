@@ -20,8 +20,8 @@ The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| lists/fromArray | [open (0.02 s)](../../verification/java-semantics-gap/opening/lists/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/lists/measurement.json) |
-| lists/fromCollection | [open (0.02 s)](../../verification/java-semantics-gap/opening/lists/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/qualified/lists/measurement.json) |
-| lists/followsSlot | [open (0.01 s)](../../verification/java-semantics-gap/opening/lists/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/qualified/lists/measurement.json) |
+| lists/fromArray | [open (0.02 s)](../../verification/java-semantics-gap/opening/lists/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/lists/measurement.json) |
+| lists/fromCollection | [open (0.02 s)](../../verification/java-semantics-gap/opening/lists/measurement.json) | [proved (0.01 s)](../../verification/java-semantics-gap/heap-and-gson/lists/measurement.json) |
+| lists/followsSlot | [open (0.01 s)](../../verification/java-semantics-gap/opening/lists/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/heap-and-gson/lists/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

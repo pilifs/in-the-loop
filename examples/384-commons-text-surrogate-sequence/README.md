@@ -19,7 +19,7 @@ The campaign's ordinary native checker decided 0/2 at opening and 2/2 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| surrogates/translate | [open (0.02 s)](../../verification/java-semantics-gap/opening/surrogates/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/qualified/surrogates/measurement.json) |
-| surrogates/removeEvery | [open (0.02 s)](../../verification/java-semantics-gap/opening/surrogates/measurement.json) | [refuted (0.10 s)](../../verification/java-semantics-gap/qualified/surrogates/measurement.json) |
+| surrogates/translate | [open (0.02 s)](../../verification/java-semantics-gap/opening/surrogates/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json) |
+| surrogates/removeEvery | [open (0.02 s)](../../verification/java-semantics-gap/opening/surrogates/measurement.json) | [refuted (0.09 s)](../../verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

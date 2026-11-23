@@ -20,8 +20,8 @@ The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| stores/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/stores/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/qualified/stores/measurement.json) |
-| stores/alwaysSucceeds | [open (0.02 s)](../../verification/java-semantics-gap/opening/stores/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/qualified/stores/measurement.json) |
-| store-iterator/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/store-iterator/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/qualified/store-iterator/measurement.json) |
+| stores/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/stores/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/stores/measurement.json) |
+| stores/alwaysSucceeds | [open (0.02 s)](../../verification/java-semantics-gap/opening/stores/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/stores/measurement.json) |
+| store-iterator/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/store-iterator/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/store-iterator/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

@@ -20,8 +20,12 @@ The campaign's ordinary native checker decided 0/3 at opening and 0/3 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| monitors/matched | [open (0.02 s)](../../verification/java-semantics-gap/opening/monitors/measurement.json) | [open (0.02 s)](../../verification/java-semantics-gap/qualified/monitors/measurement.json) |
-| monitors/mixed | [open (0.02 s)](../../verification/java-semantics-gap/opening/monitors/measurement.json) | [open (0.02 s)](../../verification/java-semantics-gap/qualified/monitors/measurement.json) |
-| monitors/synchronizedMethod | [open (0.02 s)](../../verification/java-semantics-gap/opening/monitors/measurement.json) | [open (0.02 s)](../../verification/java-semantics-gap/qualified/monitors/measurement.json) |
+| monitors/matched | [open (0.02 s)](../../verification/java-semantics-gap/opening/monitors/measurement.json) | [open (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/monitors/measurement.json) |
+| monitors/mixed | [open (0.02 s)](../../verification/java-semantics-gap/opening/monitors/measurement.json) | [open (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/monitors/measurement.json) |
+| monitors/synchronizedMethod | [open (0.02 s)](../../verification/java-semantics-gap/opening/monitors/measurement.json) | [open (0.01 s)](../../verification/java-semantics-gap/heap-and-gson/monitors/measurement.json) |
+
+The separate schedule checker enumerated every completed sequentially consistent application-bytecode interleaving of the frozen two-thread callers, with successful start and join. Both class-matched callers returned true. The mixed caller returned both false and true, each reproduced on an original JVM.
+
+[Instruction schedules and original JVM controls](../../verification/java-semantics-gap/monitor-schedules/measurement.json)
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)
