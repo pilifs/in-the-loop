@@ -31,6 +31,15 @@ public class Arrayed {
         return c.isAssignableFrom(c);
     }
 
+    public static boolean factoryIsArray() {
+        return !Arrayed.class.getProtectionDomain().getClass().isArray();
+    }
+
+    public static boolean factoryAssignable() {
+        Class<?> c = Arrayed.class.getProtectionDomain().getClass();
+        return c.isAssignableFrom(c);
+    }
+
     public static boolean boxedClass(boolean flag) {
         Object value = flag ? (Object) Boolean.TRUE : Integer.valueOf(12);
         Class<?> type = value.getClass();
@@ -46,6 +55,7 @@ public class Arrayed {
 
     public static void main(String[] args) {
         System.out.println(arrayed("a") + " " + ofAnArray() + " " + assignableOfAnArray() + " " + opaqueIsArray() + " " + opaqueAssignable()
-                + " " + boxedClass(true) + " " + boxedClass(false) + " " + classCasts(true) + " " + classCasts(false));
+                + " " + boxedClass(true) + " " + boxedClass(false) + " " + classCasts(true) + " " + classCasts(false)
+                + " " + factoryIsArray() + " " + factoryAssignable());
     }
 }

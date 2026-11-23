@@ -1682,6 +1682,21 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             store(m, elements, true);
             None
         }
+        ("addAll", "(Ljava/util/Collection;)Z") if m.array_list_mod_count.contains_key(&r) => {
+            // The source's virtual toArray can throw, return a typed array, or mutate this list.
+            // ArrayList increments modCount after the callback, even for an empty or null result.
+            let array = m.call_virtual(args[0], "java/util/Collection", "toArray", "()[Ljava/lang/Object;", Vec::new())?;
+            write(m)?;
+            let count = m.array_list_mod_count.get_mut(&r).expect("an exact ArrayList");
+            *count = count.wrapping_add(1);
+            let Some(array) = array.and_then(Value::as_ref) else { return Err(m.npe()) };
+            let Object::Array { data, .. } = m.heap.get(array) else { return unsupported("Collection.toArray returned a non-array") };
+            let snapshot = data.clone();
+            let changed = !snapshot.is_empty();
+            let Object::Native(Native::List { elements, .. }) = m.heap.get_mut(r) else { return unsupported("ArrayList lost its backing elements") };
+            elements.extend(snapshot);
+            Some(Value::bool(changed))
+        }
         ("addAll", "(Ljava/util/Collection;)Z") => {
             write(m)?;
             let others = collection_elements(m, args[0])?;

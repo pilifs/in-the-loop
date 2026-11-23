@@ -727,6 +727,8 @@ fn choice(b: &mut Blaster, options: Vec<(Lit, Option<usize>)>) -> Val {
 #[derive(Debug, Clone)]
 struct Obj {
     class: String,
+    /// A JVM `new` instruction named this exact class. A modeled factory can supply only a declared type.
+    bytecode_new: bool,
     fields: BTreeMap<String, Val>,
     array: Option<Array>,
     /// Why an opaque String has no content, where that is a named limit rather than a gap.
@@ -805,7 +807,7 @@ impl Obj {
     }
 
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, member: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
+        Obj { class: class.to_string(), bytecode_new: false, fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, member: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -2723,6 +2725,7 @@ impl<'a> Engine<'a> {
             // An object that was there before a summarized method was entered, on either path.
             o.given |= q.given;
             o.before |= q.before;
+            o.bytecode_new &= q.bytecode_new;
             for (name, x) in o.fields.iter_mut() {
                 choose(b, x, &q.fields[name]);
             }
@@ -4421,6 +4424,7 @@ impl<'a> Engine<'a> {
                     return step;
                 }
                 let r = self.alloc(path, &name);
+                path.objects[r].bytecode_new = true;
                 self.push(path, Val::R(Some(r)));
             }
             Insn::AThrow => {

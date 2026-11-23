@@ -83,7 +83,7 @@ def measure(phase, group):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("phase", choices=("opening", "final", "qualified", "direct-arrays"))
+    parser.add_argument("phase", choices=("opening", "final", "qualified", "direct-arrays", "heap-and-gson"))
     parser.add_argument("group", choices=GROUPS)
     args = parser.parse_args()
     measure(args.phase, args.group)

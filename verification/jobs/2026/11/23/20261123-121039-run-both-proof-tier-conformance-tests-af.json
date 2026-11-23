@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-121039-run-both-proof-tier-conformance-tests-af",
+  "title": "Run both proof-tier conformance tests after heap and Gson changes",
+  "description": "Check the conformance corpus on the source that binds nullable application arrays, executes the JDK collection wrappers and preserves the runtime class named by new. Exercise native, integrated JBMC, auto-selection and confirmation, checking reference verdicts and original witnesses.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Both tests pass on the qualified source with no new JVM-contradicted verdict.",
+  "submitted": {
+    "at": "2026-11-23T12:10:39+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 16,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "25m",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Both conformance proof-tier tests",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

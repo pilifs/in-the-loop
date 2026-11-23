@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-121039-qualify-all-direct-array-heaps-on-the-co",
+  "title": "Qualify all direct array heaps on the collection and Gson source",
+  "description": "Recheck five original strict claims with both engines and three direct mutation histories on the same class bytes. The preserved JSON scope is compared to the in-memory scope in its serialized form. Rebuild each native counterexample, including arbitrary fields and shared cells, on the original Temurin JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "379"
+    ]
+  },
+  "expected": "All five frozen native rows and three direct mutation controls have the expected complete proof or an exactly replayed JVM refutation. The two mutation witnesses have the required different identity graphs.",
+  "submitted": {
+    "at": "2026-11-23T12:10:39+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Measure the frozen inputs and direct alias histories",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/heap-and-gson/arrays",
+    "verification/java-semantics-gap/heap-and-gson/histories"
+  ],
+  "supersedes": "20261123-114826-qualify-direct-nullable-java-object-arra"
+}

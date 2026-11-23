@@ -128,9 +128,23 @@ public final class LiveMapViews {
         return values.isEmpty();
     }
 
+    public static boolean synchronizedBacking() {
+        try {
+            Collections.synchronizedMap(null);
+            return false;
+        } catch (NullPointerException expected) { }
+        Map<String, Object> capacityMap = new HashMap<>(1);
+        Map<String, Object> backing = new HashMap<>();
+        Map<String, Object> wrapper = Collections.synchronizedMap(backing);
+        Object first = new Object(), second = new Object();
+        return capacityMap.getClass() == HashMap.class && wrapper != backing && wrapper.put("key", first) == null && backing.get("key") == first
+            && backing.put("key", second) == first && wrapper.get("key") == second
+            && wrapper.remove("key") == second && backing.isEmpty();
+    }
+
     public static void main(String[] args) {
         if (!remove(true) || !remove(false) || !collisions() || !mixed() || !copies() || insertionOrder()
-                || !packedValue(false) || !packedValue(true) || !backedSets() || !concurrentViews() || !initialProperties()
+                || !packedValue(false) || !packedValue(true) || !backedSets() || !concurrentViews() || !initialProperties() || !synchronizedBacking()
                 || losesNonEmptyProperties()) throw new AssertionError();
     }
 }

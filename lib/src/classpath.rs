@@ -1212,6 +1212,7 @@ impl ClassPath {
             | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
             | ("java/util/Collections", "unmodifiableMap", "(Ljava/util/Map;)Ljava/util/Map;")
+            | ("java/util/Collections", "synchronizedMap", "(Ljava/util/Map;)Ljava/util/Map;")
             | ("java/util/Collections", "newSetFromMap", "(Ljava/util/Map;)Ljava/util/Set;")
             | ("java/util/Collections", "synchronizedSet", "(Ljava/util/Set;Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/util/concurrent/ConcurrentHashMap", "spread" | "tableSizeFor", "(I)I")
@@ -1726,6 +1727,7 @@ impl ClassPath {
             | ("java/util/ArrayList", "contains", "(Ljava/lang/Object;)Z") | ("java/util/ArrayList", "indexOf", "(Ljava/lang/Object;)I")
             | ("java/util/ArrayList", "indexOfRange", "(Ljava/lang/Object;II)I")
             | ("java/util/ArrayList", "add", "(Ljava/lang/Object;)Z" | "(Ljava/lang/Object;[Ljava/lang/Object;I)V")
+            | ("java/util/ArrayList", "addAll", "(Ljava/util/Collection;)Z")
             | ("java/util/ArrayList", "grow", "()[Ljava/lang/Object;" | "(I)[Ljava/lang/Object;")
             | ("java/util/ArrayList", "toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;")
             | ("java/util/Arrays", "copyOf", "([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;")) { return None; }
@@ -1924,7 +1926,7 @@ impl ClassPath {
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
             | "java/util/concurrent/ConcurrentHashMap$EntryIterator" | "java/util/concurrent/ConcurrentHashMap$BaseIterator"
             | "java/util/concurrent/ConcurrentHashMap$Traverser" | "java/util/Properties$EntrySet"
-            | "java/util/Collections$SynchronizedSet" | "java/util/Collections$SynchronizedCollection") {
+            | "java/util/Collections$SynchronizedMap" | "java/util/Collections$SynchronizedSet" | "java/util/Collections$SynchronizedCollection") {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }

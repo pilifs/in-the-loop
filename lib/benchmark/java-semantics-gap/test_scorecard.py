@@ -1,14 +1,25 @@
 """A verdict or an assertion ID alone cannot bind a claim to its declared scope."""
 import copy
+from dataclasses import asdict
 import json
 import unittest
 
 from scorecard import native_scope, state
 from standalone import decode
 from subjects import CLAIMS
+from direct_arrays import BASE, unchanged_inputs
 
 
 class ScorecardTest(unittest.TestCase):
+    def test_frozen_subjects_compare_the_in_memory_scope_to_its_json_receipt(self):
+        for key in ("arrays", "gson-parent"):
+            saved = json.loads((BASE / "qualified" / key / "measurement.json").read_bytes())
+            in_memory = dict(saved, scope=asdict(CLAIMS[key]))
+            self.assertEqual(unchanged_inputs(key, in_memory), saved)
+            in_memory["scope"]["bound"] += 1
+            with self.assertRaisesRegex(ValueError, "frozen scope changed"):
+                unchanged_inputs(key, in_memory)
+
     def test_a_violation_requires_its_original_jvm_replay(self):
         self.assertEqual(state("violation","violation","correct",None),"open")
         self.assertEqual(state("violation","violation","correct","refuted"),"refuted")

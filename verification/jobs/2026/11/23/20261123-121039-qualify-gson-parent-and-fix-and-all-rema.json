@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-121039-qualify-gson-parent-and-fix-and-all-rema",
+  "title": "Qualify Gson parent and fix and all remaining native Java callers",
+  "description": "Run native on the other 55 unchanged statements, including both original Gson builds, and repeat explicit integrated JBMC on all four Gson properties. Check scope and model hashes, original JVM refutations, all five compatible selectors and four incompatible selectors per build.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "379"
+    ]
+  },
+  "expected": "The full original Gson parent/fix separates compatible returns and exception classes. Every earlier native decision on the other original classpaths still qualifies.",
+  "submitted": {
+    "at": "2026-11-23T12:10:39+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Run both Gson revisions and the other native controls",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py --controls",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/heap-and-gson/lists",
+    "verification/java-semantics-gap/heap-and-gson/numbers",
+    "verification/java-semantics-gap/heap-and-gson/prefix",
+    "verification/java-semantics-gap/heap-and-gson/receiver",
+    "verification/java-semantics-gap/heap-and-gson/stores",
+    "verification/java-semantics-gap/heap-and-gson/store-iterator",
+    "verification/java-semantics-gap/heap-and-gson/dispatch",
+    "verification/java-semantics-gap/heap-and-gson/endian",
+    "verification/java-semantics-gap/heap-and-gson/surrogates",
+    "verification/java-semantics-gap/heap-and-gson/deque",
+    "verification/java-semantics-gap/heap-and-gson/construction",
+    "verification/java-semantics-gap/heap-and-gson/radix",
+    "verification/java-semantics-gap/heap-and-gson/nibble",
+    "verification/java-semantics-gap/heap-and-gson/enum",
+    "verification/java-semantics-gap/heap-and-gson/locals",
+    "verification/java-semantics-gap/heap-and-gson/monitors",
+    "verification/java-semantics-gap/heap-and-gson/gson-parent",
+    "verification/java-semantics-gap/heap-and-gson/guava-parent",
+    "verification/java-semantics-gap/heap-and-gson/gson-fix",
+    "verification/java-semantics-gap/heap-and-gson/guava-fix"
+  ],
+  "supersedes": "20261123-115145-recheck-the-other-55-frozen-native-java"
+}
