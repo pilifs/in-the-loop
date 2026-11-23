@@ -17,6 +17,23 @@ READ = "execute,read-file,read-dir"
 
 
 def measured(command, cwd, env=None):
+    meter = os.environ.get("KERNEL_TIME_METER")
+    if meter:
+        # The small native parent gives the child its own pre-exec RSS baseline.
+        with tempfile.NamedTemporaryFile() as sample, tempfile.TemporaryFile() as log:
+            proc = subprocess.run(
+                [meter, sample.name, *command], cwd=cwd, env=env, stdout=log, stderr=subprocess.STDOUT
+            )
+            log.seek(0)
+            parts = sample.read().decode().split()
+            if len(parts) != 2:
+                raise ValueError("native measurement missing")
+            return {
+                "exit": proc.returncode,
+                "stdout": log.read().decode(errors="replace").strip(),
+                "wallSeconds": float(parts[1]),
+                "peakKiB": int(parts[0]),
+            }
     with tempfile.TemporaryFile() as out:
         start = time.monotonic()
         proc = subprocess.Popen(command, cwd=cwd, env=env, stdout=out, stderr=subprocess.STDOUT)
@@ -47,7 +64,7 @@ def contained(command, folder, libraries=()):
     return measured([*permissions, *command], folder, {"PATH": "/usr/bin", "LC_ALL": "C"})
 
 
-def build_kernel(folder):
+def build_kernel(folder, source=HERE):
     binary = folder / "kernel"
     build = measured(
         [
@@ -63,7 +80,7 @@ def build_kernel(folder):
             "-o",
             binary.resolve(),
         ],
-        HERE,
+        source,
     )
     if build["exit"]:
         raise ValueError(build)
@@ -111,6 +128,11 @@ def lean_check(request, cert, artifact):
     # The quoted source bytes are read afresh inside Lean by its artifactBytes elaborator.
     import hashlib
 
+    if (
+        digest((LEAN / "bin/lean").read_bytes())
+        != "db7f559d05795e7af52e42bc966c90240a39dcb9712161c54c97afa546e20c00"
+    ):
+        raise ValueError("pinned Lean 4.36.0 executable differs")
     request_bytes = request.read_bytes()
     artifact_bytes = artifact.read_bytes()
     rows = request_bytes.decode().splitlines()

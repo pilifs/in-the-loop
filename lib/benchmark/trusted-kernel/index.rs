@@ -2,7 +2,7 @@
 //! into exhaustion, a matching cell, and a nonmatching cell. Prefix and frame
 //! refer to the entry heap. Only the nonmatching path may re-enter the loop.
 use super::{
-    bytecode::{instruction, Op, Test},
+    bytecode::{instruction, Element, Op, Test},
     classfile::{Class, Code},
     obligation, reject, unsupported, Obligations, Request, Result,
 };
@@ -18,6 +18,9 @@ enum Val {
     Next,
     Cell,
     Answer,
+    // Sign is unknown on a miss, but zero is impossible. Orientation preserves identity.
+    CellComparedToTarget,
+    TargetComparedToCell,
     Const(i32),
 }
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -69,7 +72,7 @@ struct Context<'a> {
     req: &'a Request<'a>,
     head: usize,
     slot: usize,
-    end_slot: usize,
+    element: Element,
 }
 enum Exit {
     Head(State),
@@ -98,7 +101,12 @@ fn guard(left: Val, right: Val, test: Test, path: Path) -> Result<bool> {
     if let Some(o) = ord {
         return Ok(test.value(o));
     }
-    if matches!((left, right), (Cell, Target) | (Target, Cell))
+    let long_zero = matches!(
+        (left, right),
+        (CellComparedToTarget | TargetComparedToCell, Const(0))
+            | (Const(0), CellComparedToTarget | TargetComparedToCell)
+    );
+    if (long_zero || matches!((left, right), (Cell, Target) | (Target, Cell)))
         && matches!(path, Path::Hit | Path::Miss)
     {
         match test {
@@ -154,8 +162,11 @@ fn walk(
                 state.stack.push(Length);
                 obligation(keys, m, pc, &next.to_string(), "safe");
             }
-            Op::Read | Op::Write => {
-                let value = if matches!(op, Op::Write) {
+            Op::Read(width) | Op::Write(width) => {
+                if width != cx.element {
+                    return Err(reject("array cell width"));
+                }
+                let value = if matches!(op, Op::Write(_)) {
                     Some(state.pop()?)
                 } else {
                     None
@@ -175,6 +186,18 @@ fn walk(
                 }
                 obligation(keys, m, pc, &next.to_string(), "safe");
             }
+            Op::LongCompare => {
+                let right = state.pop()?;
+                let left = state.pop()?;
+                let value = match (left, right) {
+                    (Cell, Target) => CellComparedToTarget,
+                    (Target, Cell) => TargetComparedToCell,
+                    (Cell, Cell) | (Target, Target) => Const(0),
+                    _ => return Err(unsupported("unbound lcmp operands")),
+                };
+                state.stack.push(value);
+            }
+            Op::LongToInt => return Err(unsupported("l2i drops high cell or target bits")),
             Op::Add => {
                 let b = state.pop()?;
                 let a = state.pop()?;
@@ -269,26 +292,24 @@ pub(super) fn check(
             "missing prefix invariant or remaining-length measure",
         ));
     };
-    if (req.entry.1, req.companion.1) != ("([II)I", "([IIII)I") {
-        return Err(unsupported("first-index element descriptor"));
-    }
+    let element = Element::for_descriptors(req.entry.1, req.companion.1)?;
     let cx = Context {
         class,
         req,
         head: head.parse().map_err(|_| reject("invalid cut PC"))?,
         slot: slot.parse().map_err(|_| reject("invalid cursor slot"))?,
-        end_slot: 3,
+        element,
     };
     let public = class.method(req.entry.0, req.entry.1, true)?;
     let helper = class.method(req.companion.0, req.companion.1, false)?;
-    if cx.slot <= cx.end_slot || cx.head >= helper.bytes.len() {
+    if cx.slot <= element.end_slot() || cx.head >= helper.bytes.len() {
         return Err(unsupported("cut point or cursor local"));
     }
     let parameters = [
         (0, Val::Root),
         (1, Val::Target),
-        (cx.end_slot - 1, Val::Const(0)),
-        (cx.end_slot, Val::Length),
+        (element.end_slot() - 1, Val::Const(0)),
+        (element.end_slot(), Val::Length),
     ];
     let proof = (|| {
         if !matches!(

@@ -25,6 +25,7 @@ INPUTS = {
     "miss": (7, [], 0, []),
     "frame": (7, [7], 0, [0]),
     "stuck": (8, [7], None, None),
+    "same-store": (7, [7], 0, [7]),
     "layout": (7, [7, 7], 0, [7, 7]),
     "narrow": (4294967296, [0, 4294967296], 0, [0, 4294967296]),
 }
@@ -54,6 +55,7 @@ def compile_variant(case, out):
     else:
         changes = {
             "start": ("target, 0, array.length", "target, 1, array.length"),
+            "same-store": ("return i;", "array[i] = target;\n        return i;"),
             "miss": ("return -1;", "return 0;"),
             "frame": ("return i;", "int result = i;\n        array[i] = 0;\n        return result;"),
             "stuck": ("i++)", "i += 0)"),

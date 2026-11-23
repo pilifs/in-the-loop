@@ -11,6 +11,7 @@ import sys
 import tempfile
 
 import controls
+from challenge import isolation, issuer_frame_case
 from prepare import HERE, digest
 from replay import build_kernel, fresh_rust, measured, summarize
 
@@ -64,7 +65,7 @@ def case_row(binary, case, phase, out, driver):
     expected = (
         "unsupported"
         if phase == "freeze" and case == "Longs"
-        else "accepted" if case in ("Ints", "Longs", "layout") else "rejected"
+        else "accepted" if case in ("Ints", "Longs", "layout", "same-store") else "rejected"
     )
     checked = summarize([fresh_rust(binary, req, cert, artifact, support) for _ in range(3)])
     actual = checked["outcome"].split()[0]
@@ -204,9 +205,13 @@ def run(phase, out):
             raise ValueError(java_build)
         order = ["Ints", "last", "start", "miss", "frame", "stuck", "Longs"]
         if phase == "transfer":
-            order += ["narrow", "layout"]
+            order += ["narrow", "layout", "same-store"]
         rows = [case_row(binary, case, phase, out, driver) for case in order]
         altered = substitution_rows(binary, out)
+        isolated = isolation(binary)
+        fault = issuer_frame_case(
+            binary, out / "frame", next(r["originalJvm"] for r in rows if r["control"] == "frame")
+        )
     record = {
         "schema": "trusted-kernel-trials/v1",
         "phase": phase,
@@ -221,6 +226,8 @@ def run(phase, out):
         },
         "cases": rows,
         "substitutions": altered,
+        "experimentalIssuerFault": fault,
+        "readDenials": isolated,
     }
     (out / "results.json").write_text(json.dumps(record, indent=2) + "\n")
     print([(r["control"], r["actual"]) for r in [*rows, *altered]])

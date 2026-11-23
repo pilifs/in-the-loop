@@ -1,7 +1,7 @@
 //! Refutations start at the public bytecode. A repeated full state on a
 //! deterministic active invocation certifies divergence. A fuel limit never does.
 use super::{
-    bytecode::{instruction, Op},
+    bytecode::{instruction, Element, Op},
     classfile::{Class, Code},
     reject, unsupported, Request, Result,
 };
@@ -11,8 +11,24 @@ use std::collections::HashSet;
 enum Value {
     Ref,
     Int(i32),
+    Long(i64),
 }
 impl Value {
+    fn from_cell(x: i64, width: Element) -> Result<Self> {
+        match width {
+            Element::Long => Ok(Self::Long(x)),
+            Element::Int => i32::try_from(x)
+                .map(Self::Int)
+                .map_err(|_| reject("witness outside int domain")),
+        }
+    }
+    fn cell(self, width: Element) -> Result<i64> {
+        match (self, width) {
+            (Self::Int(v), Element::Int) => Ok(i64::from(v)),
+            (Self::Long(v), Element::Long) => Ok(v),
+            _ => Err(reject("witness cell width")),
+        }
+    }
     fn int(self) -> Result<i32> {
         match self {
             Self::Int(v) => Ok(v),
@@ -29,7 +45,8 @@ enum Outcome {
 struct Machine<'a> {
     class: &'a Class<'a>,
     req: &'a Request<'a>,
-    heap: Vec<i32>,
+    heap: Vec<i64>,
+    width: Element,
 }
 impl Machine<'_> {
     fn run(&mut self, method: &Code, args: &[(usize, Value)], public: bool) -> Result<Outcome> {
@@ -73,9 +90,12 @@ impl Machine<'_> {
                     }
                     stack.push(Value::Int(self.heap.len() as i32));
                 }
-                Op::Read | Op::Write => {
-                    let val = if matches!(op, Op::Write) {
-                        Some(pop(&mut stack)?.int()?)
+                Op::Read(width) | Op::Write(width) => {
+                    if self.width != width {
+                        return Err(reject("witness array width"));
+                    }
+                    let val = if matches!(op, Op::Write(_)) {
+                        Some(pop(&mut stack)?.cell(width)?)
                     } else {
                         None
                     };
@@ -89,8 +109,22 @@ impl Machine<'_> {
                     if let Some(v) = val {
                         *cell = v;
                     } else {
-                        stack.push(Value::Int(*cell));
+                        stack.push(Value::from_cell(*cell, width)?);
                     }
+                }
+                Op::LongCompare => {
+                    let b = pop(&mut stack)?.cell(Element::Long)?;
+                    let a = pop(&mut stack)?.cell(Element::Long)?;
+                    let cmp = match a.cmp(&b) {
+                        std::cmp::Ordering::Less => -1,
+                        std::cmp::Ordering::Equal => 0,
+                        std::cmp::Ordering::Greater => 1,
+                    };
+                    stack.push(Value::Int(cmp));
+                }
+                Op::LongToInt => {
+                    let a = pop(&mut stack)?.cell(Element::Long)?;
+                    stack.push(Value::Int(a as i32));
                 }
                 Op::Add => {
                     let right = pop(&mut stack)?.int()?;
@@ -122,7 +156,8 @@ impl Machine<'_> {
                     let m = self
                         .class
                         .method(self.req.companion.0, self.req.companion.1, false)?;
-                    let call = [(0, a[0]), (1, a[1]), (2, a[2]), (3, a[3])];
+                    let end = self.width.end_slot();
+                    let call = [(0, a[0]), (1, a[1]), (end - 1, a[2]), (end, a[3])];
                     match self.run(m, &call, false)? {
                         Outcome::Returned(v) => stack.push(Value::Int(v)),
                         other => return Ok(other),
@@ -135,10 +170,11 @@ impl Machine<'_> {
     }
 }
 pub(super) fn explain(class: &Class, req: &Request, args: &[&str]) -> Result<Option<String>> {
-    let target: i32 = args[0]
+    let width = Element::for_descriptors(req.entry.1, req.companion.1)?;
+    let target: i64 = args[0]
         .parse()
         .map_err(|_| reject("invalid witness target"))?;
-    let initial: Vec<i32> = if args[1] == "-" {
+    let initial: Vec<i64> = if args[1] == "-" {
         vec![]
     } else {
         args[1]
@@ -149,6 +185,9 @@ pub(super) fn explain(class: &Class, req: &Request, args: &[&str]) -> Result<Opt
     if initial.len() > 32 {
         return Err(unsupported("witness length"));
     }
+    for &v in &initial {
+        Value::from_cell(v, width)?;
+    }
     let expected = initial
         .iter()
         .position(|&v| v == target)
@@ -158,8 +197,13 @@ pub(super) fn explain(class: &Class, req: &Request, args: &[&str]) -> Result<Opt
         class,
         req,
         heap: initial.clone(),
+        width,
     };
-    let actual = match machine.run(m, &[(0, Value::Ref), (1, Value::Int(target))], true) {
+    let actual = match machine.run(
+        m,
+        &[(0, Value::Ref), (1, Value::from_cell(target, width)?)],
+        true,
+    ) {
         Ok(v) => v,
         Err(_) => return Ok(None), // An incomplete concrete run supplies no refutation.
     };
