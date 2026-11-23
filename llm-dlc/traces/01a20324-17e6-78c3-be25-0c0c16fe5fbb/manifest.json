@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T20:11:37.694Z",
-  "duration_seconds": 115671,
+  "ended": "2026-11-23T20:27:51.483Z",
+  "duration_seconds": 116644,
   "stats": {
     "turns": 23,
-    "api_calls": 4633,
-    "tool_calls": 10627,
-    "tool_errors": 288,
+    "api_calls": 4685,
+    "tool_calls": 10732,
+    "tool_errors": 290,
     "compactions": 18,
     "peak_context_tokens": 550375,
     "usage": {
-      "input_tokens": 6640410,
-      "output_tokens": 2161447,
-      "cache_read_input_tokens": 1258008704,
+      "input_tokens": 6685691,
+      "output_tokens": 2190817,
+      "cache_read_input_tokens": 1276462592,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5702,
-    "exec": 4246,
+    "Bash": 5754,
+    "exec": 4295,
     "apply_patch": 415,
-    "wait": 150,
+    "wait": 154,
     "sleep": 44,
     "send_message": 25,
     "wait_agent": 19,
@@ -481,24 +481,24 @@
     {
       "index": 18,
       "started": "2026-11-23T18:39:44.813Z",
-      "ended": "2026-11-23T20:11:37.694Z",
+      "ended": "2026-11-23T20:27:51.483Z",
       "turns": 2,
-      "api_calls": 223,
+      "api_calls": 275,
       "usage": {
-        "input_tokens": 327444,
-        "output_tokens": 131585,
-        "cache_read_input_tokens": 47612160,
+        "input_tokens": 372725,
+        "output_tokens": 160955,
+        "cache_read_input_tokens": 66066048,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 324970
+      "peak_context_tokens": 366181
     }
   ],
   "log": {
-    "sha256": "6ea155c557657f3865f9df18b73913ebd59352af554e24d8f85587db3dacddd6",
-    "bytes": 68761702,
-    "lines": 34972,
-    "gzip_bytes": 12871643,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/6ea155c557657f3865f9df18b73913ebd59352af554e24d8f85587db3dacddd6.jsonl.gz"
+    "sha256": "69f3a02946271ba87404abad5ac5fdfc662a3ca85f1a725700c56e3d52f82237",
+    "bytes": 69243429,
+    "lines": 35364,
+    "gzip_bytes": 12940364,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/69f3a02946271ba87404abad5ac5fdfc662a3ca85f1a725700c56e3d52f82237.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2157,6 +2157,30 @@
       "summary": "Qualify clean proof replay and range fill (verification pending)",
       "body": "Merge all passing long-transfer and LRAT receipts. Both Guava requests are checked from their original bytes. All six behavioral mutants have checked witnesses, and the held-back wrapper layout and equal-value store both pass. CaDiCaL and cake_lpr verified all eight bounded Guava UNSAT calls and ten prefix-sums UNSAT calls, with rejected damaged and known-SAT controls.\n\nThe first SAT summary mixed the proof-only counter with two separate reachability calls. A fresh capped probe got 24 of 24 solver calls in the proof and 2 of 2 in the probe. Job 20261123-200519-reconcile-both-guava-solver-passes-with binds both raw native logs to the previously certified streams and checks the corrected counts. Job 20261123-200519-replay-clean-java-proof-bundles-and-meas rebuilds the sealed consumer and measures generation and checking on one host.\n\nWith both required cases and controls collected, job 20261123-200520-measure-the-range-fill-and-aliased-calle measures the three 337 contracts in order. The JVM driver checked 50 direct fills and 75 inputs per caller. On a shared singleton and empty range the extra-write caller returned 7 where the observation requires 11. All selected 59 Rust binaries, pipeline validation, strict-scope transcript comparison and separate-counter regressions passed.",
       "log_sha256": "6ea155c557657f3865f9df18b73913ebd59352af554e24d8f85587db3dacddd6"
+    },
+    {
+      "change_id": "zuvoyomtyvmspuumrxuqswmmwsqztnpu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261123-200519-replay-clean-java-proof-bundles-and-meas: passed: 2 passed step(s) in 25.9s, peak 228.2 MiB (estimated 1m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-200520-measure-the-range-fill-and-aliased-calle: passed: 1 passed step(s) in 16.2s, peak 158.7 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
+      "log_sha256": "69f3a02946271ba87404abad5ac5fdfc662a3ca85f1a725700c56e3d52f82237"
+    },
+    {
+      "change_id": "lpumuwutrswutzmxtwonnyvzmzoymttw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-200519-reconcile-both-guava-solver-passes-with: passed: 2 passed step(s) in 2.0s, peak 122.6 MiB (estimated 1m00s, 2.0 GiB); 3 output file(s) changed; signals: example:task-as-expected×1 Applied 3 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
+      "log_sha256": "69f3a02946271ba87404abad5ac5fdfc662a3ca85f1a725700c56e3d52f82237"
+    },
+    {
+      "change_id": "nozqouxopvmvluvrznswstnqpsxltwpy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the independent Guava proof and investment decision",
+      "body": "Recommend one further semantic family, the write frame of JDK range fill. Isolated Rust checks establish the complete public Ints and Longs first-match theorems and catch all six rebound behavioral mutants. Two unfamiliar positive controls passed. The known 64-bit transfer cost 49 net acceptance lines and 44 net concrete-witness lines, with the original certificate format, invariant, frame and decrease rules retained.\n\nPublish the 88-case table, 113 pinned evidence and implementation files, measured costs and replay commands. Three fresh Rust checks had median times of 1.35 ms and 1.11 ms at 1.8 MiB peak, compared with 1.19 seconds for either historical replay. The scalar Lean proof checks the compiled bytes. Independent LRAT checking covers all eight Guava and ten prefix-sums UNSAT calls. The proof and reachability counters were independently reconciled against their recorded native logs.\n\nNine pipeline jobs passed, including byte-identical frozen consumer rebuilding, both engines' scalar controls, fresh checking without producer access, and the optional 337 measurements. Its historical extra caller remains unresolved, while a separate JVM witness on an aliased singleton returned 7 where the contract requires 11. The audit passed with two hash seeds, all 18 local documentation links resolved, the pipeline validated, and all five changed-test groups passed, including 59 Rust binaries and four Python suites.",
+      "log_sha256": "69f3a02946271ba87404abad5ac5fdfc662a3ca85f1a725700c56e3d52f82237"
     }
   ],
   "logs": {
@@ -2369,6 +2393,12 @@
       "lines": 1208,
       "gzip_bytes": 1311627,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/6979f6c0a67f3fac34f7e1462c5f3698667f79ec10bad34accd7da8a80652452.jsonl.gz"
+    },
+    "69f3a02946271ba87404abad5ac5fdfc662a3ca85f1a725700c56e3d52f82237": {
+      "bytes": 69243429,
+      "lines": 35364,
+      "gzip_bytes": 12940364,
+      "url": null
     },
     "6ea155c557657f3865f9df18b73913ebd59352af554e24d8f85587db3dacddd6": {
       "bytes": 68761702,

@@ -1,0 +1,430 @@
+{
+  "schema": "trusted-range-transfer/v1",
+  "cases": [
+    {
+      "control": "fill-any-length",
+      "requestedClaim": "request 1\ntheorem range-fill-frame-v1\nenvironment initialized-verified-jvm-v1\nclass java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\nentry fill ([IIII)V\ncompanion rangeCheck (III)V\n",
+      "requestSha256": "130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5",
+      "statement": "Every cell in [from,to) has value at return. Every cell outside that range is unchanged.",
+      "domain": "Allocated non-null roots, valid half-open range in a and valid k in other for the caller. Shared or distinct roots; independently legal lengths when distinct.",
+      "classSha256": {
+        "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
+      },
+      "rulesSha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a",
+      "historical": {
+        "expected": "established",
+        "actual": "established",
+        "reason": [
+          {
+            "name": "nonempty input domain",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "maximal signed length admitted",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "entry establishes invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "safe array access at 20",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "return with exactly the range written",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "iteration preserves invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "nonnegative strictly decreasing Java-int variant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          }
+        ],
+        "obligations": [
+          {
+            "name": "nonempty input domain",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "maximal signed length admitted",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "entry establishes invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "safe array access at 20",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "return with exactly the range written",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "iteration preserves invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "nonnegative strictly decreasing Java-int variant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          }
+        ],
+        "comparison": [
+          "fill-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpwr4uq_y_/fill-any-length/2d90b3f81c39016d9940",
+          "fill-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/fill-any-length/6b85ebd4829039081f32: the same result",
+          "fill-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+        ],
+        "compareExit": 0
+      },
+      "independent": {
+        "expected": "unsupported",
+        "actual": "unsupported",
+        "reason": "unsupported external theorem"
+      },
+      "physical": {
+        "checks": 50,
+        "shared": 10,
+        "distinct": 40,
+        "observationalMismatches": 0,
+        "frameMismatches": 0,
+        "stdout": [
+          "owner 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+          "cases 50 shared 10 distinct 40 observed-mismatch 0 frame-mismatch 0"
+        ]
+      },
+      "firstCapability": "rangeCheck and a changing prefix with an unchanged outside frame"
+    },
+    {
+      "control": "caller-any-length",
+      "requestedClaim": "request 1\ntheorem range-fill-caller-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\n",
+      "requestSha256": "c5020eafb900905a9e2002f77b3d1fb5e23acb8da6e7d032945190aa697753ad",
+      "statement": "When roots alias and from <= k < to, observe returns value. Otherwise it returns the original other[k].",
+      "domain": "Allocated non-null roots, valid half-open range in a and valid k in other for the caller. Shared or distinct roots; independently legal lengths when distinct.",
+      "classSha256": {
+        "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+        "fill/Range": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742"
+      },
+      "rulesSha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a",
+      "historical": {
+        "expected": "established",
+        "actual": "established",
+        "reason": [
+          {
+            "name": "nonempty input domain",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "maximal signed length admitted",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "entry establishes invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "safe array access at 20",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "return with exactly the range written",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "iteration preserves invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "nonnegative strictly decreasing Java-int variant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller establishes the helper precondition",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller read follows from the proved frame",
+            "expected": "unsat",
+            "obtained": "unsat"
+          }
+        ],
+        "obligations": [
+          {
+            "name": "nonempty input domain",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "maximal signed length admitted",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "entry establishes invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "safe array access at 20",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "return with exactly the range written",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "iteration preserves invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "nonnegative strictly decreasing Java-int variant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller establishes the helper precondition",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller read follows from the proved frame",
+            "expected": "unsat",
+            "obtained": "unsat"
+          }
+        ],
+        "comparison": [
+          "caller-any-length: established, 12 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpiboj4qbo/caller-any-length/b1925f82d49b5e512f17",
+          "caller-any-length: established, 12 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/caller-any-length/2bf9f7a7d6d4481dc137: the same result",
+          "caller-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+        ],
+        "compareExit": 0
+      },
+      "independent": {
+        "expected": "unsupported",
+        "actual": "unsupported",
+        "reason": "unsupported external theorem"
+      },
+      "physical": {
+        "checks": 75,
+        "shared": 15,
+        "distinct": 60,
+        "observationalMismatches": 0,
+        "frameMismatches": 0,
+        "stdout": [
+          "owner 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742 arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+          "cases 75 shared 15 distinct 60 observed-mismatch 0 frame-mismatch 0"
+        ]
+      },
+      "firstCapability": "consume the changed-root frame at other[k] for shared and distinct roots"
+    },
+    {
+      "control": "caller-extra-any-length",
+      "requestedClaim": "request 1\ntheorem range-fill-caller-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\n",
+      "requestSha256": "73ac976b9f0d4ce737fc403f0be478b9065582cc46697e86699d141dc3f9584a",
+      "statement": "When roots alias and from <= k < to, observe returns value. Otherwise it returns the original other[k].",
+      "domain": "Allocated non-null roots, valid half-open range in a and valid k in other for the caller. Shared or distinct roots; independently legal lengths when distinct.",
+      "classSha256": {
+        "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+        "fill/Range": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe"
+      },
+      "rulesSha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a",
+      "historical": {
+        "expected": "unresolved",
+        "actual": "unresolved",
+        "reason": [
+          {
+            "name": "caller read follows from the proved frame",
+            "expected": "unsat",
+            "obtained": "sat"
+          }
+        ],
+        "obligations": [
+          {
+            "name": "nonempty input domain",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "maximal signed length admitted",
+            "expected": "sat",
+            "obtained": "sat"
+          },
+          {
+            "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "entry establishes invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "safe array access at 20",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "return with exactly the range written",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "iteration preserves invariant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "nonnegative strictly decreasing Java-int variant",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller establishes the helper precondition",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller read follows from the proved frame",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller establishes the helper precondition",
+            "expected": "unsat",
+            "obtained": "unsat"
+          },
+          {
+            "name": "caller read follows from the proved frame",
+            "expected": "unsat",
+            "obtained": "sat"
+          }
+        ],
+        "comparison": [
+          "caller-extra-any-length: unresolved, 14 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpc8droe9m/caller-extra-any-length/1d470cb3534a5c7df1c7",
+          "caller-extra-any-length: unresolved, 14 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/caller-extra-any-length/98d5d5ae53cf2d12ce0c: the same result",
+          "caller-extra-any-length: unmet: caller read follows from the proved frame: expected unsat, obtained sat",
+          "caller-extra-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+        ],
+        "compareExit": 0
+      },
+      "independent": {
+        "expected": "unsupported",
+        "actual": "unsupported",
+        "reason": "unsupported external theorem"
+      },
+      "physical": {
+        "checks": 75,
+        "shared": 15,
+        "distinct": 60,
+        "observationalMismatches": 4,
+        "frameMismatches": 31,
+        "stdout": [
+          "owner b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+          "witness shared=true before=[11] from=0 to=0 value=7 k=0 expected=11 returned=7 after=[7]",
+          "cases 75 shared 15 distinct 60 observed-mismatch 4 frame-mismatch 31"
+        ]
+      },
+      "firstCapability": "consume the changed-root frame at other[k] for shared and distinct roots"
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-200520-measure-the-range-fill-and-aliased-calle",
+  "title": "Measure the range-fill and aliased-caller holdout after index transfer",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.2s, peak 158.7 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-200520-measure-the-range-fill-and-aliased-calle.json",
+    "sha256": "98495b846e59bc4972a4bf5f14b4dc439025dff344adfa11f6779f3bdfd41841",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-200520-measure-the-range-fill-and-aliased-calle",
+      "title": "Measure the range-fill and aliased-caller holdout after index transfer",
+      "description": "With the 336 and 346 controls collected, run 337 fill-any-length, caller-any-length and caller-extra-any-length in order. Preserve the original obligation dispositions, try each actual class with the frozen independent checker, then compare the released JVM caller observation with a separate oracle on shared arrays and distinct roots of independently varying length.",
+      "kind": "library",
+      "capabilities": [
+        "array-induction",
+        "independent-java-proof",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T20:05:20+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "python3",
+        "java",
+        "javac",
+        "javap",
+        "rustc",
+        "z3",
+        "setpriv"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_followup.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/range-fill.json"
+      ]
+    }
+  },
+  "sourceCommit": "74e9e6bdb92d873219e19c5b3f55cc2fb91b7629",
+  "startedAt": "2026-11-23T20:14:48+00:00",
+  "finishedAt": "2026-11-23T20:15:14+00:00",
+  "wallSeconds": 26.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2182644,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 166420480,
+    "wallSeconds": 16.2,
+    "cpuSeconds": 28.6,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.27
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_followup.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 16.237,
+      "cpuSeconds": 28.555,
+      "cpuThrottledSeconds": 2.005,
+      "peakMemoryBytes": 166420480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-tmpdir-home-cache-in-the-loop.log",
+        "lines": 4,
+        "bytes": 717,
+        "sha256": "944ec769141ebb4a2b45001546cf3c4b444c8cc9b3235e5ab2afb876c155d096",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fill-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp_va9n0zh/fill-any-length/records/fill-any-length/2d90b3f81c39016d9940",
+        "caller-any-length: established, 12 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp_va9n0zh/caller-any-length/records/caller-any-length/b1925f82d49b5e512f17",
+        "caller-extra-any-length: unresolved, 14 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmp_va9n0zh/caller-extra-any-length/records/caller-extra-any-length/1d470cb3534a5c7df1c7",
+        "[('fill-any-length', 'established', 'unsupported', 0), ('caller-any-length', 'established', 'unsupported', 0), ('caller-extra-any-length', 'unresolved', 'unsupported', 4)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/range-fill.json",
+      "change": "added",
+      "bytes": 16579,
+      "sha256": "609c1658cd93f341a0ca83dad696904e7c28227d303f7d878aa5364c491450a5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T20:15:29+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/range-fill.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T201514Z-05614660be35f207",
+      "outputs": "20261123T201514Z-07800459354cf699",
+      "diff": "20261123T201514Z-096422f868ed85ea"
+    }
+  }
+}

@@ -1,0 +1,226 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-200519-replay-clean-java-proof-bundles-and-meas",
+  "title": "Replay clean Java proof bundles and measure each route three times",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 25.9s, peak 228.2 MiB (estimated 1m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-200519-replay-clean-java-proof-bundles-and-meas.json",
+    "sha256": "f0d8b6c122dba7a4ce97297a405cb056244c200f3f7ce0f714974ae52676d07c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-200519-replay-clean-java-proof-bundles-and-meas",
+      "title": "Replay clean Java proof bundles and measure each route three times",
+      "description": "Rebuild the frozen Rust binary from its sealed source, replay all old and new bundles and substituted requests, and check Lean on the compiled scalar bytes. On the same host measure independent checking and evidence generation for Rust, Lean, the original Guava Python/Z3 route and the selected LRAT formulas using a small native timing parent.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "lean-kernel",
+        "sat-certificate"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T20:05:19+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "rustc",
+        "lean",
+        "cc",
+        "python3",
+        "javap",
+        "java",
+        "z3",
+        "setpriv",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cadical-1.9.5/build/cadical",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Sealed source and disabled producer access",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/recheck_saved.py",
+          "cwd": "."
+        },
+        {
+          "name": "Three fresh native-meter samples per route and case",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/prices.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/clean-replay.json",
+        "lib/benchmark/trusted-kernel/evidence/costs.json"
+      ]
+    }
+  },
+  "sourceCommit": "74e9e6bdb92d873219e19c5b3f55cc2fb91b7629",
+  "startedAt": "2026-11-23T20:14:48+00:00",
+  "finishedAt": "2026-11-23T20:15:23+00:00",
+  "wallSeconds": 35.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2182644,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 239304704,
+    "wallSeconds": 25.9,
+    "cpuSeconds": 39.1,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.43
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Sealed source and disabled producer access",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/recheck_saved.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 4.408,
+      "cpuSeconds": 5.865,
+      "cpuThrottledSeconds": 0.413,
+      "peakMemoryBytes": 224083968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-sealed-source-and-disabled-pro.log",
+        "lines": 1,
+        "bytes": 406,
+        "sha256": "4c2d54d0160f553f5ce48e7ad087f044c5b13078ceb52a24ddf2e8de6b526163",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'frozenBundlesAndSubstitutions': 15, 'finalBundlesAndSubstitutions': 18, 'scalarRoutes': 4, 'frozenBinary': '8732c7a527559fa4a85408575ce914aedfa56d78fc5aec0ecfb66d5cf72112bc', 'finalBinary': '5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b', 'snapshotSha256': '1a24fe181ae72c0b07183"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Three fresh native-meter samples per route and case",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/prices.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 21.446,
+      "cpuSeconds": 33.28,
+      "cpuThrottledSeconds": 1.766,
+      "peakMemoryBytes": 239304704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-three-fresh-native-meter-sampl.log",
+        "lines": 1,
+        "bytes": 250,
+        "sha256": "8823eb60d563a1641049d7b1227097fd0a583befed982810fbceb972fb58e660",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('Rust', 'add', 1836), ('Lean', 'add', 1668048), ('Rust', 'Ints', 1836), ('Rust', 'Longs', 1836), ('SAT/LRAT', 'guava', 13324), ('SAT/LRAT', 'prefix-sums', 15368), ('Historical Python/Z3', 'Ints', 107104), ('Historical Python/Z3', 'Longs', 107088)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/clean-replay.json",
+      "change": "added",
+      "bytes": 422,
+      "sha256": "7953ea8e022c778923f358ea004f7d8fad1ebd9ec37665cb487ed0e92742b383",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/costs.json",
+      "change": "added",
+      "bytes": 21056,
+      "sha256": "473b1aaa7ffa4543861df737af2b037b9f747c39ec0b92d2ae196b81462d040a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T20:15:29+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/clean-replay.json",
+      "lib/benchmark/trusted-kernel/evidence/costs.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T201523Z-5978493652c06f41",
+      "outputs": "20261123T201523Z-619438b8b4e2e443",
+      "diff": "20261123T201523Z-637887fcf40de69a"
+    }
+  }
+}

@@ -167,3 +167,9 @@ None of the brief's mutants exists yet.
 - The `first-8-release` transcript for the SAT comparator, the choice of query, the DIMACS export and its LRAT proof.
 - The claim, assumptions, certificate format, the scalar pair (methods, JDK, frozen bytes), all controls and mutants,
   the Rust and Lean checkers, and the optional 337 runs.
+
+## Results
+
+The independent Rust consumer proved both original public Guava calls at full scope. The frozen int checker first refused the long descriptor. The transfer added 49 net lines on the acceptance path and kept the certificate format and induction invariant. Six rebound behavioral mutants have checked witnesses. The Lean scalar theorem is bound to the compiled bytes. The LRAT comparison certified every observed UNSAT in the bounded Guava task and the prefix-sums workload.
+
+The decision recommends one further write-frame family in example 337. Its historical extra-write caller remains unresolved at the caller-read obligation. A separate JVM run demonstrates a wrong return on a shared singleton. [Decision, costs and replay commands](../../lib/benchmark/trusted-kernel/README.md) · [Per-case results and artifact digests](../../lib/benchmark/trusted-kernel/evidence/cases.json)
