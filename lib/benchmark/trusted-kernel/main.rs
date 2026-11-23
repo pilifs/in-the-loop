@@ -1,8 +1,11 @@
 //! Independent checker. Its only shared implementation is SHA-256.
+mod bytecode;
 mod classfile;
 #[path = "../../src/digest.rs"]
 mod digest;
+mod index;
 mod scalar;
+mod witness;
 
 use classfile::Class;
 use digest::sha256_hex;
@@ -121,6 +124,7 @@ fn check(args: &[String]) -> Result<String> {
     let mut needed = Obligations::new();
     match req.theorem {
         "scalar-equality-v1" => scalar::check(&class, &req, hints, &mut needed)?,
+        "least-index-frame-total-v1" => index::check(&class, &req, hints, &mut needed)?,
         _ => return Err(unsupported("external theorem")),
     }
     if let Some(key) = needed.difference(&actual).next() {

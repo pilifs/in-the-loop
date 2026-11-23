@@ -1,0 +1,232 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-191505-capture-real-bounded-solver-queries-for",
+  "title": "Capture real bounded solver queries for independent LRAT",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 123.7 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-191505-capture-real-bounded-solver-queries-for.json",
+    "sha256": "3401ea6857616e73aa164bff2ba58af091ee27737ff2a589f01f68df41420197",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-191505-capture-real-bounded-solver-queries-for",
+      "title": "Capture real bounded solver queries for independent LRAT",
+      "description": "Run Guava's first-8-release native task on its real JDK and released JAR, retain its per-query assumptions and outcomes, and fall back to the recorded prefix-sums workload only if the first task emits no UNSAT calls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "sat-certificate"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T19:15:05+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/trusted-kernel/capture.py",
+          "run": "python3 -B lib/benchmark/trusted-kernel/capture.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/sat"
+      ]
+    }
+  },
+  "sourceCommit": "3c41a8d9b697551a590c725d6945b6c416561338",
+  "startedAt": "2026-11-23T19:24:32+00:00",
+  "finishedAt": "2026-11-23T19:28:40+00:00",
+  "wallSeconds": 248.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1655333,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 129753088,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 4.9,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 235.021,
+      "cpuSeconds": 235.268,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2307735552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "c608b8f02439dedb5a13bc90da7a35bfc29ae673fb6cdb26f5671e39821b5042",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-191505-capture-real-bounded-solver-queries-for/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 54s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/trusted-kernel/capture.py",
+      "run": "python3 -B lib/benchmark/trusted-kernel/capture.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.811,
+      "cpuSeconds": 4.886,
+      "cpuThrottledSeconds": 0.151,
+      "peakMemoryBytes": 129753088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-truste.log",
+        "lines": 3,
+        "bytes": 440,
+        "sha256": "4a6051c5ffd56c9df218925a360ee8ad91c1b1cb58ed1524791a28db8b206fea",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261123T192837Z-322e0039/result.json",
+          "groups": [
+            "336",
+            "first-8-release",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "336-guava-first-array-match: running task first-8-release (target route)",
+        "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261123T192837Z-322e0039/result.json",
+        "{\"336/first-8-release\": [], \"held/prefix-sums\": [{\"file\": \"trace-0.icnf.gz\", \"sha256\": \"f80486e9c427feb24299ea8e6d3153f4ab9033ed6bd33a93928a2eb73e18c7d7\", \"answers\": {\"sat\": 8, \"unsat\": 10, \"unknown\": 0}}]}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/sat/capture.json",
+      "change": "added",
+      "bytes": 8960,
+      "sha256": "0909a213c5607fce16a060ae93da1ba5cd3a547012de8b14dd582d3500b605da",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/sat/fallback/trace-0.icnf.gz",
+      "change": "added",
+      "bytes": 22526,
+      "sha256": "b1a04a029469b3debe65ab33975b4d1b9874fd10db10b34531ab7580f2f3c0cd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T19:34:53+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/sat/capture.json",
+      "lib/benchmark/trusted-kernel/evidence/sat/fallback/trace-0.icnf.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "285898c1a86a34487909f8d01887d7d51b60f3b5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/285898c1a86a34487909f8d01887d7d51b60f3b5/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T192840Z-603292a151998f66",
+      "outputs": "20261123T192840Z-645313b75e0fa384",
+      "diff": "20261123T192840Z-685727178e91319f"
+    }
+  }
+}

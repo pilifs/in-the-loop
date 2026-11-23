@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-194123-certify-all-observed-bounded-guava-and-p",
+  "title": "Certify all observed bounded Guava and prefix-sum UNSAT calls",
+  "description": "Enable only the optional transcript directory for the original Guava first-8-release task, compare its native quantities with the plain task, and reconstruct each incremental formula with that solve's assumptions. Generate and check LRAT for every observed UNSAT in both the primary and fallback workloads, reject damaged and SAT controls, and repeat from the immutable proof packs.",
+  "kind": "library",
+  "capabilities": [
+    "sat-certificate",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T19:41:23+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Generate and independently certify all query formulas",
+      "run": "python3 -B lib/benchmark/trusted-kernel/bounded_sat.py",
+      "cwd": "."
+    },
+    {
+      "name": "Replay packed proofs against fresh DIMACS exports",
+      "run": "python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --check",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/bounded-sat"
+  ]
+}

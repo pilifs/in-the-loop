@@ -1,0 +1,267 @@
+--- /dev/null
++++ b/lib/benchmark/trusted-kernel/evidence/sat/capture.json
+@@ -0,0 +1,263 @@
++{
++  "336/first-8-release": [],
++  "boundedReceipt": "receipts/first-8-release/20261123T192837Z-322e0039/result.json",
++  "boundedConclusion": {
++    "claim": "0a6e65a00e6d5c94",
++    "attempt": "20261123T192837Z-322e0039",
++    "status": "established",
++    "vacuous": false,
++    "expectation": "yes",
++    "obligations": [
++      {
++        "kind": "property",
++        "name": "property-1",
++        "statement": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
++        "status": "established",
++        "evidence": {
++          "harness": null,
++          "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
++          "assume": "true",
++          "verdict": "verified",
++          "domain": "array: int[] of length \u2264 8, not null \u00d7 target: int",
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over array: int[] of length \u2264 8, not null \u00d7 target: int in 0.0 s; loops unwound 10 times with unwinding assertions",
++          "problem": null,
++          "vacuous": null,
++          "counterexample": null,
++          "statement": null,
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.014,
++            "properties": 1,
++            "unwind": 10,
++            "maxArrayLength": 8,
++            "stage": null,
++            "deadlineSeconds": 600.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budgetSeconds": 600.0,
++                "seconds": 0.01,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.008,
++                  "encoding": 0.002,
++                  "solving": 0.001,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 1370,
++                  "clauses": 3667
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "probe",
++                "stage": null,
++                "budgetSeconds": 599.986,
++                "seconds": 0.008,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.007,
++                  "encoding": 0.001,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 987,
++                  "clauses": 2309
++                }
++              }
++            ],
++            "native": {
++              "paths": 17,
++              "merges": 0,
++              "solverCalls": 24,
++              "solvingSeconds": 0.000649555,
++              "gatesEvaluated": 935,
++              "evaluatingSeconds": 3.4748e-05,
++              "divisions": 0,
++              "divisionsBuilt": 0,
++              "multiplications": 0,
++              "multiplicationsBuilt": 0,
++              "variables": 1370,
++              "clauses": 3667,
++              "seconds": 0.010042143,
++              "loadingSeconds": 0.000162815,
++              "decodingSeconds": 0.000188833,
++              "encodingSeconds": 0.001510956,
++              "witnessSeconds": 0.0
++            },
++            "gapMode": "strict"
++          },
++          "replay": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "array",
++                  "type": "int[]",
++                  "kind": "array",
++                  "null": false,
++                  "maxLength": 8
++                },
++                {
++                  "name": "target",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "sharedArrays": false,
++              "text": "array: int[] of length \u2264 8, not null \u00d7 target: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "true",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against (result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 10,
++              "maxArrayLength": 8,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gapMode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "probe",
++              "text": "Some input in the domain reaches the calls: the tool's own checker found indexOf(array=[20, 20, 20, 20, 20, 20, 20, 20], target=20).",
++              "witness": "indexOf(array=[20, 20, 20, 20, 20, 20, 20, 20], target=20)"
++            }
++          }
++        }
++      }
++    ],
++    "label": "\u2713 Verified",
++    "obligationKeys": {
++      "property": "properties"
++    }
++  },
++  "checkerSha256": "b1e0edad5632990ef4797b8aaf23f82fa0beba809c9c8d8cfbd00805cf5ef389",
++  "held/prefix-sums": [
++    {
++      "file": "trace-0.icnf.gz",
++      "sha256": "f80486e9c427feb24299ea8e6d3153f4ab9033ed6bd33a93928a2eb73e18c7d7",
++      "answers": {
++        "sat": 8,
++        "unsat": 10,
++        "unknown": 0
++      }
++    }
++  ],
++  "fallbackSearch": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 0.014384044,
++    "properties": 1,
++    "unwind": 16,
++    "max_array_length": 8,
++    "stage": null,
++    "native": {
++      "paths": 9,
++      "merges": 0,
++      "solver_calls": 18,
++      "solving_seconds": 0.001018453,
++      "gates_evaluated": 333,
++      "evaluating_seconds": 1.7553e-05,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 1933,
++      "clauses": 5637,
++      "seconds": 0.012119218,
++      "loading_seconds": 4.0836e-05,
++      "decoding_seconds": 9.0929e-05,
++      "encoding_seconds": 0.003299781,
++      "witness_seconds": 0.0
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 120.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 120.0,
++        "seconds": 0.012,
++        "ended": "verified",
++        "ending": "verified",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.008,
++          "encoding": 0.003,
++          "solving": 0.001,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 1933,
++          "clauses": 5637
++        }
++      }
++    ],
++    "phases": {
++      "seconds": 0.047,
++      "setup": 0.001,
++      "harness": 0.0,
++      "gaps": 0.0,
++      "contracts": 0.0,
++      "runs": 0.012,
++      "replay": 0.0,
++      "jvm": 0.0,
++      "other": 0.034
++    }
++  }
++}
+Binary file lib/benchmark/trusted-kernel/evidence/sat/fallback/trace-0.icnf.gz changed
