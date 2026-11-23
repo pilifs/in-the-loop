@@ -7,6 +7,7 @@ from pathlib import Path
 import tarfile
 
 from prepare import HERE, digest
+from recheck_saved import snapshot_sources
 
 EV = HERE / "evidence"
 
@@ -202,9 +203,7 @@ def report():
         "transfer/results.json",
     )
     require(all("Permission denied" in s for s in final["readDenials"].values()), "isolation")
-    for name, sha in final["consumerSources"].items():
-        p = HERE.parents[1] / "src/digest.rs" if name == "digest.rs" else HERE / name
-        require(digest(p.read_bytes()) == sha, "final consumer source " + name)
+    snapshot_sources(EV / "transfer/sources.tar.gz", final["consumerSources"])
     covered = {}
     for family in ("guava", "prefix-sums"):
         folder = EV / "bounded-sat" / family

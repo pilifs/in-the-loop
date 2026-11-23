@@ -14,6 +14,38 @@ def read(path):
     return json.loads(path.read_text())
 
 
+def snapshot_sources(archive, hashes):
+    with tarfile.open(archive, "r:gz") as tar:
+        if len(tar.getmembers()) != len(hashes):
+            raise ValueError("unexpected frozen source inventory")
+        files = {}
+        for name, sha in hashes.items():
+            path = "lib/src/digest.rs" if name == "digest.rs" else "lib/benchmark/trusted-kernel/" + name
+            data = tar.extractfile(path).read()
+            if digest(data) != sha:
+                raise ValueError("frozen source digest " + name)
+            files[path] = data
+        return files
+
+
+def build_snapshot(folder, archive, hashes, expected_binary):
+    for rel, data in snapshot_sources(archive, hashes).items():
+        path = folder / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(data)
+    binary, build = build_kernel(folder, folder / "lib/benchmark/trusted-kernel")
+    if build["binarySha256"] != expected_binary:
+        raise ValueError("frozen binary digest")
+    return binary
+
+
+def guava_snapshot(folder):
+    folder_data = HERE / "evidence/transfer"
+    saved = read(folder_data / "results.json")
+    return build_snapshot(folder, folder_data / "sources.tar.gz", saved["consumerSources"],
+                          saved["rustBuild"]["binarySha256"])
+
+
 def verify_saved(phase, binary):
     folder = HERE / "evidence" / phase
     report = read(folder / "results.json")
@@ -50,30 +82,11 @@ def main():
     ev = HERE / "evidence"
     with tempfile.TemporaryDirectory() as directory:
         tmp = Path(directory)
-        archived = tmp / "archived"
-        archived.mkdir()
         saved = read(ev / "pretransfer/Ints.json")
         snapshot = ev / "pretransfer/sources.tar.gz"
-        with tarfile.open(snapshot, "r:gz") as tar:
-            members = {m.name: m for m in tar.getmembers()}
-            for name, sha in saved["sources"].items():
-                rel = "lib/src/digest.rs" if name == "digest.rs" else "lib/benchmark/trusted-kernel/" + name
-                data = tar.extractfile(members.pop(rel)).read()
-                if digest(data) != sha:
-                    raise ValueError("frozen source digest " + name)
-                path = archived / rel
-                path.parent.mkdir(parents=True, exist_ok=True)
-                path.write_bytes(data)
-            if members:
-                raise ValueError("unexpected frozen source")
-        frozen, _ = build_kernel(archived, archived / "lib/benchmark/trusted-kernel")
-        if digest(frozen.read_bytes()) != saved["binarySha256"]:
-            raise ValueError("frozen binary digest")
+        frozen = build_snapshot(tmp / "ints", snapshot, saved["sources"], saved["binarySha256"])
         frozen_checks = verify_saved("freeze", frozen)
-        final, _ = build_kernel(tmp)
-        finaldoc = read(ev / "transfer/results.json")
-        if digest(final.read_bytes()) != finaldoc["rustBuild"]["binarySha256"]:
-            raise ValueError("final binary digest")
+        final = guava_snapshot(tmp / "guava")
         final_checks = verify_saved("transfer", final)
         scalar = read(ev / "scalar/measurements.json")
         for row in scalar["cases"]:

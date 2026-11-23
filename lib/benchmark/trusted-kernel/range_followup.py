@@ -11,7 +11,8 @@ import zipfile
 from baseline import ROOT, array_induction as adapter
 from controls import JDK
 from prepare import HERE, digest, request
-from replay import build_kernel, fresh_rust
+from recheck_saved import guava_snapshot
+from replay import fresh_rust
 
 
 def result_for(spec, folder, target, binary, work):
@@ -141,7 +142,7 @@ def main():
     rows = []
     with tempfile.TemporaryDirectory() as directory:
         tmp = Path(directory)
-        binary, _ = build_kernel(tmp)
+        binary = guava_snapshot(tmp / "guava")
         for case in ["fill-any-length", "caller-any-length", "caller-extra-any-length"]:
             (spec,) = [s for s in target["arrayContracts"] if s["id"] == case]
             w = tmp / case
