@@ -8,6 +8,7 @@ import tarfile
 
 from prepare import HERE, digest
 from recheck_saved import snapshot_sources
+from frame_witness import FILL, Z3, guava_record, original_scope, witness_query
 
 EV = HERE / "evidence"
 
@@ -39,6 +40,7 @@ def job_ledger():
         "20261123-200519-replay-clean-java-proof-bundles-and-meas",
         "20261123-200520-measure-the-range-fill-and-aliased-calle",
         "20261123-204925-qualify-jdk-range-fill-and-the-independe",
+        "20261123-205832-replay-original-solver-failures-on-the-i",
     )
     root = HERE.parents[2]
     result = []
@@ -359,8 +361,71 @@ def report():
     for (control, expected, disposition), observed in zip(fixtures, physical):
         require(expected == observed, "JVM range control " + control)
         r = rows[control]
-        case("Temurin 21 JVM", r["classSha256"], r["requestedClaim"], control, transfer["runtime"],
-             disposition, disposition, observed, rel)
+        case(
+            "Temurin 21 JVM",
+            r["classSha256"],
+            r["requestedClaim"],
+            control,
+            transfer["runtime"],
+            disposition,
+            disposition,
+            observed,
+            rel,
+        )
+    rel = "frame-witness/results.json"
+    replayed = read(EV / rel)
+    require(replayed["solverSha256"] == Z3, "historical witness solver")
+    guava_case = guava_record()
+    guava = guava_case["unchangedProducer"]
+    jdk = read(FILL / "result.json")
+    originals = [
+        (
+            EV / "frame-witness/guava.smt2",
+            guava["formulaSha256"],
+            guava["obligations"],
+            "preserve the input heap",
+            guava_case,
+        ),
+        (
+            FILL / "obligations.smt2",
+            jdk["certificateSha256"],
+            jdk["obligations"],
+            "caller read follows from the proved frame",
+            rows["caller-extra-any-length"],
+        ),
+    ]
+    require(len(replayed["cases"]) == len(originals), "historical witness cases")
+    for r, (path, pin, obligations, name, source) in zip(replayed["cases"], originals):
+        idx, prelude, block = original_scope(path.read_bytes(), pin, obligations, name)
+        require(
+            r["obligation"] == name
+            and r["originalFormulaSha256"] == pin
+            and r["zeroBasedQuery"] == idx
+            and r["classSha256"] == source["classSha256"]
+            and r["checkerVersion"] == source["checkerVersion"]
+            and r["historicalStatus"] == "unresolved"
+            and digest(block.encode()) == r["originalScopeSha256"],
+            "historical witness scope",
+        )
+        require(
+            [c["expected"] for c in r["controls"]] == ["sat", "unsat"], "missing witness or benign control"
+        )
+        for c in r["controls"]:
+            require(
+                digest(witness_query(prelude, block, c["bindings"]).encode()) == c["querySha256"],
+                "concrete witness query",
+            )
+            case(
+                "Historical Z3 on fixed input",
+                r["classSha256"],
+                c["querySha256"],
+                c["control"],
+                Z3,
+                c["expected"],
+                c["actual"],
+                {"obligation": name, "scope": idx, "historicalStatus": r["historicalStatus"]},
+                rel,
+            )
     keys = {
         (
             r["route"],
@@ -390,6 +455,9 @@ def report():
     ]
     files.extend(sorted(HERE.rglob("*.rs")))
     files.extend([HERE / "Scalar.lean", HERE / "protocol.md", HERE / "meter.c"])
+    files.extend(
+        HERE / name for name in ("replay.py", "range_qualification.py", "range_certificate.py", "frame_witness.py")
+    )
     manifest = {
         p.relative_to(HERE).as_posix(): {"sha256": digest(p.read_bytes()), "bytes": p.stat().st_size}
         for p in sorted(files)

@@ -1,0 +1,267 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-205832-replay-original-solver-failures-on-the-i",
+  "title": "Replay original solver failures on the independently witnessed inputs",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 2.0s, peak 86.5 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-205832-replay-original-solver-failures-on-the-i.json",
+    "sha256": "32a31c9235f88fc22ed97ce8dc83be5b8b5b0214c246fdc8030e6b1ede7a8b7c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-205832-replay-original-solver-failures-on-the-i",
+      "title": "Replay original solver failures on the independently witnessed inputs",
+      "description": "Recheck the saved 14 range bundles in a separate checkout and process. Regenerate the unaltered Guava heap-writing proof, bind its complete original SMT by digest, and replay its failing frame obligation and the 337 caller-read obligation with only the actual JVM witness inputs fixed. Check each original scope also with a benign input, then replay the committed formulas without the producer.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "array-induction"
+      ],
+      "links": {
+        "examples": [
+          "337",
+          "336"
+        ]
+      },
+      "expected": "All 14 saved Rust outcomes repeat. The two original failing VCs are SAT at their witnessed inputs and UNSAT on their corresponding benign controls, under the pinned Z3.",
+      "submitted": {
+        "at": "2026-11-23T20:58:32+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "python3",
+        "rustc",
+        "java",
+        "javap",
+        "setpriv",
+        "z3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Replay the saved range certificates",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_qualification.py --check",
+          "cwd": "."
+        },
+        {
+          "name": "Bind the original failing conditions to concrete inputs",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/frame_witness.py --record lib/benchmark/trusted-kernel/evidence/frame-witness",
+          "cwd": "."
+        },
+        {
+          "name": "Recheck both saved original solver scopes",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/frame_witness.py --check",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/frame-witness"
+      ]
+    }
+  },
+  "sourceCommit": "cbe7dbf4a7d1b4a9b61436c783cac1b9966c6673",
+  "startedAt": "2026-11-23T21:09:40+00:00",
+  "finishedAt": "2026-11-23T21:09:49+00:00",
+  "wallSeconds": 9.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2721148,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 90660864,
+    "wallSeconds": 2.0,
+    "cpuSeconds": 2.4,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay the saved range certificates",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_qualification.py --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 1.203,
+      "cpuSeconds": 1.637,
+      "cpuThrottledSeconds": 0.01,
+      "peakMemoryBytes": 90660864,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-the-saved-range-certifi.log",
+        "lines": 1,
+        "bytes": 485,
+        "sha256": "0ab856e354373564bcc3e4f4af248c1dc996944567127cc9d9751d4e7efbf77f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('fill-any-length', 'accepted'), ('caller-any-length', 'accepted'), ('caller-extra-any-length', 'rejected'), ('saved-local', 'accepted'), ('missing-store', 'rejected'), ('wrong-value', 'rejected'), ('strict-empty-guard', 'unsupported'), ('wrong-observed-root', 'rejected'), ('omit-caller-frame', 're"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Bind the original failing conditions to concrete inputs",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/frame_witness.py --record lib/benchmark/trusted-kernel/evidence/frame-witness",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.584,
+      "cpuThrottledSeconds": 0.015,
+      "peakMemoryBytes": 57200640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-bind-the-original-failing-cond.log",
+        "lines": 1,
+        "bytes": 211,
+        "sha256": "a7135e4029a9409f43b82c7ea3a703450da2ce8130c1bc517180372f3143db58",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('preserve the input heap', [('changing-store', 'sat'), ('same-value-store', 'unsat')]), ('caller read follows from the proved frame', [('shared-empty-range', 'sat'), ('distinct-valid-observation', 'unsat')])]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Recheck both saved original solver scopes",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/frame_witness.py --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.129,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 53305344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-recheck-both-saved-original-so.log",
+        "lines": 1,
+        "bytes": 211,
+        "sha256": "a7135e4029a9409f43b82c7ea3a703450da2ce8130c1bc517180372f3143db58",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('preserve the input heap', [('changing-store', 'sat'), ('same-value-store', 'unsat')]), ('caller read follows from the proved frame', [('shared-empty-range', 'sat'), ('distinct-valid-observation', 'unsat')])]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/frame-witness/guava.smt2",
+      "change": "added",
+      "bytes": 4491,
+      "sha256": "6cfbfef4efd36c3d2d7292c9442b0c73028d02ee589e8d10e1025835b564a61b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/frame-witness/results.json",
+      "change": "added",
+      "bytes": 3852,
+      "sha256": "c82e423c967c86f767295c71c24b2d52ec73702f047f56d006dd89ac73757ba9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T21:10:21+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/frame-witness/guava.smt2",
+      "lib/benchmark/trusted-kernel/evidence/frame-witness/results.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T210949Z-618219d349a7b4d7",
+      "outputs": "20261123T210949Z-69262863f05eca70",
+      "diff": "20261123T210949Z-7342296c63953bdb"
+    }
+  }
+}

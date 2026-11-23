@@ -17,6 +17,8 @@ An experimental issuer given a false frame premise supplied all the expected obl
 
 Lean 4.36.0 independently checked the scalar class from its complete 256 bytes. The `(I)I` bodies for multiply, add and shifted add are `05 1a 68 ac`, `1a 1a 60 ac` and `1a 1a 60 04 60 ac`. For every 32-bit input, multiply and add return `x+x` with the same heap. The shifted version differs at zero. Both theorems use `propext`, `Classical.choice` and `Quot.sound`. A Lean Guava proof would also require the larger constant pool, branching, private calls and loop induction. [Kernel source](Scalar.lean) · [Axiom output and checkpoint](evidence/scalar/measurements.json)
 
+The genuine historical failures can also be replayed at the exact JVM inputs. Guava's heap-writing variant reproduced its original SMT byte for byte. Its frame query stays SAT for `[7]` and target 7, and becomes UNSAT for `[0]` and target 0, where the store writes the existing value. Example 337's caller-read query stays SAT for the shared singleton and becomes UNSAT for the observed read on the distinct-root control. In each case the original assertion and solver scope are preserved. Only the input equalities differ. Both historical results are still recorded as unresolved. The independent bytecode executions supply the refutations. [Fixed inputs and original formula digests](evidence/frame-witness/results.json)
+
 ## Cost of reuse
 
 The original 336 and 346 comparisons matched every historical obligation on JDK 21 and Z3 5.3.3. The additional SAT domain check for 346 admitted distinct longs with equal low halves. The setup agent supplied the pinned tools and releases. The implementation agent made the proof corrections and used the published JAR, both existing wrapper/helper solutions, and their archived obligations. The release `Ints.class` digest ends in `4edbb`. [Baseline receipts](evidence/baseline) · [Artifact and tool setup](../../../llm-dlc/loops/in-the-loop-trusted-kernel-experiment-brief-setup.md)
@@ -68,7 +70,7 @@ The JVM confirmed that witness and found four wrong returns and 31 frame differe
 | Direct JDK fill | 1,197 bytes | 439 ms / 86.3 MiB | 1.24 ms / 1.79 MiB |
 | Original 337 caller and JDK callee | 1,683 bytes | 630 ms / 86.7 MiB | 1.28 ms / 1.79 MiB |
 
-The transfer reused the class reader, branch decoder, obligation keys and isolated process. The Rust change added 633 lines and removed 7 across seven files, including the concrete refutations. Of these, 308 lines implement the range induction and 281 implement the caller and witness domains. The 63 model calls through the implementation commit cost an estimated $5.67 at the repository's prices. The qualification job took 9.4 seconds. [Effort and measurement boundary](evidence/effort.json) · [Qualification receipt](../../../verification/results/2026/11/23/20261123-204925-qualify-jdk-range-fill-and-the-independe/result.json)
+The direct proof inputs occupy 61,348 bytes. The caller inputs occupy 62,443 bytes including the same JDK class. The transfer reused the class reader, branch decoder, obligation keys and isolated process. The Rust change added 633 lines and removed 7 across seven files, including the concrete refutations. Of these, 308 lines implement the range induction and 281 implement the caller and witness domains. The model calls cost an estimated $5.67 through the implementation commit and $11.20 cumulatively through the historical-witness submission. The qualification job took 9.4 seconds and the separate clean replay took 2.0 seconds. [Effort and measurement boundary](evidence/effort.json) · [Qualification receipt](../../../verification/results/2026/11/23/20261123-204925-qualify-jdk-range-fill-and-the-independe/result.json) · [Clean replay receipt](../../../verification/results/2026/11/23/20261123-205832-replay-original-solver-failures-on-the-i/result.json)
 
 The next reuse measurement is the JDK `long[]` range-fill overload. Its disassembly retains the same bounds, guard and induction head, moves the cursor to local 5 and uses `lastore` for the 64-bit value. Measure that transfer before widening opcode coverage or budgeting a production rollout. [Pinned JDK disassembly](../../../examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/6b85ebd4829039081f32/class.javap)
 
@@ -82,6 +84,7 @@ python3 -B "$K/consumer.py" rust "$K/requests/Ints.request" "$K/evidence/transfe
 python3 -B "$K/consumer.py" rust "$K/requests/Longs.request" "$K/evidence/transfer/Longs/evidence.cert" "$K/inputs/Longs.bin"
 python3 -B "$K/consumer.py" lean "$K/requests/add.request" "$K/evidence/scalar/add.cert" "$K/inputs/Scalar.bin"
 python3 -B "$K/range_qualification.py" --check
+python3 -B "$K/frame_witness.py" --check
 python3 -B "$K/bounded_sat.py" --check
 python3 -B "$K/decision_evidence.py" --check
 ```

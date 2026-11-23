@@ -78,8 +78,16 @@
       "bytes": 21056
     },
     "evidence/effort.json": {
-      "sha256": "d8d58143646aa82520e988810c10d961a6bbf29c7dc079456b951836ed448603",
-      "bytes": 3248
+      "sha256": "8ceebd92ec06819a0f31fe00c618c4fa7ef1eca2d4a08381ee71ded6df04c3bb",
+      "bytes": 4052
+    },
+    "evidence/frame-witness/guava.smt2": {
+      "sha256": "6cfbfef4efd36c3d2d7292c9442b0c73028d02ee589e8d10e1025835b564a61b",
+      "bytes": 4491
+    },
+    "evidence/frame-witness/results.json": {
+      "sha256": "c82e423c967c86f767295c71c24b2d52ec73702f047f56d006dd89ac73757ba9",
+      "bytes": 3852
     },
     "evidence/freeze/Ints/artifact.bin": {
       "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
@@ -477,6 +485,10 @@
       "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
       "bytes": 445
     },
+    "frame_witness.py": {
+      "sha256": "ad2793be222641f3015b6fca8b4df7e5255965bef8fec24dbd762a410613dbc4",
+      "bytes": 7721
+    },
     "index.rs": {
       "sha256": "b538147315357d1d32ebca81e381c2d87c70a9328561e5b9974c250b0e02d19c",
       "bytes": 12776
@@ -520,6 +532,18 @@
     "range.rs": {
       "sha256": "cd67b9d98fe66641059f57fd21462ab373194ab46ea2caeff9dd16aef55a2efa",
       "bytes": 10542
+    },
+    "range_certificate.py": {
+      "sha256": "2be54f8301d0a62d375c9a49faca9c2bfb5f2ca40f95c1fe2eaaadc72e379dee",
+      "bytes": 3958
+    },
+    "range_qualification.py": {
+      "sha256": "a2a8073a31fccc67be4c71b150f57a170199aa4e94c17a017a7c3e603b5dfacd",
+      "bytes": 11887
+    },
+    "replay.py": {
+      "sha256": "eb37312a43527da3505b15e421373f787a49d98b3de8adc4c856d4c05b33cd8c",
+      "bytes": 9159
     },
     "requests/Ints.request": {
       "sha256": "7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740",
@@ -649,6 +673,14 @@
       "summary": "passed: 1 passed step(s) in 9.4s, peak 109.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
       "attention": [],
       "receipt": "verification/results/2026/11/23/20261123-204925-qualify-jdk-range-fill-and-the-independe/result.json"
+    },
+    {
+      "id": "20261123-205832-replay-original-solver-failures-on-the-i",
+      "status": "passed",
+      "sourceCommit": "cbe7dbf4a7d1b4a9b61436c783cac1b9966c6673",
+      "summary": "passed: 3 passed step(s) in 2.0s, peak 86.5 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed",
+      "attention": [],
+      "receipt": "verification/results/2026/11/23/20261123-205832-replay-original-solver-failures-on-the-i/result.json"
     }
   ],
   "key": [
@@ -2399,6 +2431,66 @@
       "actual": "replayed refutation",
       "reason": "readsFilledRoot ArrayIndexOutOfBoundsException",
       "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Historical Z3 on fixed input",
+      "classSha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
+      "requestedClaim": "a76d2253f42328f19ba97773624aae5d74792f4de3b52c3ab662a4b76254249e",
+      "control": "changing-store",
+      "checkerVersion": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "expected": "sat",
+      "actual": "sat",
+      "reason": {
+        "obligation": "preserve the input heap",
+        "scope": 10,
+        "historicalStatus": "unresolved"
+      },
+      "evidence": "frame-witness/results.json"
+    },
+    {
+      "route": "Historical Z3 on fixed input",
+      "classSha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
+      "requestedClaim": "284b0e720cf0eff71e6d14930c2eca4b7e96e65ea4674dc1c457519223c958f1",
+      "control": "same-value-store",
+      "checkerVersion": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "expected": "unsat",
+      "actual": "unsat",
+      "reason": {
+        "obligation": "preserve the input heap",
+        "scope": 10,
+        "historicalStatus": "unresolved"
+      },
+      "evidence": "frame-witness/results.json"
+    },
+    {
+      "route": "Historical Z3 on fixed input",
+      "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+      "requestedClaim": "8d9e60805aed900f6b074d3afb16305eeb81bb1fe4ee1e94774bdd2d8251bf3f",
+      "control": "shared-empty-range",
+      "checkerVersion": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "expected": "sat",
+      "actual": "sat",
+      "reason": {
+        "obligation": "caller read follows from the proved frame",
+        "scope": 13,
+        "historicalStatus": "unresolved"
+      },
+      "evidence": "frame-witness/results.json"
+    },
+    {
+      "route": "Historical Z3 on fixed input",
+      "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+      "requestedClaim": "ed26a531d164828a8770ec00efb07eb4200797734b90e54888ffaa729cfafbe7",
+      "control": "distinct-valid-observation",
+      "checkerVersion": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01",
+      "expected": "unsat",
+      "actual": "unsat",
+      "reason": {
+        "obligation": "caller read follows from the proved frame",
+        "scope": 13,
+        "historicalStatus": "unresolved"
+      },
+      "evidence": "frame-witness/results.json"
     }
   ],
   "coverage": {
