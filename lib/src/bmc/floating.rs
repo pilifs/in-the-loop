@@ -362,6 +362,10 @@ impl Engine<'_> {
 
     pub(super) fn floating_convert(&mut self, path: &mut Path, from: Kind, to: Kind) -> Result<Val, Stop> {
         let x = self.pop_word(path, from)?;
+        self.convert_word(path, x, from, to)
+    }
+
+    pub(super) fn convert_word(&mut self, path: &Path, x: Bits, from: Kind, to: Kind) -> Result<Val, Stop> {
         if from == Kind::Int && to == Kind::Double { return Ok(Val::J(int_to_double(&mut self.b, &x))); }
         if from == Kind::Int && to == Kind::Float { return Ok(Val::I(int_to_float(&mut self.b, &x))); }
         if from == Kind::Float && to == Kind::Double {

@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-162554-qualify-original-guava-method-reference",
+  "title": "Qualify original Guava method-reference arguments and returns",
+  "description": "Check the five original Guava Lift statements on every pair of signed ints and on null unboxing, through the strict native and staged integrated CLI. Independently compile and replay each reported counterexample on Temurin 21, retaining raw results and bootstrap descriptors before the Commons Lang transfer.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/392-method-reference-conversions/adapter/Lift.java"
+    ]
+  },
+  "expected": "Six proofs and four original JVM refutations across ten matched engine runs, all at the registered scope.",
+  "submitted": {
+    "at": "2026-11-23T16:25:54+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "1m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Guava and the original JVM",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py guava callbacks paired --methods primitiveGood primitiveWrong boxedGood boxedWrong boxedNull --require",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/guava/callbacks/paired"
+  ]
+}

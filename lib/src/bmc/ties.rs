@@ -269,7 +269,12 @@ impl Engine<'_> {
         let (code, uses) = self.code_key(&frame.class, &frame.method, &frame.code.descriptor, &previous)?;
         // The static state the code can read: the JDK's, and its own application classes'.
         let read = |class: &str| !self.cp.is_application(class) || uses.contains(class);
-        let mut key = vec![STATE, code, frame.pc() as i64, frame.lambda_return as i64, i64::from(path.unbound_platform_value.is_some())];
+        let adapter = match &frame.lambda_return {
+            LambdaReturn::Pass => 0, LambdaReturn::Discard => 1, LambdaReturn::BoxInt => 2, LambdaReturn::IntegerValueOf => 3,
+            // A pending reference cast or primitive conversion belongs to its exact call site.
+            LambdaReturn::Adapt(..) | LambdaReturn::AdaptResult(..) => return None,
+        };
+        let mut key = vec![STATE, code, frame.pc() as i64, adapter, i64::from(path.unbound_platform_value.is_some())];
         let literals: HashMap<usize, String> = path.literals.iter().map(|(l, &o)| (o, unprefixed(&format!("{l:?}"), &previous))).collect();
         let mut numbers: HashMap<usize, i64> = HashMap::new();
         let mut queue: Vec<usize> = Vec::new();

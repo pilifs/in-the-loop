@@ -83,7 +83,7 @@
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s, `int`s, `short`s and `byte`s (their decimal digits) and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a `long`, a floating-point number or a boolean converted gives an opaque String (their formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
 //! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` and `toLowerCase(Locale)` lower an ASCII String under the default locale the path set or the Locale given, Turkish and Azeri among them ([`locale`]); either of a String with a unit outside ASCII or under a Locale the engine knows nothing of, and splits outside the symbolic single-character negative-limit or concrete zero-limit forms stay the JDK call (a gap, or refused) |
-//! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
+//! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, with casts, unboxing and primitive invocation conversions ([`Engine::lambda_call`]) |
 //! | `invokespecial`, `invokevirtual` and `invokeinterface` of the constructors and methods of `java.util.ArrayList`, `java.util.ArrayDeque`, `java.util.HashSet`, `java.util.LinkedHashSet` (with the `HashSet` model), `java.util.StringJoiner` or `java.beans.PropertyChangeEvent` (with `java.util.EventObject`), in a check that asks for the class's model (`--model java.util.ArrayList`, [`crate::models::ON_REQUEST`]) | enter the model ([`ClassPath::runs_model`]) for what it keeps, and the run states it ([`Outcome::assumed`]); a method it does not keep, and every call in a check that did not ask, is the JDK call it was |
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
 //! | `Arrays.asList(T...)` and its fixed-size view | Strict checking on an image executes the JDK's array-backed list and iterator. The portable model supplies size, get and toArray when the image is unavailable. |
@@ -890,14 +890,16 @@ struct Decoded {
     descriptor: String,
 }
 
-/// A SAM's normal return can discard a result or apply a boxing invocation.
-#[derive(Clone, Copy, Default, PartialEq, Eq)]
+/// Adapt the normal result after control returns to the functional interface call.
+#[derive(Clone, Default, PartialEq, Eq)]
 enum LambdaReturn {
     #[default]
     Pass,
     Discard,
     BoxInt,
     IntegerValueOf,
+    Adapt(Type, Type),
+    AdaptResult(Type, Type),
 }
 
 #[derive(Clone)]
@@ -3634,8 +3636,12 @@ impl<'a> Engine<'a> {
                 frame.lambda_return = LambdaReturn::IntegerValueOf;
                 return;
             }
+            LambdaReturn::Adapt(from, to) => {
+                frame.lambda_return = LambdaReturn::AdaptResult(from, to);
+                return;
+            }
             LambdaReturn::Discard => { frame.stack.pop().expect("adapted method result"); }
-            LambdaReturn::IntegerValueOf | LambdaReturn::Pass => {}
+            LambdaReturn::AdaptResult(..) | LambdaReturn::IntegerValueOf | LambdaReturn::Pass => {}
         }
         frame.at += 1;
     }
@@ -3770,6 +3776,18 @@ impl<'a> Engine<'a> {
     fn step(&mut self, path: &mut Path) -> Step {
         let frame = path.frames.last().expect("a frame");
         let class = frame.class.clone();
+        if let LambdaReturn::AdaptResult(from, to) = frame.lambda_return.clone() {
+            if from.is_reference() {
+                if let Some(step) = self.concrete_ref(path, 0) { return step; }
+            }
+            let value = self.pop(path)?;
+            let adapted = match self.adapt_lambda_value(path, value, &from, &to) {
+                Ok(v) => v, Err(step) => return step,
+            };
+            self.push(path, adapted);
+            self.advance(path);
+            return Ok(None);
+        }
         if frame.lambda_return == LambdaReturn::IntegerValueOf {
             // Keep this phase until valueOf completes, including initialization or a path split.
             let factory = crate::classfile::MemberRef::new("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
@@ -5459,6 +5477,46 @@ impl<'a> Engine<'a> {
         }
     }
 
+    /// At this point a reference choice was split on the original call stack. The
+    /// erased argument is cast to the instantiated type before it can be unboxed.
+    fn adapt_lambda_value(&mut self, path: &mut Path, value: Val, from: &Type, to: &Type) -> Result<Val, Step> {
+        let (primitive, value) = if from.is_reference() {
+            let Val::R(reference) = value else { return Err(unsupported("non-reference lambda argument")); };
+            for ty in [from, to].into_iter().filter(|t| t.is_reference()) {
+                if let Some(r) = reference {
+                    let required = class_of(ty);
+                    if !path.objects[r].is_instance(self.cp, &required) {
+                        if path.objects[r].assumed { return Err(self.of_unknown_class(path, r, "a method reference cast")); }
+                        return Err(self.raise(path, "java/lang/ClassCastException"));
+                    }
+                }
+            }
+            if to.is_reference() { return Ok(value); }
+            let Some(r) = reference else { return Err(self.raise(path, "java/lang/NullPointerException")); };
+            let Some(source) = from.class_name().and_then(Type::for_wrapper) else {
+                return Err(unsupported("unboxing a method reference without an exact wrapper descriptor"));
+            };
+            let Some(v) = path.objects[r].fields.get("value").cloned() else {
+                return Err(unsupported("unboxing a method reference without its wrapper's value field"));
+            };
+            (source, v)
+        } else { (from.clone(), value) };
+        if !primitive.widens_to(to) {
+            return Err(unsupported(format!("method reference conversion from {} to {}", primitive.java_name(), to.java_name())));
+        }
+        let kind = |t: &Type| match t { Type::Long => Kind::Long, Type::Float => Kind::Float,
+            Type::Double => Kind::Double, _ => Kind::Int };
+        let (source, dest) = (kind(&primitive), kind(to));
+        let word = match value {
+            Val::I(w) if matches!(source, Kind::Int | Kind::Float) => w,
+            Val::J(w) if matches!(source, Kind::Long | Kind::Double) => w,
+            _ => return Err(unsupported("primitive method reference operand has the wrong stack width")),
+        };
+        if source == dest { return Ok(if matches!(dest, Kind::Long | Kind::Double) { Val::J(word) } else { Val::I(word) }); }
+        if source == Kind::Int && dest == Kind::Long { return Ok(Val::J(self.b.sext(&word, 64))); }
+        self.convert_word(path, word, source, dest).map_err(Err)
+    }
+
     /// The call of a lambda's object `o` (at `receiver_at` on the stack, the call's arguments above it) by its
     /// interface's method, of descriptor `called`: the object is replaced by the values it captured, and the
     /// method it stands for is invoked as the instruction for its kind would (JVMS §5.4.3.5), so that an
@@ -5481,23 +5539,15 @@ impl<'a> Engine<'a> {
         if !matches!(kind, 5..=9) || takes.params.len() != lambda.captured + called.params.len() || lambda.instantiated.params.len() != called.params.len() {
             return unsupported(format!("a lambda that stands for {}.{} in a way the engine does not run (method handle kind {kind})", target.owner.replace('/', "."), target.name));
         }
-        let fits = |from: &Type, to: &Type| match (from, to) {
-            (Type::Object(_) | Type::Array(_), Type::Object(_) | Type::Array(_)) => true,
-            (a, b) => a == b,
-        };
-        let box_int = returns == Type::Int
-            && matches!(&lambda.instantiated.ret, Type::Object(c) if c == "java/lang/Integer")
-            && matches!(&called.ret, Type::Object(c) if self.cp.is_subtype("java/lang/Integer", c));
-        if !called.params.iter().zip(&takes.params[lambda.captured..]).all(|(a, b)| fits(a, b))
-            || (called.ret != Type::Void && !fits(&returns, &called.ret) && !box_int) {
-            return unsupported(format!("a lambda whose call of {}.{} needs an unsupported argument or result conversion", target.owner.replace('/', "."), target.name));
+        // Erasure may change reference types. Primitive specializations retain
+        // their exact SAM descriptor independently of the implementation's type.
+        let compatible_sam = |erased: &Type, concrete: &Type| erased == concrete || erased.is_reference() && concrete.is_reference();
+        if !called.params.iter().zip(&lambda.instantiated.params).all(|(a, b)| compatible_sam(a, b))
+            || !compatible_sam(&called.ret, &lambda.instantiated.ret) {
+            return unsupported("incompatible erased and instantiated method reference types");
         }
-        if kind == 6 || kind == 8 {
-            let declaring = self.cp.bytecode_method(&target.owner, &target.name, &target.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| target.owner.clone());
-            if let Some(step) = self.initialise(path, &declaring) {
-                return step;
-            }
-        }
+        let box_int = returns == Type::Int && lambda.instantiated.ret.class_name()
+            .is_some_and(|c| self.cp.is_subtype("java/lang/Integer", c));
         // Each reference argument is known before the call is made of it: its cast below reads its class, and
         // the method called may need it known, which it could no longer ask of this instruction once the
         // receiver is gone from the stack (a split runs the instruction again).
@@ -5506,21 +5556,16 @@ impl<'a> Engine<'a> {
                 return step;
             }
         }
-        // The cast of each reference argument to the type the method takes.
-        let stack = &path.frames.last().expect("a frame").stack;
-        let arguments = &stack[receiver_at + 1..];
-        for (v, t) in arguments.iter().zip(&lambda.instantiated.params).chain(arguments.iter().zip(&takes.params[lambda.captured..])) {
-            if let (Val::R(Some(a)), Type::Object(_) | Type::Array(_)) = (v, t) {
-                if !path.objects[*a].is_instance(self.cp, &class_of(t)) {
-                    if path.objects[*a].assumed {
-                        return self.of_unknown_class(path, *a, &format!("a cast to {}", class_of(t).replace('/', ".")));
-                    }
-                    let args = called.params.len();
-                    self.pop_args(path, args)?;
-                    self.pop(path)?;
-                    return self.raise(path, "java/lang/ClassCastException");
-                }
+        let arguments = path.frames.last().expect("a frame").stack[receiver_at + 1..].to_vec();
+        let mut adapted = Vec::with_capacity(arguments.len());
+        for ((v, src), dst) in arguments.into_iter().zip(&lambda.instantiated.params).zip(&takes.params[lambda.captured..]) {
+            match self.adapt_lambda_value(path, v, src, dst) {
+                Ok(v) => adapted.push(v), Err(step) => return step,
             }
+        }
+        if kind == 6 || kind == 8 {
+            let declaring = self.cp.bytecode_method(&target.owner, &target.name, &target.descriptor).map(|(cf, _)| cf.name.clone()).unwrap_or_else(|| target.owner.clone());
+            if let Some(step) = self.initialise(path, &declaring) { return step; }
         }
         let captured: Vec<Val> = (0..lambda.captured).map(|i| path.objects[o].fields.get(&captured_key(i)).cloned().ok_or_else(|| Stop::Unsupported("a lambda with a captured value missing".into()))).collect::<Result<_, _>>()?;
         // Resolve the capture on the intact SAM call. Each path substitutes the chosen
@@ -5536,6 +5581,8 @@ impl<'a> Engine<'a> {
             frame.lambda_return = LambdaReturn::BoxInt;
         } else if returns != Type::Void && called.ret == Type::Void {
             frame.lambda_return = LambdaReturn::Discard;
+        } else if returns != lambda.instantiated.ret {
+            frame.lambda_return = LambdaReturn::Adapt(returns, lambda.instantiated.ret.clone());
         }
         let stack = &mut frame.stack;
         let mut replaced: Vec<Val> = Vec::new();
@@ -5544,7 +5591,8 @@ impl<'a> Engine<'a> {
             replaced.extend([Val::R(Some(r)), Val::R(Some(r))]);
         }
         replaced.extend(captured);
-        stack.splice(receiver_at..=receiver_at, replaced);
+        replaced.extend(adapted);
+        stack.splice(receiver_at.., replaced);
         match kind {
             6 => self.invoke_static(path, caller, target),
             _ => self.invoke_instance(path, caller, matches!(kind, 7 | 8), target),
