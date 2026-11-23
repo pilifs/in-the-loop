@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "ended",
+  "status": "open",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-23T11:10:44.995Z",
-  "duration_seconds": 668598,
+  "ended": "2026-11-23T11:33:20.764Z",
+  "duration_seconds": 669954,
   "stats": {
-    "turns": 989,
-    "api_calls": 4423,
-    "tool_calls": 3952,
+    "turns": 991,
+    "api_calls": 4433,
+    "tool_calls": 3965,
     "tool_errors": 56,
     "compactions": 12,
     "peak_context_tokens": 626480,
     "usage": {
-      "input_tokens": 10810,
-      "output_tokens": 1975579,
-      "cache_read_input_tokens": 1305922053,
-      "cache_creation_input_tokens": 6786541
+      "input_tokens": 10834,
+      "output_tokens": 1981352,
+      "cache_read_input_tokens": 1311797816,
+      "cache_creation_input_tokens": 6798233
     }
   },
   "tools": {
-    "Bash": 3790,
+    "Bash": 3803,
     "Edit": 33,
     "SendMessage": 33,
     "ToolSearch": 21,
@@ -246,24 +246,24 @@
     {
       "index": 12,
       "started": "2026-11-22T14:41:29.545Z",
-      "ended": "2026-11-23T11:10:44.995Z",
-      "turns": 117,
-      "api_calls": 452,
+      "ended": "2026-11-23T11:33:20.764Z",
+      "turns": 119,
+      "api_calls": 462,
       "usage": {
-        "input_tokens": 1142,
-        "output_tokens": 190555,
-        "cache_read_input_tokens": 184692634,
-        "cache_creation_input_tokens": 1200518
+        "input_tokens": 1166,
+        "output_tokens": 196328,
+        "cache_read_input_tokens": 190568397,
+        "cache_creation_input_tokens": 1212210
       },
-      "peak_context_tokens": 583046
+      "peak_context_tokens": 594814
     }
   ],
   "log": {
-    "sha256": "71cac6242e153394e1a2bd0ffe9b5a51176016231685f9f52703a74795368614",
-    "bytes": 70247000,
-    "lines": 37209,
-    "gzip_bytes": 10997149,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/71cac6242e153394e1a2bd0ffe9b5a51176016231685f9f52703a74795368614.jsonl.gz"
+    "sha256": "6b2889ccdaec35d0e89c08b53986e61ce963244469c3f164bc387dc26f712057",
+    "bytes": 70418466,
+    "lines": 37310,
+    "gzip_bytes": 11018069,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/6b2889ccdaec35d0e89c08b53986e61ce963244469c3f164bc387dc26f712057.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -9002,6 +9002,14 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-104845-recheck-conformance-on-the-qualified-jav: passed: 1 passed step(s) in 24m36s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
       "log_sha256": "71cac6242e153394e1a2bd0ffe9b5a51176016231685f9f52703a74795368614"
+    },
+    {
+      "change_id": "kyxrwttytkkqspllqlkzzumqqurtpmox",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record VF-055: the native checker took the declaration-order interface default",
+      "body": "The jbmc-java-semantics-gap run found that the native checker selected the first-declared interface default rather than the maximally specific one: example 382's dispatch was falsely refuted and firstDeclared falsely proved, both contradicted by the JVM (counterexample x=0). Fixed in stypsqmy; the brief's 98 statements and the conformance tests were rechecked and unchanged. VF-055 records it and leaves open an audit of earlier native verdicts that dispatch through library defaults. Also the watcher's decision single-jbmc-java-semantics-gap-D001 (continue: 13/13 historical JBMC-only claims, campaign 12/60 to 50/60). Documentation and decision record only.",
+      "log_sha256": "6b2889ccdaec35d0e89c08b53986e61ce963244469c3f164bc387dc26f712057"
     }
   ],
   "logs": {
@@ -10396,6 +10404,12 @@
       "lines": 24008,
       "gzip_bytes": 8164925,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/6b1cdb5171d716818e2e310882276b27cfbef098322c3a3842169475e97fe8c4.jsonl.gz"
+    },
+    "6b2889ccdaec35d0e89c08b53986e61ce963244469c3f164bc387dc26f712057": {
+      "bytes": 70418466,
+      "lines": 37310,
+      "gzip_bytes": 11018069,
+      "url": null
     },
     "6b48bc83a6b326562ff6364558f675663802318a258f09180a1a2efd204f3b49": {
       "bytes": 46550045,

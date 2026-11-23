@@ -18,6 +18,23 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-055: the native checker chose the declaration-order interface default, accepting a result the JVM refutes
+
+- **Status**: fixed in the checker; the audit of earlier verdicts is open.
+- **Raised**: 2026-11-23 by the watcher, from the first cycle of jbmc-java-semantics-gap (decision single-jbmc-java-semantics-gap-D001). The advisor session asked for it to be recorded.
+- **Found**:
+  - **The bug.** When a class inherits a default method from more than one interface, Java selects the maximally specific one (JLS 9.4.1.3, JVMS 5.4.3.3). The native checker took the default declared first instead. In example 382 (refined default dispatch) both opening verdicts were wrong and contradicted the JVM:
+    - `defaultdispatch-dispatch` was reported as a violation, though it holds;
+    - `defaultdispatch-first-declared` was reported as **proved**, though it fails.
+
+    The counterexample at `x = 0` replays on the original JVM. A proof of a false statement is the most serious kind of checker error.
+  - **The fix.** Commit `stypsqmy` ("Check wide conversions and Java dispatch") resolves maximally specific interface defaults (`lib/src/bmc/`, `lib/src/classpath.rs`). After it, 382 `dispatch` is proved and `firstDeclared` is refuted, matching the JVM.
+  - **What was rechecked.** All 38 historical and 60 campaign statements of the brief (jobs `20261123-101334-*`, `20261123-101335-*`), and the proof-tier conformance tests (`20261123-101413-*`, `20261123-104845-*`). All passed, and no other verdict changed.
+  - **Exposure elsewhere.** No Java source under `examples/` declares an interface default method (a search of 1,023 files found none). An earlier verdict could still have gone through a library default, from the JDK or a dependency, wherever more than one interface in a hierarchy supplies a default for the same method.
+- **Needs**: an audit of earlier native verdicts that dispatch through inherited interface defaults. The cheapest form is to rerun the native replays of every example with an established or refuted native verdict on the fixed checker, as a job, and compare verdicts. Any change is a finding of its own.
+- **Tracked in**: this finding. Evidence: `llm-dlc/loops/jbmc-java-semantics-gap-results.md` (row 382, "JVM-contradicted"), `verification/java-semantics-gap/scorecard.json`, and the jobs above.
+- **Closes when**: the audit has run and every changed verdict, if any, is recorded.
+
 ### VF-054: Avro #3878's seven universal results hold under one recorded startup, not at original scope
 
 - **Status**: open. To be analyzed first, probably with a brief of its own.
