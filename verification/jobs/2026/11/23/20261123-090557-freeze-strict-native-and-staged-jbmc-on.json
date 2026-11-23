@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-090557-freeze-strict-native-and-staged-jbmc-on",
+  "title": "Freeze strict native and staged JBMC on the thirteen historical leads",
+  "description": "On the opening checker run the original conformance methods on both explicit engines at unwind 16, array limit 8 and 120 seconds. Save the two array and both search claims separately, plus the other ten historical leads. Reproduce candidate violations on the original JVM and retain outcomes, timings, tool and model hashes.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc"
+  ],
+  "links": {},
+  "expected": "Twenty-eight matched outcomes across fourteen unchanged claims, including all thirteen historical comparator leads, with JVM replay of each credited violation.",
+  "submitted": {
+    "at": "2026-11-23T09:05:57+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 14,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "7m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Array construction",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py opening listOfArray",
+      "cwd": "."
+    },
+    {
+      "name": "List searches",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py opening listSearch",
+      "cwd": "."
+    },
+    {
+      "name": "Other frozen leads including enumValueOf",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py opening other-leads",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/opening/listOfArray.json",
+    "verification/java-semantics-gap/opening/listSearch.json",
+    "verification/java-semantics-gap/opening/other-leads.json"
+  ]
+}
