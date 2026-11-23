@@ -159,7 +159,7 @@ class Verdicts:
 
     def __init__(self, s, redact) -> None:
         self.path = s.STATE / "outgoing-verdicts.json"
-        h = hashlib.sha256(f"{POLICY}\0{redact.fingerprint()}\0{sorted(STRICT_KINDS)}\0".encode())
+        h = hashlib.sha256(f"{POLICY}\0{redact.fingerprint()}\0{sorted(STRICT_KINDS)}\0{OPENED_MAX}\0".encode())  # an unread blob is read again when the room grows
         # The decisions that waive a finding, not the files that hold them: a proposal changes no verdict.
         h.update(json.dumps([sorted(s.load_reviewed()), sorted(s.allowed_ids())]).encode())
         self.fingerprint = h.hexdigest()

@@ -7651,6 +7651,14 @@
       "summary": "Let a checkpoint read gzip blobs that open to up to 512 MiB",
       "body": "The checkpoint refused the JBMC fast-follow's verification/jbmc-fast-follow/opening/rows/packaged/raw.tar.gz as compressed-beyond-scan: the 5.4 MB archive of packaged-JBMC output opens to 267 MiB, over the 256 MiB the checkpoint would decompress to scan. Repacking it would break its evidence chain (results.py checks its digest against the job's output), so the scan room is raised to 512 MiB instead. Nothing is loosened: the blob is still read in full and refused for anything the rules find. test_checkpoint passes.",
       "log_sha256": "e7dadfc7ec4057f693b49b666c855a89bb765185f07a6aad1a53d83fee9e6aa7"
+    },
+    {
+      "change_id": "prusnxksoonwkmqtomlntqkntoslpunp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Key a checkpoint's cached verdicts on its scan room",
+      "body": "A blob once refused as compressed-beyond-scan stayed refused from the cache after OPENED_MAX grew, because the cache's fingerprint did not include it. It does now, so a change to the room reads such blobs again. test_checkpoint passes.",
+      "log_sha256": "e7dadfc7ec4057f693b49b666c855a89bb765185f07a6aad1a53d83fee9e6aa7"
     }
   ],
   "logs": {

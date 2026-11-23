@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-23T18:59:52.411Z",
-  "duration_seconds": 696746,
+  "ended": "2026-11-23T19:00:50.259Z",
+  "duration_seconds": 696804,
   "stats": {
     "turns": 1049,
-    "api_calls": 4679,
-    "tool_calls": 4203,
+    "api_calls": 4682,
+    "tool_calls": 4206,
     "tool_errors": 56,
     "compactions": 13,
     "peak_context_tokens": 626480,
     "usage": {
-      "input_tokens": 11440,
-      "output_tokens": 2085713,
-      "cache_read_input_tokens": 1381498613,
-      "cache_creation_input_tokens": 7096072
+      "input_tokens": 11446,
+      "output_tokens": 2087175,
+      "cache_read_input_tokens": 1382406942,
+      "cache_creation_input_tokens": 7097812
     }
   },
   "tools": {
-    "Bash": 4037,
+    "Bash": 4040,
     "SendMessage": 35,
     "Edit": 33,
     "ToolSearch": 22,
@@ -261,24 +261,24 @@
     {
       "index": 13,
       "started": "2026-11-23T13:16:11.056Z",
-      "ended": "2026-11-23T18:59:52.411Z",
+      "ended": "2026-11-23T19:00:50.259Z",
       "turns": 42,
-      "api_calls": 207,
+      "api_calls": 210,
       "usage": {
-        "input_tokens": 496,
-        "output_tokens": 91972,
-        "cache_read_input_tokens": 46007753,
-        "cache_creation_input_tokens": 271369
+        "input_tokens": 502,
+        "output_tokens": 93434,
+        "cache_read_input_tokens": 46916082,
+        "cache_creation_input_tokens": 273109
       },
-      "peak_context_tokens": 302042
+      "peak_context_tokens": 303782
     }
   ],
   "log": {
-    "sha256": "fc1427485ee01425bbd1798c3956ef131791546d090a30fba3ae28152e24494b",
-    "bytes": 74613572,
-    "lines": 39818,
-    "gzip_bytes": 11680487,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/fc1427485ee01425bbd1798c3956ef131791546d090a30fba3ae28152e24494b.jsonl.gz"
+    "sha256": "77db5a3eb8211a3e9d9fc1e5bc7e6c9d3bba0c324b67b0cc5d369c4ffc8e22d4",
+    "bytes": 74661519,
+    "lines": 39845,
+    "gzip_bytes": 11687675,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/77db5a3eb8211a3e9d9fc1e5bc7e6c9d3bba0c324b67b0cc5d369c4ffc8e22d4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -9395,14 +9395,6 @@
       "log_sha256": "c99cf055a1d2c5f3daae1a1ce338dc6c83da465482cd26c715b1fddc6a6a159f"
     },
     {
-      "change_id": "zoltqpmtrlyoskopzpvyuzpvmzsvqvyz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the watcher's decision D001 on jbmc-fast-follow (stop, outcome reached)",
-      "body": "The JBMC fast-follow reached its outcome in one cycle: strict native 7/49 -> 49/49 ordinary decisions across examples 392-396, against integrated JBMC's 26/49, and all 26 jobs passed. The watcher stopped it and handed over to the next queued brief. Decision record only.",
-      "log_sha256": "00090eb580f7d92e23762d9b72a4427855802c9bb0399bf56fce31c1c48be5cb"
-    },
-    {
       "change_id": "vqpmrnnplxmttqpospxrkqynqkzwnttv",
       "commit_id": null,
       "immutable": false,
@@ -9467,6 +9459,14 @@
       "log_sha256": "00090eb580f7d92e23762d9b72a4427855802c9bb0399bf56fce31c1c48be5cb"
     },
     {
+      "change_id": "zoltqpmtrlyoskopzpvyuzpvmzsvqvyz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decision D001 on jbmc-fast-follow (stop, outcome reached)",
+      "body": "The JBMC fast-follow reached its outcome in one cycle: strict native 7/49 -> 49/49 ordinary decisions across examples 392-396, against integrated JBMC's 26/49, and all 26 jobs passed. The watcher stopped it and handed over to the next queued brief. Decision record only.",
+      "log_sha256": "00090eb580f7d92e23762d9b72a4427855802c9bb0399bf56fce31c1c48be5cb"
+    },
+    {
       "change_id": "yvszksznozzrzmxznkznoyrvkomrlxxt",
       "commit_id": null,
       "immutable": false,
@@ -9481,6 +9481,14 @@
       "summary": "Let a checkpoint read gzip blobs that open to up to 512 MiB",
       "body": "The checkpoint refused the JBMC fast-follow's verification/jbmc-fast-follow/opening/rows/packaged/raw.tar.gz as compressed-beyond-scan: the 5.4 MB archive of packaged-JBMC output opens to 267 MiB, over the 256 MiB the checkpoint would decompress to scan. Repacking it would break its evidence chain (results.py checks its digest against the job's output), so the scan room is raised to 512 MiB instead. Nothing is loosened: the blob is still read in full and refused for anything the rules find. test_checkpoint passes.",
       "log_sha256": "fc1427485ee01425bbd1798c3956ef131791546d090a30fba3ae28152e24494b"
+    },
+    {
+      "change_id": "prusnxksoonwkmqtomlntqkntoslpunp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Key a checkpoint's cached verdicts on its scan room",
+      "body": "A blob once refused as compressed-beyond-scan stayed refused from the cache after OPENED_MAX grew, because the cache's fingerprint did not include it. It does now, so a change to the room reads such blobs again. test_checkpoint passes.",
+      "log_sha256": "77db5a3eb8211a3e9d9fc1e5bc7e6c9d3bba0c324b67b0cc5d369c4ffc8e22d4"
     }
   ],
   "logs": {
@@ -11175,6 +11183,12 @@
       "lines": 17875,
       "gzip_bytes": 6656787,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/77755aeeb38dd8d6bd30e50de0e583cab06dbb889f9f50e66ccffef21d42a2ed.jsonl.gz"
+    },
+    "77db5a3eb8211a3e9d9fc1e5bc7e6c9d3bba0c324b67b0cc5d369c4ffc8e22d4": {
+      "bytes": 74661519,
+      "lines": 39845,
+      "gzip_bytes": 11687675,
+      "url": null
     },
     "78049b94a6efe8bb185a079031cf1633a2ddc4de2622b34e9296d3a656d929ed": {
       "bytes": 49794631,
