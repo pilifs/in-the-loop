@@ -1,0 +1,148 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "springwork.ScalarPrefix#check()",
+    "domain": "",
+    "assume": null,
+    "assert": "result == 1",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": null,
+    "problem": "the engine did not finish within the time limit",
+    "statement": "/tmp/factory-startup-a4wc9z1z/native/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "springwork.ScalarPrefix#check() cannot be verified: the engine did not finish within the time limit",
+        "uri": null,
+        "line": 1
+      }
+    ],
+    "output": "✗ springwork.ScalarPrefix#check() cannot be verified: the engine did not finish within the time limit\n",
+    "work": "/tmp/factory-startup-a4wc9z1z/native",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 60.325444236,
+      "properties": 1,
+      "unwind": 256,
+      "max_array_length": 16384,
+      "stage": null,
+      "native": {
+        "paths": 2067,
+        "merges": 1257,
+        "solver_calls": 4080,
+        "solving_seconds": 53.248700422,
+        "gates_evaluated": 5427672,
+        "evaluating_seconds": 0.139609896,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 661861,
+        "clauses": 2053631,
+        "seconds": 60.009679985,
+        "loading_seconds": 0.004417504,
+        "decoding_seconds": 0.000825032,
+        "encoding_seconds": 1.174224812,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 60.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 60.0,
+          "seconds": 60.01,
+          "ended": "out-of-time",
+          "ending": "timeout",
+          "phases": {
+            "loading": 0.004,
+            "lowering": 0.001,
+            "symbolic": 5.582,
+            "encoding": 1.174,
+            "solving": 53.249,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 661861,
+            "clauses": 2053631
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 60.337,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 60.01,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.326
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [],
+        "shared_arrays": false,
+        "text": ""
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result == 1",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 256,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
