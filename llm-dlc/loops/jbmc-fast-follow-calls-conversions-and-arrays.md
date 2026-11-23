@@ -554,3 +554,50 @@ public class MatrixJvm {
 [lambda-spec]: https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/invoke/LambdaMetafactory.html
 [convert-spec]: https://docs.oracle.com/javase/specs/jls/se21/html/jls-5.html
 [jbmc]: https://diffblue.github.io/cbmc/man/jbmc.html
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- `$B = ~/.cache/in-the-loop/jbmc-fast-follow`. Released libraries, signed and checksummed, with sources jars and
+  ordered classpaths: `$B/releases/{guava-33.4.8-jre,commons-lang3-3.17.0,commons-collections4-4.5.0,commons-math3-3.6.1,jackson-2.19.0}/classpath.txt`.
+  Offline re-resolution works: `mvn -o -s $B/maven-settings.xml` in `$B/resolve/NAME`.
+- Source at every revision the brief links, all exactly the release tags: `$B/src/{guava-33.4.8,commons-lang-3.17.0,commons-collections-4.5.0,jackson-databind-2.19.0,commons-math-3.6.1}`.
+  The released sources jars equal these files.
+- The brief's appendix fixtures, extracted by its own script and compiled on JDK 21.0.13:
+  `$B/fixtures/fast-follow-fixtures/{callbacks,numeric,rows}/` with classes in `out/FAMILY/`; the matching library
+  classpaths in `$B/fixtures/FAMILY.cp`. Use these for the brief's sample commands (`--classes out/numeric
+  --classpath "$(cat $B/fixtures/numeric.cp)"`).
+- JBMC 6.11.0: 22.04 package in `$B/jbmc/ubuntu-22.04/` (numerical rows), 24.04 installed (`jbmc` on `PATH`,
+  `/usr/lib/core-models.jar`; callbacks and rows). Digests match the brief.
+- The JDK classes the brief names, from the Temurin 21.0.13 image, with digests equal to the brief's:
+  `$B/jdk/temurin-21.0.13/classes/java/util/{Comparator,Arrays}.class` (51 related classes alongside).
+- The checker's release binary at this head: `lib/target/release/jvmcontract` (sha256 `e41539fd…00be65`, built from `c41bda17`'s `lib/`, before any change of yours).
+
+### What was verified on a JVM
+
+Every appendix program behaves as the brief says: `LiftChecks`, `Replay`, `ChainTests`, `NodeAssertions`,
+`RaggedJvm` (209 graphs, 12 shared nonempty) and `MatrixJvm` (21 shapes: 8 normal, 7 NPE, 6 mismatch). The exact
+witness bits (`0x5a800001` direct vs `0x5a800000` through double; `+0.0f` at `2^-150`), the disagreement
+classification on a finite grid of 8,192 bins, and the reserve cases' JVM facts (−2 for `U+D800` vs `U+D802`,
+`Ordering.min` identity, `ArrayFill` covariance, `CircularFifoQueue.isFull()` false at two of two) also held. The
+javac bootstrap descriptors are recorded in the setup record's
+[descriptor table](#method-reference-descriptors-in-the-classfiles).
+
+### What to know before starting
+
+- The repository is past the brief's `9d9a860c`: this head includes the cycle-3 merge (`30a84499`) and the Commons
+  Lang decimal decisions. The kickoff check passes here (`scorecard.py --check`: 38 historical, 60 original). Pin
+  your successor commit and the checker digest yourself, as the brief asks.
+- The fixtures were compiled to class version 65 with the brief's `javac` command. The campaign runner compiles with
+  `-source 8 -target 8`; if your intake needs that, recompile — the descriptors above do not change.
+- JDK is Temurin 21.0.13, not Debian's build; the two class digests the brief gives match it exactly, so the
+  `Comparator` and `Arrays` profiles are reproducible here. Other `java.base` classes were not compared with Debian's.
+- The two JBMC models jars are compiled differently and can change answers; name the pairing in each standalone run.
+- Nothing is a snapshot: every dependency is a signed release.
+
+### What is left for the domain work on purpose
+
+All JBMC and project-verifier runs (the four-column opening comparison), the replay regression, any example scaffolding
+and claims, the choice of standalone classpath profiles (stock models vs. adding `Comparator.class` or `Arrays.class`),
+the `-source 8` question, the encodings for the numeric and nested-array work, and every checker change.
