@@ -13,7 +13,10 @@
 //!   letter or digit (the JDK's own fast path, by its source), and a limit that is a negative constant: the units
 //!   between the occurrences, every one kept, the String itself where there is none. Each part is the JDK's
 //!   `substring` ([`Engine::range`]): the literal `""` where it is empty. `NullPointerException` for a null regex.
-//!   Any other regex or limit is refused, as the call was (its result is an array).
+//!   Other symbolic combinations are refused.
+//! - With limit zero (including the one-argument overload), concrete UTF-16 text can also be split at a
+//!   literal separator surrounded by one or more Java default-regex whitespace characters on both sides.
+//!   Positive-width matches keep leading empty pieces and drop trailing ones; a miss retains the input.
 //! - `Pattern.quote(String)`: a String that, as a regular expression, matches the argument's units and nothing
 //!   else (its Javadoc). `NullPointerException` for null.
 //! - `String.join(CharSequence, CharSequence...)` where the delimiter is a constant in the syntax below and an
@@ -535,7 +538,7 @@ impl Regex {
 
 /// Whether the engine models `String.name(descriptor)` here.
 pub fn models_string(name: &str, descriptor: &str) -> bool {
-    matches!((name, descriptor), ("split", "(Ljava/lang/String;I)[Ljava/lang/String;") | ("matches", "(Ljava/lang/String;)Z"))
+    matches!((name, descriptor), ("split", "(Ljava/lang/String;I)[Ljava/lang/String;" | "(Ljava/lang/String;)[Ljava/lang/String;") | ("matches", "(Ljava/lang/String;)Z"))
 }
 
 /// Whether the engine models the static call here, where its arguments let it.
@@ -555,6 +558,37 @@ pub fn split_character(units: &[u16]) -> Option<u16> {
         [b, c] if *b == u16::from(b'\\') && !alphanumeric(*c) && !surrogate(*c) => Some(*c),
         _ => None,
     }
+}
+
+/// Ranges for positive-width matches at limit zero. Regex \s without a Unicode flag has six ASCII members.
+fn concrete_split(text: &[u16], pattern: &[u16]) -> Option<Vec<std::ops::Range<usize>>> {
+    let whitespace = |u: u16| matches!(u, 0x09..=0x0d | 0x20);
+    let (delimiter, padded) = if let Some(unit) = split_character(pattern) {
+        (unit, false)
+    } else {
+        let space_plus = [92, 115, 43]; // \s+
+        let middle = pattern.strip_prefix(&space_plus[..])?.strip_suffix(&space_plus[..])?;
+        let [unit] = middle else { return None };
+        if !matches!(*unit, 0x2c | 0x3a..=0x3e) { return None; } // comma, colon, semicolon, <, =, >
+        (*unit, true)
+    };
+    let mut parts = Vec::new();
+    let mut after = 0;
+    for (i, &unit) in text.iter().enumerate() {
+        if unit != delimiter || i < after { continue; }
+        let (mut begin, mut end) = (i, i + 1);
+        if padded {
+            while begin > after && whitespace(text[begin - 1]) { begin -= 1; }
+            while end < text.len() && whitespace(text[end]) { end += 1; }
+            if begin == i || end == i + 1 { continue; }
+        }
+        parts.push(after..begin);
+        after = end;
+    }
+    if parts.is_empty() { return Some(vec![0..text.len()]); }
+    parts.push(after..text.len());
+    while parts.last().is_some_and(std::ops::Range::is_empty) { parts.pop(); }
+    Some(parts)
 }
 
 impl Engine<'_> {
@@ -591,8 +625,30 @@ impl Engine<'_> {
 
     /// `String.split(regex, limit)` on the String `o` of content `s`: see the module's notes.
     pub(super) fn string_split(&mut self, path: &mut Path, o: usize, s: &Array, args: &[Val]) -> Step {
-        let [Val::R(regex), Val::I(limit)] = args else { return unsupported(format!("String.split with arguments {args:?}")) };
+        let zero_limit = self.b.constant(0, 32);
+        let (regex, limit) = match args {
+            [Val::R(regex)] => (regex, &zero_limit),
+            [Val::R(regex), Val::I(limit)] => (regex, limit),
+            _ => return unsupported(format!("String.split with arguments {args:?}")),
+        };
         let Some(regex) = *regex else { return self.raise(path, "java/lang/NullPointerException") };
+        if self.b.constant_value(limit) == Some(0) {
+            let parts = self.constant_units(path, o).zip(self.constant_units(path, regex))
+                .and_then(|(text, pattern)| concrete_split(&text, &pattern));
+            let Some(parts) = parts else { return unsupported("String.split at limit zero requires concrete text and a supported positive-width delimiter"); };
+            let length = self.b.constant(parts.len() as i64, 32);
+            self.new_array_cells(path, &length)?;
+            let refs = parts.into_iter().map(|r| {
+                let begin = self.b.constant(r.start as i64, 32);
+                let end = self.b.constant(r.end as i64, 32);
+                self.range(path, s, &begin, &end, Some(o))
+            }).collect();
+            let array = Array { element: Type::Object(STRING.to_owned()), length, cells: Vec::new(), refs };
+            path.objects.push(Obj { array: Some(array), ..Obj::new("[Ljava/lang/String;") });
+            self.push(path, Val::R(Some(path.objects.len() - 1)));
+            self.advance(path);
+            return Ok(None);
+        }
         let delimiter = self.constant_units(path, regex).and_then(|units| split_character(&units));
         let every_part = self.b.constant_value(limit).is_some_and(|l| l < 0);
         let (Some(delimiter), true) = (delimiter, every_part) else {

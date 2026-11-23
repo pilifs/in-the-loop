@@ -4,7 +4,9 @@ The legacy graph runs on the pre-feature and landed artifacts. The fluent builde
 
 ## Recorded results
 
-The ordinary native checker established 0 and refuted 0 of the 6 primary obligations. The finite JVM established 6 and refuted 0. 6 ordinary native obligations remain open.
+The ordinary selectors established all four legacy claims. Two additional strict native proofs and fresh JVM counterexamples refute the unrestricted fluent name and decision claims. The default finite JVM established all six.
+
+The strict native checker established all 32 configurations for each legacy claim on the pre-feature and landed JARs, giving 128 completed selector proofs. Each prefix granted 14 of 16 starting subsets. The fluent builder writes the first role text into its StringWriter and needs the JVM’s initial line separator to complete the line. [First startup recheck](../../verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json) · [Cache and writer recheck](../../verification/results/2026/11/23/20261123-024401-trace-the-four-spring-cache-and-writer-s/result.json)
 
 Each prefix granted 14 of the 16 authority subsets. The distinct before, feature, landed and release JARs were loaded on the JVM. The 64-history combined caller made 56 third edits and preserved the field error even on all eight declined writes. [Opening job](../../verification/results/2026/11/22/20261122-164312-spring-security-reachable-roles-and-publ/result.json) · [Selector checks](../../verification/results/2026/11/22/20261122-165838-qualified-check-literal-authority-subset/result.json) · [Scorecard](../../verification/spring-java-data/spring.json)
 
@@ -17,3 +19,21 @@ One oracle evaluates the role graph and updates two modeled children and an erro
 Four fresh JVMs each recorded the predicted **258,048 submissions and 36,864 declines** across 98,304 histories. All three attempts declined in 192 histories. The manager declined 10,752 attempts after the binder had already rejected `oops` for `backup.count`. Every one retained that error. The fresh and receipt-based oracles agreed on all 294,912 snapshots, including the 14,016 taken before any edit had been submitted. [Managed result](../../verification/results/2026/11/22/20261122-190127-check-every-role-gated-spring-edit-histo/result.json) · [Counts, timings and original JARs](../../verification/spring-java-data/gated-histories/measurement.json)
 
 Replay a single history from the repository root with `python3 lib/benchmark/spring-java-data/gated_histories.py --case 1057`. The `direct` array observes the gated caller. The `adapter` array observes a deliberately wrong caller that submits a declined first edit. Case 1057 distinguishes the final bean when both ledgers carry the same error. Case 82977 distinguishes the final ledger when both beans have the same values.
+
+## Removing the indirect grant
+
+Run `python3 -B lib/benchmark/spring-java-data/role_edge.py --replay` from the repository root. Each historical manager makes four decisions under each prefix. A alone grants D with the full hierarchy and declines it after removing B → D. D alone still grants on the shortened graph, and C alone declines on the full graph. The four decisions occupy bits zero through three, giving 5 for both prefixes. [Public caller](companions/HierarchyEdge.java)
+
+Both original JARs passed four native decisions per prefix in one assertion. The four strict proofs agreed with both physical JVMs. The original application, hierarchy and manager class hashes matched their public decision graphs. [Managed edge control](../../verification/results/2026/11/23/20261123-014142-check-the-omitted-spring-hierarchy-edge/result.json)
+
+## Fluent construction and line endings
+
+Run `python3 -B lib/benchmark/spring-java-data/fluent_lines.py --replay`. Each JVM calls the original fluent reachable-name and manager entries on all 32 inputs. LF and CRLF each give 32 matching name sets and 32 matching decisions. With a literal pipe, 10 name sets and 20 decisions match. Only a directly assigned D can grant on that graph. The native companion checks both original calls on every path whose initial separator equals LF or CRLF. [Guard and unguarded replay](companions/FluentLines.java) · [Selector measurements](records/fluent-lines/measurement.json) · [Raw proofs](records/fluent-lines/cases.tar.gz) · [Managed evidence](../../verification/results/2026/11/23/20261123-030518-measure-four-spring-startup-boundaries-o/result.json)
+
+## Binding the fluent proof to a launch
+
+Run `python3 -B lib/benchmark/spring-java-data/fluent_launch.py --replay`. The consumer checks the archived guard bytecode, both public observers’ zero-or-one returns and the raw native proof for each selector. The exact default Linux and explicit CRLF launches enter the proved branch on all 32 configurations. That branch checks reachable names first and the manager decision second. Changing the live property after startup preserved the initial separator in both. On the pipe launch the guard remained inactive and supplied zero native coverage. [Launch witness](companions/FluentLaunch.java) · [Runtime digests and outcomes](records/fluent-launches/measurement.json) · [Four startup measurements](../../verification/results/2026/11/23/20261123-042108-bind-four-spring-startup-controls-to-the/result.json)
+
+## A startup counterexample with A alone
+
+A literal pipe at startup refutes both unrestricted fluent claims at selector 1. The checker proves that each original observer returns zero when that launch premise holds. A fresh JVM executes that observer before any other application call and reports the startup code units afterwards. The public hierarchy returns `ROLE_B|ROLE_B`, `ROLE_C|ROLE_B` and `ROLE_D|` alongside `ROLE_A`. The actual manager denies `ROLE_D`. The LF and CRLF controls grant and yield exactly A, B, C and D. Run `python3 lib/benchmark/spring-java-data/fluent_witness.py --replay`. [Bytecode-qualified native implications and three launches](records/fluent-counterexample/measurement.json) · [Managed evidence](../../verification/results/2026/11/23/20261123-052111-check-the-spring-factory-registrations-a/result.json)

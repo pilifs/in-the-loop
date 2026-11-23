@@ -16,7 +16,7 @@ package java.util;
  *
  * <p>Left out, so that each is the JDK call it names: the other constructors (a load factor, access order,
  * another map), {@code keySet}, {@code entrySet}, {@code remove}, {@code clear} and every other method of
- * the map; every method of the values collection but {@code size} and {@code iterator} (it extends the JDK's
+ * the map except forEach, which visits and checks modifications in JDK insertion order; every method of the values collection but {@code size} and {@code iterator} (it extends the JDK's
  * {@code AbstractCollection}, whose methods the checker does not run); the iterator's {@code remove} and
  * {@code forEachRemaining}.
  */
@@ -39,6 +39,15 @@ public abstract class LinkedHashMap<K, V> extends HashMap<K, V> {
             modCount++;
         }
         return old;
+    }
+
+    public void forEach(java.util.function.BiConsumer<? super K, ? super V> action) {
+        if (action == null) throw new NullPointerException();
+        int expected = modCount;
+        for (Node entry = first; entry != null; entry = entry.next) {
+            action.accept((K) entry.key, (V) entry.value);
+        }
+        if (modCount != expected) throw new ConcurrentModificationException();
     }
 
     public Collection<V> values() {

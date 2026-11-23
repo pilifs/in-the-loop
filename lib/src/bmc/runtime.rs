@@ -155,6 +155,7 @@ const LOADER: &str = "java/lang/ClassLoader";
 const LOGGER: &str = "java/util/logging/Logger";
 const THREAD: &str = "java/lang/Thread";
 pub(super) const LINE_SEPARATOR: &str = "the contents and external string identity of the JVM's initial line separator are not bound";
+const SEPARATOR_EQUALS: &str = "<JVM.equalsInitialLineSeparator>";
 pub(super) fn enum_identity_read(caller: &str, method: &str, m: &crate::classfile::MemberRef) -> bool {
     (caller, method, m.owner.as_str(), m.name.as_str(), m.descriptor.as_str())
         == ("java/lang/Enum", "hashCode", "java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I")
@@ -184,6 +185,7 @@ pub fn property_call(owner: &str, name: &str, descriptor: &str) -> bool {
 }
 
 pub const REENTRANT_LOCK: &str = "java/util/concurrent/locks/ReentrantLock";
+pub(super) const REGISTERED_QUEUE: &str = "<JVM.originalReferenceQueue>";
 pub const HOLD_COUNT: &str = "<JVM.reentrantHoldCount>";
 
 pub fn sequential_lock_call(owner: &str, name: &str, descriptor: &str) -> bool {
@@ -279,20 +281,92 @@ pub fn capacity_constructor(owner: &str, descriptor: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// Content comparisons partition a single immutable startup value. Keep an open
+    /// remainder for every untested string, including an empty or custom separator.
+    pub(super) fn separator_equals(&mut self, path: &mut Path, a: usize, b: usize) -> Option<Step> {
+        let &separator = path.literals.get(&Literal::LineSeparator)?;
+        let other = if a == separator { b } else if b == separator { a } else { return None };
+        let answer = if other == separator {
+            Val::I(self.b.constant(1, 32))
+        } else {
+            let units = self.constant_units(path, other)?;
+            let literal = self.literal(path, Literal::Str(units), STRING);
+            if let Some(eq) = path.objects[literal].fields.get(SEPARATOR_EQUALS) { eq.clone() } else {
+                let mut bit = self.b.var();
+                for &id in path.literals.values() {
+                    if let Some(Val::I(other)) = path.objects[id].fields.get(SEPARATOR_EQUALS) {
+                        bit = self.b.and(bit, -other[0]);
+                    }
+                }
+                let value = Val::I(self.b.zext(&vec![bit], 32));
+                path.objects[literal].fields.insert(SEPARATOR_EQUALS.into(), value.clone());
+                value
+            }
+        };
+        path.unbound_platform_value = Some(LINE_SEPARATOR);
+        self.push(path, answer);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// Materialize code units only once the caller's own guard entails equality.
+    /// The object's external reference identity remains opaque on every branch.
+    pub(super) fn resolve_separator(&mut self, path: &mut Path, o: usize) -> Result<(), Stop> {
+        if path.objects[o].limit.as_deref() != Some(LINE_SEPARATOR) || path.objects[o].content().is_some() { return Ok(()); }
+        for &id in path.literals.values() {
+            let Some(Val::I(word)) = path.objects[id].fields.get(SEPARATOR_EQUALS) else { continue };
+            let mut no = path.cond.clone();
+            no.push(-word[0]);
+            if !self.solve(&no)? {
+                path.objects[o].array = path.objects[id].array.clone();
+                break;
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn identity_hash(&mut self, path: &mut Path, object: usize) -> Val {
+        // An alias observes the same word. Different objects may collide, including at zero.
+        path.unbound_platform_value = Some("a JVM-chosen identity hash");
+        path.objects[object].fields.entry("<JVM.identityHashCode>".into())
+            .or_insert_with(|| Val::I(self.b.fresh(32))).clone()
+    }
+
+    pub(super) fn object_hash(&mut self, path: &mut Path, object: usize, special: bool, m: &crate::classfile::MemberRef) -> Option<Step> {
+        if m.name != "hashCode" || m.descriptor != "()I" || path.objects[object].assumed || path.objects[object].unknown { return None; }
+        let loader = path.literals.get(&Literal::Loader) == Some(&object);
+        let class = &path.objects[object].class;
+        if !special && !loader && class != "java/lang/Object" && class != "java/lang/Class"
+            && !self.cp.is_application(class) { return None; }
+        let lookup = if special { &m.owner } else if loader { "jdk/internal/loader/ClassLoaders$AppClassLoader" }
+            else { &path.objects[object].class };
+        let (declaring, method) = self.cp.find_method(lookup, &m.name, &m.descriptor)?;
+        if declaring.name != "java/lang/Object" || !method.is_native() { return None; }
+        if loader {
+            self.assumed.insert("the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode".into());
+        }
+        let word = self.identity_hash(path, object);
+        self.push(path, word);
+        self.advance(path);
+        Some(Ok(None))
+    }
     /// An exact freshly created lock on the native engine's single executing thread.
     /// Thread starts stay outside this rule. Nonstandard receivers, symbolic
     /// exceptional states and unsupported operations keep their own diagnostics.
     pub(super) fn sequential_lock(&mut self, path: &mut Path, o: usize, name: &str) -> Step {
-        if path.objects[o].class != REENTRANT_LOCK || path.objects[o].assumed {
+        if !self.cp.is_subtype(&path.objects[o].class, REENTRANT_LOCK) || path.objects[o].assumed {
             return unsupported("a reentrant lock without a known implementation");
         }
+        if name != "<init>" && self.there_before(path, o) { self.reads(path, || "reads a pre-existing lock's hold count".into())?; }
         let count = if name == "<init>" { 0 } else {
             match path.objects[o].fields.get(HOLD_COUNT) {
-                Some(Val::I(word)) => self.b.constant_value(word).ok_or_else(|| Stop::Unsupported("a symbolic reentrant hold count".into()))?,
+                Some(Val::I(word)) => match self.b.constant_value(word) {
+                    Some(count) => count,
+                    None => return self.symbolic_lock(path, o, name, word.clone()),
+                },
                 _ => return unsupported("a lock whose initial hold count is unknown"),
             }
         };
-        if name != "<init>" && self.there_before(path, o) { self.reads(path, || "reads a pre-existing lock's hold count".into())?; }
         let Some((write, returned)) = sequential_lock_transition(name, count as i32) else {
             return unsupported("an unbalanced unlock or excessive recursion on a reentrant lock");
         };
@@ -301,6 +375,29 @@ impl Engine<'_> {
             path.objects[o].fields.insert(HOLD_COUNT.into(), Val::I(self.b.constant(i64::from(next), 32)));
         }
         if let Some(v) = returned { self.push(path, Val::I(self.b.constant(i64::from(v), 32))); }
+        self.advance(path);
+        Ok(None)
+    }
+
+    fn symbolic_lock(&mut self, path: &mut Path, o: usize, name: &str, count: Bits) -> Step {
+        let zero = self.b.eq(&count, &self.b.constant(0, 32));
+        let one = self.b.constant(1, 32);
+        match name {
+            "getHoldCount" => self.push(path, Val::I(count)),
+            "isHeldByCurrentThread" | "isLocked" => self.push(path, Val::I(self.b.zext(&vec![-zero], 32))),
+            "lock" | "tryLock" | "unlock" => {
+                let releasing = name == "unlock";
+                let invalid = if releasing { zero } else { self.b.eq(&count, &self.b.constant(i32::MAX.into(), 32)) };
+                let mut cond = path.cond.clone();
+                cond.push(invalid);
+                if self.solve(&cond)? { return unsupported("a possible unbalanced unlock or excessive recursion on a reentrant lock"); }
+                self.keeps(path, Some(o), "changes a reentrant lock's hold count")?;
+                let next = if releasing { self.b.sub(&count, &one) } else { self.b.add(&count, &one) };
+                path.objects[o].fields.insert(HOLD_COUNT.into(), Val::I(next));
+                if name == "tryLock" { self.push(path, Val::I(one)); }
+            }
+            _ => return unsupported("an unknown reentrant lock operation"),
+        }
         self.advance(path);
         Ok(None)
     }
@@ -381,6 +478,9 @@ impl Engine<'_> {
     /// Outside the mandatory cache the selected JDK's factory decides what it constructs.
     pub(super) fn cached_integral(&mut self, path: &mut Path, class: &'static str, word: &Bits) -> Option<Step> {
         let minimum = if class == "java/lang/Character" { 0 } else { i8::MIN };
+        if class == "java/lang/Integer" && path.statics.contains_key(&("java/lang/Integer$IntegerCache".into(), "<symbolic>".into())) {
+            return self.symbolic_integer(path, word);
+        }
         let boxed = if let Some(n) = self.b.constant_value(word) {
             if class == "java/lang/Integer" && i8::try_from(n).is_err() {
                 return self.wide_integer(path, word, i32::try_from(n).ok()?);
@@ -400,6 +500,7 @@ impl Engine<'_> {
                     Err(stop) => return Some(Err(stop)),
                 }
             }
+            if range.is_none() && class == "java/lang/Integer" { return self.symbolic_integer(path, word); }
             let mut choices = Vec::new();
             for n in range? {
                 let guard = self.b.eq(word, &self.b.constant(i64::from(n), word.len()));
@@ -408,6 +509,56 @@ impl Engine<'_> {
             choice(&mut self.b, choices)
         };
         self.push(path, boxed);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// Materialize the cache entries a path asks for, even when the key is an arbitrary
+    /// int. For each concrete assignment the oldest candidate with equal value is the
+    /// cached object. Outside the single VM-wide cache interval every call allocates.
+    fn symbolic_integer(&mut self, path: &mut Path, word: &Bits) -> Option<Step> {
+        const INTEGER: &str = "java/lang/Integer";
+        const CACHE: &str = "java/lang/Integer$IntegerCache";
+        const ENTRIES: &str = "<Integer.valueOf entries>";
+        if word.len() != 32 || self.gap_mode != GapMode::Strict
+            || self.previous.is_some() || self.pure.is_some() || self.frame.is_some() { return None; }
+        let marker = (CACHE.into(), "<symbolic>".into());
+        if !path.statics.contains_key(&marker) {
+            if !self.cp.known_integer_cache() { return None; }
+            for (index, &object) in path.literals.iter().filter_map(|(key, o)|
+                matches!(key, Literal::CachedIntegral(INTEGER, _)).then_some(o)).enumerate() {
+                path.statics.insert((ENTRIES.into(), format!("{index:08}")), Val::R(Some(object)));
+            }
+            path.statics.insert(marker, Val::I(self.b.constant(1, 32)));
+        }
+        let mut entries = Vec::new();
+        let candidates = path.statics.range((ENTRIES.to_string(), String::new())..);
+        for (_, value) in candidates.take_while(|((owner, _), _)| owner == ENTRIES) {
+            let Val::R(Some(object)) = value else { return Some(unsupported("merged symbolic Integer cache entries")); };
+            let Some(Val::I(bits)) = path.objects[*object].fields.get("value") else { return Some(unsupported("unbound Integer cache entry")); };
+            entries.push((*object, bits.clone()));
+        }
+        let fresh = self.alloc(path, INTEGER);
+        path.objects[fresh].fields.insert("value".into(), Val::I(word.clone()));
+        if !entries.iter().any(|(_, bits)| bits == word) {
+            if entries.len() >= 512 { return Some(unsupported("more than 512 distinct Integer cache candidates on one path")); }
+            path.statics.insert((ENTRIES.into(), format!("{:08}", entries.len())), Val::R(Some(fresh)));
+        }
+        let mut cached = Val::R(Some(fresh));
+        for (object, bits) in entries.iter().rev() {
+            let equal = self.b.eq(word, bits);
+            if equal != FALSE { cached = choose(&mut self.b, equal, &Val::R(Some(*object)), &cached)?; }
+        }
+        let high = path.statics.entry((CACHE.into(), "<qualified-high>".into())).or_insert_with(|| Val::I(self.b.fresh(32)));
+        let Val::I(high) = high else { return Some(unsupported("unbound Integer cache cutoff")); };
+        let below = self.b.slt(word, &self.b.constant(-128, 32));
+        let above_mandatory = self.b.slt(&self.b.constant(127, 32), word);
+        let above_vm = self.b.slt(high, word);
+        let above = self.b.and(above_mandatory, above_vm);
+        let outside = self.b.or(below, above);
+        let value = choose(&mut self.b, outside, &Val::R(Some(fresh)), &cached)?;
+        path.unbound_platform_value = Some("the JVM's Integer cache limit");
+        self.push(path, value);
         self.advance(path);
         Some(Ok(None))
     }
@@ -536,7 +687,8 @@ impl Engine<'_> {
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
             let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
             let list_storage = class == "java/util/ArrayList" && !self.cp.runs_model(&class) && o_.fields.contains_key("elementData");
-            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || o_.initialized_big_number() || self.cp.state_image_class(&class).is_some());
+            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || o_.fields.contains_key(map_views::IMAGE)
+                || o_.initialized_big_number() || self.cp.state_image_class(&class).is_some());
             let final_image_class = !o_.assumed && self.cp.load(&class).ok().flatten()
                 .is_some_and(|loaded| loaded.origin == crate::classpath::Origin::Jdk && loaded.class.is_final());
             // javac 8 emits dup/getClass/pop before capturing a bound method reference. The JVM

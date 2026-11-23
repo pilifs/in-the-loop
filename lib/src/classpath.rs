@@ -380,6 +380,16 @@ pub struct ClassPath {
     pub(crate) initializer_runs: RefCell<HashMap<String, bool>>,
     plain_buffer_formatter: std::cell::OnceCell<bool>,
     string_unit_replacement: std::cell::OnceCell<bool>,
+    reflection_copies: std::cell::OnceCell<bool>,
+    thread_local_keys: std::cell::OnceCell<bool>,
+    class_table_image: std::cell::OnceCell<bool>,
+    jar_resource_image: std::cell::OnceCell<bool>,
+    properties_reader_image: std::cell::OnceCell<bool>,
+    linked_map_image: std::cell::OnceCell<bool>,
+    soft_queue_image: std::cell::OnceCell<bool>,
+    generic_interface_image: std::cell::OnceCell<bool>,
+    explicit_utc: std::cell::OnceCell<bool>,
+    string_buffer_layout: std::cell::OnceCell<Option<bool>>,
     basic_base64: std::cell::OnceCell<bool>,
     heap_buffer_copy: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
@@ -406,7 +416,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -487,6 +497,15 @@ impl ClassPath {
     fn reset_runtime_caches(&mut self) {
         self.plain_buffer_formatter.take();
         self.string_unit_replacement.take();
+        self.reflection_copies.take();
+        self.thread_local_keys.take();
+        self.class_table_image.take();
+        self.jar_resource_image.take();
+        self.properties_reader_image.take();
+        self.linked_map_image.take();
+        self.soft_queue_image.take();
+        self.explicit_utc.take();
+        self.string_buffer_layout.take();
         self.basic_base64.take();
         self.heap_buffer_copy.take();
         self.concurrent_table_layout.take();
@@ -536,6 +555,62 @@ impl ClassPath {
             out.push((entry.display(), bytes));
         }
         Ok(out)
+    }
+
+    /// The ordinary built-in loader's base META-INF resources. Decline other providers,
+    /// manifest class paths, signed or indexed archives, duplicate URLs and mutable
+    /// directory resources. The proof states the clean launch and fixed classpath.
+    pub(crate) fn local_jar_resources(&self, name: &str) -> Option<Vec<(usize, Vec<u8>)>> {
+        let tail = name.strip_prefix("META-INF/")?;
+        if tail.is_empty() || tail.starts_with('.') || tail.contains("..") || tail.len() > 128
+            || !tail.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_'))
+            || self.jdk()?.contains_resource(name).ok()? { return None; }
+        let mut seen = std::collections::BTreeSet::new();
+        let mut urls = Vec::new();
+        for (i, entry) in self.entries.iter().enumerate() {
+            let path = match entry { Entry::Dir(dir) => dir, Entry::Jar(_, jar, _) => jar };
+            let real = path.canonicalize().ok()?;
+            if !seen.insert(real) { return None; }
+            match entry {
+                Entry::Dir(dir) => match std::fs::symlink_metadata(dir.join(name)) {
+                    Err(e) if e.kind() == std::io::ErrorKind::NotFound => {}
+                    _ => return None,
+                },
+                Entry::Jar(zip, jar, versions) => {
+                    if zip.duplicate_names || versions.entries.contains_key(name) || !jar.to_str()?.bytes()
+                        .all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_' | b'+' | b'/')) { return None; }
+                    if zip.names().any(|n| {
+                        let upper = n.to_ascii_uppercase();
+                        upper.starts_with("META-INF/") && (upper == "META-INF/INDEX.LIST" || upper.starts_with("META-INF/SIG-")
+                            || [".SF", ".RSA", ".DSA", ".EC"].iter().any(|suffix| upper.ends_with(suffix))
+                            || upper == "META-INF/MANIFEST.MF" && n != upper)
+                    }) { return None; }
+                    if zip.contains("META-INF/MANIFEST.MF") {
+                        let manifest = zip.checked_resource("META-INF/MANIFEST.MF", 65536)?;
+                        if manifest.windows(11).any(|w| w.eq_ignore_ascii_case(b"class-path:")) { return None; }
+                    }
+                    if zip.contains(name) {
+                        if urls.len() == 32 { return None; }
+                        urls.push((i, zip.checked_resource(name, 16384)?));
+                    }
+                }
+            }
+        }
+        Some(urls)
+    }
+
+    /// URLClassPath canonicalizes an input JAR before constructing its file URL.
+    /// These ASCII characters survive ParseUtil.encodePath on the selected Unix image.
+    /// A relative entry depends on the launching JVM's user.dir. Its bytes can still
+    /// be enumerated, but the checker cannot supply the lexical path.
+    pub(crate) fn local_jar_url_path(&self, index: usize, resource: &str) -> Option<String> {
+        let Entry::Jar(_, jar, _) = self.entries.get(index)? else { return None };
+        if !cfg!(unix) || !jar.is_absolute() { return None; }
+        let canonical = jar.canonicalize().ok()?;
+        let path = canonical.to_str()?;
+        if !path.starts_with('/') || !path.bytes().all(|b| b.is_ascii_alphanumeric()
+            || matches!(b, b'.' | b'-' | b'_' | b'+' | b'/')) { return None; }
+        Some(format!("file:{path}!/{resource}"))
     }
 
     /// Every application class name, in entry order and sorted within an entry.
@@ -1034,6 +1109,24 @@ impl ClassPath {
         Some(implementation.pool.loadable(*name).ok()?.string_units()?.into_owned())
     }
 
+    /// The PrintWriter access registration in this image stores its one argument in
+    /// a bootstrap field. Qualify that write without taking over other SharedSecrets state.
+    pub(crate) fn print_writer_access_field(&self, setter: &crate::classfile::MemberRef) -> Option<String> {
+        use crate::classfile::{Insn::*, Kind};
+        let desc = "Ljdk/internal/access/JavaIOPrintWriterAccess;";
+        if (setter.owner.as_str(), setter.name.as_str(), setter.descriptor.as_str()) !=
+            ("jdk/internal/access/SharedSecrets", "setJavaIOCPrintWriterAccess", "(Ljdk/internal/access/JavaIOPrintWriterAccess;)V") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(&setter.owner).ok()?? else { return None };
+        let method = class.method(&setter.name, &setter.descriptor)?;
+        let code = method.code.as_ref()?;
+        let ops = code.instructions().ok()?;
+        let [(_, Load(Kind::Ref, 0)), (_, PutStatic(i)), (_, Return(None))] = ops.as_slice() else { return None };
+        let f = class.pool.member(*i).ok()?;
+        let field = class.field(&f.name)?;
+        (method.is_static() && code.exception_table.is_empty() && f.owner == class.name && f.descriptor == desc
+            && field.is_static() && field.descriptor == desc).then_some(f.name)
+    }
+
     /// Follow the read-only UTF-8 decoder callback to the JavaLangAccess
     /// implementation installed by System during VM startup in this image.
     pub(crate) fn utf8_language_access(&self) -> Option<String> {
@@ -1085,13 +1178,20 @@ impl ClassPath {
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
             ("java/util/Arrays", "fill", "([CC)V" | "([II)V" | "([IIII)V")
+            | ("java/lang/StringUTF16", "newBytesFor", "(I)[B")
+            | ("java/lang/StringUTF16", "newBytesLength", "(I)I")
+            | ("java/lang/Character", "toLowerCase", "(C)C" | "(I)I")
+            | ("java/lang/reflect/Modifier", "isStatic", "(I)Z")
+            | ("java/net/URLDecoder", "decode", "(Ljava/lang/String;Ljava/nio/charset/Charset;)Ljava/lang/String;")
             | ("java/util/Set", "of", "([Ljava/lang/Object;)Ljava/util/Set;")
-            | ("java/lang/Character", "isJavaIdentifierPart", "(C)Z" | "(I)Z")
+            | ("java/lang/Character", "isJavaIdentifierPart" | "isUpperCase", "(C)Z" | "(I)Z")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
             | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
             | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
             | ("java/util/Arrays", "checkLength", "(II)V")
+            | ("java/util/ArrayDeque", "dec", "(II)I")
+            | ("java/util/ArrayDeque", "sub", "(III)I")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
             | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
             | ("java/nio/channels/Channels", "newChannel", "(Ljava/io/OutputStream;)Ljava/nio/channels/WritableByteChannel;")
@@ -1110,11 +1210,13 @@ impl ClassPath {
             | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
             | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
+            | ("java/util/Collections", "unmodifiableMap", "(Ljava/util/Map;)Ljava/util/Map;")
             | ("java/util/Collections", "newSetFromMap", "(Ljava/util/Map;)Ljava/util/Set;")
             | ("java/util/Collections", "synchronizedSet", "(Ljava/util/Set;Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/util/concurrent/ConcurrentHashMap", "spread" | "tableSizeFor", "(I)I")
             | ("java/util/Collections", "unmodifiableList", "(Ljava/util/List;)Ljava/util/List;")
             | ("java/util/Collections", "singletonList", "(Ljava/lang/Object;)Ljava/util/List;")
+            | ("java/util/Collections", "singleton", "(Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/util/Collections", "singletonIterator", "(Ljava/lang/Object;)Ljava/util/Iterator;")
             | ("java/util/Objects", "equals", "(Ljava/lang/Object;Ljava/lang/Object;)Z")
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
@@ -1162,6 +1264,95 @@ impl ClassPath {
             bytes.extend(body);
         }
         digests.contains(&crate::digest::sha256_hex(&bytes).as_str())
+    }
+
+    /// Fresh keys on one platform thread. Bind the key constructor, identity-based map, get/set/remove
+    /// and default initialValue to the selected implementation. Internal hash and table reads stay opaque.
+    pub(crate) fn thread_local_keys(&self) -> bool {
+        *self.thread_local_keys.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/ThreadLocal", "java/lang/InheritableThreadLocal", "java/lang/ThreadLocal$ThreadLocalMap",
+              "java/lang/ThreadLocal$ThreadLocalMap$Entry", "java/lang/Thread", "java/util/concurrent/atomic/AtomicInteger"],
+            &["3c3c4c6a6b22ae5d97b167d5dae2c9a812bd66a6af51b2320c1d51218f490cc8"])) // Temurin 21.0.13
+    }
+
+    /// Selected image for class-mirror identity, map folds and immutable-set construction.
+    pub(crate) fn class_table_image(&self) -> bool {
+        *self.class_table_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/IdentityHashMap", "java/util/IdentityHashMap$IdentityHashMapIterator", "java/util/IdentityHashMap$EntrySet",
+              "java/util/IdentityHashMap$EntryIterator", "java/util/IdentityHashMap$EntryIterator$Entry", "java/util/IdentityHashMap$Values",
+              "java/util/IdentityHashMap$ValueIterator", "java/util/HashMap", "java/util/HashMap$Node",
+              "java/util/HashSet", "java/util/AbstractCollection", "java/util/Collections",
+              "java/util/ImmutableCollections$SetN", "java/lang/Class", "java/lang/Object",
+              "java/lang/String"],
+            &["6cf0ee476e559857d5d5703d8fea3ca2a46299cfd6c6c2071fdea3001f33f348"])) // Temurin 21.0.13
+    }
+
+    /// ClassRepository clones its interfaces array, retaining the reified Type objects on the mirror.
+    pub(crate) fn generic_interface_image(&self) -> bool {
+        *self.generic_interface_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/Class", "java/lang/reflect/ParameterizedType", "sun/reflect/generics/parser/SignatureParser",
+              "sun/reflect/generics/repository/AbstractRepository", "sun/reflect/generics/repository/GenericDeclRepository",
+              "sun/reflect/generics/repository/ClassRepository", "sun/reflect/generics/tree/ClassTypeSignature",
+              "sun/reflect/generics/visitor/Reifier", "sun/reflect/generics/factory/CoreReflectionFactory",
+              "sun/reflect/generics/reflectiveObjects/ParameterizedTypeImpl"],
+            &["2a3e1317a03c92f25c934d15f147c3131377073096b550db598de8a053912063"])) // Temurin 21.0.13
+    }
+
+    pub(crate) fn jar_resource_image(&self) -> bool {
+        *self.jar_resource_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/ClassLoader", "java/lang/CompoundEnumeration", "jdk/internal/loader/BuiltinClassLoader",
+              "jdk/internal/loader/BuiltinClassLoader$1", "jdk/internal/loader/ClassLoaders$AppClassLoader", "jdk/internal/loader/URLClassPath",
+              "jdk/internal/loader/URLClassPath$JarLoader", "jdk/internal/loader/URLClassPath$JarLoader$2", "java/net/URL",
+              "java/net/JarURLConnection", "sun/net/www/protocol/jar/Handler", "sun/net/www/protocol/jar/JarURLConnection",
+              "sun/net/www/protocol/jar/JarURLConnection$JarURLInputStream", "java/io/InputStream", "java/io/FilterInputStream"],
+            &["eece9c2f142cba64068daceb85c70c2e8e426132f588ca4a402c53448e758ef0"])) // Temurin 21.0.13
+    }
+
+    pub(crate) fn properties_reader_image(&self) -> bool {
+        *self.properties_reader_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/Properties", "java/util/Properties$LineReader"],
+            &["5557162135c0a12b872b1c44af1171fe8e91a104ef7495da7777c47ea6a614fa"]))
+    }
+
+    pub(crate) fn linked_map_image(&self) -> bool {
+        *self.linked_map_image.get_or_init(|| self.matches_jdk_classes(&["java/util/HashMap", "java/util/LinkedHashMap"],
+            &["b26ef44090b682e76fe299447ad1189e4321f62f343f0c4f633568024b7fb754"]))
+    }
+
+    pub(crate) fn soft_queue_image(&self) -> bool {
+        *self.soft_queue_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/ref/Reference", "java/lang/ref/SoftReference", "java/lang/ref/ReferenceQueue"],
+            &["ab6102d8fb7c8cfc1945a9186c510bff4e994618c3224b4a5ca0aac9d5bdb1eb"]))
+    }
+
+    /// The bounded StringBuffer copy uses this image's growth rule and its actual UTF-16 byte order.
+    pub(crate) fn string_buffer_byte_order(&self) -> Option<bool> {
+        *self.string_buffer_layout.get_or_init(|| {
+            let matches = self.matches_jdk_classes(&["java/lang/AbstractStringBuilder", "java/lang/StringBuffer",
+                "java/lang/String", "java/lang/StringUTF16", "java/lang/StringLatin1", "jdk/internal/util/ArraysSupport"],
+                &["b4f23eff462728cd8564aff1ac1eab77f4be441c1a418aa9f1e2ee06d183155f"]);
+            if matches { self.jdk()?.hot_spot_big_endian() } else { None }
+        })
+    }
+
+    /// This Temurin 21 image and tzdb resolve UTC to a fixed zero-offset ZoneInfo.
+    /// The public factory clones its cached prototype and sets the caller's actual ID on the clone.
+    pub(crate) fn explicit_utc(&self) -> bool {
+        *self.explicit_utc.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/TimeZone", "sun/util/calendar/ZoneInfo", "sun/util/calendar/ZoneInfoFile",
+              "sun/util/calendar/ZoneInfoFile$1", "sun/util/calendar/ZoneInfoFile$ZoneOffsetTransitionRule"],
+            &["36b2b18547c61bf0bd54a9d78ce40a09538626ada9c2c61b8fa8fd71a239bb60"])
+            && self.jdk().and_then(JImage::tzdb_sha256).as_deref() ==
+                Some("a02e3a23d67255782b11ab81070902235ab564080f0f65ffe2a989cdaa86fe89"))
+    }
+
+    /// Class.getMethod and getDeclaredField return copies on this image. Their scalar metadata
+    /// accessors read the declaring class, interned name, descriptor and JVM modifiers of the member.
+    pub(crate) fn reflection_copies(&self) -> bool {
+        *self.reflection_copies.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/Class", "java/lang/reflect/Method", "java/lang/reflect/Field",
+              "java/lang/reflect/Executable", "jdk/internal/reflect/ReflectionFactory"],
+            &["38fa5f59e2a40c91e2d2ace8a9068f9d2e9378b887a05a184442e8f7f3379858"])) // Temurin 21.0.13
     }
 
     /// Both factories load the cached object for -128..=high and allocate a distinct Integer otherwise.
@@ -1265,6 +1456,12 @@ impl ClassPath {
         (method.is_public() && !method.is_static() && method.code.is_some()).then_some((class, method))
     }
 
+    /// VALUE is the offset of the int field 'value' and incrementAndGet is getAndAddInt(1) + 1.
+    pub(crate) fn atomic_integer_increment(&self) -> bool {
+        self.matches_jdk_classes(&["java/util/concurrent/atomic/AtomicInteger"],
+            &["9195c151584c60db712f4de7684f7d92ec5018e9a94621dd94d9512197172295"])
+    }
+
     /// Methods of an image-backed byte or char buffer with an ordinary Java heap array.
     /// Foreign segments and native memory operations keep their separate call boundaries.
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
@@ -1294,11 +1491,11 @@ impl ClassPath {
         (!method.is_static() && method.code.is_some()).then_some((class, method))
     }
 
-    /// Fresh deques and sets construct their backing storage on the selected JDK.
+    /// Fresh deques, sets, reference queues and string buffers construct their backing storage on the selected JDK.
     /// Fresh linked blocking queues build two distinct locks, conditions, an atomic
     /// count and a sentinel node. Only construction and the empty-state observers
     /// execute here. Waiting, signaling and atomic updates retain their own boundaries.
-    pub(crate) fn fresh_collection_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+    pub(crate) fn fresh_state_method(&self, receiver: &str, owner: &str, name: &str, desc: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
         // An explicitly modeled receiver has the model's fields throughout its lifetime.
         if self.runs_model(receiver) { return None; }
         const QUEUE: &str = "java/util/concurrent/LinkedBlockingQueue";
@@ -1309,21 +1506,46 @@ impl ClassPath {
         let supported = match receiver {
             "java/util/ImmutableCollections$Set12" => matches!((owner, name, desc),
                 ("java/util/ImmutableCollections$Set12", "<init>", "(Ljava/lang/Object;)V" | "(Ljava/lang/Object;Ljava/lang/Object;)V")
+                | ("java/util/ImmutableCollections$Set12" | "java/util/Set" | "java/util/Collection", "contains", "(Ljava/lang/Object;)Z")
+                | ("java/util/ImmutableCollections$Set12" | "java/util/Set" | "java/util/Collection", "size", "()I")
+                | ("java/util/ImmutableCollections$Set12" | "java/util/Set" | "java/util/Collection" | "java/lang/Iterable", "iterator", "()Ljava/util/Iterator;")
                 | ("java/util/ImmutableCollections$AbstractImmutableSet" | "java/util/ImmutableCollections$AbstractImmutableCollection"
                    | "java/util/AbstractCollection", "<init>", "()V")),
+            "java/util/ImmutableCollections$Set12$1" => matches!((owner, name, desc),
+                ("java/util/ImmutableCollections$Set12$1", "<init>", "(Ljava/util/ImmutableCollections$Set12;)V")
+                | ("java/util/ImmutableCollections$Set12$1" | "java/util/Iterator", "hasNext", "()Z")
+                | ("java/util/ImmutableCollections$Set12$1" | "java/util/Iterator", "next", "()Ljava/lang/Object;")),
             "java/util/HashSet" => matches!((owner, name, desc),
                 ("java/util/HashSet" | "java/util/AbstractSet" | "java/util/AbstractCollection", "<init>", "()V")
                 | ("java/util/HashSet" | "java/util/Set" | "java/util/Collection", "isEmpty", "()Z")),
             "java/util/ArrayDeque" => matches!((owner, name, desc),
                 ("java/util/ArrayDeque" | "java/util/AbstractCollection", "<init>", "()V")
-                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "isEmpty", "()Z")),
+                | ("java/util/ArrayDeque", "<init>", "(I)V")
+                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "isEmpty", "()Z")
+                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "size", "()I")
+                | ("java/util/ArrayDeque" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")),
+            "java/util/LinkedList" => matches!((owner, name, desc),
+                ("java/util/LinkedList" | "java/util/AbstractSequentialList" | "java/util/AbstractList" | "java/util/AbstractCollection", "<init>", "()V")
+                | ("java/util/LinkedList" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")
+                | ("java/util/LinkedList", "linkFirst", "(Ljava/lang/Object;)V")),
+            "java/util/LinkedList$Node" => owner == receiver && name == "<init>"
+                && desc == "(Ljava/util/LinkedList$Node;Ljava/lang/Object;Ljava/util/LinkedList$Node;)V",
             QUEUE => matches!((owner, name, desc),
                 (QUEUE, "<init>", "()V" | "(I)V") | (QUEUE, "size" | "remainingCapacity", "()I") | ("java/util/AbstractCollection", "size", "()I")
                 | ("java/util/AbstractCollection" | QUEUE, "isEmpty", "()Z")),
             "java/util/concurrent/LinkedBlockingQueue$Node" => owner == receiver && name == "<init>" && desc == "(Ljava/lang/Object;)V",
             COUNT => matches!((owner, name, desc), (COUNT, "<init>", "()V" | "(I)V")
-                | ("java/lang/Number", "<init>", "()V") | (COUNT, "get", "()I")),
+                | ("java/lang/Number", "<init>", "()V") | (COUNT, "get", "()I") | (COUNT, "set", "(I)V")),
             LOCK => owner == LOCK && matches!((name, desc), ("<init>", "()V") | ("newCondition", "()Ljava/util/concurrent/locks/Condition;")),
+            // invokespecial selects the named superclass constructor even on a user-defined segment.
+            _ if special && owner == LOCK && self.is_subtype(receiver, LOCK) => name == "<init>" && desc == "()V",
+            _ if special && matches!(owner, "java/lang/ref/Reference" | "java/lang/ref/SoftReference")
+                && self.is_subtype(receiver, "java/lang/ref/SoftReference") =>
+                name == "<init>" && desc == "(Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V",
+            "java/lang/ref/ReferenceQueue" => owner == receiver && name == "<init>" && desc == "()V",
+            "java/util/Properties$LineReader" => owner == receiver && matches!((name, desc),
+                ("<init>", "(Ljava/io/InputStream;)V") | ("readLine", "()I")),
+            "java/lang/StringBuffer" => owner == "java/lang/AbstractStringBuilder" && name == "<init>" && desc == "(I)V",
             SYNC => matches!((owner,name,desc), (SYNC | "java/util/concurrent/locks/ReentrantLock$Sync"
                 | "java/util/concurrent/locks/AbstractQueuedSynchronizer" | "java/util/concurrent/locks/AbstractOwnableSynchronizer", "<init>","()V")
                 | ("java/util/concurrent/locks/ReentrantLock$Sync","newCondition","()Ljava/util/concurrent/locks/AbstractQueuedSynchronizer$ConditionObject;")),
@@ -1349,6 +1571,10 @@ impl ClassPath {
         if self.runs_model(crate::models::CONCURRENT_MAP) || !matches!((name, desc),
             ("<init>", "()V" | "(I)V" | "(IFI)V") | ("isEmpty", "()Z") | ("size", "()I") | ("sumCount", "()J")
             | ("get", "(Ljava/lang/Object;)Ljava/lang/Object;") | ("containsKey", "(Ljava/lang/Object;)Z")
+            | ("put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+            | ("putVal", "(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;")
+            | ("initTable", "()[Ljava/util/concurrent/ConcurrentHashMap$Node;")
+            | ("forEach", "(Ljava/util/function/BiConsumer;)V")
             | ("putAll", "(Ljava/util/Map;)V") | ("tryPresize", "(I)V") | ("entrySet", "()Ljava/util/Set;")
             | ("keySet", "()Ljava/util/Set;" | "()Ljava/util/concurrent/ConcurrentHashMap$KeySetView;")) { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(crate::models::CONCURRENT_MAP).ok()?? else { return None };
@@ -1363,11 +1589,15 @@ impl ClassPath {
         let declaring = if special { owner } else { PROPS };
         if !matches!((declaring, name, desc),
             (PROPS, "<init>", "()V" | "(I)V" | "(Ljava/util/Properties;)V" | "(Ljava/util/Properties;I)V")
+            | (PROPS, "load", "(Ljava/io/InputStream;)V")
+            | (PROPS, "load0", "(Ljava/util/Properties$LineReader;)V")
+            | (PROPS, "loadConvert", "([CIILjava/lang/StringBuilder;)Ljava/lang/String;")
             | ("java/util/Hashtable", "<init>", "(Ljava/lang/Void;)V") | ("java/util/Dictionary", "<init>", "()V")
             | (PROPS, "size", "()I") | (PROPS, "isEmpty", "()Z") | (PROPS, "containsKey", "(Ljava/lang/Object;)Z")
             | (PROPS, "get", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
             | (PROPS, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
+            | (PROPS, "forEach", "(Ljava/util/function/BiConsumer;)V")
             | (PROPS, "putAll", "(Ljava/util/Map;)V") | (PROPS, "entrySet", "()Ljava/util/Set;")
             | (PROPS, "getProperty", "(Ljava/lang/String;)Ljava/lang/String;" | "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;")) {
             return None;
@@ -1393,7 +1623,7 @@ impl ClassPath {
 
     /// These images initialize SIZECTL from their own sizeCtl field and calculate ABASE
     /// and ASHIFT from Node[]. Only the typed operations below use these layout facts.
-    fn known_concurrent_table(&self) -> bool {
+    pub(crate) fn known_concurrent_table(&self) -> bool {
         *self.concurrent_table_layout.get_or_init(|| self.matches_jdk_classes(&[crate::models::CONCURRENT_MAP, "jdk/internal/misc/Unsafe"],
             &["fa36342584f8299066a80758c30abd00754753468be0fb36e921303dca9031d8",
               "01af927c892eb74ad558ef33d7b2d79b7bf0f67bce07b8a12c9fd3926204a361"]))
@@ -1409,7 +1639,7 @@ impl ClassPath {
     /// instruction expression before returning the local holding its expected value.
     pub(crate) fn concurrent_size_cas(&self, class: &Rc<ClassFile>, method: &str, code: &[crate::classfile::Insn]) -> Option<usize> {
         use crate::classfile::{Insn, Kind};
-        if class.name != crate::models::CONCURRENT_MAP || method != "tryPresize" { return None; }
+        if class.name != crate::models::CONCURRENT_MAP || !matches!(method, "tryPresize" | "initTable") { return None; }
         let [Insn::GetStatic(u), Insn::Load(Kind::Ref, 0), Insn::GetStatic(offset), Insn::Load(Kind::Int, expected),
             Insn::IConst(-1), Insn::InvokeVirtual(cas), ..] = code else { return None };
         let is = |i, owner: &str, name: &str, desc: &str| class.pool.member(i).is_ok_and(|m|
@@ -1425,12 +1655,15 @@ impl ClassPath {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
         if !sublist && !self.collection_static(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/String", "concat", "(Ljava/lang/String;)Ljava/lang/String;")
+            | ("java/lang/String", "contains", "(Ljava/lang/CharSequence;)Z")
+            | ("java/lang/Object", "equals", "(Ljava/lang/Object;)Z")
             | ("java/lang/String", "valueOf", "(Ljava/lang/Object;)Ljava/lang/String;")
             | ("java/lang/StringBuilder", "append", "(Ljava/lang/Object;)Ljava/lang/StringBuilder;")
             | ("java/lang/Class", "cast", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | ("java/lang/Class", "cannotCastMsg", "(Ljava/lang/Object;)Ljava/lang/String;")
-            | ("java/util/ArrayList", "<init>", "()V" | "(I)V")
+            | ("java/util/ArrayList", "<init>", "()V" | "(I)V" | "(Ljava/util/Collection;)V")
             | ("java/util/ArrayList", "size", "()I") | ("java/util/ArrayList", "isEmpty", "()Z")
+            | ("java/util/ArrayList", "spliterator", "()Ljava/util/Spliterator;")
             | ("java/util/ArrayList", "get" | "elementData", "(I)Ljava/lang/Object;")
             | ("java/util/ArrayList", "clear", "()V")
             | ("java/util/ArrayList", "iterator", "()Ljava/util/Iterator;")
@@ -1574,10 +1807,23 @@ impl ClassPath {
     /// Concrete receivers can inherit these default methods. Resolve the actual target
     /// first so an application override still supplies all its effects.
     pub(crate) fn image_default_method(&self, class: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
+        if (name, descriptor) == ("computeIfAbsent", "(Ljava/lang/Object;Ljava/util/function/Function;)Ljava/lang/Object;") {
+            let receiver = self.application(class).ok()??;
+            let [direct] = receiver.interfaces.as_slice() else { return None };
+            if !matches!(direct.as_str(), "java/util/Map" | "java/util/concurrent/ConcurrentMap")
+                || !matches!(receiver.super_class.as_deref(), Some("java/lang/Object" | "java/util/AbstractMap"))
+                || !self.find_method(class, name, descriptor)?.0.is_interface() { return None; }
+            // With these superclasses, the one direct map interface supplies the most specific default.
+            // ConcurrentMap must run its putIfAbsent path even if a search encounters Map first.
+            let Loaded { class: interface, origin: Origin::Jdk } = self.load(direct).ok()?? else { return None };
+            let method = interface.method(name, descriptor)?.clone();
+            return (method.is_public() && !method.is_static() && method.code.is_some()).then_some((interface, method));
+        }
         let interface = match (name, descriptor) {
             ("putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;") if class == "java/util/EnumMap" => "java/util/Map",
             ("end", "()V") if class.starts_with("java/util/stream/ReduceOps$") => "java/util/stream/Sink",
-            ("stream", "()Ljava/util/stream/Stream;") if class == "java/util/Arrays$ArrayList" => "java/util/Collection",
+            ("stream", "()Ljava/util/stream/Stream;") if class == "java/util/Arrays$ArrayList"
+                || class == "java/util/ArrayList" && !self.runs_model(class) => "java/util/Collection",
             ("begin", "(J)V") | ("end", "()V") if class.starts_with("java/util/stream/FindOps$FindSink") => "java/util/stream/Sink",
             ("getExactSizeIfKnown", "()J") if class == "java/util/Spliterators$ArraySpliterator" => "java/util/Spliterator",
             ("forEachRemaining", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/util/Iterator",
@@ -1630,8 +1876,8 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }
-        if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
-            | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
+        if matches!(name, "java/io/PrintWriter$1" | "java/util/Collections$UnmodifiableMap" | "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
+            | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$Node" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
             | "java/util/concurrent/ConcurrentHashMap$EntryIterator" | "java/util/concurrent/ConcurrentHashMap$BaseIterator"
             | "java/util/concurrent/ConcurrentHashMap$Traverser" | "java/util/Properties$EntrySet"
@@ -1645,6 +1891,7 @@ impl ClassPath {
             return Some(class);
         }
         if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+            | "java/io/Writer" | "java/io/StringWriter" | "java/io/PrintWriter" | "java/lang/StringBuffer"
             | "java/lang/CharacterData" | "java/lang/CharacterDataLatin1"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
             | "java/io/OutputStream" | "java/io/ByteArrayOutputStream" | "java/io/FilterOutputStream"
@@ -1652,13 +1899,15 @@ impl ClassPath {
             | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"
             | "java/util/Comparator" | "java/util/Comparators$NaturalOrderComparator"
             | "java/util/TimSort" | "java/util/ComparableTimSort" | "java/util/BitSet"
-            | "java/util/Stack" | "java/util/Vector" | "java/util/Collections$SingletonList" | "java/util/Collections$1"
+            | "java/util/Stack" | "java/util/Vector" | "java/util/Collections$SingletonList" | "java/util/Collections$SingletonSet" | "java/util/Collections$1"
             | "java/util/Collections$UnmodifiableList" | "java/util/Collections$UnmodifiableRandomAccessList"
             | "java/util/Collections$UnmodifiableCollection$1"
             | "java/util/Collections$ReverseComparator" | "java/util/Collections$ReverseComparator2"
             | "java/util/Collections$EmptyList" | "java/util/Collections$EmptyIterator" | "java/util/Arrays$ArrayList" | "java/util/Arrays$ArrayItr"
             | "java/util/Spliterators" | "java/util/Spliterators$IteratorSpliterator"
-            | "java/util/Spliterators$ArraySpliterator" | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
+            | "java/util/Spliterators$ArraySpliterator" | "java/util/ArrayList$ArrayListSpliterator"
+            | "java/util/stream/DistinctOps" | "java/util/stream/DistinctOps$1" | "java/util/stream/ReferencePipeline$StatefulOp"
+            | "java/util/stream/ReferencePipeline$2" | "java/util/stream/ReferencePipeline$2$1"
             | "java/util/stream/ReferencePipeline$3" | "java/util/stream/ReferencePipeline$3$1"
             | "java/util/stream/ReferencePipeline$StatelessOp" | "java/util/stream/Sink$ChainedReference"
             | "java/util/stream/FindOps" | "java/util/stream/FindOps$FindOp" | "java/util/stream/FindOps$FindSink" | "java/util/stream/FindOps$FindSink$OfRef"
@@ -1691,6 +1940,20 @@ impl ClassPath {
     /// static initialization must create one fresh sentinel, used by every set.
     /// An explicitly selected model keeps its own field layout and dispatch.
     fn native_map_image_class(&self, name: &str) -> Option<Rc<ClassFile>> {
+        // These classes are used only on objects marked by the native engine. Standalone
+        // LinkedHashMap model objects and explicitly selected set models keep their layouts.
+        if matches!(name, "java/util/LinkedHashSet" | "java/util/LinkedHashMap" | "java/util/LinkedHashMap$Entry"
+            | "java/util/LinkedHashMap$LinkedKeySet" | "java/util/LinkedHashMap$LinkedHashIterator"
+            | "java/util/LinkedHashMap$LinkedKeyIterator" | "java/util/LinkedHashMap$LinkedValues"
+            | "java/util/LinkedHashMap$LinkedValueIterator" | "java/util/LinkedHashMap$LinkedEntrySet"
+            | "java/util/LinkedHashMap$LinkedEntryIterator") {
+            if name == "java/util/LinkedHashSet" && (self.runs_model(name) || self.runs_model("java/util/HashSet")
+                || self.observed_initializers.borrow().contains(name) || self.native_map_image_class("java/util/HashSet").is_none()) {
+                return None;
+            }
+            let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
+            return class.method("<clinit>", "()V").is_none().then_some(class);
+        }
         if name != "java/util/HashSet" { return self.map_image_class(name); }
         if self.runs_model(name) || self.observed_initializers.borrow().contains(name) { return None; }
         let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };

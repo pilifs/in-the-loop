@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-064120-check-spring-factory-properties-and-soft",
+  "title": "Check Spring factory properties and soft cache delivery on both graphs",
+  "description": "Run the actual Spring properties loader and compare all one-, two- and three-read partitions of the 161-byte factory entry with an independent key/value expectation. On both original formatter graphs run the real Spring soft cache under all modeled GC deliveries, and the original scalar registry through the first two factories. Replay explicit retention, release, and the ten-registration prefix on both JVMs. Retain the raw sixty-second result for the two-factory proof if it remains open.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "ordinary-startup",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "368",
+      "374"
+    ]
+  },
+  "expected": "The four properties and purge proofs establish the expected public observations. Both two-factory checks report a strict proof or a measured timeout, and all physical controls agree.",
+  "submitted": {
+    "at": "2026-11-23T06:41:20+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Factory properties across refill boundaries",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py properties",
+      "cwd": "."
+    },
+    {
+      "name": "A retained or collected Spring cache entry",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py purge",
+      "cwd": "."
+    },
+    {
+      "name": "Two converter factories and ten JVM registrations",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py scalars",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/368-spring-binding-history/records/properties",
+    "examples/374-spring-formatter-binding/records/purge",
+    "examples/374-spring-formatter-binding/records/scalars"
+  ]
+}

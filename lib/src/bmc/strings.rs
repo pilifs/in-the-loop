@@ -13,7 +13,7 @@
 //! - `indexOf(int)`, `indexOf(int, int)`: the first index at or after the start (below zero is zero) whose unit is
 //!   the character, or whose two units are the surrogate pair of a supplementary one; `-1` for none, and for a
 //!   value that is no code point.
-//! - `lastIndexOf(int)`: the same test at every index, the last one that meets it.
+//! - `lastIndexOf(int)` and `lastIndexOf(int,int)`: the last match at or below the inclusive starting index.
 //! - `indexOf(String)`, `indexOf(String, int)`: `NullPointerException` for null; the first index at or after the
 //!   start (held to the length) where the other's units all are; the start itself for the empty String.
 //! - `endsWith(String)`: `NullPointerException` for null; the other's units at the end.
@@ -68,7 +68,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 pub fn models(name: &str, descriptor: &str) -> bool {
     matches!(
         (name, descriptor),
-        ("intern" | "trim", "()Ljava/lang/String;") | ("isBlank", "()Z") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
+        ("intern" | "trim", "()Ljava/lang/String;") | ("isBlank", "()Z") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I" | "(II)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
     )
 }
 
@@ -83,7 +83,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
         && matches!(
             (name, descriptor),
             ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V") | ("setLength", "(I)V")
-                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
+                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "([CII)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
                 | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
@@ -306,7 +306,7 @@ impl Engine<'_> {
         for i in order {
             let here = self.b.constant(i as i64, 32);
             let inside = self.b.slt(&here, &s.length);
-            let after = self.b.sle(from, &here);
+            let in_range = if last { self.b.sle(&here, from) } else { self.b.sle(from, &here) };
             let one = self.b.eq(&s.cells[i], &encoded.cells[0]);
             let one = self.b.and(is_bmp, one);
             let pair = match s.cells.get(i + 1).zip(encoded.cells.get(1)) {
@@ -320,7 +320,7 @@ impl Engine<'_> {
                 None => FALSE,
             };
             let found = self.b.or(one, pair);
-            let hit = self.b.all(&[inside, after, found]);
+            let hit = self.b.all(&[inside, in_range, found]);
             result = self.b.ite_bits(hit, &here, &result);
         }
         result
@@ -641,9 +641,9 @@ impl Engine<'_> {
                 self.advance(path);
                 Ok(None)
             }
-            ("lastIndexOf", "(I)I", [Val::I(ch)]) => {
-                let zero = self.b.constant(0, 32);
-                let at = self.unit_hit(s, ch, &zero, true);
+            ("lastIndexOf", _, [Val::I(ch), tail @ ..]) => {
+                let from = match tail { [] => &s.length, [Val::I(from)] => from, _ => unreachable!("descriptor checked") };
+                let at = self.unit_hit(s, ch, from, true);
                 self.push(path, Val::I(at));
                 self.advance(path);
                 Ok(None)
@@ -801,6 +801,24 @@ impl Engine<'_> {
             }
             return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model")));
         };
+        if name == "append" && descriptor == "([CII)Ljava/lang/StringBuilder;" {
+            let [Val::R(Some(chars)), Val::I(start), Val::I(count)] = args else { return None };
+            let array = path.objects[*chars].as_array()?;
+            let start = usize::try_from(self.b.constant_value(start)?).ok()?;
+            let count = usize::try_from(self.b.constant_value(count)?).ok()?;
+            let end = start.checked_add(count)?;
+            if array.element != Type::Char || end > usize::try_from(self.b.constant_value(&array.length)?).ok()?
+                || s.cells.len().checked_add(count)? > MOST_BUILDER_CONTENT { return None; }
+            if self.there_before(path, *chars) {
+                if let Err(e) = self.reads(path, || "reads a character array slice".into()) { return Some(Err(e)); }
+            }
+            let slice = Array { element: Type::Char, length: self.b.constant(count as i64, 32),
+                cells: array.cells.get(start..end)?.to_vec(), refs: vec![] };
+            path.objects[o].array = Some(self.joined(&s, &slice));
+            self.push(path, Val::R(Some(o)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         Some(match (name, args) {
             ("length", []) => {
                 self.push(path, Val::I(s.length));

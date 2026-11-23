@@ -120,6 +120,10 @@ public final class Operations {
         return of(n, a, b, c).indexOf(ch);
     }
 
+    static int lastIndexOfCharFrom(int n, int a, int b, int c, int ch, int from) {
+        return of(n, a, b, c).lastIndexOf(ch, from);
+    }
+
     static int lastIndexOfChar(int n, int a, int b, int c, int ch) {
         return of(n, a, b, c).lastIndexOf(ch);
     }
@@ -226,6 +230,11 @@ public final class Operations {
 
     static int splitByNull(int n, int a, int b, int c) {
         return of(n, a, b, c).split(null, -1).length;
+    }
+
+    static int splitDefault(int n, int a, int b, int c, int delimiter) {
+        String pattern = delimiter == 0 ? ":" : delimiter == 1 ? "\\s+>\\s+" : null;
+        return of(n, a, b, c).split(pattern).length;
     }
 
     /** Whether every code unit, as the int the stream gives, is below the limit. */

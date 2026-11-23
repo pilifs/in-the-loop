@@ -1,0 +1,67 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-030518-measure-four-spring-startup-boundaries-o",
+  "title": "Measure four Spring startup boundaries on original graphs",
+  "description": "Bind the release and combined loader resource enumerations, verify both original fluent claims for all 32 selectors under the LF/CRLF content guard and physically replay a custom separator, compare historical accessor names with one captured ClassUtils lookup table, and check the original registrar callbacks with ordinary startup on both formatter slices. Archive raw JVM and native outcomes separately from the unguarded primary claims.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay",
+    "qualified-startup"
+  ],
+  "links": {
+    "examples": [
+      "368",
+      "370",
+      "372",
+      "374"
+    ]
+  },
+  "expected": "Each original JVM reproduces the frozen observations. Every guarded hierarchy selector has a complete nonvacuous strict proof, both metadata graphs have bound public JVM and native outcomes, and both registrar queries retain their actual ordinary verdicts.",
+  "submitted": {
+    "at": "2026-11-23T03:05:18+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Binder factory URLs on both graphs",
+      "run": "python3 -B lib/benchmark/spring-java-data/binding_resources.py",
+      "cwd": "."
+    },
+    {
+      "name": "Fluent names and manager on LF, CRLF and a custom delimiter",
+      "run": "python3 -B lib/benchmark/spring-java-data/fluent_lines.py",
+      "cwd": "."
+    },
+    {
+      "name": "Historical accessors with one recorded ClassUtils table",
+      "run": "python3 -B lib/benchmark/spring-java-data/metadata_lookup.py",
+      "cwd": "."
+    },
+    {
+      "name": "Ordinary formatter registrar callbacks",
+      "run": "python3 -B examples/374-spring-formatter-binding/companions/registration.py --ordinary-only --output examples/374-spring-formatter-binding/records/ordinary-registrar",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/368-spring-binding-history/records/factory-resources",
+    "examples/370-spring-role-hierarchy/records/fluent-lines",
+    "examples/372-spring-property-accessors/records/class-utils-lookup",
+    "examples/374-spring-formatter-binding/records/ordinary-registrar"
+  ]
+}

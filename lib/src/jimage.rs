@@ -37,6 +37,7 @@ struct Location {
 /// An open JDK image.
 pub struct JImage {
     file: RefCell<File>,
+    modules: PathBuf,
     /// The header and index: redirect table, offsets table, locations and strings.
     index: Arc<Vec<u8>>,
     little_endian: bool,
@@ -60,6 +61,21 @@ static SHARED: Mutex<Vec<(Arc<Vec<u8>>, Arc<HashMap<String, u32>>)>> = Mutex::ne
 const SHARED_KEPT: usize = 4;
 
 impl JImage {
+    /// The zone database shipped alongside this particular modules image.
+    pub(crate) fn tzdb_sha256(&self) -> Option<String> {
+        let bytes = std::fs::read(self.modules.parent()?.join("tzdb.dat")).ok()?;
+        Some(crate::digest::sha256_hex(&bytes))
+    }
+
+    /// The target VM's native byte order, including when the checker reads another
+    /// installation's image. Unknown VM file formats keep native word layout opaque.
+    pub(crate) fn hot_spot_big_endian(&self) -> Option<bool> {
+        let mut header = [0; 6];
+        File::open(self.modules.parent()?.join("server/libjvm.so")).ok()?.read_exact(&mut header).ok()?;
+        if &header[..4] != b"\x7fELF" { return None; }
+        match header[5] { 1 => Some(false), 2 => Some(true), _ => None }
+    }
+
     /// Opens `<java_home>/lib/modules`: the file, its header and its index are read every time, and the table of its
     /// classes is the one built earlier in this process from the same index bytes, if any.
     pub fn open(java_home: &Path) -> Result<JImage, Error> {
@@ -131,9 +147,9 @@ impl JImage {
             let entry = shared.remove(at);
             shared.insert(0, entry.clone());
             let (index, classes) = entry;
-            return Ok(JImage { file: RefCell::new(file), index, little_endian, locations_start, strings_start, offsets_start, classes });
+            return Ok(JImage { file: RefCell::new(file), modules: path.to_owned(), index, little_endian, locations_start, strings_start, offsets_start, classes });
         }
-        let mut image = JImage { file: RefCell::new(file), index: Arc::new(index), little_endian, locations_start, strings_start, offsets_start, classes: Arc::default() };
+        let mut image = JImage { file: RefCell::new(file), modules: path.to_owned(), index: Arc::new(index), little_endian, locations_start, strings_start, offsets_start, classes: Arc::default() };
         let mut classes = HashMap::with_capacity(table_length);
         for i in 0..table_length {
             let location = image.location(i as u32)?;
@@ -209,6 +225,22 @@ impl JImage {
 
     pub fn contains(&self, class_name: &str) -> bool {
         self.classes.contains_key(class_name)
+    }
+
+    /// Class loaders consult modules before the application paths. Check every module
+    /// for the particular resource, including modules other than java.base.
+    pub(crate) fn contains_resource(&self, name: &str) -> Result<bool, Error> {
+        let (parent, file) = name.rsplit_once('/').unwrap_or(("", name));
+        let slots = (self.locations_start - self.offsets_start) / 4;
+        for index in 0..slots {
+            let loc = self.location(index as u32)?;
+            if self.string(loc.parent)? != parent { continue; }
+            let base = self.string(loc.base)?;
+            let ext = self.string(loc.extension)?;
+            if (ext.is_empty() && base == file) || (!ext.is_empty() && file.strip_prefix(base.as_ref())
+                .and_then(|s| s.strip_prefix('.')) == Some(ext.as_ref())) { return Ok(true); }
+        }
+        Ok(false)
     }
 
     /// Every class in the image, by internal name.

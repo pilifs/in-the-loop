@@ -197,7 +197,7 @@ public final class Outside {
         }
     }
 
-    /** A key of a class with Object's own hashCode, an identity the checker has none of. */
+    /** A fresh key with Object's native hashCode; its stable identity hash requires the JDK image. */
     public static void mapKeyOfIdentity(int v) {
         Map<Item, Item> m = new HashMap<>();
         Item key = new Item(v);

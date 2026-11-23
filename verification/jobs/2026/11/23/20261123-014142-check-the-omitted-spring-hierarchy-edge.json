@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-014142-check-the-omitted-spring-hierarchy-edge",
+  "title": "Check the omitted Spring hierarchy edge on both original managers",
+  "description": "On the Spring Security #14196 pre-feature and landed artifacts, compare four public manager calls per prefix. Starting with A, remove the B-to-D edge after checking the full hierarchy. D alone must still grant on the reduced graph, and C alone must decline on the full graph. Qualify each ordinary native proof and physical JVM replay on the original ordered classpath.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "ordinary-startup",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "370"
+    ]
+  },
+  "expected": "Both JARs produce decision bits 1,0,1,0 for ROLE_ and CUSTOM_PREFIX_. Four strict native checks establish mask 5, binding the actual public caller, manager and hierarchy classes.",
+  "submitted": {
+    "at": "2026-11-23T01:41:42+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Native and JVM edge controls",
+      "run": "python3 -B lib/benchmark/spring-java-data/role_edge.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/370-spring-role-hierarchy/records/edge-control"
+  ]
+}

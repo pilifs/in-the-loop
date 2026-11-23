@@ -9,6 +9,7 @@ const CALENDAR: &str = "java/util/GregorianCalendar";
 const ZONE: &str = "sun/util/calendar/ZoneInfo";
 const DATE: &str = "java/util/Date";
 const MARK: &str = "<observed UTC calendar>";
+const EXPLICIT_ZONE: &str = "<JDK.tzdb.UTC>";
 const FIELDS: [&str; 7] = ["<year>", "<month>", "<day>", "<hour>", "<minute>", "<second>", "<millisecond>"];
 const ASSUMPTION: &str = "Calendar factories use the observed JDK's fresh lenient AD Gregorian calendars in fixed UTC, with the standard Gregorian cutover and the default locale and time zone seen at startup";
 
@@ -38,8 +39,24 @@ impl Engine<'_> {
                 if path.objects[*zone].class == ZONE && path.objects[*zone].fields.contains_key(MARK) => CALENDAR,
             _ => return None,
         };
-        if self.gap_mode != GapMode::Strict || locale::has_override(path) || !self.observed.iter().any(|(c, o)|
-            o.on.utc_gregorian && matches!(o.on.zone.as_str(), "UTC" | "Etc/UTC") && path.classes.get(c) == Some(&ClassState::Done)) { return None; }
+        if self.gap_mode != GapMode::Strict { return None; }
+        let observed = !locale::has_override(path) && self.observed.iter().any(|(c, o)|
+            o.on.utc_gregorian && matches!(o.on.zone.as_str(), "UTC" | "Etc/UTC") && path.classes.get(c) == Some(&ClassState::Done));
+        if !observed {
+            let [id] = args else { return None };
+            if class != ZONE || member.name != "getTimeZone" || !self.cp.explicit_utc() { return None; }
+            if let Err(stop) = self.reads(path, || "reads UTC from the JDK zone database".into()) { return Some(Err(stop)); }
+            self.assumed.insert("the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier".into());
+            let zone = self.alloc(path, ZONE);
+            // The pinned prototype has zero raw offset, checksum and daylight saving,
+            // no transitions or cached last rule. The clone retains the caller's ID reference.
+            let field = self.cp.field_key(ZONE, "java/util/TimeZone", "ID");
+            path.objects[zone].fields.insert(field, id.clone());
+            path.objects[zone].fields.insert(EXPLICIT_ZONE.into(), Val::I(self.b.constant(1, 32)));
+            self.push(path, Val::R(Some(zone)));
+            self.advance(path);
+            return Some(Ok(None));
+        }
         if let Err(stop) = self.reads(path, || "reads the JVM calendar startup environment".into()) { return Some(Err(stop)); }
         self.assumed.insert(ASSUMPTION.to_string());
         self.assumption_ids.insert(ASSUMPTION.to_string(), "observed-calendar:gregorian-utc-ad".into());
@@ -52,6 +69,14 @@ impl Engine<'_> {
 
     pub(super) fn utc_calendar_method(&mut self, path: &mut Path, o: usize, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
         let object = &path.objects[o];
+        if object.fields.contains_key(EXPLICIT_ZONE) && matches!((member.name.as_str(), member.descriptor.as_str()),
+            ("getID", "()Ljava/lang/String;") | ("setID", "(Ljava/lang/String;)V") | ("getRawOffset" | "getDSTSavings", "()I")
+            | ("setRawOffset", "(I)V") | ("useDaylightTime", "()Z")) {
+            let (cf, method) = self.cp.find_method(ZONE, &member.name, &member.descriptor)?;
+            let mut full = vec![Val::R(Some(o))];
+            full.extend_from_slice(args);
+            return Some(self.enter_method(path, &member.owner, cf, method, full));
+        }
         if !object.fields.contains_key(MARK) { return None; }
         let name = member.name.as_str();
         if (name, member.descriptor.as_str()) == ("getClass", "()Ljava/lang/Class;") {

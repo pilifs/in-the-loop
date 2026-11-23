@@ -21,7 +21,7 @@ GUARD = "code >= 0 && code <= 1"
 ROOTS = ["org.springframework.format.datetime.DateFormatter",
          "org.springframework.format.datetime.DateTimeFormatAnnotationFormatterFactory"]
 
-def run(out, *, physical_only=False, probe=False):
+def run(out, *, physical_only=False, probe=False, ordinary_only=False):
     os.environ.setdefault("TARGETS_LOCAL_GIT_ROOT", str(SETUP / "src"))
     seed(FOLDER)
     example = read(FOLDER / "example.json")
@@ -66,7 +66,12 @@ def run(out, *, physical_only=False, probe=False):
                     if mismatch: raise ValueError(mismatch)
                 report.update(checkerSha256=digest(checker), source=os.environ.get("VERIFY_SOURCE_COMMIT"),
                               nativeClassBindings={name:actual for name,_,_,_,actual in expected}, boundRelease=release, queries={})
-                for label,roots in ([("recorded",ROOTS)] if probe else [("ordinary",[]),("recorded",ROOTS)]):
+                queries = []
+                if ordinary_only or not probe:
+                    queries.append(("ordinary", []))
+                if not ordinary_only:
+                    queries.append(("recorded", ROOTS))
+                for label, roots in queries:
                     result = proof(checker,classes,jars,work,env,dest,METHOD,label,GUARD,
                                    f"(code == 0 && result == 9) || (code == 1 && result == {sequence})",
                                    roots,(256,16384),PROFILE)
@@ -79,5 +84,6 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--physical-only", action="store_true")
     parser.add_argument("--probe", action="store_true", help="one recorded-startup parent claim for a capped diagnostic")
+    parser.add_argument("--ordinary-only", action="store_true", help="check both historical registrars from ordinary startup")
     args = parser.parse_args()
-    run(args.output, physical_only=args.physical_only, probe=args.probe)
+    run(args.output, physical_only=args.physical_only, probe=args.probe, ordinary_only=args.ordinary_only)

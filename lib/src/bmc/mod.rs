@@ -79,7 +79,7 @@
 //! | `invokevirtual`/`invokeinterface` of `String.length()`, `isEmpty()`, `charAt(int)`, `equals(Object)`, `startsWith(String)` and `hashCode()` on a String whose content the engine holds, whatever class the call names (`Object.equals`, `CharSequence.length`: the receiver's class picks the method) ([`Engine::string_method`]) | modelled, as their Javadoc specifies: `StringIndexOutOfBoundsException` from `charAt` out of range, `NullPointerException` from `startsWith(null)`, `equals` true of the same object, false of null and of another class, else the lengths and every code unit compared, `hashCode` the sum `s[0]*31^(n-1) + … + s[n-1]` in `int` arithmetic; on an opaque String they are the JDK calls below; on one past the content cap, a named limit with no verdict |
 //! | `invokevirtual`/`invokeinterface` of a JDK method returning an integer, a `char` or a `boolean` | gap: `jdk-primitive-method`, with no assume form |
 //! | `invokedynamic` string concatenation | implemented over strings and primitives: Strings (`null` as "null"), `char`s, `int`s, `short`s and `byte`s (their decimal digits) and the recipe's constants give a String of their content in order, up to [`MAX_STRING_CONTENT`] code units, past which its content is a named limit; a `long`, a floating-point number or a boolean converted gives an opaque String (their formatting is outside the model); an object argument it would convert is a gap, `string-conversion` |
-//! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` and `toLowerCase(Locale)` lower an ASCII String under the default locale the path set or the Locale given, Turkish and Azeri among them ([`locale`]); either of a String with a unit outside ASCII or under a Locale the engine knows nothing of, and `split` at anything but one constant character with a negative limit, stay the JDK call (a gap, or refused) |
+//! | `invokevirtual` of the String methods of [`strings`], of `split(String, int)` and `matches(String)` ([`regex`]) and of `getBytes(Charset)` ([`bytes`]) on a String whose content the engine holds, and a `StringBuilder`'s constructors and methods of [`strings`] | modelled as formulas over the content, each exception thrown where the JDK throws it; `toLowerCase()` and `toLowerCase(Locale)` lower an ASCII String under the default locale the path set or the Locale given, Turkish and Azeri among them ([`locale`]); either of a String with a unit outside ASCII or under a Locale the engine knows nothing of, and splits outside the symbolic single-character negative-limit or concrete zero-limit forms stay the JDK call (a gap, or refused) |
 //! | `invokedynamic` of `LambdaMetafactory.metafactory` | an object of the interface that holds what the site captured ([`Lambda`]); a call of the interface's method on it runs the lambda's method or the method a method reference names, its arguments cast as the JVM casts them ([`Engine::lambda_call`]); a call that would box or unbox is refused |
 //! | `invokespecial`, `invokevirtual` and `invokeinterface` of the constructors and methods of `java.util.ArrayList`, `java.util.ArrayDeque`, `java.util.HashSet`, `java.util.LinkedHashSet` (with the `HashSet` model), `java.util.StringJoiner` or `java.beans.PropertyChangeEvent` (with `java.util.EventObject`), in a check that asks for the class's model (`--model java.util.ArrayList`, [`crate::models::ON_REQUEST`]) | enter the model ([`ClassPath::runs_model`]) for what it keeps, and the run states it ([`Outcome::assumed`]); a method it does not keep, and every call in a check that did not ask, is the JDK call it was |
 //! | `invokestatic` of `Arrays.stream(Object[])`, `Arrays.stream(int[])` and `IntStream.range(int, int)`, and `invokevirtual` of `String.chars()` | enter the stream models only the checker runs ([`crate::models::entry`]) |
@@ -117,6 +117,10 @@ pub mod bitwuzla;
 mod arraycopy;
 mod array_list;
 mod calendar;
+mod class_tables;
+mod jar_resources;
+mod reference_queues;
+mod generic_interfaces;
 mod map_views;
 mod enum_universe;
 pub mod bits;
@@ -129,9 +133,12 @@ pub mod locale;
 mod loops;
 mod observed;
 mod regex;
+mod reflection;
+mod thread_locals;
 pub mod runtime;
 mod ties;
 pub mod sat;
+mod string_buffer;
 pub mod strings;
 pub(crate) mod throwables;
 pub mod transcript;
@@ -729,6 +736,8 @@ struct Obj {
     lambda: Option<Rc<Lambda>>,
     /// What the object means as a regular expression, where the engine holds it as one ([`regex`]).
     regex: Option<Rc<regex::Regex>>,
+    /// Metadata of a copy returned by a qualified reflective lookup on this path.
+    member: Option<Rc<reflection::Member>>,
     /// Which allocation made the object: the copies of it on the paths that split after it was made share the
     /// number, and no other object has it. Only [`align`] reads it, to pair an object with itself.
     made: u64,
@@ -792,7 +801,7 @@ impl Obj {
     }
 
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
+        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, member: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -1141,6 +1150,7 @@ fn alike(o: &Obj, q: &Obj) -> bool {
         && o.limit == q.limit
         && o.lambda == q.lambda
         && o.regex == q.regex
+        && o.member == q.member
         && o.given == q.given
         && o.before == q.before
         && o.fields.len() == q.fields.len()
@@ -3475,6 +3485,14 @@ impl<'a> Engine<'a> {
     /// with their constructors in the harness's fresh state, and a caller's were made in the caller's, so a final
     /// field holds what its constructor made of a state the proof never had.
     fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
+        if path.objects[o].fields.contains_key(reference_queues::FRESH_QUEUE) && matches!(name, "head" | "queueLength")
+            && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ref/ReferenceQueue") {
+            return unsupported("the asynchronous internal state of a reference queue");
+        }
+        if path.objects[o].fields.contains_key(runtime::REGISTERED_QUEUE) && matches!(name, "referent" | "queue" | "next" | "discovered")
+            && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ref/Reference") {
+            return unsupported("a GC-sensitive field of a registered reference");
+        }
         if !self.there_before(path, o) {
             return Ok(());
         }
@@ -3703,6 +3721,9 @@ impl<'a> Engine<'a> {
             if let Some(reason) = frame.stack.iter().find_map(|v| match v { Val::Unobserved(s) => Some(s.clone()), _ => None }) {
                 if let Some(step) = self.transport_unobserved(path, &class, &insn, &reason) { return step; }
             }
+        }
+        if matches!(insn, Insn::GetStatic(_) | Insn::New(_)) {
+            if let Some(step) = self.fold_class_tables(path) { return step; }
         }
         if matches!(insn, Insn::Load(Kind::Int, _)) {
             if let Some(step) = self.fill_loop(path) { return step; }
@@ -4018,6 +4039,35 @@ impl<'a> Engine<'a> {
                     return Ok(None);
                 }
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/ref/SoftReference", "clock", "J")
+                    && class.name == declaring && path.frames.last().is_some_and(|f| matches!(f.method.as_str(), "<init>" | "get")) {
+                    self.reads(path, || "reads the GC soft-reference clock".into())?;
+                    path.unbound_platform_value = Some("the GC soft-reference clock");
+                    let stamp = Val::J(self.b.fresh(64));
+                    self.push(path, stamp);
+                    self.advance(path);
+                    return Ok(None);
+                }
+                let platform_flag = match (declaring.as_str(), member.name.as_str()) {
+                    (STRING, "COMPACT_STRINGS") => Some("the JVM's compact-string setting"),
+                    ("java/util/ImmutableCollections", "REVERSE") => Some("the JVM's immutable collection iteration order"),
+                    _ => None,
+                };
+                if let Some(reason) = platform_flag.filter(|_| member.descriptor == "Z" && !self.is_observed(&declaring)
+                    && self.cp.load(&declaring).ok().flatten().is_some_and(|loaded| loaded.origin == crate::classpath::Origin::Jdk
+                        && loaded.class.field(&member.name).is_some_and(|f| f.is_static() && f.is_final() && f.descriptor == "Z"))) {
+                    // Each bootstrap flag is fixed for the process. Carry both choices consistently.
+                    let slot = (declaring.clone(), member.name.clone());
+                    let value = path.statics.entry(slot).or_insert_with(|| {
+                        let mut flag = self.b.fresh(1);
+                        flag.resize(32, FALSE);
+                        Val::I(flag)
+                    }).clone();
+                    path.unbound_platform_value = Some(reason);
+                    self.push(path, value);
+                    self.advance(path);
+                    return Ok(None);
+                }
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/util/HashSet", "PRESENT", "Ljava/lang/Object;")
                     && class.name == declaring && self.cp.is_map_image(&class) {
                     let sentinel = self.literal(path, Literal::HashSetPresent, "java/lang/Object");
@@ -4381,6 +4431,12 @@ impl<'a> Engine<'a> {
     /// `None` for any other call, and for one whose String has no content, which stays the JDK call it was (a
     /// gap), unless what it lacks is a named limit ([`Obj::limit`]), which ends the path with no verdict.
     fn string_method(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if name == "equals" && descriptor == "(Ljava/lang/Object;)Z" {
+            if let [Val::R(Some(other))] = args {
+                if let Some(step) = self.separator_equals(path, o, *other) { return Some(step); }
+            }
+        }
+        if let Err(stop) = self.resolve_separator(path, o) { return Some(Err(stop)); }
         if self.gap_mode == GapMode::Strict && name == "replace" && descriptor == "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" {
             return self.replace_string_unit(path, o, args);
         }
@@ -4957,6 +5013,16 @@ impl<'a> Engine<'a> {
     /// The key the instance field `owner.name:descriptor` has in object `o`: its name, unless a subclass along the
     /// object's class declares the name again ([`ClassPath::field_key`]), as the interpreter keys it.
     fn field_key(&mut self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<String, Stop> {
+        if name == "threadLocalHashCode" && path.objects[o].fields.contains_key(thread_locals::FRESH)
+            && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ThreadLocal") {
+            return unsupported("the VM-assigned internal hash of a fresh ThreadLocal key");
+        }
+        if path.objects[o].fields.contains_key(jar_resources::RESOURCE) {
+            return unsupported(format!("the classpath resource does not supply its private field {name}"));
+        }
+        if path.objects[o].fields.contains_key(class_tables::TABLE) {
+            return unsupported(format!("the class lookup table does not supply its internal field {name}"));
+        }
         if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
             return unsupported(format!("the observed WeakHashMap does not supply its internal field {name}"));
         }
@@ -5052,6 +5118,11 @@ impl<'a> Engine<'a> {
     /// a model's is called, a JDK method the engine models is computed, and any other is a gap or refused. A
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
+        if caller == crate::models::CONCURRENT_MAP && member.owner == caller && member.name == "casTabAt"
+            && member.descriptor == "([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$Node;)Z"
+            && !self.cp.runs_model(caller) && self.cp.known_concurrent_table() {
+            return self.concurrent_slot_cas(path);
+        }
         if self.cp.concurrent_table_read(&member.owner, &member.name, &member.descriptor) {
             let stack = &path.frames.last().expect("a frame").stack;
             if let [.., Val::R(Some(o)), Val::I(index)] = stack.as_slice() {
@@ -5167,6 +5238,15 @@ impl<'a> Engine<'a> {
             }
         }
         let args = self.pop_args(path, descriptor.params.len())?;
+        if caller == "java/io/PrintWriter" && path.frames.last().is_some_and(|f| f.method == "<clinit>")
+            && self.gap_mode == GapMode::Strict {
+            if let Some(field) = self.cp.print_writer_access_field(member) {
+                self.keeps(path, None, "registers the JDK PrintWriter access object")?;
+                path.statics.insert((member.owner.clone(), field), args[0].clone());
+                self.advance(path);
+                return Ok(None);
+            }
+        }
         if caller == throwables::THROWABLE && member.owner == "java/util/Objects" && self.cp.throwable_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
@@ -5259,11 +5339,7 @@ impl<'a> Engine<'a> {
                     Val::J(self.b.fresh(64))
                 }
                 ("identityHashCode", [Val::R(None)]) => Val::I(self.b.constant(0, 32)),
-                ("identityHashCode", [Val::R(Some(o))]) => {
-                    // Stable for the same object. Distinct objects may collide, including at zero.
-                    path.unbound_platform_value = Some("a JVM-chosen identity hash");
-                    path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone()
-                }
+                ("identityHashCode", [Val::R(Some(o))]) => self.identity_hash(path, *o),
                 _ => return unsupported("the JVM identity hash needs a resolved reference"),
             };
             self.push(path, value);
@@ -5357,9 +5433,12 @@ impl<'a> Engine<'a> {
             }
         }
         let captured: Vec<Val> = (0..lambda.captured).map(|i| path.objects[o].fields.get(&captured_key(i)).cloned().ok_or_else(|| Stop::Unsupported("a lambda with a captured value missing".into()))).collect::<Result<_, _>>()?;
-        // A captured reference that is not known could not be made known by the call either.
-        if captured.iter().any(|v| matches!(v, Val::C(_))) && !(kind == 6 && self.cp.is_application(&target.owner)) {
-            return unsupported(format!("a lambda that stands for {}.{} and captured a reference that is one of several objects", target.owner.replace('/', "."), target.name));
+        // Resolve the capture on the intact SAM call. Each path substitutes the chosen
+        // object in the closure and all its aliases before adapting the stack.
+        if !(kind == 6 && self.cp.is_application(&target.owner)) {
+            if let Some(Val::C(options)) = captured.iter().find(|v| matches!(v, Val::C(_))) {
+                return self.split_choice(path, options);
+            }
         }
         let made = (kind == 8).then(|| self.alloc(path, &target.owner));
         let frame = path.frames.last_mut().expect("a frame");
@@ -5438,6 +5517,12 @@ impl<'a> Engine<'a> {
             Ok(o) => o.expect("checked"),
             Err(step) => return step,
         };
+        if path.objects[o].fields.contains_key(jar_resources::RESOURCE) {
+            return self.resource_call(path, o, member, &args, special);
+        }
+        if path.objects[o].fields.contains_key(class_tables::TABLE) {
+            return self.class_table_call(path, o, member, &args, special);
+        }
         if path.objects[o].fields.contains_key(observed::WEAK_NULLS) {
             return self.null_valued_weak_map_call(path, o, special, member, &args);
         }
@@ -5482,6 +5567,28 @@ impl<'a> Engine<'a> {
         // A contract given for the call stands in place of the engine's own model of it ([`gaps::modelled_jdk_call`]):
         // the call is then the gap it is to a checker with no such model, closed as the contract says.
         if !contracted {
+            if special {
+                if let Some(step) = self.class_set_constructor(path, o, member, &args) { return step; }
+                if let Some(step) = self.string_buffer_copy(path, o, member, &args) { return step; }
+            }
+            if !special {
+                if let Some(step) = self.app_resources(path, o, member, &args) { return step; }
+            }
+            if let Some(step) = self.object_hash(path, o, special, member) { return step; }
+            if let Some(step) = self.fresh_thread_local(path, o, special, member, &args) { return step; }
+            // A hash collision between two Spring entry references reaches their
+            // inherited Object.equals. An override still dispatches to its own body.
+            if member.name == "equals" && member.descriptor == "(Ljava/lang/Object;)Z"
+                && !path.objects[o].given && !path.objects[o].assumed && !path.objects[o].unknown
+                && (special && member.owner == "java/lang/Object" || !special
+                    && self.cp.find_method(&path.objects[o].class, &member.name, &member.descriptor)
+                        .is_some_and(|(cf, _)| cf.name == "java/lang/Object")) {
+                if let Some((cf, method)) = self.cp.library_image_method("java/lang/Object", "equals", &member.descriptor) {
+                    let mut full = vec![Val::R(Some(o))];
+                    full.extend(args);
+                    return self.enter_method(path, "java/lang/Object", cf, method, full);
+                }
+            }
             if special && member.owner == STRING && member.name == "<init>"
                 && matches!(member.descriptor.as_str(), "([BLjava/nio/charset/Charset;)V" | "([BIILjava/nio/charset/Charset;)V") {
                 if let Some(step) = self.string_from_utf8(path, o, &args) { return step; }
@@ -5498,7 +5605,31 @@ impl<'a> Engine<'a> {
             if !special {
                 if let Some(step) = self.basic_base64_call(path, o, member, &args) { return step; }
             }
+            if let Some(step) = self.image_map_call(path, o, special, member, &args) { return step; }
             if !path.objects[o].assumed && !path.objects[o].given {
+                const QUEUE: &str = "java/lang/ref/ReferenceQueue";
+                const COUNTER: &str = "java/util/concurrent/atomic/AtomicInteger";
+                const FRESH_COUNTER: &str = "<JDK.freshAtomicInteger>";
+                if !special && member.owner == COUNTER && member.name == "incrementAndGet" && member.descriptor == "()I"
+                    && path.objects[o].fields.contains_key(FRESH_COUNTER) && self.cp.atomic_integer_increment() {
+                    self.keeps(path, Some(o), "increments an atomic integer")?;
+                    if self.there_before(path, o) { self.reads(path, || "reads an atomic integer before its increment".into())?; }
+                    let old = path.objects[o].fields.get("value").cloned().unwrap_or_else(|| Val::I(self.b.constant(0, 32)));
+                    let Val::I(old) = old else { return unsupported("unexpected AtomicInteger value field"); };
+                    let value = Val::I(self.b.add(&old, &self.b.constant(1, 32)));
+                    path.objects[o].fields.insert("value".into(), value.clone());
+                    self.push(path, value);
+                    self.advance(path);
+                    return Ok(None);
+                }
+                if !special && path.objects[o].fields.contains_key(reference_queues::FRESH_QUEUE) && member.owner == QUEUE
+                    && member.name == "poll" && member.descriptor == "()Ljava/lang/ref/Reference;" {
+                    return self.poll_reference_queue(path, o);
+                }
+                if path.objects[o].fields.contains_key(runtime::REGISTERED_QUEUE) && member.name == "get"
+                    && member.descriptor == "()Ljava/lang/Object;" {
+                    if let Some(step) = self.soft_reference_get(path, o, &member.owner, special) { return step; }
+                }
                 if member.owner == "java/util/concurrent/atomic/AtomicReference" && path.objects[o].class == member.owner
                     && !path.objects[o].unknown {
                     if let Some((cf, method)) = self.cp.fresh_atomic_method(&member.name, &member.descriptor, special) {
@@ -5507,7 +5638,16 @@ impl<'a> Engine<'a> {
                         return self.enter_method(path, &member.owner, cf, method, full);
                     }
                 }
-                if let Some((cf,method)) = self.cp.fresh_collection_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                if let Some((cf,method)) = self.cp.fresh_state_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                    if special && member.owner == COUNTER && member.name == "<init>" {
+                        path.objects[o].fields.insert(FRESH_COUNTER.into(), Val::I(self.b.constant(1, 32)));
+                    }
+                    if special && member.owner == "java/lang/ref/Reference" {
+                        self.register_reference(path, o, &args[1]);
+                    }
+                    if special && member.owner == QUEUE && member.name == "<init>" {
+                        path.objects[o].fields.insert(reference_queues::FRESH_QUEUE.into(), Val::I(self.b.constant(1, 32)));
+                    }
                     if special && member.owner == runtime::REENTRANT_LOCK {
                         // The original constructor initializes sync. The existing single-thread
                         // lock operations also keep their public hold-count observation.
@@ -5536,9 +5676,13 @@ impl<'a> Engine<'a> {
                     return self.enter_method(path, &target, cf, method, full);
                 }
             }
-            if runtime::sequential_lock_call(&member.owner, &member.name, &member.descriptor)
-                && path.objects[o].class == runtime::REENTRANT_LOCK {
-                return self.sequential_lock(path, o, &member.name);
+            if runtime::sequential_lock_call(runtime::REENTRANT_LOCK, &member.name, &member.descriptor) {
+                let lock = &path.objects[o];
+                let lookup = if special { &member.owner } else { &lock.class };
+                let direct = lock.class == runtime::REENTRANT_LOCK && member.owner == runtime::REENTRANT_LOCK;
+                let inherited = member.name != "<init>" && !lock.given && !lock.unknown && lock.fields.contains_key(runtime::HOLD_COUNT)
+                    && self.cp.find_method(lookup, &member.name, &member.descriptor).is_some_and(|(cf, _)| cf.name == runtime::REENTRANT_LOCK);
+                if direct || inherited { return self.sequential_lock(path, o, &member.name); }
             }
             if special && self.gap_mode == GapMode::Strict && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/Object", "clone", "()Ljava/lang/Object;")
                 && !path.objects[o].assumed && !path.objects[o].unknown && self.cp.application_object(&path.objects[o].class) {
@@ -5576,7 +5720,6 @@ impl<'a> Engine<'a> {
                     return self.enter_method(path, &member.owner, cf, method, full);
                 }
             }
-            if let Some(step) = self.image_map_call(path, o, special, member, &args) { return step; }
             if let Some(step) = self.image_list_call(path, o, special, member, &args) { return step; }
             if !special {
                 if let Some(step) = self.utc_calendar_method(path, o, member, &args) { return step; }
@@ -5614,6 +5757,17 @@ impl<'a> Engine<'a> {
                 return step;
             }
             // A class literal's name and loader ([`runtime`]).
+            if !special {
+                if path.objects[o].class == STRING && member.owner == STRING && member.name == "contains" {
+                    if let Some((cf, method)) = self.cp.library_image_method(STRING, "contains", &member.descriptor) {
+                        let mut full = vec![Val::R(Some(o))];
+                        full.extend(args);
+                        return self.enter_method(path, STRING, cf, method, full);
+                    }
+                }
+                if let Some(step) = self.generic_interface_call(path, o, member, &args) { return step; }
+                if let Some(step) = self.reflection_method(path, o, member, &args) { return step; }
+            }
             if let Some(step) = self.class_method(path, o, &member.owner, &member.name, &member.descriptor) {
                 return step;
             }

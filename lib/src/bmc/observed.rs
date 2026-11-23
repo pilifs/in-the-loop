@@ -12,7 +12,7 @@ pub(super) const WEAK_NULLS: &str = "<observed.WeakHashMap.nullValues>";
 pub(super) const LOOKUP_MAP: &str = "<observed/HashMap>";
 pub(super) const ATOMIC_REF: &str = "<observed/AtomicReference>";
 
-fn lookup_key(units: Option<&[u16]>) -> String {
+pub(super) fn lookup_key(units: Option<&[u16]>) -> String {
     use std::fmt::Write;
     let Some(units) = units else { return "<key/null>".into() };
     let mut field = String::from("<key/string>");

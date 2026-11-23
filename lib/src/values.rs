@@ -171,7 +171,7 @@ const LIST: &str = "java/util/List";
 /// with a constant name the JDK takes for UTF-8 (for example 307, whose previous version converts so), and
 /// `getBytes(US_ASCII)` (307's mutation control). Model 9 adds UTF-16 array slice construction and code-point reads. Model 11 adds trim with exact code units and unchanged-receiver identity.
 /// Model 12 admits intern only on a receiver already known to be its canonical literal.
-pub const STRING_MODEL: &str = "jvmcontract String model 12: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
+pub const STRING_MODEL: &str = "jvmcontract String model 13: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr)";
 
 /// The JDK whose `java.lang.String` the model was sampled against (`lib/tests/values.rs`, on the JVM).
 pub const STRING_MODEL_JDK: &str = "25.0.5";
@@ -193,7 +193,7 @@ pub fn string_model() -> ModelEvidence {
         jdk: STRING_MODEL_JDK.into(),
         level: EvidenceLevel::Tested,
         leaves_out: vec![
-            "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
+            "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap".into(),
             "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits".into(),
             format!("the content of a concatenation that could pass {} code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String", crate::bmc::MAX_STRING_CONTENT),
             "intern, compareTo, and the identity of a String made at run time beyond its being a fresh object".into(),
@@ -377,7 +377,7 @@ pub fn map_model() -> ModelEvidence {
         leaves_out: vec![
             "every Map but a java.util.HashMap made by HashMap() or HashMap(int): another map's constructor (TreeMap, HashMap(int, float), HashMap(Map)) is the JDK call it names. The own checker alone also has a java.util.LinkedHashMap made by LinkedHashMap(), with its values in insertion order (lib/models/java/util/LinkedHashMap.java, whose evidence is claims.M in lib/tests/claims.rs)".into(),
             "the portable model implements put, get, containsKey, size and isEmpty. For an exact fresh HashMap() with a JDK image, the native checker executes the JDK table, entries, keySet and entrySet views and iterators on one heap. An observed or model-backed map needs its own view evidence.".into(),
-            "a key whose hashCode or equals the own checker doesn't run: a String is hashed and compared by content and null is a key, and a key of an application class runs its own hashCode and equals, but Object's hashCode (an identity) is a named gap".into(),
+            "a key whose hashCode or equals the own checker doesn't run: a String is hashed and compared by content and null is a key, and an application key runs its own overrides. With a JDK image an inherited Object.hashCode shares the object's stable, possibly colliding System.identityHashCode. The portable model alone leaves that hash open".into(),
             "the table: the order in which the entries of one hash are compared, and resizing, which a key whose equals and hashCode only compute does not observe".into(),
             "a map as an input: no adapter makes one, so a map parameter or a map inside an object is refused".into(),
         ],
@@ -951,6 +951,17 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["lastIndexOf(I)I"],
     },
     OperationEvidence {
+        operation: "java.lang.String.lastIndexOf(II)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "any code point and signed start: the last matching UTF-16 start index no greater than fromIndex, or -1; a supplementary pair may end past fromIndex",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["lastIndexOfCharFrom"],
+        calls: &["lastIndexOf(II)I"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.indexOf(II)I",
         family: Family::String,
         source: STRINGS_SOURCE,
@@ -1064,12 +1075,23 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         operation: "java.lang.String.split(Ljava/lang/String;I)[Ljava/lang/String;",
         family: Family::String,
         source: REGEX_SOURCE,
-        admits: "a String with content, a constant regex of one character that stands for itself or of a backslash and one character that is no ASCII letter or digit (the JDK's own fast path), and a negative constant limit: every part kept, each as substring makes it, and the String itself as the one part where the character does not occur",
+        admits: "a String with content, a constant regex of one character that stands for itself or of a backslash and one character that is no ASCII letter or digit (the JDK's own fast path), and a negative constant limit: every part kept, each as substring makes it, and the String itself as the one part where the character does not occur. At zero limit, including split(String), the native checker splits concrete UTF-16 text at the fast-path character or at a separator surrounded by Java regex whitespace; it discards trailing empty pieces",
         throws: &[NPE],
-        leaves_out: &["any other regex, and a limit of zero or more: refused, as a JDK call with an array result is", "split(String)"],
+        leaves_out: &["positive limits, unsupported regular expressions and symbolic text at limit zero; the default-limit native boundary cases run in claims.SpringStartup"],
         level: EvidenceLevel::Tested,
         sampled_by: &["split", "splitByNull"],
         calls: &["split(Ljava/lang/String;I)[Ljava/lang/String;"],
+    },
+    OperationEvidence {
+        operation: "java.lang.String.split(Ljava/lang/String;)[Ljava/lang/String;",
+        family: Family::String,
+        source: REGEX_SOURCE,
+        admits: "concrete UTF-16 text split at a fast-path literal or at a comma, colon, semicolon, less-than, equals or greater-than sign surrounded on both sides by Java default-regex whitespace; a miss retains the receiver, leading empty pieces survive and trailing empty pieces are removed",
+        throws: &[NPE],
+        leaves_out: &["symbolic text, other regex forms and the interpreter's regex calls"],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["splitDefault"],
+        calls: &["split(Ljava/lang/String;)[Ljava/lang/String;"],
     },
     OperationEvidence {
         operation: "java.lang.String.chars()Ljava/util/stream/IntStream;",
@@ -1352,7 +1374,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 32);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 34);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

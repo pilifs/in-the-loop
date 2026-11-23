@@ -1,0 +1,71 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-064120-recheck-ordinary-spring-entries-after-fa",
+  "title": "Recheck ordinary Spring entries after factory parsing and cache purge",
+  "description": "Run all 18 existing tasks on both release binders, both legacy and landed role paths, the two original metadata JARs and the two formatter slices. Check the original frozen observers, replay each claimed violation and identify the first open operation or exhausted bound under ordinary startup.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "ordinary-startup",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "368",
+      "370",
+      "372",
+      "374"
+    ]
+  },
+  "expected": "Every original task publishes a digest-bound selector receipt and its complete decision or first refusal. Preserve the eight existing direct decisions.",
+  "submitted": {
+    "at": "2026-11-23T06:41:20+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "7m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Spring binder histories",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 368 --stage spring-refills-and-purge",
+      "cwd": "."
+    },
+    {
+      "name": "Reachable authorities and public decisions",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 370 --stage spring-refills-and-purge --first 1",
+      "cwd": "."
+    },
+    {
+      "name": "Reflected property names",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 372 --stage spring-refills-and-purge",
+      "cwd": "."
+    },
+    {
+      "name": "Formatter bean and error histories",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 374 --stage spring-refills-and-purge",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/368-spring-binding-history/records/spring-refills-and-purge",
+    "examples/368-spring-binding-history/records/native-selectors",
+    "examples/370-spring-role-hierarchy/records/spring-refills-and-purge",
+    "examples/370-spring-role-hierarchy/records/native-selectors",
+    "examples/372-spring-property-accessors/records/spring-refills-and-purge",
+    "examples/372-spring-property-accessors/records/native-selectors",
+    "examples/374-spring-formatter-binding/records/spring-refills-and-purge",
+    "examples/374-spring-formatter-binding/records/native-selectors"
+  ]
+}
