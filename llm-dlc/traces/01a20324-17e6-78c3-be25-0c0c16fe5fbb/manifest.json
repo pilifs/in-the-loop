@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20324-17e6-78c3-be25-0c0c16fe5fbb",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/java-domain-proof-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize quality and efficien",
   "client": {
@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T07:19:30.482Z",
-  "duration_seconds": 69343,
+  "ended": "2026-11-23T07:32:40.220Z",
+  "duration_seconds": 70133,
   "stats": {
-    "turns": 15,
-    "api_calls": 2659,
-    "tool_calls": 6230,
-    "tool_errors": 172,
-    "compactions": 11,
+    "turns": 16,
+    "api_calls": 2695,
+    "tool_calls": 6312,
+    "tool_errors": 173,
+    "compactions": 12,
     "peak_context_tokens": 525653,
     "usage": {
-      "input_tokens": 3788410,
-      "output_tokens": 1239644,
-      "cache_read_input_tokens": 669067776,
+      "input_tokens": 3900762,
+      "output_tokens": 1260132,
+      "cache_read_input_tokens": 674090112,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 3449,
-    "exec": 2420,
+    "Bash": 3498,
+    "exec": 2445,
     "apply_patch": 221,
-    "wait": 48,
+    "wait": 56,
     "sleep": 31,
     "send_message": 23,
     "wait_agent": 16,
@@ -292,24 +292,38 @@
     {
       "index": 11,
       "started": "2026-11-23T06:11:37.612Z",
-      "ended": "2026-11-23T07:19:30.482Z",
+      "ended": "2026-11-23T07:23:47.820Z",
       "turns": 1,
-      "api_calls": 230,
+      "api_calls": 242,
       "usage": {
-        "input_tokens": 312913,
-        "output_tokens": 89417,
-        "cache_read_input_tokens": 49780480,
+        "input_tokens": 316902,
+        "output_tokens": 94492,
+        "cache_read_input_tokens": 53518080,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 310531
+      "peak_context_tokens": 313568
+    },
+    {
+      "index": 12,
+      "started": "2026-11-23T07:23:47.826Z",
+      "ended": "2026-11-23T07:32:40.220Z",
+      "turns": 1,
+      "api_calls": 24,
+      "usage": {
+        "input_tokens": 108363,
+        "output_tokens": 15413,
+        "cache_read_input_tokens": 1284736,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 79949
     }
   ],
   "log": {
-    "sha256": "d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007",
-    "bytes": 40157320,
-    "lines": 20345,
-    "gzip_bytes": 7678964,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007.jsonl.gz"
+    "sha256": "ddc0026f8ccdb8f3a1e4203a9a761e53df910d5bf20fdab4fcedd862f3aa5044",
+    "bytes": 41149660,
+    "lines": 20616,
+    "gzip_bytes": 7887227,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/ddc0026f8ccdb8f3a1e4203a9a761e53df910d5bf20fdab4fcedd862f3aa5044.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -835,320 +849,320 @@
     },
     {
       "change_id": "sokkzolpqkwulysplukurmqwxvqrmpqt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7267071b6453b33b7ab19544c47e922ea2a9b2d1",
+      "immutable": true,
       "summary": "Add the JBMC semantics-gap and trusted-kernel briefs",
       "body": "The user's two briefs, copied unchanged from their analysis folder, queued as single-agent runs after the Spring work, each with an Opus setup phase first (single_run.py setup) and then Astra 6.2 at max for the domain work: jbmc-java-semantics-gap-brief.md, then in-the-loop-trusted-kernel-experiment-brief.md. Documentation only.",
       "log_sha256": "bfd800e4e987246e4ac4a2a1586bbaa200a1c73d26e905ea52f68279f556cbf8"
     },
     {
-      "change_id": "wnwqzlwulnwozsvnvlmmvwqlxxvpkkws",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Follow ordinary Spring startup through JDK calls (verification pending)",
-      "body": "Run application cache initializers and the selected JDK's lock, reference queue, writer, collection and iterator bytecode. The native checker follows concrete zero-limit splits, directly declared method and field metadata, and fresh same-thread bindings. Overriding initial values, unresolved member signatures and unbound VM configuration retain their proof boundaries.\n\nThe real fixed Spring Security manager passed a capped strict proof of four decisions: an indirect grant, its loss after removing the B-to-D edge, a preserved direct grant and a C-only denial. The original JVM confirmed all four. Pinned Temurin 21 tool tests cover aliases, overrides, lookup misses, writer identity and both possible immutable-set orders. The four example validators, eight frozen tables, existing scorecards, 59 selected Rust binaries and all selected Python suites passed. The negative HashSet capacity in the conformance corpus now refutes on the original JDK bytecode.\n\nJob 20261123-011836-recheck-all-ordinary-spring-claims-after checks the 16 Spring primary claims and two binder controls on the original classpaths. Job 20261123-012155-check-spring-startup-changes-against-the checks the proof-tier conformance corpus under JBMC, auto and confirmation.",
-      "log_sha256": "bfd800e4e987246e4ac4a2a1586bbaa200a1c73d26e905ea52f68279f556cbf8"
-    },
-    {
-      "change_id": "xmmwwryktvlszoyowzuppmnwptyyqztu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Verify the omitted Spring hierarchy edge (verification pending)",
-      "body": "Check the real legacy manager with A and a present or omitted B-to-D edge, D with the edge omitted, and C with the full hierarchy. The JVM returned grant, decline, grant, decline for each prefix on the pre-feature and landed JARs. The runnable control binds its compiled class and original providers to the same ordered classpath as the scored decision.\n\nA capped pre-feature native proof checked the ROLE_ mask, all five class bindings matched and seven altered proof records were rejected. The example validator, all 59 selected Rust binaries, the selected Python suite and both existing scorecards passed. Job 20261123-014142-check-the-omitted-spring-hierarchy-edge checks both prefixes on both original artifacts and stores the raw JVM and native evidence.",
-      "log_sha256": "2ba5782582ca803c6c46d8b66ff449b1b08ff43e0fca68be7801f34530b0171b"
-    },
-    {
       "change_id": "xpvvlyytlopsmysnwlotnqspuwvulqmu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "881c01c03f52344cfbdba61a60d3f5e13c430fb4",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-011836-recheck-all-ordinary-spring-claims-after: passed: 4 passed step(s) in 47.7s, peak 239.3 MiB (estimated 5m00s, 3.0 GiB); 120 output file(s) changed Applied 120 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "baffdd454dbc28e580aecfc9a73eafbfc1433471c50a1ff8d2014778e1c3278c"
     },
     {
       "change_id": "zktnrmvvsqrssyrowrrkwkzrnwxunpuv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "438a6e3099f6f2f0489be27a39a127166f300453",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-014142-check-the-omitted-spring-hierarchy-edge: passed: 1 passed step(s) in 6.4s, peak 111.5 MiB (estimated 1m00s, 1.0 GiB); 10 output file(s) changed Applied 10 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "baffdd454dbc28e580aecfc9a73eafbfc1433471c50a1ff8d2014778e1c3278c"
     },
     {
-      "change_id": "ukwmvxoxssykstvlkplnzvlnuswmptlq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record four ordinary Spring role proofs and the startup gaps",
-      "body": "Both original legacy hierarchies established the exact reachable authority names and public manager decisions for both prefixes and all 16 authority subsets. The four claims account for 128 complete strict selector proofs and move Spring to 4/16 ordinary native decisions. Four additional proofs on the independently identified historical JARs reproduced the loss of the indirect grant after the B-to-D edge was removed while preserving direct-D grants and C-only denials.\n\nKeep the original attempts, finite observations, new raw refusals and the selector where each public claim stopped. The remaining primary steps are the factory cache key hash, PrintWriter bootstrap registration, ClassUtils' capacity-nine identity map and the UTC TimeZone lookup. The separate 6.1.7 binder control still stops at its cache initializer. The data scorecard reproduced byte for byte.\n\nAll 130 managed output hashes matched, 15 damaged selector records and 10 damaged or misattributed edge-control records were rejected, all eight oracle tables reproduced and the four example validators passed. All 59 selected Rust binaries and all 27 selected Python suites passed. The independent proof-tier conformance job 20261123-012155-check-spring-startup-changes-against-the is still running.",
-      "log_sha256": "baffdd454dbc28e580aecfc9a73eafbfc1433471c50a1ff8d2014778e1c3278c"
-    },
-    {
       "change_id": "vquvyquwxsmxqsywosnvvnpqqwknxntz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "edbfd0978f2ff8b362c56e5f51e3796ba33ca03c",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-012155-check-spring-startup-changes-against-the: passed: 1 passed step(s) in 23m53s, peak 2.3 GiB (estimated 22m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "ad59270cb1780ad553d23cf5d2ba830f44e914679415ed75a65b276199052add"
     },
     {
-      "change_id": "uqsqvyyxyplsylnrxzrnkxkvyzrtnrnu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the passed Spring startup conformance run",
-      "body": "The two existing proof-tier conformance tests passed on their first run against the original JVM fixtures. The job checked JBMC and automatic selection under strict gaps, plus automatic confirmation under strict and assume modes, using OpenJDK 25.0.5 and JBMC 6.11.0. The step took 23 minutes 53 seconds including compilation and peaked at 2.3 GiB.\n\nIntegrate result 20261123-012155-check-spring-startup-changes-against-the and close the Spring startup follow-up at four ordinary decisions out of sixteen. All three managed jobs passed. The complete scorecard, eight oracle tables and local result links checked, the documentation-only test selection was empty, and the verification queue had no outstanding jobs.",
-      "log_sha256": "ad59270cb1780ad553d23cf5d2ba830f44e914679415ed75a65b276199052add"
-    },
-    {
-      "change_id": "rzloxunklrxxsrrnpqsqmszovrpstwwr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Follow Spring cache inserts and writer output (verification pending)",
-      "body": "Keep the native path on the selected JDK through loader identity hashing, empty queue polling, real soft-reference registration and the atomic insertion counter. Qualify the explicit UTC zone against the actual runtime classes and tzdb, with fresh mutable identity. Run insertion-ordered map callbacks and the PrintWriter access registration, and update the real StringBuffer backing bytes for bounded character ranges. An unbound process line separator becomes known only on a path that explicitly checks its contents.\n\nThe metadata path now constructs a capacity-nine identity map. On the separately recorded ClassUtils route, qualify reverse character search, use the JDK uppercase predicate and run the optional parameter-discovery initializer. Actual JVM samples cover negative and extreme indexes, split surrogate pairs, overwritten map values, late concurrent modification, hash aliases and distinct mutable UTC objects.\n\nThe 59 selected Rust test binaries and seven Python suites passed. One timing-sensitive JBMC launcher unit test passed on retry. The focused Temurin 21 control and all 18 value-correspondence tests passed. Jobs 20261123-024401-trace-the-four-spring-cache-and-writer-s and 20261123-024401-check-the-spring-cache-and-writer-semant recheck all four families and the proof-tier conformance corpus.",
-      "log_sha256": "34f0fca1a713bcbaeef40f28a21576a9b899b828c00f55f38ca153eba96115f4"
-    },
-    {
-      "change_id": "lwouozxzuqoqkqtnnmzswluxlnlnusuu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Measure Spring's four remaining startup paths (verification pending)",
-      "body": "Run the public binder's factory resource lookup on both frozen classpaths. Feed the original fluent role builder and manager all 32 configurations with LF, CRLF and a custom delimiter. Qualify the native implication on the two actual platform separators while retaining a separate unguarded result.\n\nRun each original metadata selector on both historical JARs with just the ClassUtils lookup state recorded, and replay the six unchanged public names on each JVM. Recheck both historical registrars without supplied initialization. A JDK class mirror inherits Object.equals, which now executes the original reference comparison when class keys collide in the formatter's registration set.\n\nPhysical replay matched all 96 role rows, both six-name metadata tables and both factory enumerations. Capped checks established a custom-prefix fluent selector and the ordinary parent registrar, and found the metadata parent's replayed violation. All 59 selected Rust binaries and four Python suites passed, as did the focused Temurin 21 test. Job 20261123-030518-measure-four-spring-startup-boundaries-o checks all four experiments.",
-      "log_sha256": "38b7ce24243c7cabb2747cba9a53df52eb11d0104b80aa715ddfc7d2cd4e9df3"
-    },
-    {
       "change_id": "psypkwxlwykzsuumkzztxmrvpspukmwp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c925866458c07c655eb6022b830d839225fa9625",
+      "immutable": true,
       "summary": "Record the watcher's continue after Spring leg 3's first cycle",
       "body": "single-spring-java-data-D002: continue. Under the user's new continue message Spring moved from 0/16 to 4/16 ordinary native decisions (role hierarchy on both historical Security JARs, 128 selector proofs, edge control agreeing with the JVMs); each remaining blocker has a named first unproved step. Decision record only.",
       "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
     },
     {
       "change_id": "uqsllmxzymnpkkqrwrurponnpooozwwo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a3ced72f4f9d9f717bf1f1218c4eb3e43014160a",
+      "immutable": true,
       "summary": "Allow list: Filip Stankovic approved 4b1e27a1, 4d6fe33d, 540bdee9, 558c5692, 5c77f540, 6dd9b42c, 6fa9e925, 6fbcce9b and 11 more",
       "body": "Filip Stankovic approved 19 value(s) at their terminal with sync.py allow; the command committed the decision itself.\n\n4b1e27a1  long-token  che…at (43 chars): open when the rules were stamped on 2026-11-22; not judged yet\n4d6fe33d  long-token  gAA…H- (396 chars): open when the rules were stamped on 2026-11-22; not judged yet\n540bdee9  long-token  gAA…l- (610 chars): open when the rules were stamped on 2026-11-22; not judged yet\n558c5692  long-token  gAA…kB (588 chars): open when the rules were stamped on 2026-11-22; not judged yet\n5c77f540  long-token  cli…on (74 chars): open when the rules were stamped on 2026-11-22; not judged yet\n6dd9b42c  long-token  gAA…8v (972 chars): open when the rules were stamped on 2026-11-22; not judged yet\n6fa9e925  long-token  gAA…w= (568 chars): open when the rules were stamped on 2026-11-22; not judged yet\n6fbcce9b  long-token  gAA…4= (568 chars): open when the rules were stamped on 2026-11-22; not judged yet\n8eaa4e93  long-token  gAA…iJ (396 chars): open when the rules were stamped on 2026-11-22; not judged yet\n9907227c  long-token  rol…bb (64 chars): open when the rules were stamped on 2026-11-22; not judged yet\n99fb43fb  long-token  utf…ma (56 chars): open when the rules were stamped on 2026-11-22; not judged yet\nac578a58  long-token  gAA…== (996 chars): open when the rules were stamped on 2026-11-22; not judged yet\nb9374afc  long-token  gAA…== (548 chars): open when the rules were stamped on 2026-11-22; not judged yet\nbffe65d2  long-token  U1N…cy (59 chars): First 60 characters of the public SSH signature block (gpgsig header) of Spring Framework commit fd95ab16, printed while checking the pinned revision's signature; it is in the public GitHub history\nd2f4835b  long-token  gAA…== (612 chars): open when the rules were stamped on 2026-11-22; not judged yet\ndde9764a  long-token  PzP…tQ (43 chars): SHA256 fingerprint of Sam Brannen's public SSH signing key, as printed by git verify-commit for Spring Framework commit fd95ab16; the key is published at api.github.com/users/sbrannen/ssh_signing_keys\nec5e860f  long-token  gAA…oT (332 chars): open when the rules were stamped on 2026-11-22; not judged yet\nf1269a59  long-token  utf…ma (56 chars): open when the rules were stamped on 2026-11-22; not judged yet\nfddfbd33  long-token  gAA…Ph (908 chars): open when the rules were stamped on 2026-11-22; not judged yet",
       "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
     },
     {
       "change_id": "pqnxzqmlzsyuvklqzmwrvpnwtpopqtml",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "35c4d016a6811721d88170ec4386cc77d790320d",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-024401-trace-the-four-spring-cache-and-writer-s: passed: 4 passed step(s) in 1m02s, peak 240.7 MiB (estimated 5m00s, 3.0 GiB); 120 output file(s) changed Applied 120 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
     },
     {
       "change_id": "ykxkzklrvvxnnvlytupwmmwuopuxolnq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "515b5a9bb3b80fc26dd6b7b00d4d0e217e855d3b",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-030518-measure-four-spring-startup-boundaries-o: passed: 4 passed step(s) in 41.3s, peak 209.9 MiB (estimated 3m00s, 3.0 GiB); 53 output file(s) changed Applied 53 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
     },
     {
       "change_id": "mpytssznvvlnzowuuuvvvkwyosvoprsl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "cfb323986fcf76bf7036758706705d62d5367922",
+      "immutable": true,
       "summary": "Add the receiver construction and property discovery brief",
       "body": "The user's brief, copied unchanged from their analysis folder, queued as the third single-agent run after the JBMC semantics-gap and trusted-kernel briefs: an Opus setup phase (single_run.py setup), then Astra 6.2 at max in the same session for the domain work. Documentation only.",
       "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
     },
     {
       "change_id": "nonwlrwtxxltuvrpqnvrysnltlvozsps",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4e8c6e37f49cc79ce2b0e6be422330cdebfbfda2",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-024401-check-the-spring-cache-and-writer-semant: passed: 1 passed step(s) in 24m19s, peak 2.3 GiB (estimated 22m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
     },
     {
-      "change_id": "okwpsnytrlnzuqknxplzsmqqorvkzuwy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record Spring startup proofs, counterexamples and remaining calls",
-      "body": "Join the three passed managed jobs and retain the previous Spring receipts. The unguarded run established the four historical legacy hierarchy claims again. The release and combined binders reached ClassLoader.getResources, the fluent builder reached the unbound line terminator, the metadata cache reached IdentityHashMap entry traversal, and both formatter slices reached the ordered converter set. Both binder graphs enumerated the same factory resource bytes.\n\nA guarded strict native proof covers both fluent properties for all 32 selectors under LF or CRLF. A pipe changed 22 name outcomes and 12 decisions on the original JVM. With ClassUtils as the sole recorded initializer root, all nine matching accessor selectors verified and three parent component violations replayed on the original JVM. Both unmodified registrars proved callback order from ordinary startup, including the global formatter controls.\n\nVerified all 173 managed output hashes, both conformance corpus tests, all four example validators, all eight oracle tables and both scorecards. Fifteen deliberately damaged records were rejected, 136 local links resolved, all prior primary and companion receipts were retained and the data card reproduced byte for byte. The final selected 59 Rust test binaries and 27 Python suites passed, with a timing-sensitive encoding-cost test passing on retry.",
-      "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
-    },
-    {
-      "change_id": "tmvnuyprnqzxmttkpvppomzpmnoluvsk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Prove unordered Spring class lookups (verification pending)",
-      "body": "Derive the inverse and name indexes from the actual class-initializer instructions and mirror entries. The strict engine admits writes only when their final references agree in every traversal order. It preserves the original fields and callbacks after the folds, refuses observable table order, and follows the actual ordered JDK set, fixed local application resource streams, and boxed formatter initializer. Resource bindings include ordered provider digests. The frozen public tasks retain their original inputs and ordinary startup.\n\nThe landed budget selector verified in a capped ordinary probe. The binder opened its 161-byte resource and reached URL.getPath. The formatter reached Class.getGenericInterfaces. Physical and native controls covered conflicting inverse writes, escaped order, colliding identity hashes, LinkedHashSet mutation, independent streams and a reversed pair of JARs. The pinned control passed and all 59 selected Rust binaries and seven Python suites passed. A timing-dependent solver stand-in passed in isolation and on the full rerun.\n\nManaged jobs 20261123-040519-check-ordinary-spring-class-tables-and-r and 20261123-040530-check-class-table-and-jar-resource-seman recheck all Spring obligations and both existing conformance corpus tests.",
-      "log_sha256": "75fb38ae92d5194499247c8eba7af6e2de47382121028b7d596891bf1f9e3b1d"
-    },
-    {
-      "change_id": "zqtuwsmnxrswuxlzsvztqxnvmrzystks",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Bind four Spring startup observations (verification pending)",
-      "body": "Check the entire factory stream and a one-bit last-byte change on each binder graph. Discharge the two standard launch conditions of the native fluent proofs using the actual startup separator, the original guard bytecode and the zero-or-one range of both unmodified public observers. The custom separator is measured independently. Check all twelve Property selectors without a recorded initializer. On the formatter classpaths record what generic interfaces the first converter factory supplied and whether the original registration succeeded.\n\nBoth binder JVMs read 161 matching bytes and rejected the changed last byte. All 96 fluent launch rows replayed, including after changing the live system property. Seven changes to branches, calls or return ranges were rejected by the proof consumer. Both property-name tables replayed, and both formatter JVMs registered the original Number-to-Number factory. The capped native release-stream check verified. The four example validators, 59 selected Rust binaries and the selected Python suite passed.\n\nJob 20261123-042108-bind-four-spring-startup-controls-to-the checks every scoped result against the previously frozen artifacts. Primary claim scores come separately from 20261123-040519-check-ordinary-spring-class-tables-and-r.",
-      "log_sha256": "704ce59f7111a632f903f33f19a6916b74a99e5e1ec8961739d1396dd96c4aea"
-    },
-    {
-      "change_id": "kxoyxlsyxnltunnmrzolkmsqqllrpqmz",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Compare Spring metadata startup costs (verification pending)",
-      "body": "Time both full workflows that can decide all twelve original Property selectors. Each historical graph is prepared, compiled, bound, replayed on a fresh JVM and checked by the same native binary. Run ordinary then captured ClassUtils initialization, and repeat in reverse order. Retain every raw outcome and the checker and whole-workflow durations. Each route must reproduce the same three historical violations and nine proofs.\n\nBoth historical JVM name tables replayed. A packaging check on archived inputs retained exactly 80 files across the two trial orders and rejected a missing parent result. The 59 selected Rust binaries and the selected Python suite passed. Job 20261123-042542-compare-ordinary-and-recorded-spring-met measures the 48 actual proof invocations.",
-      "log_sha256": "f29cdf611248d0969d5b8dec9b3e2394fc62b2384859bf84d5ba6b96c90d3e70"
-    },
-    {
       "change_id": "skzxnukspsmpukxpmqumvxznmnunyqpw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4f5f8ae392efe3536c53a99ff2937575ae090ebd",
+      "immutable": true,
       "summary": "Record the watcher's continue after Spring leg 3's second cycle",
       "body": "single-spring-java-data-D003: continue. Spring held at 4/16, but each of the four blockers moved one step deeper (getResources, lineSeparator, entrySet, LinkedHashSet), and formatter callback order is proved from ordinary startup. If the score still holds after the next cycle, hand over to the queued briefs. Decision record only.",
       "log_sha256": "b1885d748916ab6990c34a0c8d57133c6f88f89ac58e7f9542a6bb489e71a41b"
     },
     {
       "change_id": "xvzzmlzoruwltmkuurxlmmvolkqmrsyl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "70c8537bd27deb647ae242cf0588e070e5cbddb3",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-040519-check-ordinary-spring-class-tables-and-r: passed: 4 passed step(s) in 48.1s, peak 236.3 MiB (estimated 5m00s, 3.0 GiB); 120 output file(s) changed Applied 120 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "b1885d748916ab6990c34a0c8d57133c6f88f89ac58e7f9542a6bb489e71a41b"
     },
     {
       "change_id": "xxustyvmxnpuvnrvxmsloknnmmwxxuvx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e6629625d163d7d54cbaef6dc0677e2ca36015e8",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-042108-bind-four-spring-startup-controls-to-the: passed: 4 passed step(s) in 27.9s, peak 209.7 MiB (estimated 3m00s, 3.0 GiB); 58 output file(s) changed Applied 58 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "b1885d748916ab6990c34a0c8d57133c6f88f89ac58e7f9542a6bb489e71a41b"
     },
     {
       "change_id": "qsvlnlortstppssppuqprzvpsusoolyr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4657dbc0e7a767fb266a4eddc811141ca81698cc",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-042542-compare-ordinary-and-recorded-spring-met: passed: 1 passed step(s) in 59.1s, peak 144.9 MiB (estimated 3m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "b1885d748916ab6990c34a0c8d57133c6f88f89ac58e7f9542a6bb489e71a41b"
     },
     {
       "change_id": "qktoxprunryznyknpslsvvmxxqyptvxl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "91fbffe1fc9397351a3ffd34cb65509b66d353e2",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-040530-check-class-table-and-jar-resource-seman: passed: 1 passed step(s) in 24m45s, peak 2.2 GiB (estimated 22m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "b1885d748916ab6990c34a0c8d57133c6f88f89ac58e7f9542a6bb489e71a41b"
     },
     {
-      "change_id": "kzksvvxuvmyxzuzstqkkvvlwmvsywvup",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record eight ordinary Spring decisions and measured startup costs",
-      "body": "Merge the four passed verification jobs and rebuild the Spring scorecard from their bound artifacts. Ordinary native decisions rose from four to eight of sixteen: seven establishments and one refutation. Both historical property-name JARs reached the public observer without supplied application state. The three different parent component names reproduced individually. The complete primary recheck retained 148 raw outcomes, including all 128 legacy role proofs.\n\nThe full binder and transfer graphs advance to URL.getPath after opening the factory stream. Both prove the same 161 bytes and EOF separately. The fluent guard holds on the measured LF and CRLF launches and remains open for an unspecified startup separator. Both formatter slices now first need Class.getGenericInterfaces for the actual Number-to-Number converter factory. The report identifies these operations and the bound JVM inputs for each.\n\nEqual-scope metadata trials ran six selectors per historical artifact in both route orders. The full routes took 6.18 s ordinary versus 19.72 s recorded, then 24.99 s recorded versus 7.83 s ordinary. All 48 results agree. Both conformance corpus tests passed on their first run, in a 24m45s step. The four example validators, 59 selected Rust test binaries and 28 Python suites passed. Both scorecards and eight oracle tables were regenerated or checked, the data scorecard stayed byte-identical, 175 local documentation links resolved, and twelve altered evidence records plus seven bytecode changes were rejected.",
-      "log_sha256": "b1885d748916ab6990c34a0c8d57133c6f88f89ac58e7f9542a6bb489e71a41b"
-    },
-    {
-      "change_id": "upntkyurkwtuqnskpswqxzmmruomzxyt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Certify a fluent startup counterexample (verification pending)",
-      "body": "The landed Spring builder with A alone emits a graph whose reachable names and manager decision both fail their unrestricted statements on a JVM started with a pipe line separator. The companion checks two bytecode-qualified implications and replays the unchanged public calls on Linux LF, CRLF and pipe. It binds the original classpath, JVM and both native statements.\n\nA capped strict native probe established the reachable-name witness. All three physical replays, six altered-bytecode controls, example 370 validation and the 59 selected Rust binaries passed. Managed job 20261123-050140-certify-the-startup-counterexample-to-bo checks both implications and all three launches.",
-      "log_sha256": "123ade41e065cd8b62f543263f075b5e9bdd212626a964b3fd8926809c696ff8"
-    },
-    {
-      "change_id": "zutlxonnsxnvxvypwxnnwzqnpyymwpnr",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Follow Spring through real factory registration (verification pending)",
-      "body": "The verifier derives concrete top-level generic interfaces from application signatures on Temurin 21. It preserves declared order, shared cached types and fresh public arrays. Arbitrary int hashes can be boxed with one JVM cache cutoff and correct cached or fresh identity. Spring now resolves and registers its first Number-to-Number converter. The original binder normalizes the canonical factory URL and enters the JDK properties line reader.\n\nChecked native probes of the original filename and complete first registration, nine independent role-observer launches and comparisons, both binder graphs with 161 refill caps each, both formatter JVMs, the Java 21 semantic fixtures and 100 integer pairs on three cache settings. Three example validators, the 59 selected Rust test binaries and seven selected Python suites passed. The earlier fluent job stopped before proof at the Java release binding, which is now explicit. Managed jobs 20261123-052111-recheck-spring-factory-filenames-and-con, 20261123-052111-check-the-spring-factory-registrations-a and 20261123-052111-check-spring-generic-reflection-and-boxe check all original selectors, the six scoped proofs and conformance.",
-      "log_sha256": "5f3051bb78920407c61c817d4e5158588a5ce3f61d9aeeb7a39718986a6c35ad"
-    },
-    {
       "change_id": "spkylulqpptlrtmvlvorovxslqtsvouz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "854aecf8663ee4860d6dc886f1313188e5fb8a55",
+      "immutable": true,
       "summary": "Record the watcher's continue after Spring leg 3's third cycle",
       "body": "single-spring-java-data-D004: continue. Spring rose from 4/16 to 8/16 ordinary native decisions (all four property-metadata claims decided, one parent counterexample replayed); the other three blockers moved deeper with named next steps. Decision record only.",
       "log_sha256": "32a26daa9cf68a099d873a972265f98c1f99b8dd575e2f4f6768da84ed390f92"
     },
     {
       "change_id": "normuqtpoluymnknoquwupltouxxwpyk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "18aa9e6d6eb98b0952fb43391f12bf374dc01a15",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-050140-certify-the-startup-counterexample-to-bo: failed: 1 failed step(s) in 3.0s, peak 113.0 MiB (estimated 1m00s, 2.0 GiB) Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "32a26daa9cf68a099d873a972265f98c1f99b8dd575e2f4f6768da84ed390f92"
     },
     {
       "change_id": "zrsypozzltknwlozvoppuwmlktoupuxy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "83b81ee8e1a509e3fe15b38a5a51f1522c048ddc",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-052111-check-the-spring-factory-registrations-a: passed: 3 passed step(s) in 17.6s, peak 211.7 MiB (estimated 3m00s, 3.0 GiB); 45 output file(s) changed Applied 45 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "32a26daa9cf68a099d873a972265f98c1f99b8dd575e2f4f6768da84ed390f92"
     },
     {
       "change_id": "lppwnqvytposvqlkyvptsullznzqwrru",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5899fd2d309e95d73ff4f56f0ed93ebea1f5b2c0",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-052111-recheck-spring-factory-filenames-and-con: passed: 4 passed step(s) in 47.9s, peak 232.4 MiB (estimated 5m00s, 3.0 GiB); 120 output file(s) changed Applied 120 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "32a26daa9cf68a099d873a972265f98c1f99b8dd575e2f4f6768da84ed390f92"
     },
     {
       "change_id": "xloxtlnokyulksrtuwnnowuomlumxkrs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "550027e6ed4d3d811afdb8411df2de43a2c13a7e",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-052111-check-spring-generic-reflection-and-boxe: passed: 1 passed step(s) in 23m53s, peak 2.3 GiB (estimated 22m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "32a26daa9cf68a099d873a972265f98c1f99b8dd575e2f4f6768da84ed390f92"
     },
     {
-      "change_id": "pxptzwynlukzxukrqwvtlxtzwxpznuxl",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record two fluent counterexamples and the remaining Spring blockers",
-      "body": "The Spring scorecard retains eight direct native decisions and counts ten of sixteen when two realizable startup counterexamples are included. With A alone the landed manager denies D on a pipe launch. Separate strict proofs establish both original observer failures, and each runs first in a fresh JVM on pipe, LF and CRLF. Both binders now reach the JDK properties bulk read. Both historical formatters register the Number-to-Number factory before a reference-queue poll can observe garbage collection. The property metadata index now displays its four already decided claims.\n\nValidated all 18 original tasks and 148 selector outcomes, all six factory and fluent proofs, both managed conformance tests, all four Spring examples and all eight frozen oracle tables. The evidence checks rejected 18 altered records and 24 altered witness or replay bytecodes. The complete scorecard, 184 relative links, 59 selected Rust test binaries and 28 selected Python suites passed. The data scorecard remained byte-identical at nine of fourteen direct decisions. The earlier class-binding failure is recorded with its successful replacement.",
-      "log_sha256": "32a26daa9cf68a099d873a972265f98c1f99b8dd575e2f4f6768da84ed390f92"
-    },
-    {
-      "change_id": "xomqvlokyxwspovtyyrnnymxyprstvnu",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Follow Spring through factory parsing and cache purge (verification pending)",
-      "body": "Run the pinned JDK properties reader on both original JAR streams. Only its private buffer can coalesce short reads, and the underlying cursor stays opaque on early exit. Follow Spring's real map updates and mapped implementation-name callbacks. Model one-shot soft-reference delivery, permanent clearing, captured reference choices and symbolic lock holds for the formatter's ResolvableType cache.\n\nBoth binder JVMs returned the exact factory property on 12,881 refill partitions each. On both formatter slices the retention and release controls passed and ten real converter registrations completed before EnumToStringConverter. A capped native proof covered the Spring soft cache. The ten-registration probe hit its 60-second limit. The two-factory companion records its own result. The changed test selection passed all 59 Rust binaries and the selected Python suites. The pinned JDK 21 regression tests and the 368 and 374 validators passed.\n\nManaged jobs 20261123-064120-recheck-ordinary-spring-entries-after-fa, 20261123-064120-check-spring-factory-properties-and-soft and 20261123-064120-check-cache-stream-and-map-changes-again cover all four Spring examples, both deployment graphs and both proof-tier conformance tests.",
-      "log_sha256": "7407c822f475d2bee6d9f8b030cd8a0d5ba2b6ecadb343ddaf6b7bbc5a2db5e9"
-    },
-    {
       "change_id": "okswnwoquqrtrnovklrzptpkopzskszu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4c15e1bd08c88c300c923786e59e4e74a43af468",
+      "immutable": true,
       "summary": "Record the watcher's continue after Spring leg 3's fourth cycle",
       "body": "single-spring-java-data-D005: continue. Spring reached 10/16 decided (8/16 direct native plus two startup counterexamples: the fluent role hierarchy fails both claims under a pipe line separator). Two blockers remain with named next steps. Decision record only.",
       "log_sha256": "d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007"
     },
     {
       "change_id": "zmuntpmtrtkkuqmuzmvwsxqlvpnsmtkv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6f90e52705028a6c74bc1be481e726c016fb22cc",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-064120-recheck-ordinary-spring-entries-after-fa: passed: 4 passed step(s) in 1m37s, peak 432.5 MiB (estimated 7m00s, 3.0 GiB); 120 output file(s) changed Applied 120 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007"
     },
     {
       "change_id": "lqwrwwtklvyolpppqonxowlrsqrmsmnr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0ca14154afe57a3f75364d5afddf655398f571aa",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261123-064120-check-spring-factory-properties-and-soft: passed: 3 passed step(s) in 2m22s, peak 768.0 MiB (estimated 4m00s, 3.0 GiB); 40 output file(s) changed Applied 40 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007"
     },
     {
       "change_id": "wtvtspykqkkxvuqvporltpnrovpoztzv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "08701bfdd3276fd530b02b9e5f65fc0cfea92fbb",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-064120-check-cache-stream-and-map-changes-again: passed: 1 passed step(s) in 23m55s, peak 2.3 GiB (estimated 22m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.",
       "log_sha256": "d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007"
     },
     {
+      "change_id": "wnwqzlwulnwozsvnvlmmvwqlxxvpkkws",
+      "commit_id": "bc8da148d794220cc5f1f5ce3e133ce4f84c0657",
+      "immutable": true,
+      "summary": "Follow ordinary Spring startup through JDK calls (verification pending)",
+      "body": "Run application cache initializers and the selected JDK's lock, reference queue, writer, collection and iterator bytecode. The native checker follows concrete zero-limit splits, directly declared method and field metadata, and fresh same-thread bindings. Overriding initial values, unresolved member signatures and unbound VM configuration retain their proof boundaries.\n\nThe real fixed Spring Security manager passed a capped strict proof of four decisions: an indirect grant, its loss after removing the B-to-D edge, a preserved direct grant and a C-only denial. The original JVM confirmed all four. Pinned Temurin 21 tool tests cover aliases, overrides, lookup misses, writer identity and both possible immutable-set orders. The four example validators, eight frozen tables, existing scorecards, 59 selected Rust binaries and all selected Python suites passed. The negative HashSet capacity in the conformance corpus now refutes on the original JDK bytecode.\n\nJob 20261123-011836-recheck-all-ordinary-spring-claims-after checks the 16 Spring primary claims and two binder controls on the original classpaths. Job 20261123-012155-check-spring-startup-changes-against-the checks the proof-tier conformance corpus under JBMC, auto and confirmation.",
+      "log_sha256": "bfd800e4e987246e4ac4a2a1586bbaa200a1c73d26e905ea52f68279f556cbf8"
+    },
+    {
+      "change_id": "xmmwwryktvlszoyowzuppmnwptyyqztu",
+      "commit_id": "f588d1193026aa3c7e83265b39a95fb0e21a2b8b",
+      "immutable": true,
+      "summary": "Verify the omitted Spring hierarchy edge (verification pending)",
+      "body": "Check the real legacy manager with A and a present or omitted B-to-D edge, D with the edge omitted, and C with the full hierarchy. The JVM returned grant, decline, grant, decline for each prefix on the pre-feature and landed JARs. The runnable control binds its compiled class and original providers to the same ordered classpath as the scored decision.\n\nA capped pre-feature native proof checked the ROLE_ mask, all five class bindings matched and seven altered proof records were rejected. The example validator, all 59 selected Rust binaries, the selected Python suite and both existing scorecards passed. Job 20261123-014142-check-the-omitted-spring-hierarchy-edge checks both prefixes on both original artifacts and stores the raw JVM and native evidence.",
+      "log_sha256": "2ba5782582ca803c6c46d8b66ff449b1b08ff43e0fca68be7801f34530b0171b"
+    },
+    {
+      "change_id": "ukwmvxoxssykstvlkplnzvlnuswmptlq",
+      "commit_id": "1f928e4f9ce010566d94db8f66d4e7befc32ff73",
+      "immutable": true,
+      "summary": "Record four ordinary Spring role proofs and the startup gaps",
+      "body": "Both original legacy hierarchies established the exact reachable authority names and public manager decisions for both prefixes and all 16 authority subsets. The four claims account for 128 complete strict selector proofs and move Spring to 4/16 ordinary native decisions. Four additional proofs on the independently identified historical JARs reproduced the loss of the indirect grant after the B-to-D edge was removed while preserving direct-D grants and C-only denials.\n\nKeep the original attempts, finite observations, new raw refusals and the selector where each public claim stopped. The remaining primary steps are the factory cache key hash, PrintWriter bootstrap registration, ClassUtils' capacity-nine identity map and the UTC TimeZone lookup. The separate 6.1.7 binder control still stops at its cache initializer. The data scorecard reproduced byte for byte.\n\nAll 130 managed output hashes matched, 15 damaged selector records and 10 damaged or misattributed edge-control records were rejected, all eight oracle tables reproduced and the four example validators passed. All 59 selected Rust binaries and all 27 selected Python suites passed. The independent proof-tier conformance job 20261123-012155-check-spring-startup-changes-against-the is still running.",
+      "log_sha256": "baffdd454dbc28e580aecfc9a73eafbfc1433471c50a1ff8d2014778e1c3278c"
+    },
+    {
+      "change_id": "uqsqvyyxyplsylnrxzrnkxkvyzrtnrnu",
+      "commit_id": "ef175847db36d8fabd16b2442189e33a377b9b62",
+      "immutable": true,
+      "summary": "Record the passed Spring startup conformance run",
+      "body": "The two existing proof-tier conformance tests passed on their first run against the original JVM fixtures. The job checked JBMC and automatic selection under strict gaps, plus automatic confirmation under strict and assume modes, using OpenJDK 25.0.5 and JBMC 6.11.0. The step took 23 minutes 53 seconds including compilation and peaked at 2.3 GiB.\n\nIntegrate result 20261123-012155-check-spring-startup-changes-against-the and close the Spring startup follow-up at four ordinary decisions out of sixteen. All three managed jobs passed. The complete scorecard, eight oracle tables and local result links checked, the documentation-only test selection was empty, and the verification queue had no outstanding jobs.",
+      "log_sha256": "ad59270cb1780ad553d23cf5d2ba830f44e914679415ed75a65b276199052add"
+    },
+    {
+      "change_id": "rzloxunklrxxsrrnpqsqmszovrpstwwr",
+      "commit_id": "b49e76ffde376758d03e890b008d8045df335289",
+      "immutable": true,
+      "summary": "Follow Spring cache inserts and writer output (verification pending)",
+      "body": "Keep the native path on the selected JDK through loader identity hashing, empty queue polling, real soft-reference registration and the atomic insertion counter. Qualify the explicit UTC zone against the actual runtime classes and tzdb, with fresh mutable identity. Run insertion-ordered map callbacks and the PrintWriter access registration, and update the real StringBuffer backing bytes for bounded character ranges. An unbound process line separator becomes known only on a path that explicitly checks its contents.\n\nThe metadata path now constructs a capacity-nine identity map. On the separately recorded ClassUtils route, qualify reverse character search, use the JDK uppercase predicate and run the optional parameter-discovery initializer. Actual JVM samples cover negative and extreme indexes, split surrogate pairs, overwritten map values, late concurrent modification, hash aliases and distinct mutable UTC objects.\n\nThe 59 selected Rust test binaries and seven Python suites passed. One timing-sensitive JBMC launcher unit test passed on retry. The focused Temurin 21 control and all 18 value-correspondence tests passed. Jobs 20261123-024401-trace-the-four-spring-cache-and-writer-s and 20261123-024401-check-the-spring-cache-and-writer-semant recheck all four families and the proof-tier conformance corpus.",
+      "log_sha256": "34f0fca1a713bcbaeef40f28a21576a9b899b828c00f55f38ca153eba96115f4"
+    },
+    {
+      "change_id": "lwouozxzuqoqkqtnnmzswluxlnlnusuu",
+      "commit_id": "82bd7dc77d8a981bea6088283d7681ab2f178789",
+      "immutable": true,
+      "summary": "Measure Spring's four remaining startup paths (verification pending)",
+      "body": "Run the public binder's factory resource lookup on both frozen classpaths. Feed the original fluent role builder and manager all 32 configurations with LF, CRLF and a custom delimiter. Qualify the native implication on the two actual platform separators while retaining a separate unguarded result.\n\nRun each original metadata selector on both historical JARs with just the ClassUtils lookup state recorded, and replay the six unchanged public names on each JVM. Recheck both historical registrars without supplied initialization. A JDK class mirror inherits Object.equals, which now executes the original reference comparison when class keys collide in the formatter's registration set.\n\nPhysical replay matched all 96 role rows, both six-name metadata tables and both factory enumerations. Capped checks established a custom-prefix fluent selector and the ordinary parent registrar, and found the metadata parent's replayed violation. All 59 selected Rust binaries and four Python suites passed, as did the focused Temurin 21 test. Job 20261123-030518-measure-four-spring-startup-boundaries-o checks all four experiments.",
+      "log_sha256": "38b7ce24243c7cabb2747cba9a53df52eb11d0104b80aa715ddfc7d2cd4e9df3"
+    },
+    {
+      "change_id": "okwpsnytrlnzuqknxplzsmqqorvkzuwy",
+      "commit_id": "acfc7fd0b2e537f3b73f401c0ac40096b286dfbf",
+      "immutable": true,
+      "summary": "Record Spring startup proofs, counterexamples and remaining calls",
+      "body": "Join the three passed managed jobs and retain the previous Spring receipts. The unguarded run established the four historical legacy hierarchy claims again. The release and combined binders reached ClassLoader.getResources, the fluent builder reached the unbound line terminator, the metadata cache reached IdentityHashMap entry traversal, and both formatter slices reached the ordered converter set. Both binder graphs enumerated the same factory resource bytes.\n\nA guarded strict native proof covers both fluent properties for all 32 selectors under LF or CRLF. A pipe changed 22 name outcomes and 12 decisions on the original JVM. With ClassUtils as the sole recorded initializer root, all nine matching accessor selectors verified and three parent component violations replayed on the original JVM. Both unmodified registrars proved callback order from ordinary startup, including the global formatter controls.\n\nVerified all 173 managed output hashes, both conformance corpus tests, all four example validators, all eight oracle tables and both scorecards. Fifteen deliberately damaged records were rejected, 136 local links resolved, all prior primary and companion receipts were retained and the data card reproduced byte for byte. The final selected 59 Rust test binaries and 27 Python suites passed, with a timing-sensitive encoding-cost test passing on retry.",
+      "log_sha256": "562c839e45bd839edd83f16d7ab03bf867fbff0bbd710ee1a1558fad13ad4812"
+    },
+    {
+      "change_id": "tmvnuyprnqzxmttkpvppomzpmnoluvsk",
+      "commit_id": "ce2153f66315640755ceec3562c15d81a0f5650b",
+      "immutable": true,
+      "summary": "Prove unordered Spring class lookups (verification pending)",
+      "body": "Derive the inverse and name indexes from the actual class-initializer instructions and mirror entries. The strict engine admits writes only when their final references agree in every traversal order. It preserves the original fields and callbacks after the folds, refuses observable table order, and follows the actual ordered JDK set, fixed local application resource streams, and boxed formatter initializer. Resource bindings include ordered provider digests. The frozen public tasks retain their original inputs and ordinary startup.\n\nThe landed budget selector verified in a capped ordinary probe. The binder opened its 161-byte resource and reached URL.getPath. The formatter reached Class.getGenericInterfaces. Physical and native controls covered conflicting inverse writes, escaped order, colliding identity hashes, LinkedHashSet mutation, independent streams and a reversed pair of JARs. The pinned control passed and all 59 selected Rust binaries and seven Python suites passed. A timing-dependent solver stand-in passed in isolation and on the full rerun.\n\nManaged jobs 20261123-040519-check-ordinary-spring-class-tables-and-r and 20261123-040530-check-class-table-and-jar-resource-seman recheck all Spring obligations and both existing conformance corpus tests.",
+      "log_sha256": "75fb38ae92d5194499247c8eba7af6e2de47382121028b7d596891bf1f9e3b1d"
+    },
+    {
+      "change_id": "zqtuwsmnxrswuxlzsvztqxnvmrzystks",
+      "commit_id": "f7a9f4ffb2698a39713d18235311381fc7023952",
+      "immutable": true,
+      "summary": "Bind four Spring startup observations (verification pending)",
+      "body": "Check the entire factory stream and a one-bit last-byte change on each binder graph. Discharge the two standard launch conditions of the native fluent proofs using the actual startup separator, the original guard bytecode and the zero-or-one range of both unmodified public observers. The custom separator is measured independently. Check all twelve Property selectors without a recorded initializer. On the formatter classpaths record what generic interfaces the first converter factory supplied and whether the original registration succeeded.\n\nBoth binder JVMs read 161 matching bytes and rejected the changed last byte. All 96 fluent launch rows replayed, including after changing the live system property. Seven changes to branches, calls or return ranges were rejected by the proof consumer. Both property-name tables replayed, and both formatter JVMs registered the original Number-to-Number factory. The capped native release-stream check verified. The four example validators, 59 selected Rust binaries and the selected Python suite passed.\n\nJob 20261123-042108-bind-four-spring-startup-controls-to-the checks every scoped result against the previously frozen artifacts. Primary claim scores come separately from 20261123-040519-check-ordinary-spring-class-tables-and-r.",
+      "log_sha256": "704ce59f7111a632f903f33f19a6916b74a99e5e1ec8961739d1396dd96c4aea"
+    },
+    {
+      "change_id": "kxoyxlsyxnltunnmrzolkmsqqllrpqmz",
+      "commit_id": "853a1f6080d08152cf671c6032159a6b316e810f",
+      "immutable": true,
+      "summary": "Compare Spring metadata startup costs (verification pending)",
+      "body": "Time both full workflows that can decide all twelve original Property selectors. Each historical graph is prepared, compiled, bound, replayed on a fresh JVM and checked by the same native binary. Run ordinary then captured ClassUtils initialization, and repeat in reverse order. Retain every raw outcome and the checker and whole-workflow durations. Each route must reproduce the same three historical violations and nine proofs.\n\nBoth historical JVM name tables replayed. A packaging check on archived inputs retained exactly 80 files across the two trial orders and rejected a missing parent result. The 59 selected Rust binaries and the selected Python suite passed. Job 20261123-042542-compare-ordinary-and-recorded-spring-met measures the 48 actual proof invocations.",
+      "log_sha256": "f29cdf611248d0969d5b8dec9b3e2394fc62b2384859bf84d5ba6b96c90d3e70"
+    },
+    {
+      "change_id": "kzksvvxuvmyxzuzstqkkvvlwmvsywvup",
+      "commit_id": "52ed3d370b148e187d3e25b096339f17a2c3bcd8",
+      "immutable": true,
+      "summary": "Record eight ordinary Spring decisions and measured startup costs",
+      "body": "Merge the four passed verification jobs and rebuild the Spring scorecard from their bound artifacts. Ordinary native decisions rose from four to eight of sixteen: seven establishments and one refutation. Both historical property-name JARs reached the public observer without supplied application state. The three different parent component names reproduced individually. The complete primary recheck retained 148 raw outcomes, including all 128 legacy role proofs.\n\nThe full binder and transfer graphs advance to URL.getPath after opening the factory stream. Both prove the same 161 bytes and EOF separately. The fluent guard holds on the measured LF and CRLF launches and remains open for an unspecified startup separator. Both formatter slices now first need Class.getGenericInterfaces for the actual Number-to-Number converter factory. The report identifies these operations and the bound JVM inputs for each.\n\nEqual-scope metadata trials ran six selectors per historical artifact in both route orders. The full routes took 6.18 s ordinary versus 19.72 s recorded, then 24.99 s recorded versus 7.83 s ordinary. All 48 results agree. Both conformance corpus tests passed on their first run, in a 24m45s step. The four example validators, 59 selected Rust test binaries and 28 Python suites passed. Both scorecards and eight oracle tables were regenerated or checked, the data scorecard stayed byte-identical, 175 local documentation links resolved, and twelve altered evidence records plus seven bytecode changes were rejected.",
+      "log_sha256": "b1885d748916ab6990c34a0c8d57133c6f88f89ac58e7f9542a6bb489e71a41b"
+    },
+    {
+      "change_id": "upntkyurkwtuqnskpswqxzmmruomzxyt",
+      "commit_id": "a15363526ffd2d8bcb32eee46528c7c0905c6e7a",
+      "immutable": true,
+      "summary": "Certify a fluent startup counterexample (verification pending)",
+      "body": "The landed Spring builder with A alone emits a graph whose reachable names and manager decision both fail their unrestricted statements on a JVM started with a pipe line separator. The companion checks two bytecode-qualified implications and replays the unchanged public calls on Linux LF, CRLF and pipe. It binds the original classpath, JVM and both native statements.\n\nA capped strict native probe established the reachable-name witness. All three physical replays, six altered-bytecode controls, example 370 validation and the 59 selected Rust binaries passed. Managed job 20261123-050140-certify-the-startup-counterexample-to-bo checks both implications and all three launches.",
+      "log_sha256": "123ade41e065cd8b62f543263f075b5e9bdd212626a964b3fd8926809c696ff8"
+    },
+    {
+      "change_id": "zutlxonnsxnvxvypwxnnwzqnpyymwpnr",
+      "commit_id": "e730b738b0ba9063551f6ae13e618b2b9ebf2fad",
+      "immutable": true,
+      "summary": "Follow Spring through real factory registration (verification pending)",
+      "body": "The verifier derives concrete top-level generic interfaces from application signatures on Temurin 21. It preserves declared order, shared cached types and fresh public arrays. Arbitrary int hashes can be boxed with one JVM cache cutoff and correct cached or fresh identity. Spring now resolves and registers its first Number-to-Number converter. The original binder normalizes the canonical factory URL and enters the JDK properties line reader.\n\nChecked native probes of the original filename and complete first registration, nine independent role-observer launches and comparisons, both binder graphs with 161 refill caps each, both formatter JVMs, the Java 21 semantic fixtures and 100 integer pairs on three cache settings. Three example validators, the 59 selected Rust test binaries and seven selected Python suites passed. The earlier fluent job stopped before proof at the Java release binding, which is now explicit. Managed jobs 20261123-052111-recheck-spring-factory-filenames-and-con, 20261123-052111-check-the-spring-factory-registrations-a and 20261123-052111-check-spring-generic-reflection-and-boxe check all original selectors, the six scoped proofs and conformance.",
+      "log_sha256": "5f3051bb78920407c61c817d4e5158588a5ce3f61d9aeeb7a39718986a6c35ad"
+    },
+    {
+      "change_id": "pxptzwynlukzxukrqwvtlxtzwxpznuxl",
+      "commit_id": "726c2a7fc3f0268dacd1d2d1cb4990a50b115e4e",
+      "immutable": true,
+      "summary": "Record two fluent counterexamples and the remaining Spring blockers",
+      "body": "The Spring scorecard retains eight direct native decisions and counts ten of sixteen when two realizable startup counterexamples are included. With A alone the landed manager denies D on a pipe launch. Separate strict proofs establish both original observer failures, and each runs first in a fresh JVM on pipe, LF and CRLF. Both binders now reach the JDK properties bulk read. Both historical formatters register the Number-to-Number factory before a reference-queue poll can observe garbage collection. The property metadata index now displays its four already decided claims.\n\nValidated all 18 original tasks and 148 selector outcomes, all six factory and fluent proofs, both managed conformance tests, all four Spring examples and all eight frozen oracle tables. The evidence checks rejected 18 altered records and 24 altered witness or replay bytecodes. The complete scorecard, 184 relative links, 59 selected Rust test binaries and 28 selected Python suites passed. The data scorecard remained byte-identical at nine of fourteen direct decisions. The earlier class-binding failure is recorded with its successful replacement.",
+      "log_sha256": "32a26daa9cf68a099d873a972265f98c1f99b8dd575e2f4f6768da84ed390f92"
+    },
+    {
+      "change_id": "xomqvlokyxwspovtyyrnnymxyprstvnu",
+      "commit_id": "6cfcd181cec9e7753fa6ee439056f62389bc2de2",
+      "immutable": true,
+      "summary": "Follow Spring through factory parsing and cache purge (verification pending)",
+      "body": "Run the pinned JDK properties reader on both original JAR streams. Only its private buffer can coalesce short reads, and the underlying cursor stays opaque on early exit. Follow Spring's real map updates and mapped implementation-name callbacks. Model one-shot soft-reference delivery, permanent clearing, captured reference choices and symbolic lock holds for the formatter's ResolvableType cache.\n\nBoth binder JVMs returned the exact factory property on 12,881 refill partitions each. On both formatter slices the retention and release controls passed and ten real converter registrations completed before EnumToStringConverter. A capped native proof covered the Spring soft cache. The ten-registration probe hit its 60-second limit. The two-factory companion records its own result. The changed test selection passed all 59 Rust binaries and the selected Python suites. The pinned JDK 21 regression tests and the 368 and 374 validators passed.\n\nManaged jobs 20261123-064120-recheck-ordinary-spring-entries-after-fa, 20261123-064120-check-spring-factory-properties-and-soft and 20261123-064120-check-cache-stream-and-map-changes-again cover all four Spring examples, both deployment graphs and both proof-tier conformance tests.",
+      "log_sha256": "7407c822f475d2bee6d9f8b030cd8a0d5ba2b6ecadb343ddaf6b7bbc5a2db5e9"
+    },
+    {
       "change_id": "myuvyrtpvlrymvqyvsvotpqmyyvyowzr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "2af878742cc32adb89634e52b0a7646ff3481262",
+      "immutable": true,
       "summary": "Record Spring factory and soft-cache proof boundaries",
       "body": "Both binder graphs establish the exact property loaded by Spring. Each JVM also checked 12,881 read partitions. Both native formatter cache tests prove identity and permanent loss through purge. Each formatter JVM completed ten real scalar registrations. A separate two-factory proof remained open after 60 seconds per side. The complete callers next require the JDK collection-access hook and the nested Enum<?> converter signature.\n\nQualify all six companion records against the original classpaths, JVM observations, native statements and checker. Incorporate the three passed managed jobs and their 148 primary selector outcomes. Direct ordinary decisions remain 8/16, or 10/16 including the previously certified fluent counterexamples. The Java data scorecard reproduced byte for byte. Both conformance tests, all four example validators, 59 selected Rust test binaries and 28 Python suites passed. The final scorecard, eight oracle tables, test inventory and 205 local links checked, and 102 altered receipt fields were rejected.",
       "log_sha256": "d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007"
@@ -1405,6 +1419,12 @@
       "bytes": 5643343,
       "lines": 2149,
       "gzip_bytes": 2126217,
+      "url": null
+    },
+    "ddc0026f8ccdb8f3a1e4203a9a761e53df910d5bf20fdab4fcedd862f3aa5044": {
+      "bytes": 41149660,
+      "lines": 20616,
+      "gzip_bytes": 7887227,
       "url": null
     },
     "f29cdf611248d0969d5b8dec9b3e2394fc62b2384859bf84d5ba6b96c90d3e70": {

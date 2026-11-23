@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11",
+  "title": "Setup: rerun the brief's stock JBMC 6.11.0 preflight with the preflight and the installed binary and models",
+  "description": "Setup for llm-dlc/loops/jbmc-java-semantics-gap-brief.md, no claims and no project verifier. Reruns the brief's two runnable seeds (Semantics: 8 entries; ExtraOpeners: 6 entries; the brief's flags) and the named upstream JBMC regressions (StartsWith, toCodePoint, synchronized-methods, virtual5, default-methods, no-main-object-array-elements-maybe-null1/2; their test.desc files, fixtures compiled by the setup) with stock JBMC 6.11.0 in three pairings: (1) the Ubuntu 22.04 release binary and its core-models.jar, whose digests equal the brief's preflight (2cf57254…, 2a05026b…); (2) the installed Ubuntu 24.04 binary and models (200f4cbb…, a31ef93b…); (3) the installed binary with the 22.04 models. A capped probe already showed ExtraOpeners.firstDeclared FAILURE with the 22.04 models and SUCCESS with the installed ones, so the job records which pairing reproduces each preflight result. Compiled seeds: ~/.cache/in-the-loop/jbmc-java-semantics-gap/probes/seed/cls. Script: scripts/jbmc_repro.py in that folder (sha256 in the setup record). Per-run timeout 1200 s.",
+  "kind": "other",
+  "capabilities": [
+    "setup:comparator-preflight",
+    "jbmc"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md"
+    ]
+  },
+  "expected": "Pairing 1 gives the brief's results: SUCCESS for fraction, narrow, prefix, categories, dispatch, endian, hex; FAILURE for floorOnly, wraps, noNullCell, noItemCell, firstDeclared, halfSwap, lowFirst; CORE regressions pass. Differences in pairings 2 and 3 are recorded, not failures.",
+  "submitted": {
+    "at": "2026-11-23T07:50:49+00:00",
+    "session": "970bfd4f-5faa-49d7-bcbc-626f36895cc8",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "jbmc",
+    "java",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "4G",
+    "duration": "60m"
+  },
+  "steps": [
+    {
+      "name": "preflight pairing: Ubuntu 22.04 jbmc + its models",
+      "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py preflight-22.04 $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/bin/jbmc $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/preflight-22.04",
+      "cwd": "."
+    },
+    {
+      "name": "installed pairing: /usr/bin/jbmc + /usr/lib models",
+      "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py installed-24.04 /usr/bin/jbmc /usr/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/installed-24.04",
+      "cwd": "."
+    },
+    {
+      "name": "installed binary + 22.04 models",
+      "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py installed-bin-22.04-models /usr/bin/jbmc $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/installed-bin-22.04-models",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

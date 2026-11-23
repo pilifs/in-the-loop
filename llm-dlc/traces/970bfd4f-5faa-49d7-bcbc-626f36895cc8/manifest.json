@@ -1,0 +1,84 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "970bfd4f-5faa-49d7-bcbc-626f36895cc8",
+  "status": "open",
+  "title": null,
+  "first_prompt": "You are the SETUP AGENT for `llm-dlc/loops/jbmc-java-semantics-gap-brief.md`. Your role is strictly limited to mechanical setup. The goal is that the domain agent who comes after you can start the rea",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.330"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-23T07:34:03.271Z",
+  "ended": "2026-11-23T07:54:18.752Z",
+  "duration_seconds": 1215,
+  "stats": {
+    "turns": 1,
+    "api_calls": 79,
+    "tool_calls": 79,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 223653,
+    "usage": {
+      "input_tokens": 158,
+      "output_tokens": 93259,
+      "cache_read_input_tokens": 10787261,
+      "cache_creation_input_tokens": 211925
+    }
+  },
+  "tools": {
+    "Bash": 77,
+    "Read": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-23T07:34:03.271Z",
+      "ended": "2026-11-23T07:54:18.752Z",
+      "turns": 1,
+      "api_calls": 79,
+      "usage": {
+        "input_tokens": 158,
+        "output_tokens": 93259,
+        "cache_read_input_tokens": 10787261,
+        "cache_creation_input_tokens": 211925
+      },
+      "peak_context_tokens": 223653
+    }
+  ],
+  "log": {
+    "sha256": "b050e907b0af813c039eca857070e5d10401f3e3445c0e40a5787b091e67f05e",
+    "bytes": 1633237,
+    "lines": 558,
+    "gzip_bytes": 304441,
+    "path": "llm-dlc/traces/970bfd4f-5faa-49d7-bcbc-626f36895cc8/logs/b050e907b0af813c039eca857070e5d10401f3e3445c0e40a5787b091e67f05e.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "lrtoronopwvqpqlrnynnopplxupnpzwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up the JBMC Java semantics gap brief: sources, artifacts, JVM replays (verification pending)",
+      "body": "Mechanical setup for llm-dlc/loops/jbmc-java-semantics-gap-brief.md, recorded in llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md. Fetched every pinned revision (Commons Lang 5904c573, 3e50a7f9 and 3.14.0, Commons IO 2.19.0, Text 1.12.0, Collections 4.5.0, the Gson #719 and Guava #7955 pairs, Spring 6.2.0, CBMC 6.11.0 and d2972052 regression folders, jdk21u 21.0.13) into bare mirrors with worktrees under ~/.cache/in-the-loop/jbmc-java-semantics-gap; resolved and signature-checked the released Commons, Spring and Guava 33.4.8/33.5.0 jars; built Commons Lang 3e50a7f9 and both Gson sides; fetched and verified Temurin 24.0.2 for Guava's toolchain; found that the brief's preflight JBMC and models are the CBMC 6.11.0 Ubuntu 22.04 package, not the installed 24.04 one, and that the models jar alone flips ExtraOpeners.firstDeclared.\n\nVerified on Temurin 21.0.13: both runnable seeds' JVM oracles, the floor-only and narrowing counts, Gson's own tests on both sides and the fix's test failing on the parent with ClassCastException, Gson's 18 observations, the covariant-store kernel, the Commons Collections iterator grid, the Guava parent/fix behaviour by source slice and by release, and the observations of examples 6-15. No claims, examples, adapters or verifier runs.",
+      "log_sha256": "b050e907b0af813c039eca857070e5d10401f3e3445c0e40a5787b091e67f05e"
+    }
+  ],
+  "logs": {
+    "b050e907b0af813c039eca857070e5d10401f3e3445c0e40a5787b091e67f05e": {
+      "bytes": 1633237,
+      "lines": 558,
+      "gzip_bytes": 304441,
+      "url": null
+    }
+  },
+  "redaction_policy": 6,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}
