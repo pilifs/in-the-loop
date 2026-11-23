@@ -42,7 +42,7 @@ if __name__=="__main__":
     cli.add_argument("number")
     cli.add_argument("--first",type=int,default=0)
     cli.add_argument("--only",nargs="+")
-    cli.add_argument("--stage",choices=["native-final","native-qualified","spring-startup","spring-cache-writers","spring-class-tables","spring-factory-signatures","spring-refills-and-purge","semantics-opening","semantics-final"],default="native-final")
+    cli.add_argument("--stage",choices=["native-final","native-qualified","spring-startup","spring-cache-writers","spring-class-tables","spring-factory-signatures","spring-refills-and-purge","semantics-opening","semantics-final","semantics-qualified"],default="native-final")
     cli.add_argument("--seconds",type=int,default=60)
     args=cli.parse_args()
     run(args.number,args.first,args.only,args.stage,args.seconds)

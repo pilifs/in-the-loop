@@ -84,7 +84,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
         && matches!(
             (name, descriptor),
             ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V") | ("setLength", "(I)V")
-                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "([CII)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
+                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "([CII)Ljava/lang/StringBuilder;" | "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
                 | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
@@ -241,6 +241,21 @@ impl Engine<'_> {
         }
         let none = self.b.eq(begin, end);
         let empty = self.b.and(-whole, none);
+        let slice = self.sliced_units(s, begin, end);
+        let mut same = Vec::new();
+        if let Some(o) = itself {
+            same.push((whole, o));
+        }
+        if canonical_empty && empty != FALSE {
+            let literal = self.empty_literal(path);
+            same.push((empty, literal));
+        }
+        let made = self.new_string(path, slice.length, slice.cells, same);
+        if !canonical_empty { path.objects[made].limit = Some(TRIM_IDENTITY.into()); }
+        Val::R(Some(made))
+    }
+
+    fn sliced_units(&mut self, s: &Array, begin: &Bits, end: &Bits) -> Array {
         // A begin that is a constant leaves the cells after it; any other, every cell.
         let skipped = self.b.constant_value(begin).and_then(|b| usize::try_from(b).ok()).unwrap_or(0).min(s.cells.len());
         let most = match self.b.constant_value(end).and_then(|e| usize::try_from(e).ok()) {
@@ -254,17 +269,7 @@ impl Engine<'_> {
             cells.push(self.unit_at(s, &at));
         }
         let length = self.b.sub(end, begin);
-        let mut same = Vec::new();
-        if let Some(o) = itself {
-            same.push((whole, o));
-        }
-        if canonical_empty && empty != FALSE {
-            let literal = self.empty_literal(path);
-            same.push((empty, literal));
-        }
-        let made = self.new_string(path, length, cells, same);
-        if !canonical_empty { path.objects[made].limit = Some(TRIM_IDENTITY.into()); }
-        Val::R(Some(made))
+        Array { element: Type::Char, length, cells, refs: Vec::new() }
     }
 
     /// Whether `begin..end` is no range of a sequence of `length` units: the JDK's `checkBoundsBeginEnd`.
@@ -826,6 +831,24 @@ impl Engine<'_> {
             }
             return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model")));
         };
+        if name == "append" && descriptor == "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;" {
+            let [Val::R(from), Val::I(begin), Val::I(end)] = args else { return None };
+            let text = match from {
+                None => Array { element: Type::Char, length: self.b.constant(4, 32),
+                    cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u),16)).collect(), refs: Vec::new() },
+                Some(id) if path.objects[*id].class == STRING => path.objects[*id].content()?.clone(),
+                _ => return None, // another CharSequence may run arbitrary length() and charAt() callbacks
+            };
+            let invalid = self.bad_range(begin, end, &text.length);
+            if invalid == TRUE { return Some(self.raise(path,"java/lang/IndexOutOfBoundsException")); }
+            let slice = self.sliced_units(&text,begin,end);
+            if s.cells.len() + slice.cells.len() > MOST_BUILDER_CONTENT { return Some(unsupported("StringBuilder append slice exceeds the content bound")); }
+            return Some(self.branch_throw_or(path, invalid, "java/lang/IndexOutOfBoundsException", move |engine, p| {
+                p.objects[o].array = Some(engine.joined(&s,&slice));
+                engine.push(p,Val::R(Some(o)));
+                engine.advance(p);
+            }));
+        }
         if name == "append" && descriptor == "([CII)Ljava/lang/StringBuilder;" {
             let [Val::R(Some(chars)), Val::I(start), Val::I(count)] = args else { return None };
             let array = path.objects[*chars].as_array()?;

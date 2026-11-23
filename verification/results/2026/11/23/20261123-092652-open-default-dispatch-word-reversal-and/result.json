@@ -1,0 +1,315 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-092652-open-default-dispatch-word-reversal-and",
+  "title": "Open default dispatch, word reversal and Unicode decoding",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 11.8s, peak 94.5 MiB (estimated 9m00s, 4.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-092652-open-default-dispatch-word-reversal-and.json",
+    "sha256": "36fdb4c52144cce407db44f416c208113cb5b1bc0407b1bced0b7c1381a03048",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-092652-open-default-dispatch-word-reversal-and",
+      "title": "Open default dispatch, word reversal and Unicode decoding",
+      "description": "Check the declaration-order trap, both full-width byte reversals and both offsets on an arbitrary two-char CharSequence with a recording writer. Use the unchanged opening checker on both explicit engines at 120 seconds per claim. Retain each raw response and replay actual primitive counterexamples on the original JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "The job records every requested native and integrated JBMC outcome, or the exact frontend or model refusal, against the bound original JVM checks.",
+      "submitted": {
+        "at": "2026-11-23T09:26:52+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "9m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "dispatch",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening dispatch",
+          "cwd": "."
+        },
+        {
+          "name": "endian",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening endian",
+          "cwd": "."
+        },
+        {
+          "name": "surrogates",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening surrogates",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/opening/dispatch",
+        "verification/java-semantics-gap/opening/endian",
+        "verification/java-semantics-gap/opening/surrogates"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:54:03+00:00",
+  "finishedAt": "2026-11-23T09:58:02+00:00",
+  "wallSeconds": 239.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 99082240,
+    "wallSeconds": 11.8,
+    "cpuSeconds": 14.6,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "dispatch",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening dispatch",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.565,
+      "cpuSeconds": 3.093,
+      "cpuThrottledSeconds": 0.102,
+      "peakMemoryBytes": 66736128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-dispatch.log",
+        "lines": 4,
+        "bytes": 197,
+        "sha256": "5c1a2ef35951303410f4890243f69e7f761338a228fb04b9050f515831139291",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dispatch dispatch-native unconfirmed witness 0.03",
+        "dispatch dispatch-jbmc unconfirmed witness 0.145",
+        "dispatch firstDeclared-native false-success 0.022",
+        "dispatch firstDeclared-jbmc false-success 0.257"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "endian",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening endian",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 6.011,
+      "cpuSeconds": 7.729,
+      "cpuThrottledSeconds": 0.166,
+      "peakMemoryBytes": 99082240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-endian.log",
+        "lines": 8,
+        "bytes": 312,
+        "sha256": "87d132746416cc1c50cd71193191b3073ec289b41b506cd27c19e9c092513d24",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "endian reverseInt-native unsupported 0.019",
+        "endian reverseInt-jbmc correct 1.151",
+        "endian reverseLong-native unsupported 0.017",
+        "endian reverseLong-jbmc correct 0.808",
+        "endian rotateInt-native correct 0.042",
+        "endian rotateInt-jbmc correct 0.677",
+        "endian rotateLong-native correct 0.021",
+        "endian rotateLong-jbmc correct 0.454"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "surrogates",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening surrogates",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 3.206,
+      "cpuSeconds": 3.789,
+      "cpuThrottledSeconds": 0.078,
+      "peakMemoryBytes": 89280512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-surrogates.log",
+        "lines": 4,
+        "bytes": 184,
+        "sha256": "2bb3ca495ee8a1008a461a8d54f633c059d4865b76e98060e785820ba099608d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "surrogates translate-native unsupported 0.016",
+        "surrogates translate-jbmc unsupported 0.998",
+        "surrogates removeEvery-native unsupported 0.021",
+        "surrogates removeEvery-jbmc unsupported 1.026"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/opening/dispatch/measurement.json",
+      "change": "added",
+      "bytes": 15796,
+      "sha256": "d2a479620d44a5ec758ccb1f0af50c2c76ba0101dd22e8eb096d06632a46cd2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/dispatch/raw.tar.gz",
+      "change": "added",
+      "bytes": 3619,
+      "sha256": "9da81de4a2695a39a217224efe32bd760d0eccb8445fbd365f60eaa22cc5ca4f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/endian/measurement.json",
+      "change": "added",
+      "bytes": 21275,
+      "sha256": "a3d9abbc822139894ebe87540474e28b150e99e5f7c74194d21d390c46eb94ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/endian/raw.tar.gz",
+      "change": "added",
+      "bytes": 5257,
+      "sha256": "b75f40527565e95c88462d23675e365efd4c69f15dec7f07b3e538edd909a674",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/surrogates/measurement.json",
+      "change": "added",
+      "bytes": 8240,
+      "sha256": "f3d7a7db8cd36c7a4457574aa7e0ee2fa1fca19d7286dfd9f658187ff4246581",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/surrogates/raw.tar.gz",
+      "change": "added",
+      "bytes": 3798,
+      "sha256": "f6f1c8057e404febd0a6694f62b9f211b4c1cca75e3971482b03f8e6e3ba9fbb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:53+00:00",
+    "applied": [
+      "verification/java-semantics-gap/opening/dispatch/measurement.json",
+      "verification/java-semantics-gap/opening/dispatch/raw.tar.gz",
+      "verification/java-semantics-gap/opening/endian/measurement.json",
+      "verification/java-semantics-gap/opening/endian/raw.tar.gz",
+      "verification/java-semantics-gap/opening/surrogates/measurement.json",
+      "verification/java-semantics-gap/opening/surrogates/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "19c1c9c274fbcf750cbf07318387217da7d2e50d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/19c1c9c274fbcf750cbf07318387217da7d2e50d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095802Z-3301825d7eb3e219",
+      "outputs": "20261123T095802Z-359371cf0a8b00c8",
+      "diff": "20261123T095802Z-3813186247a1af43"
+    }
+  }
+}

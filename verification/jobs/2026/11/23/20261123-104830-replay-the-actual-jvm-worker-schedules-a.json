@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-104830-replay-the-actual-jvm-worker-schedules-a",
+  "title": "Replay the actual JVM worker schedules and test the reference-array plan",
+  "description": "Pause the original caller at its shared read with JDI. Observe the worker blocked on the identical class mirror or having written six while the instance lock is held. Compare the narrower in-lock Java assertions under JBMC threading. At the same source run the direct Item[] claim with an explicit two-cell construction plan.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Every named original entry has a measured result, evidence hashes and an explicit disposition. The scorecard independently verifies the original domain and every native refutation on its JVM.",
+  "submitted": {
+    "at": "2026-11-23T10:48:30+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 14,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "4m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "Class locks and array construction",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/heap_and_monitors.py",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/heap-and-monitors"
+  ]
+}

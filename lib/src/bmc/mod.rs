@@ -903,6 +903,8 @@ struct Frame {
     stack: Vec<Val>,
     /// Adapt the implementation result before advancing the caller's interface instruction.
     lambda_return: LambdaReturn,
+    /// A fresh ThreadLocal.get installs an overriding initialValue's result only on normal return.
+    thread_local_key: Option<usize>,
     /// The class whose `<clinit>` the frame runs: when it returns the class is initialized, and when an exception
     /// leaves it the class is erroneous (JVMS §5.5, steps 10 and 11).
     initializes: Option<String>,
@@ -921,7 +923,7 @@ struct Frame {
 
 impl Frame {
     fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
-        Frame { class, method, code, at: 0, locals, stack: Vec::new(), lambda_return: LambdaReturn::Pass, initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), lambda_return: LambdaReturn::Pass, thread_local_key: None, initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
     }
 
     fn pc(&self) -> u32 {
@@ -1136,7 +1138,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
-        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.lambda_return == g.lambda_return && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.lambda_return == g.lambda_return && f.thread_local_key == g.thread_local_key && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
         && a.unheld_statics == b.unheld_statics
         && a.statics.len() == b.statics.len()
@@ -1235,6 +1237,11 @@ fn align(into: &Path, other: &Path) -> Option<Vec<usize>> {
             paired.push_back((i, j));
         }
     }
+    for (left, right) in into.frames.iter().zip(&other.frames) {
+        if let Some(key) = right.thread_local_key {
+            if map[key] != left.thread_local_key { return None; }
+        }
+    }
     let mut next = into.objects.len();
     Some(
         map.into_iter()
@@ -1270,6 +1277,7 @@ fn renumber(path: &mut Path, number: &dyn Fn(usize) -> usize) {
         }
     }
     for frame in &mut path.frames {
+        frame.thread_local_key = frame.thread_local_key.map(number);
         frame.locals.iter_mut().flatten().for_each(value);
         frame.stack.iter_mut().for_each(value);
     }
@@ -1310,6 +1318,7 @@ fn collect(path: &mut Path) {
     let mut roots = Vec::new();
     roots.extend(path.literals.values().copied());
     for frame in &path.frames {
+        roots.extend(frame.thread_local_key);
         frame.locals.iter().flatten().for_each(|v| targets(v, &mut roots));
         frame.stack.iter().for_each(|v| targets(v, &mut roots));
     }
@@ -2992,7 +3001,7 @@ impl<'a> Engine<'a> {
                 if let Val::R(Some(v)) = value {
                     if !path.objects[v].is_instance(self.cp, &class_of(&array.element)) {
                         if path.objects[v].assumed { return self.of_unknown_class(path, v, "an aastore component check"); }
-                        return self.raise(path, "java/lang/ArrayStoreException");
+                        return self.throw_class_only(path, "java/lang/ArrayStoreException");
                     }
                 }
                 self.keeps(path, Some(o), "stores into an array made before it was called")?;
@@ -3194,8 +3203,8 @@ impl<'a> Engine<'a> {
 
     /// How many cells a new array of `count` elements has: its size when that is a constant (none when it is
     /// negative, which throws), and otherwise the bound, once the solver shows the size is within it on the path;
-    /// or, where it is not, the cells of the largest array the path holds (a copy of an array the run made itself,
-    /// as `String.split`'s of a String of as many units as the bound is one longer than the bound).
+    /// or the cells of the largest array the path holds. For a larger local allocation, find its maximum
+    /// by SAT under the actual path condition, up to the same ceiling as a constant allocation.
     fn new_array_cells(&mut self, path: &Path, count: &Bits) -> Result<usize, Stop> {
         Ok(match self.b.constant_value(count) {
             Some(n) if n < 0 => 0,
@@ -3223,8 +3232,26 @@ impl<'a> Engine<'a> {
                 match within {
                     Some(cells) => cells,
                     None => {
-                        let top = path.frames.last().expect("a frame");
-                        return unsupported(format!("an array of computed size, not known to be within {} elements (in {}.{})", (bound + 1).max(largest), top.class.name.replace('/', "."), top.method));
+                        // An internally allocated buffer can exceed the input length (for example
+                        // source.length() + 32). Prove its capacity from the original path without
+                        // restricting an input or allocating the whole implementation ceiling.
+                        let mut low = (bound + 1).max(largest);
+                        let mut high = 1usize << 16;
+                        let exceeds = |engine: &mut Self, size: usize| {
+                            let test = engine.b.slt(&engine.b.constant(size as i64, 32), count);
+                            let mut conditions = path.cond.clone();
+                            conditions.push(test);
+                            engine.solve(&conditions)
+                        };
+                        if low >= high || exceeds(self, high)? {
+                            let top = path.frames.last().expect("a frame");
+                            return unsupported(format!("an array of computed size beyond the checked local allocation limit (in {}.{})", top.class.name.replace('/', "."), top.method));
+                        }
+                        while high - low > 1 {
+                            let mid = low + (high - low)/2;
+                            if exceeds(self, mid)? { low = mid } else { high = mid }
+                        }
+                        high
                     }
                 }
             }
@@ -4015,6 +4042,9 @@ impl<'a> Engine<'a> {
                     return Ok(None);
                 }
                 if let Some(v) = value {
+                    if let Some(key) = returned.thread_local_key {
+                        path.objects[key].fields.insert(thread_locals::BINDING.into(), v.clone());
+                    }
                     self.push(path, v);
                 }
                 self.advance(path);
@@ -5176,6 +5206,11 @@ impl<'a> Engine<'a> {
         }
         if self.cp.enum_universe_lookup(&member.owner, &member.name, &member.descriptor) {
             return self.enum_universe(path);
+        }
+        if member.owner == "java/lang/Enum" && member.name == "valueOf"
+            && member.descriptor == "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;"
+            && self.previous.is_none() && self.pure.is_none() && self.frame.is_none() && self.cp.enum_lookup_image() {
+            return self.enum_by_name(path);
         }
         if self.cp.is_map_image(&path.frames.last().expect("a frame").class) {
             if let Some((cf, m)) = self.cp.map_image_method(&member.owner, &member.name, &member.descriptor).filter(|(_, m)| m.is_static()) {

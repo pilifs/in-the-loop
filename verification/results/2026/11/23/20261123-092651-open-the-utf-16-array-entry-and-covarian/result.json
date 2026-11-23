@@ -1,0 +1,441 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-092651-open-the-utf-16-array-entry-and-covarian",
+  "title": "Open the UTF-16, array entry and covariant store claims",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 9.8s, peak 73.6 MiB (estimated 15m00s, 4.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-092651-open-the-utf-16-array-entry-and-covarian.json",
+    "sha256": "27ad91e9bfeef23d8ae45a62e02bea5053f8844079c5e032c1bdbc73a9e11d50",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-092651-open-the-utf-16-array-entry-and-covarian",
+      "title": "Open the UTF-16, array entry and covariant store claims",
+      "description": "Measure the two symbolic strings and every offset, direct nullable input arrays, sharing, dynamic receiver selection, exception precedence and the released iterator. Use the unchanged opening checker on both explicit engines at 120 seconds per claim. Retain each raw response and replay actual primitive counterexamples on the original JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "The job records every requested native and integrated JBMC outcome, or the exact frontend or model refusal, against the bound original JVM checks.",
+      "submitted": {
+        "at": "2026-11-23T09:26:51+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "prefix",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening prefix",
+          "cwd": "."
+        },
+        {
+          "name": "arrays",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening arrays",
+          "cwd": "."
+        },
+        {
+          "name": "receiver",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening receiver",
+          "cwd": "."
+        },
+        {
+          "name": "stores",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening stores",
+          "cwd": "."
+        },
+        {
+          "name": "store-iterator",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening store-iterator",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/opening/prefix",
+        "verification/java-semantics-gap/opening/arrays",
+        "verification/java-semantics-gap/opening/receiver",
+        "verification/java-semantics-gap/opening/stores",
+        "verification/java-semantics-gap/opening/store-iterator"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:54:03+00:00",
+  "finishedAt": "2026-11-23T09:58:00+00:00",
+  "wallSeconds": 237.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 77164544,
+    "wallSeconds": 9.8,
+    "cpuSeconds": 12.7,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "prefix",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening prefix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 1.803,
+      "cpuSeconds": 1.982,
+      "cpuThrottledSeconds": 0.049,
+      "peakMemoryBytes": 69447680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-prefix.log",
+        "lines": 8,
+        "bytes": 311,
+        "sha256": "3acd753839f8f575e90d4730731140fd4fbad60cde233ce69fa5247495b09f83",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "prefix small-native unsupported 0.018",
+        "prefix small-jbmc unsupported 0.21",
+        "prefix beforeEnd-native unsupported 0.019",
+        "prefix beforeEnd-jbmc unsupported 0.219",
+        "prefix wide-native unsupported 0.018",
+        "prefix wide-jbmc unsupported 0.003",
+        "prefix nullPrefix-native unsupported 0.019",
+        "prefix nullPrefix-jbmc unsupported 0.223"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "arrays",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening arrays",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.404,
+      "cpuSeconds": 3.243,
+      "cpuThrottledSeconds": 0.031,
+      "peakMemoryBytes": 68636672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-arrays.log",
+        "lines": 10,
+        "bytes": 411,
+        "sha256": "0b90730bc39e3d4bf43b361c077d5e5541d102588f6a3e6499075ec5306125c5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "arrays categories-native unsupported 0.003",
+        "arrays categories-jbmc unsupported 0.002",
+        "arrays noNullCell-native unsupported 0.003",
+        "arrays noNullCell-jbmc unsupported 0.002",
+        "arrays noItemCell-native unsupported 0.001",
+        "arrays noItemCell-jbmc unsupported 0.003",
+        "arrays followsAlias-native correct 0.016",
+        "arrays followsAlias-jbmc correct 0.25",
+        "arrays alwaysShares-native correct 0.024",
+        "arrays alwaysShares-jbmc correct 0.158"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "receiver",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening receiver",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 3.215,
+      "cpuThrottledSeconds": 0.081,
+      "peakMemoryBytes": 67981312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-receiver.log",
+        "lines": 4,
+        "bytes": 155,
+        "sha256": "6882c71337a6725ca4e4c21a3fd120d77ff750c8c69c4e56c2ae141b2aa9d028",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "receiver exact-native correct 0.016",
+        "receiver exact-jbmc correct 0.14",
+        "receiver parentOrChild-native correct 0.029",
+        "receiver parentOrChild-jbmc correct 0.154"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "stores",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening stores",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 1.405,
+      "cpuSeconds": 1.796,
+      "cpuThrottledSeconds": 0.087,
+      "peakMemoryBytes": 66908160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-stores.log",
+        "lines": 4,
+        "bytes": 172,
+        "sha256": "9ae08e429b5d1b2377dcc92a2200a11b4c40b94f61636ae5968ed125c6b61efd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "stores history-native unsupported 0.022",
+        "stores history-jbmc unsupported 0.143",
+        "stores alwaysSucceeds-native unsupported 0.018",
+        "stores alwaysSucceeds-jbmc false-success 0.148"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "store-iterator",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening store-iterator",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.004,
+      "cpuSeconds": 2.497,
+      "cpuThrottledSeconds": 0.138,
+      "peakMemoryBytes": 77164544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-store-iterator.log",
+        "lines": 2,
+        "bytes": 94,
+        "sha256": "95984c426c718c87d0bb4cca007b80708a510f3943086e100cace0896665635f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "store-iterator history-native unsupported 0.024",
+        "store-iterator history-jbmc unsupported 0.633"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/opening/prefix/measurement.json",
+      "change": "added",
+      "bytes": 11060,
+      "sha256": "069b0f9019cc54a1807c801f089a409d76fed714710929c96d213c81a1b0c287",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/prefix/raw.tar.gz",
+      "change": "added",
+      "bytes": 5557,
+      "sha256": "a657dcca3e8253585a9f9b29386e06a38ada7131872c58a0cf09349f356eedc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/arrays/measurement.json",
+      "change": "added",
+      "bytes": 18995,
+      "sha256": "c82ecdf5120f3154be511781b2caae28421c714d08f95dcde18f07cf338fb596",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/arrays/raw.tar.gz",
+      "change": "added",
+      "bytes": 4267,
+      "sha256": "127a266c1f1693545bac8dbf4da82bbab1a0199a1be8193c3fe75b06b2e2079e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/receiver/measurement.json",
+      "change": "added",
+      "bytes": 13968,
+      "sha256": "89890ca358ef592268646967ea3e262e45b90537c1ee8d806848f5ca25869fcc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/receiver/raw.tar.gz",
+      "change": "added",
+      "bytes": 3536,
+      "sha256": "fc69654eca6bf2d4870a8e335648e0f3f281d09e819c40e9bae23256e3da5921",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/stores/measurement.json",
+      "change": "added",
+      "bytes": 8685,
+      "sha256": "9493b74322c85a89e1a4bb5cd723b0ff5605b5492f1f6d03443504e450d0c379",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/stores/raw.tar.gz",
+      "change": "added",
+      "bytes": 3295,
+      "sha256": "d47a43ab5f3741c81a37be6474db74deaf85d247f4d5acecaf904e86036b5722",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/store-iterator/measurement.json",
+      "change": "added",
+      "bytes": 5606,
+      "sha256": "37d34c3191880cd5ac807d7289545de1f563b9e5da38ec1f1316d0a288ecec7e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/store-iterator/raw.tar.gz",
+      "change": "added",
+      "bytes": 2932,
+      "sha256": "58b6981d5c79ab198100ddcf75125bf4a35a78be76860ea9b3d33bf27b0d0e88",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:53+00:00",
+    "applied": [
+      "verification/java-semantics-gap/opening/prefix/measurement.json",
+      "verification/java-semantics-gap/opening/prefix/raw.tar.gz",
+      "verification/java-semantics-gap/opening/arrays/measurement.json",
+      "verification/java-semantics-gap/opening/arrays/raw.tar.gz",
+      "verification/java-semantics-gap/opening/receiver/measurement.json",
+      "verification/java-semantics-gap/opening/receiver/raw.tar.gz",
+      "verification/java-semantics-gap/opening/stores/measurement.json",
+      "verification/java-semantics-gap/opening/stores/raw.tar.gz",
+      "verification/java-semantics-gap/opening/store-iterator/measurement.json",
+      "verification/java-semantics-gap/opening/store-iterator/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "19c1c9c274fbcf750cbf07318387217da7d2e50d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/19c1c9c274fbcf750cbf07318387217da7d2e50d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095800Z-752350ac96eaa27c",
+      "outputs": "20261123T095800Z-7811372d6c36f800",
+      "diff": "20261123T095800Z-805351390b258ac0"
+    }
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-104830-qualify-the-original-iterator-constructo",
+  "title": "Qualify the original iterator, constructor, enum and thread-local histories",
+  "description": "Run the unchanged Temurin 21 callers on the opening classpaths under native and integrated JBMC. Retain the true and deliberately wrong claims separately, including time, complete raw checker output and actual JVM replay.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Every named original entry has a measured result, evidence hashes and an explicit disposition. The scorecard independently verifies the original domain and every native refutation on its JVM.",
+  "submitted": {
+    "at": "2026-11-23T10:48:30+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 14,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "6m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "deque",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified deque",
+      "cwd": "."
+    },
+    {
+      "name": "construction",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified construction",
+      "cwd": "."
+    },
+    {
+      "name": "enum",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified enum",
+      "cwd": "."
+    },
+    {
+      "name": "locals",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified locals",
+      "cwd": "."
+    },
+    {
+      "name": "monitors",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified monitors",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/qualified/deque",
+    "verification/java-semantics-gap/qualified/construction",
+    "verification/java-semantics-gap/qualified/enum",
+    "verification/java-semantics-gap/qualified/locals",
+    "verification/java-semantics-gap/qualified/monitors"
+  ]
+}

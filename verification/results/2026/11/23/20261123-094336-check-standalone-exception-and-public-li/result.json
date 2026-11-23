@@ -1,0 +1,602 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-094336-check-standalone-exception-and-public-li",
+  "title": "Check standalone exception and public library transfers",
+  "status": "passed",
+  "summary": "passed: 6 passed step(s) in 1m04s, peak 462.1 MiB (estimated 15m00s, 4.0 GiB); 28 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-094336-check-standalone-exception-and-public-li.json",
+    "sha256": "36f696457fccc93ce9d7daa109b3db0b9b9b48ea23a3934defd50bd3ec6ec456",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-094336-check-standalone-exception-and-public-li",
+      "title": "Check standalone exception and public library transfers",
+      "description": "Run an independent Java assertion wrapper and reachability assertion for each bound entry with the Ubuntu 22.04 JBMC 6.11.0 executable and model bytes. Preserve target IDs, all other failing properties, warnings, traces and JVM checks. Record disagreements as measurements.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "Every requested assertion and its reachability control retain their original raw result or the exact timeout. Only matched outcomes and independently replayable refutations can be credited.",
+      "submitted": {
+        "at": "2026-11-23T09:43:36+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 8,
+      "requires": [
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "stores packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged stores",
+          "cwd": "."
+        },
+        {
+          "name": "store-iterator packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged store-iterator",
+          "cwd": "."
+        },
+        {
+          "name": "guava-parent packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged guava-parent",
+          "cwd": "."
+        },
+        {
+          "name": "guava-fix packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged guava-fix",
+          "cwd": "."
+        },
+        {
+          "name": "gson-parent packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged gson-parent",
+          "cwd": "."
+        },
+        {
+          "name": "gson-fix packaged",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged gson-fix",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/standalone/stores/preflight-packaged",
+        "verification/java-semantics-gap/standalone/store-iterator/preflight-packaged",
+        "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged",
+        "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged",
+        "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged",
+        "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:54:03+00:00",
+  "finishedAt": "2026-11-23T09:55:31+00:00",
+  "wallSeconds": 88.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 484540416,
+    "wallSeconds": 64.4,
+    "cpuSeconds": 75.1,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "stores packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged stores",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.604,
+      "cpuSeconds": 3.888,
+      "cpuThrottledSeconds": 0.148,
+      "peakMemoryBytes": 89092096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-stores-packaged.log",
+        "lines": 2,
+        "bytes": 87,
+        "sha256": "66fae04315b0d490974bfb6ad140b79b5319761134331cd460545f412c7f5d5f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "stores packaged history FAILURE FAILURE",
+        "stores packaged alwaysSucceeds SUCCESS FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "store-iterator packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged store-iterator",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 3.501,
+      "cpuThrottledSeconds": 0.209,
+      "peakMemoryBytes": 78491648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-store-iterator-packaged.log",
+        "lines": 1,
+        "bytes": 48,
+        "sha256": "00cdf3f213c0a32860a3978431edbf7483eca4520ccc9fd231edd73cc6d3e67f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "store-iterator packaged history FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "guava-parent packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged guava-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 6.622,
+      "cpuSeconds": 8.514,
+      "cpuThrottledSeconds": 0.245,
+      "peakMemoryBytes": 215547904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-guava-parent-packaged.log",
+        "lines": 2,
+        "bytes": 100,
+        "sha256": "9c0ff4b04ac0440540d63e90882ccdda19ccb0abea2394248f7d427d324ff632",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "guava-parent packaged retained FAILURE FAILURE",
+        "guava-parent packaged parentBehavior FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "guava-fix packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged guava-fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 5.812,
+      "cpuSeconds": 7.843,
+      "cpuThrottledSeconds": 0.387,
+      "peakMemoryBytes": 152272896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-guava-fix-packaged.log",
+        "lines": 2,
+        "bytes": 94,
+        "sha256": "c3e0734cf88f2ed6f4d4348d939a71d72770f179a7ffb6a8b30367ec7966e7e1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "guava-fix packaged retained FAILURE FAILURE",
+        "guava-fix packaged parentBehavior FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "gson-parent packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged gson-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 22.031,
+      "cpuSeconds": 24.087,
+      "cpuThrottledSeconds": 0.17,
+      "peakMemoryBytes": 450985984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-gson-parent-packaged.log",
+        "lines": 2,
+        "bytes": 92,
+        "sha256": "6ad637316a1a39a18f5c5f3ea9574d75e7425e57f72337c22000f247ddf6544a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gson-parent packaged compatible FAILURE FAILURE",
+        "gson-parent packaged syntax FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "gson-fix packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged gson-fix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 25.133,
+      "cpuSeconds": 27.311,
+      "cpuThrottledSeconds": 0.12,
+      "peakMemoryBytes": 484540416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-gson-fix-packaged.log",
+        "lines": 2,
+        "bytes": 86,
+        "sha256": "d854e0f91531bfbf1988e3da43eed7c26714c34e57c687d98b122a4b52440f0c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gson-fix packaged compatible FAILURE FAILURE",
+        "gson-fix packaged syntax FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/standalone/stores/preflight-packaged/alwaysSucceeds-reached.json.gz",
+      "change": "added",
+      "bytes": 5519,
+      "sha256": "5029a8aa5bfcfebeb8280bfe705902439ca8be04dfb337f699ed743c558540b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/stores/preflight-packaged/alwaysSucceeds-target.json.gz",
+      "change": "added",
+      "bytes": 750,
+      "sha256": "59f5e9963b6ac9aca965ff8d45b9ef086ce87618e3690f9e50fad5fc55862d7b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/stores/preflight-packaged/history-reached.json.gz",
+      "change": "added",
+      "bytes": 5953,
+      "sha256": "92f7675dac1354d5f53e570a04013d0788bbea1ebed93c7bf277a31540ce66d8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/stores/preflight-packaged/history-target.json.gz",
+      "change": "added",
+      "bytes": 6207,
+      "sha256": "8b5c339a8f47d1c7ae6804089a5ef5969b84b2a2399c3edfbe2c743dc420be92",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/stores/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 7579,
+      "sha256": "59220ee1b709117f2b0fc2f46856f2b8724000e07f85c5bcd71076c02fdfbbbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/history-reached.json.gz",
+      "change": "added",
+      "bytes": 16267,
+      "sha256": "0e8e148edf3be9adb66ba472a0c43e2dded9da21a11086cae1ef1b799b9eb93c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/history-target.json.gz",
+      "change": "added",
+      "bytes": 16669,
+      "sha256": "68beaf44078bf378462fd6a2484587de2a9750060545096365bfa6447d5c8bc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 5146,
+      "sha256": "f5ef29a10fc607a310fc409bb03a8e18b310dc93e94ac677fa69c488031649cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 8224,
+      "sha256": "6f6e6dddb651f4e4f7ab5441a1abf1b278d07aac3154247f7368279efb14ec99",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/parentBehavior-reached.json.gz",
+      "change": "added",
+      "bytes": 35842,
+      "sha256": "b2666ca73a7d8c98d6d7de7337bfed4c133407eee91f967282418ceaf2d2abe8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/parentBehavior-target.json.gz",
+      "change": "added",
+      "bytes": 35864,
+      "sha256": "29da81b0abbce7d5ccb37e18de4b9dec950a7ddf4cdae36042fca39df649a1ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/retained-reached.json.gz",
+      "change": "added",
+      "bytes": 35654,
+      "sha256": "40478cc2fff909058b898e5d43f752d4931c51d8e968d601c8bdc5efb2577722",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/retained-target.json.gz",
+      "change": "added",
+      "bytes": 35700,
+      "sha256": "67841bcb6c231714f88501a131cedfec5084c1130dbfa8d1d6f4f2e46a8ca8e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 8216,
+      "sha256": "5a0b14081c5f6967e164d3081b3cb1c53edda70010288a8acb73c2f3c7fdb1c7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/parentBehavior-reached.json.gz",
+      "change": "added",
+      "bytes": 33294,
+      "sha256": "a1dd0ae22115df9db84f6504e3da1fb821cf05f7cd4628e79ab3e3e05317fd54",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/parentBehavior-target.json.gz",
+      "change": "added",
+      "bytes": 33347,
+      "sha256": "2e141a52c262239e54b61ae13a87043b230770653edc30b5eef1d76ae7f8a0ac",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/retained-reached.json.gz",
+      "change": "added",
+      "bytes": 33146,
+      "sha256": "c624b918c969bf2ccab3df6fc88af82c064dd124efc5f4f7a5d6139b6ddebba4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/retained-target.json.gz",
+      "change": "added",
+      "bytes": 33170,
+      "sha256": "e6fa6e4495153d6c1b10a3882ff75c223b5927d9fa86c5fcf7a6a6e180dbe43f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/compatible-reached.json.gz",
+      "change": "added",
+      "bytes": 363189,
+      "sha256": "523a6b8530db668f5bd48016c7f2b74a4cf8e853edf5c9c98f21f0d4ddd2a3a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/compatible-target.json.gz",
+      "change": "added",
+      "bytes": 363241,
+      "sha256": "f19962a71b2db02f679def01159fb11e654d1b54a516313d130c5d4836780243",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 9408,
+      "sha256": "9a9f55c42a944ce46c665d390c34539ae71832fed996d16f376b8bddc140c6dc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/syntax-reached.json.gz",
+      "change": "added",
+      "bytes": 365790,
+      "sha256": "da33a3c026754d8a2fdfd4a2634c894cb37959e5188a5d46fa4921db3ab0ccac",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/syntax-target.json.gz",
+      "change": "added",
+      "bytes": 365848,
+      "sha256": "03c470a1599060fa70f4ab4920d969870e122ac21e3c0cf250e71e8b8e31b012",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/compatible-reached.json.gz",
+      "change": "added",
+      "bytes": 363469,
+      "sha256": "d9eb9bf96677dffd05678750fc0a516d68717e033130884dd8eaec07d8b21254",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/compatible-target.json.gz",
+      "change": "added",
+      "bytes": 363517,
+      "sha256": "ca35ef76586eeb5679462ac36dd84557c0e94dac06ddadf6fc85d5e82cae7894",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/measurement.json",
+      "change": "added",
+      "bytes": 9396,
+      "sha256": "24b8dee2731f5d52eef73f9332ffa7a463501b247a02ee7877a30eb3af014725",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/syntax-reached.json.gz",
+      "change": "added",
+      "bytes": 368435,
+      "sha256": "ea2e632052f9052eb8da1edaf4baccc53a4bae33b7037196323ce6b7fbfd69bd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/syntax-target.json.gz",
+      "change": "added",
+      "bytes": 368488,
+      "sha256": "8efb2e94a0efb28a09c965db7075ba76dc8a3ab445f007f7ec360aea3e04e564",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:54+00:00",
+    "applied": [
+      "verification/java-semantics-gap/standalone/stores/preflight-packaged/alwaysSucceeds-reached.json.gz",
+      "verification/java-semantics-gap/standalone/stores/preflight-packaged/alwaysSucceeds-target.json.gz",
+      "verification/java-semantics-gap/standalone/stores/preflight-packaged/history-reached.json.gz",
+      "verification/java-semantics-gap/standalone/stores/preflight-packaged/history-target.json.gz",
+      "verification/java-semantics-gap/standalone/stores/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/history-reached.json.gz",
+      "verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/history-target.json.gz",
+      "verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/parentBehavior-reached.json.gz",
+      "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/parentBehavior-target.json.gz",
+      "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/retained-reached.json.gz",
+      "verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/retained-target.json.gz",
+      "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/parentBehavior-reached.json.gz",
+      "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/parentBehavior-target.json.gz",
+      "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/retained-reached.json.gz",
+      "verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/retained-target.json.gz",
+      "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/compatible-reached.json.gz",
+      "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/compatible-target.json.gz",
+      "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/syntax-reached.json.gz",
+      "verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/syntax-target.json.gz",
+      "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/compatible-reached.json.gz",
+      "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/compatible-target.json.gz",
+      "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/measurement.json",
+      "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/syntax-reached.json.gz",
+      "verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/syntax-target.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095531Z-95638971e24bd0e6",
+      "outputs": "20261123T095532Z-037162d58c3410df",
+      "diff": "20261123T095532Z-0546640293102105"
+    }
+  }
+}

@@ -1,0 +1,1437 @@
+Binary file verification/java-semantics-gap/standalone/stores/preflight-packaged/alwaysSucceeds-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/stores/preflight-packaged/alwaysSucceeds-target.json.gz changed
+Binary file verification/java-semantics-gap/standalone/stores/preflight-packaged/history-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/stores/preflight-packaged/history-target.json.gz changed
+--- /dev/null
++++ b/verification/java-semantics-gap/standalone/stores/preflight-packaged/measurement.json
+@@ -0,0 +1,228 @@
++{
++  "key": "stores",
++  "profile": "packaged",
++  "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "classpath": [
++    "assertions",
++    "caller",
++    "core-models.jar"
++  ],
++  "classes": {
++    "ArrayStores.class": "7e1c1217a49fa61c5f9fa8aa7c904b81ddfd7f00279a46ea869ea83accde2a81"
++  },
++  "jars": {},
++  "selectedModels": {},
++  "originalJvm": {
++    "checks": 19,
++    "sourceSha256": "24107f1e4d9ae7b4f67dfbdc7dea374e790e9f50294b7385ed73079d19a10908",
++    "stdout": "19 original checks passed"
++  },
++  "job": "20261123-094336-check-standalone-exception-and-public-li",
++  "runs": [
++    {
++      "method": "history",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "633c305c2ecfde53a44640ba9868b4449b7a6ef58ae0f9416f40c47c8654231d",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(IIZ)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(IIZ)V bytecode-index 16",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "16",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(IIZ)V bytecode-index 16",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(IIZ)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(IIZ)V.assertion.1"
++          }
++        },
++        "totalProperties": 2,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "index": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          },
++          "kind": {
++            "binary": "11111111111111111111111111111111",
++            "data": "-1",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          },
++          "absent": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.129,
++        "raw": "history-target.json.gz",
++        "sha256": "8b5c339a8f47d1c7ae6804089a5ef5969b84b2a2399c3edfbe2c743dc420be92",
++        "jvmReplay": {
++          "outcome": "held",
++          "inputs": [
++            {
++              "type": "int",
++              "value": 0
++            },
++            {
++              "type": "int",
++              "value": -1
++            },
++            {
++              "type": "boolean",
++              "value": false
++            }
++          ],
++          "sourceSha256": "215a6ddd3b378bcb2080af4dd96ef20842209ed7293e57a9f6e65a41145f75b4",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(IIZ)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(IIZ)V bytecode-index 12",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "12",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(IIZ)V bytecode-index 12",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(IIZ)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(IIZ)V.assertion.1"
++          }
++        },
++        "totalProperties": 2,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "index": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          },
++          "kind": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          },
++          "absent": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.1,
++        "raw": "history-reached.json.gz",
++        "sha256": "92f7675dac1354d5f53e570a04013d0788bbea1ebed93c7bf277a31540ce66d8"
++      }
++    },
++    {
++      "method": "alwaysSucceeds",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "535f117c4ef9930047fd002f7d218f04dfa12cf138bdf917db55e541fb2a030c",
++      "target": {
++        "status": "SUCCESS",
++        "exit": 0,
++        "target": {
++          "property": "java::GapAssertions.target:()V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:()V bytecode-index 13",
++          "status": "SUCCESS",
++          "sourceLocation": {
++            "bytecodeIndex": "13",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:()V bytecode-index 13",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:()V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:()V.assertion.1"
++          }
++        },
++        "totalProperties": 2,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {},
++        "seconds": 0.103,
++        "raw": "alwaysSucceeds-target.json.gz",
++        "sha256": "59f5e9963b6ac9aca965ff8d45b9ef086ce87618e3690f9e50fad5fc55862d7b"
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:()V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:()V bytecode-index 9",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "9",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:()V bytecode-index 9",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:()V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:()V.assertion.1"
++          }
++        },
++        "totalProperties": 2,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {},
++        "seconds": 0.1,
++        "raw": "alwaysSucceeds-reached.json.gz",
++        "sha256": "5029a8aa5bfcfebeb8280bfe705902439ca8be04dfb337f699ed743c558540b6"
++      }
++    }
++  ]
++}
+Binary file verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/history-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/history-target.json.gz changed
+--- /dev/null
++++ b/verification/java-semantics-gap/standalone/store-iterator/preflight-packaged/measurement.json
+@@ -0,0 +1,161 @@
++{
++  "key": "store-iterator",
++  "profile": "packaged",
++  "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "classpath": [
++    "assertions",
++    "caller",
++    "commons-collections4-4.5.0.jar",
++    "core-models.jar"
++  ],
++  "classes": {
++    "IteratorStores.class": "bd4db1fd674f873b9cc75eb32d335b5afa7ceb8af2b315a55ef9cb077872c8ba"
++  },
++  "jars": {
++    "commons-collections4-4.5.0.jar": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++  },
++  "selectedModels": {},
++  "originalJvm": {
++    "checks": 12,
++    "sourceSha256": "f7fd05521f44680324297f8262a15ea4542756f63ebcee6726f0bb959811263e",
++    "stdout": "12 original checks passed"
++  },
++  "job": "20261123-094336-check-standalone-exception-and-public-li",
++  "runs": [
++    {
++      "method": "history",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "7185987ee735cb4f86496c8e24b19fd3e3c4140c0de6c867718f4e4666589a15",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(ZZI)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(ZZI)V bytecode-index 22",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "22",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(ZZI)V bytecode-index 22",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(ZZI)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(ZZI)V.assertion.1"
++          }
++        },
++        "totalProperties": 2,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "integerArray": {
++            "binary": "00000001",
++            "data": "true",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          },
++          "advance": {
++            "binary": "00000001",
++            "data": "true",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          },
++          "kind": {
++            "binary": "00000000000000000000000000000010",
++            "data": "2",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 0.156,
++        "raw": "history-target.json.gz",
++        "sha256": "68beaf44078bf378462fd6a2484587de2a9750060545096365bfa6447d5c8bc4",
++        "jvmReplay": {
++          "outcome": "held",
++          "inputs": [
++            {
++              "type": "boolean",
++              "value": true
++            },
++            {
++              "type": "boolean",
++              "value": true
++            },
++            {
++              "type": "int",
++              "value": 2
++            }
++          ],
++          "sourceSha256": "aae18dd5671c1152089d9a41f2b03653c88636d0eebcfbfe97de85a43da7cd55",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(ZZI)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(ZZI)V bytecode-index 18",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "18",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(ZZI)V bytecode-index 18",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(ZZI)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(ZZI)V.assertion.1"
++          }
++        },
++        "totalProperties": 2,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "integerArray": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          },
++          "advance": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          },
++          "kind": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 0.14,
++        "raw": "history-reached.json.gz",
++        "sha256": "0e8e148edf3be9adb66ba472a0c43e2dded9da21a11086cae1ef1b799b9eb93c"
++      }
++    }
++  ]
++}
+--- /dev/null
++++ b/verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/measurement.json
+@@ -0,0 +1,233 @@
++{
++  "key": "guava-parent",
++  "profile": "packaged",
++  "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "classpath": [
++    "assertions",
++    "caller",
++    "guava-7955-parent.jar",
++    "failureaccess-1.0.3.jar",
++    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
++    "jspecify-1.0.0.jar",
++    "error_prone_annotations-2.36.0.jar",
++    "j2objc-annotations-3.0.0.jar",
++    "core-models.jar"
++  ],
++  "classes": {
++    "FormatHistory.class": "3472dfb9644d6b226771cd6c9c11aa15bc7a74355e1f5dd892ad8aaa1fb355e1"
++  },
++  "jars": {
++    "guava-7955-parent.jar": "3e0c1d182ff80b9dca3b3c4aa427285c1eae944418218a0ae28186156e41b945",
++    "failureaccess-1.0.3.jar": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
++    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++    "jspecify-1.0.0.jar": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++    "error_prone_annotations-2.36.0.jar": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
++    "j2objc-annotations-3.0.0.jar": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
++  },
++  "selectedModels": {},
++  "originalJvm": {
++    "checks": 4,
++    "sourceSha256": "3ab493cd05af0ede97c747df444a874bf3c76c6357ad12c97d40eeafdd331880",
++    "stdout": "4 original checks passed"
++  },
++  "job": "20261123-094336-check-standalone-exception-and-public-li",
++  "runs": [
++    {
++      "method": "retained",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "57384f63c2d06d221ca12497066ccd80676adae94fc743aee7a3533c54325bef",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "14",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(Z)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 1.003,
++        "raw": "retained-target.json.gz",
++        "sha256": "67841bcb6c231714f88501a131cedfec5084c1130dbfa8d1d6f4f2e46a8ca8e6",
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "type": "boolean",
++              "value": false
++            }
++          ],
++          "sourceSha256": "8e323f6de3547b56704de706863c4eb9b0ad0a8e63ea994c816d7383c2efdd45",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "10",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(Z)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 1.005,
++        "raw": "retained-reached.json.gz",
++        "sha256": "40478cc2fff909058b898e5d43f752d4931c51d8e968d601c8bdc5efb2577722"
++      }
++    },
++    {
++      "method": "parentBehavior",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "1f65d3b285650cd809977ad93d0775337a0bbd3aa36309aa085a39d3f409e8b4",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "14",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(Z)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.927,
++        "raw": "parentBehavior-target.json.gz",
++        "sha256": "29da81b0abbce7d5ccb37e18de4b9dec950a7ddf4cdae36042fca39df649a1ad",
++        "jvmReplay": {
++          "outcome": "held",
++          "inputs": [
++            {
++              "type": "boolean",
++              "value": false
++            }
++          ],
++          "sourceSha256": "5c5e7208e3a11748682ad6dc1e2413efcfe59b00eccef2f4436dd69b8e7e12f9",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "10",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(Z)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.93,
++        "raw": "parentBehavior-reached.json.gz",
++        "sha256": "b2666ca73a7d8c98d6d7de7337bfed4c133407eee91f967282418ceaf2d2abe8"
++      }
++    }
++  ]
++}
+Binary file verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/parentBehavior-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/parentBehavior-target.json.gz changed
+Binary file verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/retained-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/guava-parent/preflight-packaged/retained-target.json.gz changed
+--- /dev/null
++++ b/verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/measurement.json
+@@ -0,0 +1,233 @@
++{
++  "key": "guava-fix",
++  "profile": "packaged",
++  "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "classpath": [
++    "assertions",
++    "caller",
++    "guava-7955-fix.jar",
++    "failureaccess-1.0.3.jar",
++    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
++    "jspecify-1.0.0.jar",
++    "error_prone_annotations-2.36.0.jar",
++    "j2objc-annotations-3.0.0.jar",
++    "core-models.jar"
++  ],
++  "classes": {
++    "FormatHistory.class": "3472dfb9644d6b226771cd6c9c11aa15bc7a74355e1f5dd892ad8aaa1fb355e1"
++  },
++  "jars": {
++    "guava-7955-fix.jar": "1ca60c0343aaf457839388c04069d2e6c725d9ad6fd034b3a6deedf0c7db518d",
++    "failureaccess-1.0.3.jar": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
++    "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++    "jspecify-1.0.0.jar": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
++    "error_prone_annotations-2.36.0.jar": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
++    "j2objc-annotations-3.0.0.jar": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
++  },
++  "selectedModels": {},
++  "originalJvm": {
++    "checks": 4,
++    "sourceSha256": "7a5cc3e060665764bb2bcbf8484704e2a745ae3a799c4a8ef8f080963d1b69d1",
++    "stdout": "4 original checks passed"
++  },
++  "job": "20261123-094336-check-standalone-exception-and-public-li",
++  "runs": [
++    {
++      "method": "retained",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "57384f63c2d06d221ca12497066ccd80676adae94fc743aee7a3533c54325bef",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "14",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(Z)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.724,
++        "raw": "retained-target.json.gz",
++        "sha256": "e6fa6e4495153d6c1b10a3882ff75c223b5927d9fa86c5fcf7a6a6e180dbe43f",
++        "jvmReplay": {
++          "outcome": "held",
++          "inputs": [
++            {
++              "type": "boolean",
++              "value": false
++            }
++          ],
++          "sourceSha256": "8e323f6de3547b56704de706863c4eb9b0ad0a8e63ea994c816d7383c2efdd45",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "10",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(Z)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.697,
++        "raw": "retained-reached.json.gz",
++        "sha256": "c624b918c969bf2ccab3df6fc88af82c064dd124efc5f4f7a5d6139b6ddebba4"
++      }
++    },
++    {
++      "method": "parentBehavior",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "1f65d3b285650cd809977ad93d0775337a0bbd3aa36309aa085a39d3f409e8b4",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "14",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(Z)V bytecode-index 14",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(Z)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.783,
++        "raw": "parentBehavior-target.json.gz",
++        "sha256": "2e141a52c262239e54b61ae13a87043b230770653edc30b5eef1d76ae7f8a0ac",
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "type": "boolean",
++              "value": false
++            }
++          ],
++          "sourceSha256": "5c5e7208e3a11748682ad6dc1e2413efcfe59b00eccef2f4436dd69b8e7e12f9",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(Z)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "10",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(Z)V bytecode-index 10",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(Z)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(Z)V.assertion.1"
++          }
++        },
++        "totalProperties": 4,
++        "otherFailures": [],
++        "warnings": [],
++        "inputs": {
++          "typed": {
++            "binary": "00000000",
++            "data": "false",
++            "name": "integer",
++            "type": "const boolean",
++            "width": 8
++          }
++        },
++        "seconds": 0.752,
++        "raw": "parentBehavior-reached.json.gz",
++        "sha256": "a1dd0ae22115df9db84f6504e3da1fb821cf05f7cd4628e79ab3e3e05317fd54"
++      }
++    }
++  ]
++}
+Binary file verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/parentBehavior-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/parentBehavior-target.json.gz changed
+Binary file verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/retained-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/guava-fix/preflight-packaged/retained-target.json.gz changed
+Binary file verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/compatible-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/compatible-target.json.gz changed
+--- /dev/null
++++ b/verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/measurement.json
+@@ -0,0 +1,271 @@
++{
++  "key": "gson-parent",
++  "profile": "packaged",
++  "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "classpath": [
++    "assertions",
++    "caller",
++    "gson-719-parent.jar",
++    "core-models.jar"
++  ],
++  "classes": {
++    "GsonRequestedClass.class": "ebe3b08c2bb01b4de9f9c5cc1e4a6212a854f61f82f3d1a173f07ef3626186b5"
++  },
++  "jars": {
++    "gson-719-parent.jar": "aa5c6883a29f7138e0452f8a9cd5c19efd9adba228f0d67024cd305cdfb3eb89"
++  },
++  "selectedModels": {},
++  "originalJvm": {
++    "checks": 9,
++    "sourceSha256": "9ad3f9584a39fcc0e05de9816c1cab70e59d74b2db2e0273bcb35e3a8da5a3f3",
++    "stdout": "9 original checks passed"
++  },
++  "job": "20261123-094336-check-standalone-exception-and-public-li",
++  "runs": [
++    {
++      "method": "compatible",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "9bff3ff94b4bee4271e82af2c753e9ba34cd8abc79de0af2651480678ea3f6f6",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "20",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(I)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 4.57,
++        "raw": "compatible-target.json.gz",
++        "sha256": "f19962a71b2db02f679def01159fb11e654d1b54a516313d130c5d4836780243",
++        "jvmReplay": {
++          "outcome": "held",
++          "inputs": [
++            {
++              "type": "int",
++              "value": 0
++            }
++          ],
++          "sourceSha256": "8e7f904131d270635399581cf55a05bcb50cdbe0f323de423971cdb26c8f54fc",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "16",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(I)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 4.345,
++        "raw": "compatible-reached.json.gz",
++        "sha256": "523a6b8530db668f5bd48016c7f2b74a4cf8e853edf5c9c98f21f0d4ddd2a3a6"
++      }
++    },
++    {
++      "method": "syntax",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "98a430be68f49cf297773beaca6fefbfbcc84b2366da700eadee36730540f1e1",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "20",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(I)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000001",
++            "data": "1",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 4.803,
++        "raw": "syntax-target.json.gz",
++        "sha256": "03c470a1599060fa70f4ab4920d969870e122ac21e3c0cf250e71e8b8e31b012",
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "type": "int",
++              "value": 1
++            }
++          ],
++          "sourceSha256": "8645d26093ae4db740c546bdbde4da55e5432ef95aef6b99b9113ae35cc20877",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "16",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(I)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000001",
++            "data": "1",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 4.527,
++        "raw": "syntax-reached.json.gz",
++        "sha256": "da33a3c026754d8a2fdfd4a2634c894cb37959e5188a5d46fa4921db3ab0ccac"
++      }
++    }
++  ]
++}
+Binary file verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/syntax-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/gson-parent/preflight-packaged/syntax-target.json.gz changed
+Binary file verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/compatible-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/compatible-target.json.gz changed
+--- /dev/null
++++ b/verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/measurement.json
+@@ -0,0 +1,271 @@
++{
++  "key": "gson-fix",
++  "profile": "packaged",
++  "binarySha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "classpath": [
++    "assertions",
++    "caller",
++    "gson-719-fix.jar",
++    "core-models.jar"
++  ],
++  "classes": {
++    "GsonRequestedClass.class": "ebe3b08c2bb01b4de9f9c5cc1e4a6212a854f61f82f3d1a173f07ef3626186b5"
++  },
++  "jars": {
++    "gson-719-fix.jar": "f0c093dc10b6830cc7eef6d94bf8a40c2bfa46322d714b716807d9ed6a481477"
++  },
++  "selectedModels": {},
++  "originalJvm": {
++    "checks": 9,
++    "sourceSha256": "b071b4f5fee32200772f911f90b2c501e5fc95e5356ff6e468b41c8c1c3a5b48",
++    "stdout": "9 original checks passed"
++  },
++  "job": "20261123-094336-check-standalone-exception-and-public-li",
++  "runs": [
++    {
++      "method": "compatible",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "9bff3ff94b4bee4271e82af2c753e9ba34cd8abc79de0af2651480678ea3f6f6",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "20",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(I)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 4.856,
++        "raw": "compatible-target.json.gz",
++        "sha256": "ca35ef76586eeb5679462ac36dd84557c0e94dac06ddadf6fc85d5e82cae7894",
++        "jvmReplay": {
++          "outcome": "held",
++          "inputs": [
++            {
++              "type": "int",
++              "value": 0
++            }
++          ],
++          "sourceSha256": "8e7f904131d270635399581cf55a05bcb50cdbe0f323de423971cdb26c8f54fc",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "16",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(I)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000000",
++            "data": "0",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 4.942,
++        "raw": "compatible-reached.json.gz",
++        "sha256": "d9eb9bf96677dffd05678750fc0a516d68717e033130884dd8eaec07d8b21254"
++      }
++    },
++    {
++      "method": "syntax",
++      "flags": [
++        "--unwind",
++        "16",
++        "--unwinding-assertions",
++        "--throw-runtime-exceptions",
++        "--max-nondet-array-length",
++        "8",
++        "--max-nondet-tree-depth",
++        "4",
++        "--max-nondet-string-length",
++        "8",
++        "--sat-solver",
++        "cadical",
++        "--trace",
++        "--json-ui"
++      ],
++      "wrapperSha256": "98a430be68f49cf297773beaca6fefbfbcc84b2366da700eadee36730540f1e1",
++      "target": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.target:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "20",
++            "comment": "assertion at file GapAssertions.java line 2 function java::GapAssertions.target:(I)V bytecode-index 20",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.target:(I)V",
++            "line": "2",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.target:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000001",
++            "data": "1",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 5.618,
++        "raw": "syntax-target.json.gz",
++        "sha256": "8efb2e94a0efb28a09c965db7075ba76dc8a3ab445f007f7ec360aea3e04e564",
++        "jvmReplay": {
++          "outcome": "held",
++          "inputs": [
++            {
++              "type": "int",
++              "value": 1
++            }
++          ],
++          "sourceSha256": "8645d26093ae4db740c546bdbde4da55e5432ef95aef6b99b9113ae35cc20877",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "reached": {
++        "status": "FAILURE",
++        "exit": 10,
++        "target": {
++          "property": "java::GapAssertions.reached:(I)V.assertion.1",
++          "description": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++          "status": "FAILURE",
++          "sourceLocation": {
++            "bytecodeIndex": "16",
++            "comment": "assertion at file GapAssertions.java line 3 function java::GapAssertions.reached:(I)V bytecode-index 16",
++            "file": "GapAssertions.java",
++            "function": "java::GapAssertions.reached:(I)V",
++            "line": "3",
++            "propertyClass": "assertion",
++            "propertyId": "java::GapAssertions.reached:(I)V.assertion.1"
++          }
++        },
++        "totalProperties": 19,
++        "otherFailures": [
++          {
++            "property": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0",
++            "description": "unwinding assertion loop 0",
++            "status": "FAILURE",
++            "sourceLocation": {
++              "bytecodeIndex": "88",
++              "file": "com/google/gson/stream/JsonReader.java",
++              "function": "java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z",
++              "line": "1310"
++            }
++          }
++        ],
++        "warnings": [],
++        "inputs": {
++          "selection": {
++            "binary": "00000000000000000000000000000001",
++            "data": "1",
++            "name": "integer",
++            "type": "int",
++            "width": 32
++          }
++        },
++        "seconds": 5.83,
++        "raw": "syntax-reached.json.gz",
++        "sha256": "ea2e632052f9052eb8da1edaf4baccc53a4bae33b7037196323ce6b7fbfd69bd"
++      }
++    }
++  ]
++}
+Binary file verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/syntax-reached.json.gz changed
+Binary file verification/java-semantics-gap/standalone/gson-fix/preflight-packaged/syntax-target.json.gz changed

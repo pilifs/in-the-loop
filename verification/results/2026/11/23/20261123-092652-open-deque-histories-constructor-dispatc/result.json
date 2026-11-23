@@ -1,0 +1,416 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-092652-open-deque-histories-constructor-dispatc",
+  "title": "Open deque histories, constructor dispatch, radix and unsigned offsets",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 17.8s, peak 134.1 MiB (estimated 15m00s, 4.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-092652-open-deque-histories-constructor-dispatc.json",
+    "sha256": "6d8e20c854aa97d4ad90a0cc3934d6bf7354f59af056cdb6e6408f24ede6ecad",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-092652-open-deque-histories-constructor-dispatc",
+      "title": "Open deque histories, constructor dispatch, radix and unsigned offsets",
+      "description": "Check JDK and Commons iterator mutations, subclass initialization order, signed hexadecimal digits and all int offsets through the original APIs. Use the unchanged opening checker on both explicit engines at 120 seconds per claim. Retain each raw response and replay actual primitive counterexamples on the original JVM.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "The job records every requested native and integrated JBMC outcome, or the exact frontend or model refusal, against the bound original JVM checks.",
+      "submitted": {
+        "at": "2026-11-23T09:26:52+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "15m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "deque",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening deque",
+          "cwd": "."
+        },
+        {
+          "name": "construction",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening construction",
+          "cwd": "."
+        },
+        {
+          "name": "radix",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening radix",
+          "cwd": "."
+        },
+        {
+          "name": "nibble",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening nibble",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/java-semantics-gap/opening/deque",
+        "verification/java-semantics-gap/opening/construction",
+        "verification/java-semantics-gap/opening/radix",
+        "verification/java-semantics-gap/opening/nibble"
+      ]
+    }
+  },
+  "sourceCommit": "dcee16459e6191027a0d2be10e5ea0425f230bc8",
+  "startedAt": "2026-11-23T09:54:03+00:00",
+  "finishedAt": "2026-11-23T09:58:08+00:00",
+  "wallSeconds": 245.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3824310,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 140574720,
+    "wallSeconds": 17.8,
+    "cpuSeconds": 22.1,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 202.566,
+      "cpuSeconds": 202.659,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2294165504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "0bf60a2a7741f7262fc6dc5208b143ff604d06b405a94f10a26d056fe8abeddb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-092652-open-deque-histories-constructor-dispatc/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 22s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "deque",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening deque",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 2.965,
+      "cpuSeconds": 3.729,
+      "cpuThrottledSeconds": 0.214,
+      "peakMemoryBytes": 80203776,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-deque.log",
+        "lines": 8,
+        "bytes": 311,
+        "sha256": "05cc9ba9dd3fbbe13e84963737bccce1ee39387837d248275d00ea0dc41fd4aa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "deque history-native unsupported 0.021",
+        "deque history-jbmc unsupported 0.315",
+        "deque stillReturns-native unsupported 0.018",
+        "deque stillReturns-jbmc correct 0.283",
+        "deque singleton-native correct 0.031",
+        "deque singleton-jbmc unsupported 0.189",
+        "deque filtered-native unsupported 0.02",
+        "deque filtered-jbmc unsupported 0.344"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "construction",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening construction",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 5.008,
+      "cpuSeconds": 6.923,
+      "cpuThrottledSeconds": 0.188,
+      "peakMemoryBytes": 88035328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-construction.log",
+        "lines": 8,
+        "bytes": 565,
+        "sha256": "95ea638832722d4b93bc684d6f0d3d6f447cb5506696caa4cf11f26463435051",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261123-092652-open-deque-histories-constructor-dispatc/examples/386-commons-lang-constructor-dispatch/adapter/ConstructorPhase.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "construction history-native unsupported 0.021",
+        "construction history-jbmc unsupported 0.005",
+        "construction emptySkips-native correct 0.034",
+        "construction emptySkips-jbmc correct 0.952",
+        "construction alreadyInitialized-native correct 0.032",
+        "construction alreadyInitialized-jbmc correct 0.989"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "radix",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening radix",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 5.011,
+      "cpuSeconds": 5.736,
+      "cpuThrottledSeconds": 0.058,
+      "peakMemoryBytes": 140574720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-radix.log",
+        "lines": 4,
+        "bytes": 141,
+        "sha256": "e8da63debd838b8bee074026e0ed4a32bf4e2302b633ff74b0717a0fe60bfdcb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "radix hex-native unsupported 0.017",
+        "radix hex-jbmc unsupported 1.888",
+        "radix lowFirst-native unsupported 0.02",
+        "radix lowFirst-jbmc correct 1.753"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "nibble",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py opening nibble",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 4.811,
+      "cpuSeconds": 5.668,
+      "cpuThrottledSeconds": 0.124,
+      "peakMemoryBytes": 83595264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-nibble.log",
+        "lines": 6,
+        "bytes": 233,
+        "sha256": "d19292e8bb029492d8d0b313e34d4b595b475cddb20fe8543e362b33dcafe995",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "nibble nibble-native unsupported 0.021",
+        "nibble nibble-jbmc unsupported 1.048",
+        "nibble left-native unsupported 0.021",
+        "nibble left-jbmc correct 0.77",
+        "nibble acceptsNegative-native unsupported 0.015",
+        "nibble acceptsNegative-jbmc correct 0.927"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/opening/deque/measurement.json",
+      "change": "added",
+      "bytes": 13854,
+      "sha256": "45b1d46b2de70294a13c306cd238c4095a1171b3a0184b9da624865c6bb10e77",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/deque/raw.tar.gz",
+      "change": "added",
+      "bytes": 6564,
+      "sha256": "1254a9519bb0e49ba7694d39dd9858634d582176ec0289de796c1d004a68ff18",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/construction/measurement.json",
+      "change": "added",
+      "bytes": 14406,
+      "sha256": "2270395135b419dc067d0e87e06bedc0287330137d4b2237ba17bc0e1cf0ac40",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/construction/raw.tar.gz",
+      "change": "added",
+      "bytes": 5258,
+      "sha256": "9b44188c582a45597393bee0a787b2701c4d200c21e40c6f1d563d074ea6ac7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/radix/measurement.json",
+      "change": "added",
+      "bytes": 8696,
+      "sha256": "5dd57b6d59db9d2b4a3b157ec790771dfe3fedad9d43e4534b10249ce32db5da",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/radix/raw.tar.gz",
+      "change": "added",
+      "bytes": 4411,
+      "sha256": "6e7eed2f8f2082371de6107fe27027a51407c4ff9e7713dde71eccc49a518a6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/nibble/measurement.json",
+      "change": "added",
+      "bytes": 14178,
+      "sha256": "3cc67dc7464f16ad510f6da67ce8a65ff1d15a34432723fcf098d7e9b8f7979c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/opening/nibble/raw.tar.gz",
+      "change": "added",
+      "bytes": 6149,
+      "sha256": "7925f7221a2bdde74ce52ab2afc92948c36c57c6ff9d312f07059645f55e0c71",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:59:53+00:00",
+    "applied": [
+      "verification/java-semantics-gap/opening/deque/measurement.json",
+      "verification/java-semantics-gap/opening/deque/raw.tar.gz",
+      "verification/java-semantics-gap/opening/construction/measurement.json",
+      "verification/java-semantics-gap/opening/construction/raw.tar.gz",
+      "verification/java-semantics-gap/opening/radix/measurement.json",
+      "verification/java-semantics-gap/opening/radix/raw.tar.gz",
+      "verification/java-semantics-gap/opening/nibble/measurement.json",
+      "verification/java-semantics-gap/opening/nibble/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "19c1c9c274fbcf750cbf07318387217da7d2e50d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/19c1c9c274fbcf750cbf07318387217da7d2e50d/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T095808Z-3233016de3ccc174",
+      "outputs": "20261123T095808Z-34848308c18ed2dc",
+      "diff": "20261123T095808Z-375357f580c98416"
+    }
+  }
+}

@@ -164,12 +164,11 @@ fn fresh_thread_local_and_declared_member_metadata_match_the_selected_jvm() {
     for (method, boundary) in [("metadata", "java.lang.Class.getMethod"), ("bindings", "java.lang.ThreadLocal.<init>"),
                                ("overridingInitialValue", "java.lang.ThreadLocal.<init>")] {
         let result = run(&options(classes, &format!("claims.SpringStartup#{method}"), 16, method));
-        if pinned && method != "overridingInitialValue" {
+        if pinned {
             assert_eq!(result.verdict, Verdict::Verified, "{}", result.output);
         } else {
             assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
-            let refusal = if pinned { "overriding initialValue" } else { boundary };
-            assert!(result.output.contains(refusal), "{}", result.output);
+            assert!(result.output.contains(boundary), "{}", result.output);
         }
     }
 }
@@ -182,6 +181,12 @@ fn the_string_and_builder_methods_are_the_definitions_written_out_over_char_at()
         proved(classes, &format!("claims.T#{method}"), 3);
     }
     proved(classes, "claims.S#ends", 3);
+    proved(classes, "claims.T#builderSlice", 3);
+    let version = Command::new("java").arg("-version").output().unwrap();
+    let release = String::from_utf8_lossy(&version.stderr);
+    if release.contains("Temurin-21.0.13+9") || release.contains("Temurin-25.0.5+8") {
+        proved(classes, "claims.T#integerText", 3);
+    }
     // `toLowerCase` reads the default locale: the proof says which it takes for granted.
     let o = run(&options(classes, "claims.T#lower", 2, "lower-stated"));
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);

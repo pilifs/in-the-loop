@@ -470,6 +470,7 @@ pub fn get_static_jdk(m: &mut Machine, class: &str, name: &str) -> Exec<Value> {
 
 pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
     let native = match class {
+        "java/util/ArrayDeque" | "java/util/ArrayDeque$DeqIterator" => return m.new_instance(class),
         "java/util/Properties" if m.cp.properties_method(class, class, "<init>", "()V", true).is_some() => return m.new_instance(class),
         crate::models::CONCURRENT_MAP if m.cp.concurrent_map_method("<init>", "()V").is_some() => return m.new_instance(class),
         "java/lang/StringBuilder" | "java/lang/StringBuffer" => Native::StringBuilder(JStr::new()),
@@ -1348,6 +1349,17 @@ fn string_builder_method(m: &mut Machine, r: Ref, s: JStr, name: &str, descripto
     let result = match (name, descriptor) {
         ("appendCodePoint", "(I)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuffer;") => {
             text.push(&checked_code_point(m, args[0].as_int())?);
+            Some(Value::Ref(r))
+        }
+        ("append", "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;") => {
+            let source = if args[0] == Value::Null { JStr::from("null") } else {
+                m.units_of(args[0]).ok_or_else(|| Fault::Unsupported("append slice of an unqualified CharSequence".into()))?
+            };
+            let (begin,end) = (args[1].as_int(),args[2].as_int());
+            if begin < 0 || begin > end || end as usize > source.len() {
+                return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("Range [{begin}, {end}) out of bounds for length {}",source.len()))));
+            }
+            for &unit in &source.units()[begin as usize..end as usize] { text.push_unit(unit); }
             Some(Value::Ref(r))
         }
         ("append", d) => {

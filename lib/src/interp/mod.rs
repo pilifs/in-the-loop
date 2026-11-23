@@ -487,7 +487,7 @@ impl<'a> Machine<'a> {
         let mut current = Some(class.to_string());
         while let Some(c) = current {
             let mut layout = self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))?;
-            if layout.is_none() && matches!(class, crate::models::CONCURRENT_MAP | "java/util/Properties") {
+            if layout.is_none() && matches!(class, crate::models::CONCURRENT_MAP | "java/util/Properties" | "java/util/ArrayDeque" | "java/util/ArrayDeque$DeqIterator") {
                 layout = self.cp.load(&c).map_err(|e| Fault::Unsupported(e.to_string()))?
                     .filter(|l| l.origin == crate::classpath::Origin::Jdk).map(|l| l.class);
             }
@@ -1270,6 +1270,8 @@ impl<'a> Machine<'a> {
             self.cp.concurrent_map_method(name, descriptor)
         } else if class == "java/util/Properties" {
             self.cp.properties_method(class, owner, name, descriptor, special)
+        } else if matches!(class, "java/util/ArrayDeque" | "java/util/ArrayDeque$DeqIterator") {
+            self.cp.fresh_state_method(class, owner, name, descriptor, special)
         } else {
             self.cp.linked_queue_method(class, owner, name, descriptor, special)
         }

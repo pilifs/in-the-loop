@@ -105,6 +105,9 @@ pub fn charset_constant(owner: &str, name: &str) -> Option<&'static str> {
 
 /// Whether the engine models the static call here.
 pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
+    if owner == INTEGER && name == "toString" && matches!(descriptor, "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") {
+        return true;
+    }
     matches!(
         (owner, name, descriptor),
         ("java/lang/String", "valueOf", "(C)Ljava/lang/String;") |
@@ -390,6 +393,18 @@ impl Engine<'_> {
     /// call stays the JDK's.
     pub(super) fn bytes_static(&mut self, path: &mut Path, owner: &str, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
         match (owner, name, args) {
+            (INTEGER, "toString", [Val::I(word), rest @ ..]) if self.cp.integer_text_image() => {
+                let radix = match rest {
+                    [] => 10,
+                    [Val::I(r)] => match self.b.constant_value(r)? { r @ 2..=36 => r as usize, _ => 10 },
+                    _ => return None,
+                };
+                let (length, cells) = self.integer_digits(word, radix);
+                let text = self.new_string(path, length, cells, Vec::new());
+                self.push(path, Val::R(Some(text)));
+                self.advance(path);
+                Some(Ok(None))
+            }
             ("java/lang/String", "valueOf", [Val::I(unit)]) if descriptor == "(C)Ljava/lang/String;" && self.cp.fresh_string_factory(owner, name, descriptor) => {
                 let text = self.new_string(path, self.b.constant(1, 32), vec![self.b.trunc(unit, 16)], Vec::new());
                 self.push(path, Val::R(Some(text)));
@@ -571,25 +586,32 @@ impl Engine<'_> {
 
     /// Signed decimal UTF-16 units of an int or long, including the minimum value of each type.
     pub(super) fn decimal(&mut self, value: &Bits) -> (Bits, Vec<Bits>) {
-        if let Some(n) = self.b.constant_value(value) {
+        self.integer_digits(value, 10)
+    }
+
+    fn integer_digits(&mut self, value: &Bits, radix: usize) -> (Bits, Vec<Bits>) {
+        if let Some(n) = self.b.constant_value(value).filter(|_| radix == 10) {
             let text = n.to_string();
             return (self.b.constant(text.len() as i64, 32), text.bytes().map(|ch| self.b.constant(i64::from(ch), 16)).collect());
         }
         let width = if value.len() == 64 { 64 } else { 34 };
-        let digits_in_type = if value.len() == 64 { 19 } else { 10 };
+        let digits_in_type = (1u64 << (value.len() - 1)).ilog(radix as u64) as usize + 1;
         let negative = self.b.negative(value);
         let wide = self.b.sext(value, width);
         let negated = self.b.neg(&wide);
         let magnitude = self.b.ite_bits(negative, &negated, &wide);
-        // The digits from the least: the magnitude's remainders by ten, and how many it has.
-        let ten = self.b.constant(10, width);
+        let base = self.b.constant(radix as i64, width);
         let mut rest = magnitude;
         let mut digits: Vec<Bits> = Vec::with_capacity(digits_in_type);
         let mut more: Vec<Lit> = Vec::with_capacity(digits_in_type);
         for _ in 0..digits_in_type {
-            let (quotient, remainder) = self.b.udivrem(&rest, &ten);
-            let digit: Bits = remainder[..4].iter().copied().chain(std::iter::repeat(FALSE)).take(16).collect();
-            let character = self.b.constant(i64::from(b'0'), 16);
+            let (quotient, remainder) = self.b.udivrem(&rest, &base);
+            let digit = self.b.zext(&remainder[..6].to_vec(),16);
+            let zero = self.b.constant(i64::from(b'0'), 16);
+            let character = if radix <= 10 { zero } else {
+                let numeric = self.b.ult(&digit,&self.b.constant(10,16));
+                self.b.ite_bits(numeric,&zero,&self.b.constant(i64::from(b'a')-10,16))
+            };
             digits.push(self.b.add(&digit, &character));
             let none = self.b.is_zero(&quotient);
             more.push(-none);

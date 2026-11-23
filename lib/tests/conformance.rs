@@ -150,7 +150,7 @@ fn corpus() -> Vec<Case> {
         Case::new("enumState", &[("0", "returns 3"), ("1", "returns 17"), ("5", "returns 23")]).holds(Some("n == 1"), "result == 17", &[], V).refuted(None, "result < 20", &[], X),
         // Enums in the own checker (Phase 5, its last step): `$VALUES` at an index that is an input, a switch through
         // javac's `$SwitchMap` class, constants with bodies and a field named as `Enum`'s private one, an enum whose
-        // initializer throws, and `valueOf`, which stays a gap (`Enum.valueOf(Class, String)` is reflection).
+        // initializer throws, and a known name looked up in the original enum constants directory.
         Case::new("enumValues", &[("0", "returns 1003"), ("2", "returns 1023"), ("3", "throws java.lang.ArrayIndexOutOfBoundsException"), ("-1", "throws java.lang.ArrayIndexOutOfBoundsException")])
             .holds(None, "result == 1003 + n * 10", &["ArrayIndexOutOfBoundsException when n < 0 || n > 2"], V)
             .refuted(Some("n >= 0 && n <= 2"), "result < 1020", &[], X),
@@ -159,7 +159,7 @@ fn corpus() -> Vec<Case> {
             .holds(Some("n > 0 && n < 1000"), "result == n * 10 + 1110", &[], V)
             .refuted(Some("n <= 0 && n > -1000"), "result == 1181", &[], X),
         Case::new("enumBroken", &[("3", "returns 12")]).holds(None, "result == 12", &[], V).refuted(None, "result == 13", &[], X),
-        Case::new("enumValueOf", &[("4", "returns 5")]).holds(None, "result == n + 1", &[], U).refuted(None, "result == n", &[], U),
+        Case::new("enumValueOf", &[("4", "returns 5")]).holds(None, "result == n + 1", &[], V).refuted(None, "result == n", &[], X),
         Case::new("listSizes", &[("0", "returns 1"), ("1", "returns 10"), ("2", "returns 20"), ("3", "returns 30"), ("-4", "returns 30")])
             .holds(Some("n >= 1 && n <= 3"), "result == n * 10", &[], V)
             .refuted(None, "result >= 10", &[], X),

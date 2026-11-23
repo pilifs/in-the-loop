@@ -7,7 +7,7 @@ use crate::classfile::MemberRef;
 const LOCAL: &str = "java/lang/ThreadLocal";
 const INHERITABLE: &str = "java/lang/InheritableThreadLocal";
 pub(super) const FRESH: &str = "<JVM.ThreadLocal.fresh>";
-const BINDING: &str = "<JVM.ThreadLocal.binding>";
+pub(super) const BINDING: &str = "<JVM.ThreadLocal.binding>";
 
 impl Engine<'_> {
     pub(super) fn fresh_thread_local(&mut self, path: &mut Path, o: usize, special: bool, m: &MemberRef, args: &[Val]) -> Option<Step> {
@@ -38,8 +38,19 @@ impl Engine<'_> {
                 ("remove", []) => { path.objects[o].fields.remove(BINDING); }
                 ("get", []) => {
                     if !path.objects[o].fields.contains_key(BINDING) {
-                        if self.cp.find_method(&path.objects[o].class, "initialValue", "()Ljava/lang/Object;")?.0.name != LOCAL {
-                            return Some(unsupported("ThreadLocal.get on an unbound key with an overriding initialValue"));
+                        let (class, method) = self.cp.find_method(&path.objects[o].class, "initialValue", "()Ljava/lang/Object;")?;
+                        if class.name != LOCAL {
+                            if !self.cp.is_application(&class.name) || method.code.is_none() {
+                                return Some(unsupported("ThreadLocal.get with an unqualified initialValue implementation"));
+                            }
+                            let old_depth = path.frames.len();
+                            return Some(self.enter_method(path, LOCAL, class, method, vec![Val::R(Some(o))]).and_then(|step| {
+                                if step.is_some() || path.frames.len() != old_depth + 1 {
+                                    return unsupported("ThreadLocal.initialValue did not enter its application frame");
+                                }
+                                path.frames.last_mut().expect("initialValue frame").thread_local_key = Some(o);
+                                Ok(None)
+                            }));
                         }
                         path.objects[o].fields.insert(BINDING.into(), Val::R(None));
                     }

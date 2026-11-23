@@ -1190,8 +1190,9 @@ impl ClassPath {
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
             | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
             | ("java/util/Arrays", "checkLength", "(II)V")
-            | ("java/util/ArrayDeque", "dec", "(II)I")
+            | ("java/util/ArrayDeque", "inc" | "dec", "(II)I")
             | ("java/util/ArrayDeque", "sub", "(III)I")
+            | ("java/util/ArrayDeque", "elementAt" | "nonNullElementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
             | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
             | ("java/nio/channels/Channels", "newChannel", "(Ljava/io/OutputStream;)Ljava/nio/channels/WritableByteChannel;")
@@ -1364,6 +1365,18 @@ impl ClassPath {
         ])
     }
 
+    pub(crate) fn integer_text_image(&self) -> bool {
+        self.matches_jdk_classes(&["java/lang/Integer","java/lang/StringLatin1","java/lang/StringUTF16"],
+            &["a8e237e5d730b5afba88e8995b5bfc171d3a437731ba31295e36a6f31acc9b83",
+              "eeef00c7da113b3b61cd916103a56f733fb327a6a459d8ba02f982f3d6462cf3"])
+    }
+
+    pub(crate) fn enum_lookup_image(&self) -> bool {
+        self.matches_jdk_classes(&["java/lang/Enum","java/lang/Class","java/util/HashMap"],
+            &["0406d74eaffee4294188f377a0a8ed29ae8031b33fcbb6f0ec4b4d89157009a1",
+              "d9dab35be2671bc870ef08b57cb2b66b971307fd48a5421331b82a995ce9fa68"])
+    }
+
     /// These images install Buffer$1 through Preconditions$4. The fixed checkIndex formatter
     /// converts two plain Integers with "%s". Buffer$1.apply(String) ignores both the message
     /// and its receiver and constructs a fresh, no-argument IndexOutOfBoundsException.
@@ -1523,7 +1536,17 @@ impl ClassPath {
                 | ("java/util/ArrayDeque", "<init>", "(I)V")
                 | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "isEmpty", "()Z")
                 | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "size", "()I")
-                | ("java/util/ArrayDeque" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")),
+                | ("java/util/ArrayDeque" | "java/util/Deque", "addFirst" | "addLast", "(Ljava/lang/Object;)V")
+                | ("java/util/ArrayDeque" | "java/util/Collection" | "java/util/Deque", "add", "(Ljava/lang/Object;)Z")
+                | ("java/util/ArrayDeque", "delete", "(I)Z")
+                | ("java/util/ArrayDeque" | "java/util/Deque", "pollLast" | "peekFirst" | "peekLast", "()Ljava/lang/Object;")
+                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection" | "java/lang/Iterable", "iterator", "()Ljava/util/Iterator;")),
+            "java/util/ArrayDeque$DeqIterator" => matches!((owner, name, desc),
+                ("java/util/ArrayDeque$DeqIterator", "<init>", "(Ljava/util/ArrayDeque;)V")
+                | ("java/util/ArrayDeque$DeqIterator" | "java/util/Iterator", "hasNext", "()Z")
+                | ("java/util/ArrayDeque$DeqIterator" | "java/util/Iterator", "next", "()Ljava/lang/Object;")
+                | ("java/util/ArrayDeque$DeqIterator" | "java/util/Iterator", "remove", "()V")
+                | ("java/util/ArrayDeque$DeqIterator", "postDelete", "(Z)V")),
             "java/util/LinkedList" => matches!((owner, name, desc),
                 ("java/util/LinkedList" | "java/util/AbstractSequentialList" | "java/util/AbstractList" | "java/util/AbstractCollection", "<init>", "()V")
                 | ("java/util/LinkedList" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")
@@ -1734,6 +1757,7 @@ impl ClassPath {
         owner == "java/lang/Character" && matches!((name, descriptor),
             ("isSurrogate" | "isHighSurrogate" | "isLowSurrogate", "(C)Z") | ("isSupplementaryCodePoint", "(I)Z")
             | ("charCount", "(I)I")
+            | ("toCodePoint", "(CC)I")
             | ("highSurrogate" | "lowSurrogate", "(I)C"))
     }
 
@@ -1753,6 +1777,7 @@ impl ClassPath {
             | ("java/lang/Integer", "bitCount" | "lowestOneBit", "(I)I")
             | ("java/lang/Integer", "equals", "(Ljava/lang/Object;)Z")
             | ("java/lang/Integer", "hashCode", "()I" | "(I)I")
+            | ("java/lang/Integer", "toString", "()Ljava/lang/String;")
             | ("java/lang/Integer", "reverseBytes", "(I)I")
             | ("java/lang/Long", "reverseBytes", "(J)J")
             | ("java/lang/Integer", "compareUnsigned" | "compare", "(II)I")

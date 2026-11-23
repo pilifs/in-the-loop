@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-104830-qualify-all-historical-leads-and-native",
+  "title": "Qualify all historical leads and native controls after enum lookup",
+  "description": "Run the frozen 38 original benchmark statements on the matching final source with both explicit strict engines. Recount the 13 historical JBMC-only rows, the extra search establishment and all 24 native controls at the original 120-second budget.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Every named original entry has a measured result, evidence hashes and an explicit disposition. The scorecard independently verifies the original domain and every native refutation on its JVM.",
+  "submitted": {
+    "at": "2026-11-23T10:48:30+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 14,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "listOfArray",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py qualified listOfArray",
+      "cwd": "."
+    },
+    {
+      "name": "listSearch",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py qualified listSearch",
+      "cwd": "."
+    },
+    {
+      "name": "other-leads",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py qualified other-leads",
+      "cwd": "."
+    },
+    {
+      "name": "native-controls",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py qualified native-controls",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/qualified/listOfArray.json",
+    "verification/java-semantics-gap/qualified/listSearch.json",
+    "verification/java-semantics-gap/qualified/other-leads.json",
+    "verification/java-semantics-gap/qualified/native-controls.json"
+  ]
+}

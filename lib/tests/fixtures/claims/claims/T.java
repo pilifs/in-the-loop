@@ -4,6 +4,27 @@ package claims;
 public final class T {
     private T() {}
 
+    public static boolean builderSlice(String source, int begin, int end, boolean useNull) {
+        String text = useNull ? "null" : source;
+        StringBuilder b = new StringBuilder("X");
+        try {
+            if (b.append(useNull ? null : source, begin, end) != b || begin < 0 || end < begin
+                    || end > text.length() || b.length() != 1 + end - begin || b.charAt(0) != 'X') return false;
+            for (int i = begin; i < end; i++) if (b.charAt(1 + i - begin) != text.charAt(i)) return false;
+            return true;
+        } catch (IndexOutOfBoundsException e) {
+            return (begin < 0 || end < begin || end > text.length()) && b.length() == 1 && b.charAt(0) == 'X'
+                    && e.getClass() == IndexOutOfBoundsException.class;
+        }
+    }
+
+    public static boolean integerText() {
+        return Integer.toString(Integer.MIN_VALUE,16).equals("-80000000")
+                && Integer.toString(-255,2).equals("-11111111") && Integer.toString(1295,36).equals("zz")
+                && Integer.toString(-15,1).equals("-15") && Integer.valueOf(5).toString().equals("5")
+                && Integer.toString(0,16) != Integer.toString(0,16);
+    }
+
     static int refIndexOf(String s, String t, int from) {
         int n = s.length(), m = t.length();
         if (from < 0) from = 0;

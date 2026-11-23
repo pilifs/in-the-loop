@@ -45,6 +45,20 @@ def javaenv():
                 PATH=str(JDK/"bin") + os.pathsep + os.environ["PATH"])
 
 
+def seed_router(keys):
+    sys.path.insert(0, str(ROOT/"examples/tools"))
+    from targets import runtime_maven
+    cache = runtime_maven.Cache()
+    for graph in sorted({CLAIMS[k].graph for k in keys}):
+        for record in GRAPHS[graph]:
+            wanted = record["sha256"]
+            if cache.path(wanted).is_file() and digest(cache.path(wanted)) == wanted:
+                continue
+            source = CACHE/record["path"]
+            if digest(source) != wanted: raise ValueError(f"{source.name}: different pinned artifact")
+            cache.store(source, wanted)
+
+
 def java_source(path, content):
     path.write_text(content + "\n")
     return path
@@ -102,7 +116,7 @@ def replay_witness(subject, claim, data, work, cp, env):
     declared = "\n".join(f"{typ} {name} = {literal};" for (typ,name),literal in zip(params,literals))
     guard = claim.guard or "true"
     call = f"{subject.owner}.{claim.method}({', '.join(p[1] for p in params)})"
-    source = java_source(work/"OriginalWitness.java", "class OriginalWitness {public static void main(String[] a) throws Exception {\n"
+    source = java_source(work/"OriginalWitness.java", "class OriginalWitness {public static void main(String[] args) throws Exception { check(); } static void check() throws Exception {\n"
                          + declared + f'\nif (!({guard})) throw new IllegalArgumentException("outside guard");\n'
                          + f'System.out.println({call} ? "held" : "refuted");' + "}}")
     dest = work/"witness"
@@ -224,11 +238,14 @@ def measure(key, phase, engines, output, method=None):
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("phase", choices=("opening","final","jvm"))
+    p.add_argument("phase", choices=("opening","final","qualified","jvm","seed"))
     p.add_argument("subjects",nargs="+",choices=CLAIMS)
     p.add_argument("--engines", default="native,jbmc",choices=("native,jbmc","native","jbmc"))
     p.add_argument("--output",type=Path,default=ROOT/"verification/java-semantics-gap")
     p.add_argument("--method")
     a = p.parse_args()
+    if a.phase == "seed":
+        seed_router(a.subjects)
+        sys.exit(0)
     for subject_key in a.subjects:
         measure(subject_key,a.phase,[] if a.phase=="jvm" else a.engines.split(","),a.output.resolve(),a.method)
