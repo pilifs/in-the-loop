@@ -1,0 +1,231 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-075049-setup-build-guava-at-the-7955-parent-and",
+  "title": "Setup: build Guava at the #7955 parent and fix, run StringsTest, and the fix's test on the parent",
+  "status": "failed",
+  "summary": "failed: 1 failed, 4 skipped step(s) in 35.7s, peak 1.4 GiB (estimated 30m00s, 5.0 GiB)",
+  "attention": [
+    "step 1 (guava-7955-fix: build, StringsTest, jar) exited 1, expected 0",
+    "step 1 (guava-7955-fix: build, StringsTest, jar) was held back 28.6s by its 4-CPU quota in 35.7s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-075049-setup-build-guava-at-the-7955-parent-and.json",
+    "sha256": "27bd5aa7698be5fa2819e89866fb81b9e3a8c8fc12bc0947448a8492b977545c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-075049-setup-build-guava-at-the-7955-parent-and",
+      "title": "Setup: build Guava at the #7955 parent and fix, run StringsTest, and the fix's test on the parent",
+      "description": "Setup for llm-dlc/loops/jbmc-java-semantics-gap-brief.md (section 5, organic change), no claims. In the worktrees ~/.cache/in-the-loop/jbmc-java-semantics-gap/src/guava-7955-{parent,fix} (47b7e9e5 and 148cea07), with the project's own Maven wrapper (3.9.9, sha256-pinned), the JDK 24 toolchain Guava asks for (Temurin 24.0.2, checked against Adoptium's sha256 and signature, in the cache) and tests on JDK 21.0.13. Maven's user.home and toolchains.xml point into the cache folder so nothing is written to ~/.m2. Each side builds guava, guava-testlib and guava-tests and runs com.google.common.base.StringsTest, then packages the guava jar to artifacts/guava-7955-SIDE.jar and prints its sha256 and classpath. The fix's StringsTest (which adds the Integer[] lenientFormat assertion) is then run on the parent's code and must fail testLenientFormat; the fix's test is rerun offline; the build trees are removed. Script: ~/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh (sha256 in the setup record).",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md"
+        ]
+      },
+      "expected": "StringsTest passes on both sides; on the parent the transplanted fix test fails testLenientFormat with ArrayStoreException; the offline rerun passes; both jars are built",
+      "submitted": {
+        "at": "2026-11-23T07:50:49+00:00",
+        "session": "970bfd4f-5faa-49d7-bcbc-626f36895cc8",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "5G",
+        "duration": "30m"
+      },
+      "steps": [
+        {
+          "name": "guava-7955-fix: build, StringsTest, jar",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side fix",
+          "cwd": "."
+        },
+        {
+          "name": "guava-7955-parent: build, StringsTest, jar",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side parent",
+          "cwd": "."
+        },
+        {
+          "name": "the fix's StringsTest on the parent (expected to fail testLenientFormat)",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh transplant",
+          "cwd": "."
+        },
+        {
+          "name": "the fix's StringsTest offline",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh offline",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh clean",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "9b3916acca21ab3e0c768f6582d03ef3e5163b6c",
+  "startedAt": "2026-11-23T08:00:15+00:00",
+  "finishedAt": "2026-11-23T08:00:59+00:00",
+  "wallSeconds": 44.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2824466,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1800.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1455788032,
+    "wallSeconds": 35.7,
+    "cpuSeconds": 107.7,
+    "memoryOfEstimate": 0.27,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "guava-7955-fix: build, StringsTest, jar",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side fix",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 35.678,
+      "cpuSeconds": 107.686,
+      "cpuThrottledSeconds": 28.589,
+      "peakMemoryBytes": 1455788032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-guava-7955-fix-build-stringste.log",
+        "lines": 16,
+        "bytes": 1037,
+        "sha256": "2e9927f2e754c688cd957f83392e358323515fd98701e395e73a4bf78e209834",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commit 148cea0778b7ea2e362c794c02b29a62bd93daa2",
+        "[INFO] Total time:  34.657 s",
+        "[INFO] Finished at: 2026-11-23T08:00:59Z",
+        "[INFO] ------------------------------------------------------------------------",
+        "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (compile-java9) on project guava-testlib: Compilation failure",
+        "[ERROR] /home/filip/.cache/in-the-loop/jbmc-java-semantics-gap/src/guava-7955-fix/guava-testlib/src/module-info.java:[18,32] error: module not found: com.google.common",
+        "[ERROR] -> [Help 1]",
+        "[ERROR] ",
+        "[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.",
+        "[ERROR] Re-run Maven using the -X switch to enable full debug logging.",
+        "[ERROR] ",
+        "[ERROR] For more information about the errors and possible solutions, please read the following articles:",
+        "[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException",
+        "[ERROR] ",
+        "[ERROR] After correcting the problems, you can resume the build with the command",
+        "[ERROR]   mvn <args> -rf :guava-testlib"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "guava-7955-parent: build, StringsTest, jar",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side parent",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 3,
+      "name": "the fix's StringsTest on the parent (expected to fail testLenientFormat)",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh transplant",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 4,
+      "name": "the fix's StringsTest offline",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh offline",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 5,
+      "name": "remove the build trees",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh clean",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-23T08:05:49+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T080059Z-506978afd5281efd",
+      "workdir": "20261123T080102Z-839359bf2230db49"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261123-075049-setup-build-guava-at-the-7955-parent-and"
+}
