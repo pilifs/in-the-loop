@@ -1,0 +1,315 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-134736-compare-strict-native-and-jbmc-on-both-o",
+  "title": "Compare strict native and JBMC on both original decimal parsers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11.0s, peak 163.4 MiB (estimated 2m00s, 4.0 GiB); 17 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-134736-compare-strict-native-and-jbmc-on-both-o.json",
+    "sha256": "64aa2bede321a08b13e8735f382fbd89c78a920bbfe0494a5cba16625318b056",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-134736-compare-strict-native-and-jbmc-on-both-o",
+      "title": "Compare strict native and JBMC on both original decimal parsers",
+      "description": "Use the same frozen classpath, compiled adapter, unrestricted selector within the original guard, 120-second deadline, unwind 256 and array bound 16384 for both engines. Retain raw responses, input identities and an independent original-JVM witness for every counterexample.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "375"
+        ]
+      },
+      "expected": "Four paired records with source, JDK, models, raw outcomes and the public JVM replay of the native parent witness.",
+      "submitted": {
+        "at": "2026-11-23T13:47:36+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 20,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "2m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "Paired decimal callers",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/decimal_transfer.py paired",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/decimal-transfer/paired"
+      ]
+    }
+  },
+  "sourceCommit": "36542708757ff25866f04e65714bea631132ac28",
+  "startedAt": "2026-11-23T14:05:11+00:00",
+  "finishedAt": "2026-11-23T14:09:08+00:00",
+  "wallSeconds": 237.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2056273,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 171319296,
+    "wallSeconds": 11.0,
+    "cpuSeconds": 14.5,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Paired decimal callers",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/decimal_transfer.py paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 11.029,
+      "cpuSeconds": 14.495,
+      "cpuThrottledSeconds": 0.505,
+      "peakMemoryBytes": 171319296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-paired-decimal-callers.log",
+        "lines": 8,
+        "bytes": 299,
+        "sha256": "b7eff7879ec0f62cc3179950eb8003d20a98d5ae0b02cf0d71a23aeb2ffe8d4e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "precise-parent native correct 0.032",
+        "precise-parent jbmc correct 1.573",
+        "preserved-parent native correct 0.042",
+        "preserved-parent jbmc unsupported 1.518",
+        "precise-landed native correct 0.052",
+        "precise-landed jbmc unsupported 1.365",
+        "preserved-landed native correct 0.034",
+        "preserved-landed jbmc unsupported 1.39"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/measurement.json",
+      "change": "added",
+      "bytes": 23036,
+      "sha256": "49db4f610f5a0e5f782e91aef4e6dabbf6a0a70c05ed9b01ce37123a8025bf97",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6764,
+      "sha256": "7d4b55f8e9ab1945d06bce0f3767224007884054ee11c740bb579d669f3bdd28",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/native/stdout.json",
+      "change": "added",
+      "bytes": 5333,
+      "sha256": "ff8205382255cb530dea76b7cbff13082975c5b013b6b348ec0141cace907d2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 7056,
+      "sha256": "7175831eb516769b2b600316c92be93cfccbcd1c4ac0449509fe39a0ce0baff6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/native/stdout.json",
+      "change": "added",
+      "bytes": 6023,
+      "sha256": "0d50ce662dda78884bd1bb7407d49efbcb2ff2784c0f591ba42a657420729700",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6757,
+      "sha256": "35a26433d9f916915f0a7cf6d02c4a2977e2e3d3612a37b01f489b68e836648a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/native/stdout.json",
+      "change": "added",
+      "bytes": 5348,
+      "sha256": "543ae8bf6591a8c1dfe10679b633342bdc9c6e13fec7fac6866a318d129864a2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6792,
+      "sha256": "05faeefd7cf904a1bea306ecee5cd298f7f38436d696762359929371fc16a1a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/native/stdout.json",
+      "change": "added",
+      "bytes": 5352,
+      "sha256": "ce49eb0acff4040776284f515055ff6710b0ede38b512a575c96e7e54f436a2d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T14:11:02+00:00",
+    "applied": [
+      "verification/java-semantics-gap/decimal-transfer/paired/measurement.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/jbmc/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/jbmc/stdout.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/native/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/native/stdout.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/jbmc/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/jbmc/stdout.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/native/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/native/stdout.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/jbmc/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/jbmc/stdout.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/native/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/native/stdout.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/jbmc/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/jbmc/stdout.json",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/native/stderr.txt",
+      "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/native/stdout.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "264ac161d93b5f54ce34683cd0cc8b035ca0f334",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/264ac161d93b5f54ce34683cd0cc8b035ca0f334/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T140908Z-799796e0e70daf4b",
+      "outputs": "20261123T140908Z-8224273fa9abd671",
+      "diff": "20261123T140908Z-842916002e96c56d"
+    }
+  }
+}

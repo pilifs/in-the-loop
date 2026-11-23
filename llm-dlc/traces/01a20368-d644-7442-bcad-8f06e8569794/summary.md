@@ -38,20 +38,6 @@ Both captured public readers reach a supplied thread-local. Qualify the original
 
 Job 20261122-133607-prove-the-name-validation-consumer-on-fo compares the prior campaign and follow-up checker on the same inputs, including two symbolic ASCII positions and the unmodified later validator API.
 
-### Bind recorded Avro startup gaps to their public reader claims
-
-change `pqlmqzzmplzo` · [log `70037333c36d`](https://terminalvalue.net/raw-traces/01a20368-d644-7442-bcad-8f06e8569794/70037333c36dfd344fbc1413d4203c6ca86ffd11d1eea3f6b375dec8d2ad65cc.jsonl.gz)
-
-Recount all eight captured public reader attempts against their own entries, guards, artifacts and checker receipts. Both Avro revisions reach a supplied thread-local on the public path. FIELD_RESERVED belongs to the earlier record-field helper. The complete scorecard recount, example 364 validation and changed tests passed.
-
-### Check Avro schema-name validation across readers (verification pending)
-
-change `mnwlsurvsztm` · [log `331916685cad`](https://terminalvalue.net/raw-traces/01a20368-d644-7442-bcad-8f06e8569794/331916685cadbf7346f51571ea96d9904bca8e0570d01c35318a3326defd950f.jsonl.gz)
-
-Both captured public readers reach a supplied thread-local. Qualify the original supplier and consumer bytecode on four JARs, observe its return inside the frozen public calls, and check both name policies on the original JVM. Add strict native ASCII letter-or-digit classification and preserve the named gap for non-ASCII inputs. Changed tests, four original-JVM comparisons, qualification mutation controls and a capped symbolic probe passed.
-
-Job 20261122-133607-prove-the-name-validation-consumer-on-fo compares the prior campaign and follow-up checker on the same inputs, including two symbolic ASCII positions and the unmodified later validator API.
-
 ### Report the checked Avro name policies on four historical JARs
 
 [`48ef435c6a4b`](https://github.com/pilifs/in-the-loop/commit/48ef435c6a4b279e5d41af498a1d0ac39485c509) · [log `6364e5f05e4d`](https://terminalvalue.net/raw-traces/01a20368-d644-7442-bcad-8f06e8569794/6364e5f05e4d770333d99b2283ee01ecffc3dc49d11abaf4eecb2f38105fc30a.jsonl.gz)

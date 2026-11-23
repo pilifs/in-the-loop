@@ -1,0 +1,224 @@
+{
+  "plan": {
+    "example": "375",
+    "task": "preserved-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "preserved-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "file": "claims/preserved.json",
+      "sha256": "45347f4b74a696ac15b0264c29ea94d5065bf777ffa7994c5c4f680cf92fb66f",
+      "property": "preserved",
+      "claimKind": "property",
+      "statement": "The short decimals return the expected Float bits, 17 returns Integer, and 1eE throws NumberFormatException.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "eb49781fcb4a7f7e4068a4e0c34370c67b2d207138b85631f86d435c35f07aa0"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "c18650daed2188aba9dc5078cef8076e403cd4f89cf96e254defd3b361926ed8"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.Decimals#preserved(I)I",
+        "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+        "correspondence": "finite-oracle",
+        "cases": 3
+      },
+      "key": "b5f0874cc73601d9"
+    },
+    "prerequisites": [
+      "replay"
+    ],
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "5904c573ffacaa5d8836ffc2b346f400c8901ed1",
+        "parent": "1dd7cb14c233140a8e76ba5441b6360a239a98dc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-DskipTests",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-landed.json",
+          "sha256": "61043d2227570ecdc2565af6bc898622c19479cc406bef9ec2c3e644cb97d7dc"
+        },
+        "adapters": [
+          "adapter/datawork/Decimals.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "tools": {
+      "required": [
+        "java",
+        "javac",
+        "git",
+        "maven",
+        "jvmcontract"
+      ],
+      "optional": []
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "expected": "established",
+    "outputs": {
+      "receipts": "receipts/preserved-landed"
+    },
+    "folder": "/home/filip/code/in-the-loop/verification/.state/work/20261123-134727-qualify-the-four-original-commons-lang-d/examples/375-commons-lang-decimal-precision",
+    "network": true
+  },
+  "inputs": {
+    "example": "375",
+    "task": "preserved-landed",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+    "revisions": [
+      "landed"
+    ],
+    "claim": {
+      "task": "preserved-landed",
+      "kind": "prove",
+      "relation": "calibration",
+      "target": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "file": "claims/preserved.json",
+      "sha256": "45347f4b74a696ac15b0264c29ea94d5065bf777ffa7994c5c4f680cf92fb66f",
+      "property": "preserved",
+      "claimKind": "property",
+      "statement": "The short decimals return the expected Float bits, 17 returns Integer, and 1eE throws NumberFormatException.",
+      "assume": "code >= 0 && code < 3",
+      "assert": "result == 1",
+      "throws": [],
+      "nullable": [],
+      "mayAlias": [],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "assumptions": [],
+      "allowedChange": null,
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "explicitBounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "defaultBounds": [],
+      "models": [],
+      "plan": null,
+      "contracts": null,
+      "gaps": "strict",
+      "parent": null,
+      "controls": [
+        {
+          "id": "driver",
+          "kind": "driver",
+          "path": "driver/datawork/Cases.java",
+          "sha256": "eb49781fcb4a7f7e4068a4e0c34370c67b2d207138b85631f86d435c35f07aa0"
+        },
+        {
+          "id": "finite-oracle",
+          "kind": "oracle",
+          "path": "controls/table.json",
+          "sha256": "c18650daed2188aba9dc5078cef8076e403cd4f89cf96e254defd3b361926ed8"
+        }
+      ],
+      "adapter": {
+        "entry": "datawork.Decimals#preserved(I)I",
+        "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+        "correspondence": "finite-oracle",
+        "cases": 3
+      },
+      "key": "b5f0874cc73601d9"
+    },
+    "artifacts": [
+      {
+        "revision": "landed",
+        "route": "upstream-build",
+        "repository": "https://github.com/apache/commons-lang",
+        "commit": "5904c573ffacaa5d8836ffc2b346f400c8901ed1",
+        "parent": "1dd7cb14c233140a8e76ba5441b6360a239a98dc",
+        "build": {
+          "tool": "maven",
+          "argv": [
+            "mvn",
+            "-DskipTests",
+            "-Dmaven.javadoc.skip=true",
+            "-Dmaven.source.skip=true",
+            "package"
+          ],
+          "jdk": "21"
+        },
+        "capturedBuild": {
+          "path": "records/setup/build-landed.json",
+          "sha256": "61043d2227570ecdc2565af6bc898622c19479cc406bef9ec2c3e644cb97d7dc"
+        },
+        "adapters": [
+          "adapter/datawork/Decimals.java"
+        ],
+        "jdks": [
+          "21"
+        ]
+      }
+    ],
+    "adapters": [
+      {
+        "path": "adapter/datawork/Decimals.java",
+        "sha256": "051a6ef7c8b9a3df5f0b78ccf00562cec166b0e479f66240beb7c2a86162986a"
+      }
+    ]
+  },
+  "key": "ea31181393453da846102602acf26fdbac4f2721deff1a92b267028ec5d70447"
+}
