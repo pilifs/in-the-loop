@@ -1,0 +1,657 @@
+{
+  "task": "precise-parent",
+  "record": {
+    "kind": "verifier",
+    "revision": "parent",
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/264ac161d93b5f54ce34683cd0cc8b035ca0f334/jvmcontract",
+      "prove",
+      "datawork.Decimals#precise(int)",
+      "--classes",
+      "prepare/parent/adapter-parent.jar",
+      "--classpath",
+      "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "--assume",
+      "code >= 0 && code < 3",
+      "--assert",
+      "result == 1",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "256",
+      "--max-array-length",
+      "16384",
+      "--timeout",
+      "120",
+      "--work",
+      "verifier/work",
+      "--report",
+      "verifier/report",
+      "--json"
+    ],
+    "status": "exited",
+    "exitCode": 1,
+    "seconds": 0.031,
+    "stdout": "verifier/verifier.stdout",
+    "stderr": "verifier/verifier.stderr",
+    "identities": {
+      "jvmcontract": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+      "commit": "36542708757ff25866f04e65714bea631132ac28",
+      "libTree": "264ac161d93b5f54ce34683cd0cc8b035ca0f334",
+      "command": "prove",
+      "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "jdkFeature": "21",
+      "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "engine": "native",
+      "gaps": "strict",
+      "bounds": {
+        "unwind": 256,
+        "maxArrayLength": 16384
+      },
+      "timeout": 120,
+      "scope": {
+        "label": "adapter",
+        "meaning": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+        "method": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+        "revisions": {
+          "parent": {
+            "commit": "1dd7cb14c233140a8e76ba5441b6360a239a98dc",
+            "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "classSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22",
+            "origin": "Original commons-lang-1635-parent module, prepared in spring-java-data setup",
+            "parameters": {
+              "names": [
+                "str"
+              ],
+              "recordedIn": "LocalVariableTable"
+            }
+          }
+        },
+        "adapter": {
+          "entry": "datawork.Decimals#precise(I)I",
+          "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+          "correspondence": "finite-oracle",
+          "cases": 3
+        },
+        "models": [],
+        "assumptions": []
+      },
+      "classpath": {
+        "parent": [
+          {
+            "path": "adapter-parent.jar",
+            "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+            "role": "adapter"
+          },
+          {
+            "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "sha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38",
+            "role": "original"
+          }
+        ]
+      },
+      "checkedEntry": "datawork.Decimals#precise(I)I",
+      "entryBindings": {
+        "parent": {
+          "entry": "datawork.Decimals#precise(I)I",
+          "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+          "loadedFrom": "adapter-parent.jar",
+          "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+          "subjectClassSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22"
+        }
+      },
+      "recipe": {
+        "kind": "adapter",
+        "command": "prove",
+        "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+        "checkedEntry": "datawork.Decimals#precise(I)I",
+        "arguments": [
+          {
+            "field": "assume",
+            "flag": "--assume",
+            "value": "code >= 0 && code < 3"
+          },
+          {
+            "field": "assert",
+            "flag": "--assert",
+            "value": "result == 1"
+          },
+          {
+            "field": "engine",
+            "flag": "--engine",
+            "value": "native"
+          },
+          {
+            "field": "gaps",
+            "flag": "--gaps",
+            "value": "strict"
+          },
+          {
+            "field": "bounds.unwind",
+            "flag": "--unwind",
+            "value": "256"
+          },
+          {
+            "field": "bounds.maxArrayLength",
+            "flag": "--max-array-length",
+            "value": "16384"
+          }
+        ],
+        "checkerDefaults": {
+          "observations": {
+            "values": [
+              "result",
+              "exception"
+            ],
+            "evidence": "stated.observations"
+          },
+          "nullable": {
+            "values": [],
+            "evidence": "stated.domain"
+          },
+          "mayAlias": {
+            "values": [],
+            "evidence": "stated.domain"
+          }
+        },
+        "preparation": "Bind each original class and the ordered classpath of its revision by digest.",
+        "correspondence": {
+          "entry": "datawork.Decimals#precise(I)I",
+          "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+          "correspondence": "finite-oracle",
+          "cases": 3
+        }
+      },
+      "commits": {
+        "parent": "1dd7cb14c233140a8e76ba5441b6360a239a98dc"
+      },
+      "environment": {
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "TZ": "UTC",
+        "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "JVMCONTRACT_JBMC_MEMORY_MB": "4096",
+        "JVMCONTRACT_JAVA_OPTS": "-Xmx2764m",
+        "JVMCONTRACT_JAR_RELEASE": "21"
+      },
+      "cwd": "the attempt directory",
+      "probe": {
+        "parent": {
+          "argv": [
+            "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/264ac161d93b5f54ce34683cd0cc8b035ca0f334/jvmcontract",
+            "gaps",
+            "--target",
+            "datawork.Decimals#precise(int)",
+            "--classes",
+            "prepare/parent/adapter-parent.jar",
+            "--classpath",
+            "prepare/parent/built/commons-lang3-3.21.0-SNAPSHOT.jar",
+            "--json"
+          ],
+          "status": "exited",
+          "exitCode": 0,
+          "seconds": 0.032,
+          "stdout": "verifier/probe-parent.stdout",
+          "stderr": "verifier/probe-parent.stderr",
+          "gaps": [
+            {
+              "id": "jdk-constructor:java.math.BigInteger.<init>(Ljava/lang/String;I)V@jdk-21.0.13",
+              "kind": "jdk-constructor",
+              "call": "java.math.BigInteger.<init>(java.lang.String, int)",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createBigInteger:235"
+              ]
+            },
+            {
+              "id": "jdk-void-method:java.math.BigInteger.checkRange()V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "java.math.BigInteger.checkRange()",
+              "sites": [
+                "java.math.BigInteger.<init>:615"
+              ]
+            },
+            {
+              "id": "jdk-void-method:jdk.internal.math.FormattedFPDecimal.set(JII)V@jdk-21.0.13",
+              "kind": "jdk-void-method",
+              "call": "jdk.internal.math.FormattedFPDecimal.set(long, int, int)",
+              "sites": [
+                "jdk.internal.math.DoubleToDecimal.toChars:383"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Double.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Double.toString()",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createNumber:505"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.Float.toString()Ljava/lang/String;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.Float.toString()",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createNumber:505"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.lang.NumberFormatException.initCause(Ljava/lang/Throwable;)Ljava/lang/Throwable;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.lang.NumberFormatException.initCause(java.lang.Throwable)",
+              "sites": [
+                "java.math.BigDecimal.<init>:704"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.math.BigDecimal.unscaledValue()Ljava/math/BigInteger;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.math.BigDecimal.unscaledValue()",
+              "sites": [
+                "datawork.Decimals.precise:29"
+              ]
+            },
+            {
+              "id": "jdk-reference-method:java.math.BigInteger.negate()Ljava/math/BigInteger;@jdk-21.0.13",
+              "kind": "jdk-reference-method",
+              "call": "java.math.BigInteger.negate()",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createBigInteger:236"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.CharSequence.charAt(I)C@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.CharSequence.charAt(int)",
+              "sites": [
+                "java.lang.Integer.parseInt:722",
+                "java.lang.Integer.parseInt:741",
+                "org.apache.commons.lang3.StringUtils.isBlank:3518",
+                "org.apache.commons.lang3.StringUtils.isNumeric:3727"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.CharSequence.length()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.CharSequence.length()",
+              "sites": [
+                "java.lang.Integer.parseInt:706",
+                "org.apache.commons.lang3.StringUtils.isEmpty:3545",
+                "org.apache.commons.lang3.StringUtils.isNumeric:3725",
+                "org.apache.commons.lang3.StringUtils.length:5218"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Double.isInfinite()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Double.isInfinite()",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createNumber:463",
+                "org.apache.commons.lang3.math.NumberUtils.createNumber:508"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.lang.Float.isInfinite()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Float.isInfinite()",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createNumber:450",
+                "org.apache.commons.lang3.math.NumberUtils.createNumber:504"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.math.BigDecimal.compareTo(Ljava/math/BigDecimal;)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.math.BigDecimal.compareTo(java.math.BigDecimal)",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createNumber:510"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.math.BigDecimal.scale()I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.math.BigDecimal.scale()",
+              "sites": [
+                "datawork.Decimals.precise:29"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.math.BigInteger.equals(Ljava/lang/Object;)Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.math.BigInteger.equals(java.lang.Object)",
+              "sites": [
+                "datawork.Decimals.precise:29"
+              ]
+            },
+            {
+              "id": "jdk-primitive-method:java.math.BigInteger.parseInt([CII)I@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.math.BigInteger.parseInt(char[], int, int)",
+              "sites": [
+                "java.math.BigInteger.<init>:606",
+                "java.math.BigInteger.<init>:610"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Integer.parseInt(Ljava/lang/String;I)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Integer.parseInt(java.lang.String, int)",
+              "sites": [
+                "java.lang.Integer.decode:1460"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.Long.decode(Ljava/lang/String;)Ljava/lang/Long;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.Long.decode(java.lang.String)",
+              "sites": [
+                "org.apache.commons.lang3.math.NumberUtils.createLong:314"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.NumberFormatException.forCharSequence(Ljava/lang/CharSequence;III)Ljava/lang/NumberFormatException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.NumberFormatException.forCharSequence(java.lang.CharSequence, int, int, int)",
+              "sites": [
+                "java.lang.Integer.parseInt:728",
+                "java.lang.Integer.parseInt:733",
+                "java.lang.Integer.parseInt:743",
+                "java.lang.Integer.parseInt:748"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.lang.NumberFormatException.forInputString(Ljava/lang/String;I)Ljava/lang/NumberFormatException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.lang.NumberFormatException.forInputString(java.lang.String, int)",
+              "sites": [
+                "java.lang.Integer.parseInt:756"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.math.BigDecimal.bigDigitLength(Ljava/math/BigInteger;)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.math.BigDecimal.bigDigitLength(java.math.BigInteger)",
+              "sites": [
+                "java.math.BigDecimal.<init>:686"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.math.BigDecimal.divideAndRound(JJI)J@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.math.BigDecimal.divideAndRound(long, long, int)",
+              "sites": [
+                "java.math.BigDecimal.<init>:622",
+                "java.math.BigDecimal.<init>:694"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.math.BigDecimal.divideAndRoundByTenPow(Ljava/math/BigInteger;II)Ljava/math/BigInteger;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.math.BigDecimal.divideAndRoundByTenPow(java.math.BigInteger, int, int)",
+              "sites": [
+                "java.math.BigDecimal.<init>:680"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.math.BigDecimal.longDigitLength(J)I@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.math.BigDecimal.longDigitLength(long)",
+              "sites": [
+                "java.math.BigDecimal.<init>:623",
+                "java.math.BigDecimal.<init>:683",
+                "java.math.BigDecimal.<init>:695"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.math.BigDecimal.parseExp([CII)J@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.math.BigDecimal.parseExp(char[], int, int)",
+              "sites": [
+                "java.math.BigDecimal.<init>:605",
+                "java.math.BigDecimal.<init>:665"
+              ]
+            },
+            {
+              "id": "jdk-static-method:java.math.BigInteger.reportOverflow()V@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "java.math.BigInteger.reportOverflow()",
+              "sites": [
+                "java.math.BigInteger.<init>:596"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromIndexSize(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromIndexSize:397"
+              ]
+            },
+            {
+              "id": "jdk-static-method:jdk.internal.util.Preconditions.outOfBoundsCheckFromToIndex(Ljava/util/function/BiFunction;III)Ljava/lang/RuntimeException;@jdk-21.0.13",
+              "kind": "jdk-static-method",
+              "call": "jdk.internal.util.Preconditions.outOfBoundsCheckFromToIndex(java.util.function.BiFunction, int, int, int)",
+              "sites": [
+                "jdk.internal.util.Preconditions.checkFromToIndex:349"
+              ]
+            }
+          ]
+        }
+      },
+      "usage": {
+        "cpuSeconds": 0.0259,
+        "peakRssBytes": 64933888,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      }
+    },
+    "observations": [
+      {
+        "wire_version": 1,
+        "verdict": "violation",
+        "target": "datawork.Decimals#precise(int)",
+        "domain": "code: int",
+        "assume": "code >= 0 && code < 3",
+        "assert": "result == 1",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": {
+          "input": "precise(code=0)",
+          "outcome": "0",
+          "values": [
+            "0"
+          ],
+          "found": "precise(code=2)",
+          "shrink_runs": 1,
+          "inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 0
+            }
+          ],
+          "found_inputs": [
+            {
+              "name": "code",
+              "type": "int",
+              "value": 2
+            }
+          ],
+          "call": {
+            "class": "datawork.Decimals",
+            "class_file": "datawork/Decimals.class",
+            "classes": "after",
+            "method": "precise",
+            "descriptor": "(I)I",
+            "static": true,
+            "arguments": [
+              {
+                "name": "code",
+                "type": "int",
+                "value": 0,
+                "from": "code"
+              }
+            ]
+          }
+        },
+        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as precise(code=2), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain code: int",
+        "problem": null,
+        "statement": "verifier/work/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "property-violated",
+            "message": "Property of datawork.Decimals#precise(int) violated: `result == 1` where code >= 0 && code < 3:\n  precise(code=0)\n    outcome: 0",
+            "uri": null,
+            "line": 15
+          }
+        ],
+        "output": "✗ Property of datawork.Decimals#precise(int) violated: `result == 1` where code >= 0 && code < 3:\n  precise(code=0)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as precise(code=2), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+        "work": "verifier/work",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006000752,
+          "properties": 1,
+          "unwind": 256,
+          "max_array_length": 16384,
+          "stage": "[0:20]",
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 6,
+            "solving_seconds": 4.5077e-05,
+            "gates_evaluated": 154,
+            "evaluating_seconds": 4.971e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 250,
+            "clauses": 713,
+            "seconds": 0.004868419,
+            "loading_seconds": 0.001299492,
+            "decoding_seconds": 0.000372136,
+            "encoding_seconds": 0.00019434,
+            "witness_seconds": 7.854e-06
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.005,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.001,
+                "lowering": 0.0,
+                "symbolic": 0.003,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 250,
+                "clauses": 713
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.023,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.005,
+            "replay": 0.006,
+            "jvm": 0.0,
+            "other": 0.011
+          }
+        },
+        "replay": {
+          "by": "interpreter",
+          "reproduced": true
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "code",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "code: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "code >= 0 && code < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == 1",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 256,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    ],
+    "control": null,
+    "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261123-134727-qualify-the-four-original-commons-lang-d/.build-py/examples-gl9bh7t2/targets/375/precise-parent/20261123T140907Z-86ae0d4c",
+    "record": "verifier/verifier.json",
+    "reason": null
+  },
+  "log": {
+    "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261123-134727-qualify-the-four-original-commons-lang-d/.build-py/examples-gl9bh7t2/targets/375/precise-parent/20261123T140907Z-86ae0d4c"
+  }
+}

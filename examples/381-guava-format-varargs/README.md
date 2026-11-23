@@ -21,9 +21,9 @@ The campaign's ordinary native checker decided 0/4 at opening and 4/4 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| guava-parent/retained | [open (0.02 s)](../../verification/java-semantics-gap/opening/guava-parent/measurement.json) | [refuted (0.05 s)](../../verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json) |
-| guava-parent/parentBehavior | [open (0.03 s)](../../verification/java-semantics-gap/opening/guava-parent/measurement.json) | [proved (0.04 s)](../../verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json) |
-| guava-fix/retained | [open (0.03 s)](../../verification/java-semantics-gap/opening/guava-fix/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json) |
-| guava-fix/parentBehavior | [open (0.02 s)](../../verification/java-semantics-gap/opening/guava-fix/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json) |
+| guava-parent/retained | [open (0.02 s)](../../verification/java-semantics-gap/opening/guava-parent/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/decimal-transfer/callers/guava-parent/measurement.json) |
+| guava-parent/parentBehavior | [open (0.03 s)](../../verification/java-semantics-gap/opening/guava-parent/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/guava-parent/measurement.json) |
+| guava-fix/retained | [open (0.03 s)](../../verification/java-semantics-gap/opening/guava-fix/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/guava-fix/measurement.json) |
+| guava-fix/parentBehavior | [open (0.02 s)](../../verification/java-semantics-gap/opening/guava-fix/measurement.json) | [refuted (0.04 s)](../../verification/java-semantics-gap/decimal-transfer/callers/guava-fix/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

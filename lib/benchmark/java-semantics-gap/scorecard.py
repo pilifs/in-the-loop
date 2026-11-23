@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import tarfile
 
 from campaign import CLAIMS, GRAPHS, ROOT, wire
@@ -17,6 +18,7 @@ from direct_arrays import PHASE, HISTORIES, check_cells, check_run
 
 BASE = ROOT/"verification/java-semantics-gap"
 PAGE = ROOT/"llm-dlc/loops/jbmc-java-semantics-gap-results.md"
+DECIMAL_PHASE = "decimal-transfer"
 
 
 def require(ok, why):
@@ -353,6 +355,7 @@ def totals(rows,cohort=None):
 
 
 CONFORMANCE = "20261123-104845-recheck-conformance-on-the-qualified-jav"
+DECIMAL_CONFORMANCE = "20261123-135311-recheck-proof-tier-conformance-after-dec"
 FAILED_LAUNCHER = "20261123-101413-qualify-standalone-ordinary-string-and-j"
 FIXED_LAUNCHER = "20261123-104830-replay-corrected-standalone-string-unico"
 HEAP_CONFORMANCE = "20261123-121039-run-both-proof-tier-conformance-tests-af"
@@ -573,8 +576,201 @@ def qualify_followup(card):
     qualify_monitor_schedule(card)
 
 
+def decimal_comparison(mode, plan, paired, directory, finite):
+    """Check the named engine reply and tie a reported counterexample to the original JVM input."""
+    task = plan.task
+    pair = paired["tasks"][task]
+    expected_verdict = "violation" if plan.expected == "refuted" else "verified"
+    row = pair["runs"][mode]
+    raw = directory/task/mode/"stdout.json"
+    err = raw.with_name("stderr.txt")
+    for item, key in ((raw,"stdoutSha256"),(err,"stderrSha256")):
+        collected(item, paired["job"], paired["source"])
+        require(row[key] == digest(item), task+" different raw comparison")
+    decoded = wire.decode(raw.read_text(errors="replace"), "prove")
+    outcome = state(row["verdict"], expected_verdict, row["disposition"], row.get("jvmReplay",{}).get("outcome"))
+    require(row["engine"] == mode and row["expected"] == expected_verdict, task+" different backend or expectation")
+    if decoded.ok and len(decoded.outcomes) == 1:
+        answer, = decoded.outcomes
+        require(answer["target"] == "datawork.Decimals#"+plan.claim["property"] and answer["assume"] == pair["assume"]
+                and answer["assert"] == pair["assert"] and answer["verdict"] == row["verdict"]
+                and not wire.exit_problem([answer["verdict"]], row["exit"]), task+" different comparison statement")
+        if outcome in DECIDED:
+            require(answer["stated"] == row["stated"] and answer["search"]["engine"] == mode
+                    and answer["stated"]["gap_mode"] == "strict" and not answer["stated"]["checker"].get("fallback")
+                    and answer["search"]["unwind"] == pair["bounds"]["unwind"]
+                    and answer["search"]["max_array_length"] == pair["bounds"]["maxArrayLength"], task+" unmatched decimal bounds")
+            if mode == "native":
+                from subjects import Claim
+                native_scope(answer, Claim(plan.claim["property"], "int code", pair["assume"]), pair["bounds"]["maxArrayLength"], task)
+            if outcome == "proved":
+                require(answer["stated"]["bounds"]["complete"] and answer["stated"]["vacuity"]["status"] == "non-vacuous",
+                        task+" incomplete decimal proof")
+            else:
+                require(answer["counterexample"]["inputs"] == row["jvmReplay"]["inputs"]
+                        and row["jvmReplay"]["exit"] == 0, task+" different decimal witness")
+    else:
+        require(outcome == "open" and row["disposition"] in ("frontend refusal", "timeout"), task+" missing checker response")
+    result = {"status":outcome, "seconds":row["seconds"], "evidence":location(raw),
+                      "firstUnproved":short_problem(row["firstUnproved"]), "jvmReplay":row.get("jvmReplay")}
+    if mode == "jbmc" and outcome == "open":
+        pattern = re.escape(plan.claim["property"]) + r"\(code=(-?\d+)\) does not reproduce"
+        candidate = re.search(pattern, row["firstUnproved"])
+        if candidate:
+            value = int(candidate[1])
+            physical = read(ROOT/finite["receipt"])["sides"][plan.revisions[0]]["rows"]
+            observed, = [r for r in physical if r["value"] == value]
+            require(observed["admitted"] and observed["satisfies"] and observed["observations"] == [1,None],
+                    task+" lacks the original JVM observation at JBMC's candidate")
+            result["rejectedCandidate"] = {"code":value, "result":1, "jvmReceipt":finite["receipt"]}
+    return result
+
+
+def qualify_decimal_transfer(card):
+    """Bind both decimal routes, all four paired comparisons and the unchanged controls."""
+    import importlib.util
+    from decimal_transfer import DEST, EXPECTED, FOLDER, PHASE as DECIMAL
+    from targets import native_selectors, route, sidecar
+
+    # This is the same original pair, selector and public receipt format as the Spring/data workstream.
+    spec = importlib.util.spec_from_file_location("spring_data_scorecard", ROOT/"lib/benchmark/spring-java-data/scorecard.py")
+    public = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(public)
+    report_path = FOLDER/"records"/DECIMAL/"run.json"
+    ordinary_job = public.managed(read(report_path)["job"])
+    ordinary = public.run_report(ordinary_job, FOLDER, DECIMAL)
+    selectors = public.run_report(ordinary_job, FOLDER, DECIMAL+"-selectors")
+    path = DEST/"paired/measurement.json"
+    paired = read(path)
+    source = ordinary["source"]
+    collected(path, paired["job"], source)
+    checker = ordinary["checkerSha256"]
+    require(ordinary["job"] == selectors["job"] and source == selectors["source"] == paired["source"]
+            and checker == selectors["checkerSha256"] == paired["checkerSha256"]
+            and ordinary["libTree"] == selectors["libTree"] == paired["libTree"], "different decimal checker")
+    require(set(ordinary["tasks"]) == set(selectors["tasks"]) == set(paired["tasks"]) == EXPECTED.keys(),
+            "missing original decimal task")
+    require(paired["staging"] == "staged" and paired["secondsPerClaim"] == 120, "different decimal comparator profile")
+    example = read(FOLDER/"example.json")
+    target = sidecar.load(FOLDER, example)
+    authored = {t["id"]: t for t in read(FOLDER/"target.json")["tasks"]}
+    cases = {}
+    for task, expected in EXPECTED.items():
+        plan = route.resolve(FOLDER, example, target, task)
+        finite, native = public.public(ordinary_job, FOLDER, plan, authored[task], ordinary)
+        selector = selectors["tasks"][task]
+        receipt = FOLDER/selector["receipt"]
+        collected(receipt, selectors["job"], source)
+        checked = native_selectors.validate_result(FOLDER, plan, receipt)
+        special = read(receipt)
+        require(native["status"] == finite["status"] == checked["status"] == expected
+                and selector["sha256"] == digest(receipt) and checked["admitted"] == 3,
+                task+" incorrect original or selector outcome")
+        require(finite["inputs"] == 3 and finite["differences"] == (3 if expected == "refuted" else 0),
+                task+" incomplete original JVM observations")
+        pair = paired["tasks"][task]
+        require(pair["claimKey"] == plan.claim["key"] and pair["assume"] == plan.claim["assume"]
+                and pair["assert"] == plan.claim["assert"] and pair["bounds"] == plan.claim["bounds"]
+                and pair["entry"] == native["binding"]["entry"] and pair["classpath"] == special["classpath"]
+                and native["classpath"] == [a["sha256"] for a in pair["classpath"]], task+" changed decimal inputs")
+        compared = {mode:decimal_comparison(mode, plan, paired, path.parent, finite) for mode in ("native","jbmc")}
+        require(compared["native"]["status"] == ("refuted" if expected == "refuted" else "proved"), task+" missing paired native decision")
+        cases[task] = {"ordinary":native, "finite":finite, "selectors":location(receipt), "checkedSelectors":checked["checked"], "paired":compared}
+    require(all(row["sourceSha256"] == digest(FOLDER/"controls/DecimalRuntime.java") and len(row["rows"]) == 3
+                for row in paired["originalJvm"].values()) and set(paired["originalJvm"]) == {"parent","landed"}, "missing exact runtime class controls")
+    current = subject_rows(DECIMAL+"/callers", recorded_phase="callers")
+    historic_rows = historic(DECIMAL+"/historical")
+    for group, earlier in ((current,card["subjects"]), (historic_rows,card["historical"])):
+        require(set(group) == set(earlier), "different regression cohort")
+        for key, row in group.items():
+            prior = earlier[key]["final"]
+            require(row["source"] == source and row["native"]["status"] == prior["native"]["status"]
+                    and row["jbmc"]["status"] == prior["jbmc"]["status"]
+                    and row["expected"] == prior["expected"], key+" changed matched outcomes")
+            for field in ("inputClasses","oracles","signature","guard","bound","classes","jvm","claim"):
+                if field in prior: require(prior[field] == row[field], key+" changed "+field)
+            earlier[key][PHASE] = {"source":prior["source"], "evidence":prior["evidence"],
+                                   "jbmcEvidence":prior.get("jbmcEvidence",prior["evidence"])}
+            earlier[key]["final"] = row
+    entry = read(DEST/"callers/numbers/measurement.json")
+    bench = read(DEST/"historical/listOfArray.json")
+    require(entry["checkerSha256"] == bench["binaries"]["jvmcontract"] == checker
+            and entry["jvmSha256"] == paired["javaSha256"] and entry["modulesSha256"] == paired["jdkModulesSha256"]
+            and entry["jbmcSha256"] == paired["jbmcSha256"] and entry["packagedModelsSha256"] == paired["coreModelsSha256"],
+            "different engine or JDK in the matched regressions")
+    startup_path = BASE/"monitor-startup/measurement.json"
+    startup = read(startup_path)
+    require(startup["originalClasses"] == current["monitors/matched"]["classes"]
+            and startup["jdkModulesSha256"] == entry["modulesSha256"]
+            and startup["observerSha256"] == digest(ROOT/"examples/391-class-monitor-identity/controls/WorkerStartup.java"),
+            "different monitor startup classes or runtime")
+    observed = {(r["entry"],r["parentBinding"]):(r["result"],r["childValueCalls"],r["finalShared"]) for r in startup["jvmRuns"]}
+    expected_startup = {("constructor",b):("NEW",int(b in ("present","null")),41) for b in ("absent","removed","null","present")}
+    expected_startup.update({(m,"throw"):("original exception",1,41) for m in ("matched","mixed","synchronizedMethod")})
+    expected_startup["matched","present"] = ("true",1,6)
+    require(observed == expected_startup and len(startup["jvmRuns"]) == len(observed), "incomplete original worker startup controls")
+    jobs = {ordinary["job"],paired["job"],entry["job"],bench["environment"]["job"],DECIMAL_CONFORMANCE}
+    for job in sorted(jobs):
+        checked_source, _ = job_outputs(job)
+        require(checked_source == source, job+" ran another decimal source")
+        card["verification"][job] = {"status":"passed","source":source,"receipt":location(receipt_path(job))}
+    proof_step, = job_receipt(DECIMAL_CONFORMANCE)["steps"]
+    for test in ("the_corpus_agrees_with_the_jvm_under_jbmc_and_auto","the_corpus_agrees_with_the_jvm_under_auto_confirm"):
+        require("test "+test+" ... ok" in proof_step["tail"], "missing proof-tier conformance result for "+test)
+    card["environments"][DECIMAL] = {**card["environments"][PHASE], "historicalSource":source, "callerSource":source,
+                                     "benchmarkBinaries":bench["binaries"], "callerChecker":checker,
+                                     "callerJdk":entry["jdk"], "historicalJdk":bench["environment"]["java"]}
+    outcomes = Counter((r["native"]["status"] in DECIDED, r["jbmc"]["status"] in DECIDED) for r in current.values())
+    card["pairedFinal"] = {"both":outcomes[True,True],"nativeOnly":outcomes[True,False],
+                           "integratedJbmcOnly":outcomes[False,True],"neither":outcomes[False,False],
+                           "integratedByStatus":dict(Counter(r["jbmc"]["status"] for r in current.values()))}
+    for t in card["transfers"]:
+        if t["example"] == 375:
+            before = {k:t[k] for k in ("final","status","source","checker","job","evidence")}
+            native = cases[t["task"]]["ordinary"]
+            t.update({PHASE:before}, final="", status=native["status"], source=source, checker=checker,
+                     job=ordinary["job"], evidence=native["receipt"])
+    card["decimalTransfer"] = {"source":source,"checkerSha256":checker,"job":ordinary["job"],"paired":location(path),
+                               "tasks":cases,"originalJvm":paired["originalJvm"],"monitorStartup":location(startup_path)}
+    card["phase"] = DECIMAL
+
+
+def decimal_findings(study):
+    rows = study["tasks"]
+    paired = link(study["paired"], "Original JVM values and matched checker runs")
+    lines = ["## Commons Lang decimal parser", "",
+             "All four ordinary claims on Commons Lang #1635 previously stopped at `Float.valueOf(String)`. "
+             "The follow-up checked the original parent and fix on the whole guard `0 ≤ code < 3`, then repeated the checks through the admitted constant calls. "
+             "Both routes yielded three proofs and a parent refutation. These four transfer claims have their own denominator. "+paired, "",
+             "| Claim | Ordinary native, full guard | Native selector check | Integrated JBMC |",
+             "|---|---|---|---|"]
+    for task in ("precise-parent","precise-landed","preserved-parent","preserved-landed"):
+        case = rows[task]
+        native = case["ordinary"]
+        comp = case["paired"]["jbmc"]
+        lines.append("| "+" | ".join([task,link(native["receipt"],native["status"]),link(case["selectors"],native["status"]),
+                     link(comp["evidence"],engine(comp))])+" |")
+    candidates = [(task,case["paired"]["jbmc"]["rejectedCandidate"]) for task,case in rows.items()
+                  if "rejectedCandidate" in case["paired"]["jbmc"]]
+    if candidates:
+        lines.extend(["","Integrated JBMC also refuted the parent precision claim. Its other candidate counterexamples "
+                      "returned 1 on the original JVM, leaving those comparisons open. "
+                      +" · ".join(link(r["jvmReceipt"],f"{task}, selector {r['code']}") for task,r in candidates)])
+    lines += ["",
+             "The positive literals `0.100000001490116121` and `0.100000001490116122` collapse to the same Float on the parent. "
+             "The negative literal also returns a Float there. The fix returns three exact BigDecimals with signed coefficients "
+             "`100000001490116121`, `100000001490116122`, and `-100000001490116121`, all at scale 18. "
+             "Both revisions retain the raw Float bits for `0.1` and `0.5`, the Integer value 17, and the exact NumberFormatException for `1eE`. "
+             +link(rows["precise-parent"]["ordinary"]["replay"],"Original parent witness")+" · "+paired, "",
+             "After floating-point parsing and formatting, the long decimal first reached `BigDecimal(String)` and then the `BigInteger.bitsPerDigit` table. "
+             "The integer control reached `Objects.checkFromToIndex` inside `Integer.parseInt`. The checker now executes those JDK paths and decodes five arithmetic tables from the pinned Temurin 21 initializers. "
+             "An independent test covers a decimal just above a binary32 midpoint that produces a different word if rounded through binary64. "
+             +link("lib/tests/fixtures/claims/claims/DecimalText.java","Rounding, scale, identity and initializer controls"), ""]
+    return lines
+
+
 def findings(card):
-    phase=card["phase"]
+    phase=PHASE if "decimalTransfer" in card else card["phase"]
     def reported(key):return read(BASE/phase/key/"measurement.json")
     def ref(key,caption):return link(location(BASE/phase/key/"measurement.json"),caption)
     f=card["subjects"]
@@ -628,6 +824,11 @@ def findings(card):
             counts={v["read"]:v["instructionSchedules"] for v in r["outcomes"]}
             ordered.append(f"| {label} | {r['states']:,} | {counts.get(5,0):,} | {counts.get(6,0):,} |")
         ordered+=["","All completed schedules leave the shared field at 6. The ordinary native entry first needs the platform-thread constructor. The three schedule results have their own scope and denominator.",""]
+        if "decimalTransfer" in card:
+            ordered+=["Eight fresh JVM controls followed the original Worker constructor into the platform thread's inherited map. "
+                      "A present parent binding, including a stored null, invoked the application's childValue on the parent before the worker started. "
+                      "An absent or removed binding made zero callbacks. A throwing callback escaped all three original monitor callers before their first shared-field write. "
+                      +link(card["decimalTransfer"]["monitorStartup"],"Original constructor bytecode and callback outcomes"),""]
     ordered+=["## Remaining direct native claims","",
               "| Original caller | First unproved step | Open statements |","|---|---|---:|"]
     grouped={}
@@ -645,6 +846,7 @@ def findings(card):
 
 
 def render(card):
+    decimal = card.get("decimalTransfer")
     historical,sub,stock=card["historical"],card["subjects"],card["standalone"]
     leads=totals(historical,"jbmc-only");controls=totals(historical,"native-only");scores=totals(sub)
     def count(group,stage):return sum(group[stage].get(k,0) for k in DECIDED)
@@ -659,7 +861,8 @@ def render(card):
            "## Historical differential","",
            "| Frozen claim | Assertion and guard, or equivalence scope | Historical cohort | Expected | Opening native | Final native | Integrated JBMC, opening → final | Standalone target with six list models / packaged models | Original JVM witness or first open native step |",
            "|---|---|---|---|---|---|---|---|---|"]
-    lines[lines.index("## Historical differential"):lines.index("## Historical differential")]=findings(card)
+    position = lines.index("## Historical differential")
+    lines[position:position] = (decimal_findings(decimal) if decimal else []) + findings(card)
     for key,pair in historical.items():
         a,b=pair["opening"],pair["final"];n=b["native"]
         detail=(f"{n['witness']} → {n['replay']}" if n["replay"] else n["firstUnproved"] or "Registered JVM controls")
@@ -672,7 +875,7 @@ def render(card):
             engine(a["jbmc"])+" → "+engine(b["jbmc"]),paired,detail]))+" |")
     lines+=["","## Original callers","",
             "A refutation earns credit when the actual checker input fails on a fresh original JVM. A named refusal, an incomplete bound or a witness that holds on replay stays open. Standalone columns identify the target status, reachability assertion status and accompanying failing properties. Credit requires a failing deliberately false reachability control and successful accompanying properties.",""]
-    if card["phase"] == PHASE:
+    if "pairedFinal" in card:
         p=card["pairedFinal"]
         j=p["integratedByStatus"]
         lines+=[f"All 60 final native and integrated JBMC entries used the same checker build, JDK, original class files and 120-second budgets. Both profiles qualified {p['both']} statements, native alone qualified {p['nativeOnly']}, integrated JBMC alone qualified {p['integratedJbmcOnly']}, and {p['neither']} remained open in both. The integrated profile produced {j.get('proved',0)} qualified proofs and {j.get('refuted',0)} replayed refutations. The original JVM contradicted {j.get('JVM-contradicted proof',0)} further integrated proofs. Each comparator result links to its measurement.",""]
@@ -690,8 +893,13 @@ def render(card):
         lines.append("| "+" | ".join(map(cell,[link(b["claim"],f"{b['family']} {key}"),scope,b["expected"],
             link(a["evidence"],engine(a["native"])),link(b["evidence"],engine(n)),engine(a["jbmc"])+" → "+link(b.get("jbmcEvidence", b["evidence"]),engine(b["jbmc"])),
             ", ".join(ss) or "Separate seed or upstream control",detail]))+" |")
-    lines+=["","## Transfer to existing ordinary callers","",
-            "| Example | Frozen claim | Opening first unproved step | Final first unproved step | Ordinary result |",
+    lines+=["","## Transfer to existing ordinary callers",""]
+    if decimal:
+        formatter, = (t for t in card["transfers"] if t["example"] == 374)
+        lines += [f"The decimal rows were rechecked at `{decimal['source'][:12]}`. "
+                  f"The formatter's latest ordinary receipt is from `{formatter['source'][:12]}`.",""]
+    column = "Last measured first unproved step" if decimal else "Final first unproved step"
+    lines+=[f"| Example | Frozen claim | Opening first unproved step | {column} | Ordinary result |",
             "|---|---|---|---|---|"]
     for t in card["transfers"]:
         lines.append("| "+" | ".join(map(cell,[str(t["example"]),t["task"],t["opening"] or "Decided",
@@ -706,14 +914,17 @@ def render(card):
                      f"`{env['callerJbmc'][:16]}` / `{env['callerCoreModels'][:16]}` |")
     if "verification" in card:
         jobs=card["verification"]
+        conformance = HEAP_CONFORMANCE if card["phase"]==PHASE else CONFORMANCE
+        if decimal:
+            conformance = DECIMAL_CONFORMANCE
         passed=sum(r["status"]=="passed" for r in jobs.values())
         lines+=["", f"Of {len(jobs)} campaign jobs, {passed} passed. Both proof-tier conformance tests passed on the final measured source. "
                 "One intermediate Unicode witness launcher failed to compile because its parameter and a local variable shared a name. "
                 "The corrected launcher replayed the original witness and completed the string and deque checks. "
-                +link(jobs[HEAP_CONFORMANCE if card["phase"]==PHASE else CONFORMANCE]["receipt"],"Final conformance")+" · "
+                +link(jobs[conformance]["receipt"],"Final conformance")+" · "
                 +link(jobs[FAILED_LAUNCHER]["receipt"],"Initial launcher failure")+" · "
                 +link(jobs[FIXED_LAUNCHER]["receipt"],"Passing replacement")]
-        if card["phase"]==PHASE:
+        if "scopeRetries" in card:
             links=[link(jobs[old]["receipt"],"Initial "+("array" if "array-heaps" in new else "caller")+" check")+" · "+
                    link(jobs[new]["receipt"],"Passing replacement") for old,new in card["scopeRetries"].items()]
             lines+=["","Two follow-up jobs stopped at the scope comparison because tuples in memory and arrays in the saved JSON compared differently. The bytecode, claims, JVM and serialized scopes matched. Both replacement jobs passed after the comparison used the serialized scope for both inputs. "+" · ".join(links)]
@@ -722,6 +933,35 @@ def render(card):
             +link(location(BASE/"scorecard.json"),"Machine-readable comparison")+" · "
             +link("llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md","Pinned artifacts and setup recipes")]
     return "\n".join(lines)+"\n"
+
+
+def decimal_example(study):
+    folder, = (ROOT/"examples").glob("375-*")
+    ep = folder/"example.json"
+    example = read(ep)
+    note = ("The Java semantics follow-up decided all four ordinary native claims on both original Commons Lang builds. "
+            "The parent returned Float for all three precision inputs. The fix returned the exact BigDecimal coefficients at scale 18. "
+            "Both revisions preserved the two short Floats, the Integer, and the malformed-input exception.")
+    example["verdictLabel"] = "Ordinary native 4/4, finite JVM 4/4"
+    example["notes"] = [s for s in example["notes"] if not s.startswith("The Java semantics follow-up ")] + [note]
+    page = folder/"README.md"
+    opening = re.sub(r"\n## Ordinary native follow-up\n.*?(?=\n## |\Z)", "\n", page.read_text(), flags=re.S)
+    heading = "## Earlier Spring/data results"
+    opening = opening.replace("## Recorded results", heading)
+    opening = opening.replace("4 ordinary native obligations remain open.", "All four ordinary native obligations were open at that measurement.")
+    table = ["## Ordinary native follow-up", "", note, "",
+             "The strict checker took the unchanged public entry with `0 ≤ code < 3`, unwind 256, maximum array length 16,384 and a 120-second deadline. A separate run covered every admitted constant call required for each proof and replayed the parent witness on a fresh JVM.", "",
+             "| Claim | Whole guard | Selector checks |", "|---|---|---|"]
+    for name in ("precise-parent","precise-landed","preserved-parent","preserved-landed"):
+        case = study["tasks"][name]
+        result = case["ordinary"]
+        guarded = os.path.relpath(ROOT/result["workflow"], folder)
+        selected = os.path.relpath(ROOT/case["selectors"], folder)
+        table.append(f"| {name} | [{result['status']}]({guarded}) | [{case['checkedSelectors']} checked]({selected}) |")
+    table += ["","[Exact runtime classes, raw values and integrated JBMC](../../" +study["paired"]+") · "
+              "[Campaign results](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md#commons-lang-decimal-parser)"]
+    intro, history = opening.split(heading, 1)
+    return {ep:json.dumps(example,indent=2)+"\n", page:intro.rstrip()+"\n\n"+"\n".join(table)+"\n\n"+heading+history}
 
 
 def example_outputs(card):
@@ -742,11 +982,11 @@ def example_outputs(card):
         example["notes"]=[n for n in example.get("notes",[]) if not n.startswith(("The campaign's ordinary native checker decided ", "The direct mutation controls ", "The separate schedule checker "))]
         example["notes"].append(note)
         extra=None
-        if card["phase"]==PHASE and number==379:
+        if "gainedSinceQualification" in card and number==379:
             extra=("The direct mutation controls reconstructed a shared object and two distinct objects with equal maximal int fields. "
                    "On every incompatible public Gson call the parent threw ClassCastException and the fix threw JsonSyntaxException. "
                    "The native checker also verified all five compatible selections on both builds.")
-        if card["phase"]==PHASE and number==391:
+        if "gainedSinceQualification" in card and number==391:
             extra=("The separate schedule checker enumerated every completed sequentially consistent application-bytecode interleaving of the frozen two-thread callers, with successful start and join. "
                    "Both class-matched callers returned true. The mixed caller returned both false and true, each reproduced on an original JVM.")
         if extra: example["notes"].append(extra)
@@ -768,17 +1008,21 @@ def example_outputs(card):
 
 if __name__=="__main__":
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--phase",choices=("final","qualified",PHASE),default=PHASE)
+    parser.add_argument("--phase",choices=("final","qualified",PHASE,DECIMAL_PHASE),default=DECIMAL_PHASE)
     parser.add_argument("--check",action="store_true")
     args=parser.parse_args()
-    card=compare(args.phase)
-    if args.phase in ("qualified", PHASE):
+    baseline = PHASE if args.phase == DECIMAL_PHASE else args.phase
+    card=compare(baseline)
+    if baseline in ("qualified", PHASE):
         qualify_companions(card)
         card["verification"]=campaign_jobs(card)
-    if args.phase==PHASE:
+    if baseline==PHASE:
         qualify_followup(card)
+    if args.phase==DECIMAL_PHASE:
+        qualify_decimal_transfer(card)
     outputs={BASE/"scorecard.json":json.dumps(card,indent=1)+"\n",PAGE:render(card)}
-    if args.phase in ("qualified", PHASE): outputs.update(example_outputs(card))
+    if baseline in ("qualified", PHASE): outputs.update(example_outputs(card))
+    if "decimalTransfer" in card: outputs.update(decimal_example(card["decimalTransfer"]))
     for path,contents in outputs.items():
         if args.check: require(path.read_text()==contents,f"stale {path.name}")
         else: path.write_text(contents)

@@ -28,17 +28,17 @@ The campaign's ordinary native checker decided 4/11 at opening and 11/11 at qual
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| arrays/categories | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [proved (0.01 s)](../../verification/java-semantics-gap/heap-and-gson/arrays/measurement.json) |
-| arrays/noNullCell | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [refuted (0.06 s)](../../verification/java-semantics-gap/heap-and-gson/arrays/measurement.json) |
-| arrays/noItemCell | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [refuted (0.07 s)](../../verification/java-semantics-gap/heap-and-gson/arrays/measurement.json) |
-| arrays/followsAlias | [proved (0.02 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/arrays/measurement.json) |
-| arrays/alwaysShares | [refuted (0.02 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/arrays/measurement.json) |
-| receiver/exact | [proved (0.02 s)](../../verification/java-semantics-gap/opening/receiver/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/receiver/measurement.json) |
-| receiver/parentOrChild | [refuted (0.03 s)](../../verification/java-semantics-gap/opening/receiver/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/receiver/measurement.json) |
-| gson-parent/compatible | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-parent/measurement.json) | [proved (12.88 s)](../../verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json) |
-| gson-parent/syntax | [open (0.03 s)](../../verification/java-semantics-gap/opening/gson-parent/measurement.json) | [refuted (12.75 s)](../../verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json) |
-| gson-fix/compatible | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-fix/measurement.json) | [proved (10.16 s)](../../verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json) |
-| gson-fix/syntax | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-fix/measurement.json) | [proved (0.17 s)](../../verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json) |
+| arrays/categories | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json) |
+| arrays/noNullCell | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [refuted (0.07 s)](../../verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json) |
+| arrays/noItemCell | [open (0.00 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [refuted (0.06 s)](../../verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json) |
+| arrays/followsAlias | [proved (0.02 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json) |
+| arrays/alwaysShares | [refuted (0.02 s)](../../verification/java-semantics-gap/opening/arrays/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json) |
+| receiver/exact | [proved (0.02 s)](../../verification/java-semantics-gap/opening/receiver/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/receiver/measurement.json) |
+| receiver/parentOrChild | [refuted (0.03 s)](../../verification/java-semantics-gap/opening/receiver/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/receiver/measurement.json) |
+| gson-parent/compatible | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-parent/measurement.json) | [proved (7.34 s)](../../verification/java-semantics-gap/decimal-transfer/callers/gson-parent/measurement.json) |
+| gson-parent/syntax | [open (0.03 s)](../../verification/java-semantics-gap/opening/gson-parent/measurement.json) | [refuted (9.19 s)](../../verification/java-semantics-gap/decimal-transfer/callers/gson-parent/measurement.json) |
+| gson-fix/compatible | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-fix/measurement.json) | [proved (7.78 s)](../../verification/java-semantics-gap/decimal-transfer/callers/gson-fix/measurement.json) |
+| gson-fix/syntax | [open (0.02 s)](../../verification/java-semantics-gap/opening/gson-fix/measurement.json) | [proved (0.12 s)](../../verification/java-semantics-gap/decimal-transfer/callers/gson-fix/measurement.json) |
 
 The direct mutation controls reconstructed a shared object and two distinct objects with equal maximal int fields. On every incompatible public Gson call the parent threw ClassCastException and the fix threw JsonSyntaxException. The native checker also verified all five compatible selections on both builds.
 

@@ -20,8 +20,8 @@ The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| nibble/nibble | [open (0.02 s)](../../verification/java-semantics-gap/opening/nibble/measurement.json) | [proved (2.91 s)](../../verification/java-semantics-gap/heap-and-gson/nibble/measurement.json) |
-| nibble/left | [open (0.02 s)](../../verification/java-semantics-gap/opening/nibble/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/nibble/measurement.json) |
-| nibble/acceptsNegative | [open (0.01 s)](../../verification/java-semantics-gap/opening/nibble/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/heap-and-gson/nibble/measurement.json) |
+| nibble/nibble | [open (0.02 s)](../../verification/java-semantics-gap/opening/nibble/measurement.json) | [proved (3.87 s)](../../verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json) |
+| nibble/left | [open (0.02 s)](../../verification/java-semantics-gap/opening/nibble/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json) |
+| nibble/acceptsNegative | [open (0.01 s)](../../verification/java-semantics-gap/opening/nibble/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

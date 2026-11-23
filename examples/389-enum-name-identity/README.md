@@ -20,8 +20,8 @@ The campaign's ordinary native checker decided 2/3 at opening and 3/3 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| enum/lookup | [open (0.02 s)](../../verification/java-semantics-gap/opening/enum/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/enum/measurement.json) |
-| enum/ordinal | [proved (0.02 s)](../../verification/java-semantics-gap/opening/enum/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/enum/measurement.json) |
-| enum/alwaysZero | [refuted (0.03 s)](../../verification/java-semantics-gap/opening/enum/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/heap-and-gson/enum/measurement.json) |
+| enum/lookup | [open (0.02 s)](../../verification/java-semantics-gap/opening/enum/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json) |
+| enum/ordinal | [proved (0.02 s)](../../verification/java-semantics-gap/opening/enum/measurement.json) | [proved (0.01 s)](../../verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json) |
+| enum/alwaysZero | [refuted (0.03 s)](../../verification/java-semantics-gap/opening/enum/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

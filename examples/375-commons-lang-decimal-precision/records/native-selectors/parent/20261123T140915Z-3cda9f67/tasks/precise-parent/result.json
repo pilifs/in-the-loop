@@ -1,0 +1,170 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "e306676095e52b78",
+    "inputsKey": "e855fda9fcc17a830c8deec0e2d960a03ce125118baf9ad324d61edb4944be94",
+    "revisions": [
+      "parent"
+    ],
+    "expected": "refuted",
+    "sourceLocks": {
+      "parent": "193a38a45911b3c26dc89f023bf1dc78786779019be665acac511829a8e4a98a"
+    }
+  },
+  "task": "precise-parent",
+  "revision": "parent",
+  "entry": "datawork.Decimals#precise(I)I",
+  "guard": "code >= 0 && code < 3",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "envelope": [
+    0,
+    2
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    0,
+    1,
+    2
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "36542708757ff25866f04e65714bea631132ac28",
+    "libTree": "264ac161d93b5f54ce34683cd0cc8b035ca0f334",
+    "sha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
+  },
+  "classpath": [
+    {
+      "path": "adapter-parent.jar",
+      "sha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+      "role": "adapter"
+    },
+    {
+      "path": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+      "sha256": "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38",
+      "role": "original"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "parent",
+      "entry": "datawork.Decimals#precise(I)I",
+      "adapterSha256": "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+      "adapterClassSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+      "subject": {
+        "class": "org.apache.commons.lang3.math.NumberUtils",
+        "method": "createNumber",
+        "descriptor": "(Ljava/lang/String;)Ljava/lang/Number;",
+        "loadedFrom": "built/commons-lang3-3.21.0-SNAPSHOT.jar",
+        "classSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22",
+        "adapterCalls": [
+          "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 3,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+  "ruleFiles": {
+    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
+  },
+  "admissionClass": "tasks/precise-parent/Admission.jvm-bytecode",
+  "admissionSha256": "2837062e5f157f66cc630b018f688ce13a3500d3a308de8f6ec7fa374b7ce5f7",
+  "callsClass": "calls/a8ac8771806840a288b3/Calls.jvm-bytecode",
+  "callsSha256": "009270042aadc70ded927c3d29f98f8602af093a7dcb184c03bdd06f7a117a24",
+  "checked": [
+    {
+      "selector": 0,
+      "status": "needs-jvm-replay",
+      "target": "verificationselectors.Calls#p0()",
+      "exit": 1,
+      "wallSeconds": 0.032,
+      "usage": {
+        "cpuSeconds": 0.0281,
+        "peakRssBytes": 70737920,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "0156deb011557a6d7c32a89673fb091fd7b7a5f65d9015ee37960dc901de9744",
+      "wireVersion": 1,
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "raw": "calls/a8ac8771806840a288b3/cases/p0/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "refuted",
+  "originalJVMReplay": {
+    "claimKey": "e306676095e52b78",
+    "entry": "datawork.Decimals#precise(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+        "classpath": [
+          "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+          "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 3)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = datawork.Decimals.precise(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    }
+  },
+  "wallSeconds": 0.46257,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 2.15732,
+    "checkerWallSeconds": 0.032,
+    "originalWitnessReplaySeconds": 0.42961,
+    "endToEndSeconds": 2.61991,
+    "peakNativeRssBytes": 70737920
+  }
+}

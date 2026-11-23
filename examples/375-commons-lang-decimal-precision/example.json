@@ -30,11 +30,12 @@
     "description": "Three adjacent or signed decimals return BigDecimal with the coefficient and scale specified by their text. Float, Integer and malformed controls keep their types."
   },
   "target": "target.json",
-  "verdictLabel": "Ordinary native 0/4, finite JVM 4/4",
+  "verdictLabel": "Ordinary native 4/4, finite JVM 4/4",
   "notes": [
     "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
     "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence.",
-    "The three long decimal literals distinguished the historical artifacts. The landed revision returned the exact signed BigDecimal coefficient and scale 18. Both revisions preserved the Float raw bits, the Integer and the malformed-token exception. The landed NumberUtils JAR and class matched example 369."
+    "The three long decimal literals distinguished the historical artifacts. The landed revision returned the exact signed BigDecimal coefficient and scale 18. Both revisions preserved the Float raw bits, the Integer and the malformed-token exception. The landed NumberUtils JAR and class matched example 369.",
+    "The Java semantics follow-up decided all four ordinary native claims on both original Commons Lang builds. The parent returned Float for all three precision inputs. The fix returned the exact BigDecimal coefficients at scale 18. Both revisions preserved the two short Floats, the Integer, and the malformed-input exception."
   ],
   "source": {
     "kind": "pull-request",

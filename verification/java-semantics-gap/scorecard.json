@@ -1,5 +1,5 @@
 {
- "phase": "heap-and-gson",
+ "phase": "decimal-transfer",
  "environments": {
   "opening": {
    "historicalSource": "58cbd49d7d513605f0319fa1a8e0966485408276",
@@ -135,6 +135,51 @@
     "java/util/ImmutableCollections$ListItr.class": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
     "java/util/ImmutableCollections$AbstractImmutableList.class": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d"
    }
+  },
+  "decimal-transfer": {
+   "historicalSource": "36542708757ff25866f04e65714bea631132ac28",
+   "historicalJdk": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+   "benchmarkBinaries": {
+    "jvmcontract": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+    "jbmc": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+    "java": "1bf1aaef01e4f8d7c85d913c60fb2ee4624cbe54d4053254c59657b7ea913b25",
+    "modules": "f5463cffa81c51b3c13f57e2c23eacceab2b12e842069acf2facd5485f63bc85",
+    "core-models.jar": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
+   },
+   "callerSource": "36542708757ff25866f04e65714bea631132ac28",
+   "callerChecker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+   "callerJdk": [
+    "IMPLEMENTOR=\"Eclipse Adoptium\"",
+    "IMPLEMENTOR_VERSION=\"Temurin-21.0.13+9\"",
+    "JAVA_RUNTIME_VERSION=\"21.0.13+9-LTS\"",
+    "JAVA_VERSION=\"21.0.13\"",
+    "JAVA_VERSION_DATE=\"2026-10-20\"",
+    "LIBC=\"gnu\"",
+    "MODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom\"",
+    "OS_ARCH=\"x86_64\"",
+    "OS_NAME=\"Linux\"",
+    "SOURCE=\".:git:2ab10ca20c19\"",
+    "BUILD_SOURCE=\"git:1cf43d7a3e77886bfea7d550a902e151a87d724d\"",
+    "BUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"",
+    "SOURCE_REPO=\"https://github.com/adoptium/jdk21u.git\"",
+    "FULL_VERSION=\"21.0.13+9-LTS\"",
+    "SEMANTIC_VERSION=\"21.0.13+9\"",
+    "BUILD_INFO=\"OS: Linux Version: 6.8.0-1070-azure\"",
+    "JVM_VARIANT=\"Hotspot\"",
+    "JVM_VERSION=\"21.0.13+9-LTS\"",
+    "IMAGE_TYPE=\"JDK\""
+   ],
+   "callerModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+   "callerJbmc": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+   "callerCoreModels": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+   "listModels": {
+    "java/util/List.class": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+    "java/util/ImmutableCollections.class": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+    "java/util/ImmutableCollections$List12.class": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+    "java/util/ImmutableCollections$ListN.class": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+    "java/util/ImmutableCollections$ListItr.class": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+    "java/util/ImmutableCollections$AbstractImmutableList.class": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d"
+   }
   }
  },
  "historical": {
@@ -171,8 +216,8 @@
     "historical": "jbmc-only",
     "expected": "verified",
     "statement": "n != 9 \u21d2 result == 111",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/listOfArray.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/listOfArray.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -189,11 +234,16 @@
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.537,
+     "seconds": 0.68,
      "firstUnproved": "",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/listOfArray.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/listOfArray.json"
    }
   },
   "conformance/listOfArray/2": {
@@ -229,8 +279,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result == 111",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/listOfArray.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/listOfArray.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -239,7 +289,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.031,
+     "seconds": 0.051,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "9"
@@ -247,11 +297,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.283,
+     "seconds": 0.355,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "9"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/listOfArray.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/listOfArray.json"
    }
   },
   "conformance/listSearch/1": {
@@ -287,8 +342,8 @@
     "historical": "neither",
     "expected": "verified",
     "statement": "n == 5 \u21d2 result == 90",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/listSearch.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/listSearch.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -297,7 +352,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.021,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -305,11 +360,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.435,
+     "seconds": 0.589,
      "firstUnproved": "JBMC's counterexample listSearch(n=5) does not reproduce: the method returns 90 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: stubbed-handler at java.util.ImmutableCollections$ListItr.next:260: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/listSearch.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/listSearch.json"
    }
   },
   "conformance/listSearch/2": {
@@ -345,8 +405,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result < 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/listSearch.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/listSearch.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -355,7 +415,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.021,
+     "seconds": 0.041,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "5"
@@ -363,11 +423,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.395,
+     "seconds": 0.537,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/listSearch.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/listSearch.json"
    }
   },
   "conformance/enumValueOf/2": {
@@ -403,8 +468,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result == n",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -413,7 +478,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.031,
+     "seconds": 0.041,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
@@ -421,11 +486,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.254,
+     "seconds": 0.283,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listSizes/2": {
@@ -461,8 +531,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result >= 10",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -479,11 +549,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.315,
+     "seconds": 0.364,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listNull/1": {
@@ -519,8 +594,8 @@
     "historical": "jbmc-only",
     "expected": "verified",
     "statement": "n > 1 \u21d2 result == 5",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -529,7 +604,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.021,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -537,11 +612,16 @@
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.415,
+     "seconds": 0.365,
      "firstUnproved": "",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listNull/2": {
@@ -577,8 +657,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result == 5",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -595,11 +675,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.192,
+     "seconds": 0.264,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listChange/2": {
@@ -635,8 +720,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result >= 1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -645,7 +730,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.031,
+     "seconds": 0.041,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "1"
@@ -653,11 +738,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.395,
+     "seconds": 0.396,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "1"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listCopySame/1": {
@@ -693,8 +783,8 @@
     "historical": "jbmc-only",
     "expected": "verified",
     "statement": "result == 3",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -711,11 +801,16 @@
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 20.576,
+     "seconds": 20.064,
      "firstUnproved": "",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listCopySame/2": {
@@ -751,8 +846,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result == 1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -761,7 +856,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.053,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
@@ -769,11 +864,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 7.104,
+     "seconds": 3.27,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listGet/1": {
@@ -809,8 +909,8 @@
     "historical": "jbmc-only",
     "expected": "verified",
     "statement": "n == 0 || n == 12 \u21d2 result == 1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -819,7 +919,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.045,
+     "seconds": 0.021,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -827,11 +927,16 @@
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.625,
+     "seconds": 0.409,
      "firstUnproved": "",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listGet/2": {
@@ -867,8 +972,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result >= 1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -877,7 +982,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.052,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "13"
@@ -885,11 +990,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.337,
+     "seconds": 0.263,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "1"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/listIterate/2": {
@@ -925,8 +1035,8 @@
     "historical": "jbmc-only",
     "expected": "violation",
     "statement": "result == 6",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/other-leads.json",
     "inputClasses": "8cb2903f1f2c1bc3469e9a678b86fa8463257602fefa951d0038bc9a879bd6dd",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -935,7 +1045,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.052,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "1"
@@ -943,11 +1053,16 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.522,
+     "seconds": 0.294,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "1"
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/other-leads.json"
    }
   },
   "conformance/nullMonitor/1": {
@@ -983,8 +1098,8 @@
     "historical": "native-only",
     "expected": "violation",
     "statement": "result == 1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -993,7 +1108,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.052,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
@@ -1001,11 +1116,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.411,
+     "seconds": 0.255,
      "firstUnproved": "monitor:conformance.Conformance.nullMonitor(I)I; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/monitor/1": {
@@ -1041,8 +1161,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "result == n",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1051,7 +1171,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.031,
+     "seconds": 0.021,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -1059,11 +1179,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.254,
+     "seconds": 0.245,
      "firstUnproved": "monitor:conformance.Conformance.monitor(I)I; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/concatenated/1": {
@@ -1099,8 +1224,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "!result",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1117,11 +1242,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.254,
+     "seconds": 0.244,
      "firstUnproved": "invokedynamic:java.lang.invoke.StringConcatFactory.makeConcatWithConstants:makeConcatWithConstants(Ljava/lang/String;)Ljava/lang/String;; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/declaring/1": {
@@ -1157,8 +1287,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "result == n + 7",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1167,7 +1297,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.031,
+     "seconds": 0.021,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -1175,11 +1305,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.214,
+     "seconds": 0.152,
      "firstUnproved": "JBMC's counterexample declaring(n=0) does not reproduce: the method returns 7 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: extra-initializer at conformance.Conformance.declaring:114: getstatic conformance.Conformance$Sub.value resolves to a member conformance.Conformance$Holder declares, and the JVM initializes the declaring class, where JBMC initializes the class the instruction names (JVMS \u00a75.5), so JBMC runs the initializer of conformance.Conformance$Sub where the JVM does not: what it sets, or throws, is not what the JVM does",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/declaring/2": {
@@ -1215,8 +1350,8 @@
     "historical": "native-only",
     "expected": "violation",
     "statement": "result == n + 107",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1233,11 +1368,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.407,
+     "seconds": 0.254,
      "firstUnproved": "JBMC proved it, but runs 1 construct otherwise than the JVM (extra-initializer at conformance.Conformance.declaring:114), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/defaults/1": {
@@ -1273,8 +1413,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "result == 3",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1283,7 +1423,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.031,
+     "seconds": 0.021,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -1291,11 +1431,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.254,
+     "seconds": 0.152,
      "firstUnproved": "JBMC's counterexample defaults(n=0) does not reproduce: the method returns 3 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: extra-initializer at conformance.Conformance.defaults:116: invokestatic initializes conformance.Conformance$Hello: the JVM initializes with a class its superclasses and only those of its superinterfaces that declare a default method, where JBMC initializes every superinterface (JVMS \u00a75.5), so JBMC runs the initializer of conformance.Conformance$Bare where the JVM does not: what it sets, or throws, is not what the JVM does",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/defaults/3": {
@@ -1331,8 +1476,8 @@
     "historical": "native-only",
     "expected": "violation",
     "statement": "result == 43",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1341,7 +1486,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.051,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
@@ -1349,11 +1494,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.355,
+     "seconds": 0.254,
      "firstUnproved": "JBMC proved it, but runs 1 construct otherwise than the JVM (extra-initializer at conformance.Conformance.defaults:116), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/boomTwice/1": {
@@ -1389,8 +1539,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "result == 2",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1407,11 +1557,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.213,
+     "seconds": 0.153,
      "firstUnproved": "JBMC's counterexample boomTwice(n=0) does not reproduce: the method returns 2 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: throwing-initializer at conformance.Conformance$Boom.<clinit>: the initializer of conformance.Conformance$Boom may throw java.lang.IllegalStateException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS \u00a75.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ExceptionInInitializerError) at conformance.Conformance.boomTwice:124, catch (java.lang.NoClassDefFoundError) at conformance.Conformance.boomTwice:125 tell them apart",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/enumBroken/1": {
@@ -1447,8 +1602,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "result == 12",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1465,11 +1620,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.162,
+     "seconds": 0.142,
      "firstUnproved": "JBMC's counterexample enumBroken(n=0) does not reproduce: the method returns 12 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: throwing-initializer at conformance.Conformance$Broken.<clinit>: the initializer of conformance.Conformance$Broken may throw java.lang.ArithmeticException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS \u00a75.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ExceptionInInitializerError) at conformance.Conformance.enumBroken:183, catch (java.lang.NoClassDefFoundError) at conformance.Conformance.enumBroken:184 tell them apart",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/caught/1": {
@@ -1505,8 +1665,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "n != 0 || result == -1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1515,7 +1675,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.031,
+     "seconds": 0.021,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -1523,11 +1683,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.203,
+     "seconds": 0.152,
      "firstUnproved": "JBMC's counterexample caught(n=0) does not reproduce: the method returns -1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: return-past-handler at conformance.Conformance.caught:291: returns a value that may throw java.lang.ArithmeticException inside a try block whose catch (java.lang.ArithmeticException) catches it on the JVM; JBMC computes the value at the return, after it leaves the try block, so the exception escapes the method",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/caught/3": {
@@ -1563,8 +1728,8 @@
     "historical": "native-only",
     "expected": "violation",
     "statement": "result == 10 / n or throws ArithmeticException when n == 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1581,11 +1746,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.471,
+     "seconds": 0.406,
      "firstUnproved": "JBMC proved it, but runs 1 construct otherwise than the JVM (return-past-handler at conformance.Conformance.caught:291), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/caughtAsRuntime/1": {
@@ -1621,8 +1791,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "n != 0 || result == -1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1639,11 +1809,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.203,
+     "seconds": 0.204,
      "firstUnproved": "JBMC's counterexample caughtAsRuntime(n=0) does not reproduce: the method returns -1 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: stubbed-handler at conformance.Conformance.caughtAsRuntime:490: catch (java.lang.RuntimeException) catches java.lang.ArithmeticException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/caughtAsRuntime/2": {
@@ -1679,8 +1854,8 @@
     "historical": "native-only",
     "expected": "violation",
     "statement": "result == 10 / n or throws ArithmeticException when n == 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1689,7 +1864,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.051,
+     "seconds": 0.041,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "0"
@@ -1697,11 +1872,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.456,
+     "seconds": 0.408,
      "firstUnproved": "JBMC proved it, but runs 1 construct otherwise than the JVM (stubbed-handler at conformance.Conformance.caughtAsRuntime:490), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/nestedHandler/1": {
@@ -1737,8 +1917,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "n != 0 || result == -2",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1755,11 +1935,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.153,
+     "seconds": 0.154,
      "firstUnproved": "JBMC's counterexample nestedHandler(n=0) does not reproduce: the method returns -2 in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: return-past-handler at conformance.Conformance.nestedHandler:302: returns a value that may throw java.lang.ArithmeticException inside a try block whose catch (java.lang.ArithmeticException) catches it on the JVM; JBMC computes the value at the return, after it leaves the try block, so the exception escapes the method; stubbed-handler at conformance.Conformance.nestedHandler:300: catch (java.lang.RuntimeException) catches java.lang.ArithmeticException, java.lang.IllegalArgumentException, java.lang.NullPointerException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/divide/3": {
@@ -1795,8 +1980,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "result * b + a % b == a or throws ArithmeticException when b == 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1813,11 +1998,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 120.188,
+     "seconds": 120.103,
      "firstUnproved": "JBMC did not finish within 105 s",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/shiftRight/1": {
@@ -1853,8 +2043,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "x == -1 \u21d2 result == -1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1863,7 +2053,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.031,
+     "seconds": 0.022,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -1871,11 +2061,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.305,
+     "seconds": 0.254,
      "firstUnproved": "JBMC proved it, but runs 1 construct otherwise than the JVM (unmasked-shift at conformance.Conformance.shiftRight:455), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/shiftRight/3": {
@@ -1911,8 +2106,8 @@
     "historical": "native-only",
     "expected": "violation",
     "statement": "s == 33 \u21d2 result == 0 || result == -1",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1934,6 +2129,11 @@
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/shiftUnsigned/2": {
@@ -1969,8 +2169,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "x < 0 && s == 1 \u21d2 result > 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -1979,7 +2179,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.021,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -1987,11 +2187,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.305,
+     "seconds": 0.254,
      "firstUnproved": "JBMC proved it, but runs 1 construct otherwise than the JVM (unmasked-shift at conformance.Conformance.shiftUnsigned:457), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "conformance/shiftUnsigned/3": {
@@ -2027,8 +2232,8 @@
     "historical": "native-only",
     "expected": "violation",
     "statement": "s == 32 \u21d2 result == 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -2037,7 +2242,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.041,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "refuted",
      "witness": "1;32"
@@ -2045,11 +2250,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.305,
+     "seconds": 0.254,
      "firstUnproved": "JBMC proved it, but runs 1 construct otherwise than the JVM (unmasked-shift at conformance.Conformance.shiftUnsigned:457), so the proof is refused under every --gaps mode; --engine native or auto lets the tool's own checker try it",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "real/bucket/fix-confined": {
@@ -2085,8 +2295,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "equivalence of bench.real.Bucket#index unless hash < 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -2095,7 +2305,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.051,
+     "seconds": 0.041,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -2103,11 +2313,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 120.151,
+     "seconds": 120.111,
      "firstUnproved": "JBMC did not finish within 105 s",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "held/floor-mod/jdk": {
@@ -2143,8 +2358,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "equivalence of bench.held.FloorMod#mod unless n <= 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -2153,7 +2368,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.041,
+     "seconds": 0.031,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -2161,11 +2376,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 120.127,
+     "seconds": 120.14,
      "firstUnproved": "JBMC did not finish within 105 s",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "held/ceil-div": {
@@ -2201,8 +2421,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "equivalence of bench.held.CeilDiv#ceilDiv unless b <= 0",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -2211,7 +2431,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.031,
+     "seconds": 0.041,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -2219,11 +2439,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 120.127,
+     "seconds": 120.113,
      "firstUnproved": "JBMC did not finish within 105 s",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "held/reverse": {
@@ -2259,8 +2484,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "equivalence of bench.held.Reverse#reverse",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -2269,7 +2494,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.143,
+     "seconds": 0.184,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -2277,11 +2502,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 20.419,
+     "seconds": 26.158,
      "firstUnproved": "JBMC ran out of memory (the limit is 5632 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   },
   "example/142": {
@@ -2317,8 +2547,8 @@
     "historical": "native-only",
     "expected": "verified",
     "statement": "equivalence of net.terminalvalue.mica.classfile.ModifiedUtf8#encodeInto",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/historical/native-controls.json",
     "inputClasses": "ed6fdc758470d78eb793cd021630688b10cde5486eefe9beaf8e0236241e2218",
     "oracles": {
      "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
@@ -2327,7 +2557,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 5.053,
+     "seconds": 9.17,
      "firstUnproved": "",
      "replay": "",
      "witness": null
@@ -2335,11 +2565,16 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 21.319,
+     "seconds": 33.007,
      "firstUnproved": "JBMC ran out of memory (the limit is 5632 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)",
      "replay": "",
      "witness": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/native-controls.json"
    }
   }
  },
@@ -2381,8 +2616,8 @@
    "final": {
     "expected": "verified",
     "family": 376,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/lists/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "lists",
     "method": "fromArray",
     "checks": 15,
@@ -2399,17 +2634,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.016,
+     "seconds": 0.018,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.295,
+     "seconds": 0.29,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/lists/measurement.json"
    }
   },
@@ -2450,8 +2689,8 @@
    "final": {
     "expected": "verified",
     "family": 376,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/lists/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "lists",
     "method": "fromCollection",
     "checks": 15,
@@ -2468,17 +2707,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.015,
+     "seconds": 0.022,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 5.034,
+     "seconds": 7.608,
      "firstUnproved": "JBMC's counterexample fromCollection(value=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-reference-method:java.util.Collection.toArray()[Ljava/lang/Object;@jdk-21.0.13, jdk-primitive-method:java.util.Collection.isEmpty()Z@jdk-21.0.13, jdk-primitive-method:java.util.List.size()I@jdk-21.0.13, jdk-static-method:java.util.Arrays.asList([Ljava/lang/Object;)Ljava/util/List;@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/lists/measurement.json"
    }
   },
@@ -2531,8 +2774,8 @@
    "final": {
     "expected": "violation",
     "family": 376,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/lists/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "lists",
     "method": "followsSlot",
     "checks": 15,
@@ -2549,7 +2792,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.026,
+     "seconds": 0.023,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -2568,7 +2811,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.148,
+     "seconds": 0.146,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -2583,7 +2826,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/lists/measurement.json"
    }
   },
@@ -2623,8 +2870,8 @@
    "final": {
     "expected": "verified",
     "family": 377,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "numbers",
     "method": "fraction",
     "checks": 23,
@@ -2640,17 +2887,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.037,
+     "seconds": 0.029,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.942,
+     "seconds": 1.234,
      "firstUnproved": "jdk-static-method:java.util.Objects.hash([Ljava/lang/Object;)I@jdk-21.0.13; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/numbers/measurement.json"
    }
   },
@@ -2690,8 +2941,8 @@
    "final": {
     "expected": "verified",
     "family": 377,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "numbers",
     "method": "fractionOpcode",
     "checks": 23,
@@ -2714,10 +2965,14 @@
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.258,
+     "seconds": 0.31,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/numbers/measurement.json"
    }
   },
@@ -2769,8 +3024,8 @@
    "final": {
     "expected": "violation",
     "family": 377,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "numbers",
     "method": "floorOnly",
     "checks": 23,
@@ -2786,7 +3041,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.088,
+     "seconds": 0.1,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -2805,7 +3060,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 1.016,
+     "seconds": 1.306,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -2820,7 +3075,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/numbers/measurement.json"
    }
   },
@@ -2860,8 +3119,8 @@
    "final": {
     "expected": "verified",
     "family": 377,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "numbers",
     "method": "narrow",
     "checks": 23,
@@ -2877,17 +3136,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.016,
+     "seconds": 0.014,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.299,
+     "seconds": 0.3,
      "firstUnproved": "JBMC's counterexample narrow(fraction=15) is no reproduction in the interpreter, which cannot run the method on it (unsupported: org.apache.commons.lang3.mutable.MutableDouble extends the JDK class java.lang.Number, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-static-method:java.lang.Double.longBitsToDouble(J)D@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/numbers/measurement.json"
    }
   },
@@ -2927,8 +3190,8 @@
    "final": {
     "expected": "verified",
     "family": 377,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "numbers",
     "method": "narrowOpcode",
     "checks": 23,
@@ -2944,17 +3207,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.016,
+     "seconds": 0.02,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.216,
+     "seconds": 0.233,
      "firstUnproved": "JBMC's counterexample narrowOpcode(fraction=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-static-method:java.lang.Double.longBitsToDouble(J)D@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/numbers/measurement.json"
    }
   },
@@ -3006,8 +3273,8 @@
    "final": {
     "expected": "violation",
     "family": 377,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "numbers",
     "method": "wraps",
     "checks": 23,
@@ -3023,7 +3290,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.081,
+     "seconds": 0.077,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3042,7 +3309,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.452,
+     "seconds": 0.479,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3057,7 +3324,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/numbers/measurement.json"
    }
   },
@@ -3097,8 +3368,8 @@
    "final": {
     "expected": "verified",
     "family": 378,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "prefix",
     "method": "small",
     "checks": 30,
@@ -3114,17 +3385,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.019,
+     "seconds": 0.03,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.211,
+     "seconds": 0.216,
      "firstUnproved": "JBMC's counterexample small(off=6, empty=false) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/prefix/measurement.json"
    }
   },
@@ -3164,8 +3439,8 @@
    "final": {
     "expected": "violation",
     "family": 378,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "prefix",
     "method": "beforeEnd",
     "checks": 30,
@@ -3181,7 +3456,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.019,
+     "seconds": 0.031,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3200,10 +3475,14 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.211,
+     "seconds": 0.222,
      "firstUnproved": "JBMC's counterexample beforeEnd(off=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/prefix/measurement.json"
    }
   },
@@ -3243,8 +3522,8 @@
    "final": {
     "expected": "verified",
     "family": 378,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "prefix",
     "method": "wide",
     "checks": 30,
@@ -3260,17 +3539,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.027,
+     "seconds": 0.026,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.002,
+     "seconds": 0.003,
      "firstUnproved": "wide takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 4 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/prefix/measurement.json"
    }
   },
@@ -3310,8 +3593,8 @@
    "final": {
     "expected": "verified",
     "family": 378,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "prefix",
     "method": "nullPrefix",
     "checks": 30,
@@ -3327,17 +3610,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.018,
+     "seconds": 0.025,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.209,
+     "seconds": 0.211,
      "firstUnproved": "JBMC's counterexample nullPrefix(off=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/prefix/measurement.json"
    }
   },
@@ -3378,8 +3665,8 @@
    "final": {
     "expected": "verified",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "arrays",
     "method": "categories",
     "checks": 16,
@@ -3396,17 +3683,22 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.013,
+     "seconds": 0.023,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.002,
+     "seconds": 0.003,
      "firstUnproved": "the integrated JBMC harness does not bind the direct native object-array domain with nullable and shared cells",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json"
    }
   },
   "arrays/noNullCell": {
@@ -3446,8 +3738,8 @@
    "final": {
     "expected": "violation",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "arrays",
     "method": "noNullCell",
     "checks": 16,
@@ -3464,7 +3756,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.061,
+     "seconds": 0.07,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3490,10 +3782,15 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.003,
+     "seconds": 0.004,
      "firstUnproved": "the integrated JBMC harness does not bind the direct native object-array domain with nullable and shared cells",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json"
    }
   },
   "arrays/noItemCell": {
@@ -3533,8 +3830,8 @@
    "final": {
     "expected": "violation",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "arrays",
     "method": "noItemCell",
     "checks": 16,
@@ -3551,7 +3848,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.066,
+     "seconds": 0.062,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3585,6 +3882,11 @@
      "firstUnproved": "the integrated JBMC harness does not bind the direct native object-array domain with nullable and shared cells",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json"
    }
   },
   "arrays/followsAlias": {
@@ -3624,8 +3926,8 @@
    "final": {
     "expected": "verified",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "arrays",
     "method": "followsAlias",
     "checks": 16,
@@ -3642,17 +3944,22 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.018,
+     "seconds": 0.019,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.248,
+     "seconds": 0.241,
      "firstUnproved": "",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json"
    }
   },
   "arrays/alwaysShares": {
@@ -3716,8 +4023,8 @@
    "final": {
     "expected": "violation",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "arrays",
     "method": "alwaysShares",
     "checks": 16,
@@ -3734,7 +4041,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.024,
+     "seconds": 0.018,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3753,7 +4060,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.149,
+     "seconds": 0.142,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3769,6 +4076,11 @@
       "diagnostic": ""
      }
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/arrays/measurement.json"
    }
   },
   "receiver/exact": {
@@ -3809,8 +4121,8 @@
    "final": {
     "expected": "verified",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/receiver/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/receiver/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "receiver",
     "method": "exact",
     "checks": 5,
@@ -3835,10 +4147,14 @@
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.133,
+     "seconds": 0.136,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/receiver/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/receiver/measurement.json"
    }
   },
@@ -3904,8 +4220,8 @@
    "final": {
     "expected": "violation",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/receiver/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/receiver/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "receiver",
     "method": "parentOrChild",
     "checks": 5,
@@ -3923,7 +4239,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.019,
+     "seconds": 0.018,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3942,7 +4258,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.141,
+     "seconds": 0.145,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -3957,7 +4273,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/receiver/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/receiver/measurement.json"
    }
   },
@@ -3997,8 +4317,8 @@
    "final": {
     "expected": "verified",
     "family": 380,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/stores/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/stores/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "stores",
     "method": "history",
     "checks": 19,
@@ -4014,17 +4334,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.018,
+     "seconds": 0.034,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.14,
+     "seconds": 0.192,
      "firstUnproved": "JBMC's counterexample history(index=0, kind=20, absent=false) does not reproduce: the method returns true in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/stores/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/stores/measurement.json"
    }
   },
@@ -4064,8 +4388,8 @@
    "final": {
     "expected": "violation",
     "family": 380,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/stores/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/stores/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "stores",
     "method": "alwaysSucceeds",
     "checks": 19,
@@ -4081,7 +4405,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.02,
+     "seconds": 0.032,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -4094,10 +4418,14 @@
     "jbmc": {
      "status": "JVM-contradicted proof",
      "verdict": "verified",
-     "seconds": 0.138,
+     "seconds": 0.136,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/stores/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/stores/measurement.json"
    }
   },
@@ -4137,8 +4465,8 @@
    "final": {
     "expected": "verified",
     "family": 380,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/store-iterator/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/store-iterator/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "store-iterator",
     "method": "history",
     "checks": 12,
@@ -4154,17 +4482,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.021,
+     "seconds": 0.034,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.578,
+     "seconds": 0.678,
      "firstUnproved": "JBMC's counterexample history(integerArray=true, advance=true, kind=2) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-static-method:java.lang.Double.valueOf(D)Ljava/lang/Double;@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/store-iterator/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/store-iterator/measurement.json"
    }
   },
@@ -4243,8 +4575,8 @@
    "final": {
     "expected": "verified",
     "family": 382,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/dispatch/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/dispatch/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "dispatch",
     "method": "dispatch",
     "checks": 20,
@@ -4265,17 +4597,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.019,
+     "seconds": 0.015,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.139,
+     "seconds": 0.14,
      "firstUnproved": "JBMC's counterexample dispatch(kind=0, x=15) does not reproduce: the method returns true in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/dispatch/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/dispatch/measurement.json"
    }
   },
@@ -4320,8 +4656,8 @@
    "final": {
     "expected": "violation",
     "family": 382,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/dispatch/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/dispatch/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "dispatch",
     "method": "firstDeclared",
     "checks": 20,
@@ -4342,7 +4678,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.02,
+     "seconds": 0.019,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -4361,10 +4697,14 @@
     "jbmc": {
      "status": "JVM-contradicted proof",
      "verdict": "verified",
-     "seconds": 0.24,
+     "seconds": 0.247,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/dispatch/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/dispatch/measurement.json"
    }
   },
@@ -4404,8 +4744,8 @@
    "final": {
     "expected": "verified",
     "family": 383,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "endian",
     "method": "reverseInt",
     "checks": 16,
@@ -4421,17 +4761,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.014,
+     "seconds": 0.017,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.906,
+     "seconds": 1.201,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/endian/measurement.json"
    }
   },
@@ -4471,8 +4815,8 @@
    "final": {
     "expected": "verified",
     "family": 383,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "endian",
     "method": "reverseLong",
     "checks": 16,
@@ -4488,17 +4832,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.014,
+     "seconds": 0.02,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.646,
+     "seconds": 0.77,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/endian/measurement.json"
    }
   },
@@ -4562,8 +4910,8 @@
    "final": {
     "expected": "violation",
     "family": 383,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "endian",
     "method": "rotateInt",
     "checks": 16,
@@ -4579,7 +4927,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.02,
+     "seconds": 0.048,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -4598,7 +4946,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.455,
+     "seconds": 0.608,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -4613,7 +4961,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/endian/measurement.json"
    }
   },
@@ -4677,8 +5029,8 @@
    "final": {
     "expected": "violation",
     "family": 383,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "endian",
     "method": "rotateLong",
     "checks": 16,
@@ -4694,7 +5046,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.025,
+     "seconds": 0.032,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -4713,7 +5065,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.343,
+     "seconds": 0.469,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -4728,7 +5080,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/endian/measurement.json"
    }
   },
@@ -4770,8 +5126,8 @@
    "final": {
     "expected": "verified",
     "family": 384,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/surrogates/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "surrogates",
     "method": "translate",
     "checks": 10,
@@ -4789,17 +5145,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.018,
+     "seconds": 0.016,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.719,
+     "seconds": 1.022,
      "firstUnproved": "JBMC's counterexample translate(a='\\udbff', b='\\udfff', second=true) is no reproduction in the interpreter, which cannot run the method on it (unsupported: Character.codePointAt(Ljava/lang/CharSequence;I)I); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.io.Writer.<init>()V@jdk-21.0.13, jdk-primitive-method:java.lang.Character.codePointAt(Ljava/lang/CharSequence;I)I@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/surrogates/measurement.json"
    }
   },
@@ -4841,8 +5201,8 @@
    "final": {
     "expected": "violation",
     "family": 384,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/surrogates/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "surrogates",
     "method": "removeEvery",
     "checks": 10,
@@ -4860,7 +5220,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.087,
+     "seconds": 0.097,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -4884,10 +5244,14 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.717,
+     "seconds": 1.01,
      "firstUnproved": "JBMC's counterexample removeEvery(a='\\udfff', b='\uffff') is no reproduction in the interpreter, which cannot run the method on it (unsupported: Character.codePointAt(Ljava/lang/CharSequence;I)I); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.io.Writer.<init>()V@jdk-21.0.13, jdk-primitive-method:java.lang.Character.codePointAt(Ljava/lang/CharSequence;I)I@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/surrogates/measurement.json"
    }
   },
@@ -4927,8 +5291,8 @@
    "final": {
     "expected": "verified",
     "family": 385,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "deque",
     "method": "history",
     "checks": 7,
@@ -4944,17 +5308,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.017,
+     "seconds": 0.015,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.213,
+     "seconds": 0.229,
      "firstUnproved": "JBMC's counterexample history(ownerRemoves=false) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13, jdk-void-method:java.util.Iterator.remove()V@jdk-21.0.13, jdk-reference-method:java.util.ArrayDeque.iterator()Ljava/util/Iterator;@jdk-21.0.13, jdk-primitive-method:java.util.ArrayDeque.add(Ljava/lang/Object;)Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/deque/measurement.json"
    }
   },
@@ -5000,8 +5368,8 @@
    "final": {
     "expected": "violation",
     "family": 385,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "deque",
     "method": "stillReturns",
     "checks": 7,
@@ -5017,7 +5385,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.024,
+     "seconds": 0.046,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5030,7 +5398,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.23,
+     "seconds": 0.22,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5039,7 +5407,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/deque/measurement.json"
    }
   },
@@ -5079,8 +5451,8 @@
    "final": {
     "expected": "verified",
     "family": 385,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "deque",
     "method": "singleton",
     "checks": 7,
@@ -5103,10 +5475,14 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.159,
+     "seconds": 0.181,
      "firstUnproved": "invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:evaluate()Lorg/apache/commons/collections4/Predicate;; --gaps assume accepts the proof under it, and --engine native or auto lets the tool's own checker try it",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/deque/measurement.json"
    }
   },
@@ -5146,8 +5522,8 @@
    "final": {
     "expected": "verified",
     "family": 385,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "deque",
     "method": "filtered",
     "checks": 7,
@@ -5163,17 +5539,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.021,
+     "seconds": 0.016,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.299,
+     "seconds": 0.3,
      "firstUnproved": "JBMC's counterexample filtered(prefetch=false) is no reproduction in the interpreter, which cannot run the method on it (unsupported: org.apache.commons.collections4.Predicate.test on a lambda (only its functional method evaluate is modelled)); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.util.ArrayDeque.<init>()V@jdk-21.0.13, jdk-reference-method:java.util.ArrayDeque.iterator()Ljava/util/Iterator;@jdk-21.0.13, jdk-reference-method:java.util.Iterator.next()Ljava/lang/Object;@jdk-21.0.13, jdk-primitive-method:java.util.ArrayDeque.add(Ljava/lang/Object;)Z@jdk-21.0.13, jdk-primitive-method:java.util.Iterator.hasNext()Z@jdk-21.0.13, invokedynamic:java.lang.invoke.LambdaMetafactory.metafactory:evaluate()Lorg/apache/commons/collections4/Predicate;): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/deque/measurement.json"
    }
   },
@@ -5214,8 +5594,8 @@
    "final": {
     "expected": "verified",
     "family": 386,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/construction/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "construction",
     "method": "history",
     "checks": 8,
@@ -5232,7 +5612,7 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.035,
+     "seconds": 0.027,
      "firstUnproved": "",
      "jvmReplay": null
     },
@@ -5242,7 +5622,11 @@
      "seconds": 0.003,
      "firstUnproved": "history takes a String (a parameter, an array's element, or inside an object), which the tool's own checker takes under the stated bound of 2 code units (--engine native or auto, without --confirm); JBMC's Strings are its own model, not this one, so it wouldn't check the same claim",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/construction/measurement.json"
    }
   },
@@ -5295,8 +5679,8 @@
    "final": {
     "expected": "violation",
     "family": 386,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/construction/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "construction",
     "method": "emptySkips",
     "checks": 8,
@@ -5313,7 +5697,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.034,
+     "seconds": 0.019,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5326,7 +5710,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.682,
+     "seconds": 0.94,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5335,7 +5719,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/construction/measurement.json"
    }
   },
@@ -5388,8 +5776,8 @@
    "final": {
     "expected": "violation",
     "family": 386,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/construction/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "construction",
     "method": "alreadyInitialized",
     "checks": 8,
@@ -5406,7 +5794,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.025,
+     "seconds": 0.023,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5419,7 +5807,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.688,
+     "seconds": 0.986,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5428,7 +5816,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/construction/measurement.json"
    }
   },
@@ -5468,8 +5860,8 @@
    "final": {
     "expected": "verified",
     "family": 387,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/radix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/radix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "radix",
     "method": "hex",
     "checks": 5,
@@ -5485,17 +5877,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.084,
+     "seconds": 0.06,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 1.437,
+     "seconds": 1.755,
      "firstUnproved": "JBMC's counterexample hex(n=16) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-primitive-method:java.lang.String.charAt(I)C@jdk-21.0.13, jdk-primitive-method:java.lang.String.length()I@jdk-21.0.13, jdk-static-method:java.lang.StringLatin1.newString([BII)Ljava/lang/String;@jdk-21.0.13, jdk-static-method:java.lang.StringUTF16.newString([BII)Ljava/lang/String;@jdk-21.0.13, jdk-static-method:java.lang.StringUTF16.putChar([BII)V@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/radix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/radix/measurement.json"
    }
   },
@@ -5547,8 +5943,8 @@
    "final": {
     "expected": "violation",
     "family": 387,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/radix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/radix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "radix",
     "method": "lowFirst",
     "checks": 5,
@@ -5564,7 +5960,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.049,
+     "seconds": 0.048,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5583,7 +5979,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 1.192,
+     "seconds": 1.814,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5598,7 +5994,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/radix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/radix/measurement.json"
    }
   },
@@ -5638,8 +6038,8 @@
    "final": {
     "expected": "verified",
     "family": 388,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "nibble",
     "method": "nibble",
     "checks": 24,
@@ -5655,17 +6055,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 2.907,
+     "seconds": 3.865,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.728,
+     "seconds": 0.87,
      "firstUnproved": "JBMC's counterexample nibble(m=15, offset=20) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: stubbed-handler at UnsignedNibble.nibble:8: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler; throwing-initializer at org.apache.commons.lang3.Conversion.<clinit>: the initializer of org.apache.commons.lang3.Conversion may throw java.lang.ArrayIndexOutOfBoundsException, java.lang.NegativeArraySizeException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS \u00a75.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.IndexOutOfBoundsException) at UnsignedNibble.nibble:8 tells them apart; unmasked-shift at UnsignedNibble.nibble:7: shifts an int with >>> by a distance that may be outside 0..31: the JVM shifts by the distance's low five bits, JBMC by the whole distance, so it fills the value with zeros where the JVM does not",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/nibble/measurement.json"
    }
   },
@@ -5717,8 +6121,8 @@
    "final": {
     "expected": "violation",
     "family": 388,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "nibble",
     "method": "left",
     "checks": 24,
@@ -5734,7 +6138,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.022,
+     "seconds": 0.025,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5753,7 +6157,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.65,
+     "seconds": 0.816,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5768,7 +6172,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/nibble/measurement.json"
    }
   },
@@ -5814,8 +6222,8 @@
    "final": {
     "expected": "violation",
     "family": 388,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "nibble",
     "method": "acceptsNegative",
     "checks": 24,
@@ -5831,7 +6239,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.027,
+     "seconds": 0.028,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5844,7 +6252,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.633,
+     "seconds": 0.847,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -5853,7 +6261,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/nibble/measurement.json"
    }
   },
@@ -5894,8 +6306,8 @@
    "final": {
     "expected": "verified",
     "family": 389,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "enum",
     "method": "lookup",
     "checks": 9,
@@ -5912,17 +6324,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.019,
+     "seconds": 0.025,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.231,
+     "seconds": 0.217,
      "firstUnproved": "JBMC's counterexample lookup(kind=4) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.String.<init>(Ljava/lang/String;)V@jdk-21.0.13, jdk-reference-method:java.lang.Enum.valueOf(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/enum/measurement.json"
    }
   },
@@ -5963,8 +6379,8 @@
    "final": {
     "expected": "verified",
     "family": 389,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "enum",
     "method": "ordinal",
     "checks": 9,
@@ -5981,17 +6397,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.017,
+     "seconds": 0.012,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.132,
+     "seconds": 0.139,
      "firstUnproved": "",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/enum/measurement.json"
    }
   },
@@ -6056,8 +6476,8 @@
    "final": {
     "expected": "violation",
     "family": 389,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "enum",
     "method": "alwaysZero",
     "checks": 9,
@@ -6074,7 +6494,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.026,
+     "seconds": 0.024,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -6093,7 +6513,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.141,
+     "seconds": 0.148,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -6108,7 +6528,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/enum/measurement.json"
    }
   },
@@ -6151,8 +6575,8 @@
    "final": {
     "expected": "verified",
     "family": 390,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/locals/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "locals",
     "method": "kernel",
     "checks": 10,
@@ -6171,17 +6595,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.025,
+     "seconds": 0.028,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.518,
+     "seconds": 0.649,
      "firstUnproved": "JBMC's counterexample kernel(choice=0) is no reproduction in the interpreter, which cannot run the method on it (unsupported: ThreadLocalHistory$1 extends the JDK class java.lang.ThreadLocal, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13, jdk-void-method:java.lang.ThreadLocal.remove()V@jdk-21.0.13, jdk-reference-method:java.lang.ThreadLocal.get()Ljava/lang/Object;@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/locals/measurement.json"
    }
   },
@@ -6224,8 +6652,8 @@
    "final": {
     "expected": "verified",
     "family": 390,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/locals/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "locals",
     "method": "spring",
     "checks": 10,
@@ -6244,17 +6672,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.023,
+     "seconds": 0.026,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.535,
+     "seconds": 0.625,
      "firstUnproved": "JBMC's counterexample spring(choice=0) is no reproduction in the interpreter, which cannot run the method on it (unsupported: org.springframework.core.NamedThreadLocal$SuppliedNamedThreadLocal extends the JDK class java.lang.ThreadLocal, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13, jdk-void-method:java.lang.ThreadLocal.remove()V@jdk-21.0.13, jdk-reference-method:java.lang.ThreadLocal.get()Ljava/lang/Object;@jdk-21.0.13, jdk-primitive-method:java.lang.String.isBlank()Z@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/locals/measurement.json"
    }
   },
@@ -6321,8 +6753,8 @@
    "final": {
     "expected": "violation",
     "family": 390,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/locals/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "locals",
     "method": "nullInitializes",
     "checks": 10,
@@ -6341,7 +6773,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.126,
+     "seconds": 0.121,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -6360,7 +6792,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.541,
+     "seconds": 0.617,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -6375,7 +6807,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/locals/measurement.json"
    }
   },
@@ -6417,8 +6853,8 @@
    "final": {
     "expected": "verified",
     "family": 391,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/monitors/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "monitors",
     "method": "matched",
     "checks": 3,
@@ -6436,17 +6872,21 @@
     "native": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.018,
+     "seconds": 0.013,
      "firstUnproved": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3)",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.257,
+     "seconds": 0.251,
      "firstUnproved": "JBMC's counterexample matched() is no reproduction in the interpreter, which cannot run the method on it (unsupported: MonitorIdentity$Worker extends the JDK class java.lang.Thread, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13, missing-body:MonitorIdentity$Worker.join()V, missing-body:MonitorIdentity$Worker.start()V, monitor:MonitorIdentity.observe(ZZ)Z): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/monitors/measurement.json"
    }
   },
@@ -6488,8 +6928,8 @@
    "final": {
     "expected": "violation",
     "family": 391,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/monitors/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "monitors",
     "method": "mixed",
     "checks": 3,
@@ -6507,17 +6947,21 @@
     "native": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.017,
+     "seconds": 0.018,
      "firstUnproved": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3)",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.257,
+     "seconds": 0.25,
      "firstUnproved": "JBMC's counterexample mixed() is no reproduction in the interpreter, which cannot run the method on it (unsupported: MonitorIdentity$Worker extends the JDK class java.lang.Thread, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13, missing-body:MonitorIdentity$Worker.join()V, missing-body:MonitorIdentity$Worker.start()V, monitor:MonitorIdentity.observe(ZZ)Z): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/monitors/measurement.json"
    }
   },
@@ -6559,8 +7003,8 @@
    "final": {
     "expected": "verified",
     "family": 391,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/monitors/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "monitors",
     "method": "synchronizedMethod",
     "checks": 3,
@@ -6585,10 +7029,14 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 0.252,
+     "seconds": 0.253,
      "firstUnproved": "JBMC's counterexample synchronizedMethod() is no reproduction in the interpreter, which cannot run the method on it (unsupported: MonitorIdentity$Worker extends the JDK class java.lang.Thread, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13, missing-body:MonitorIdentity$Worker.join()V, missing-body:MonitorIdentity$Worker.start()V, monitor:MonitorIdentity.observe(ZZ)Z): a stub returns any value of its type, which may be one the JDK's call never returns",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/monitors/measurement.json"
    }
   },
@@ -6628,8 +7076,8 @@
    "final": {
     "expected": "verified",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/gson-parent/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "gson-parent",
     "method": "compatible",
     "checks": 9,
@@ -6645,17 +7093,22 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 12.876,
+     "seconds": 7.336,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 21.916,
+     "seconds": 16.701,
      "firstUnproved": "a loop was not fully unwound with --unwind 16 (java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0)",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json"
    }
   },
   "gson-parent/syntax": {
@@ -6694,8 +7147,8 @@
    "final": {
     "expected": "violation",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/gson-parent/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "gson-parent",
     "method": "syntax",
     "checks": 9,
@@ -6711,7 +7164,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 12.753,
+     "seconds": 9.186,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -6730,10 +7183,15 @@
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 23.575,
+     "seconds": 16.484,
      "firstUnproved": "a loop was not fully unwound with --unwind 16 (java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0)",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json"
    }
   },
   "guava-parent/retained": {
@@ -6784,8 +7242,8 @@
    "final": {
     "expected": "violation",
     "family": 381,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/guava-parent/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "guava-parent",
     "method": "retained",
     "checks": 4,
@@ -6801,7 +7259,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.046,
+     "seconds": 0.04,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -6820,7 +7278,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 1.098,
+     "seconds": 1.331,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -6835,7 +7293,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/guava-parent/measurement.json"
    }
   },
@@ -6875,8 +7337,8 @@
    "final": {
     "expected": "verified",
     "family": 381,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/guava-parent/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "guava-parent",
     "method": "parentBehavior",
     "checks": 4,
@@ -6892,17 +7354,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.037,
+     "seconds": 0.024,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 1.066,
+     "seconds": 1.484,
      "firstUnproved": "JBMC's counterexample parentBehavior(typed=true) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: stubbed-handler at com.google.common.base.Strings.lenientToString:314: catch (java.lang.Exception) catches java.lang.ArithmeticException, java.lang.ArrayIndexOutOfBoundsException, java.lang.NegativeArraySizeException, java.lang.NullPointerException on the JVM, which the program may raise, but JBMC has no class file of java.lang.Exception and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler; unmasked-shift at java.lang.Integer.formatUnsignedInt:393: shifts an int with >>> by a distance that may be outside 0..31: the JVM shifts by the distance's low five bits, JBMC by the whole distance, so it fills the value with zeros where the JVM does not; unmasked-shift at java.lang.Integer.formatUnsignedIntUTF16:413: shifts an int with >>> by a distance that may be outside 0..31: the JVM shifts by the distance's low five bits, JBMC by the whole distance, so it fills the value with zeros where the JVM does not",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/guava-parent/measurement.json"
    }
   },
@@ -6942,8 +7408,8 @@
    "final": {
     "expected": "verified",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/gson-fix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "gson-fix",
     "method": "compatible",
     "checks": 9,
@@ -6959,17 +7425,22 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 10.164,
+     "seconds": 7.778,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 22.758,
+     "seconds": 18.041,
      "firstUnproved": "a loop was not fully unwound with --unwind 16 (java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0)",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json"
    }
   },
   "gson-fix/syntax": {
@@ -7008,8 +7479,8 @@
    "final": {
     "expected": "verified",
     "family": 379,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/gson-fix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "gson-fix",
     "method": "syntax",
     "checks": 9,
@@ -7025,17 +7496,22 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.175,
+     "seconds": 0.124,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 23.321,
+     "seconds": 18.122,
      "firstUnproved": "a loop was not fully unwound with --unwind 16 (java::com.google.gson.stream.JsonReader.fillBuffer:(I)Z.unwind.0)",
      "jvmReplay": null
     }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json",
+    "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json"
    }
   },
   "guava-fix/retained": {
@@ -7074,8 +7550,8 @@
    "final": {
     "expected": "verified",
     "family": 381,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/guava-fix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "guava-fix",
     "method": "retained",
     "checks": 4,
@@ -7091,17 +7567,21 @@
     "native": {
      "status": "proved",
      "verdict": "verified",
-     "seconds": 0.031,
+     "seconds": 0.023,
      "firstUnproved": "",
      "jvmReplay": null
     },
     "jbmc": {
      "status": "open",
      "verdict": "unverifiable",
-     "seconds": 1.098,
+     "seconds": 1.429,
      "firstUnproved": "JBMC's counterexample retained(typed=true) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC runs otherwise than the JVM, whatever its class path: stubbed-handler at com.google.common.base.Strings.lenientToString:310: catch (java.lang.Exception) catches java.lang.ArithmeticException, java.lang.ArrayIndexOutOfBoundsException, java.lang.NegativeArraySizeException, java.lang.NullPointerException on the JVM, which the program may raise, but JBMC has no class file of java.lang.Exception and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler; unmasked-shift at java.lang.Integer.formatUnsignedInt:393: shifts an int with >>> by a distance that may be outside 0..31: the JVM shifts by the distance's low five bits, JBMC by the whole distance, so it fills the value with zeros where the JVM does not; unmasked-shift at java.lang.Integer.formatUnsignedIntUTF16:413: shifts an int with >>> by a distance that may be outside 0..31: the JVM shifts by the distance's low five bits, JBMC by the whole distance, so it fills the value with zeros where the JVM does not",
      "jvmReplay": null
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/guava-fix/measurement.json"
    }
   },
@@ -7153,8 +7633,8 @@
    "final": {
     "expected": "violation",
     "family": 381,
-    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json",
-    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/decimal-transfer/callers/guava-fix/measurement.json",
+    "source": "36542708757ff25866f04e65714bea631132ac28",
     "graph": "guava-fix",
     "method": "parentBehavior",
     "checks": 4,
@@ -7170,7 +7650,7 @@
     "native": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 0.035,
+     "seconds": 0.045,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -7189,7 +7669,7 @@
     "jbmc": {
      "status": "refuted",
      "verdict": "violation",
-     "seconds": 1.14,
+     "seconds": 1.363,
      "firstUnproved": "",
      "jvmReplay": {
       "outcome": "refuted",
@@ -7204,7 +7684,11 @@
       "exit": 0,
       "diagnostic": ""
      }
-    },
+    }
+   },
+   "heap-and-gson": {
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "evidence": "verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json",
     "jbmcEvidence": "verification/java-semantics-gap/heap-and-gson/integrated/qualified/guava-fix/measurement.json"
    }
   }
@@ -8747,45 +9231,77 @@
    "example": 375,
    "task": "precise-parent",
    "opening": "jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363)",
-   "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
-   "status": "open",
-   "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-   "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
-   "job": "20261123-125839-recheck-the-original-decimal-and-spring",
-   "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261123T130421Z-a064e875/tasks/precise-parent/result.json"
+   "final": "",
+   "status": "refuted",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+   "job": "20261123-134727-qualify-the-four-original-commons-lang-d",
+   "evidence": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261123T140907Z-86ae0d4c/checker.json",
+   "heap-and-gson": {
+    "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
+    "status": "open",
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
+    "job": "20261123-125839-recheck-the-original-decimal-and-spring",
+    "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261123T130421Z-a064e875/tasks/precise-parent/result.json"
+   }
   },
   {
    "example": 375,
    "task": "preserved-parent",
    "opening": "jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363)",
-   "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
-   "status": "open",
-   "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-   "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
-   "job": "20261123-125839-recheck-the-original-decimal-and-spring",
-   "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261123T130421Z-a064e875/tasks/preserved-parent/result.json"
+   "final": "",
+   "status": "established",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+   "job": "20261123-134727-qualify-the-four-original-commons-lang-d",
+   "evidence": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261123T140911Z-96d728c9/checker.json",
+   "heap-and-gson": {
+    "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
+    "status": "open",
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
+    "job": "20261123-125839-recheck-the-original-decimal-and-spring",
+    "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261123T130421Z-a064e875/tasks/preserved-parent/result.json"
+   }
   },
   {
    "example": 375,
    "task": "precise-landed",
    "opening": "jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363)",
-   "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
-   "status": "open",
-   "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-   "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
-   "job": "20261123-125839-recheck-the-original-decimal-and-spring",
-   "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261123T130424Z-7731f8b0/tasks/precise-landed/result.json"
+   "final": "",
+   "status": "established",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+   "job": "20261123-134727-qualify-the-four-original-commons-lang-d",
+   "evidence": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261123T140909Z-c11a7db6/checker.json",
+   "heap-and-gson": {
+    "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
+    "status": "open",
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
+    "job": "20261123-125839-recheck-the-original-decimal-and-spring",
+    "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261123T130424Z-7731f8b0/tasks/precise-landed/result.json"
+   }
   },
   {
    "example": 375,
    "task": "preserved-landed",
    "opening": "jdk-primitive-method:java.lang.String.startsWith(Ljava/lang/String;I)Z@jdk-21.0.13 (java.lang.String.startsWith(java.lang.String, int) at org.apache.commons.lang3.math.NumberUtils.createNumber:363)",
-   "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
-   "status": "open",
-   "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
-   "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
-   "job": "20261123-125839-recheck-the-original-decimal-and-spring",
-   "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261123T130424Z-7731f8b0/tasks/preserved-landed/result.json"
+   "final": "",
+   "status": "established",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+   "job": "20261123-134727-qualify-the-four-original-commons-lang-d",
+   "evidence": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261123T140913Z-5b128c46/checker.json",
+   "heap-and-gson": {
+    "final": "jdk-static-method:java.lang.Float.valueOf(Ljava/lang/String;)Ljava/lang/Float;@jdk-21.0.13 (java.lang.Float.valueOf(java.lang.String) at org.apache.commons.lang3.math.NumberUtils.createFloat:272)",
+    "status": "open",
+    "source": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+    "checker": "391a5a75d7d565a5424012a30ffd8464ba3625c1baf7647c210ee7125ba83c1b",
+    "job": "20261123-125839-recheck-the-original-decimal-and-spring",
+    "evidence": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261123T130424Z-7731f8b0/tasks/preserved-landed/result.json"
+   }
   },
   {
    "example": 374,
@@ -9636,6 +10152,31 @@
    "status": "passed",
    "source": "500257aef0266422a6803cb88827233cf946fb43",
    "receipt": "verification/results/2026/11/23/20261123-122845-enumerate-the-original-two-thread-class/result.json"
+  },
+  "20261123-134727-qualify-the-four-original-commons-lang-d": {
+   "status": "passed",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "receipt": "verification/results/2026/11/23/20261123-134727-qualify-the-four-original-commons-lang-d/result.json"
+  },
+  "20261123-134736-compare-strict-native-and-jbmc-on-both-o": {
+   "status": "passed",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "receipt": "verification/results/2026/11/23/20261123-134736-compare-strict-native-and-jbmc-on-both-o/result.json"
+  },
+  "20261123-134759-recheck-60-original-java-callers-on-the": {
+   "status": "passed",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "receipt": "verification/results/2026/11/23/20261123-134759-recheck-60-original-java-callers-on-the/result.json"
+  },
+  "20261123-134806-recheck-38-frozen-historical-java-claims": {
+   "status": "passed",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "receipt": "verification/results/2026/11/23/20261123-134806-recheck-38-frozen-historical-java-claims/result.json"
+  },
+  "20261123-135311-recheck-proof-tier-conformance-after-dec": {
+   "status": "passed",
+   "source": "36542708757ff25866f04e65714bea631132ac28",
+   "receipt": "verification/results/2026/11/23/20261123-135311-recheck-proof-tier-conformance-after-dec/result.json"
   }
  },
  "gainedSinceQualification": [
@@ -9650,5 +10191,321 @@
  "scopeRetries": {
   "20261123-114826-qualify-direct-nullable-java-object-arra": "20261123-121039-qualify-all-direct-array-heaps-on-the-co",
   "20261123-115145-recheck-the-other-55-frozen-native-java": "20261123-121039-qualify-gson-parent-and-fix-and-all-rema"
+ },
+ "decimalTransfer": {
+  "source": "36542708757ff25866f04e65714bea631132ac28",
+  "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+  "job": "20261123-134727-qualify-the-four-original-commons-lang-d",
+  "paired": "verification/java-semantics-gap/decimal-transfer/paired/measurement.json",
+  "tasks": {
+   "precise-parent": {
+    "ordinary": {
+     "status": "refuted",
+     "claimKey": "e306676095e52b78",
+     "workflow": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/20261123T140907Z-86ae0d4c/result.json",
+     "receipt": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261123T140907Z-86ae0d4c/checker.json",
+     "binding": {
+      "entry": "datawork.Decimals#precise(I)I",
+      "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+      "loadedFrom": "adapter-parent.jar",
+      "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "subjectClassSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22"
+     },
+     "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+     "classpath": [
+      "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+      "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+     ],
+     "jdk": "21.0.13+9-LTS",
+     "seconds": 2.2252,
+     "peakRssBytes": 117915648,
+     "firstBlocker": null,
+     "replay": "examples/375-commons-lang-decimal-precision/receipts/precise-parent/executions/20261123T140907Z-86ae0d4c/replay.json",
+     "inputs": [
+      {
+       "name": "code",
+       "type": "int",
+       "value": 0
+      }
+     ]
+    },
+    "finite": {
+     "status": "refuted",
+     "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261123T140901Z-53dc0098/precise-parent.json",
+     "inputs": 3,
+     "differences": 3,
+     "reason": null
+    },
+    "selectors": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261123T140915Z-3cda9f67/tasks/precise-parent/result.json",
+    "checkedSelectors": 1,
+    "paired": {
+     "native": {
+      "status": "refuted",
+      "seconds": 0.032,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/native/stdout.json",
+      "firstUnproved": "",
+      "jvmReplay": {
+       "outcome": "refuted",
+       "inputs": [
+        {
+         "name": "code",
+         "type": "int",
+         "value": 0
+        }
+       ],
+       "sourceSha256": "c0ed4b36ff9e83a104f80ca1e92e0986cf621ed5f1dab44da37529c97c027557",
+       "exit": 0,
+       "diagnostic": ""
+      }
+     },
+     "jbmc": {
+      "status": "refuted",
+      "seconds": 1.573,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/precise-parent/jbmc/stdout.json",
+      "firstUnproved": "",
+      "jvmReplay": {
+       "outcome": "refuted",
+       "inputs": [
+        {
+         "name": "code",
+         "type": "int",
+         "value": 0
+        }
+       ],
+       "sourceSha256": "c0ed4b36ff9e83a104f80ca1e92e0986cf621ed5f1dab44da37529c97c027557",
+       "exit": 0,
+       "diagnostic": ""
+      }
+     }
+    }
+   },
+   "preserved-parent": {
+    "ordinary": {
+     "status": "established",
+     "claimKey": "b5f0874cc73601d9",
+     "workflow": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/20261123T140911Z-96d728c9/result.json",
+     "receipt": "examples/375-commons-lang-decimal-precision/receipts/preserved-parent/executions/20261123T140911Z-96d728c9/checker.json",
+     "binding": {
+      "entry": "datawork.Decimals#preserved(I)I",
+      "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+      "loadedFrom": "adapter-parent.jar",
+      "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "subjectClassSha256": "c667f2bac810296ec20fa1b148f3c122dde47ba56b82a943bcce1aa7d4c75d22"
+     },
+     "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+     "classpath": [
+      "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+      "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+     ],
+     "jdk": "21.0.13+9-LTS",
+     "seconds": 1.7502,
+     "peakRssBytes": 116535296,
+     "firstBlocker": null
+    },
+    "finite": {
+     "status": "established",
+     "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261123T140901Z-53dc0098/preserved-parent.json",
+     "inputs": 3,
+     "differences": 0,
+     "reason": null
+    },
+    "selectors": "examples/375-commons-lang-decimal-precision/records/native-selectors/parent/20261123T140915Z-3cda9f67/tasks/preserved-parent/result.json",
+    "checkedSelectors": 3,
+    "paired": {
+     "native": {
+      "status": "proved",
+      "seconds": 0.042,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/native/stdout.json",
+      "firstUnproved": "",
+      "jvmReplay": null
+     },
+     "jbmc": {
+      "status": "open",
+      "seconds": 1.518,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/preserved-parent/jbmc/stdout.json",
+      "firstUnproved": "JBMC's counterexample preserved(code=2) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+      "jvmReplay": null,
+      "rejectedCandidate": {
+       "code": 2,
+       "result": 1,
+       "jvmReceipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261123T140901Z-53dc0098/preserved-parent.json"
+      }
+     }
+    }
+   },
+   "precise-landed": {
+    "ordinary": {
+     "status": "established",
+     "claimKey": "e306676095e52b78",
+     "workflow": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/20261123T140909Z-c11a7db6/result.json",
+     "receipt": "examples/375-commons-lang-decimal-precision/receipts/precise-landed/executions/20261123T140909Z-c11a7db6/checker.json",
+     "binding": {
+      "entry": "datawork.Decimals#precise(I)I",
+      "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+      "loadedFrom": "adapter-landed.jar",
+      "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "subjectClassSha256": "33f7877270f9c6f97571e9a1dec7465cbce61bcecc01c36a2fca69e09d884974"
+     },
+     "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+     "classpath": [
+      "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+      "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+     ],
+     "jdk": "21.0.13+9-LTS",
+     "seconds": 1.831,
+     "peakRssBytes": 115826688,
+     "firstBlocker": null
+    },
+    "finite": {
+     "status": "established",
+     "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261123T140901Z-53dc0098/precise-landed.json",
+     "inputs": 3,
+     "differences": 0,
+     "reason": null
+    },
+    "selectors": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261123T140918Z-e98cebd2/tasks/precise-landed/result.json",
+    "checkedSelectors": 3,
+    "paired": {
+     "native": {
+      "status": "proved",
+      "seconds": 0.052,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/native/stdout.json",
+      "firstUnproved": "",
+      "jvmReplay": null
+     },
+     "jbmc": {
+      "status": "open",
+      "seconds": 1.365,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/precise-landed/jbmc/stdout.json",
+      "firstUnproved": "JBMC's counterexample precise(code=0) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+      "jvmReplay": null,
+      "rejectedCandidate": {
+       "code": 0,
+       "result": 1,
+       "jvmReceipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261123T140901Z-53dc0098/precise-landed.json"
+      }
+     }
+    }
+   },
+   "preserved-landed": {
+    "ordinary": {
+     "status": "established",
+     "claimKey": "b5f0874cc73601d9",
+     "workflow": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/20261123T140913Z-5b128c46/result.json",
+     "receipt": "examples/375-commons-lang-decimal-precision/receipts/preserved-landed/executions/20261123T140913Z-5b128c46/checker.json",
+     "binding": {
+      "entry": "datawork.Decimals#preserved(I)I",
+      "classSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+      "loadedFrom": "adapter-landed.jar",
+      "subject": "org.apache.commons.lang3.math.NumberUtils#createNumber(Ljava/lang/String;)Ljava/lang/Number;",
+      "subjectClassSha256": "33f7877270f9c6f97571e9a1dec7465cbce61bcecc01c36a2fca69e09d884974"
+     },
+     "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+     "classpath": [
+      "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+      "4f6b509b49e10b69de68d29cd4c7c0f378a6ee5f9e97f22778e24290de675d1c"
+     ],
+     "jdk": "21.0.13+9-LTS",
+     "seconds": 1.807,
+     "peakRssBytes": 124866560,
+     "firstBlocker": null
+    },
+    "finite": {
+     "status": "established",
+     "receipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261123T140901Z-53dc0098/preserved-landed.json",
+     "inputs": 3,
+     "differences": 0,
+     "reason": null
+    },
+    "selectors": "examples/375-commons-lang-decimal-precision/records/native-selectors/landed/20261123T140918Z-e98cebd2/tasks/preserved-landed/result.json",
+    "checkedSelectors": 3,
+    "paired": {
+     "native": {
+      "status": "proved",
+      "seconds": 0.034,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/native/stdout.json",
+      "firstUnproved": "",
+      "jvmReplay": null
+     },
+     "jbmc": {
+      "status": "open",
+      "seconds": 1.39,
+      "evidence": "verification/java-semantics-gap/decimal-transfer/paired/preserved-landed/jbmc/stdout.json",
+      "firstUnproved": "JBMC's counterexample preserved(code=2) does not reproduce: the method returns 1 in the interpreter and the property holds on it. A method the target calls is probably missing from JBMC's class path (its models cover little of the JDK beyond java.lang.Math and the integer wrappers) and was treated as returning an arbitrary value",
+      "jvmReplay": null,
+      "rejectedCandidate": {
+       "code": 2,
+       "result": 1,
+       "jvmReceipt": "examples/375-commons-lang-decimal-precision/records/finite-proofs/20261123T140901Z-53dc0098/preserved-landed.json"
+      }
+     }
+    }
+   }
+  },
+  "originalJvm": {
+   "parent": {
+    "sourceSha256": "2eeb9fc3c9308391d56e8fdb9ee0a4f4ac91d5402b07ed5137f88e9b91bd2514",
+    "classSha256": "fc358854995e769822480436a665ec943e3b792504accea3a6fe2218c0509a19",
+    "stdoutSha256": "da9c39f27931a23dfa84497edfba1a594be613013f74d18d2aa3709c77d87ee8",
+    "rows": [
+     [
+      "0",
+      "0.100000001490116121",
+      "java.lang.Float 1036831949",
+      "0.1",
+      "java.lang.Float 1036831949",
+      "java.lang.NumberFormatException"
+     ],
+     [
+      "1",
+      "0.100000001490116122",
+      "java.lang.Float 1036831949",
+      "0.5",
+      "java.lang.Float 1056964608",
+      "java.lang.NumberFormatException"
+     ],
+     [
+      "2",
+      "-0.100000001490116121",
+      "java.lang.Float -1110651699",
+      "17",
+      "java.lang.Integer 17",
+      "java.lang.NumberFormatException"
+     ]
+    ]
+   },
+   "landed": {
+    "sourceSha256": "2eeb9fc3c9308391d56e8fdb9ee0a4f4ac91d5402b07ed5137f88e9b91bd2514",
+    "classSha256": "fc358854995e769822480436a665ec943e3b792504accea3a6fe2218c0509a19",
+    "stdoutSha256": "3c254732e6ed0f903b65b040528c182b448f9c99b596e8e0cf554f309b3b8f72",
+    "rows": [
+     [
+      "0",
+      "0.100000001490116121",
+      "java.math.BigDecimal 100000001490116121 18",
+      "0.1",
+      "java.lang.Float 1036831949",
+      "java.lang.NumberFormatException"
+     ],
+     [
+      "1",
+      "0.100000001490116122",
+      "java.math.BigDecimal 100000001490116122 18",
+      "0.5",
+      "java.lang.Float 1056964608",
+      "java.lang.NumberFormatException"
+     ],
+     [
+      "2",
+      "-0.100000001490116121",
+      "java.math.BigDecimal -100000001490116121 18",
+      "17",
+      "java.lang.Integer 17",
+      "java.lang.NumberFormatException"
+     ]
+    ]
+   }
+  },
+  "monitorStartup": "verification/java-semantics-gap/monitor-startup/measurement.json"
  }
 }

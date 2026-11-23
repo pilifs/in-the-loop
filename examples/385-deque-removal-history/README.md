@@ -21,9 +21,9 @@ The campaign's ordinary native checker decided 1/4 at opening and 4/4 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| deque/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/deque/measurement.json) |
-| deque/stillReturns | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/deque/measurement.json) |
-| deque/singleton | [proved (0.03 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/deque/measurement.json) |
-| deque/filtered | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/deque/measurement.json) |
+| deque/history | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.01 s)](../../verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json) |
+| deque/stillReturns | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [refuted (0.05 s)](../../verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json) |
+| deque/singleton | [proved (0.03 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json) |
+| deque/filtered | [open (0.02 s)](../../verification/java-semantics-gap/opening/deque/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

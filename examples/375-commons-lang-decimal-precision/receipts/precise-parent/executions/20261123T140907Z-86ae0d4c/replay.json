@@ -1,0 +1,67 @@
+[
+  {
+    "claimKey": "e306676095e52b78",
+    "entry": "datawork.Decimals#precise(I)I",
+    "inputs": [
+      {
+        "name": "code",
+        "type": "int",
+        "value": 0
+      }
+    ],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "by": "jvm",
+    "reproduced": true,
+    "sides": {
+      "parent": {
+        "entryClassSha256": "973afb8efbb593d1b82ef8f14ede46f78f64e5030fe214da6ad3fe3933080fe4",
+        "classpath": [
+          "28ad5b10b2fbf252b2471a2974dd20a92279fc39ae6d5c2e4b4c7e447444a8ee",
+          "e83aa9d86adf5d0c613f107c54faedd5f9e57f12cdb4ec308f554537c35e2f38"
+        ],
+        "program": "class CandidateReplay { public static void main(String[] args) {\nint code = 0;\nif (!(code >= 0 && code < 3)) { System.out.println(\"outside\"); return; }\nint result = 0;\nThrowable failure = null;\ntry { result = datawork.Decimals.precise(code); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result == 1));\nSystem.out.println(failure == null ? Long.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+        "admitted": true,
+        "values": [
+          0,
+          null
+        ],
+        "satisfies": false
+      }
+    },
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "finiteObservation": {
+      "id": 0,
+      "input": [
+        "0.100000001490116121",
+        "0.1",
+        "1eE"
+      ],
+      "field": "precise",
+      "direct": {
+        "parent": {
+          "precise": [
+            "Float",
+            1036831949
+          ],
+          "preserved": [
+            [
+              "Float",
+              1036831949
+            ],
+            "java.lang.NumberFormatException"
+          ]
+        }
+      },
+      "tableSha256": "c18650daed2188aba9dc5078cef8076e403cd4f89cf96e254defd3b361926ed8"
+    }
+  }
+]

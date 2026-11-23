@@ -21,9 +21,9 @@ The campaign's ordinary native checker decided 0/4 at opening and 4/4 at qualifi
 
 | Entry | Opening native | Qualified native |
 |---|---|---|
-| prefix/small | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/prefix/measurement.json) |
-| prefix/beforeEnd | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [refuted (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/prefix/measurement.json) |
-| prefix/wide | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/heap-and-gson/prefix/measurement.json) |
-| prefix/nullPrefix | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [proved (0.02 s)](../../verification/java-semantics-gap/heap-and-gson/prefix/measurement.json) |
+| prefix/small | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json) |
+| prefix/beforeEnd | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [refuted (0.03 s)](../../verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json) |
+| prefix/wide | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json) |
+| prefix/nullPrefix | [open (0.02 s)](../../verification/java-semantics-gap/opening/prefix/measurement.json) | [proved (0.03 s)](../../verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json) |
 
 [All families and first unproved operations](../../llm-dlc/loops/jbmc-java-semantics-gap-results.md)

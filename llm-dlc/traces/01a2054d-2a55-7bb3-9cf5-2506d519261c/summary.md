@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a2054d-2a55-7bb3-9cf5-2506d519261c` (open) |
+| Session | `01a2054d-2a55-7bb3-9cf5-2506d519261c` (ended) |
 | When | 2026-11-22 22:07 UTC to 2026-11-22 22:28 UTC (21 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -18,23 +18,23 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
+### Record verification results for 1 job(s)
+
+[`97ae1a2ae83a`](https://github.com/pilifs/in-the-loop/commit/97ae1a2ae83af7bb573ec79f8b325dee828a88aa) · [log `d38f40816aea`](https://terminalvalue.net/raw-traces/01a2054d-2a55-7bb3-9cf5-2506d519261c/d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38.jsonl.gz)
+
+Outputs applied for 1 of the 1 job(s). 20261122-221543-prove-reference-identity-through-both-hi: passed: 1 passed step(s) in 3.8s, peak 109.1 MiB (estimated 1m00s, 1.0 GiB); 16 output file(s) changed Applied 16 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.
+
 ### Check transpose cell and outer identity (verification pending)
 
-change `ymrympxxkuup` · [log `861a068adcf6`](https://terminalvalue.net/raw-traces/01a2054d-2a55-7bb3-9cf5-2506d519261c/861a068adcf6dbd485300ef91fe7ec58ddae2e74323149a3fba1dc593f4b2a13.jsonl.gz)
+[`af29f0887bfa`](https://github.com/pilifs/in-the-loop/commit/af29f0887bfacf0dfe96d346d25cbb1d07d1b814) · [log `861a068adcf6`](https://terminalvalue.net/raw-traces/01a2054d-2a55-7bb3-9cf5-2506d519261c/861a068adcf6dbd485300ef91fe7ec58ddae2e74323149a3fba1dc593f4b2a13.jsonl.gz)
 
 Exercise the original Javaslang List.transpose in both orientations of a six-cell rectangle. An unrestricted int selects null or one of seven distinct, value-equal objects at each coordinate. Observe one transpose, two transposes and the original input by reference. Check the three identity fast paths and zero-column height loss separately. The JVM observer also executes a value-equal copying caller and an invertible row-major reshape.
 
 Job 20261122-221543-prove-reference-identity-through-both-hi checks both historical JARs and 877 null and alias partitions per orientation. A capped strict parent probe established the rectangular property. Both example validators, all eight oracle tables, the existing scorecards and the changed Rust and Python tests passed. Recompiling the tolerance companion on each revision reproduced its recorded observer and JAR.
 
-### Record verification results for 1 job(s)
-
-change `yxymsvpqtyrs` · [log `d38f40816aea`](https://terminalvalue.net/raw-traces/01a2054d-2a55-7bb3-9cf5-2506d519261c/d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38.jsonl.gz)
-
-Outputs applied for 1 of the 1 job(s). 20261122-221543-prove-reference-identity-through-both-hi: passed: 1 passed step(s) in 3.8s, peak 109.1 MiB (estimated 1m00s, 1.0 GiB); 16 output file(s) changed Applied 16 output(s). Collected by the watcher of the spring-java-data run, which keeps the queue while the run is under way.
-
 ### Record cell identity through both historical matrix transposes
 
-change `llqkpztklnlz` · [log `d38f40816aea`](https://terminalvalue.net/raw-traces/01a2054d-2a55-7bb3-9cf5-2506d519261c/d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38.jsonl.gz)
+[`6e022f9e7809`](https://github.com/pilifs/in-the-loop/commit/6e022f9e7809651b590a4b4349b74ab8e8f28c28) · [log `d38f40816aea`](https://terminalvalue.net/raw-traces/01a2054d-2a55-7bb3-9cf5-2506d519261c/d38f40816aea7fcb45c7b1272ec0d14afe3a61eea3871a86fcac68d0a6496d38.jsonl.gz)
 
 The parent and fixed Javaslang JARs both preserved the exact reference at each coordinate through one transpose and a round trip on 2 by 3 and 3 by 2 rectangles. Each of the six cells independently selects null or one of seven equal-valued objects. Four strict native proofs cover the 524,288 labeled rectangles and the separate fast-path identity and zero-column claims. The paired JVMs produced byte-identical observations for 1,754 rectangles and 40 boundary cases each.
 

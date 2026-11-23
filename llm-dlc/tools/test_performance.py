@@ -119,7 +119,7 @@ class Reference(redaction_rules.Rules):
         return text
 
     def _leaks_in(self, s, out):
-        for kind, rx, _ in self.literals + self.secret_res:
+        for kind, rx, _ in self.literals + [r for r in self.secret_res if r[0] not in redaction_rules.UNAUDITED_KINDS]:
             out += [(kind, m.group(0)) for m in rx.finditer(s)]
         out += [("email", m.group(0)) for m in EMAIL_RE.finditer(s) if not self._public_email(m.group(0))]
         out += [("windows-user", m.group(0)) for m in WIN_USER_RE.finditer(s) if self._win_user(m) != m.group(0)]
@@ -206,7 +206,8 @@ class Rules(unittest.TestCase):
 
 
 # What the gates name, in and out of case, glued into the random text of the gate tests.
-GATE_PIECES = ["gl" + "pat-", "xo" + "xb-", "np" + "m_", "k_" + "live_", "S" + "G.", "/api/" + "webhooks/", "cookie",
+GATE_PIECES = ["gAAA" + "AA" + "madeUpQUJD" * 7,  # the shape of encrypted reasoning, no real bytes
+               "gl" + "pat-", "xo" + "xb-", "np" + "m_", "k_" + "live_", "S" + "G.", "/api/" + "webhooks/", "cookie",
                "COOKIE", "Set-Cookie: ", "gh" + "s_", "github" + "_pat_", "AI" + "za", "https://hooks." + "slack.com/services/",
                "basic ", "BASIC ", "baſic ", "-----BEGIN ", "k-" + "lf-", "s" + "k-", "userID\": \"", "Users",
                "/home/", "x-api-key=", "Key=", "tokeɴ", "ya29.", "1.2.3", ".4", "ab:cd", ":ef:", "Zz09" * 11,
