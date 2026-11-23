@@ -1,0 +1,51 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-200519-replay-clean-java-proof-bundles-and-meas",
+  "title": "Replay clean Java proof bundles and measure each route three times",
+  "description": "Rebuild the frozen Rust binary from its sealed source, replay all old and new bundles and substituted requests, and check Lean on the compiled scalar bytes. On the same host measure independent checking and evidence generation for Rust, Lean, the original Guava Python/Z3 route and the selected LRAT formulas using a small native timing parent.",
+  "kind": "library",
+  "capabilities": [
+    "independent-java-proof",
+    "lean-kernel",
+    "sat-certificate"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T20:05:19+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "rustc",
+    "lean",
+    "cc",
+    "python3",
+    "javap",
+    "java",
+    "z3",
+    "setpriv",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cadical-1.9.5/build/cadical",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Sealed source and disabled producer access",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/recheck_saved.py",
+      "cwd": "."
+    },
+    {
+      "name": "Three fresh native-meter samples per route and case",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/prices.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/clean-replay.json",
+    "lib/benchmark/trusted-kernel/evidence/costs.json"
+  ]
+}

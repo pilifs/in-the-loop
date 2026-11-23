@@ -6,6 +6,7 @@ import gzip
 import io
 import json
 import os
+import re
 from pathlib import Path
 import statistics
 import subprocess
@@ -29,7 +30,71 @@ def instrumented_task():
     from targets import runtime
 
     runtime.VERIFIER_PASS = (*runtime.VERIFIER_PASS, "JVMCONTRACT_TRANSCRIPTS")
+    ordinary = runtime.run_verifier
+
+    def observe_logs(plan, prepared, workdir, **kwargs):
+        ret = ordinary(plan, prepared, workdir, **kwargs)
+        records = {}
+        for log in Path(workdir).rglob("bmc.log"):
+            purpose = "probe" if log.parent.name == "probe" else "proof"
+            if purpose in records:
+                raise ValueError("ambiguous native run " + purpose)
+            records[purpose] = log.read_text()
+        if set(records) != {"proof", "probe"}:
+            raise ValueError(("missing native work logs", records))
+        Path(os.environ["KERNEL_NATIVE_RUN_LOGS"]).write_text(json.dumps(records))
+        return ret
+
+    runtime.run_verifier = observe_logs
     return build.main(["336", "--task", "first-8-release"])
+
+
+def logical_trace(raw):
+    # Scheduling can change timestamps and the remaining time budget. Formula and answers must repeat.
+    return [
+        (
+            line.split()[:3]
+            if line.startswith("c answer ")
+            else re.sub(r"timeout [0-9.]+ s", "timeout [remaining] s", line)
+        )
+        for line in raw.decode("ascii").splitlines()
+    ]
+
+
+def match_runs(traces, folder, logs):
+    used = set()
+    rows = []
+    for trace in traces:
+        raw = gzip.decompress((folder / trace["file"]).read_bytes())
+        footer = re.search(rb"^c end: (\d+) clauses, (\d+) calls; (\w+)", raw, re.M)
+        if not footer:
+            raise ValueError("missing transcript footer")
+        clauses, called, verdict = int(footer[1]), int(footer[2]), footer[3].decode()
+        matches = []
+        for purpose, log in logs.items():
+            m = re.search(r"^(Verified|Violation): .*?, (\d+) solver calls .*?, ([\d,]+) clauses", log, re.M)
+            if m and m[1] == verdict and int(m[3].replace(",", "")) == clauses:
+                matches.append((purpose, int(m[2])))
+        if len(matches) != 1:
+            raise ValueError(("cannot bind native log", trace, logs))
+        purpose, attempted = matches[0]
+        if purpose in used or called != sum(trace["answers"].values()) or attempted < called:
+            raise ValueError("inconsistent native counters")
+        used.add(purpose)
+        rows.append(
+            {
+                "purpose": purpose,
+                "trace": trace["file"],
+                "clauses": clauses,
+                "attempted": attempted,
+                "solverCalls": called,
+                "settledWithoutSolver": attempted - called,
+                "rawNativeLog": logs[purpose],
+            }
+        )
+    if used != set(logs):
+        raise ValueError("unaccounted native run")
+    return rows
 
 
 def certify(capture, profile, out, check_only):
@@ -140,7 +205,11 @@ def certify(capture, profile, out, check_only):
             "satisfyingAssignment": [1],
             "damageBytes": damaged.stat().st_size,
         }
+        if profile["decisions"] < sum(counts.values()):
+            raise ValueError("observed calls exceed native decisions")
         if previous:
+            if previous["decisionsWithoutSolver"] != profile["decisions"] - sum(counts.values()):
+                raise ValueError("stale native shortcut count")
             if previous["controls"]["selected"] != controls["selected"]:
                 raise ValueError("selected query changed")
             if len(rows) != len(known) or counts != previous["observed"]:
@@ -214,6 +283,9 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--instrumented-task", action="store_true")
     ap.add_argument("--check", action="store_true")
+    ap.add_argument(
+        "--account", action="store_true", help="bind each saved transcript to its individual native log"
+    )
     args = ap.parse_args()
     if args.instrumented_task:
         return instrumented_task()
@@ -225,7 +297,10 @@ def main():
         with tempfile.TemporaryDirectory() as directory:
             temp = Path(directory)
             env = dict(
-                os.environ, JVMCONTRACT_TRANSCRIPTS=str(temp / "transcripts"), JVMCONTRACT_SOLVER="cadical"
+                os.environ,
+                JVMCONTRACT_TRANSCRIPTS=str(temp / "transcripts"),
+                JVMCONTRACT_SOLVER="cadical",
+                KERNEL_NATIVE_RUN_LOGS=str(temp / "native.json"),
             )
             run = subprocess.run(
                 [sys.executable, "-B", __file__, "--instrumented-task"],
@@ -248,6 +323,48 @@ def main():
                 or any(actual[k] != reference[k] for k in quantities)
             ):
                 raise ValueError("instrumented task differs from the ordinary bounded claim")
+            if args.account:
+                profile = json.loads((out / "capture.json").read_text())
+                repeated = save(temp / "transcripts", temp / "new-traces")
+                for trace in profile["traces"]:
+                    match = next((t for t in repeated if t["answers"] == trace["answers"]), None)
+                    if match is None or logical_trace(
+                        gzip.decompress((temp / "new-traces" / match["file"]).read_bytes())
+                    ) != logical_trace(gzip.decompress((out / "traces" / trace["file"]).read_bytes())):
+                        raise ValueError("instrumentation changed saved clauses, assumptions, or answers")
+                runs = match_runs(
+                    profile["traces"], out / "traces", json.loads((temp / "native.json").read_text())
+                )
+                primary = next(r for r in runs if r["purpose"] == "proof")
+                if primary["attempted"] != actual["solverCalls"]:
+                    raise ValueError("main check accounting")
+                profile["individualRuns"] = runs
+                profile["decisions"] = sum(r["attempted"] for r in runs)
+                (out / "capture.json").write_text(json.dumps(profile, indent=2) + "\n")
+                doc_path = out / "guava/queries.json"
+                saved = json.loads(doc_path.read_text())
+                old = saved["decisionsWithoutSolver"]
+                saved["decisionsWithoutSolver"] = sum(r["settledWithoutSolver"] for r in runs)
+                (out / "accounting.json").write_text(
+                    json.dumps(
+                        {
+                            "supersededRawValue": old,
+                            "explanation": "The original receipt subtracted both proof and probe calls from the proof-only counter.",
+                            "individualRuns": runs,
+                            "corrected": saved["decisionsWithoutSolver"],
+                        },
+                        indent=2,
+                    )
+                    + "\n"
+                )
+                doc_path.write_text(json.dumps(saved, indent=2) + "\n")
+                print(
+                    [
+                        (r["purpose"], r["attempted"], r["solverCalls"], r["settledWithoutSolver"])
+                        for r in runs
+                    ]
+                )
+                return 0
             profile = {
                 "claim": "336/first-8-release",
                 "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
@@ -260,6 +377,10 @@ def main():
             }
             if not profile["traces"]:
                 raise ValueError("diagnostic directory still empty")
+            profile["individualRuns"] = match_runs(
+                profile["traces"], out / "traces", json.loads((temp / "native.json").read_text())
+            )
+            profile["decisions"] = sum(r["attempted"] for r in profile["individualRuns"])
             (backup_trace,) = capture["held/prefix-sums"]
             profile["fallbackClassSha256"] = bind_prefix_pair(
                 temp, src / "fallback" / backup_trace["file"], out / "prefix-inputs"

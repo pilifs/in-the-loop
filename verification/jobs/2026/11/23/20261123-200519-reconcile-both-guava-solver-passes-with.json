@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-200519-reconcile-both-guava-solver-passes-with",
+  "title": "Reconcile both Guava solver passes with the saved LRAT evidence",
+  "description": "Read the native proof and reachability logs separately. Bind each log to its actual transcript and require every saved clause, assumption and answer to repeat. Correct the original proof-only counter that subtracted both streams, then independently check all 18 previously packed UNSAT certificates and their damaged and SAT controls.",
+  "kind": "library",
+  "capabilities": [
+    "sat-certificate",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T20:05:19+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "python3",
+    "java",
+    "javac",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Repeat the single property and bind both counters",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --account",
+      "cwd": "."
+    },
+    {
+      "name": "Replay every retained formula and proof",
+      "run": "python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --check",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/bounded-sat/accounting.json",
+    "lib/benchmark/trusted-kernel/evidence/bounded-sat/capture.json",
+    "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json"
+  ]
+}

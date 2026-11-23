@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-200520-measure-the-range-fill-and-aliased-calle",
+  "title": "Measure the range-fill and aliased-caller holdout after index transfer",
+  "description": "With the 336 and 346 controls collected, run 337 fill-any-length, caller-any-length and caller-extra-any-length in order. Preserve the original obligation dispositions, try each actual class with the frozen independent checker, then compare the released JVM caller observation with a separate oracle on shared arrays and distinct roots of independently varying length.",
+  "kind": "library",
+  "capabilities": [
+    "array-induction",
+    "independent-java-proof",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T20:05:20+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "python3",
+    "java",
+    "javac",
+    "javap",
+    "rustc",
+    "z3",
+    "setpriv"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_followup.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/range-fill.json"
+  ]
+}

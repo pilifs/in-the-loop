@@ -1,0 +1,476 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-195310-qualify-the-64-bit-transfer-and-held-bac",
+  "title": "Qualify the 64-bit transfer and held-back Java controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 14.2s, peak 114.5 MiB (estimated 1m00s, 2.0 GiB); 39 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-195310-qualify-the-64-bit-transfer-and-held-bac.json",
+    "sha256": "77f194be888299a96e4841d31b74a483d16164523a890278a0b2eb1ddca7e5b5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-195310-qualify-the-64-bit-transfer-and-held-bac",
+      "title": "Qualify the 64-bit transfer and held-back Java controls",
+      "description": "Recheck both whole public Guava methods and every int control on the transfer binary. Check a rebound truncating long comparison, a held-back wrapper layout and an actual frame-preserving store. Independently rederive both exits from the original bytes, observe real JVM behavior, record the experiment issuer fault and verify that the consumer cannot read the producer, its saved verdict or its cache.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T19:53:10+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "python3",
+        "javac",
+        "java",
+        "javap",
+        "z3",
+        "rustc",
+        "setpriv"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/trusted-kernel/trials.py transfer",
+          "run": "python3 -B lib/benchmark/trusted-kernel/trials.py transfer",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/transfer"
+      ]
+    }
+  },
+  "sourceCommit": "bb9a9f190bbf7a0a393e0094584028bacce7b881",
+  "startedAt": "2026-11-23T19:59:23+00:00",
+  "finishedAt": "2026-11-23T19:59:45+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2047382,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 120098816,
+    "wallSeconds": 14.2,
+    "cpuSeconds": 24.0,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/trusted-kernel/trials.py transfer",
+      "run": "python3 -B lib/benchmark/trusted-kernel/trials.py transfer",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 14.229,
+      "cpuSeconds": 24.038,
+      "cpuThrottledSeconds": 1.704,
+      "peakMemoryBytes": 120098816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-truste.log",
+        "lines": 1,
+        "bytes": 545,
+        "sha256": "d28b2180e4e7ab1cbb7d589d13596d2892460fb6c8f3fcccb4b8a931393d190d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('Ints', 'accepted'), ('last', 'rejected'), ('start', 'rejected'), ('miss', 'rejected'), ('frame', 'rejected'), ('stuck', 'rejected'), ('Longs', 'accepted'), ('narrow', 'rejected'), ('layout', 'accepted'), ('same-store', 'accepted'), ('swap-class', 'rejected'), ('swap-certificate', 'rejected'), ('r"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/Ints/artifact.bin",
+      "change": "added",
+      "bytes": 9186,
+      "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/Ints/evidence.cert",
+      "change": "added",
+      "bytes": 1064,
+      "sha256": "6e9d8964e61f6f40ca58840fc6b936bd39dd08045b964a8fcf31f3b277b02104",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/Ints/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/Ints/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/Longs/artifact.bin",
+      "change": "added",
+      "bytes": 9547,
+      "sha256": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/Longs/evidence.cert",
+      "change": "added",
+      "bytes": 1111,
+      "sha256": "22417f3f425c15e82321277f229aa17cef3131f7af2e7617f6ae0410b4e030f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/Longs/external.request",
+      "change": "added",
+      "bytes": 239,
+      "sha256": "19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/frame/artifact.bin",
+      "change": "added",
+      "bytes": 9213,
+      "sha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/frame/evidence.cert",
+      "change": "added",
+      "bytes": 1251,
+      "sha256": "2399558842cafec8eeba576efc314c0949167096d1ade42e6e9866d6903bb899",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/frame/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "eb9ed325938200c9de24c467629139ac4adff7bfda38eaa62c5c6041952c6813",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/frame/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/last/artifact.bin",
+      "change": "added",
+      "bytes": 9206,
+      "sha256": "ecc2e7dbf6b0e2ae100ff720b18b4a739447a87231abc48f0ee1969ad42b6b85",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/last/evidence.cert",
+      "change": "added",
+      "bytes": 1082,
+      "sha256": "ce3812d17110f51ec6e869342c1fc794c8072eb165b410d6a5b6a7e7f6f7a32c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/last/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "09508fe83d0b156149c4bf6fe72aa372ef62b5d788fde1969dfa723c24aa053d",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/last/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/layout/artifact.bin",
+      "change": "added",
+      "bytes": 9210,
+      "sha256": "0a2cdd0152396e0d661efd6c6ea2b34245ebb7cae9c78ba3af89df67c550c5c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/layout/evidence.cert",
+      "change": "added",
+      "bytes": 1114,
+      "sha256": "e7d4074f87130f15d379a474d6bf0e07de8557eeade6bec629125c14ddc7161c",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/layout/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "6d9358af5ac8f32efd2d90946667e8d82759f15143cc286f00eca823fa3916a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/layout/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/miss/artifact.bin",
+      "change": "added",
+      "bytes": 9186,
+      "sha256": "4cbdc3e3e7ddda3196050ee42b1606e7c6ebb8aedfab66eec0aec669c479da02",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/miss/evidence.cert",
+      "change": "added",
+      "bytes": 1062,
+      "sha256": "e403554ec1e66d0c3ab85b8a20cf0db87fb599b66532a5a3afe868700366a29a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/miss/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "0f8d110f50fa79286f9886328970c7b9f25077485c690bd0f7de1613b626b361",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/miss/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/narrow/artifact.bin",
+      "change": "added",
+      "bytes": 9548,
+      "sha256": "c0628182b357ed344ba9520544c99992445eb9bbd58deaf114b04064a844a05f",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/narrow/evidence.cert",
+      "change": "added",
+      "bytes": 1138,
+      "sha256": "cac8e8ebaaf462c3eb8769d55fe62000f1b54ff74b3205e0eeff1c50dcb0311b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/narrow/external.request",
+      "change": "added",
+      "bytes": 239,
+      "sha256": "2fc8250d704ca311d7a21ccb3d2c27f80d0614194af94f7b2d1eb0297f1061af",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/results.json",
+      "change": "added",
+      "bytes": 79844,
+      "sha256": "35b476b8f269ed4049dac5b7686f152c4b26818119cafb2fa62e6d2bf42c1cac",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/same-store/artifact.bin",
+      "change": "added",
+      "bytes": 9195,
+      "sha256": "95d7daa1af4325e2b26e33db980f3c0562e280e84be5508d8af6794985b70905",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/same-store/evidence.cert",
+      "change": "added",
+      "bytes": 1197,
+      "sha256": "d7bb0500f48d26e5d37eb6ef8a16c2b624c6d2632d2234557f1d930428d3841b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/same-store/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "e2edebc05e60c2048c1dea04e039f37f7c2b065f7bcec3ba2660497cea40c617",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/same-store/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/start/artifact.bin",
+      "change": "added",
+      "bytes": 9186,
+      "sha256": "d9b7130f674b63a39dd679285b54d409789f78cf07850a7690f4cb3c21f7e3df",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/start/evidence.cert",
+      "change": "added",
+      "bytes": 1062,
+      "sha256": "ee400903d7175a487e1aa619aaa62557361cc91c0eadf54e96f9686600f8c9f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/start/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "96813d988111e18f11ff533dc9400b73cf8b7181927dcb2abe0ad44cbb77f528",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/start/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/stuck/artifact.bin",
+      "change": "added",
+      "bytes": 9186,
+      "sha256": "bb38184513592e43771b13db9aab09390ebf2e128a004345dade67fbc98f196e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/stuck/evidence.cert",
+      "change": "added",
+      "bytes": 1062,
+      "sha256": "161d597c31da86a6f5a98eccf01191f197c58fa1f0c0a167664e38246201db87",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/stuck/external.request",
+      "change": "added",
+      "bytes": 358,
+      "sha256": "b3bb1eb9ea3cc5b44fa7e1e2ca71accfbb55626a119e0638b3f50d7839a318ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/transfer/stuck/support.bin",
+      "change": "added",
+      "bytes": 445,
+      "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T20:00:03+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/transfer/Ints/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/Ints/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/Ints/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/Ints/support.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/Longs/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/Longs/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/Longs/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/frame/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/frame/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/frame/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/frame/support.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/last/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/last/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/last/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/last/support.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/layout/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/layout/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/layout/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/layout/support.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/miss/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/miss/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/miss/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/miss/support.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/narrow/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/narrow/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/narrow/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/results.json",
+      "lib/benchmark/trusted-kernel/evidence/transfer/same-store/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/same-store/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/same-store/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/same-store/support.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/start/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/start/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/start/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/start/support.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/stuck/artifact.bin",
+      "lib/benchmark/trusted-kernel/evidence/transfer/stuck/evidence.cert",
+      "lib/benchmark/trusted-kernel/evidence/transfer/stuck/external.request",
+      "lib/benchmark/trusted-kernel/evidence/transfer/stuck/support.bin"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T195945Z-62584228b0e3f500",
+      "outputs": "20261123T195945Z-64932015a6629b04",
+      "diff": "20261123T195945Z-66830642c6cff725"
+    }
+  }
+}
