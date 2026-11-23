@@ -116,3 +116,54 @@ Deliver one replay command for each completed route, a minimal immutable evidenc
 [lean]: https://lean-lang.org/doc/reference/latest/Axioms/
 [lrat]: https://github.com/marijnheule/coch-demo
 [cake]: https://github.com/tanyongkiam/cake_lpr
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+`$B` = `~/.cache/in-the-loop/trusted-kernel`.
+- The release jar `guava-33.4.8-jre.jar` (sha256 `f3d7f57f…e617ed`, = brief) and its runtime graph, signature- and
+  checksum-checked: `$B/releases/guava-33.4.8-jre/lib/`; sources jars beside it. The preparer's cache
+  (`~/.cache/in-the-loop/targets/sha256/`) already holds what 336 and 346 list.
+- The class bytes, extracted: `$B/classes/guava-33.4.8-jre/com/google/common/primitives/`. `Ints.class`
+  `ae581f72…a7151`, `IntsMethodsForWeb.class` (its superclass) `a31b9770…17bd6`, `Longs.class` `b8c75a5f…96d9`; all
+  equal to the existing records. `javap` of each: `$B/logs/javap-*.txt`.
+- Guava source at the release commit `f06690fa`: `$B/src/guava-33.4.8`.
+- CaDiCaL 1.9.5 CLI: `$B/src/cadical-1.9.5/build/cadical`. `cake_lpr`: `$B/src/cake_lpr-033aad53/cake_lpr`. LRAT
+  round-trip example: `$B/probes/lrat-smoke/`.
+- Lean `v4.36.0` and `v4.35.0`, both checked file by file against their release archives.
+- JDK 21 (Temurin 21.0.13+9), Z3 5.3.3 (the records' binary, same digest), and the checker built at this head.
+
+### What was verified on a JVM
+
+On Temurin 21.0.13 with the release jar: `Ints.indexOf([7,7],7) = 0`, empty → −1, `[5]`/5 → 0, signed extrema at
+both ends, and `Longs.indexOf([0, 2^32], 2^32) = 1` (no truncation), `[2^32]`/0 → −1, `Long` extrema; every input
+array unchanged, and the classes the JVM loaded have the digests above (`$B/logs/jvm-guava-indexof.txt`, 14 of 14).
+None of the brief's mutants exists yet.
+
+### What to know before starting
+
+- This head is `3471332a3`, 150 commits after the brief's `d717edd2`. Of the linked paths, only
+  `lib/tests/integration.rs` changed (one test added after line 549); the `#L464` scalar lines are unchanged.
+- **`cake_lpr` exits 0 when it rejects.** Read stdout for `s VERIFIED UNSAT`. It rejected a truncated proof, a proof
+  with one literal flipped, and a proof against a satisfiable formula, all with exit 0.
+- `cake_lpr` is at its upstream head, whose README says it is the last release before it is "superseded by a new
+  checker in this repository": pin `033aad53`, not the branch. Heap and stack sizes are flags
+  (`--CML_HEAP_SIZE=<MiB>`), no longer environment variables.
+- The checker's bundled solver is CaDiCaL 1.9.5 (crate `cadical` 0.1.16), differing from the upstream tag only in
+  Windows portability code, so the brief's pinned CLI is the same solver as the engine's.
+- `lean` follows elan's `stable` channel and moved to v4.36.0 during this setup. Pin a toolchain (a
+  `lean-toolchain` file or `elan run leanprover/lean4:vX`) before recording "the exact Lean version".
+- The scalar fixtures are compiled by the tests with javac 25 (`-parameters -g -proc:none`), not JDK 21, and the
+  fixture folder does not compile with JDK 21 (`TrafficLight.java` uses `_`). `Overloads.twice(int)` is
+  `iconst_2; iload_0; imul; ireturn` under javac 25.
+- GNU `time` is absent; the `resource.getrusage(RUSAGE_CHILDREN)` line above gives peak memory.
+- Nothing here is a snapshot: every input is a pinned release, tag or commit.
+
+### What is left for the domain work on purpose
+
+- The two Stage 1 baseline runs (`build.py 336|346 --array-induction first-any-length --compare`), which run the
+  verifier on the existing claims: submit them as jobs (B11) or run them as the brief and `CLAUDE.md` allow.
+- The `first-8-release` transcript for the SAT comparator, the choice of query, the DIMACS export and its LRAT proof.
+- The claim, assumptions, certificate format, the scalar pair (methods, JDK, frozen bytes), all controls and mutants,
+  the Rust and Lean checkers, and the optional 337 runs.
