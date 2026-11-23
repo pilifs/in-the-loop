@@ -1,0 +1,336 @@
+{
+  "subject": "surrogates",
+  "phase": "callers",
+  "source": "36542708757ff25866f04e65714bea631132ac28",
+  "job": "20261123-134759-recheck-60-original-java-callers-on-the",
+  "adapterSha256": "aa4b09175cc8e4ad698578c7253d6c17f7de11f33c580364411f806dc2c6d7a2",
+  "classes": {
+    "SurrogateUnits$Recording.class": "750874034758fc51a7efb03ab85356daf7e24e902379efd0f5010dfb8b893469",
+    "SurrogateUnits$Two.class": "6dd41496a49ebea16591e1d008a78ea40622577fa7152e47c9a9e6a708deb7f6",
+    "SurrogateUnits.class": "aee8c566473ccf7f51a8589bc322ce3fffb1ef4dde2c543acf63b3eee32fa382"
+  },
+  "classpath": [
+    "adapter",
+    {
+      "path": "m2/org/apache/commons/commons-text/1.12.0/commons-text-1.12.0.jar",
+      "sha256": "de023257ff166044a56bd1aa9124e843cd05dac5806cc705a9311f3556d5a15f"
+    },
+    {
+      "path": "m2/org/apache/commons/commons-lang3/3.14.0/commons-lang3-3.14.0.jar",
+      "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c"
+    }
+  ],
+  "jdk": [
+    "IMPLEMENTOR=\"Eclipse Adoptium\"",
+    "IMPLEMENTOR_VERSION=\"Temurin-21.0.13+9\"",
+    "JAVA_RUNTIME_VERSION=\"21.0.13+9-LTS\"",
+    "JAVA_VERSION=\"21.0.13\"",
+    "JAVA_VERSION_DATE=\"2026-10-20\"",
+    "LIBC=\"gnu\"",
+    "MODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom\"",
+    "OS_ARCH=\"x86_64\"",
+    "OS_NAME=\"Linux\"",
+    "SOURCE=\".:git:2ab10ca20c19\"",
+    "BUILD_SOURCE=\"git:1cf43d7a3e77886bfea7d550a902e151a87d724d\"",
+    "BUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"",
+    "SOURCE_REPO=\"https://github.com/adoptium/jdk21u.git\"",
+    "FULL_VERSION=\"21.0.13+9-LTS\"",
+    "SEMANTIC_VERSION=\"21.0.13+9\"",
+    "BUILD_INFO=\"OS: Linux Version: 6.8.0-1070-azure\"",
+    "JVM_VARIANT=\"Hotspot\"",
+    "JVM_VERSION=\"21.0.13+9-LTS\"",
+    "IMAGE_TYPE=\"JDK\""
+  ],
+  "jvmSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "modulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "scope": {
+    "example": 384,
+    "owner": "SurrogateUnits",
+    "graph": "text",
+    "claims": [
+      {
+        "method": "translate",
+        "parameters": "char a, char b, boolean second",
+        "guard": "",
+        "holds": [
+          [
+            "'A'",
+            "'B'",
+            "true"
+          ],
+          [
+            "'A'",
+            "'B'",
+            "false"
+          ],
+          [
+            "(char)0xDBFF",
+            "(char)0xDFFF",
+            "true"
+          ],
+          [
+            "(char)0xDBFF",
+            "(char)0xDFFF",
+            "false"
+          ],
+          [
+            "(char)0xD800",
+            "'A'",
+            "true"
+          ],
+          [
+            "(char)0xD800",
+            "'A'",
+            "false"
+          ],
+          [
+            "'A'",
+            "(char)0xDC00",
+            "true"
+          ],
+          [
+            "'A'",
+            "(char)0xDC00",
+            "false"
+          ]
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "removeEvery",
+        "parameters": "char a, char b",
+        "guard": "",
+        "holds": [
+          [
+            "'A'",
+            "'B'"
+          ]
+        ],
+        "fails": [
+          [
+            "(char)0xDBFF",
+            "(char)0xDFFF"
+          ]
+        ],
+        "nullable": ""
+      }
+    ],
+    "bound": 8,
+    "unwind": 16
+  },
+  "claimsSha256": {
+    "translate": "8e49e502517ce01aea3acc769102d1436b2f02518e6aa69ea66cb1ea1583b004",
+    "removeEvery": "e738946b0cd96ea9431db2874be35075dea23ff5b7a1ac20426e1685e7fb9d87"
+  },
+  "originalJvm": {
+    "checks": 10,
+    "sourceSha256": "bd362676c26462e5d9832c162545e8eb61f991fab533522309112e2ad247ea0a",
+    "stdout": "10 original checks passed"
+  },
+  "runs": [
+    {
+      "method": "translate",
+      "engine": "native",
+      "exit": 0,
+      "seconds": 0.016,
+      "expected": "verified",
+      "verdict": "verified",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "a",
+              "type": "char",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "b",
+              "type": "char",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "second",
+              "type": "boolean",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "a: char \u00d7 b: char \u00d7 second: boolean"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "harness",
+          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+        }
+      }
+    },
+    {
+      "method": "translate",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 1.022,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample translate(a='\\udbff', b='\\udfff', second=true) is no reproduction in the interpreter, which cannot run the method on it (unsupported: Character.codePointAt(Ljava/lang/CharSequence;I)I); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.io.Writer.<init>()V@jdk-21.0.13, jdk-primitive-method:java.lang.Character.codePointAt(Ljava/lang/CharSequence;I)I@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "removeEvery",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.097,
+      "expected": "violation",
+      "verdict": "violation",
+      "disposition": "correct",
+      "firstUnproved": "",
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "a",
+              "type": "char",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "b",
+              "type": "char",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "a: char \u00d7 b: char"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      },
+      "jvmReplay": {
+        "outcome": "refuted",
+        "inputs": [
+          {
+            "name": "a",
+            "type": "char",
+            "value": 55996
+          },
+          {
+            "name": "b",
+            "type": "char",
+            "value": 56992
+          }
+        ],
+        "sourceSha256": "4feca9163e3f6c87b16851dd870a91d07f89553efe32188d923319c2111032ca",
+        "exit": 0,
+        "diagnostic": ""
+      }
+    },
+    {
+      "method": "removeEvery",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 1.01,
+      "expected": "violation",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample removeEvery(a='\\udfff', b='\uffff') is no reproduction in the interpreter, which cannot run the method on it (unsupported: Character.codePointAt(Ljava/lang/CharSequence;I)I); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.io.Writer.<init>()V@jdk-21.0.13, jdk-primitive-method:java.lang.Character.codePointAt(Ljava/lang/CharSequence;I)I@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
+    }
+  ],
+  "jvmGrid": {
+    "sourceSha256": "315ec4a857743fe2d2d2cb028d33f0bf514cfdb80a33cabf25fc29e4999d2c0e",
+    "seconds": 0.075,
+    "observations": "1048576 valid pairs and 589824 boundary pairs at both offsets; zero writer units"
+  },
+  "checkerSha256": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+  "libTree": "264ac161d93b5f54ce34683cd0cc8b035ca0f334",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "packagedModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "rawSha256": "0498cb853bc8159d2c246d8c7bb1a01b7263c5d5f337990edc85a2469a363497"
+}
