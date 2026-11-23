@@ -1,0 +1,193 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-231039-recheck-receiver-cohort-group-05-at-orig",
+  "title": "Recheck receiver cohort group 05 at original scope",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m11s, peak 312.2 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-231039-recheck-receiver-cohort-group-05-at-orig.json",
+    "sha256": "b5b2295e1436dd7a30477cb08d36d59383dc8fb2739da8f2863c6334bcdb0d7c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-231039-recheck-receiver-cohort-group-05-at-orig",
+      "title": "Recheck receiver cohort group 05 at original scope",
+      "description": "Repeat only the frozen receiver-blocked cases in this group. Bind both original commits, classpaths, public JVM calls and exact paired overloads. Preserve incomplete calls and their first remaining native instruction.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:regress",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:10:39+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Recheck the frozen original inputs",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py 05",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/transfer/cohort/05"
+      ]
+    }
+  },
+  "sourceCommit": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "startedAt": "2026-11-23T23:45:46+00:00",
+  "finishedAt": "2026-11-23T23:51:18+00:00",
+  "wallSeconds": 332.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 327417856,
+    "wallSeconds": 71.8,
+    "cpuSeconds": 98.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.3
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recheck the frozen original inputs",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py 05",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 71.776,
+      "cpuSeconds": 97.99,
+      "cpuThrottledSeconds": 15.773,
+      "peakMemoryBytes": 327417856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-the-frozen-original-in.log",
+        "lines": 12,
+        "bytes": 2368,
+        "sha256": "7b545b95c240952657fc0b433fcb30c10cc7732faf357707f4fb19f84181ee82",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-94 current open validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.vali",
+        "commons-csv-8993be87 current open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of sever",
+        "reflector-35 current open newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassG",
+        "commons-fileupload-377 current open readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no con",
+        "preserved org.apache.commons.csv.CSVParser#nextRecord()Lorg/apache/commons/csv/CSVRecord;",
+        "commons-csv-8993be87 preserved",
+        "preserved org.apache.commons.fileupload2.core.MultipartInput#readBodyData(Ljava/io/OutputStream;)J",
+        "commons-fileupload-377 preserved",
+        "open new input 0: the original caller method was never entered. java.lang.NoSuchFieldError: STANDARD_NUMBER_TYPES at org.springframework.web.context.request.ServletRequestAttributes.<clinit>(ServletRequestAttributes.java:57)",
+        "compsuite-i-94 open",
+        "open old input 0: the original caller method was never entered. java.lang.ExceptionInInitializerError: null at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<init>(AsmClassGenerator.java:26) caused by java.lang.NullPointerException: value is marked @NonNull but is null at ru.progrm_jarvi",
+        "reflector-35 open"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/transfer/cohort/05/measurement.json",
+      "change": "added",
+      "bytes": 11954,
+      "sha256": "d0090256ba400e98d535e5dff995e1376996d642a15f297def8feb777124544e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/transfer/cohort/05/receipts.tar.gz",
+      "change": "added",
+      "bytes": 35085,
+      "sha256": "21057aefb32711f66303ef6033720c781840b09cdfc33469d9609de239c3cb3e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:56:32+00:00",
+    "applied": [
+      "verification/receiver-discovery/transfer/cohort/05/measurement.json",
+      "verification/receiver-discovery/transfer/cohort/05/receipts.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3f924408a679b585beec4e937902e68399d2c87",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3f924408a679b585beec4e937902e68399d2c87/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T235118Z-5010911e64c72bad",
+      "outputs": "20261123T235118Z-524954764db7d9c1",
+      "diff": "20261123T235118Z-5435638373dfddac"
+    }
+  }
+}

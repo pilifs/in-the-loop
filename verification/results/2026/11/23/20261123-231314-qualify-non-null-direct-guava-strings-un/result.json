@@ -1,0 +1,265 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-231314-qualify-non-null-direct-guava-strings-un",
+  "title": "Qualify non-null direct Guava strings under both models",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.0s, peak 142.9 MiB (estimated 2m00s, 3.0 GiB); 11 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-231314-qualify-non-null-direct-guava-strings-un.json",
+    "sha256": "1ebb00101ce4ceac2463807df3bf55997e0f18d32866b63b045842781f2eb192",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-231314-qualify-non-null-direct-guava-strings-un",
+      "title": "Qualify non-null direct Guava strings under both models",
+      "description": "Use the direct non-null String domain in both JBMC profiles. Match the exact user assertion and check the uncaught-exception and unwinding obligations, including the tilde and minimum controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:13:14+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "2m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "Measure the selected original property",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex standalone --stage nonnull",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/nonnull/hex/standalone"
+      ]
+    }
+  },
+  "sourceCommit": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "startedAt": "2026-11-23T23:50:25+00:00",
+  "finishedAt": "2026-11-23T23:50:56+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 149868544,
+    "wallSeconds": 17.0,
+    "cpuSeconds": 18.8,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Measure the selected original property",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex standalone --stage nonnull",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 17.011,
+      "cpuSeconds": 18.834,
+      "cpuThrottledSeconds": 0.36,
+      "peakMemoryBytes": 149868544,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-selected-original.log",
+        "lines": 18,
+        "bytes": 1562,
+        "sha256": "e9bd54e41d57fa47ba84a749ece448d02aa839696291b71a70d00370d9cbeef1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "hex packaged hexNull [('java::DeepAssertions.hexNull:(Ljava/lang/String;)V.assertion.1', 'FAILURE')] []",
+        "hex packaged hexBoxed [('java::DeepAssertions.hexBoxed:(Ljava/lang/String;)V.assertion.1', 'FAILURE')] []",
+        "hex packaged hexMinimum [('java::DeepAssertions.hexMinimum:(Ljava/lang/String;)V.assertion.1', 'FAILURE')] []",
+        "hex packaged hexReach [('java::DeepAssertions.hexReach:(Ljava/lang/String;)V.assertion.1', 'FAILURE')] []",
+        "hex packaged tilde [('java::DeepAssertions.tilde:()V.assertion.1', 'FAILURE')] []",
+        "hex jdk-arrays hexNull [('java::DeepAssertions.hexNull:(Ljava/lang/String;)V.assertion.1', 'SUCCESS')] []",
+        "hex jdk-arrays hexBoxed [('java::DeepAssertions.hexBoxed:(Ljava/lang/String;)V.assertion.1', 'SUCCESS')] []",
+        "hex jdk-arrays hexMinimum [('java::DeepAssertions.hexMinimum:(Ljava/lang/String;)V.assertion.1', 'FAILURE')] []",
+        "hex jdk-arrays hexReach [('java::DeepAssertions.hexReach:(Ljava/lang/String;)V.assertion.1', 'FAILURE')] []",
+        "hex jdk-arrays tilde [('java::DeepAssertions.tilde:()V.assertion.1', 'SUCCESS')] []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexBoxed.json.gz",
+      "change": "added",
+      "bytes": 2276,
+      "sha256": "54148a0b1a1250f7c720cbb509c618bad27233b934c0370fa7773b1feaca7133",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexMinimum.json.gz",
+      "change": "added",
+      "bytes": 30382,
+      "sha256": "d2b09e15ad7ceb3558bd9e818fafa9e6a7ca8dcc83336c6d5566b558b04eb59d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexNull.json.gz",
+      "change": "added",
+      "bytes": 2251,
+      "sha256": "29eb22f6ba9a4b2e46e5a6f167a3083e9b2290ff9f777ced0666080805e40170",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexReach.json.gz",
+      "change": "added",
+      "bytes": 30567,
+      "sha256": "4e7a71f307ef257430b664b4d705d127bd10fde825b48dfa5cd90a6f77840b75",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-tilde.json.gz",
+      "change": "added",
+      "bytes": 1933,
+      "sha256": "998c081779e973a26b58a67e7caa7ef72307577317148dca97405d4f642fec1b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/measurement.json",
+      "change": "added",
+      "bytes": 10861,
+      "sha256": "5f2a1324a4a0bd231c8c74e551fd9566638b7a8b6675bcea61abb111cf5cd490",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexBoxed.json.gz",
+      "change": "added",
+      "bytes": 26587,
+      "sha256": "8367aeb61e07049d1e2b0b5f2e17207d8e503bcd8f671d19c18726b63292256e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexMinimum.json.gz",
+      "change": "added",
+      "bytes": 24736,
+      "sha256": "13d49dcc67e2a86b46f35b7a91ad4f173c0d5ed18de6e3654ace8dddf63d3243",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexNull.json.gz",
+      "change": "added",
+      "bytes": 26133,
+      "sha256": "a5614f2b0e4b64b1946de749e521385e245048ed4bdc12359c782a1b76e1fe75",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexReach.json.gz",
+      "change": "added",
+      "bytes": 20268,
+      "sha256": "5a7284d5daffaf948898d10ba0d362d30a1fc0d35d2aa96648d778b6b0caed6d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-tilde.json.gz",
+      "change": "added",
+      "bytes": 23092,
+      "sha256": "146804b42665e9c352a4f0ebbf109e85ecea02a41107281bb6dab18ce5600bbf",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:56:32+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexBoxed.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexMinimum.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexNull.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-hexReach.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/jdk-arrays-tilde.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/measurement.json",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexBoxed.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexMinimum.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexNull.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-hexReach.json.gz",
+      "verification/receiver-discovery/deeper/nonnull/hex/standalone/packaged-tilde.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T235056Z-507605b1d5de9fee",
+      "outputs": "20261123T235056Z-563156fa579390e9",
+      "diff": "20261123T235056Z-587343d2b19b8685"
+    }
+  }
+}

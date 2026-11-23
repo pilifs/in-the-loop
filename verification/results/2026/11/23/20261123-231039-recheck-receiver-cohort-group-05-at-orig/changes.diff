@@ -1,0 +1,230 @@
+--- /dev/null
++++ b/verification/receiver-discovery/transfer/cohort/05/measurement.json
+@@ -0,0 +1,226 @@
++{
++  "job": "20261123-231039-recheck-receiver-cohort-group-05-at-orig",
++  "source": "14d4fb339743c5e65652595ef574ead73c0aea2b",
++  "checkerSha256": "1ef8756230ff459470819d822859a2c6e48cd7f60345ed3583ec182914111748",
++  "cases": {
++    "commons-csv-8993be87": {
++      "overloads": {
++        "org.apache.commons.csv.CSVParser#nextRecord()": {
++          "verdict": "unverifiable",
++          "firstOutstanding": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet"
++        }
++      },
++      "status": "preserved",
++      "inputs": 4,
++      "sides": {
++        "old": {
++          "jvmInputsReached": 4,
++          "verdict": "verified",
++          "firstOutstanding": null,
++          "counterexample": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "probe",
++            "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
++            "witness": "matches(selector=0)"
++          },
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 4",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "31e7bd00d186e1bf0ce2ed44360ee061d1afd45becbf1c223225ecc21324eae9"
++        },
++        "new": {
++          "jvmInputsReached": 4,
++          "verdict": "verified",
++          "firstOutstanding": null,
++          "counterexample": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "probe",
++            "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
++            "witness": "matches(selector=0)"
++          },
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 4",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "b2afb753f3c64e9bc2566020a77b78dab806d9dddf9a32bebe382765aed6a512"
++        }
++      }
++    },
++    "commons-fileupload-377": {
++      "overloads": {
++        "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream)": {
++          "verdict": "unverifiable",
++          "firstOutstanding": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use"
++        }
++      },
++      "status": "preserved",
++      "inputs": 4,
++      "sides": {
++        "old": {
++          "jvmInputsReached": 4,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ThreadLocal.withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;@jdk-21.0.13 (java.lang.ThreadLocal.withInitial(java.util.function.Supplier) at org.apache.commons.io.IOUtils.<clinit>:205). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 4",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "f9da0dfbbbb27a7bcaac3b231d54c86250195b961f785bc311a86dc764d1c537"
++        },
++        "new": {
++          "jvmInputsReached": 4,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ThreadLocal.withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;@jdk-21.0.13 (java.lang.ThreadLocal.withInitial(java.util.function.Supplier) at org.apache.commons.io.IOUtils.<clinit>:206). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 4",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "8ac59badce9547a795408574d2f2c63ddaab3cccc6d10659d6dd619319faccb9"
++        }
++      }
++    },
++    "compsuite-i-94": {
++      "overloads": {
++        "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(com.alibaba.citrus.service.form.Validator$Context, java.lang.String)": {
++          "verdict": "unverifiable",
++          "firstOutstanding": "validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++        }
++      },
++      "status": "open",
++      "inputs": 3,
++      "sides": {
++        "old": {
++          "jvmInputsReached": 3,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>()V (com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() at UpgradeProbe.observe:12). With --gaps assume it assumes instead that com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 3",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "e32739f305b322b5556304c22ab6c8877ee915caef43adcafaa06175fcac7525"
++        },
++        "new": {
++          "jvmInputsReached": 0,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>()V (com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() at UpgradeProbe.observe:12). With --gaps assume it assumes instead that com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 3",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "27625bbf1615135a2dd3a65bf26f7660eed3083574d4a0b7c065a13d6cad9d95"
++        }
++      }
++    },
++    "reflector-35": {
++      "overloads": {
++        "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class)": {
++          "verdict": "unverifiable",
++          "firstOutstanding": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet"
++        }
++      },
++      "status": "open",
++      "inputs": 2,
++      "sides": {
++        "old": {
++          "jvmInputsReached": 0,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String; (java.lang.String.replace(char, char) at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<clinit>:17). With --gaps assume it assumes instead that java.lang.String.replace(char, char) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 2",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "4a0db7ed3c97f3136fb2cd692623de9bf6211425372769420dbf034dcb4cb815"
++        },
++        "new": {
++          "jvmInputsReached": 0,
++          "verdict": "unverifiable",
++          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String; (java.lang.String.replace(char, char) at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<clinit>:17). With --gaps assume it assumes instead that java.lang.String.replace(char, char) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++          "counterexample": null,
++          "vacuity": null,
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "selector >= 0 && selector < 2",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "rawSha256": "8de9e7b0fbbd99d22baad5890a338ca4f1865339a8d53368f459e8a7626d165a"
++        }
++      }
++    }
++  },
++  "receiptPackSha256": "21057aefb32711f66303ef6033720c781840b09cdfc33469d9609de239c3cb3e"
++}
+Binary file verification/receiver-discovery/transfer/cohort/05/receipts.tar.gz changed

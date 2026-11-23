@@ -1,0 +1,1198 @@
+--- /dev/null
++++ b/verification/receiver-discovery/deeper/aligned/float/native/measurement.json
+@@ -0,0 +1,1195 @@
++{
++  "schema": "receiver-deep-case/v1",
++  "job": "20261123-231925-recheck-independent-float-operands-with",
++  "source": "14d4fb339743c5e65652595ef574ead73c0aea2b",
++  "classes": {
++    "FloatHistory.class": "f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5"
++  },
++  "jars": [
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    }
++  ],
++  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "originalJvm": [
++    "100081 pairs; x=3f800001 y=3f800000 original=34000000 translated=00000000"
++  ],
++  "checker": "1ef8756230ff459470819d822859a2c6e48cd7f60345ed3583ec182914111748",
++  "results": {
++    "exact": {
++      "verdict": "verified",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "verified",
++        "target": "FloatHistory#exact",
++        "domain": "x: float \u00d7 y: float",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over x: float \u00d7 y: float in 0.2 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-exact/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "\u2713 FloatHistory#exact satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over x: float \u00d7 y: float in 0.2 s; loops unwound 16 times with unwinding assertions)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-exact",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.221346181,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 12,
++            "solving_seconds": 0.208287765,
++            "gates_evaluated": 2292,
++            "evaluating_seconds": 7.5532e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 3759,
++            "clauses": 13912,
++            "seconds": 0.219410575,
++            "loading_seconds": 0.000216309,
++            "decoding_seconds": 7.7296e-05,
++            "encoding_seconds": 0.003852356,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.219,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.007,
++                "encoding": 0.004,
++                "solving": 0.208,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 3759,
++                "clauses": 13912
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.25,
++            "setup": 0.002,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.219,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.029
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: float \u00d7 y: float"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      }
++    },
++    "translated": {
++      "verdict": "violation",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "violation",
++        "target": "FloatHistory#translated",
++        "domain": "x: float \u00d7 y: float",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": {
++          "input": "translated(x=1.5820311, y=1.7924805)",
++          "outcome": "false",
++          "values": [
++            "1.5820311",
++            "1.7924805"
++          ],
++          "shrink_runs": 0,
++          "inputs": [
++            {
++              "name": "x",
++              "type": "float",
++              "value": "1.5820311"
++            },
++            {
++              "name": "y",
++              "type": "float",
++              "value": "1.7924805"
++            }
++          ],
++          "call": {
++            "class": "FloatHistory",
++            "class_file": "FloatHistory.class",
++            "classes": "after",
++            "method": "translated",
++            "descriptor": "(FF)Z",
++            "static": true,
++            "arguments": [
++              {
++                "name": "x",
++                "type": "float",
++                "value": "1.5820311",
++                "from": "x"
++              },
++              {
++                "name": "y",
++                "type": "float",
++                "value": "1.7924805",
++                "from": "y"
++              }
++            ]
++          }
++        },
++        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain x: float \u00d7 y: float",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-translated/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "property-violated",
++            "message": "Property of FloatHistory#translated violated: `result`:\n  translated(x=1.5820311, y=1.7924805)\n    outcome: false",
++            "uri": null,
++            "line": 15
++          }
++        ],
++        "output": "\u2717 Property of FloatHistory#translated violated: `result`:\n  translated(x=1.5820311, y=1.7924805)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain x: float \u00d7 y: float)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-translated",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.017682615,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": "[0:20]",
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 17,
++            "solving_seconds": 0.007980077,
++            "gates_evaluated": 2378,
++            "evaluating_seconds": 4.0015e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 4242,
++            "clauses": 15542,
++            "seconds": 0.015968058,
++            "loading_seconds": 0.000215208,
++            "decoding_seconds": 5.204e-05,
++            "encoding_seconds": 0.002261268,
++            "witness_seconds": 0.000368009
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.016,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.005,
++                "encoding": 0.002,
++                "solving": 0.008,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 4242,
++                "clauses": 15542
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.104,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.016,
++            "replay": 0.006,
++            "jvm": 0.062,
++            "other": 0.019
++          }
++        },
++        "replay": {
++          "by": "jvm",
++          "reproduced": true
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: float \u00d7 y: float"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "originalReplay": {
++        "arguments": [
++          "3fca7fff",
++          "3fe57000"
++        ],
++        "jvm": [
++          "class f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5",
++          "returned false"
++        ]
++      }
++    },
++    "afterReturn": {
++      "verdict": "violation",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "violation",
++        "target": "FloatHistory#afterReturn",
++        "domain": "x: float \u00d7 y: float",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": {
++          "input": "afterReturn(x=1.0, y=1.0)",
++          "outcome": "false",
++          "values": [
++            "1.0",
++            "1.0"
++          ],
++          "shrink_runs": 0,
++          "inputs": [
++            {
++              "name": "x",
++              "type": "float",
++              "value": "1.0"
++            },
++            {
++              "name": "y",
++              "type": "float",
++              "value": "1.0"
++            }
++          ],
++          "call": {
++            "class": "FloatHistory",
++            "class_file": "FloatHistory.class",
++            "classes": "after",
++            "method": "afterReturn",
++            "descriptor": "(FF)Z",
++            "static": true,
++            "arguments": [
++              {
++                "name": "x",
++                "type": "float",
++                "value": "1.0",
++                "from": "x"
++              },
++              {
++                "name": "y",
++                "type": "float",
++                "value": "1.0",
++                "from": "y"
++              }
++            ]
++          }
++        },
++        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain x: float \u00d7 y: float",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-afterReturn/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "property-violated",
++            "message": "Property of FloatHistory#afterReturn violated: `result`:\n  afterReturn(x=1.0, y=1.0)\n    outcome: false",
++            "uri": null,
++            "line": 26
++          }
++        ],
++        "output": "\u2717 Property of FloatHistory#afterReturn violated: `result`:\n  afterReturn(x=1.0, y=1.0)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain x: float \u00d7 y: float)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-afterReturn",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.007697142,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": "[0:20]",
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 8,
++            "solving_seconds": 0.000273486,
++            "gates_evaluated": 119,
++            "evaluating_seconds": 4.388e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 1243,
++            "clauses": 4341,
++            "seconds": 0.006321735,
++            "loading_seconds": 0.000197532,
++            "decoding_seconds": 4.1117e-05,
++            "encoding_seconds": 0.00061667,
++            "witness_seconds": 2.6055e-05
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.006,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.005,
++                "encoding": 0.001,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 1243,
++                "clauses": 4341
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.111,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.006,
++            "replay": 0.004,
++            "jvm": 0.084,
++            "other": 0.016
++          }
++        },
++        "replay": {
++          "by": "jvm",
++          "reproduced": true
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: float \u00d7 y: float"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      },
++      "originalReplay": {
++        "arguments": [
++          "3f800000",
++          "3f800000"
++        ],
++        "jvm": [
++          "class f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5",
++          "returned false"
++        ]
++      }
++    },
++    "adjacent": {
++      "verdict": "verified",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "verified",
++        "target": "FloatHistory#adjacent",
++        "domain": "x: float \u00d7 y: float",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over x: float \u00d7 y: float in 0.3 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-adjacent/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "\u2713 FloatHistory#adjacent satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over x: float \u00d7 y: float in 0.3 s; loops unwound 16 times with unwinding assertions)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-adjacent",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.278386607,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 13,
++            "solving_seconds": 0.268348716,
++            "gates_evaluated": 2305,
++            "evaluating_seconds": 5.4423e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 3799,
++            "clauses": 14056,
++            "seconds": 0.276695625,
++            "loading_seconds": 0.000197684,
++            "decoding_seconds": 6.8479e-05,
++            "encoding_seconds": 0.003455132,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.277,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.005,
++                "encoding": 0.003,
++                "solving": 0.268,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 3799,
++                "clauses": 14056
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.289,
++            "setup": 0.002,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.277,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.011
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: float \u00d7 y: float"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      }
++    },
++    "rounded": {
++      "verdict": "verified",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "verified",
++        "target": "FloatHistory#rounded",
++        "domain": "x: float \u00d7 y: float",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over x: float \u00d7 y: float in 0.0 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-rounded/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "\u2713 FloatHistory#rounded satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over x: float \u00d7 y: float in 0.0 s; loops unwound 16 times with unwinding assertions)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-rounded",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.033546986,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 12,
++            "solving_seconds": 0.023960115,
++            "gates_evaluated": 1083,
++            "evaluating_seconds": 2.8393e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 3968,
++            "clauses": 14483,
++            "seconds": 0.032086378,
++            "loading_seconds": 0.000129773,
++            "decoding_seconds": 5.2428e-05,
++            "encoding_seconds": 0.002129482,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.032,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.006,
++                "encoding": 0.002,
++                "solving": 0.024,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 3968,
++                "clauses": 14483
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.045,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.032,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.012
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "y",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: float \u00d7 y: float"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "bounds": {
++        "unwind": 16,
++        "maxArrayLength": 8
++      }
++    },
++    "constructed": {
++      "discovery": {
++        "freshObserverInputs": true,
++        "generatedClass": "ReceiverHistoryf7c8e87d9a578c38",
++        "generatedSha256": "c14b58d9d9287a84b3273c0baddc5e463cdefa1aa8f67ab87dfee3d40df025fb",
++        "maxProducers": 64,
++        "missed": [
++          {
++            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(Ljava/lang/Number;)V",
++            "reason": "reference argument needs another producer or an input domain"
++          },
++          {
++            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(Ljava/lang/String;)V",
++            "reason": "reference argument needs another producer or an input domain"
++          }
++        ],
++        "nullCollaborators": false,
++        "observer": "FloatHistory#exactOn",
++        "observerBinding": {
++          "bound_release": 21,
++          "candidates": [
++            {
++              "entry": "FloatHistory.class",
++              "provider": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/classes",
++              "sha256": "f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5"
++            }
++          ],
++          "class": "FloatHistory",
++          "entry": "FloatHistory.class",
++          "index": 0,
++          "manifest": null,
++          "provider": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/classes",
++          "selected_by": "rule",
++          "sha256": "f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5",
++          "shadowed": []
++        },
++        "observerDescriptor": "(Lorg/apache/commons/lang3/mutable/MutableFloat;F)Z",
++        "plans": [
++          {
++            "binding": {
++              "bound_release": 21,
++              "candidates": [
++                {
++                  "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
++                  "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
++                  "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b"
++                }
++              ],
++              "class": "org.apache.commons.lang3.mutable.MutableFloat",
++              "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
++              "index": 1,
++              "manifest": "enabled",
++              "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
++              "selected_by": "rule",
++              "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b",
++              "shadowed": []
++            },
++            "descriptor": "(F)Z",
++            "entry": "ReceiverHistoryf7c8e87d9a578c38#history0",
++            "nullArgumentPositions": [],
++            "parameters": [],
++            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>()V"
++          },
++          {
++            "binding": {
++              "bound_release": 21,
++              "candidates": [
++                {
++                  "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
++                  "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
++                  "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b"
++                }
++              ],
++              "class": "org.apache.commons.lang3.mutable.MutableFloat",
++              "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
++              "index": 1,
++              "manifest": "enabled",
++              "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
++              "selected_by": "rule",
++              "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b",
++              "shadowed": []
++            },
++            "descriptor": "(FF)Z",
++            "entry": "ReceiverHistoryf7c8e87d9a578c38#history1",
++            "nullArgumentPositions": [],
++            "parameters": [
++              "value"
++            ],
++            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(F)V"
++          }
++        ],
++        "receiver": "org/apache/commons/lang3/mutable/MutableFloat",
++        "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
++      },
++      "selected": {
++        "binding": {
++          "bound_release": 21,
++          "candidates": [
++            {
++              "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
++              "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
++              "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b"
++            }
++          ],
++          "class": "org.apache.commons.lang3.mutable.MutableFloat",
++          "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
++          "index": 1,
++          "manifest": "enabled",
++          "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
++          "selected_by": "rule",
++          "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b",
++          "shadowed": []
++        },
++        "descriptor": "(FF)Z",
++        "entry": "ReceiverHistoryf7c8e87d9a578c38#history1",
++        "nullArgumentPositions": [],
++        "parameters": [
++          "value"
++        ],
++        "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(F)V"
++      },
++      "verdict": "verified",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "verified",
++        "target": "ReceiverHistoryf7c8e87d9a578c38#history1",
++        "domain": "arg0: float \u00d7 arg1: float",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: float \u00d7 arg1: float in 0.2 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-constructed/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "\u2713 ReceiverHistoryf7c8e87d9a578c38#history1 satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: float \u00d7 arg1: float in 0.2 s; loops unwound 16 times with unwinding assertions)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmpp5nleo07/native-constructed",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.215482655,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 12,
++            "solving_seconds": 0.206526536,
++            "gates_evaluated": 2292,
++            "evaluating_seconds": 5.3141e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 3759,
++            "clauses": 13912,
++            "seconds": 0.213929012,
++            "loading_seconds": 0.000158139,
++            "decoding_seconds": 6.1165e-05,
++            "encoding_seconds": 0.002057495,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.214,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.005,
++                "encoding": 0.002,
++                "solving": 0.207,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 3759,
++                "clauses": 13912
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.228,
++            "setup": 0.002,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.214,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.012
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "arg0",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              },
++              {
++                "name": "arg1",
++                "type": "float",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "arg0: float \u00d7 arg1: float"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    }
++  }
++}

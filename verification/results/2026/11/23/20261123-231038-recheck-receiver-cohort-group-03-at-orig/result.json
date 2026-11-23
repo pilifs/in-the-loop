@@ -1,0 +1,190 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-231038-recheck-receiver-cohort-group-03-at-orig",
+  "title": "Recheck receiver cohort group 03 at original scope",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 50.6s, peak 296.4 MiB (estimated 4m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-231038-recheck-receiver-cohort-group-03-at-orig.json",
+    "sha256": "9bcaa647bfe937ac96a99108ba8418693905051db3b5d96587c64c934ccc7e46",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-231038-recheck-receiver-cohort-group-03-at-orig",
+      "title": "Recheck receiver cohort group 03 at original scope",
+      "description": "Repeat only the frozen receiver-blocked cases in this group. Bind both original commits, classpaths, public JVM calls and exact paired overloads. Preserve incomplete calls and their first remaining native instruction.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:regress",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:10:38+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Recheck the frozen original inputs",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py 03",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/transfer/cohort/03"
+      ]
+    }
+  },
+  "sourceCommit": "14d4fb339743c5e65652595ef574ead73c0aea2b",
+  "startedAt": "2026-11-23T23:45:46+00:00",
+  "finishedAt": "2026-11-23T23:50:57+00:00",
+  "wallSeconds": 311.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 310771712,
+    "wallSeconds": 50.6,
+    "cpuSeconds": 52.5,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Recheck the frozen original inputs",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py 03",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 50.59,
+      "cpuSeconds": 52.465,
+      "cpuThrottledSeconds": 4.093,
+      "peakMemoryBytes": 310771712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-the-frozen-original-in.log",
+        "lines": 9,
+        "bytes": 885,
+        "sha256": "08317db977ba0a8e01497c3cb164f2d82357f454344ab7c08cfccb5bd294c90c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ea-async-27 current open review the recorded exact overloads",
+        "whatjdk-12 current open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of",
+        "incremental-analysis-28 current open review the recorded exact overloads",
+        "preserved com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+        "ea-async-27 preserved",
+        "preserved com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
+        "incremental-analysis-28 preserved",
+        "preserved com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+        "whatjdk-12 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/transfer/cohort/03/measurement.json",
+      "change": "added",
+      "bytes": 11227,
+      "sha256": "4b404e8eca29bbca9edd6d6489afe426d61e1d747f6c9cc058845268e492b2fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/transfer/cohort/03/receipts.tar.gz",
+      "change": "added",
+      "bytes": 25161,
+      "sha256": "9ac7699ac80b6328fed59168b5c0f1e8c90921f8dc55e3cb7c17bef8681ace98",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:56:32+00:00",
+    "applied": [
+      "verification/receiver-discovery/transfer/cohort/03/measurement.json",
+      "verification/receiver-discovery/transfer/cohort/03/receipts.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3f924408a679b585beec4e937902e68399d2c87",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3f924408a679b585beec4e937902e68399d2c87/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T235057Z-2498316e5916e71b",
+      "outputs": "20261123T235057Z-2964270b181ea384",
+      "diff": "20261123T235057Z-320245399ace2307"
+    }
+  }
+}
