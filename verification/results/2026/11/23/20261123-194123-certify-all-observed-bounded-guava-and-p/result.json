@@ -1,0 +1,347 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-194123-certify-all-observed-bounded-guava-and-p",
+  "title": "Certify all observed bounded Guava and prefix-sum UNSAT calls",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 2.8s, peak 121.7 MiB (estimated 2m00s, 2.0 GiB); 11 output file(s) changed; signals: example:task-as-expected×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-194123-certify-all-observed-bounded-guava-and-p.json",
+    "sha256": "74fbe1a308fbc138c71b62852d4c3a2d08ba28f112e1627f70f814a09cb6ef04",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-194123-certify-all-observed-bounded-guava-and-p",
+      "title": "Certify all observed bounded Guava and prefix-sum UNSAT calls",
+      "description": "Enable only the optional transcript directory for the original Guava first-8-release task, compare its native quantities with the plain task, and reconstruct each incremental formula with that solve's assumptions. Generate and check LRAT for every observed UNSAT in both the primary and fallback workloads, reject damaged and SAT controls, and repeat from the immutable proof packs.",
+      "kind": "library",
+      "capabilities": [
+        "sat-certificate",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T19:41:23+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Generate and independently certify all query formulas",
+          "run": "python3 -B lib/benchmark/trusted-kernel/bounded_sat.py",
+          "cwd": "."
+        },
+        {
+          "name": "Replay packed proofs against fresh DIMACS exports",
+          "run": "python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --check",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/bounded-sat"
+      ]
+    }
+  },
+  "sourceCommit": "ed5f54492eb934c7a2eb7f3ce22e3df61c80b2ab",
+  "startedAt": "2026-11-23T19:52:50+00:00",
+  "finishedAt": "2026-11-23T19:56:59+00:00",
+  "wallSeconds": 249.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1946661,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 127631360,
+    "wallSeconds": 2.8,
+    "cpuSeconds": 3.7,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 237.597,
+      "cpuSeconds": 237.707,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2302062592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d64822ef4dfdf599a8cc5fe23995969ed1a569590fa7e6434c4ffbb13e0beb32",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-194123-certify-all-observed-bounded-guava-and-p/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Generate and independently certify all query formulas",
+      "run": "python3 -B lib/benchmark/trusted-kernel/bounded_sat.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 2.606,
+      "cpuSeconds": 3.518,
+      "cpuThrottledSeconds": 0.072,
+      "peakMemoryBytes": 127631360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-generate-and-independently-cer.log",
+        "lines": 4,
+        "bytes": 398,
+        "sha256": "a98362b712e194838eed4eb3a7d7700ddfb158e6b3f0dbd386aa482729f80315",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 1
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261123T195656Z-d2f627fa/result.json",
+          "groups": [
+            "336",
+            "first-8-release",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "336-guava-first-array-match: running task first-8-release (target route)",
+        "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261123T195656Z-d2f627fa/result.json",
+        "336/first-8-release: certified 8/8 UNSAT, 18 SAT calls, -2 constant-false decisions",
+        "held/prefix-sums: certified 10/10 UNSAT, 8 SAT calls, 0 constant-false decisions"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay packed proofs against fresh DIMACS exports",
+      "run": "python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.172,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 35848192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-packed-proofs-against-f.log",
+        "lines": 2,
+        "bytes": 165,
+        "sha256": "40180f8dbdd3450b95195e7246d598c3eb933e0961816f8e7f95cd72af62b04d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "336/first-8-release: certified 8/8 UNSAT, 18 SAT calls, -2 constant-false decisions",
+        "held/prefix-sums: certified 10/10 UNSAT, 8 SAT calls, 0 constant-false decisions"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/capture.json",
+      "change": "added",
+      "bytes": 1399,
+      "sha256": "cce11e2ed9f9c6ba5a29985d266aac5446bb22c1cd28a8a6d712451bc8af896b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+      "change": "added",
+      "bytes": 27157,
+      "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+      "change": "added",
+      "bytes": 14341,
+      "sha256": "f1c0c2685e83a1989877619675f3e8c483b9164021e67af6a295ad1475040b3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/selected.cnf.gz",
+      "change": "added",
+      "bytes": 13166,
+      "sha256": "edd74fa292efe8c96988e0f79f483825b508ee9a617e62592be14d4b3e061930",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-inputs/v1.bin",
+      "change": "added",
+      "bytes": 484,
+      "sha256": "bdeca0120d8d804073c2719f4ccbd418c901c2797851872b6673ba227c128c6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-inputs/v2.bin",
+      "change": "added",
+      "bytes": 510,
+      "sha256": "fd8b0aa5760f4bf6726ddf05c4e5840b8d972c7adfe27c02cb933c229536aae6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-sums/proofs.tar.gz",
+      "change": "added",
+      "bytes": 28718,
+      "sha256": "2fdf7db2bee100ffd9b387cfd10f6e0774c4be13b9363da232fdd3122b45d414",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-sums/queries.json",
+      "change": "added",
+      "bytes": 18524,
+      "sha256": "dbcc165814ebe38753e9262bb6132cf305ae25f27b05a5bf6d37d5fac364f65e",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-sums/selected.cnf.gz",
+      "change": "added",
+      "bytes": 19595,
+      "sha256": "1df3591fc91d8f2e12ce6a09b836a36c7588955f879cde8d6cec60f6561fd973",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+      "change": "added",
+      "bytes": 15017,
+      "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-1.icnf.gz",
+      "change": "added",
+      "bytes": 8150,
+      "sha256": "d782815b2fdf02751b6a8d70d1086fc843d7246ef7ec8430fe5ae4447ae16b0a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T19:58:49+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/capture.json",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/selected.cnf.gz",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-inputs/v1.bin",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-inputs/v2.bin",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-sums/proofs.tar.gz",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-sums/queries.json",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/prefix-sums/selected.cnf.gz",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+      "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-1.icnf.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "688d4473f1af6ebebddf4894722e7d90f0e3a844",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/688d4473f1af6ebebddf4894722e7d90f0e3a844/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T195659Z-4498160bd19a8b1c",
+      "outputs": "20261123T195659Z-475798b68c0224b5",
+      "diff": "20261123T195659Z-4944706527bb8982"
+    }
+  }
+}
