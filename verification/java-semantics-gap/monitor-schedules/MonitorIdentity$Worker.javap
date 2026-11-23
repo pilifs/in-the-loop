@@ -1,0 +1,47 @@
+Compiled from "MonitorIdentity.java"
+class MonitorIdentity$Worker extends java.lang.Thread {
+  boolean staticMethod;
+    descriptor: Z
+
+  MonitorIdentity$Worker();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: invokespecial #1                  // Method java/lang/Thread."<init>":()V
+       4: return
+
+  static synchronized void write();
+    descriptor: ()V
+    Code:
+       0: bipush        6
+       2: putstatic     #7                  // Field MonitorIdentity.shared:I
+       5: return
+
+  public void run();
+    descriptor: ()V
+    Code:
+       0: aload_0
+       1: getfield      #13                 // Field staticMethod:Z
+       4: ifeq          13
+       7: invokestatic  #19                 // Method write:()V
+      10: goto          33
+      13: ldc           #14                 // class MonitorIdentity$Worker
+      15: dup
+      16: astore_1
+      17: monitorenter
+      18: bipush        6
+      20: putstatic     #7                  // Field MonitorIdentity.shared:I
+      23: aload_1
+      24: monitorexit
+      25: goto          33
+      28: astore_2
+      29: aload_1
+      30: monitorexit
+      31: aload_2
+      32: athrow
+      33: return
+    Exception table:
+       from    to  target type
+          18    25    28   any
+          28    31    28   any
+}

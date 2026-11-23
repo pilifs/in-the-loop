@@ -1,0 +1,616 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-121039-qualify-gson-parent-and-fix-and-all-rema",
+  "title": "Qualify Gson parent and fix and all remaining native Java callers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m51s, peak 640.5 MiB (estimated 4m00s, 3.0 GiB); 44 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-121039-qualify-gson-parent-and-fix-and-all-rema.json",
+    "sha256": "9fe8f4bb3d28cb160bc4bdfe6c8f85f640b969c56cb9b0e9ab846ad9b61996cf",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-121039-qualify-gson-parent-and-fix-and-all-rema",
+      "title": "Qualify Gson parent and fix and all remaining native Java callers",
+      "description": "Run native on the other 55 unchanged statements, including both original Gson builds, and repeat explicit integrated JBMC on all four Gson properties. Check scope and model hashes, original JVM refutations, all five compatible selectors and four incompatible selectors per build.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "examples": [
+          "379"
+        ]
+      },
+      "expected": "The full original Gson parent/fix separates compatible returns and exception classes. Every earlier native decision on the other original classpaths still qualifies.",
+      "submitted": {
+        "at": "2026-11-23T12:10:39+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Run both Gson revisions and the other native controls",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py --controls",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/heap-and-gson/lists",
+        "verification/java-semantics-gap/heap-and-gson/numbers",
+        "verification/java-semantics-gap/heap-and-gson/prefix",
+        "verification/java-semantics-gap/heap-and-gson/receiver",
+        "verification/java-semantics-gap/heap-and-gson/stores",
+        "verification/java-semantics-gap/heap-and-gson/store-iterator",
+        "verification/java-semantics-gap/heap-and-gson/dispatch",
+        "verification/java-semantics-gap/heap-and-gson/endian",
+        "verification/java-semantics-gap/heap-and-gson/surrogates",
+        "verification/java-semantics-gap/heap-and-gson/deque",
+        "verification/java-semantics-gap/heap-and-gson/construction",
+        "verification/java-semantics-gap/heap-and-gson/radix",
+        "verification/java-semantics-gap/heap-and-gson/nibble",
+        "verification/java-semantics-gap/heap-and-gson/enum",
+        "verification/java-semantics-gap/heap-and-gson/locals",
+        "verification/java-semantics-gap/heap-and-gson/monitors",
+        "verification/java-semantics-gap/heap-and-gson/gson-parent",
+        "verification/java-semantics-gap/heap-and-gson/guava-parent",
+        "verification/java-semantics-gap/heap-and-gson/gson-fix",
+        "verification/java-semantics-gap/heap-and-gson/guava-fix"
+      ],
+      "supersedes": "20261123-115145-recheck-the-other-55-frozen-native-java"
+    }
+  },
+  "sourceCommit": "fb3c6c2c9735b5e99106882bdd135e6a8787d280",
+  "startedAt": "2026-11-23T12:26:26+00:00",
+  "finishedAt": "2026-11-23T12:32:36+00:00",
+  "wallSeconds": 370.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 894710,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 671657984,
+    "wallSeconds": 171.9,
+    "cpuSeconds": 195.8,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.72
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 186.274,
+      "cpuSeconds": 186.602,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2278236160,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "bcb416bdd7f63a47e8ce032612fdec460a28552327c111c1312b08885f2e7eb1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-121039-qualify-gson-parent-and-fix-and-all-rema/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 06s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run both Gson revisions and the other native controls",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py --controls",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 171.917,
+      "cpuSeconds": 195.765,
+      "cpuThrottledSeconds": 2.725,
+      "peakMemoryBytes": 671657984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-both-gson-revisions-and-th.log",
+        "lines": 61,
+        "bytes": 2641,
+        "sha256": "efe188e035b1a5ac4ccb7f7fb8c07b425120853c4509c574c673680147c00ed3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "endian reverseLong-native correct 0.014",
+        "endian rotateInt-native correct 0.02",
+        "endian rotateLong-native correct 0.025",
+        "surrogates translate-native correct 0.018",
+        "surrogates removeEvery-native correct 0.087",
+        "deque history-native correct 0.017",
+        "deque stillReturns-native correct 0.024",
+        "deque singleton-native correct 0.024",
+        "deque filtered-native correct 0.021",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261123-121039-qualify-gson-parent-and-fix-and-all-rema/examples/386-commons-lang-constructor-dispatch/adapter/ConstructorPhase.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "construction history-native correct 0.035",
+        "construction emptySkips-native correct 0.034",
+        "construction alreadyInitialized-native correct 0.025",
+        "radix hex-native correct 0.084",
+        "radix lowFirst-native correct 0.049",
+        "nibble nibble-native correct 2.907",
+        "nibble left-native correct 0.022",
+        "nibble acceptsNegative-native correct 0.027",
+        "enum lookup-native correct 0.019",
+        "enum ordinal-native correct 0.017",
+        "enum alwaysZero-native correct 0.026",
+        "locals kernel-native correct 0.025",
+        "locals spring-native correct 0.023",
+        "locals nullInitializes-native correct 0.126",
+        "monitors matched-native unsupported 0.018",
+        "monitors mixed-native unsupported 0.017",
+        "monitors synchronizedMethod-native unsupported 0.015",
+        "gson-parent compatible-native correct 12.876",
+        "gson-parent compatible-jbmc unsupported 21.916",
+        "gson-parent syntax-native correct 12.753",
+        "gson-parent syntax-jbmc unsupported 23.575",
+        "guava-parent retained-native correct 0.046",
+        "guava-parent parentBehavior-native correct 0.037",
+        "gson-fix compatible-native correct 10.164",
+        "gson-fix compatible-jbmc unsupported 22.758",
+        "gson-fix syntax-native correct 0.175",
+        "gson-fix syntax-jbmc unsupported 23.321",
+        "guava-fix retained-native correct 0.031",
+        "guava-fix parentBehavior-native correct 0.035"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
+      "change": "added",
+      "bytes": 11900,
+      "sha256": "9d84538c103716295c869ee7bd23c0e04ee79e266208fc15a30a044a7f557904",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/lists/raw.tar.gz",
+      "change": "added",
+      "bytes": 2796,
+      "sha256": "9a1cc59a594a53a75cc48ba870b00f6a87ad21947e7e97703f928b69d140508d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
+      "change": "added",
+      "bytes": 21094,
+      "sha256": "df03027e9db8da76f3b79c3ef26d991c9d529d89a927f618e9bcb40c7331d109",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/numbers/raw.tar.gz",
+      "change": "added",
+      "bytes": 4262,
+      "sha256": "457dce92f83cbec40a36d9c5c16bc8dc6f33273e316e720be9145a76d0eef959",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
+      "change": "added",
+      "bytes": 18707,
+      "sha256": "2de3c70e8ef37544c79a2ef775fc4ea478f1ea217a3c6ec6763f151e1e5710bb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/prefix/raw.tar.gz",
+      "change": "added",
+      "bytes": 4341,
+      "sha256": "77ce0b8cfaaee366f8d83247e428583ae55b97a0db773fdf865c221f3696e251",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/receiver/measurement.json",
+      "change": "added",
+      "bytes": 8912,
+      "sha256": "c888eb3e02eee5abc8359a9237b88b035f6fa3c47249a8f8ac8553402942c31c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/receiver/raw.tar.gz",
+      "change": "added",
+      "bytes": 2650,
+      "sha256": "d80362a852a892cd821823ae64bf4cf1a21597dfc20c8fa100b058fcee57b06c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/stores/measurement.json",
+      "change": "added",
+      "bytes": 9988,
+      "sha256": "e635730ad65dcf9411a237951902c7ec91d51054aacb8300adab6ef2ca69408d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/stores/raw.tar.gz",
+      "change": "added",
+      "bytes": 2600,
+      "sha256": "bf2d0031547232dc9677f930c9f6d8edda7146c14ff277734526819195594ff3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/store-iterator/measurement.json",
+      "change": "added",
+      "bytes": 7604,
+      "sha256": "73892792b4110c150f8b057acfd2f82b264584817d9f021cd9971b1296bd348e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/store-iterator/raw.tar.gz",
+      "change": "added",
+      "bytes": 2015,
+      "sha256": "f53888cead313f0ae8ab14a8b9ef2be1844f6ded28c6b126e2c7ca19a96d3e71",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/dispatch/measurement.json",
+      "change": "added",
+      "bytes": 10366,
+      "sha256": "29ceb510de661523253fe7fa3e83d27e386dc85b80a7faa3879cf510e973ef0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/dispatch/raw.tar.gz",
+      "change": "added",
+      "bytes": 2630,
+      "sha256": "6ebf03567f62e361e02f6003406733642931a958a3b58f1a4c478ea6d0dfa94f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
+      "change": "added",
+      "bytes": 14891,
+      "sha256": "26adc8eb73a8c34b98538837bf051fe31b072beef5ecfd9c39ffd838aaaa4e6a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/endian/raw.tar.gz",
+      "change": "added",
+      "bytes": 3126,
+      "sha256": "06ce6d09b97412a66d673d5ca97e47375789bca1bc8e20d247c1e149246dfbfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json",
+      "change": "added",
+      "bytes": 10792,
+      "sha256": "1e0fa1b81ac0b6cf63e5c74a7708b2521f0547461c323fb13bc71d5bf3a25740",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/surrogates/raw.tar.gz",
+      "change": "added",
+      "bytes": 2716,
+      "sha256": "3ac872be5a00d8063b07eced6fe43028002591cc97c476d670427e34752d4ec8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
+      "change": "added",
+      "bytes": 13936,
+      "sha256": "b93821d94877f7c89b72c52e03ed3d834d60ddaf831373e55b393f6f307ba92e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/deque/raw.tar.gz",
+      "change": "added",
+      "bytes": 2945,
+      "sha256": "50059c239debd86f9a31008212be3f1a1c5eafd6869481c4d7713d2f8cf3c2e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
+      "change": "added",
+      "bytes": 13215,
+      "sha256": "94854a6b9990ca1c013bdf401ac8eaf5493b35019f1138380fe66adb742a0e47",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/construction/raw.tar.gz",
+      "change": "added",
+      "bytes": 3748,
+      "sha256": "8a3b3b6711814b456fae30e7494ad6b186771352fc757faefd9de3e4420ca0f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/radix/measurement.json",
+      "change": "added",
+      "bytes": 8960,
+      "sha256": "2f38f67f5cfc2c8845fb34927062750a599c2cc31b1a60f8207b4d79af409e8e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/radix/raw.tar.gz",
+      "change": "added",
+      "bytes": 2696,
+      "sha256": "c100eab71ae61978449740905cab332ccb8e85bfea0e19856ff816687439c076",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
+      "change": "added",
+      "bytes": 12980,
+      "sha256": "8e4333039653a049969b1a97547e23307e481fdc28c0b324a69d2a665b4fc2ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/nibble/raw.tar.gz",
+      "change": "added",
+      "bytes": 3087,
+      "sha256": "f23f8448df363c65b6a9f2fb3d9f4dfc8dec1da8a916d061e6f8ebaf8aa046b6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
+      "change": "added",
+      "bytes": 11755,
+      "sha256": "100f7309fa76a2ce1c8aa4b6fb00379eb27a13599f11151772645e5699b08746",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/enum/raw.tar.gz",
+      "change": "added",
+      "bytes": 2985,
+      "sha256": "211f0323492f43967df2315d01464f8bafbbd9af80c2b15f894107f2df64a453",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
+      "change": "added",
+      "bytes": 13164,
+      "sha256": "8c1966634fdf608eb59c244eb195e4a7a5fb454efde2f0cf8293123abff7b52d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/locals/raw.tar.gz",
+      "change": "added",
+      "bytes": 3035,
+      "sha256": "0f5fc8c1b75fb72ff088604e5803d9ef0f33ea91443735dc5c3d707b44598161",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
+      "change": "added",
+      "bytes": 6166,
+      "sha256": "a046f2f28f97f959301d90c980c8612e6bd1785b6a2b465d517908fcecedb92b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/monitors/raw.tar.gz",
+      "change": "added",
+      "bytes": 2335,
+      "sha256": "45e2022756cf26852f90e07aa7c8b5f507ad3157ff289a6e15f7e6abd0e507d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-parent/exception-control/measurement.json",
+      "change": "added",
+      "bytes": 4381,
+      "sha256": "07ad077bc68fbaee59708188676f76577be7a4881b1b896ed13c1bdf1099557d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-parent/exception-control/raw.tar.gz",
+      "change": "added",
+      "bytes": 2072,
+      "sha256": "ad4ff58805254b94db4935266d17decafdbdec1a6031bbfc143b5efcd7417937",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json",
+      "change": "added",
+      "bytes": 10498,
+      "sha256": "0269b0dafb36cd5c54325988300694d2cfd16ff66a2751a709439a55a8aadff9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 13475,
+      "sha256": "0b61fd10ddc534a188062637875ff0483f353c4f4e827aa6c496b165e06cdc17",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json",
+      "change": "added",
+      "bytes": 9837,
+      "sha256": "161382d799ca27cf5fa91f57414d8e327533bd9b8501d14ed6d2c1f714f98370",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/guava-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 2579,
+      "sha256": "969ef63df7efd9b9b8a2a3e2b267112c541d53f88b966a31737db47702b4a713",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-fix/exception-control/measurement.json",
+      "change": "added",
+      "bytes": 4461,
+      "sha256": "078528f54b0526b44ac14826373977c83c39e951cc4f3a7280acd12d909f761a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-fix/exception-control/raw.tar.gz",
+      "change": "added",
+      "bytes": 2270,
+      "sha256": "811a3e19b6a7b35bddfaeb96c6b291d741890937fc18d6471a3921b200c094ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json",
+      "change": "added",
+      "bytes": 10403,
+      "sha256": "5d71e162a835c2fc703ad9309de18154e49a6cd131afe4022d9a8c70af0dfc54",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/gson-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 13242,
+      "sha256": "95ea63826f4c1a3ea70041f77a7ac3b46e887c506b045c93ac563d31d257e192",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json",
+      "change": "added",
+      "bytes": 9828,
+      "sha256": "9a0e4d03f2b34b2894f9547e80268a38cf2ec07307d571708b02ddc930a2fd04",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/java-semantics-gap/heap-and-gson/guava-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 2558,
+      "sha256": "4508f3723683d1345d48cc67a9f92efceb13cc5659406cd24a31537d701f6de6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T12:35:48+00:00",
+    "applied": [
+      "verification/java-semantics-gap/heap-and-gson/lists/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/lists/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/numbers/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/numbers/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/prefix/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/prefix/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/receiver/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/receiver/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/stores/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/stores/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/store-iterator/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/store-iterator/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/dispatch/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/dispatch/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/endian/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/endian/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/surrogates/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/surrogates/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/deque/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/deque/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/construction/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/construction/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/radix/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/radix/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/nibble/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/nibble/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/enum/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/enum/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/locals/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/locals/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/monitors/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/monitors/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/gson-parent/exception-control/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/gson-parent/exception-control/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/gson-parent/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/gson-parent/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/guava-parent/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/guava-parent/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/gson-fix/exception-control/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/gson-fix/exception-control/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/gson-fix/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/gson-fix/raw.tar.gz",
+      "verification/java-semantics-gap/heap-and-gson/guava-fix/measurement.json",
+      "verification/java-semantics-gap/heap-and-gson/guava-fix/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6e1f007edda58a1a7cc398377abc87e546e3825c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6e1f007edda58a1a7cc398377abc87e546e3825c/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T123236Z-73806588d80ac5ca",
+      "outputs": "20261123T123236Z-7669635fa70fffd3",
+      "diff": "20261123T123236Z-78949234a71859d0"
+    }
+  }
+}
