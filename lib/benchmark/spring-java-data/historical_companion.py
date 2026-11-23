@@ -32,9 +32,9 @@ def prepare(folder, side, work, original, sources):
     return jdk, env, classes, jar, prior
 
 
-def bind(checker, env, work, side, bindings):
+def bind(checker, env, work, side, bindings, *, classpath=None):
     requests = [{"class": name, "method": method, "descriptor": desc} for name, method, desc, _, _ in bindings]
-    paths = [str(work / entry) for entry in CLASSPATH]
+    paths = [str(work / entry) for entry in CLASSPATH] if classpath is None else list(map(str, classpath))
     answer, release = class_binding.ask(checker, env, work, {side: {"classpath": paths, "classes": requests}})
     if release != 21:
         raise ValueError("different bytecode release")
