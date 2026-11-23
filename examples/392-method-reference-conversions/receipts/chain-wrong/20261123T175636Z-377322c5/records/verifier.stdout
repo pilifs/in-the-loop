@@ -1,0 +1,212 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "violation",
+    "target": "Chain#wrong",
+    "domain": "x: int × y: int",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": {
+      "input": "wrong(x=-1, y=0)",
+      "outcome": "false",
+      "values": [
+        "-1",
+        "0"
+      ],
+      "found": "wrong(x=-2147418128, y=-1073676304)",
+      "shrink_runs": 573,
+      "inputs": [
+        {
+          "name": "x",
+          "type": "int",
+          "value": -1
+        },
+        {
+          "name": "y",
+          "type": "int",
+          "value": 0
+        }
+      ],
+      "found_inputs": [
+        {
+          "name": "x",
+          "type": "int",
+          "value": -2147418128
+        },
+        {
+          "name": "y",
+          "type": "int",
+          "value": -1073676304
+        }
+      ],
+      "call": {
+        "class": "Chain",
+        "class_file": "Chain.class",
+        "classes": "after",
+        "method": "wrong",
+        "descriptor": "(II)Z",
+        "static": true,
+        "arguments": [
+          {
+            "name": "x",
+            "type": "int",
+            "value": -1,
+            "from": "x"
+          },
+          {
+            "name": "y",
+            "type": "int",
+            "value": 0,
+            "from": "y"
+          }
+        ]
+      }
+    },
+    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s as wrong(x=-2147418128, y=-1073676304), shrunk to the input above in 573 interpreter runs, replayed in the interpreter; domain x: int × y: int",
+    "problem": null,
+    "statement": "verifier/work/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "property-violated",
+        "message": "Property of Chain#wrong violated: `result`:\n  wrong(x=-1, y=0)\n    outcome: false",
+        "uri": null,
+        "line": 10
+      }
+    ],
+    "output": "✗ Property of Chain#wrong violated: `result`:\n  wrong(x=-1, y=0)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s as wrong(x=-2147418128, y=-1073676304), shrunk to the input above in 573 interpreter runs, replayed in the interpreter; domain x: int × y: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+    "work": "verifier/work",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.012988491,
+      "properties": 1,
+      "unwind": 10,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 4,
+        "merges": 0,
+        "solver_calls": 11,
+        "solving_seconds": 0.000487967,
+        "gates_evaluated": 541,
+        "evaluating_seconds": 0.000011533,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 1561,
+        "clauses": 4998,
+        "seconds": 0.008966844,
+        "loading_seconds": 0.000665746,
+        "decoding_seconds": 0.000067313,
+        "encoding_seconds": 0.000723308,
+        "witness_seconds": 0.00002821
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.009,
+          "ended": "violation",
+          "ending": "counterexample",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.007,
+            "encoding": 0.001,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 1561,
+            "clauses": 4998
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.065,
+        "setup": 0.002,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.009,
+        "replay": 0.029,
+        "jvm": 0.0,
+        "other": 0.026
+      }
+    },
+    "replay": {
+      "by": "interpreter",
+      "reproduced": true
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "x",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          },
+          {
+            "name": "y",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "x: int × y: int"
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 10,
+        "max_array_length": null,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]

@@ -1,0 +1,285 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-173547-recheck-the-primary-callback-and-numeric",
+  "title": "Recheck the primary callback and numeric entries on the successor",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m41s, peak 392.2 MiB (estimated 3m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-173547-recheck-the-primary-callback-and-numeric.json",
+    "sha256": "b066db4ef8421980c762bbd03d594d60b55cdc84ba9ea11646e3e6cbb60334b9",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-173547-recheck-the-primary-callback-and-numeric",
+      "title": "Recheck the primary callback and numeric entries on the successor",
+      "description": "Match all 21 native and integrated public calls, including full-width Jackson classification, after input-heap qualification and the reserve transfers.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:35:47+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "callbacks paired engines",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor callbacks paired",
+          "cwd": "."
+        },
+        {
+          "name": "numeric paired engines",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor numeric paired",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/successor/callbacks/paired",
+        "verification/jbmc-fast-follow/successor/numeric/paired"
+      ]
+    }
+  },
+  "sourceCommit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+  "startedAt": "2026-11-23T17:52:01+00:00",
+  "finishedAt": "2026-11-23T17:57:11+00:00",
+  "wallSeconds": 310.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 710475,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 411242496,
+    "wallSeconds": 101.2,
+    "cpuSeconds": 109.9,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.56
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "callbacks paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor callbacks paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 29.854,
+      "cpuSeconds": 35.706,
+      "cpuThrottledSeconds": 0.946,
+      "peakMemoryBytes": 140828672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-callbacks-paired-engines.log",
+        "lines": 26,
+        "bytes": 796,
+        "sha256": "e6ac53591c4275936d22df2b46a30da93261a4e6424cb931d731843df98f6a65",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Lift#primitiveGood native correct",
+        "Lift#primitiveGood jbmc correct",
+        "Lift#primitiveWrong native correct",
+        "Lift#primitiveWrong jbmc correct",
+        "Lift#boxedGood native correct",
+        "Lift#boxedGood jbmc correct",
+        "Lift#boxedWrong native correct",
+        "Lift#boxedWrong jbmc correct",
+        "Lift#returnGood native correct",
+        "Lift#returnGood jbmc correct",
+        "Lift#returnWrong native correct",
+        "Lift#returnWrong jbmc correct",
+        "Lift#boxedNull native correct",
+        "Lift#boxedNull jbmc correct",
+        "Lift#staticGood native correct",
+        "Lift#staticGood jbmc correct",
+        "Lift#staticWrong native correct",
+        "Lift#staticWrong jbmc correct",
+        "Chain#good native correct",
+        "Chain#good jbmc unsupported",
+        "Chain#wrong native correct",
+        "Chain#wrong jbmc unsupported",
+        "Chain#skipsNull native correct",
+        "Chain#skipsNull jbmc unsupported",
+        "Chain#rejectsNull native correct",
+        "Chain#rejectsNull jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "numeric paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor numeric paired",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 71.333,
+      "cpuSeconds": 74.236,
+      "cpuThrottledSeconds": 0.452,
+      "peakMemoryBytes": 411242496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-numeric-paired-engines.log",
+        "lines": 16,
+        "bytes": 624,
+        "sha256": "7b6ec1785adc416cedcc1cfc6d96f1ea81f9454eca9030533a97ccc3a168abce",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "NodeChecks#direct native correct",
+        "NodeChecks#direct jbmc correct",
+        "NodeChecks#same native correct",
+        "NodeChecks#same jbmc correct",
+        "NodeChecks#publicSubnormal native correct",
+        "NodeChecks#publicSubnormal jbmc correct",
+        "NodeChecks#wrongSubnormal native correct",
+        "NodeChecks#wrongSubnormal jbmc correct",
+        "NodeChecks#commons native correct",
+        "NodeChecks#commons jbmc correct",
+        "ConversionEquivalence#classified native correct",
+        "ConversionEquivalence#classified jbmc correct",
+        "NodeChecks#intrinsicSubnormal native correct",
+        "NodeChecks#intrinsicSubnormal jbmc correct",
+        "NodeChecks#mantissaSubnormal native correct",
+        "NodeChecks#mantissaSubnormal jbmc unsupported"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/successor/callbacks/paired/measurement.json",
+      "change": "added",
+      "bytes": 72739,
+      "sha256": "cfa346102ee479bc48fcb3871db6887ef03f4e89d8158a69e60f87009d9283ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/callbacks/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 19564,
+      "sha256": "bd82cd82061a0cf88336ea7b90bc288a738c52fdeaf2994008c56a921b0f0320",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/numeric/paired/measurement.json",
+      "change": "added",
+      "bytes": 46831,
+      "sha256": "cdd6464c469c5565ea537c64297fe84d4c28216adee0cad16c6b4ae6ed8e9979",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/numeric/paired/raw.tar.gz",
+      "change": "added",
+      "bytes": 10481,
+      "sha256": "7e740db3caf75062410ac3e6f008aef03a8df98e728802df599e20aa7f021ea6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T18:01:29+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/successor/callbacks/paired/measurement.json",
+      "verification/jbmc-fast-follow/successor/callbacks/paired/raw.tar.gz",
+      "verification/jbmc-fast-follow/successor/numeric/paired/measurement.json",
+      "verification/jbmc-fast-follow/successor/numeric/paired/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "565c1e1ae507778f5e662c22623357df27a054a5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T175711Z-81605894cd554064",
+      "outputs": "20261123T175711Z-853710b5b1002562",
+      "diff": "20261123T175711Z-88645066e6189976"
+    }
+  }
+}

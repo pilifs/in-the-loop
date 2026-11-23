@@ -1,0 +1,560 @@
+{
+  "task": "lift-primitive-wrong",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "callbacks",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-cp",
+        "driver.jar:callbacks.jar:libraries/guava.jar:libraries/failureaccess.jar:libraries/listenablefuture.jar:libraries/jspecify.jar:libraries/error-prone-annotations.jar:libraries/j2objc-annotations.jar:libraries/commons-lang3.jar",
+        "Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.116,
+      "stdout": "controls/control-callbacks-jdk21.stdout",
+      "stderr": "controls/control-callbacks-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:adapter",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "079824a4002e9185d49fbfacd56529459715fb9fafe9c53de63121625835b9ec",
+            "role": "driver"
+          },
+          {
+            "path": "callbacks.jar",
+            "sha256": "60d812e6b3857d782d4b832f6a7565db293f6b5c9101c8497877cc6376ad3769",
+            "role": "original"
+          },
+          {
+            "path": "libraries/guava.jar",
+            "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/failureaccess.jar",
+            "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/listenablefuture.jar",
+            "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/jspecify.jar",
+            "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/error-prone-annotations.jar",
+            "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/j2objc-annotations.jar",
+            "sha256": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/commons-lang3.jar",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver-callbacks",
+          "main": "Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/original.json",
+          "oracleSha256": "a9d91c06ab9e2f4d63c896d8a9611bb06bd351c72faa557a8f234883f1d50360"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "entry": "Lift#primitiveGood",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 1,
+          "input": {
+            "entry": "Lift#primitiveGood",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 2,
+          "input": {
+            "entry": "Lift#primitiveGood",
+            "arguments": [
+              "-1",
+              "-1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 3,
+          "input": {
+            "entry": "Lift#primitiveGood",
+            "arguments": [
+              "Integer.MIN_VALUE",
+              "Integer.MAX_VALUE"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 4,
+          "input": {
+            "entry": "Lift#primitiveWrong",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 5,
+          "input": {
+            "entry": "Lift#primitiveWrong",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 6,
+          "input": {
+            "entry": "Lift#boxedGood",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 7,
+          "input": {
+            "entry": "Lift#boxedGood",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 8,
+          "input": {
+            "entry": "Lift#boxedGood",
+            "arguments": [
+              "-1",
+              "-1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 9,
+          "input": {
+            "entry": "Lift#boxedGood",
+            "arguments": [
+              "Integer.MIN_VALUE",
+              "Integer.MAX_VALUE"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 10,
+          "input": {
+            "entry": "Lift#boxedWrong",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 11,
+          "input": {
+            "entry": "Lift#boxedWrong",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 12,
+          "input": {
+            "entry": "Lift#returnGood",
+            "arguments": [
+              "(short)0",
+              "(short)1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 13,
+          "input": {
+            "entry": "Lift#returnGood",
+            "arguments": [
+              "(short)3",
+              "(short)-1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 14,
+          "input": {
+            "entry": "Lift#returnGood",
+            "arguments": [
+              "Short.MIN_VALUE",
+              "Short.MAX_VALUE"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 15,
+          "input": {
+            "entry": "Lift#returnWrong",
+            "arguments": [
+              "(short)3",
+              "(short)-1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 16,
+          "input": {
+            "entry": "Lift#returnWrong",
+            "arguments": [
+              "(short)0",
+              "(short)1"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 17,
+          "input": {
+            "entry": "Lift#boxedNull",
+            "arguments": []
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 18,
+          "input": {
+            "entry": "Lift#staticGood",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 19,
+          "input": {
+            "entry": "Lift#staticGood",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 20,
+          "input": {
+            "entry": "Lift#staticGood",
+            "arguments": [
+              "-1",
+              "-1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 21,
+          "input": {
+            "entry": "Lift#staticGood",
+            "arguments": [
+              "Integer.MIN_VALUE",
+              "Integer.MAX_VALUE"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 22,
+          "input": {
+            "entry": "Lift#staticWrong",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 23,
+          "input": {
+            "entry": "Lift#staticWrong",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 24,
+          "input": {
+            "entry": "Chain#good",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 25,
+          "input": {
+            "entry": "Chain#good",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 26,
+          "input": {
+            "entry": "Chain#good",
+            "arguments": [
+              "-1",
+              "-1"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 27,
+          "input": {
+            "entry": "Chain#good",
+            "arguments": [
+              "Integer.MIN_VALUE",
+              "Integer.MAX_VALUE"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 28,
+          "input": {
+            "entry": "Chain#wrong",
+            "arguments": [
+              "1",
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 29,
+          "input": {
+            "entry": "Chain#wrong",
+            "arguments": [
+              "0",
+              "1"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 30,
+          "input": {
+            "entry": "Chain#skipsNull",
+            "arguments": []
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 31,
+          "input": {
+            "entry": "Chain#rejectsNull",
+            "arguments": []
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        }
+      ],
+      "control": "driver-callbacks",
+      "directory": "/home/filip/code/in-the-loop/verification/.state/work/20261123-173701-record-all-49-ordinary-native-example-ta/.build-py/examples-d66g6j0a/targets/392/lift-primitive-wrong/20261123T175610Z-62a64258",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/code/in-the-loop/verification/.state/work/20261123-173701-record-all-49-ordinary-native-example-ta/.build-py/examples-d66g6j0a/targets/392/lift-primitive-wrong/20261123T175610Z-62a64258/prepare/callbacks"
+      }
+    }
+  ]
+}

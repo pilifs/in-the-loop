@@ -1,0 +1,344 @@
+{
+  "schema": "target-execution/v1",
+  "id": "20261123T175759Z-e2bd4a3f",
+  "task": "queue-fill-queue",
+  "claimKey": "36a1cfda25319e1d",
+  "revisions": [
+    "queue"
+  ],
+  "startedAt": "2026-11-23T17:57:59.928724+00:00",
+  "retryOf": null,
+  "retryBinding": null,
+  "budget": {
+    "checkerSeconds": 120
+  },
+  "strategy": {
+    "engine": "native",
+    "gaps": "strict"
+  },
+  "host": {
+    "machine": "x86_64",
+    "kernel": "7.0.0-43-generic",
+    "node": "claude-vm"
+  },
+  "job": "20261123-173701-record-all-49-ordinary-native-example-ta",
+  "sourceCommit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+  "cache": "fresh verifier work directory",
+  "stages": [
+    {
+      "stage": "planned",
+      "elapsedSeconds": 0.0
+    },
+    {
+      "stage": "artifacts-ready",
+      "elapsedSeconds": 1.4705
+    },
+    {
+      "stage": "controls-returned",
+      "elapsedSeconds": 1.6186
+    },
+    {
+      "stage": "invocation-bound",
+      "elapsedSeconds": 1.6945
+    },
+    {
+      "stage": "checker-returned",
+      "elapsedSeconds": 1.7605
+    },
+    {
+      "stage": "receipt-published",
+      "elapsedSeconds": 1.9459
+    }
+  ],
+  "status": "completed",
+  "lastCompletedStage": "receipt-published",
+  "bindings": {
+    "queue": {
+      "revision": "fixture:adapter",
+      "target": {
+        "class": "QueueFill",
+        "method": "queue",
+        "descriptor": null,
+        "loadedFrom": "queue.jar",
+        "classSha256": "574e582b1311809cc9babe8dc64d7e25009e584bb7d03e5f595d8869a2eab616"
+      },
+      "jdk": {
+        "feature": "21",
+        "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "release": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "82df220432949ef7af46297174832032b99d010cb0a94df96f17984683935e66",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "queue.jar",
+          "sha256": "1aae25b0f5f147c8c522fa62c173e088b6d6815f068850c08d61f7511b70e3ac",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from adapter by the fixture recipe"
+        },
+        {
+          "path": "libraries/commons-lang3.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+          "origin": "published org.apache.commons:commons-lang3:3.17.0 at 6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+        },
+        {
+          "path": "libraries/commons-collections4.jar",
+          "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-collections4:4.5.0",
+          "origin": "published org.apache.commons:commons-collections4:4.5.0 at 00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
+        }
+      ],
+      "originalCompiler": {
+        "jdk": {
+          "feature": "21",
+          "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+          "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "release": {
+            "JAVA_VERSION": "21.0.13",
+            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "flags": [
+          "-g",
+          "-parameters"
+        ]
+      }
+    }
+  },
+  "bindingId": "b00e95fb6e24280a34e6cb298cc107429e2a83f99f74753f68ea61cccef18a91",
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "prove",
+    "QueueFill#queue",
+    "--classes",
+    "prepare/queue/queue.jar",
+    "--classpath",
+    "prepare/queue/libraries/commons-lang3.jar",
+    "--classpath",
+    "prepare/queue/libraries/commons-collections4.jar",
+    "--assert",
+    "result",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "8",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "checker": {
+    "jvmcontract": "b1e0edad5632990ef4797b8aaf23f82fa0beba809c9c8d8cfbd00805cf5ef389",
+    "commit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+    "libTree": "565c1e1ae507778f5e662c22623357df27a054a5",
+    "command": "prove",
+    "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+    "jdkFeature": "21",
+    "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 8,
+      "maxArrayLength": 8
+    },
+    "timeout": 120,
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "QueueFill#queue",
+      "revisions": {
+        "queue": {
+          "commit": "fixture:adapter",
+          "loadedFrom": "queue.jar",
+          "classSha256": "574e582b1311809cc9babe8dc64d7e25009e584bb7d03e5f595d8869a2eab616",
+          "origin": "built from adapter by the fixture recipe",
+          "parameters": null
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "classpath": {
+      "queue": [
+        {
+          "path": "queue.jar",
+          "sha256": "1aae25b0f5f147c8c522fa62c173e088b6d6815f068850c08d61f7511b70e3ac",
+          "role": "original"
+        },
+        {
+          "path": "libraries/commons-lang3.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency"
+        },
+        {
+          "path": "libraries/commons-collections4.jar",
+          "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+          "role": "dependency"
+        }
+      ]
+    },
+    "checkedEntry": "QueueFill#queue",
+    "entryBindings": {
+      "queue": {
+        "entry": "QueueFill#queue",
+        "classSha256": "574e582b1311809cc9babe8dc64d7e25009e584bb7d03e5f595d8869a2eab616",
+        "loadedFrom": "queue.jar",
+        "subject": "QueueFill#queue",
+        "subjectClassSha256": "574e582b1311809cc9babe8dc64d7e25009e584bb7d03e5f595d8869a2eab616"
+      }
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "QueueFill#queue",
+      "checkedEntry": "QueueFill#queue",
+      "arguments": [
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "8"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "assume": {
+          "value": true,
+          "evidence": "absence of a precondition in stated.assumptions"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    },
+    "commits": {
+      "queue": "fixture:adapter"
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "5632",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx3686m",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "cwd": "the attempt directory",
+    "probe": {
+      "queue": {
+        "argv": [
+          "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+          "gaps",
+          "--target",
+          "QueueFill#queue",
+          "--classes",
+          "prepare/queue/queue.jar",
+          "--classpath",
+          "prepare/queue/libraries/commons-lang3.jar",
+          "--classpath",
+          "prepare/queue/libraries/commons-collections4.jar",
+          "--json"
+        ],
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.032,
+        "stdout": "verifier/probe-queue.stdout",
+        "stderr": "verifier/probe-queue.stderr",
+        "gaps": [
+          {
+            "id": "jdk-static-method:java.lang.String.format(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;@jdk-21.0.13",
+            "kind": "jdk-static-method",
+            "call": "java.lang.String.format(java.lang.String, java.lang.Object[])",
+            "sites": [
+              "org.apache.commons.collections4.queue.CircularFifoQueue.get:187"
+            ]
+          }
+        ]
+      }
+    },
+    "usage": {
+      "cpuSeconds": 0.0573,
+      "peakRssBytes": 70471680,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    }
+  },
+  "budgetExhausted": false,
+  "usage": {
+    "cpuSeconds": 0.0573,
+    "peakRssBytes": 70471680,
+    "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+  },
+  "checkerEvidence": "checker.json",
+  "checkerStatus": "exited",
+  "checkerSeconds": 0.064,
+  "missing": [],
+  "receipt": "receipts/queue-fill-queue/20261123T175759Z-e2bd4a3f/result.json",
+  "preparedClaim": "9ad171376e725d2f",
+  "firstBlocker": null,
+  "endedAt": "2026-11-23T17:58:01.874712+00:00"
+}

@@ -1,0 +1,243 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "prove",
+    "RowIdentities#noDistinctEqualRows",
+    "--classes",
+    "prepare/rows/rows.jar",
+    "--classpath",
+    "prepare/rows/libraries/commons-lang3.jar",
+    "--classpath",
+    "prepare/rows/libraries/commons-collections4.jar",
+    "--classpath",
+    "prepare/rows/libraries/commons-math3.jar",
+    "--assert",
+    "result",
+    "--nullable",
+    "rows",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "7",
+    "--max-array-length",
+    "2",
+    "--timeout",
+    "120",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.182,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "violation",
+      "target": "RowIdentities#noDistinctEqualRows",
+      "domain": "rows: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+      "assume": null,
+      "assert": "result",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": {
+        "input": "noDistinctEqualRows(rows=[[-2147483648],[-2147483648]])",
+        "outcome": "false",
+        "values": [
+          "[[-2147483648],[-2147483648]]"
+        ],
+        "shrink_runs": 0,
+        "inputs": [
+          {
+            "name": "rows",
+            "type": "int[][]",
+            "value": [
+              [
+                -2147483648
+              ],
+              [
+                -2147483648
+              ]
+            ]
+          }
+        ],
+        "call": {
+          "class": "RowIdentities",
+          "class_file": "RowIdentities.class",
+          "classes": "after",
+          "method": "noDistinctEqualRows",
+          "descriptor": "([[I)Z",
+          "static": true,
+          "arguments": [
+            {
+              "name": "rows",
+              "type": "int[][]",
+              "value": [
+                [
+                  -2147483648
+                ],
+                [
+                  -2147483648
+                ]
+              ],
+              "from": "rows"
+            }
+          ]
+        }
+      },
+      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain rows: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "property-violated",
+          "message": "Property of RowIdentities#noDistinctEqualRows violated: `result`:\n  noDistinctEqualRows(rows=[[-2147483648],[-2147483648]])\n    outcome: false",
+          "uri": null,
+          "line": 11
+        }
+      ],
+      "output": "✗ Property of RowIdentities#noDistinctEqualRows violated: `result`:\n  noDistinctEqualRows(rows=[[-2147483648],[-2147483648]])\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s, replayed in the interpreter and run on a JVM (JDK 21.0.13), where the harness fails on it too; domain rows: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.009742177,
+        "properties": 1,
+        "unwind": 7,
+        "max_array_length": 2,
+        "stage": null,
+        "native": {
+          "paths": 10,
+          "merges": 0,
+          "solver_calls": 18,
+          "solving_seconds": 0.000276308,
+          "gates_evaluated": 319,
+          "evaluating_seconds": 1.1132e-05,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 1619,
+          "clauses": 4760,
+          "seconds": 0.006670261,
+          "loading_seconds": 0.000167064,
+          "decoding_seconds": 4.9173e-05,
+          "encoding_seconds": 0.000720858,
+          "witness_seconds": 3.4114e-05
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 120.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 120.0,
+            "seconds": 0.007,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.005,
+              "encoding": 0.001,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 1619,
+              "clauses": 4760
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.17,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.007,
+          "replay": 0.01,
+          "jvm": 0.133,
+          "other": 0.019
+        }
+      },
+      "replay": {
+        "by": "jvm",
+        "reproduced": true
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "rows",
+              "type": "int[][]",
+              "kind": "array",
+              "null": true,
+              "max_length": 2
+            }
+          ],
+          "shared_arrays": false,
+          "text": "rows: int[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 7,
+          "max_array_length": 2,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6442,
+    "sha256": "d17dfff124672fb0cf1ff754711e639e8505c93b14c648d4c682da219e5070e0"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}
