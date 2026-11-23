@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "198d90b677cec350",
+    "format": 1,
+    "example": "382",
+    "statement": {
+      "approach": "target",
+      "task": "replay-dispatch",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "DefaultDispatch#dispatch",
+      "revisions": [
+        "dispatch"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-dispatch",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "DefaultDispatch#dispatch",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-dispatch",
+            "kind": "driver",
+            "path": "driver/dispatch/Cases.java",
+            "sha256": "28457b284b18afc1389d6f1ccf16cc1ed7dbd8f096bc3a2f33bef10a716b0c9c"
+          },
+          {
+            "id": "oracle-dispatch",
+            "kind": "oracle",
+            "path": "controls/dispatch.json",
+            "sha256": "f80d04199fce1d2722ffca035c73db05b84af633274c2f930c5c2f5f9bcb4e2d"
+          }
+        ],
+        "key": "2c024239592ab442"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "e97c7b5320b8afde62c464b18a5239400905ffff4332d2786b5128b98aaee36a",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-dispatch",
+      "sidecar": "780d71fc53c2b10f6e01d98749bc2d2682a7c12484895232f061630a9f64b219",
+      "revisions": {
+        "dispatch": "4798a8068de2908ad2ca44e1c764ac9208607ef3"
+      },
+      "dependencies": [
+        {
+          "revision": "dispatch",
+          "position": 0,
+          "role": "driver",
+          "sha256": "120c64263786860144149f51c363fa827ee42299aca8db8578b425001af04033"
+        },
+        {
+          "revision": "dispatch",
+          "position": 1,
+          "role": "original",
+          "sha256": "b40d92d020e02faded351816e94fe5e225d342b03315ff5373eabe1a97b1519e"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/dispatch.json": "f80d04199fce1d2722ffca035c73db05b84af633274c2f930c5c2f5f9bcb4e2d",
+        "driver/dispatch/Cases.java": "28457b284b18afc1389d6f1ccf16cc1ed7dbd8f096bc3a2f33bef10a716b0c9c"
+      },
+      "claimKey": "2c024239592ab442"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094253Z-b2a781f5",
+    "claim": "198d90b677cec350",
+    "startedAt": "2026-11-23T09:42:53+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "3002dd37db29151aa49fc67d02fd8f93e0860c47374333000c5d7cf6ac6ac2bc",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control dispatch on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-dispatch-jdk21.stdout",
+        "stderr": "records/control-dispatch-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "198d90b677cec350",
+    "attempt": "20261123T094253Z-b2a781f5",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: dispatch holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"dispatch\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/dispatch.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "18468f2c71281317d093c1d6d912c72d2fbc95429c3df7cdc5377f8b0d6d7181",
+        "bytes": 8267
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "3461bda9df99e95ab9096dba94b300af1b2d3e11d6df7634bd79e0e5f2586dee",
+        "bytes": 182
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "e64c5d98fbfdc484e971a3efe6facc688e861c07e34abeb8a1cd88a510dc88b9",
+        "bytes": 1041
+      },
+      {
+        "path": "records/control-dispatch-jdk21.stdout",
+        "sha256": "ca9e52f764abf9742f497e182a4a5d4a2a7a7321f703a589622e899c52ce24fa",
+        "bytes": 2092
+      },
+      {
+        "path": "records/control-dispatch-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "a2735e4d8686507a9c0fa0a5ff93700bb530fc29040c634a0e0a93f819451d4a",
+        "bytes": 8488
+      }
+    ]
+  }
+}

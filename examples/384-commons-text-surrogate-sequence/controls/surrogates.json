@@ -1,0 +1,12 @@
+{"schema":"finite-jvm-observations/v1","fields":{"holds":{}},"cases":[
+{"id":0,"input":{"entry":"translate","arguments":["'A'","'B'","true"]},"expected":{"holds":true}},
+{"id":1,"input":{"entry":"translate","arguments":["'A'","'B'","false"]},"expected":{"holds":true}},
+{"id":2,"input":{"entry":"translate","arguments":["(char)0xDBFF","(char)0xDFFF","true"]},"expected":{"holds":true}},
+{"id":3,"input":{"entry":"translate","arguments":["(char)0xDBFF","(char)0xDFFF","false"]},"expected":{"holds":true}},
+{"id":4,"input":{"entry":"translate","arguments":["(char)0xD800","'A'","true"]},"expected":{"holds":true}},
+{"id":5,"input":{"entry":"translate","arguments":["(char)0xD800","'A'","false"]},"expected":{"holds":true}},
+{"id":6,"input":{"entry":"translate","arguments":["'A'","(char)0xDC00","true"]},"expected":{"holds":true}},
+{"id":7,"input":{"entry":"translate","arguments":["'A'","(char)0xDC00","false"]},"expected":{"holds":true}},
+{"id":8,"input":{"entry":"removeEvery","arguments":["'A'","'B'"]},"expected":{"holds":true}},
+{"id":9,"input":{"entry":"removeEvery","arguments":["(char)0xDBFF","(char)0xDFFF"]},"expected":{"holds":false}}
+]}

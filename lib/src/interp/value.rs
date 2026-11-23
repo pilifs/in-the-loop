@@ -18,6 +18,20 @@ pub enum Value {
     Ref(Ref),
 }
 
+/// Java decimal floating-point literals (including the optional precision suffix), rounded
+/// directly to the requested IEEE width. Hexadecimal syntax has a separate JVM grammar.
+pub(crate) fn decimal_float(text: &str, double: bool) -> Option<Value> {
+    let text = text.trim_matches(|c: char| c <= ' ');
+    let number = text.strip_suffix(['f', 'F', 'd', 'D']).unwrap_or(text);
+    // Rust also accepts non-Java spellings of infinity and NaN. Only its decimal-number
+    // parser is shared with Java here; in particular a suffix cannot turn a word into a number.
+    if !number.bytes().all(|b| b.is_ascii_digit() || matches!(b, b'.' | b'e' | b'E' | b'+' | b'-')) {
+        return None;
+    }
+    if double { number.parse::<f64>().ok().map(Value::Double) }
+    else { number.parse::<f32>().ok().map(Value::Float) }
+}
+
 impl Value {
     pub fn as_int(self) -> i32 {
         match self {

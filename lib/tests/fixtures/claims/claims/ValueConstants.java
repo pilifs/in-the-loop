@@ -6,7 +6,7 @@ public class ValueConstants {
         final int number;
         Value(int n) {
             if (n < 0) throw new IllegalArgumentException();
-            number = n == 0 ? (int) Double.parseDouble("9") : n;
+            number = n == 0 ? (int) Double.parseDouble("9") : n == 1 ? (int) Double.parseDouble("0x1.2p3") : n;
         }
     }
 
@@ -15,8 +15,12 @@ public class ValueConstants {
         static final Value SECOND = new Value(5);
     }
 
-    static class Unsupported {
+    static class Decimal {
         static final Value VALUE = new Value(0);
+    }
+
+    static class Hexadecimal {
+        static final Value VALUE = new Value(1);
     }
 
     static class Failed {
@@ -28,7 +32,11 @@ public class ValueConstants {
     }
 
     public static boolean parses() {
-        return Unsupported.VALUE.number == 9;
+        return Decimal.VALUE.number == 9;
+    }
+
+    public static boolean parsesHex() {
+        return Hexadecimal.VALUE.number == 9;
     }
 
     public static boolean failureState() {
@@ -44,6 +52,6 @@ public class ValueConstants {
     }
 
     public static void main(String[] args) {
-        if (!kept() || !parses() || !failureState()) throw new AssertionError();
+        if (!kept() || !parses() || !parsesHex() || !failureState()) throw new AssertionError();
     }
 }

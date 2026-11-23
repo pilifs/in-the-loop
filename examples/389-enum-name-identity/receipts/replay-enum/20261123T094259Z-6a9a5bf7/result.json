@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "9b9a2d27db7aa6c8",
+    "format": 1,
+    "example": "389",
+    "statement": {
+      "approach": "target",
+      "task": "replay-enum",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "EnumNames#lookup",
+      "revisions": [
+        "enum"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-enum",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "EnumNames#lookup",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-enum",
+            "kind": "driver",
+            "path": "driver/enum/Cases.java",
+            "sha256": "91dec2cf6562beb284e9f9c596aa3038403100060107b4b43b52f7b71b4e9ccf"
+          },
+          {
+            "id": "oracle-enum",
+            "kind": "oracle",
+            "path": "controls/enum.json",
+            "sha256": "1ec280f8fdbbdc74e717b83d5c8d6ebb9b16566172dfebf61fcacd3341cdc972"
+          }
+        ],
+        "key": "49376d4f3edcd33e"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "afe92740b64d42283b551708a0fd94c0728a578d8e9dc76aa3a60f4338a8c706",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-enum",
+      "sidecar": "7ab93b6af9d78e6b0f81515e781c00980bb4c11cdcaa0b8dac68c0034661e76f",
+      "revisions": {
+        "enum": "15f265d6fb3b93948fa9d79629b7ef535841cb94"
+      },
+      "dependencies": [
+        {
+          "revision": "enum",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c84536b23bf0f9ba03393cf45d39af839bb69b136f61b18c85ffbde5d13f404c"
+        },
+        {
+          "revision": "enum",
+          "position": 1,
+          "role": "original",
+          "sha256": "7f000bd53f2fd54203097d2869319826103e7c7f2ed3d9f5e0fd366e5b6e0aac"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/enum.json": "1ec280f8fdbbdc74e717b83d5c8d6ebb9b16566172dfebf61fcacd3341cdc972",
+        "driver/enum/Cases.java": "91dec2cf6562beb284e9f9c596aa3038403100060107b4b43b52f7b71b4e9ccf"
+      },
+      "claimKey": "49376d4f3edcd33e"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094259Z-6a9a5bf7",
+    "claim": "9b9a2d27db7aa6c8",
+    "startedAt": "2026-11-23T09:42:59+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "f219edc1f4c10c08c761e780eb16530a64f1003b69b10423249fb308c19d9fde",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control enum on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-enum-jdk21.stdout",
+        "stderr": "records/control-enum-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "9b9a2d27db7aa6c8",
+    "attempt": "20261123T094259Z-6a9a5bf7",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: enum holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"enum\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/enum.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "c4a7a4e04ab343234c8fabab08b18df2298076aba77c9385c3e8416cea0c5656",
+        "bytes": 5020
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "6cfcf78b5c474da0997d16651d9c45bc17ee63015616317e7594f737e4b49b02",
+        "bytes": 174
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "21c8d839bc18890851d2fa02236613495e1e478c94d6d6a20839242a01bc0d20",
+        "bytes": 1015
+      },
+      {
+        "path": "records/control-enum-jdk21.stdout",
+        "sha256": "c6a7bf14b942947700da5279923769b404df5293a4a6707492e4c0993a72034f",
+        "bytes": 844
+      },
+      {
+        "path": "records/control-enum-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "55a0a4a3b2e259c4766abb91a4aeee3daed0285f07e0693d706e4b8c65be41a1",
+        "bytes": 5229
+      }
+    ]
+  }
+}

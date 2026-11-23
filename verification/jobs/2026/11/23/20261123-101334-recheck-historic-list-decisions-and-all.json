@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-101334-recheck-historic-list-decisions-and-all",
+  "title": "Recheck historic list decisions and all 24 native controls",
+  "description": "Re-run the identical 38 original benchmark statements on both engines under strict gaps, staged JBMC and the original 120-second budget. Preserve the JVM replay, model digests and complete differential, including the enum control.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "All 76 outcomes are recorded. The final scorecard checks recovered list decisions, regressions and JVM-contradicted native answers against the opening.",
+  "submitted": {
+    "at": "2026-11-23T10:13:34+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 13,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "13m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "Four original list statements",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py final listOfArray",
+      "cwd": "."
+    },
+    {
+      "name": "Exact list searches",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py final listSearch",
+      "cwd": "."
+    },
+    {
+      "name": "Remaining ten former JBMC leads",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py final other-leads",
+      "cwd": "."
+    },
+    {
+      "name": "All 24 native regression controls",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py final native-controls",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/final/listOfArray.json",
+    "verification/java-semantics-gap/final/listSearch.json",
+    "verification/java-semantics-gap/final/other-leads.json",
+    "verification/java-semantics-gap/final/native-controls.json"
+  ]
+}

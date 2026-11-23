@@ -254,6 +254,11 @@ class ReplayExpectationTest(unittest.TestCase):
         target = {"identity": {"role": "calibration"},
                   "history": {"pairs": [{"name": "release", "kind": "release", "before": "a", "after": "b"}]}}
         self.assertEqual(workflow_ingest.expected_sides(target, {"pair": "release"}, ["a", "b"]), {})
+        single = {"kind": "replay", "revision": "original"}
+        self.assertEqual(workflow_ingest.expected_sides({}, single, ["original"]), {})
+        for expectation, result in (("established", "holds"), ("refuted", "violates")):
+            self.assertEqual(workflow_ingest.expected_sides({}, dict(single, expected=expectation), ["original"]),
+                             {"original": result})
         for role, sides in (("negative", {"a": "violates", "b": "holds"}), ("positive", {"a": "holds", "b": "holds"})):
             target["identity"]["role"] = role
             self.assertEqual(workflow_ingest.expected_sides(target, {"pair": "release"}, ["a", "b"]), sides)
@@ -399,7 +404,7 @@ class OracleConventionTest(unittest.TestCase):
 
     def prepare_oracle(self, folder, workdir):
         """The oracle part of a preparation, as runtime._add_controls makes it (no adapter or driver here)."""
-        source = runtime._controls_source(folder.resolve(), {})
+        source = runtime._controls_source(folder.resolve(), {}, "r", "replay")
         build = SimpleNamespace(artifacts=[])
         runtime._add_controls(build, {"oracle": source["oracle"]}, folder.resolve(), workdir, "r", [])
         return SimpleNamespace(revision="r", source=source, artifacts=build.artifacts)

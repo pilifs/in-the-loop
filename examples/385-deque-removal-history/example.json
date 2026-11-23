@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "385",
+  "title": "Remove an element before or after iterator prefetch",
+  "summary": "JDK deque iterator removal and released Commons filter iterators are checked through the original owner and element identities.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "side-effecting-read",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Remove an element before or after iterator prefetch",
+    "file": "adapter/DequeRemoval.java",
+    "symbol": "DequeRemoval#history"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "JDK deque iterator removal and released Commons filter iterators are checked through the original owner and element identities."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 4/4",
+  "notes": [
+    "The deque JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening deque.",
+    "The campaign's ordinary native checker decided 1/4 at opening and 4/4 at qualification, with 3 established and 1 refuted on original-JVM replays."
+  ]
+}

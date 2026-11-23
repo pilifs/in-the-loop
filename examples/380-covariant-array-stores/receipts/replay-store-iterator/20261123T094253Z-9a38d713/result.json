@@ -1,0 +1,210 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "8e245bdce697c86c",
+    "format": 1,
+    "example": "380",
+    "statement": {
+      "approach": "target",
+      "task": "replay-store-iterator",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "IteratorStores#history",
+      "revisions": [
+        "store-iterator"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-store-iterator",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "IteratorStores#history",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-store-iterator",
+            "kind": "driver",
+            "path": "driver/store-iterator/Cases.java",
+            "sha256": "1a207c82c383f7bdfb8e6f8fef4a8a03eadece27e52feeb0fb972f10d6f0ba9b"
+          },
+          {
+            "id": "oracle-store-iterator",
+            "kind": "oracle",
+            "path": "controls/store-iterator.json",
+            "sha256": "ce11578a2f29e82aa6a952e7dabbb9794e8a09e2300178a9512a57ebd40aa952"
+          }
+        ],
+        "key": "f4b3be277bf7889d"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "d36a772773a41b02b627b0a7318c1806a36e1bb5412d0403be4acb6be0d668c9",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-store-iterator",
+      "sidecar": "e8fe1e7d3ae1095bb930a98601397251db3c2d8830b23808947b09502213fcea",
+      "revisions": {
+        "store-iterator": "580bd3ae1e62b556bc116bb35fd520a1ae314192"
+      },
+      "dependencies": [
+        {
+          "revision": "store-iterator",
+          "position": 0,
+          "role": "driver",
+          "sha256": "c5f9ae82be58689c38e05b3275c067fcb2f13f47c902a529ba3841afcce9c50d"
+        },
+        {
+          "revision": "store-iterator",
+          "position": 1,
+          "role": "original",
+          "sha256": "2443106d93dedd01def4421c98c621d9aa6f30185cc36b875991f763af20d7a9"
+        },
+        {
+          "revision": "store-iterator",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+          "coordinates": "org.apache.commons:commons-collections4:4.5.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/store-iterator.json": "ce11578a2f29e82aa6a952e7dabbb9794e8a09e2300178a9512a57ebd40aa952",
+        "driver/store-iterator/Cases.java": "1a207c82c383f7bdfb8e6f8fef4a8a03eadece27e52feeb0fb972f10d6f0ba9b"
+      },
+      "claimKey": "f4b3be277bf7889d"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094253Z-9a38d713",
+    "claim": "8e245bdce697c86c",
+    "startedAt": "2026-11-23T09:42:53+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "235c4a4f5dfb12239ca0288a48f833d7d2adc9be62295b27419660b15573bd0c",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control store-iterator on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-store-iterator-jdk21.stdout",
+        "stderr": "records/control-store-iterator-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "8e245bdce697c86c",
+    "attempt": "20261123T094253Z-9a38d713",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: store-iterator holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 27,
+      "code": "\"store-iterator\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/store-iterator.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "b5e36054cf7196f745eb4dbc3021ae3b8f85fb021a753c39fe0dafcfd8a70570",
+        "bytes": 6642
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "892aef1be819eb5c7083d6b6e8094e5ea0ffbbc431e2a3149b0643f1fcaa3e1d",
+        "bytes": 194
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "f3f3353fa487d0a72ee820b4ee45261a9f869b95266727315c9599bea598bd0e",
+        "bytes": 1077
+      },
+      {
+        "path": "records/control-store-iterator-jdk21.stdout",
+        "sha256": "9a9c203f3543004f15c5337d25b5e95480d7aef36d87c79e6c58945969816041",
+        "bytes": 1286
+      },
+      {
+        "path": "records/control-store-iterator-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "913a03ddfa376c81dd212a1ab9b48bc3a36075735a82cf21cf4e84327840e26f",
+        "bytes": 6881
+      }
+    ]
+  }
+}

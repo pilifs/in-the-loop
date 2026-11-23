@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-090613-freeze-the-24-original-native-only-regre",
+  "title": "Freeze the 24 original native-only regression controls",
+  "description": "Run the original 24 native-only claims from the 187-claim November benchmark. Keep every staged JBMC and strict native result, including comparator disagreements, against the independent historical observer, the full int domain and the original per-claim budget.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc"
+  ],
+  "links": {},
+  "expected": "All 24 original native controls are compared on both engines with 120-second deadlines and their replay outcomes recorded.",
+  "submitted": {
+    "at": "2026-11-23T09:06:13+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "12m",
+    "timeout": "65m"
+  },
+  "steps": [
+    {
+      "name": "Paired native-only controls",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py opening native-controls",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/opening/native-controls.json"
+  ]
+}

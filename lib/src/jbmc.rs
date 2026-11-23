@@ -136,7 +136,30 @@ pub struct JbmcResult {
     pub congruence: Option<crate::congruence::Record>,
 }
 
-/// An argument of a counterexample: a primitive, an array of primitives, a String's UTF-16 code units, `null`, or
+/// A cell in the initial heap of a direct application-class array. A repeated reference
+/// names its first cell so replay preserves both sharing and equal-but-distinct objects.
+#[derive(Debug, Clone, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(untagged, deny_unknown_fields)]
+pub enum ObjectCell {
+    Null,
+    Object { fields: BTreeMap<String, i32> },
+    Same { #[serde(rename = "sameCell")] index: usize },
+}
+
+impl ObjectCell {
+    pub(crate) fn checked(cells: Vec<Self>) -> Result<Vec<Self>, Error> {
+        for (i, cell) in cells.iter().enumerate() {
+            if let Self::Same { index } = cell {
+                if !matches!(cells[..i].get(*index), Some(Self::Object { .. })) {
+                    return Err(Error::new(format!("cell {i} refers to cell {index}, which does not define an earlier object")));
+                }
+            }
+        }
+        Ok(cells)
+    }
+}
+
+/// An argument of a counterexample: a primitive, an array, a String's UTF-16 code units, `null`, or
 /// the same object as an earlier argument (by its index), which a replay passes again rather than a copy of it.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Argument {
@@ -147,6 +170,7 @@ pub enum Argument {
     String(Vec<u16>),
     /// A `String[]`: each cell null or a String's code units, each String an object of its own.
     Strings(Vec<Option<Vec<u16>>>),
+    Objects(Vec<ObjectCell>),
     Null,
     Same(usize),
 }
@@ -183,6 +207,15 @@ impl JbmcResult {
                     Some(Some(raw)) => Argument::Strings(raw.iter().map(|r| crate::bmc::read_string_element(r)).collect::<Result<Vec<_>, _>>().map_err(|e| Error::new(format!("the counterexample's String[] in slot {slot}: {e}")))?),
                     Some(None) => Argument::Null,
                     None => Argument::Strings(Vec::new()),
+                },
+                _ if crate::bmc::reference_inputs::component(t).is_some() => match self.raw_arrays.get(&slot) {
+                    Some(Some(raw)) => {
+                        let cells = raw.iter().map(|s| serde_json::from_str(s)).collect::<Result<_, _>>()
+                            .map_err(|e| Error::new(format!("the counterexample's object array in slot {slot}: {e}")))?;
+                        Argument::Objects(ObjectCell::checked(cells)?)
+                    }
+                    Some(None) => Argument::Null,
+                    None => return Err(Error::new(format!("the counterexample has no object array in slot {slot}"))),
                 },
                 Type::Array(element) => match self.raw_arrays.get(&slot) {
                     Some(Some(raw)) => Argument::Array(raw.iter().map(|r| parse_value(element, r)).collect::<Result<Vec<_>, _>>()?),

@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-104830-qualify-original-guava-and-gson-class-an",
+  "title": "Qualify original Guava and Gson class and exception observations",
+  "description": "Run the unchanged Temurin 21 callers on the opening classpaths under native and integrated JBMC. Retain the true and deliberately wrong claims separately, including time, complete raw checker output and actual JVM replay.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Every named original entry has a measured result, evidence hashes and an explicit disposition. The scorecard independently verifies the original domain and every native refutation on its JVM.",
+  "submitted": {
+    "at": "2026-11-23T10:48:30+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 14,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "6m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "guava-parent",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified guava-parent",
+      "cwd": "."
+    },
+    {
+      "name": "guava-fix",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified guava-fix",
+      "cwd": "."
+    },
+    {
+      "name": "gson-parent",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified gson-parent",
+      "cwd": "."
+    },
+    {
+      "name": "gson-fix",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py qualified gson-fix",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/qualified/guava-parent",
+    "verification/java-semantics-gap/qualified/guava-fix",
+    "verification/java-semantics-gap/qualified/gson-parent",
+    "verification/java-semantics-gap/qualified/gson-fix"
+  ]
+}

@@ -36,7 +36,9 @@
 //! [`Options::parameters`] lets it be, a symbolic reference then), a read is a choice among the cells by the index and a write a
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
 //! division by zero is. An array of references holds an object or null per cell, and an index into one that is not
-//! a constant splits the path per cell. An application class's static fields are path state, and its initializer
+//! a constant splits the path per cell. A direct array of a flat final application class admits null
+//! cells, every partition of the other cells into shared objects, and arbitrary writable int fields
+//! (`reference_inputs`). An application class's static fields are path state, and its initializer
 //! runs where the JVM runs it (JVMS §5.5); an enum's is one, its constants made through `java.lang.Enum`'s model
 //! and its `$VALUES` an array of references. IEEE 754 comparisons and signed zero use raw bit-vectors.
 //! Arithmetic over bounded floating-point operands uses their complete reachable tuples. Unmodeled static state and the rest of the
@@ -53,7 +55,7 @@
 //! | `ifeq` …, `if_icmpeq` …, `if_acmpeq`/`if_acmpne`, `ifnull`, `ifnonnull`, `goto`, `tableswitch`, `lookupswitch`, `ireturn` … `return` | implemented; a loop's back edge counts against the unwinding bound, per entry of the loop (an outer loop's back edge or a new call starts an inner loop's count again), and a path that needs another iteration goes on from an invariant of the loop where the engine finds one ([`loops`], [`Options::invariants`]); `if_acmp`, `ifnull` and `ifnonnull` on a symbolic reference are formulas over its guards |
 //! | `newarray`, `arraylength`, `iaload` … `saload`, `iastore` … `sastore` on arrays of primitives | implemented, up to [`Options::max_array_length`] cells; `ArrayIndexOutOfBoundsException`, `NegativeArraySizeException`, and `NullPointerException` on null |
 //! | `multianewarray` | implemented for bounded shapes with primitive or reference cells. Each allocated row has a fresh identity, trailing unspecified dimensions stay null, and any negative dimension throws before allocation. |
-//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an `aaload` at an index that is not a constant gives a symbolic reference, the reference of each cell under `index == i` ([`Choice`]), and splits no path; an `aastore` at such an index splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; an `aastore` of an object not of the element type (`ArrayStoreException`) is refused |
+//! | `anewarray`, `aaload`/`aastore` on arrays of references, and an array's `clone()` | implemented as for primitives, a cell holding an object or null; an `aaload` at an index that is not a constant gives a symbolic reference, the reference of each cell under `index == i` ([`Choice`]), and splits no path; an `aastore` at such an index splits the path per cell ([`Engine::concrete_index`]); a cell may hold a symbolic reference, which an `aastore` stores as it is when every object it may be is of the element type (as `List.of`'s varargs array holds a harness's picks), and splits per object otherwise; `clone()` a new array of the same class and elements; a null array or invalid index throws before the component check, and an incompatible in-bounds store throws `ArrayStoreException` without changing a cell |
 //! | `new`, `getfield`, `putfield`, `invokestatic`, `invokespecial`, `invokevirtual`, `invokeinterface` of the application's own methods | implemented: objects with fields, calls inlined, a virtual call dispatched on its receiver's class, `NullPointerException` on a null receiver; a field resolved as the JVM resolves it (JVMS §5.4.3.2), so a field a subclass declares again is a second one. Through a symbolic reference, `getfield` chooses among its objects' fields by the guards and `putfield` writes each under its guard, `NullPointerException` where it is null; a call on one, or any other instruction that needs its object (`checkcast`, `athrow`, a monitor, an array instruction, a JDK call's argument), splits the path per object first ([`Engine::concrete_ref`]) |
 //! | `athrow`, exception handlers, `checkcast`, `instanceof` | implemented, a handler matched by subclass; `instanceof` on a symbolic reference a formula over its guards |
 //! | `monitorenter`, `monitorexit` | implemented: `NullPointerException` on null, and otherwise nothing, which is all a monitor does in a run of one thread |
@@ -68,10 +70,11 @@
 //! | `Math.sin/cos` and `StrictMath.sin/cos` on finite operand sets | Signed zero follows the specified special cases. For nonzero angles up to eight radians in magnitude, exact rational Taylor bounds certify adjacent binary64 endpoints. Every call covers both permitted roundings independently; the counterexample qualifier requires failure for every choice. A missing bracket leaves the claim open. |
 //! | Calendar factories after an observed UTC Gregorian startup | The JVM qualifies its default and explicit UTC calendars, cutover, era, leniency and zone rules. The checker converts complete canonical civil fields to epoch milliseconds and returns a fresh Date on each getTime. A receipt states the startup assumption. |
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
+//! | Decimal text at `Float.valueOf`, `Double.valueOf` and `BigDecimal(String)` | Decimal floating-point literals round directly to the destination width. Formatting, including shortest digits and special-value string identity, runs the selected JDK formatters and their tables. BigDecimal runs the selected parser, magnitude construction and scale comparison. Five arithmetic tables in BigInteger and BigDecimal are read from their fingerprinted Temurin 21 initializers. A symbolic floating-point input string or an unsupported spelling stays open. |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. For hashCode the JDK cache reads one universally quantified int per object. A counterexample that uses a JVM-chosen value needs a scalar input for which the failing paths cover every platform choice. |
-//! | `invokestatic` of `List.of` (its fixed forms, up to ten elements) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort` …, and `List.of(E...)`) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
+//! | `invokestatic` of `List.of` (its fixed and caller-array forms) and `List.copyOf`, and `invokevirtual`/`invokeinterface` of the immutable lists' methods an evidence record of `values::OPERATIONS` samples (`size`, `isEmpty`, `get`, `iterator`, the iterator's `hasNext` and `next`, and the changes `add`, `set`, `remove(int)`, `clear` and the iterator's `remove`) ([`ClassPath::checker_runs`]); a call from outside the models of any other method they implement (`equals`, `hashCode`, `toArray`, `addAll` and `sort`, for example) is the JDK call it names, a gap or a refusal as any JDK call is ([`gaps::outside_the_list_records`]) | modelled: the models' bytecode (`lib/models/java/util/`, which JBMC runs too: `List12` for one or two elements, `ListN` over an array of its own otherwise, one empty list), `ImmutableCollections`' initializer run as an application class's ([`ClassPath::checker_class`]); order, duplicates and aliases between elements are the elements' references, null rejected, every change `UnsupportedOperationException`, `get` out of range an `IndexOutOfBoundsException` from a `List12` and an `ArrayIndexOutOfBoundsException` from a `ListN`. The interpreter's natives do the same. `copyOf` of another implementation meets its methods as JDK calls |
 //! | Exact, freshly constructed `new HashMap()` and its key and entry views with a JDK image | Runs the runtime's table, collision chains, entry nodes, iterators and removal on one heap ([`map_views`]). Model-backed and observed maps keep the portable HashMap and its own fields. |
 //! | `invokespecial` of `Object.<init>()`, `Record.<init>()`, and a JDK exception's `()`, `(String)` or `(String, Throwable)` constructor that only passes its arguments up to `Throwable`'s ([`gaps::exact_jdk_call`]) | modelled exactly: the first two change nothing a proof observes, and an exception's keeps its message and cause ([`throwables`]), refused on a class whose application override of `fillInStackTrace()` the constructor would run |
 //! | `getMessage()`, `getCause()`, `getLocalizedMessage()` and `toString()` of `Throwable` on an exception whose message and cause the engine kept, `getClass()` of an exception of a JDK class no JDK call returned ([`throwables`]) | modelled as `Throwable`'s, where the method the JVM runs is `Throwable`'s own; `getLocalizedMessage()` calls an application's `getMessage()`; the JDK call (a gap) elsewhere |
@@ -120,6 +123,7 @@ mod calendar;
 mod class_tables;
 mod jar_resources;
 mod reference_queues;
+pub(crate) mod reference_inputs;
 mod generic_interfaces;
 mod map_views;
 mod enum_universe;
@@ -133,6 +137,7 @@ pub mod locale;
 mod loops;
 mod observed;
 mod regex;
+pub(crate) use regex::compiles_constant;
 mod reflection;
 mod thread_locals;
 pub mod runtime;
@@ -579,13 +584,14 @@ impl Stats {
     }
 }
 
-/// Why a parameter type is outside the fragment, if it is. A `String` is in it under a bound
-/// ([`Parameters::max_string_length`]).
+/// The type filter at entry. Strings also require a length bound, and an application array's
+/// component and accompanying parameters must pass the classpath check in `reference_inputs::shape`.
 pub fn unsupported_parameter(t: &Type) -> Option<String> {
     match t {
         Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long => None,
         Type::Array(element) if matches!(**element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) => None,
         Type::Array(element) if is_string(element) => None,
+        t if reference_inputs::component(t).is_some() => None,
         t if is_string(t) => None,
         other => Some(format!("a {} parameter", other.java_name())),
     }
@@ -723,6 +729,8 @@ fn choice(b: &mut Blaster, options: Vec<(Lit, Option<usize>)>) -> Val {
 #[derive(Debug, Clone)]
 struct Obj {
     class: String,
+    /// A JVM `new` instruction named this exact class. A modeled factory can supply only a declared type.
+    bytecode_new: bool,
     fields: BTreeMap<String, Val>,
     array: Option<Array>,
     /// Why an opaque String has no content, where that is a named limit rather than a gap.
@@ -801,7 +809,7 @@ impl Obj {
     }
 
     fn new(class: &str) -> Obj {
-        Obj { class: class.to_string(), fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, member: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
+        Obj { class: class.to_string(), bytecode_new: false, fields: BTreeMap::new(), array: None, limit: None, same: Vec::new(), lambda: None, regex: None, member: None, made: MADE.fetch_add(1, std::sync::atomic::Ordering::Relaxed), given: false, before: false, unknown: false, content: None, assumed: false }
     }
 
     /// The array the object is, where its cells are known: not a String's content.
@@ -903,6 +911,8 @@ struct Frame {
     stack: Vec<Val>,
     /// Adapt the implementation result before advancing the caller's interface instruction.
     lambda_return: LambdaReturn,
+    /// A fresh ThreadLocal.get installs an overriding initialValue's result only on normal return.
+    thread_local_key: Option<usize>,
     /// The class whose `<clinit>` the frame runs: when it returns the class is initialized, and when an exception
     /// leaves it the class is erroneous (JVMS §5.5, steps 10 and 11).
     initializes: Option<String>,
@@ -921,7 +931,7 @@ struct Frame {
 
 impl Frame {
     fn new(class: Rc<ClassFile>, method: String, code: Rc<Decoded>, locals: Vec<Option<Val>>) -> Frame {
-        Frame { class, method, code, at: 0, locals, stack: Vec::new(), lambda_return: LambdaReturn::Pass, initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
+        Frame { class, method, code, at: 0, locals, stack: Vec::new(), lambda_return: LambdaReturn::Pass, thread_local_key: None, initializes: None, entered: Vec::new(), back_edges: BTreeMap::new(), summarized: Default::default() }
     }
 
     fn pc(&self) -> u32 {
@@ -1136,7 +1146,7 @@ fn frames_alike(a: &Path, b: &Path) -> bool {
     };
     a.frames.len() == b.frames.len()
         && a.frames.iter().zip(&b.frames).all(|(f, g)| f.locals.len() == g.locals.len() && f.locals.iter().zip(&g.locals).all(|(x, y)| slots(x, y)) && f.stack.len() == g.stack.len() && f.stack.iter().zip(&g.stack).all(|(x, y)| mergeable(x, y)))
-        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.lambda_return == g.lambda_return && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
+        && a.frames.iter().zip(&b.frames).all(|(f, g)| Rc::ptr_eq(&f.code, &g.code) && f.lambda_return == g.lambda_return && f.thread_local_key == g.thread_local_key && f.initializes == g.initializes && f.entered == g.entered && f.summarized == g.summarized)
         && a.classes == b.classes
         && a.unheld_statics == b.unheld_statics
         && a.statics.len() == b.statics.len()
@@ -1235,6 +1245,11 @@ fn align(into: &Path, other: &Path) -> Option<Vec<usize>> {
             paired.push_back((i, j));
         }
     }
+    for (left, right) in into.frames.iter().zip(&other.frames) {
+        if let Some(key) = right.thread_local_key {
+            if map[key] != left.thread_local_key { return None; }
+        }
+    }
     let mut next = into.objects.len();
     Some(
         map.into_iter()
@@ -1270,6 +1285,7 @@ fn renumber(path: &mut Path, number: &dyn Fn(usize) -> usize) {
         }
     }
     for frame in &mut path.frames {
+        frame.thread_local_key = frame.thread_local_key.map(number);
         frame.locals.iter_mut().flatten().for_each(value);
         frame.stack.iter_mut().for_each(value);
     }
@@ -1310,6 +1326,7 @@ fn collect(path: &mut Path) {
     let mut roots = Vec::new();
     roots.extend(path.literals.values().copied());
     for frame in &path.frames {
+        roots.extend(frame.thread_local_key);
         frame.locals.iter().flatten().for_each(|v| targets(v, &mut roots));
         frame.stack.iter().for_each(|v| targets(v, &mut roots));
     }
@@ -1473,6 +1490,7 @@ struct Engine<'a> {
     /// Each `String[]` parameter's own array, by slot: its length, and for each cell whether it is null, and the
     /// length and code units of the String it holds otherwise.
     string_arrays: Vec<(u32, Bits, Vec<(Lit, Bits, Vec<Bits>)>)>,
+    object_arrays: Vec<reference_inputs::InputArray>,
     /// The array parameters that are a choice ([`Parameters`]): slot, and each option's guard with the slot whose
     /// own array it is, or null.
     choices: Vec<(u32, Vec<(Lit, Option<u32>)>)>,
@@ -1594,6 +1612,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         params: Vec::new(),
         arrays: Vec::new(),
         string_arrays: Vec::new(),
+        object_arrays: Vec::new(),
         assumed: Default::default(),
         trig_brackets: HashMap::new(),
         assumption_ids: Default::default(),
@@ -1687,6 +1706,10 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         // Each array parameter's own array: slot, type and object.
         let mut own: Vec<(u32, Type, usize)> = Vec::new();
         let options_in = &options.parameters;
+        let object_shape = match reference_inputs::shape(cp, &descriptor.params, options.max_array_length) {
+            Ok(shape) => shape,
+            Err(why) => break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(why))),
+        };
         for t in &descriptor.params {
             if let Some(why) = unsupported_parameter(t) {
                 break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
@@ -1728,6 +1751,8 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
                     }
                     engine.string_arrays.push((slot, length.clone(), elements));
                     objects.push(Obj { array: Some(Array { element, length, cells: Vec::new(), refs }), ..Obj::new(&class) });
+                } else if let Some(shape) = &object_shape {
+                    engine.object_arrays.push(reference_inputs::InputArray::allocate(shape, slot, length, bound, &mut engine.b, &mut objects));
                 } else {
                     let cells: Vec<Bits> = (0..bound).map(|_| engine.b.fresh(cell_width(&element))).collect();
                     engine.arrays.push((slot, element.clone(), length.clone(), cells.clone()));
@@ -2236,6 +2261,9 @@ impl<'a> Engine<'a> {
                 values.extend(cells.iter().map(|c| (Type::Char, self.b.extend_cell(&Type::Char, c))));
             }
         }
+        for array in &self.object_arrays {
+            values.extend(array.field_words().map(|bits| (Type::Int, bits.clone())));
+        }
         for (t, bits) in values {
             if t == Type::Boolean {
                 continue;
@@ -2368,6 +2396,9 @@ impl<'a> Engine<'a> {
             input.scalars.insert(*slot, unsigned(t, self.b.eval(bits)).to_string());
         }
         let contents = |own: u32| -> Option<Vec<String>> {
+            if let Some(array) = self.object_arrays.iter().find(|a| a.slot == own) {
+                return Some(array.witness(&self.b));
+            }
             // A String[]'s cells, each as [`string_element`] spells it.
             if let Some((_, length, elements)) = self.string_arrays.iter().find(|(s, ..)| *s == own) {
                 let n = usize::try_from(self.b.eval(length)).unwrap_or(0).min(elements.len());
@@ -2382,7 +2413,8 @@ impl<'a> Engine<'a> {
         };
         // Which array each parameter holds (its own, unless it is a choice), and the first parameter to hold each.
         let mut first: BTreeMap<u32, u32> = BTreeMap::new();
-        let mut slots: Vec<u32> = self.arrays.iter().map(|(s, ..)| *s).chain(self.string_arrays.iter().map(|(s, ..)| *s)).collect();
+        let mut slots: Vec<u32> = self.arrays.iter().map(|(s, ..)| *s).chain(self.string_arrays.iter().map(|(s, ..)| *s))
+            .chain(self.object_arrays.iter().map(|a| a.slot)).collect();
         slots.sort_unstable();
         for slot in &slots {
             let held = match self.choices.iter().find(|(s, _)| s == slot) {
@@ -2695,6 +2727,7 @@ impl<'a> Engine<'a> {
             // An object that was there before a summarized method was entered, on either path.
             o.given |= q.given;
             o.before |= q.before;
+            o.bytecode_new &= q.bytecode_new;
             for (name, x) in o.fields.iter_mut() {
                 choose(b, x, &q.fields[name]);
             }
@@ -2954,8 +2987,16 @@ impl<'a> Engine<'a> {
                 if let Some(step) = self.concrete_ref(path, 2) {
                     return step;
                 }
-                if let Some(Val::R(Some(o))) = path.frames.last().and_then(|f| f.stack.len().checked_sub(3).map(|i| f.stack[i].clone())) {
-                    self.keeps(path, Some(o), "stores into an array made before it was called")?;
+                let stack = &path.frames.last().expect("a frame").stack;
+                if let [.., Val::R(array), Val::I(index), _] = &stack[..] {
+                    let Some(o) = array else { return self.raise(path, "java/lang/NullPointerException"); };
+                    if let Some(target) = path.objects[*o].array.as_ref() {
+                        let fits = self.b.ult(index, &target.length);
+                        // Keep the operands for the in-bounds branch, just as System.arraycopy does.
+                        if fits != TRUE && !path.cond.contains(&fits) {
+                            return self.branch_throw_or(path, -fits, "java/lang/ArrayIndexOutOfBoundsException", |_, valid| valid.resumed = true);
+                        }
+                    }
                 }
                 if !self.stores_without_check(path) {
                     if let Some(step) = self.concrete_ref(path, 0) {
@@ -2983,14 +3024,14 @@ impl<'a> Engine<'a> {
                 };
                 if let Val::R(Some(v)) = value {
                     if !path.objects[v].is_instance(self.cp, &class_of(&array.element)) {
-                        return unsupported(format!("an aastore of a {} into a {}[] (ArrayStoreException)", path.objects[v].class.replace('/', "."), array.element.java_name()));
+                        if path.objects[v].assumed { return self.of_unknown_class(path, v, "an aastore component check"); }
+                        return self.throw_class_only(path, "java/lang/ArrayStoreException");
                     }
                 }
-                let in_bounds = self.b.ult(&index, &array.length);
-                self.branch_throw_or(path, -in_bounds, "java/lang/ArrayIndexOutOfBoundsException", move |engine, path| {
-                    path.objects[o].array.as_mut().expect("an array").refs[cell] = value;
-                    engine.advance(path);
-                })
+                self.keeps(path, Some(o), "stores into an array made before it was called")?;
+                path.objects[o].array.as_mut().expect("an array").refs[cell] = value;
+                self.advance(path);
+                Ok(None)
             }
             Insn::ArrayLoad(kind) => {
                 if let Some(step) = self.concrete_ref(path, 1) {
@@ -3186,8 +3227,8 @@ impl<'a> Engine<'a> {
 
     /// How many cells a new array of `count` elements has: its size when that is a constant (none when it is
     /// negative, which throws), and otherwise the bound, once the solver shows the size is within it on the path;
-    /// or, where it is not, the cells of the largest array the path holds (a copy of an array the run made itself,
-    /// as `String.split`'s of a String of as many units as the bound is one longer than the bound).
+    /// or the cells of the largest array the path holds. For a larger local allocation, find its maximum
+    /// by SAT under the actual path condition, up to the same ceiling as a constant allocation.
     fn new_array_cells(&mut self, path: &Path, count: &Bits) -> Result<usize, Stop> {
         Ok(match self.b.constant_value(count) {
             Some(n) if n < 0 => 0,
@@ -3215,8 +3256,26 @@ impl<'a> Engine<'a> {
                 match within {
                     Some(cells) => cells,
                     None => {
-                        let top = path.frames.last().expect("a frame");
-                        return unsupported(format!("an array of computed size, not known to be within {} elements (in {}.{})", (bound + 1).max(largest), top.class.name.replace('/', "."), top.method));
+                        // An internally allocated buffer can exceed the input length (for example
+                        // source.length() + 32). Prove its capacity from the original path without
+                        // restricting an input or allocating the whole implementation ceiling.
+                        let mut low = (bound + 1).max(largest);
+                        let mut high = 1usize << 16;
+                        let exceeds = |engine: &mut Self, size: usize| {
+                            let test = engine.b.slt(&engine.b.constant(size as i64, 32), count);
+                            let mut conditions = path.cond.clone();
+                            conditions.push(test);
+                            engine.solve(&conditions)
+                        };
+                        if low >= high || exceeds(self, high)? {
+                            let top = path.frames.last().expect("a frame");
+                            return unsupported(format!("an array of computed size beyond the checked local allocation limit (in {}.{})", top.class.name.replace('/', "."), top.method));
+                        }
+                        while high - low > 1 {
+                            let mid = low + (high - low)/2;
+                            if exceeds(self, mid)? { low = mid } else { high = mid }
+                        }
+                        high
                     }
                 }
             }
@@ -4007,6 +4066,9 @@ impl<'a> Engine<'a> {
                     return Ok(None);
                 }
                 if let Some(v) = value {
+                    if let Some(key) = returned.thread_local_key {
+                        path.objects[key].fields.insert(thread_locals::BINDING.into(), v.clone());
+                    }
                     self.push(path, v);
                 }
                 self.advance(path);
@@ -4039,6 +4101,28 @@ impl<'a> Engine<'a> {
                     return Ok(None);
                 }
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if class.name == declaring && matches!(declaring.as_str(), "java/math/BigInteger" | "java/math/BigDecimal")
+                    && !self.is_observed(&declaring) && matches!(member.descriptor.as_str(), "[I" | "[J") {
+                    let key = (declaring.clone(), member.name.clone());
+                    let mut table = path.statics.get(&key).cloned();
+                    if table.is_none() {
+                        if let Some((element, words)) = self.cp.decimal_table(&declaring, &member.name) {
+                            let array = self.alloc(path, &member.descriptor);
+                            let length = self.b.constant(words.len() as i64, 32);
+                            let cells = words.into_iter().map(|n| self.b.constant(n, cell_width(&element))).collect();
+                            path.objects[array].array = Some(Array { element, length, cells, refs: Vec::new() });
+                            path.objects[array].given = true;
+                            path.objects[array].before = true;
+                            table = Some(Val::R(Some(array)));
+                            path.statics.insert(key, Val::R(Some(array)));
+                        }
+                    }
+                    if let Some(value) = table {
+                        self.push(path, value);
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/ref/SoftReference", "clock", "J")
                     && class.name == declaring && path.frames.last().is_some_and(|f| matches!(f.method.as_str(), "<init>" | "get")) {
                     self.reads(path, || "reads the GC soft-reference clock".into())?;
@@ -4364,6 +4448,7 @@ impl<'a> Engine<'a> {
                     return step;
                 }
                 let r = self.alloc(path, &name);
+                path.objects[r].bytecode_new = true;
                 self.push(path, Val::R(Some(r)));
             }
             Insn::AThrow => {
@@ -5169,6 +5254,11 @@ impl<'a> Engine<'a> {
         if self.cp.enum_universe_lookup(&member.owner, &member.name, &member.descriptor) {
             return self.enum_universe(path);
         }
+        if member.owner == "java/lang/Enum" && member.name == "valueOf"
+            && member.descriptor == "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;"
+            && self.previous.is_none() && self.pure.is_none() && self.frame.is_none() && self.cp.enum_lookup_image() {
+            return self.enum_by_name(path);
+        }
         if self.cp.is_map_image(&path.frames.last().expect("a frame").class) {
             if let Some((cf, m)) = self.cp.map_image_method(&member.owner, &member.name, &member.descriptor).filter(|(_, m)| m.is_static()) {
                 let args = self.pop_args(path, descriptor.params.len())?;
@@ -5177,7 +5267,7 @@ impl<'a> Engine<'a> {
         }
         // A model only for JBMC's class path that the checker runs all the same ([`ClassPath::checker_runs`]:
         // `List.of`, `List.copyOf` and the immutable lists' helpers) is called as an application method, unless
-        // no evidence record samples the call (`List.of(E...)`), which is then the JDK call it names
+        // no evidence record samples the call (`List.toArray`, for example), which is then the JDK call it names
         // ([`gaps::outside_the_list_records`]).
         let runs_model = !self.cp.is_application(&member.owner) && self.cp.checker_runs(&member.owner) && self.cp.checker_method(&member.owner, &member.name, &member.descriptor).is_some_and(|(cf, m)| self.cp.checker_runs(&cf.name) && m.code.is_some() && !gaps::outside_the_list_records(caller, &cf.name, &member.name, &member.descriptor));
         if runs_model || (self.cp.is_application(&member.owner) && member.owner != crate::gap_contracts::INTRINSICS) {
@@ -5699,7 +5789,9 @@ impl<'a> Engine<'a> {
             if special && member.owner == STRING && member.name == "<init>" {
                 match (member.descriptor.as_str(), args.as_slice()) {
                     ("([CII)V", [Val::R(source), Val::I(offset), Val::I(count)]) =>
-                        return self.initialize_string_range(path, o, *source, offset, count),
+                        return self.initialize_string_range(path, o, *source, offset, count, None),
+                    ("([BIII)V", [Val::R(source), Val::I(high), Val::I(offset), Val::I(count)]) =>
+                        return self.initialize_string_range(path, o, *source, offset, count, Some(high)),
                     ("([C)V" | "(Ljava/lang/String;)V", [Val::R(source)]) =>
                         return self.initialize_string(path, o, *source, &member.descriptor),
                     _ => {}
@@ -5736,8 +5828,21 @@ impl<'a> Engine<'a> {
             // Only the selected JDK implementation on an exact receiver whose magnitude
             // or unscaled value was installed by its constructor. A subclass keeps its dispatch.
             let object = &path.objects[o];
-            if object.class == member.owner && object.initialized_big_number() && member.name != "<init>" {
+            // BigInteger's digit parser also runs on 'this' inside its constructor,
+            // before the constructor publishes the magnitude it is computing.
+            let parsing_digits = member.owner == "java/math/BigInteger" && member.name == "parseInt" && member.descriptor == "([CII)I"
+                && path.frames.last().is_some_and(|f| f.class.name == member.owner && f.method == "<init>"
+                    && matches!(f.locals.first(), Some(Some(Val::R(Some(this)))) if *this == o));
+            if object.class == member.owner && (object.initialized_big_number() || parsing_digits) && member.name != "<init>" {
                 if let Some((cf, method)) = self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor) {
+                    if matches!(member.name.as_str(), "equals" | "compareTo" | "compareMagnitude") {
+                        if let [Val::R(Some(other))] = args.as_slice() {
+                            let arg = &path.objects[*other];
+                            if arg.unknown || arg.assumed || (self.cp.is_subtype(&arg.class, &member.owner) && !arg.initialized_big_number()) {
+                                return unsupported("big-number comparison needs the constructed argument's fields");
+                            }
+                        }
+                    }
                     let mut full = vec![Val::R(Some(o))];
                     full.extend(args);
                     return self.enter_method(path, &member.owner, cf, method, full);

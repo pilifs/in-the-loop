@@ -393,6 +393,7 @@ pub struct ClassPath {
     basic_base64: std::cell::OnceCell<bool>,
     heap_buffer_copy: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
+    decimal_tables_image: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
     pub(crate) observed_initializers: RefCell<std::collections::BTreeSet<String>>,
@@ -416,7 +417,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -526,7 +527,7 @@ impl ClassPath {
 
     /// The public constructor itself chooses which exception wins when the array is null and a bound is negative.
     pub(crate) fn string_range_constructor(&self, owner: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
-        if !matches!((owner, descriptor), ("java/lang/String", "([CII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
+        if !matches!((owner, descriptor), ("java/lang/String", "([CII)V" | "([BIII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
         let class = if let Some(boot) = &self.legacy_boot {
             let bytes = boot.read(&format!("{owner}.class")).ok()??;
             let class = ClassFile::parse(&bytes).ok()?;
@@ -1190,8 +1191,9 @@ impl ClassPath {
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
             | ("java/util/Arrays", "copyOfRange" | "copyOfRangeByte", "([BII)[B")
             | ("java/util/Arrays", "checkLength", "(II)V")
-            | ("java/util/ArrayDeque", "dec", "(II)I")
+            | ("java/util/ArrayDeque", "inc" | "dec", "(II)I")
             | ("java/util/ArrayDeque", "sub", "(III)I")
+            | ("java/util/ArrayDeque", "elementAt" | "nonNullElementAt", "([Ljava/lang/Object;I)Ljava/lang/Object;")
             | ("java/nio/ByteBuffer", "allocate", "(I)Ljava/nio/ByteBuffer;")
             | ("java/nio/ByteBuffer", "wrap", "([B)Ljava/nio/ByteBuffer;" | "([BII)Ljava/nio/ByteBuffer;")
             | ("java/nio/channels/Channels", "newChannel", "(Ljava/io/OutputStream;)Ljava/nio/channels/WritableByteChannel;")
@@ -1211,6 +1213,7 @@ impl ClassPath {
             | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
             | ("java/util/Collections", "unmodifiableMap", "(Ljava/util/Map;)Ljava/util/Map;")
+            | ("java/util/Collections", "synchronizedMap", "(Ljava/util/Map;)Ljava/util/Map;")
             | ("java/util/Collections", "newSetFromMap", "(Ljava/util/Map;)Ljava/util/Set;")
             | ("java/util/Collections", "synchronizedSet", "(Ljava/util/Set;Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/util/concurrent/ConcurrentHashMap", "spread" | "tableSizeFor", "(I)I")
@@ -1222,9 +1225,9 @@ impl ClassPath {
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
             | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
             | ("java/util/Objects", "hashCode", "(Ljava/lang/Object;)I")
-            | ("java/util/Objects", "checkFromIndexSize", "(III)I")
+            | ("java/util/Objects", "checkFromIndexSize" | "checkFromToIndex", "(III)I")
             | ("jdk/internal/util/Preconditions", "checkIndex", "(IILjava/util/function/BiFunction;)I")
-            | ("jdk/internal/util/Preconditions", "checkFromIndexSize", "(IIILjava/util/function/BiFunction;)I")
+            | ("jdk/internal/util/Preconditions", "checkFromIndexSize" | "checkFromToIndex", "(IIILjava/util/function/BiFunction;)I")
             | ("jdk/internal/util/ArraysSupport", "hashCode", "([Ljava/lang/Object;III)I")
             | ("java/util/Arrays", "equals", "([Ljava/lang/Object;[Ljava/lang/Object;)Z")
             | ("java/util/Arrays", "hashCode", "([Ljava/lang/Object;)I"))
@@ -1264,6 +1267,43 @@ impl ClassPath {
             bytes.extend(body);
         }
         digests.contains(&crate::digest::sha256_hex(&bytes).as_str())
+    }
+
+    /// The five arithmetic tables are read-only after initialization on this image. Decode
+    /// their literal array initializers from the selected class, including every cell.
+    pub(crate) fn decimal_table(&self, owner: &str, field: &str) -> Option<(crate::classfile::Type, Vec<i64>)> {
+        use crate::classfile::{ArrayKind, BootstrapArg, Insn, Type};
+        let (kind, element, descriptor) = match (owner, field) {
+            ("java/math/BigInteger", "digitsPerInt" | "intRadix") => (ArrayKind::Int, Type::Int, "[I"),
+            ("java/math/BigInteger", "bitsPerDigit") | ("java/math/BigDecimal", "LONG_TEN_POWERS_TABLE" | "THRESHOLDS_TABLE") =>
+                (ArrayKind::Long, Type::Long, "[J"),
+            _ => return None,
+        };
+        if !*self.decimal_tables_image.get_or_init(|| self.matches_jdk_classes(&["java/math/BigInteger", "java/math/BigDecimal"],
+                    &["174944a78445d7e38620917a7b3e4567b5b080f32dc10518d7550cd8ac5b4658"])) { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        let code = class.method("<clinit>", "()V")?.code.as_ref()?.instructions().ok()?;
+        let end = code.iter().position(|(_, op)| matches!(op, Insn::PutStatic(i) if class.pool.member(*i).is_ok_and(|m|
+            m.owner == owner && m.name == field && m.descriptor == descriptor)))?;
+        let alloc = code[..end].iter().rposition(|(_, op)| matches!(op, Insn::NewArray(k) if *k == kind))?;
+        let Insn::IConst(length) = code.get(alloc.checked_sub(1)?)?.1 else { return None };
+        let entries = &code[alloc + 1..end];
+        if entries.len() != usize::try_from(length).ok()?.checked_mul(4)? { return None; }
+        let cells = entries.chunks_exact(4).enumerate().map(|(index, ops)| {
+            let [(_, Insn::Dup), (_, Insn::IConst(i)), (_, value), (_, Insn::ArrayStore(store))] = ops else { return None };
+            if *i != index as i32 || *store != kind { return None; }
+            match value {
+                Insn::IConst(n) if kind == ArrayKind::Int => Some(i64::from(*n)),
+                Insn::LConst(n) if kind == ArrayKind::Long => Some(*n),
+                Insn::Ldc(i) => match class.pool.loadable(*i).ok()? {
+                    BootstrapArg::Int(n) if kind == ArrayKind::Int => Some(i64::from(n)),
+                    BootstrapArg::Long(n) if kind == ArrayKind::Long => Some(n),
+                    _ => None,
+                },
+                _ => None,
+            }
+        }).collect::<Option<Vec<_>>>()?;
+        Some((element, cells))
     }
 
     /// Fresh keys on one platform thread. Bind the key constructor, identity-based map, get/set/remove
@@ -1362,6 +1402,18 @@ impl ClassPath {
             "72bfbbe1f2885dbd5565cf63195e776a2ca3fc3807a8d8292f50bc8a06a927aa",
             "b9dd4690cd66026e282baa47deb2d5f60e9cffd843b34027cda4898da3d1141b",
         ])
+    }
+
+    pub(crate) fn integer_text_image(&self) -> bool {
+        self.matches_jdk_classes(&["java/lang/Integer","java/lang/StringLatin1","java/lang/StringUTF16"],
+            &["a8e237e5d730b5afba88e8995b5bfc171d3a437731ba31295e36a6f31acc9b83",
+              "eeef00c7da113b3b61cd916103a56f733fb327a6a459d8ba02f982f3d6462cf3"])
+    }
+
+    pub(crate) fn enum_lookup_image(&self) -> bool {
+        self.matches_jdk_classes(&["java/lang/Enum","java/lang/Class","java/util/HashMap"],
+            &["0406d74eaffee4294188f377a0a8ed29ae8031b33fcbb6f0ec4b4d89157009a1",
+              "d9dab35be2671bc870ef08b57cb2b66b971307fd48a5421331b82a995ce9fa68"])
     }
 
     /// These images install Buffer$1 through Preconditions$4. The fixed checkIndex formatter
@@ -1523,7 +1575,17 @@ impl ClassPath {
                 | ("java/util/ArrayDeque", "<init>", "(I)V")
                 | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "isEmpty", "()Z")
                 | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection", "size", "()I")
-                | ("java/util/ArrayDeque" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")),
+                | ("java/util/ArrayDeque" | "java/util/Deque", "addFirst" | "addLast", "(Ljava/lang/Object;)V")
+                | ("java/util/ArrayDeque" | "java/util/Collection" | "java/util/Deque", "add", "(Ljava/lang/Object;)Z")
+                | ("java/util/ArrayDeque", "delete", "(I)Z")
+                | ("java/util/ArrayDeque" | "java/util/Deque", "pollLast" | "peekFirst" | "peekLast", "()Ljava/lang/Object;")
+                | ("java/util/ArrayDeque" | "java/util/Deque" | "java/util/Collection" | "java/lang/Iterable", "iterator", "()Ljava/util/Iterator;")),
+            "java/util/ArrayDeque$DeqIterator" => matches!((owner, name, desc),
+                ("java/util/ArrayDeque$DeqIterator", "<init>", "(Ljava/util/ArrayDeque;)V")
+                | ("java/util/ArrayDeque$DeqIterator" | "java/util/Iterator", "hasNext", "()Z")
+                | ("java/util/ArrayDeque$DeqIterator" | "java/util/Iterator", "next", "()Ljava/lang/Object;")
+                | ("java/util/ArrayDeque$DeqIterator" | "java/util/Iterator", "remove", "()V")
+                | ("java/util/ArrayDeque$DeqIterator", "postDelete", "(Z)V")),
             "java/util/LinkedList" => matches!((owner, name, desc),
                 ("java/util/LinkedList" | "java/util/AbstractSequentialList" | "java/util/AbstractList" | "java/util/AbstractCollection", "<init>", "()V")
                 | ("java/util/LinkedList" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")
@@ -1650,6 +1712,18 @@ impl ClassPath {
             && self.known_concurrent_table()).then_some(usize::from(*expected))
     }
 
+    /// Some JDKs reject a negative offset before dereferencing a null prefix. Qualify that
+    /// observable exception ordering against the actual branch and its false-return target.
+    pub(crate) fn prefix_checks_negative_first(&self) -> bool {
+        use crate::classfile::{Cond, Insn, Kind};
+        let Ok(Some(Loaded {class, origin: Origin::Jdk})) = self.load("java/lang/String") else { return false };
+        let Some(code) = class.method("startsWith", "(Ljava/lang/String;I)Z").and_then(|m| m.code.as_ref()) else { return false };
+        let Ok(insns) = code.instructions() else { return false };
+        let [(_, Insn::Load(Kind::Int, 2)), (_, Insn::If(Cond::Lt, target)), ..] = &insns[..] else { return false };
+        insns.windows(2).any(|pair| matches!(pair,
+            [(at, Insn::IConst(0)), (_, Insn::Return(Some(Kind::Int)))] if at == target))
+    }
+
     /// Selected collection and text bytecode. Callers qualify the actual receivers and helper arguments.
     pub(crate) fn library_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         let sublist = matches!(owner, "java/util/ArrayList$SubList" | "java/util/ArrayList$SubList$1");
@@ -1691,6 +1765,7 @@ impl ClassPath {
             | ("java/util/ArrayList", "contains", "(Ljava/lang/Object;)Z") | ("java/util/ArrayList", "indexOf", "(Ljava/lang/Object;)I")
             | ("java/util/ArrayList", "indexOfRange", "(Ljava/lang/Object;II)I")
             | ("java/util/ArrayList", "add", "(Ljava/lang/Object;)Z" | "(Ljava/lang/Object;[Ljava/lang/Object;I)V")
+            | ("java/util/ArrayList", "addAll", "(Ljava/util/Collection;)Z")
             | ("java/util/ArrayList", "grow", "()[Ljava/lang/Object;" | "(I)[Ljava/lang/Object;")
             | ("java/util/ArrayList", "toArray", "()[Ljava/lang/Object;" | "([Ljava/lang/Object;)[Ljava/lang/Object;")
             | ("java/util/Arrays", "copyOf", "([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;")) { return None; }
@@ -1722,7 +1797,23 @@ impl ClassPath {
         owner == "java/lang/Character" && matches!((name, descriptor),
             ("isSurrogate" | "isHighSurrogate" | "isLowSurrogate", "(C)Z") | ("isSupplementaryCodePoint", "(I)Z")
             | ("charCount", "(I)I")
+            | ("toCodePoint", "(CC)I")
             | ("highSurrogate" | "lowSurrogate", "(I)C"))
+    }
+
+    pub(crate) fn big_number(owner: &str) -> bool {
+        matches!(owner, "java/math/BigDecimal" | "java/math/BigInteger")
+    }
+
+    /// The JDK 21 formatters construct their result from a byte range. Other image
+    /// layouts keep the interpreter's existing rendering path.
+    pub(crate) fn floating_formatter(&self, owner: &str) -> bool {
+        let implementation = match owner {
+            "java/lang/Float" => "jdk/internal/math/FloatToDecimal",
+            "java/lang/Double" => "jdk/internal/math/DoubleToDecimal",
+            _ => return false,
+        };
+        self.state_image_class(implementation).is_some_and(|c| c.method("charsToString", "()Ljava/lang/String;").is_some())
     }
 
     /// Numeric code executed from the selected JDK image. Factories follow their actual
@@ -1739,13 +1830,31 @@ impl ClassPath {
             | ("java/lang/FdLibm", "__HI" | "__LO", "(D)I" | "(DI)D")
             | ("java/lang/Math", "powerOfTwoD" | "primPowerOfTwoD", "(I)D")
             | ("java/lang/Integer", "bitCount" | "lowestOneBit", "(I)I")
+            | ("java/lang/Integer", "equals", "(Ljava/lang/Object;)Z")
+            | ("java/lang/Integer", "hashCode", "()I" | "(I)I")
+            | ("java/lang/Integer", "toString", "()Ljava/lang/String;")
+            | ("java/lang/Integer", "reverseBytes", "(I)I")
+            | ("java/lang/Long", "reverseBytes", "(J)J")
+            | ("java/lang/Integer", "compareUnsigned" | "compare", "(II)I")
+            | ("java/lang/Character", "codePointAt" | "codePointBefore", "(Ljava/lang/CharSequence;I)I")
             | ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
             | ("java/math/BigInteger", "<init>", "(J)V" | "([B)V" | "([BII)V")
+            | ("java/math/BigInteger", "<init>", "([CII)V")
+            | ("java/math/BigInteger", "parseInt", "([CII)I")
+            | ("java/math/BigInteger", "destructiveMulAdd", "([III)V")
+            | ("java/math/BigInteger", "trustedStripLeadingZeroInts", "([I)[I")
+            | ("java/math/BigInteger", "equals", "(Ljava/lang/Object;)Z")
             | ("java/math/BigInteger", "toMagArray", "(J)[I")
             | ("java/math/BigInteger", "makePositive" | "stripLeadingZeroBytes", "(I[BII)[I" | "([BII)[I")
             | ("java/math/BigInteger", "bitLengthForInt" | "getInt", "(I)I")
             | ("java/math/BigInteger", "bitLength" | "magBitLength" | "intValue" | "intValueExact" | "signInt" | "firstNonzeroIntNum" | "numberOfTrailingZeroInts", "()I")
             | ("java/math/BigDecimal", "<init>", "(Ljava/math/BigInteger;I)V")
+            | ("java/math/BigDecimal", "<init>", "(Ljava/lang/String;)V" | "([CII)V" | "([CIILjava/math/MathContext;)V")
+            | ("java/math/BigDecimal", "valueOf", "(D)Ljava/math/BigDecimal;")
+            | ("java/math/BigDecimal", "compareTo" | "compareMagnitude", "(Ljava/math/BigDecimal;)I")
+            | ("java/math/BigDecimal", "precision" | "signum", "()I")
+            | ("java/math/BigDecimal", "longMultiplyPowerTen", "(JI)J")
+            | ("java/math/BigDecimal", "longCompareMagnitude", "(JJ)I")
             | ("java/math/BigDecimal", "compactValFor", "(Ljava/math/BigInteger;)J")
             | ("java/math/BigDecimal", "toStrictBigInteger", "(Ljava/math/BigInteger;)Ljava/math/BigInteger;")
             | ("java/math/BigDecimal", "scale", "()I")
@@ -1763,6 +1872,16 @@ impl ClassPath {
             | ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;")
             | ("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;")
             | ("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;")
+            | ("java/lang/Float", "valueOf", "(Ljava/lang/String;)Ljava/lang/Float;")
+            | ("java/lang/Double", "valueOf", "(Ljava/lang/String;)Ljava/lang/Double;")
+            | ("java/lang/Float" | "java/lang/Double", "isInfinite", "()Z")
+            | ("java/lang/Float" | "java/lang/Double", "toString", "()Ljava/lang/String;")
+            | ("java/lang/Float", "toString", "(F)Ljava/lang/String;")
+            | ("java/lang/Double", "toString", "(D)Ljava/lang/String;")
+            | ("java/lang/Math", "multiplyHigh", "(JJ)J")
+            | ("java/lang/Integer", "decode", "(Ljava/lang/String;)Ljava/lang/Integer;")
+            | ("java/lang/Integer", "parseInt", "(Ljava/lang/CharSequence;III)I")
+            | ("java/lang/Integer", "intValue", "()I")
             | ("java/lang/Byte", "<init>", "(B)V") | ("java/lang/Short", "<init>", "(S)V")
             | ("java/lang/Long", "<init>", "(J)V") | ("java/lang/Float", "<init>", "(F)V")
             | ("java/lang/Double", "<init>", "(D)V") | ("java/lang/Number", "<init>", "()V"))
@@ -1772,7 +1891,8 @@ impl ClassPath {
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
         let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
-        if matches!(owner, "java/lang/Math" | "java/lang/StrictMath" | "java/lang/FdLibm" | "java/lang/FdLibm$Hypot")
+        // multiplyHigh specifies the exact high word of the signed 128-bit product.
+        if name != "multiplyHigh" && matches!(owner, "java/lang/Math" | "java/lang/StrictMath" | "java/lang/FdLibm" | "java/lang/FdLibm$Hypot")
             && method.annotations(&class.pool).ok()?.iter().any(|a| matches!(a.type_name.rsplit('/').next(), Some("IntrinsicCandidate" | "HotSpotIntrinsicCandidate"))) {
             return None;
         }
@@ -1881,7 +2001,7 @@ impl ClassPath {
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
             | "java/util/concurrent/ConcurrentHashMap$EntryIterator" | "java/util/concurrent/ConcurrentHashMap$BaseIterator"
             | "java/util/concurrent/ConcurrentHashMap$Traverser" | "java/util/Properties$EntrySet"
-            | "java/util/Collections$SynchronizedSet" | "java/util/Collections$SynchronizedCollection") {
+            | "java/util/Collections$SynchronizedMap" | "java/util/Collections$SynchronizedSet" | "java/util/Collections$SynchronizedCollection") {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }
@@ -1890,7 +2010,9 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return Some(class);
         }
-        if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+        if !matches!(name, "java/math/MathContext" | "java/math/RoundingMode"
+            | "jdk/internal/math/FloatToDecimal" | "jdk/internal/math/DoubleToDecimal" | "jdk/internal/math/MathUtils"
+            | "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
             | "java/io/Writer" | "java/io/StringWriter" | "java/io/PrintWriter" | "java/lang/StringBuffer"
             | "java/lang/CharacterData" | "java/lang/CharacterDataLatin1"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
@@ -2015,14 +2137,27 @@ impl ClassPath {
                 break;
             }
         }
-        for iface in self.all_interfaces(owner) {
-            if let Some(class) = bytecode(&iface) {
-                if let Some(m) = class.method(name, descriptor) {
-                    return Some((class.clone(), m.clone()));
-                }
-            }
-        }
-        None
+        self.interface_method_in(owner, name, descriptor, bytecode)
+    }
+
+    /// JVMS 5.4.3.3 and 5.4.6: a subinterface's declaration shadows its ancestors,
+    /// including when it redeclares a default abstract. Among the maximally specific
+    /// declarations only a unique concrete default supplies executable code.
+    fn interface_method_in(&self, owner: &str, name: &str, descriptor: &str,
+        bytecode: &dyn Fn(&str) -> Option<Rc<ClassFile>>) -> Option<(Rc<ClassFile>, Method)> {
+        let declared: Vec<_> = self.all_interfaces(owner).into_iter().filter_map(|iface| {
+            let class = bytecode(&iface).or_else(|| self.load(&iface).ok().flatten().map(|loaded| loaded.class))?;
+            let method = class.method(name, descriptor)?;
+            (!method.is_static() && !method.is_private()).then(|| (iface, method.is_abstract()))
+        }).collect();
+        let maximal: Vec<_> = declared.iter().filter(|(iface, _)|
+            !declared.iter().any(|(other, _)| other != iface && self.is_subtype(other, iface))).collect();
+        let mut defaults = maximal.iter().copied().filter(|(_, abstract_)| !abstract_);
+        let selected = defaults.next().or_else(|| maximal.first().copied())?;
+        if defaults.next().is_some() { return None; }
+        let class = bytecode(&selected.0)?;
+        let method = class.method(name, descriptor)?.clone();
+        Some((class, method))
     }
 
     /// The class that declares the field a reference `owner.name:descriptor` resolves to, by the JVM's field
@@ -2237,15 +2372,7 @@ impl ClassPath {
                 break;
             }
         }
-        // Interfaces, for default methods and abstract declarations.
-        for iface in self.all_interfaces(owner) {
-            if let Ok(Some(loaded)) = self.load(&iface) {
-                if let Some(m) = loaded.class.method(name, descriptor) {
-                    return Some((loaded.class.clone(), m.clone()));
-                }
-            }
-        }
-        None
+        self.interface_method_in(owner, name, descriptor, &|c| self.load(c).ok().flatten().map(|loaded| loaded.class))
     }
 
     /// Every interface a class implements, transitively, through superclasses and superinterfaces.

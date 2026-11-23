@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "378",
+  "title": "UTF-16 prefix matching at a signed offset",
+  "summary": "An independent charAt loop checks all offsets and strings of up to four UTF-16 units. The empty prefix also matches at the end.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "off-by-one",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "UTF-16 prefix matching at a signed offset",
+    "file": "adapter/OffsetPrefix.java",
+    "symbol": "OffsetPrefix#small"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "An independent charAt loop checks all offsets and strings of up to four UTF-16 units. The empty prefix also matches at the end."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 4/4",
+  "notes": [
+    "The prefix JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening prefix.",
+    "The campaign's ordinary native checker decided 0/4 at opening and 4/4 at qualification, with 3 established and 1 refuted on original-JVM replays."
+  ]
+}

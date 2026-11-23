@@ -1,0 +1,247 @@
+{
+  "task": "replay-surrogates",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "surrogates",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d",
+        "-cp",
+        "driver.jar:surrogates.jar:libraries/commons-text.jar:libraries/commons-lang3.jar",
+        "Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.064,
+      "stdout": "controls/control-surrogates-jdk21.stdout",
+      "stderr": "controls/control-surrogates-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:adapter",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "5d2cbf714b58ad4b3cc632ddbcaef55bf1a513b6657255aa8b439a84ca6f1c5f",
+            "role": "driver"
+          },
+          {
+            "path": "surrogates.jar",
+            "sha256": "8f091c4742564b58145a0098fb02695ae582eb7d20795203d85d7c7ae83bef09",
+            "role": "original"
+          },
+          {
+            "path": "libraries/commons-text.jar",
+            "sha256": "de023257ff166044a56bd1aa9124e843cd05dac5806cc705a9311f3556d5a15f",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/commons-lang3.jar",
+            "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver-surrogates",
+          "main": "Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/surrogates.json",
+          "oracleSha256": "76b231435f7b24ee614f869fd0cab8be4d78f97c75f38aeec66cfa9f264e54a5"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC",
+          "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d"
+        ],
+        "replay": "original-jvm",
+        "executionId": "20261123T094255Z-2216bdb6",
+        "startedAt": "2026-11-23T09:42:55.139627+00:00"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "'A'",
+              "'B'",
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 1,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "'A'",
+              "'B'",
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 2,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "(char)0xDBFF",
+              "(char)0xDFFF",
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 3,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "(char)0xDBFF",
+              "(char)0xDFFF",
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 4,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "(char)0xD800",
+              "'A'",
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 5,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "(char)0xD800",
+              "'A'",
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 6,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "'A'",
+              "(char)0xDC00",
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 7,
+          "input": {
+            "entry": "translate",
+            "arguments": [
+              "'A'",
+              "(char)0xDC00",
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 8,
+          "input": {
+            "entry": "removeEvery",
+            "arguments": [
+              "'A'",
+              "'B'"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 9,
+          "input": {
+            "entry": "removeEvery",
+            "arguments": [
+              "(char)0xDBFF",
+              "(char)0xDFFF"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        }
+      ],
+      "control": "driver-surrogates",
+      "record": "controls/controls.json",
+      "reason": null,
+      "oracle": {
+        "problems": []
+      }
+    }
+  ]
+}

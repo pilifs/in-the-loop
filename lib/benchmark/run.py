@@ -513,7 +513,7 @@ def environment(options):
     }
 
 
-def run(options):
+def run(options, *, case_ids=None):
     groups = {int(g) for g in options.groups.split(",")}
     engines = options.engines.split(",")
     modes = options.modes.split(",")
@@ -524,11 +524,13 @@ def run(options):
     cases = load_cases(groups, options.cases)
     selection = getattr(options, "selection", None)
     if selection == "foundation-v1":
+        case_ids = FOUNDATION_V1
+    if case_ids is not None:
         by_id = {c["id"]: c for c in cases}
-        missing = [key for key in FOUNDATION_V1 if key not in by_id]
+        missing = [key for key in case_ids if key not in by_id]
         if missing:
-            raise SystemExit("missing cases in foundation-v1: " + ", ".join(missing))
-        cases = [by_id[key] for key in FOUNDATION_V1]
+            raise SystemExit(f"missing cases in {selection}: " + ", ".join(missing))
+        cases = [by_id[key] for key in case_ids]
     cases_by_id = {c["id"]: c for c in cases}
     build = Path(options.build).resolve()
     build.mkdir(parents=True, exist_ok=True)

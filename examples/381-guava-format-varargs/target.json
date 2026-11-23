@@ -1,0 +1,182 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "guava-format-varargs",
+    "family": "guava-format-varargs",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "guava-parent": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "guava-parent",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations"
+        ],
+        "runtimeLibraries": [
+          "guava-parent",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations"
+        ]
+      },
+      "guava-fix": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "guava-fix",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations"
+        ],
+        "runtimeLibraries": [
+          "guava-fix",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-guava-parent",
+      "kind": "replay",
+      "revision": "guava-parent",
+      "target": "FormatHistory#retained",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "replay-guava-fix",
+      "kind": "replay",
+      "revision": "guava-fix",
+      "target": "FormatHistory#retained",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "guava-parent-retained",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "guava-parent",
+      "target": "FormatHistory#retained",
+      "claim": "claims/formathistory-retained.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-guava-parent"
+      ]
+    },
+    {
+      "id": "guava-parent-parent-behavior",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "guava-parent",
+      "target": "FormatHistory#parentBehavior",
+      "claim": "claims/formathistory-parent-behavior.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-guava-parent"
+      ]
+    },
+    {
+      "id": "guava-fix-retained",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "guava-fix",
+      "target": "FormatHistory#retained",
+      "claim": "claims/formathistory-retained.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-guava-fix"
+      ]
+    },
+    {
+      "id": "guava-fix-parent-behavior",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "guava-fix",
+      "target": "FormatHistory#parentBehavior",
+      "claim": "claims/formathistory-parent-behavior.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-guava-fix"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-guava-parent",
+      "revision": "guava-parent",
+      "kind": "driver",
+      "path": "driver/guava-parent/Cases.java"
+    },
+    {
+      "id": "oracle-guava-parent",
+      "revision": "guava-parent",
+      "kind": "oracle",
+      "path": "controls/guava-parent.json"
+    },
+    {
+      "id": "driver-guava-fix",
+      "revision": "guava-fix",
+      "kind": "driver",
+      "path": "driver/guava-fix/Cases.java"
+    },
+    {
+      "id": "oracle-guava-fix",
+      "revision": "guava-fix",
+      "kind": "oracle",
+      "path": "controls/guava-fix.json"
+    }
+  ]
+}

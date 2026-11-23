@@ -1,0 +1,217 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "f9fb6f763ca60536",
+    "format": 1,
+    "example": "384",
+    "statement": {
+      "approach": "target",
+      "task": "replay-surrogates",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "SurrogateUnits#translate",
+      "revisions": [
+        "surrogates"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-surrogates",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "SurrogateUnits#translate",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-surrogates",
+            "kind": "driver",
+            "path": "driver/surrogates/Cases.java",
+            "sha256": "0c827f42a70d97c093b0f392321b2ad0fb48a7b6f9c15d37041a7dd671be77f9"
+          },
+          {
+            "id": "oracle-surrogates",
+            "kind": "oracle",
+            "path": "controls/surrogates.json",
+            "sha256": "76b231435f7b24ee614f869fd0cab8be4d78f97c75f38aeec66cfa9f264e54a5"
+          }
+        ],
+        "key": "42bc9fc8de34a941"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "45565def796ac1e163b5f1cd02fec9f51548d97c940b81af046d151065856492",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-surrogates",
+      "sidecar": "e4aebc0fc6143b10712791baf9eefccebe0c48d44d0b111745c62b15fdc77bcb",
+      "revisions": {
+        "surrogates": "0b1f4d719cf2f58aa81b1ec98134a12504eb5cab"
+      },
+      "dependencies": [
+        {
+          "revision": "surrogates",
+          "position": 0,
+          "role": "driver",
+          "sha256": "5d2cbf714b58ad4b3cc632ddbcaef55bf1a513b6657255aa8b439a84ca6f1c5f"
+        },
+        {
+          "revision": "surrogates",
+          "position": 1,
+          "role": "original",
+          "sha256": "8f091c4742564b58145a0098fb02695ae582eb7d20795203d85d7c7ae83bef09"
+        },
+        {
+          "revision": "surrogates",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "de023257ff166044a56bd1aa9124e843cd05dac5806cc705a9311f3556d5a15f",
+          "coordinates": "org.apache.commons:commons-text:1.12.0"
+        },
+        {
+          "revision": "surrogates",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+          "coordinates": "org.apache.commons:commons-lang3:3.14.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/surrogates.json": "76b231435f7b24ee614f869fd0cab8be4d78f97c75f38aeec66cfa9f264e54a5",
+        "driver/surrogates/Cases.java": "0c827f42a70d97c093b0f392321b2ad0fb48a7b6f9c15d37041a7dd671be77f9"
+      },
+      "claimKey": "42bc9fc8de34a941"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094255Z-2216bdb6",
+    "claim": "f9fb6f763ca60536",
+    "startedAt": "2026-11-23T09:42:55+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "a25d87c34e13cb52559e916a23cb87ff53614ffa5303415e4b5f1d284a2230d2",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control surrogates on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-surrogates-jdk21.stdout",
+        "stderr": "records/control-surrogates-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "f9fb6f763ca60536",
+    "attempt": "20261123T094255Z-2216bdb6",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: surrogates holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"surrogates\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/surrogates.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "3bdb68bc24ba4cc99b5c0470205db7723e67090df264e5269b1913a2ac3a0c1f",
+        "bytes": 6285
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "a872ae9bd128b5c23d270db50f898f258df38e435963eebf173d07dd8c88c3cc",
+        "bytes": 186
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "97ff8b9439ed7d05016386b9e69c6b2993e6904c461649303593cc2f530caca6",
+        "bytes": 1053
+      },
+      {
+        "path": "records/control-surrogates-jdk21.stdout",
+        "sha256": "2d46a848cbfa113c058135c13d60f607ebb57488040ec92fefebfe5db635a2ad",
+        "bytes": 1175
+      },
+      {
+        "path": "records/control-surrogates-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "7060042b6e88005eaed9933b4eaf6e8fa2635eb2eb8e7938d9c8ae86ef35b273",
+        "bytes": 6512
+      }
+    ]
+  }
+}

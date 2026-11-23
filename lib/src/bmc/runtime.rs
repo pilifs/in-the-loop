@@ -10,7 +10,8 @@
 //!   of a final class in the selected JDK image, or a `Throwable` the run made and no JDK call returned (with `new`, or the engine for the JVM or a
 //!   model of a JDK method, as `athrow`'s handlers already take it; its class is the one `new` or the engine's own
 //!   throw named, [`super::throwables`]): that class's literal, the one object a class literal of it is (JLS
-//!   §15.8.2). Fresh arrays and exact objects from executed JDK bytecode also carry their runtime class.
+//!   §15.8.2). A successful JVM `new` instruction also fixes the runtime class of an object
+//!   whose fields use a library model, including a mutable map viewed through its interface.
 //! - `Class.getName()` of a class literal: the class's binary name, the interned String (the JVM interns it).
 //!   `Class.getTypeName()` of the literal of a class that is no array: the same String, as the JDK's returns
 //!   `getName()` for such a class (an array's is its element type's name and `[]`, the JDK call it was).
@@ -520,8 +521,7 @@ impl Engine<'_> {
         const INTEGER: &str = "java/lang/Integer";
         const CACHE: &str = "java/lang/Integer$IntegerCache";
         const ENTRIES: &str = "<Integer.valueOf entries>";
-        if word.len() != 32 || self.gap_mode != GapMode::Strict
-            || self.previous.is_some() || self.pure.is_some() || self.frame.is_some() { return None; }
+        if word.len() != 32 || self.previous.is_some() || self.pure.is_some() || self.frame.is_some() { return None; }
         let marker = (CACHE.into(), "<symbolic>".into());
         if !path.statics.contains_key(&marker) {
             if !self.cp.known_integer_cache() { return None; }
@@ -687,10 +687,11 @@ impl Engine<'_> {
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
             let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
             let list_storage = class == "java/util/ArrayList" && !self.cp.runs_model(&class) && o_.fields.contains_key("elementData");
-            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || o_.fields.contains_key(map_views::IMAGE)
+            let image = self.cp.load(&class).ok().flatten().filter(|c| c.origin == crate::classpath::Origin::Jdk);
+            let allocated = o_.bytecode_new && image.as_ref().is_some_and(|c| !c.class.is_abstract() && !c.class.is_interface());
+            let image_object = !o_.assumed && !self.there_before(path, o) && (allocated || list_storage || o_.fields.contains_key(map_views::IMAGE)
                 || o_.initialized_big_number() || self.cp.state_image_class(&class).is_some());
-            let final_image_class = !o_.assumed && self.cp.load(&class).ok().flatten()
-                .is_some_and(|loaded| loaded.origin == crate::classpath::Origin::Jdk && loaded.class.is_final());
+            let final_image_class = !o_.assumed && image.is_some_and(|loaded| loaded.class.is_final());
             // javac 8 emits dup/getClass/pop before capturing a bound method reference. The JVM
             // has already checked this concrete receiver for null. No hidden class mirror escapes.
             let caller = path.frames.last()?;

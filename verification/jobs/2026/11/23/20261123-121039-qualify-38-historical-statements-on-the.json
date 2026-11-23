@@ -1,0 +1,57 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-121039-qualify-38-historical-statements-on-the",
+  "title": "Qualify 38 historical statements on the heap and Gson source",
+  "description": "Recheck all thirteen original leads, 24 native controls and the extra positive search at the historical bounds, using staged integrated JBMC and strict native with original-JVM evidence.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "All 38 frozen cases produce both engine rows with their original controls and replay evidence.",
+  "submitted": {
+    "at": "2026-11-23T12:10:39+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "8m",
+    "timeout": "55m"
+  },
+  "steps": [
+    {
+      "name": "listOfArray",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py heap-and-gson listOfArray",
+      "cwd": "."
+    },
+    {
+      "name": "listSearch",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py heap-and-gson listSearch",
+      "cwd": "."
+    },
+    {
+      "name": "other-leads",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py heap-and-gson other-leads",
+      "cwd": "."
+    },
+    {
+      "name": "native-controls",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py heap-and-gson native-controls",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/heap-and-gson/listOfArray.json",
+    "verification/java-semantics-gap/heap-and-gson/listSearch.json",
+    "verification/java-semantics-gap/heap-and-gson/other-leads.json",
+    "verification/java-semantics-gap/heap-and-gson/native-controls.json"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-094337-compare-deque-enum-thread-local-and-moni",
+  "title": "Compare deque, enum, thread-local and monitor model boundaries",
+  "description": "Run an independent Java assertion wrapper and reachability assertion for each bound entry with the Ubuntu 22.04 JBMC 6.11.0 executable and model bytes. Preserve target IDs, all other failing properties, warnings, traces and JVM checks. Record disagreements as measurements.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc"
+  ],
+  "links": {},
+  "expected": "Every requested assertion and its reachability control retain their original raw result or the exact timeout. Only matched outcomes and independently replayable refutations can be credited.",
+  "submitted": {
+    "at": "2026-11-23T09:43:37+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 8,
+  "requires": [
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "15m",
+    "timeout": "100m"
+  },
+  "steps": [
+    {
+      "name": "deque packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged deque",
+      "cwd": "."
+    },
+    {
+      "name": "enum packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged enum",
+      "cwd": "."
+    },
+    {
+      "name": "locals packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged locals",
+      "cwd": "."
+    },
+    {
+      "name": "monitors packaged",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py packaged monitors",
+      "cwd": "."
+    },
+    {
+      "name": "deque eight-deque",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py eight-deque deque",
+      "cwd": "."
+    },
+    {
+      "name": "enum repo-enum",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/standalone.py repo-enum enum",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/standalone/deque/preflight-packaged",
+    "verification/java-semantics-gap/standalone/enum/preflight-packaged",
+    "verification/java-semantics-gap/standalone/locals/preflight-packaged",
+    "verification/java-semantics-gap/standalone/monitors/preflight-packaged",
+    "verification/java-semantics-gap/standalone/deque/preflight-eight-deque",
+    "verification/java-semantics-gap/standalone/enum/preflight-repo-enum"
+  ]
+}

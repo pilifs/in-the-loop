@@ -136,6 +136,46 @@ public final class ListConversions {
         try { it.next(); return false; } catch (NoSuchElementException expected) { return backing[1] == "tail"; }
     }
 
+    public static boolean bulkAppend(boolean empty) {
+        List<String> destination = new ArrayList<>(1);
+        destination.add("first");
+        java.util.Collection<String> source = new java.util.AbstractCollection<String>() {
+            public int size() { return 0; }
+            public Iterator<String> iterator() { throw new AssertionError("must call toArray"); }
+            public Object[] toArray() {
+                destination.add("callback");
+                return empty ? new String[0] : new String[]{"last"};
+            }
+        };
+        boolean changed = destination.addAll(source);
+        if (changed == empty || destination.size() != (empty ? 2 : 3) || destination.get(1) != "callback") return false;
+        Iterator<String> before = destination.iterator();
+        if (destination.addAll(java.util.Collections.emptyList())) return false;
+        try { before.next(); return false; }
+        catch (ConcurrentModificationException expected) {
+            return empty || destination.get(2) == "last";
+        }
+    }
+
+    public static boolean failedBulkAppend(boolean nullResult) {
+        List<String> destination = new ArrayList<>();
+        destination.add("first");
+        Iterator<String> before = destination.iterator();
+        java.util.Collection<String> source = new java.util.AbstractCollection<String>() {
+            public int size() { return 0; }
+            public Iterator<String> iterator() { throw new AssertionError(); }
+            public Object[] toArray() {
+                if (nullResult) return null;
+                throw new IllegalStateException();
+            }
+        };
+        try { destination.addAll(source); return false; }
+        catch (NullPointerException expected) { if (!nullResult) return false; }
+        catch (IllegalStateException expected) { if (nullResult) return false; }
+        try { return before.next() == "first" && !nullResult; }
+        catch (ConcurrentModificationException expected) { return nullResult; }
+    }
+
     public static boolean viewEquality() {
         List<String> fixed = Arrays.asList("ab", "cd");
         List<String> list = new ArrayList<>(3);
@@ -151,6 +191,7 @@ public final class ListConversions {
     public static void main(String[] args) {
         if (!snapshots(false) || !snapshots(true) || !storesPrefix() || !shortCircuit(false) || !shortCircuit(true)
                 || !digits(false) || !digits(true) || !liveIterator(false) || !liveIterator(true) || !nestedView(false) || !nestedView(true)
-                || !arrayView() || !viewEquality() || !callbacks(false) || !callbacks(true) || snapshotIterator() || wrong()) throw new AssertionError();
+                || !arrayView() || !viewEquality() || !callbacks(false) || !callbacks(true) || !bulkAppend(false) || !bulkAppend(true)
+                || !failedBulkAppend(false) || !failedBulkAppend(true) || snapshotIterator() || wrong()) throw new AssertionError();
     }
 }

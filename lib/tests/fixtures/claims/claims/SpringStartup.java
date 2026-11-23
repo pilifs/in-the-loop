@@ -85,7 +85,20 @@ public final class SpringStartup {
         Custom c = new Custom();
         c.set(null);
         c.remove();
-        return c.get() == c.initial;
+        if (c.get() != c.initial) return false;
+        class Retried extends ThreadLocal<Object> {
+            int calls;
+            final Object token = new Object();
+            protected Object initialValue() {
+                if (++calls == 1) { set(token); throw new IllegalStateException(); }
+                return null;
+            }
+        }
+        Retried retry = new Retried();
+        try { retry.get(); return false; } catch (IllegalStateException expected) {}
+        if (retry.get() != retry.token || retry.calls != 1) return false;
+        retry.remove();
+        return retry.get() == null && retry.get() == null && retry.calls == 2;
     }
 
     public static boolean split() {

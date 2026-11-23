@@ -1,0 +1,210 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "abe16d5a1cf8089b",
+    "format": 1,
+    "example": "386",
+    "statement": {
+      "approach": "target",
+      "task": "replay-construction",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "ConstructorPhase#history",
+      "revisions": [
+        "construction"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-construction",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "ConstructorPhase#history",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-construction",
+            "kind": "driver",
+            "path": "driver/construction/Cases.java",
+            "sha256": "51e713b4970c51d7aac81c46478a590977609e0f236b6dac487d2c96302018ba"
+          },
+          {
+            "id": "oracle-construction",
+            "kind": "oracle",
+            "path": "controls/construction.json",
+            "sha256": "7a4aa3f0bd3fa7bd7e9e9652dd20ea9b6b9453664d4c8bc383b4fb1d9fb5a231"
+          }
+        ],
+        "key": "71d01fdf6c6c9bb7"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "e38347cbe2bfb6319b48c2fd16992e041330fdf449f1f6d7b611c0b039ae0c6c",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-construction",
+      "sidecar": "27ae1abfb8a14e425737f654bb4b8f2c096ffd699d43cf8f306ab94d4e52ad24",
+      "revisions": {
+        "construction": "e516825206b03de6a121fca9a516006dfb0e2002"
+      },
+      "dependencies": [
+        {
+          "revision": "construction",
+          "position": 0,
+          "role": "driver",
+          "sha256": "eacd853d6a77ebdb8f930d4568e345cef08d1ede91d641aba65afe5774733e6b"
+        },
+        {
+          "revision": "construction",
+          "position": 1,
+          "role": "original",
+          "sha256": "24cf39348d1b06bfd383b4fab3aae148558a611a0f7b4aaa76f606f865e1f6f7"
+        },
+        {
+          "revision": "construction",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
+          "coordinates": "org.apache.commons:commons-lang3:3.14.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/construction.json": "7a4aa3f0bd3fa7bd7e9e9652dd20ea9b6b9453664d4c8bc383b4fb1d9fb5a231",
+        "driver/construction/Cases.java": "51e713b4970c51d7aac81c46478a590977609e0f236b6dac487d2c96302018ba"
+      },
+      "claimKey": "71d01fdf6c6c9bb7"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094256Z-9cb433aa",
+    "claim": "abe16d5a1cf8089b",
+    "startedAt": "2026-11-23T09:42:56+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "47a27173b7ebd001632d1e7fa80166ce5f9b7c82a3896f1279a656dfc5ac025d",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control construction on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-construction-jdk21.stdout",
+        "stderr": "records/control-construction-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "abe16d5a1cf8089b",
+    "attempt": "20261123T094256Z-9cb433aa",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: construction holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"construction\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/construction.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "b16d849a1bc712de3846fd8da442fd9bad967b642eb05883ab9e7759e47f6b95",
+        "bytes": 5054
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "77238521c9fd96e032bd995f15967b058e0b8f30e49a1f5a0537f1a7e2875a23",
+        "bytes": 190
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "4947e1df062f469953de5103e3391a13f342128468f2a0127229f403c78435e8",
+        "bytes": 1063
+      },
+      {
+        "path": "records/control-construction-jdk21.stdout",
+        "sha256": "c15d27333b158f66bcda48a0b480ef5008835157535bb067dfbf4c1a27645d25",
+        "bytes": 793
+      },
+      {
+        "path": "records/control-construction-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "2ca952dd3896694826ad72e5e6ef713bf2651ac3356259ca5699dce35d2af27b",
+        "bytes": 5287
+      }
+    ]
+  }
+}

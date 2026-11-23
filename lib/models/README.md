@@ -54,9 +54,9 @@ as a class path entry for any other tool.
   elements being fields of its objects (`List12`'s two, `ListN`'s array) and `ImmutableCollections`' initializer run
   as an application class's (`ClassPath::checker_class`: the one empty list and the sentinel of a list of one). It
   dispatches an interface call on a list or its iterator to the model's method, but only for the calls an evidence
-  record of `values::OPERATIONS` samples (`List.of`'s fixed forms, `copyOf`, `size`, `isEmpty`, `get`, the
+  record of `values::OPERATIONS` samples (`List.of`'s fixed and array forms, `contains`, `indexOf`, `lastIndexOf`, `copyOf`, `size`, `isEmpty`, `get`, the
   iterator's path and the changes `add`, `set`, `remove(int)`, `clear`, the iterator's `remove`). Any other method
-  the models implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort`, `List.of(E...)` …),
+  the models implement (`equals`, `hashCode`, `toArray`, `addAll` and `sort`, for example),
   called from outside them, is the JDK call it names, a named gap (`gaps::outside_the_list_records`); JBMC runs
   their bytecode all the same. Every step is the models' own, with
   no JDK call, but `AbstractCollection()`'s empty constructor, which the checker reproduces exactly; `copyOf` of

@@ -540,8 +540,7 @@ fn the_own_checker_runs_the_immutable_list_models_and_keeps_order_duplicates_and
 /// array's element type, so that `List.of`'s varargs array over a harness's picks costs no split per pick (each pick
 /// had split the path per object it may be, `n!` paths for `n` elements: the list sweep's cliff past five lines). The
 /// reference read back is the one stored (proved), a claim that it is the first line is refuted where it is the
-/// second, and a store the JVM refuses (`ArrayStoreException`, a String into a `Line[]`) is still refused by name
-/// under both search orders, never stored.
+/// second, and a caught incompatible store throws before changing the original cell under both search orders.
 #[test]
 fn an_array_cell_holds_a_symbolic_reference_of_its_element_type() {
     jvmcontract::tool_tier!();
@@ -549,12 +548,7 @@ fn an_array_cell_holds_a_symbolic_reference_of_its_element_type() {
     list_verified(&cp, "cellKeepsTheReference");
     let first = list_refuted(&cp, "cellHoldsTheFirst");
     assert_ne!(first[0], 0, "the second line: {first:?}");
-    for merge_after in [0, u64::MAX] {
-        let out = list_checked(&cp, "cellOfAnotherClass", merge_after);
-        assert_eq!(out.verdict, Verdict::Unverifiable, "merging after {merge_after}");
-        let problem = out.problem.unwrap_or_default();
-        assert!(problem.contains("an aastore of a java.lang.String into a values.Lists$Line[] (ArrayStoreException)"), "merging after {merge_after}: {problem}");
-    }
+    list_verified(&cp, "cellOfAnotherClass");
 }
 
 /// The models' other behaviour the kernels may reach, as the JDK's: `size`, `isEmpty` and the iterator (each
@@ -1060,6 +1054,26 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "ofWithNull", &[3, 2]),
     case(OPS, "ofWithNull", &[2, 2]),
     case(OPS, "ofKeepsDuplicates", &[7]),
+    case(OPS, "prefixAt", &[3, LOW, HIGH, LOW, 2, HIGH, LOW, 0, 1]),
+    case(OPS, "prefixAt", &[3, C, HIGH, LOW, 0, 0, 0, 0, 3]),
+    case(OPS, "prefixAt", &[3, C, HIGH, LOW, 1, LOW, 0, 0, i32::MAX]),
+    case(OPS, "prefixAt", &[0, 0, 0, 0, -1, 0, 0, 0, i32::MIN]),
+    case(OPS, "prefixAt", &[0, 0, 0, 0, -1, 0, 0, 0, 0]),
+    case(OPS, "callerArray", &[-1, -1]),
+    case(OPS, "callerArray", &[0, -1]),
+    case(OPS, "callerArray", &[1, -1]),
+    case(OPS, "callerArray", &[2, 1]),
+    case(OPS, "callerArray", &[3, 0]),
+    case(OPS, "callerArray", &[3, -1]),
+    case(OPS, "searchOrder", &[0, 0, 0]),
+    case(OPS, "searchOrder", &[0, 1, 1]),
+    case(OPS, "searchOrder", &[1, 2, 0]),
+    case(OPS, "searchOrder", &[1, 1, 2]),
+    case(OPS, "searchOrder", &[2, 0, 1]),
+    case(OPS, "searchOrder", &[2, 2, 1]),
+    case(OPS, "searchOrder", &[3, 0, 2]),
+    case(OPS, "searchOrder", &[3, 1, 1]),
+    case(OPS, "searchOrder", &[3, 2, 1]),
     case(OPS, "elementsAreTheObjects", &[5]),
     case(OPS, "emptyIsShared", &[]),
     case(OPS, "otherwiseFresh", &[1]),
@@ -1290,9 +1304,6 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("compareTo", "jdk-primitive-method:java.lang.String.compareTo(Ljava/lang/String;)I"),
     ("subSequence", "jdk-reference-method:java.lang.CharSequence.subSequence(II)Ljava/lang/CharSequence;"),
     ("valueOf", "jdk-static-method:java.lang.String.valueOf(I)Ljava/lang/String;"),
-    ("contains", "jdk-primitive-method:java.util.List.contains(Ljava/lang/Object;)Z"),
-    ("indexOfElement", "jdk-primitive-method:java.util.List.indexOf(Ljava/lang/Object;)I"),
-    ("lastIndexOf", "jdk-primitive-method:java.util.List.lastIndexOf(Ljava/lang/Object;)I"),
     ("equalLists", "jdk-primitive-method:java.util.List.equals(Ljava/lang/Object;)Z"),
     ("emptyHashCode", "jdk-primitive-method:java.util.List.hashCode()I"),
     ("hashCodeAsObject", "jdk-primitive-method:java.lang.Object.hashCode()I"),
@@ -1300,8 +1311,6 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
     ("addAll", "jdk-primitive-method:java.util.List.addAll(Ljava/util/Collection;)Z"),
     ("removeElement", "jdk-primitive-method:java.util.List.remove(Ljava/lang/Object;)Z"),
     ("sort", "jdk-void-method:java.util.List.sort(Ljava/util/Comparator;)V"),
-    ("arrayForm", "jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;"),
-    ("elevenElements", "jdk-static-method:java.util.List.of([Ljava/lang/Object;)Ljava/util/List;"),
     ("mapRemove", "jdk-reference-method:java.util.Map.remove(Ljava/lang/Object;)Ljava/lang/Object;"),
     ("mapGetOrDefault", "jdk-reference-method:java.util.Map.getOrDefault(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"),
     ("mapKeyOfIdentity", "jdk-primitive-method:java.lang.Object.hashCode()I"),
@@ -1316,7 +1325,7 @@ const OUTSIDE_THE_MODELS: &[(&str, &str)] = &[
 /// V3's strict gap detection: an operation outside the values models is a named gap under the strict engine, never
 /// a verdict. Every claim of [`OUTSIDE`] holds on the JVM, so a verdict could only rest on semantics no record
 /// vouches for: a String method other than the ones modelled on content (`values::OPERATIONS`), a list method or form the list models
-/// implement (`contains`, `equals`, `hashCode`, `addAll`, `List.of(E...)` …) that no record samples, a map the
+/// implement (`equals`, `hashCode` and `addAll`, for example) that no record samples, a map the
 /// `HashMap` model is not or a method it has not, a key hashed by its identity, a regular expression that is neither a
 /// plain constant nor one of the checker's syntax, a `Pattern`'s methods but `matcher`. Each run, merging
 /// from the start and never, has no verdict and names the operation's gap (or its refusal), and the gap scan reports
@@ -1357,7 +1366,7 @@ fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
         }
         let scan = bmc::gaps::scan(&cp, &bmc::gaps::roots(&cp, &[format!("values.Outside#{method}")]).unwrap()).unwrap();
         let reported = if expected.starts_with("outside") { scan.refused.values().any(|r| r.first.starts_with("java.util.List.toArray")) } else { scan.gaps.keys().any(|g| g.id(bmc::gaps::jdk_release().as_deref()).starts_with(&format!("{expected}@"))) };
-        let unsampled: Vec<&String> = scan.methods.iter().filter(|m| m.starts_with("java.util.ImmutableCollections") && [".contains", ".indexOf", ".lastIndexOf", ".equals", ".hashCode", ".toArray", ".addAll", ".remove(Ljava/lang/Object;)", ".sort", ".listFromArray"].iter().any(|n| m.contains(n))).collect();
+        let unsampled: Vec<&String> = scan.methods.iter().filter(|m| m.starts_with("java.util.ImmutableCollections") && [".equals", ".hashCode", ".toArray", ".addAll", ".remove(Ljava/lang/Object;)", ".sort"].iter().any(|n| m.contains(n))).collect();
         if !reported || !unsampled.is_empty() {
             wrong.push(format!("{method}: the scan reports {:?} {:?}, and walks {unsampled:?}", scan.gaps.keys().map(|g| g.id(None)).collect::<Vec<_>>(), scan.refused));
         }

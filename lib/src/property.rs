@@ -484,6 +484,18 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     };
     let descriptor = method.parsed_descriptor()?;
     let names = method.parameter_names(&class.pool);
+    let reference_array = match crate::bmc::reference_inputs::shape(&cp, &descriptor.params, options.max_array_length) {
+        Ok(shape) => shape.is_some(),
+        Err(why) => return refuse(&mut out, line, why),
+    };
+    if reference_array {
+        if receiver.is_some() || plan.is_some() || options.writes.is_some() {
+            return refuse(&mut out, line, "a direct object-array heap with a constructed receiver, an explicit heap plan or a write-set frame is unsupported".into());
+        }
+        if options.engine == crate::Engine::Jbmc || options.confirm {
+            return refuse(&mut out, line, "the integrated JBMC harness does not bind the direct native object-array domain with nullable and shared cells".into());
+        }
+    }
     // A parameter of an application class is an object made by its constructor (step H2 of
     // `llm-dlc/loops/foundations-heap.md`), from symbolic leaves, as in a regression check.
     let mut records = Vec::new();
@@ -509,7 +521,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             }
         }
         // A String is a value under the check's bound, and a String[] an array of such (the own checker's alone).
-        if t.is_primitive() || harness::expr::element_ty(t).is_some() || crate::values::is_string(t) || harness::is_string_array(t) {
+        if t.is_primitive() || harness::expr::element_ty(t).is_some() || crate::values::is_string(t) || harness::is_string_array(t)
+            || crate::bmc::reference_inputs::component(t).is_some() {
             records.push(None);
             continue;
         }
@@ -669,7 +682,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         return refuse(&mut out, line, format!("{method_name} takes an interface the check gives an implementation of, which only the tool's own checker is given (--engine native or auto, without --confirm)"));
     }
     // JBMC gives each array parameter an array of its own, never null: it would prove a narrower claim.
-    let widened = !parameters.is_default() || !given.is_empty();
+    let widened = !parameters.is_default() || !given.is_empty() || reference_array;
     if widened && strings.is_none() && (options.engine == crate::Engine::Jbmc || options.confirm) {
         let how = if options.confirm { "--confirm would have JBMC check a narrower claim than this one" } else { "JBMC is not given it" };
         let mut refused = refuse(&mut out, line, format!("the domain {domain} lets an array parameter be null or one array with another, which only the tool's own checker takes, and {how}: check it with --engine native or auto"))?;
@@ -1089,7 +1102,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         runs.push(Run::of(&result, "proof", budget));
         if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
-                let _ = writeln!(out, "{}", if strings.is_some() { NOT_JBMC_STRINGS } else if !given.is_empty() { NOT_JBMC_GIVEN } else if widened { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
+                let _ = writeln!(out, "{}", if strings.is_some() { NOT_JBMC_STRINGS } else if !given.is_empty() { NOT_JBMC_GIVEN } else if reference_array { "the integrated JBMC harness does not bind the direct object-array heap" } else if widened { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
             }
             stages.clear();
             last = Some(result);
@@ -1431,7 +1444,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // classes opened so that it may read their fields. The JVM is the reference: where its harness holds on
             // the witness, the interpreter was wrong and nothing is reported.
             let mut jvm_note = None;
-            if (over_objects || compiled) && on_jvm.is_none() {
+            if (over_objects || reference_array || compiled) && on_jvm.is_none() {
                 let mut entries = vec![harness_dir.clone()];
                 entries.extend(options.classes.iter().cloned());
                 entries.extend(options.classpath.iter().cloned());

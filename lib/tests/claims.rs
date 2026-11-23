@@ -164,12 +164,11 @@ fn fresh_thread_local_and_declared_member_metadata_match_the_selected_jvm() {
     for (method, boundary) in [("metadata", "java.lang.Class.getMethod"), ("bindings", "java.lang.ThreadLocal.<init>"),
                                ("overridingInitialValue", "java.lang.ThreadLocal.<init>")] {
         let result = run(&options(classes, &format!("claims.SpringStartup#{method}"), 16, method));
-        if pinned && method != "overridingInitialValue" {
+        if pinned {
             assert_eq!(result.verdict, Verdict::Verified, "{}", result.output);
         } else {
             assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
-            let refusal = if pinned { "overriding initialValue" } else { boundary };
-            assert!(result.output.contains(refusal), "{}", result.output);
+            assert!(result.output.contains(boundary), "{}", result.output);
         }
     }
 }
@@ -182,6 +181,12 @@ fn the_string_and_builder_methods_are_the_definitions_written_out_over_char_at()
         proved(classes, &format!("claims.T#{method}"), 3);
     }
     proved(classes, "claims.S#ends", 3);
+    proved(classes, "claims.T#builderSlice", 3);
+    let version = Command::new("java").arg("-version").output().unwrap();
+    let release = String::from_utf8_lossy(&version.stderr);
+    if release.contains("Temurin-21.0.13+9") || release.contains("Temurin-25.0.5+8") {
+        proved(classes, "claims.T#integerText", 3);
+    }
     // `toLowerCase` reads the default locale: the proof says which it takes for granted.
     let o = run(&options(classes, "claims.T#lower", 2, "lower-stated"));
     assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
@@ -451,7 +456,7 @@ fn registrations_in_order_and_classes_by_name_are_the_definitions_written_out() 
     assert!(stated.assumptions.iter().any(|a| a.text.contains("whose context class loader is the class loader of the check's class path")), "{:?}", stated.assumptions);
 }
 
-/// An initializer the checker does not run (`claims.Tables`: an `IdentityHashMap` and a load factor) is a gap,
+/// An initializer the checker cannot finish (`claims.Tables`: an `IdentityHashMap` and a load factor) is a gap,
 /// and with `--observed-initializer` the state a JVM left: what the observation holds is read as the JVM has it,
 /// the result says what it rests on, and a field it holds no value of is refused by name. A class it initialized
 /// that holds a lambda (`claims.Hooked`) is bound as it is alone, whatever address the JVM put in the lambda's name.
@@ -461,7 +466,9 @@ fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     let Some(classes) = classes() else { return };
     let unobserved = run(&options(classes, "claims.M#observed", 3, "unobserved"));
     assert_eq!(unobserved.verdict, Verdict::Unverifiable, "{}", unobserved.output);
-    assert!(unobserved.output.contains("class-initializer:claims.Tables.<clinit>()V"), "{}", unobserved.output);
+    assert!(unobserved.output.contains("class-initializer:claims.Tables.<clinit>()V")
+        || (unobserved.output.contains("jdk-constructor:java.util.HashMap.<init>(IF)V") && unobserved.output.contains("at claims.Tables.<clinit>")),
+        "{}", unobserved.output);
 
     let observing = |target: &str, work: &str, class: &str| {
         let mut o = options(classes, target, 3, work);
@@ -830,18 +837,17 @@ fn a_class_literal_says_whether_it_is_an_array_class_and_another_class_is_the_jd
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes).arg("claims.Arrayed").output().expect("java runs");
-    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true true true true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
-    for method in ["arrayed", "ofAnArray", "assignableOfAnArray", "boxedClass", "classCasts"] { proved(classes, &format!("claims.Arrayed#{method}"), 2); }
+    assert_eq!(String::from_utf8_lossy(&jvm.stdout).trim(), "true true true true true true true true true true true", "{}", String::from_utf8_lossy(&jvm.stderr));
+    for method in ["arrayed", "ofAnArray", "assignableOfAnArray", "opaqueIsArray", "opaqueAssignable", "boxedClass", "classCasts"] { proved(classes, &format!("claims.Arrayed#{method}"), 2); }
     let cp = jvmcontract::witness::classpath([classes]).unwrap();
     let mut machine = jvmcontract::interp::Machine::new(&cp);
     for flag in [0, 1] {
         use jvmcontract::interp::Value;
         assert_eq!(machine.call_static("claims/Arrayed", "classCasts", "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
     }
-    for (method, call) in [("opaqueIsArray", "java.lang.Class.isArray()"), ("opaqueAssignable", "java.lang.Class.isAssignableFrom(java.lang.Class)")] {
-        // Under strict the run stops at the opaque receiver's `getClass()`; under assume that gives a Class the engine holds
-        // no literal of, and the run stops at the call on it.
-        for (mode, stop) in [(jvmcontract::bmc::gaps::GapMode::Strict, "java.lang.Object.getClass()"), (jvmcontract::bmc::gaps::GapMode::Assume, call)] {
+    for method in ["factoryIsArray", "factoryAssignable"] {
+        // The VM supplies the protection domain. Its declared type leaves its runtime class open.
+        for (mode, stop) in [(jvmcontract::bmc::gaps::GapMode::Strict, "getProtectionDomain"), (jvmcontract::bmc::gaps::GapMode::Assume, "getClass")] {
             let mut o = options(classes, &format!("claims.Arrayed#{method}"), 1, &format!("Arrayed-{method}-{mode:?}"));
             o.gaps = mode;
             let o = run(&o);
@@ -1383,12 +1389,47 @@ fn static_value_constructors_keep_reachable_gaps_and_erroneous_state() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
     assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.ValueConstants").status().unwrap().success());
-    for name in ["kept", "failureState"] {
+    for name in ["kept", "parses", "failureState"] {
         proved(classes, &format!("claims.ValueConstants#{name}"), 2);
     }
-    let o = run(&options(classes, "claims.ValueConstants#parses", 2, "value-constant-parse"));
+    let o = run(&options(classes, "claims.ValueConstants#parsesHex", 2, "value-constant-hex"));
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.output.contains("Double.parseDouble"), "{}", o.output);
+}
+
+#[test]
+fn decimal_text_rounds_at_its_width_and_preserves_the_unscaled_integer() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    let version = Command::new("java").arg("-version").output().unwrap();
+    let pinned = String::from_utf8_lossy(&version.stderr).contains("Temurin-21.0.13+9");
+    let mut jvm = Command::new("java");
+    jvm.arg("-cp").arg(classes).arg("claims.DecimalText");
+    if pinned { jvm.arg("check-format-identity"); }
+    assert!(jvm.status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    let mut methods = vec!["rounding", "byteRange", "compilesBlock"];
+    if pinned { methods.extend(["formatting", "coefficient"]); }
+    for name in methods {
+        let mut o = options(classes, &format!("claims.DecimalText#{name}"), 2048, name);
+        o.unwind = 128;
+        let result = run(&o);
+        assert_eq!(result.verdict, Verdict::Verified, "{name}: {}", result.output);
+        let mark = machine.begin_case();
+        assert_eq!(machine.call_static("claims/DecimalText", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)), "{name}");
+        machine.end_case(mark);
+    }
+    let mark = machine.begin_case();
+    let stopped = machine.call_static("claims/DecimalText", "initializeLater", "()I", vec![]).unwrap_err();
+    assert!(matches!(&stopped, jvmcontract::interp::Fault::Unsupported(reason) if reason.contains("Pattern.compile")));
+    machine.end_case(mark);
+    for method in ["initializeLater", "observedStage"] {
+        assert_eq!(machine.call_static("claims/DecimalText", method, "()I", vec![]), Err(stopped.clone()));
+    }
+    let mut fresh = Machine::new(&cp);
+    assert_eq!(fresh.call_static("claims/DecimalText", "observedStage", "()I", vec![]), Ok(Some(Value::Int(0))));
 }
 
 #[test]
@@ -1416,7 +1457,7 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
     let Some(classes) = classes() else { return };
     let jvm = Command::new("java").arg("-cp").arg(classes).arg("claims.ListConversions").output().unwrap();
     assert!(jvm.status.success(), "{}", String::from_utf8_lossy(&jvm.stderr));
-    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView", "arrayView", "callbacks"] {
+    for name in ["snapshots", "storesPrefix", "shortCircuit", "digits", "liveIterator", "nestedView", "arrayView", "callbacks", "bulkAppend", "failedBulkAppend"] {
         let o = run(&options(classes, &format!("claims.ListConversions#{name}"), 4, &format!("list-image-{name}")));
         assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
         assert!(!o.stated.unwrap().assumptions.iter().any(|a| a.text.contains("java.util.ArrayList is the tool's model")));
@@ -1427,6 +1468,8 @@ fn selected_jdk_lists_keep_capacity_growth_typed_arrays_and_partial_stores() {
         assert_eq!(machine.call_static("claims/ListConversions", "snapshots", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
         assert_eq!(machine.call_static("claims/ListConversions", "liveIterator", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
         assert_eq!(machine.call_static("claims/ListConversions", "callbacks", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
+        assert_eq!(machine.call_static("claims/ListConversions", "bulkAppend", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
+        assert_eq!(machine.call_static("claims/ListConversions", "failedBulkAppend", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
         assert_eq!(machine.call_static("claims/ListConversions", "nestedView", "(Z)Z", vec![Value::Int(sized)]).unwrap(), Some(Value::Int(1)));
     }
     assert_eq!(machine.call_static("claims/ListConversions", "storesPrefix", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
@@ -1527,10 +1570,10 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     }
     assert_eq!(machine.call_static("claims/LiveMapViews", "collisions", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     assert_eq!(machine.call_static("claims/LiveMapViews", "copies", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
-    for name in ["backedSets", "concurrentViews", "initialProperties"] {
+    for name in ["backedSets", "concurrentViews", "initialProperties", "synchronizedBacking"] {
         assert_eq!(machine.call_static("claims/LiveMapViews", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     }
-    for name in ["remove", "collisions", "mixed", "packedValue", "backedSets", "concurrentViews", "initialProperties"] {
+    for name in ["remove", "collisions", "mixed", "packedValue", "backedSets", "concurrentViews", "initialProperties", "synchronizedBacking"] {
         let mut options = options(classes, &format!("claims.LiveMapViews#{name}"), 3, name);
         options.unwind = 30;
         let o = run(&options);

@@ -142,6 +142,13 @@ pub fn jdk_throwable(cp: &ClassPath, class: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// These VM or library failures have a known class. Keep unqualified diagnostic
+    /// messages and causes opaque to later observers.
+    pub(super) fn throw_class_only(&mut self, path: &mut Path, class: &str) -> Step {
+        let object = self.alloc(path, class);
+        path.objects[object].fields.insert(MODEL_DETAILS.into(), Val::R(None));
+        self.throw(path, object)
+    }
     /// The selected Class.getDeclaredField throws new NoSuchFieldException(name) on a miss.
     pub(super) fn missing_declared_field(&mut self, path: &mut Path, name: usize) -> Step {
         let object = self.alloc(path, "java/lang/NoSuchFieldException");

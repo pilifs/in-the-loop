@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "384",
+  "title": "Decode a surrogate pair through CharSequence",
+  "summary": "The public Commons Text translator receives a two-unit sequence at either offset. Its consumed count and writer effects are independently observable.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "text-encoding",
+    "buffer-bounds",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Decode a surrogate pair through CharSequence",
+    "file": "adapter/SurrogateUnits.java",
+    "symbol": "SurrogateUnits#translate"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "The public Commons Text translator receives a two-unit sequence at either offset. Its consumed count and writer effects are independently observable."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 2/2",
+  "notes": [
+    "The surrogates JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening surrogates.",
+    "The campaign's ordinary native checker decided 0/2 at opening and 2/2 at qualification, with 1 established and 1 refuted on original-JVM replays."
+  ]
+}

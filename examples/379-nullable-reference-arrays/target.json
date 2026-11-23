@@ -1,0 +1,328 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "nullable-reference-arrays",
+    "family": "nullable-reference-arrays",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "arrays": {
+        "fixture": "adapter/ReferenceCells",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      },
+      "receiver": {
+        "fixture": "adapter/ReceiverScope",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      },
+      "gson-parent": {
+        "fixture": "adapter/GsonRequestedClass",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "gson-parent"
+        ],
+        "runtimeLibraries": [
+          "gson-parent"
+        ]
+      },
+      "gson-fix": {
+        "fixture": "adapter/GsonRequestedClass",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "gson-fix"
+        ],
+        "runtimeLibraries": [
+          "gson-fix"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-arrays",
+      "kind": "replay",
+      "revision": "arrays",
+      "target": "ReferenceCells#categories",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "replay-receiver",
+      "kind": "replay",
+      "revision": "receiver",
+      "target": "ReceiverScope#exact",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "replay-gson-parent",
+      "kind": "replay",
+      "revision": "gson-parent",
+      "target": "GsonRequestedClass#compatible",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "replay-gson-fix",
+      "kind": "replay",
+      "revision": "gson-fix",
+      "target": "GsonRequestedClass#compatible",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "arrays-categories",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "arrays",
+      "target": "ReferenceCells#categories",
+      "claim": "claims/referencecells-categories.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-arrays"
+      ]
+    },
+    {
+      "id": "arrays-no-null-cell",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "arrays",
+      "target": "ReferenceCells#noNullCell",
+      "claim": "claims/referencecells-no-null-cell.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-arrays"
+      ]
+    },
+    {
+      "id": "arrays-no-item-cell",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "arrays",
+      "target": "ReferenceCells#noItemCell",
+      "claim": "claims/referencecells-no-item-cell.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-arrays"
+      ]
+    },
+    {
+      "id": "arrays-follows-alias",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "arrays",
+      "target": "ReferenceCells#followsAlias",
+      "claim": "claims/referencecells-follows-alias.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-arrays"
+      ]
+    },
+    {
+      "id": "arrays-always-shares",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "arrays",
+      "target": "ReferenceCells#alwaysShares",
+      "claim": "claims/referencecells-always-shares.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-arrays"
+      ]
+    },
+    {
+      "id": "receiver-exact",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "receiver",
+      "target": "ReceiverScope#exact",
+      "claim": "claims/receiverscope-exact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-receiver"
+      ]
+    },
+    {
+      "id": "receiver-parent-or-child",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "receiver",
+      "target": "ReceiverScope#parentOrChild",
+      "claim": "claims/receiverscope-parent-or-child.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-receiver"
+      ]
+    },
+    {
+      "id": "gson-parent-compatible",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "gson-parent",
+      "target": "GsonRequestedClass#compatible",
+      "claim": "claims/gsonrequestedclass-compatible.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-gson-parent"
+      ]
+    },
+    {
+      "id": "gson-parent-syntax",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "gson-parent",
+      "target": "GsonRequestedClass#syntax",
+      "claim": "claims/gsonrequestedclass-syntax.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-gson-parent"
+      ]
+    },
+    {
+      "id": "gson-fix-compatible",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "gson-fix",
+      "target": "GsonRequestedClass#compatible",
+      "claim": "claims/gsonrequestedclass-compatible.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-gson-fix"
+      ]
+    },
+    {
+      "id": "gson-fix-syntax",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "gson-fix",
+      "target": "GsonRequestedClass#syntax",
+      "claim": "claims/gsonrequestedclass-syntax.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-gson-fix"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-arrays",
+      "revision": "arrays",
+      "kind": "driver",
+      "path": "driver/arrays/Cases.java"
+    },
+    {
+      "id": "oracle-arrays",
+      "revision": "arrays",
+      "kind": "oracle",
+      "path": "controls/arrays.json"
+    },
+    {
+      "id": "driver-receiver",
+      "revision": "receiver",
+      "kind": "driver",
+      "path": "driver/receiver/Cases.java"
+    },
+    {
+      "id": "oracle-receiver",
+      "revision": "receiver",
+      "kind": "oracle",
+      "path": "controls/receiver.json"
+    },
+    {
+      "id": "driver-gson-parent",
+      "revision": "gson-parent",
+      "kind": "driver",
+      "path": "driver/gson-parent/Cases.java"
+    },
+    {
+      "id": "oracle-gson-parent",
+      "revision": "gson-parent",
+      "kind": "oracle",
+      "path": "controls/gson-parent.json"
+    },
+    {
+      "id": "driver-gson-fix",
+      "revision": "gson-fix",
+      "kind": "driver",
+      "path": "driver/gson-fix/Cases.java"
+    },
+    {
+      "id": "oracle-gson-fix",
+      "revision": "gson-fix",
+      "kind": "oracle",
+      "path": "controls/gson-fix.json"
+    }
+  ]
+}

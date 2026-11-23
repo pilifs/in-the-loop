@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "380",
+  "title": "A covariant store preserves the old cell on failure",
+  "summary": "A single store and a released Commons iterator expose the exception type and the original cell through a retained reference.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "exceptions",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "A covariant store preserves the old cell on failure",
+    "file": "adapter/ArrayStores/ArrayStores.java",
+    "symbol": "ArrayStores#history"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "A single store and a released Commons iterator expose the exception type and the original cell through a retained reference."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 3/3",
+  "notes": [
+    "The stores JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening stores.",
+    "The store-iterator JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening store-iterator.",
+    "The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualification, with 2 established and 1 refuted on original-JVM replays."
+  ]
+}

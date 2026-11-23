@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "388",
+  "title": "Unsigned offset checks in Commons Lang nibble conversion",
+  "summary": "Each nibble and signed offset is checked against a right shift or the method\u2019s exact explicit exception.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "buffer-bounds",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Unsigned offset checks in Commons Lang nibble conversion",
+    "file": "adapter/UnsignedNibble.java",
+    "symbol": "UnsignedNibble#nibble"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Each nibble and signed offset is checked against a right shift or the method\u2019s exact explicit exception."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 3/3",
+  "notes": [
+    "The nibble JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening nibble.",
+    "The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualification, with 1 established and 2 refuted on original-JVM replays."
+  ]
+}

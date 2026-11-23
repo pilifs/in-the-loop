@@ -1,0 +1,209 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "af2908efe39c6090",
+    "format": 1,
+    "example": "379",
+    "statement": {
+      "approach": "target",
+      "task": "replay-gson-fix",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "GsonRequestedClass#compatible",
+      "revisions": [
+        "gson-fix"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-gson-fix",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "GsonRequestedClass#compatible",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-gson-fix",
+            "kind": "driver",
+            "path": "driver/gson-fix/Cases.java",
+            "sha256": "252f84b02e0882f8c0d610c61a3f02b5291477d26798cc1692484d422cb99eda"
+          },
+          {
+            "id": "oracle-gson-fix",
+            "kind": "oracle",
+            "path": "controls/gson-fix.json",
+            "sha256": "c764f6a3e7386d3db5055b7234b75cf7d276e198665301c2d4fc2b9c22d3dedb"
+          }
+        ],
+        "key": "1ee794890e9cc607"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "b0c400a08af7005b58747bbe4de58a75c610cf8800bacce3057c72582007aae1",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-gson-fix",
+      "sidecar": "12bd087c877c9445ba0816ecc16c7a4f47802b2a01fd49627e9b13d8702eb4bc",
+      "revisions": {
+        "gson-fix": "2ec2337acc32d55d5bff1908d1b3f1209a0e410f"
+      },
+      "dependencies": [
+        {
+          "revision": "gson-fix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "d1feb35af830b7081d13d2a89abdb8e657d71dba2cfc8aaa79a111989db71495"
+        },
+        {
+          "revision": "gson-fix",
+          "position": 1,
+          "role": "original",
+          "sha256": "6ed3febd0d9611600922d95cd280b3ed86865d447c2c1b88ba9a5866d74be403"
+        },
+        {
+          "revision": "gson-fix",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "f0c093dc10b6830cc7eef6d94bf8a40c2bfa46322d714b716807d9ed6a481477"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/gson-fix.json": "c764f6a3e7386d3db5055b7234b75cf7d276e198665301c2d4fc2b9c22d3dedb",
+        "driver/gson-fix/Cases.java": "252f84b02e0882f8c0d610c61a3f02b5291477d26798cc1692484d422cb99eda"
+      },
+      "claimKey": "1ee794890e9cc607"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094302Z-a6a7afe2",
+    "claim": "af2908efe39c6090",
+    "startedAt": "2026-11-23T09:43:02+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "3f4a846623eccd2cc5c94938e6095371afefbae532945f2176240c6ffa15fe85",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control gson-fix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-gson-fix-jdk21.stdout",
+        "stderr": "records/control-gson-fix-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "af2908efe39c6090",
+    "attempt": "20261123T094302Z-a6a7afe2",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: gson-fix holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 61,
+      "code": "\"gson-fix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/gson-fix.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "24a6bf8986093c8396d01c422964ad6dd7aae61866dea97d6c4a51555dd649ab",
+        "bytes": 5287
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "664d547d4de071bccaa31c04877bb537d9442b5b2180b0c026a86cc7159c3e0b",
+        "bytes": 182
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "a7d9639125b4fd0a58108c2b5d57c9c32635c14573456896553a07c21614898c",
+        "bytes": 1039
+      },
+      {
+        "path": "records/control-gson-fix-jdk21.stdout",
+        "sha256": "3ddb735f5dc982ee8c8a21381c861f621840dd1c9dc235fd89ef967de1f38a0b",
+        "bytes": 839
+      },
+      {
+        "path": "records/control-gson-fix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "a1d94dd40c9448c5f44823217f6fff28be99010377f28da3e7e64749962f2c58",
+        "bytes": 5508
+      }
+    ]
+  }
+}

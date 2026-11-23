@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-135311-recheck-proof-tier-conformance-after-dec",
+  "title": "Recheck proof-tier conformance after decimal and replay changes",
+  "description": "Repeat the two cross-engine conformance tests on the checker that executes decimal library code and propagates incomplete initializer faults. The harnesses are unchanged. This checks the changed native selection and witness replay paths under both auto and confirmation.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Both proof-tier cross-engine conformance tests pass against their original JVM observations.",
+  "submitted": {
+    "at": "2026-11-23T13:53:11+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 13,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "25m",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Cross-engine conformance",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

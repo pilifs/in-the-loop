@@ -1,0 +1,108 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-lang-unsigned-nibble",
+    "family": "commons-lang-unsigned-nibble",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "nibble": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "lang-nibble"
+        ],
+        "runtimeLibraries": [
+          "lang-nibble"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-nibble",
+      "kind": "replay",
+      "revision": "nibble",
+      "target": "UnsignedNibble#nibble",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "nibble-nibble",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "nibble",
+      "target": "UnsignedNibble#nibble",
+      "claim": "claims/unsignednibble-nibble.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-nibble"
+      ]
+    },
+    {
+      "id": "nibble-left",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "nibble",
+      "target": "UnsignedNibble#left",
+      "claim": "claims/unsignednibble-left.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-nibble"
+      ]
+    },
+    {
+      "id": "nibble-accepts-negative",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "nibble",
+      "target": "UnsignedNibble#acceptsNegative",
+      "claim": "claims/unsignednibble-accepts-negative.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-nibble"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-nibble",
+      "revision": "nibble",
+      "kind": "driver",
+      "path": "driver/nibble/Cases.java"
+    },
+    {
+      "id": "oracle-nibble",
+      "revision": "nibble",
+      "kind": "oracle",
+      "path": "controls/nibble.json"
+    }
+  ]
+}

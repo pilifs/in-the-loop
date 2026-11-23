@@ -19691,14 +19691,15 @@
       "severity": "medium",
       "changeKind": "bug-fix",
       "verdict": null,
-      "verdictLabel": "Ordinary native 0/4, finite JVM 4/4",
+      "verdictLabel": "Ordinary native 4/4, finite JVM 4/4",
       "vacuous": false,
       "snapshot": null,
       "existingTestsPassed": null,
       "notes": [
         "Three explicit exact-decimal strings, each paired with an unchanged short literal and the malformed token 1eE.",
         "The captured original module and its dependencies are identified by SHA-256. The setup record retains build and historical regression evidence.",
-        "The three long decimal literals distinguished the historical artifacts. The landed revision returned the exact signed BigDecimal coefficient and scale 18. Both revisions preserved the Float raw bits, the Integer and the malformed-token exception. The landed NumberUtils JAR and class matched example 369."
+        "The three long decimal literals distinguished the historical artifacts. The landed revision returned the exact signed BigDecimal coefficient and scale 18. Both revisions preserved the Float raw bits, the Integer and the malformed-token exception. The landed NumberUtils JAR and class matched example 369.",
+        "The Java semantics follow-up decided all four ordinary native claims on both original Commons Lang builds. The parent returned Float for all three precision inputs. The fix returned the exact BigDecimal coefficients at scale 18. Both revisions preserved the two short Floats, the Integer, and the malformed-input exception."
       ],
       "source": "https://github.com/apache/commons-lang/pull/1635",
       "target": {
@@ -19782,11 +19783,1580 @@
         "unevidencedGaps": [],
         "predictedGaps": [],
         "historical": {
-          "verdictLabel": "Ordinary native 0/4, finite JVM 4/4",
+          "verdictLabel": "Ordinary native 4/4, finite JVM 4/4",
           "source": "https://github.com/apache/commons-lang/pull/1635",
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 375 TASK"
+      }
+    },
+    {
+      "id": "376",
+      "path": "examples/376-immutable-array-list",
+      "title": "A list copied from a caller-owned array",
+      "summary": "List construction isolates later slot replacement and retains aliases to the mutable elements.",
+      "origin": "constructed",
+      "system": "A list copied from a caller-owned array",
+      "symbol": "ListHistory#fromArray",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 3/3",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The lists JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening lists.",
+        "The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualification, with 2 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "immutable-array-list",
+        "role": "control",
+        "case": "immutable-array-list",
+        "tasks": [
+          "replay-lists",
+          "lists-from-array",
+          "lists-from-collection",
+          "lists-follows-slot"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-lists": "scaffolded",
+          "lists-from-array": "scaffolded",
+          "lists-from-collection": "scaffolded",
+          "lists-follows-slot": "scaffolded"
+        },
+        "expected": {
+          "replay-lists": "established",
+          "lists-from-array": "established",
+          "lists-from-collection": "established",
+          "lists-follows-slot": "refuted"
+        },
+        "claims": {
+          "lists-from-array": null,
+          "lists-from-collection": null,
+          "lists-follows-slot": null
+        },
+        "receipts": {
+          "replay-lists": {
+            "path": "receipts/replay-lists/20261123T094249Z-30511e89/result.json",
+            "attempt": "20261123T094249Z-30511e89",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 3/3",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 376 TASK"
+      }
+    },
+    {
+      "id": "377",
+      "path": "examples/377-commons-lang-wide-conversions",
+      "title": "Wide conversions on Commons Lang fractions and mutable doubles",
+      "summary": "Fraction rounding covers every numerator in [2²⁴, 2²⁵). MutableDouble narrowing covers every binary64 value in [2³¹, 2³²), before and after a sign change.",
+      "origin": "constructed",
+      "system": "Wide conversions on Commons Lang fractions and mutable doubles",
+      "symbol": "WideNumbers#fraction",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 6/6",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The numbers JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening numbers.",
+        "The numeric callers run the original Commons Lang revision 5904c573. Its historical change concerned decimal parsing. Fraction.floatValue and MutableDouble.intValue provide independent unchanged consumers.",
+        "The campaign's ordinary native checker decided 0/6 at opening and 6/6 at qualification, with 4 established and 2 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "commons-lang-wide-conversions",
+        "role": "control",
+        "case": "commons-lang-wide-conversions",
+        "tasks": [
+          "replay-numbers",
+          "numbers-fraction",
+          "numbers-fraction-opcode",
+          "numbers-floor-only",
+          "numbers-narrow",
+          "numbers-narrow-opcode",
+          "numbers-wraps"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-numbers": "scaffolded",
+          "numbers-fraction": "scaffolded",
+          "numbers-fraction-opcode": "scaffolded",
+          "numbers-floor-only": "scaffolded",
+          "numbers-narrow": "scaffolded",
+          "numbers-narrow-opcode": "scaffolded",
+          "numbers-wraps": "scaffolded"
+        },
+        "expected": {
+          "replay-numbers": "established",
+          "numbers-fraction": "established",
+          "numbers-fraction-opcode": "established",
+          "numbers-floor-only": "refuted",
+          "numbers-narrow": "established",
+          "numbers-narrow-opcode": "established",
+          "numbers-wraps": "refuted"
+        },
+        "claims": {
+          "numbers-fraction": null,
+          "numbers-fraction-opcode": null,
+          "numbers-floor-only": null,
+          "numbers-narrow": null,
+          "numbers-narrow-opcode": null,
+          "numbers-wraps": null
+        },
+        "receipts": {
+          "replay-numbers": {
+            "path": "receipts/replay-numbers/20261123T094249Z-3071ad8c/result.json",
+            "attempt": "20261123T094249Z-3071ad8c",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 6/6",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 377 TASK"
+      }
+    },
+    {
+      "id": "378",
+      "path": "examples/378-utf16-offset-prefix",
+      "title": "UTF-16 prefix matching at a signed offset",
+      "summary": "An independent charAt loop checks all offsets and strings of up to four UTF-16 units. The empty prefix also matches at the end.",
+      "origin": "constructed",
+      "system": "UTF-16 prefix matching at a signed offset",
+      "symbol": "OffsetPrefix#small",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 4/4",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The prefix JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening prefix.",
+        "The campaign's ordinary native checker decided 0/4 at opening and 4/4 at qualification, with 3 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "utf16-offset-prefix",
+        "role": "control",
+        "case": "utf16-offset-prefix",
+        "tasks": [
+          "replay-prefix",
+          "prefix-small",
+          "prefix-before-end",
+          "prefix-wide",
+          "prefix-null-prefix"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-prefix": "scaffolded",
+          "prefix-small": "scaffolded",
+          "prefix-before-end": "scaffolded",
+          "prefix-wide": "scaffolded",
+          "prefix-null-prefix": "scaffolded"
+        },
+        "expected": {
+          "replay-prefix": "established",
+          "prefix-small": "established",
+          "prefix-before-end": "refuted",
+          "prefix-wide": "established",
+          "prefix-null-prefix": "established"
+        },
+        "claims": {
+          "prefix-small": null,
+          "prefix-before-end": null,
+          "prefix-wide": null,
+          "prefix-null-prefix": null
+        },
+        "receipts": {
+          "replay-prefix": {
+            "path": "receipts/replay-prefix/20261123T094250Z-cc0d7d72/result.json",
+            "attempt": "20261123T094250Z-cc0d7d72",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 4/4",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 378 TASK"
+      }
+    },
+    {
+      "id": "379",
+      "path": "examples/379-nullable-reference-arrays",
+      "title": "Nullable array cells and runtime receiver types",
+      "summary": "Direct array arguments distinguish null, empty, null-element and object-element heaps. Constructed histories observe aliasing, dispatch and Gson’s requested class.",
+      "origin": "constructed",
+      "system": "Nullable array cells and runtime receiver types",
+      "symbol": "ReferenceCells#categories",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 11/11",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The arrays JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening arrays.",
+        "The receiver JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening receiver.",
+        "The gson-parent JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening gson-parent.",
+        "The gson-fix JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening gson-fix.",
+        "The campaign's ordinary native checker decided 4/11 at opening and 11/11 at qualification, with 6 established and 5 refuted on original-JVM replays.",
+        "The direct mutation controls reconstructed a shared object and two distinct objects with equal maximal int fields. On every incompatible public Gson call the parent threw ClassCastException and the fix threw JsonSyntaxException. The native checker also verified all five compatible selections on both builds."
+      ],
+      "source": null,
+      "target": {
+        "family": "nullable-reference-arrays",
+        "role": "control",
+        "case": "nullable-reference-arrays",
+        "tasks": [
+          "replay-arrays",
+          "replay-receiver",
+          "replay-gson-parent",
+          "replay-gson-fix",
+          "arrays-categories",
+          "arrays-no-null-cell",
+          "arrays-no-item-cell",
+          "arrays-follows-alias",
+          "arrays-always-shares",
+          "receiver-exact",
+          "receiver-parent-or-child",
+          "gson-parent-compatible",
+          "gson-parent-syntax",
+          "gson-fix-compatible",
+          "gson-fix-syntax"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-arrays": "scaffolded",
+          "replay-receiver": "scaffolded",
+          "replay-gson-parent": "scaffolded",
+          "replay-gson-fix": "scaffolded",
+          "arrays-categories": "scaffolded",
+          "arrays-no-null-cell": "scaffolded",
+          "arrays-no-item-cell": "scaffolded",
+          "arrays-follows-alias": "scaffolded",
+          "arrays-always-shares": "scaffolded",
+          "receiver-exact": "scaffolded",
+          "receiver-parent-or-child": "scaffolded",
+          "gson-parent-compatible": "scaffolded",
+          "gson-parent-syntax": "scaffolded",
+          "gson-fix-compatible": "scaffolded",
+          "gson-fix-syntax": "scaffolded"
+        },
+        "expected": {
+          "replay-arrays": "established",
+          "replay-receiver": "established",
+          "replay-gson-parent": "established",
+          "replay-gson-fix": "established",
+          "arrays-categories": "established",
+          "arrays-no-null-cell": "refuted",
+          "arrays-no-item-cell": "refuted",
+          "arrays-follows-alias": "established",
+          "arrays-always-shares": "refuted",
+          "receiver-exact": "established",
+          "receiver-parent-or-child": "refuted",
+          "gson-parent-compatible": "established",
+          "gson-parent-syntax": "refuted",
+          "gson-fix-compatible": "established",
+          "gson-fix-syntax": "established"
+        },
+        "claims": {
+          "arrays-categories": null,
+          "arrays-no-null-cell": null,
+          "arrays-no-item-cell": null,
+          "arrays-follows-alias": null,
+          "arrays-always-shares": null,
+          "receiver-exact": null,
+          "receiver-parent-or-child": null,
+          "gson-parent-compatible": null,
+          "gson-parent-syntax": null,
+          "gson-fix-compatible": null,
+          "gson-fix-syntax": null
+        },
+        "receipts": {
+          "replay-arrays": {
+            "path": "receipts/replay-arrays/20261123T094250Z-dd85c429/result.json",
+            "attempt": "20261123T094250Z-dd85c429",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-receiver": {
+            "path": "receipts/replay-receiver/20261123T094252Z-4335a0a2/result.json",
+            "attempt": "20261123T094252Z-4335a0a2",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-gson-parent": {
+            "path": "receipts/replay-gson-parent/20261123T094301Z-260d1024/result.json",
+            "attempt": "20261123T094301Z-260d1024",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-gson-fix": {
+            "path": "receipts/replay-gson-fix/20261123T094302Z-a6a7afe2/result.json",
+            "attempt": "20261123T094302Z-a6a7afe2",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 11/11",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 379 TASK"
+      }
+    },
+    {
+      "id": "380",
+      "path": "examples/380-covariant-array-stores",
+      "title": "A covariant store preserves the old cell on failure",
+      "summary": "A single store and a released Commons iterator expose the exception type and the original cell through a retained reference.",
+      "origin": "constructed",
+      "system": "A covariant store preserves the old cell on failure",
+      "symbol": "ArrayStores#history",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 3/3",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The stores JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening stores.",
+        "The store-iterator JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening store-iterator.",
+        "The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualification, with 2 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "covariant-array-stores",
+        "role": "control",
+        "case": "covariant-array-stores",
+        "tasks": [
+          "replay-stores",
+          "replay-store-iterator",
+          "stores-history",
+          "stores-always-succeeds",
+          "store-iterator-history"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-stores": "scaffolded",
+          "replay-store-iterator": "scaffolded",
+          "stores-history": "scaffolded",
+          "stores-always-succeeds": "scaffolded",
+          "store-iterator-history": "scaffolded"
+        },
+        "expected": {
+          "replay-stores": "established",
+          "replay-store-iterator": "established",
+          "stores-history": "established",
+          "stores-always-succeeds": "refuted",
+          "store-iterator-history": "established"
+        },
+        "claims": {
+          "stores-history": null,
+          "stores-always-succeeds": null,
+          "store-iterator-history": null
+        },
+        "receipts": {
+          "replay-stores": {
+            "path": "receipts/replay-stores/20261123T094252Z-52f7b6b6/result.json",
+            "attempt": "20261123T094252Z-52f7b6b6",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-store-iterator": {
+            "path": "receipts/replay-store-iterator/20261123T094253Z-9a38d713/result.json",
+            "attempt": "20261123T094253Z-9a38d713",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 3/3",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 380 TASK"
+      }
+    },
+    {
+      "id": "381",
+      "path": "examples/381-guava-format-varargs",
+      "title": "Guava formatting preserves the caller’s varargs",
+      "summary": "The historical formatters receive Integer[] and Object[] with the same three references. The caller observes returned text, the exact exception and the final slots.",
+      "origin": "constructed",
+      "system": "Guava formatting preserves the caller’s varargs",
+      "symbol": "FormatHistory#retained",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 4/4",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The guava-parent JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening guava-parent.",
+        "The guava-fix JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening guava-fix.",
+        "The caller is constructed. Both Guava implementations come from their original parent and fix builds, each with its recorded runtime dependencies.",
+        "The campaign's ordinary native checker decided 0/4 at opening and 4/4 at qualification, with 2 established and 2 refuted on original-JVM replays."
+      ],
+      "source": "https://github.com/google/guava/pull/7955",
+      "target": {
+        "family": "guava-format-varargs",
+        "role": "control",
+        "case": "guava-format-varargs",
+        "tasks": [
+          "replay-guava-parent",
+          "replay-guava-fix",
+          "guava-parent-retained",
+          "guava-parent-parent-behavior",
+          "guava-fix-retained",
+          "guava-fix-parent-behavior"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-guava-parent": "scaffolded",
+          "replay-guava-fix": "scaffolded",
+          "guava-parent-retained": "scaffolded",
+          "guava-parent-parent-behavior": "scaffolded",
+          "guava-fix-retained": "scaffolded",
+          "guava-fix-parent-behavior": "scaffolded"
+        },
+        "expected": {
+          "replay-guava-parent": "established",
+          "replay-guava-fix": "established",
+          "guava-parent-retained": "refuted",
+          "guava-parent-parent-behavior": "established",
+          "guava-fix-retained": "established",
+          "guava-fix-parent-behavior": "refuted"
+        },
+        "claims": {
+          "guava-parent-retained": null,
+          "guava-parent-parent-behavior": null,
+          "guava-fix-retained": null,
+          "guava-fix-parent-behavior": null
+        },
+        "receipts": {
+          "replay-guava-parent": {
+            "path": "receipts/replay-guava-parent/20261123T094302Z-445afe16/result.json",
+            "attempt": "20261123T094302Z-445afe16",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-guava-fix": {
+            "path": "receipts/replay-guava-fix/20261123T094303Z-c91f8957/result.json",
+            "attempt": "20261123T094303Z-c91f8957",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 4/4",
+          "source": "https://github.com/google/guava/pull/7955",
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 381 TASK"
+      }
+    },
+    {
+      "id": "382",
+      "path": "examples/382-refined-default-dispatch",
+      "title": "Default interface methods on a refined receiver",
+      "summary": "Interface order, a class override and a qualified super call determine the result for every signed int.",
+      "origin": "constructed",
+      "system": "Default interface methods on a refined receiver",
+      "symbol": "DefaultDispatch#dispatch",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 2/2",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The dispatch JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening dispatch.",
+        "The campaign's ordinary native checker decided 0/2 at opening and 2/2 at qualification, with 1 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "refined-default-dispatch",
+        "role": "control",
+        "case": "refined-default-dispatch",
+        "tasks": [
+          "replay-dispatch",
+          "dispatch-dispatch",
+          "dispatch-first-declared"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-dispatch": "scaffolded",
+          "dispatch-dispatch": "scaffolded",
+          "dispatch-first-declared": "scaffolded"
+        },
+        "expected": {
+          "replay-dispatch": "established",
+          "dispatch-dispatch": "established",
+          "dispatch-first-declared": "refuted"
+        },
+        "claims": {
+          "dispatch-dispatch": null,
+          "dispatch-first-declared": null
+        },
+        "receipts": {
+          "replay-dispatch": {
+            "path": "receipts/replay-dispatch/20261123T094253Z-b2a781f5/result.json",
+            "attempt": "20261123T094253Z-b2a781f5",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 2/2",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 382 TASK"
+      }
+    },
+    {
+      "id": "383",
+      "path": "examples/383-commons-io-byte-reversal",
+      "title": "Reverse every byte of an int or long",
+      "summary": "Commons IO’s released swap methods are compared with the JDK for every word. Rotation supplies a distinct incorrect rule.",
+      "origin": "constructed",
+      "system": "Reverse every byte of an int or long",
+      "symbol": "ByteReversal#reverseInt",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 4/4",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The endian JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening endian.",
+        "The campaign's ordinary native checker decided 2/4 at opening and 4/4 at qualification, with 2 established and 2 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "commons-io-byte-reversal",
+        "role": "control",
+        "case": "commons-io-byte-reversal",
+        "tasks": [
+          "replay-endian",
+          "endian-reverse-int",
+          "endian-reverse-long",
+          "endian-rotate-int",
+          "endian-rotate-long"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-endian": "scaffolded",
+          "endian-reverse-int": "scaffolded",
+          "endian-reverse-long": "scaffolded",
+          "endian-rotate-int": "scaffolded",
+          "endian-rotate-long": "scaffolded"
+        },
+        "expected": {
+          "replay-endian": "established",
+          "endian-reverse-int": "established",
+          "endian-reverse-long": "established",
+          "endian-rotate-int": "refuted",
+          "endian-rotate-long": "refuted"
+        },
+        "claims": {
+          "endian-reverse-int": null,
+          "endian-reverse-long": null,
+          "endian-rotate-int": null,
+          "endian-rotate-long": null
+        },
+        "receipts": {
+          "replay-endian": {
+            "path": "receipts/replay-endian/20261123T094255Z-1d47ad57/result.json",
+            "attempt": "20261123T094255Z-1d47ad57",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 4/4",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 383 TASK"
+      }
+    },
+    {
+      "id": "384",
+      "path": "examples/384-commons-text-surrogate-sequence",
+      "title": "Decode a surrogate pair through CharSequence",
+      "summary": "The public Commons Text translator receives a two-unit sequence at either offset. Its consumed count and writer effects are independently observable.",
+      "origin": "constructed",
+      "system": "Decode a surrogate pair through CharSequence",
+      "symbol": "SurrogateUnits#translate",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "text-encoding"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 2/2",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The surrogates JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening surrogates.",
+        "The campaign's ordinary native checker decided 0/2 at opening and 2/2 at qualification, with 1 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "commons-text-surrogate-sequence",
+        "role": "control",
+        "case": "commons-text-surrogate-sequence",
+        "tasks": [
+          "replay-surrogates",
+          "surrogates-translate",
+          "surrogates-remove-every"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-surrogates": "scaffolded",
+          "surrogates-translate": "scaffolded",
+          "surrogates-remove-every": "scaffolded"
+        },
+        "expected": {
+          "replay-surrogates": "established",
+          "surrogates-translate": "established",
+          "surrogates-remove-every": "refuted"
+        },
+        "claims": {
+          "surrogates-translate": null,
+          "surrogates-remove-every": null
+        },
+        "receipts": {
+          "replay-surrogates": {
+            "path": "receipts/replay-surrogates/20261123T094255Z-2216bdb6/result.json",
+            "attempt": "20261123T094255Z-2216bdb6",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 2/2",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 384 TASK"
+      }
+    },
+    {
+      "id": "385",
+      "path": "examples/385-deque-removal-history",
+      "title": "Remove an element before or after iterator prefetch",
+      "summary": "JDK deque iterator removal and released Commons filter iterators are checked through the original owner and element identities.",
+      "origin": "constructed",
+      "system": "Remove an element before or after iterator prefetch",
+      "symbol": "DequeRemoval#history",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 4/4",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The deque JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening deque.",
+        "The campaign's ordinary native checker decided 1/4 at opening and 4/4 at qualification, with 3 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "deque-removal-history",
+        "role": "control",
+        "case": "deque-removal-history",
+        "tasks": [
+          "replay-deque",
+          "deque-history",
+          "deque-still-returns",
+          "deque-singleton",
+          "deque-filtered"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-deque": "scaffolded",
+          "deque-history": "scaffolded",
+          "deque-still-returns": "scaffolded",
+          "deque-singleton": "scaffolded",
+          "deque-filtered": "scaffolded"
+        },
+        "expected": {
+          "replay-deque": "established",
+          "deque-history": "established",
+          "deque-still-returns": "refuted",
+          "deque-singleton": "established",
+          "deque-filtered": "established"
+        },
+        "claims": {
+          "deque-history": null,
+          "deque-still-returns": null,
+          "deque-singleton": null,
+          "deque-filtered": null
+        },
+        "receipts": {
+          "replay-deque": {
+            "path": "receipts/replay-deque/20261123T094256Z-844a611d/result.json",
+            "attempt": "20261123T094256Z-844a611d",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 4/4",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 385 TASK"
+      }
+    },
+    {
+      "id": "386",
+      "path": "examples/386-commons-lang-constructor-dispatch",
+      "title": "Observe an override during superclass construction",
+      "summary": "Commons Lang’s StrBuilder constructor calls the subclass before its field initializer. A second call observes the initialized receiver and contents.",
+      "origin": "constructed",
+      "system": "Observe an override during superclass construction",
+      "symbol": "ConstructorPhase#history",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "class-initialization"
+        ],
+        "defect": [
+          "side-effecting-read"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 3/3",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The construction JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening construction.",
+        "The campaign's ordinary native checker decided 2/3 at opening and 3/3 at qualification, with 1 established and 2 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "commons-lang-constructor-dispatch",
+        "role": "control",
+        "case": "commons-lang-constructor-dispatch",
+        "tasks": [
+          "replay-construction",
+          "construction-history",
+          "construction-empty-skips",
+          "construction-already-initialized"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-construction": "scaffolded",
+          "construction-history": "scaffolded",
+          "construction-empty-skips": "scaffolded",
+          "construction-already-initialized": "scaffolded"
+        },
+        "expected": {
+          "replay-construction": "established",
+          "construction-history": "established",
+          "construction-empty-skips": "refuted",
+          "construction-already-initialized": "refuted"
+        },
+        "claims": {
+          "construction-history": null,
+          "construction-empty-skips": null,
+          "construction-already-initialized": null
+        },
+        "receipts": {
+          "replay-construction": {
+            "path": "receipts/replay-construction/20261123T094256Z-9cb433aa/result.json",
+            "attempt": "20261123T094256Z-9cb433aa",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 3/3",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 386 TASK"
+      }
+    },
+    {
+      "id": "387",
+      "path": "examples/387-negative-radix-format",
+      "title": "Format a negative integer in radix sixteen",
+      "summary": "An independent ASCII digit calculation checks the sign and order of both digits from 16 through 255.",
+      "origin": "constructed",
+      "system": "Format a negative integer in radix sixteen",
+      "symbol": "RadixDigits#hex",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 2/2",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The radix JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening radix.",
+        "The campaign's ordinary native checker decided 0/2 at opening and 2/2 at qualification, with 1 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "negative-radix-format",
+        "role": "control",
+        "case": "negative-radix-format",
+        "tasks": [
+          "replay-radix",
+          "radix-hex",
+          "radix-low-first"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-radix": "scaffolded",
+          "radix-hex": "scaffolded",
+          "radix-low-first": "scaffolded"
+        },
+        "expected": {
+          "replay-radix": "established",
+          "radix-hex": "established",
+          "radix-low-first": "refuted"
+        },
+        "claims": {
+          "radix-hex": null,
+          "radix-low-first": null
+        },
+        "receipts": {
+          "replay-radix": {
+            "path": "receipts/replay-radix/20261123T094258Z-0dde2851/result.json",
+            "attempt": "20261123T094258Z-0dde2851",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 2/2",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 387 TASK"
+      }
+    },
+    {
+      "id": "388",
+      "path": "examples/388-commons-lang-unsigned-nibble",
+      "title": "Unsigned offset checks in Commons Lang nibble conversion",
+      "summary": "Each nibble and signed offset is checked against a right shift or the method’s exact explicit exception.",
+      "origin": "constructed",
+      "system": "Unsigned offset checks in Commons Lang nibble conversion",
+      "symbol": "UnsignedNibble#nibble",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "buffer-bounds"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 3/3",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The nibble JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening nibble.",
+        "The campaign's ordinary native checker decided 0/3 at opening and 3/3 at qualification, with 1 established and 2 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "commons-lang-unsigned-nibble",
+        "role": "control",
+        "case": "commons-lang-unsigned-nibble",
+        "tasks": [
+          "replay-nibble",
+          "nibble-nibble",
+          "nibble-left",
+          "nibble-accepts-negative"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-nibble": "scaffolded",
+          "nibble-nibble": "scaffolded",
+          "nibble-left": "scaffolded",
+          "nibble-accepts-negative": "scaffolded"
+        },
+        "expected": {
+          "replay-nibble": "established",
+          "nibble-nibble": "established",
+          "nibble-left": "refuted",
+          "nibble-accepts-negative": "refuted"
+        },
+        "claims": {
+          "nibble-nibble": null,
+          "nibble-left": null,
+          "nibble-accepts-negative": null
+        },
+        "receipts": {
+          "replay-nibble": {
+            "path": "receipts/replay-nibble/20261123T094258Z-1c267c94/result.json",
+            "attempt": "20261123T094258Z-1c267c94",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 3/3",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 388 TASK"
+      }
+    },
+    {
+      "id": "389",
+      "path": "examples/389-enum-name-identity",
+      "title": "Enum lookup returns the original constant",
+      "summary": "Two equal-but-distinct names, null, lowercase and unknown strings distinguish constant identity and the two lookup exceptions.",
+      "origin": "constructed",
+      "system": "Enum lookup returns the original constant",
+      "symbol": "EnumNames#lookup",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "exceptions"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 3/3",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The enum JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening enum.",
+        "The campaign's ordinary native checker decided 2/3 at opening and 3/3 at qualification, with 2 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "enum-name-identity",
+        "role": "control",
+        "case": "enum-name-identity",
+        "tasks": [
+          "replay-enum",
+          "enum-lookup",
+          "enum-ordinal",
+          "enum-always-zero"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-enum": "scaffolded",
+          "enum-lookup": "scaffolded",
+          "enum-ordinal": "scaffolded",
+          "enum-always-zero": "scaffolded"
+        },
+        "expected": {
+          "replay-enum": "established",
+          "enum-lookup": "established",
+          "enum-ordinal": "established",
+          "enum-always-zero": "refuted"
+        },
+        "claims": {
+          "enum-lookup": null,
+          "enum-ordinal": null,
+          "enum-always-zero": null
+        },
+        "receipts": {
+          "replay-enum": {
+            "path": "receipts/replay-enum/20261123T094259Z-6a9a5bf7/result.json",
+            "attempt": "20261123T094259Z-6a9a5bf7",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 3/3",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 389 TASK"
+      }
+    },
+    {
+      "id": "390",
+      "path": "examples/390-thread-local-presence",
+      "title": "A stored null differs from an absent thread-local binding",
+      "summary": "Two keys with counting suppliers expose their initializations, fresh references and stored nulls, including the Spring factory.",
+      "origin": "constructed",
+      "system": "A stored null differs from an absent thread-local binding",
+      "symbol": "ThreadLocalHistory#kernel",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 3/3",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The locals JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening locals.",
+        "The campaign's ordinary native checker decided 1/3 at opening and 3/3 at qualification, with 2 established and 1 refuted on original-JVM replays."
+      ],
+      "source": null,
+      "target": {
+        "family": "thread-local-presence",
+        "role": "control",
+        "case": "thread-local-presence",
+        "tasks": [
+          "replay-locals",
+          "locals-kernel",
+          "locals-spring",
+          "locals-null-initializes"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-locals": "scaffolded",
+          "locals-kernel": "scaffolded",
+          "locals-spring": "scaffolded",
+          "locals-null-initializes": "scaffolded"
+        },
+        "expected": {
+          "replay-locals": "established",
+          "locals-kernel": "established",
+          "locals-spring": "established",
+          "locals-null-initializes": "refuted"
+        },
+        "claims": {
+          "locals-kernel": null,
+          "locals-spring": null,
+          "locals-null-initializes": null
+        },
+        "receipts": {
+          "replay-locals": {
+            "path": "receipts/replay-locals/20261123T094259Z-93a4b178/result.json",
+            "attempt": "20261123T094259Z-93a4b178",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 3/3",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 390 TASK"
+      }
+    },
+    {
+      "id": "391",
+      "path": "examples/391-class-monitor-identity",
+      "title": "A static monitor and an instance monitor protect different reads",
+      "summary": "One JVM worker writes under its class monitor. The caller’s lock and the worker’s explicit or implicit synchronized method determine whether five is protected.",
+      "origin": "constructed",
+      "system": "A static monitor and an instance monitor protect different reads",
+      "symbol": "MonitorIdentity#matched",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "jvm-internals"
+        ],
+        "defect": [
+          "race-condition"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 0/3",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The monitors JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening monitors.",
+        "Eight fresh JVM startup controls used the original Worker class. An explicitly installed InheritableThreadLocal ran childValue on the parent even for a stored null. A throwing callback escaped each public caller before its first shared-field write.",
+        "The campaign's ordinary native checker decided 0/3 at opening and 0/3 at qualification, with 0 established and 0 refuted on original-JVM replays.",
+        "The separate schedule checker enumerated every completed sequentially consistent application-bytecode interleaving of the frozen two-thread callers, with successful start and join. Both class-matched callers returned true. The mixed caller returned both false and true, each reproduced on an original JVM."
+      ],
+      "source": null,
+      "target": {
+        "family": "class-monitor-identity",
+        "role": "control",
+        "case": "class-monitor-identity",
+        "tasks": [
+          "replay-monitors",
+          "monitors-matched",
+          "monitors-mixed",
+          "monitors-synchronized-method"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-monitors": "scaffolded",
+          "monitors-matched": "scaffolded",
+          "monitors-mixed": "scaffolded",
+          "monitors-synchronized-method": "scaffolded"
+        },
+        "expected": {
+          "replay-monitors": "established",
+          "monitors-matched": "established",
+          "monitors-mixed": "refuted",
+          "monitors-synchronized-method": "established"
+        },
+        "claims": {
+          "monitors-matched": null,
+          "monitors-mixed": null,
+          "monitors-synchronized-method": null
+        },
+        "receipts": {
+          "replay-monitors": {
+            "path": "receipts/replay-monitors/20261123T094300Z-d7770c6d/result.json",
+            "attempt": "20261123T094300Z-d7770c6d",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 0/3",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 391 TASK"
       }
     }
   ]

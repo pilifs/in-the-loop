@@ -1,0 +1,101 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "class-monitor-identity",
+    "family": "class-monitor-identity",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "monitors": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay-monitors",
+      "kind": "replay",
+      "revision": "monitors",
+      "target": "MonitorIdentity#matched",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "monitors-matched",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "monitors",
+      "target": "MonitorIdentity#matched",
+      "claim": "claims/monitoridentity-matched.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-monitors"
+      ]
+    },
+    {
+      "id": "monitors-mixed",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "monitors",
+      "target": "MonitorIdentity#mixed",
+      "claim": "claims/monitoridentity-mixed.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-monitors"
+      ]
+    },
+    {
+      "id": "monitors-synchronized-method",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "monitors",
+      "target": "MonitorIdentity#synchronizedMethod",
+      "claim": "claims/monitoridentity-synchronized-method.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-monitors"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-monitors",
+      "revision": "monitors",
+      "kind": "driver",
+      "path": "driver/monitors/Cases.java"
+    },
+    {
+      "id": "oracle-monitors",
+      "revision": "monitors",
+      "kind": "oracle",
+      "path": "controls/monitors.json"
+    }
+  ]
+}

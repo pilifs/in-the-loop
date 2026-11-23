@@ -1,0 +1,122 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "commons-io-byte-reversal",
+    "family": "commons-io-byte-reversal",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "endian": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "commons-io"
+        ],
+        "runtimeLibraries": [
+          "commons-io"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-endian",
+      "kind": "replay",
+      "revision": "endian",
+      "target": "ByteReversal#reverseInt",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "endian-reverse-int",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "endian",
+      "target": "ByteReversal#reverseInt",
+      "claim": "claims/bytereversal-reverse-int.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-endian"
+      ]
+    },
+    {
+      "id": "endian-reverse-long",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "endian",
+      "target": "ByteReversal#reverseLong",
+      "claim": "claims/bytereversal-reverse-long.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-endian"
+      ]
+    },
+    {
+      "id": "endian-rotate-int",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "endian",
+      "target": "ByteReversal#rotateInt",
+      "claim": "claims/bytereversal-rotate-int.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-endian"
+      ]
+    },
+    {
+      "id": "endian-rotate-long",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "endian",
+      "target": "ByteReversal#rotateLong",
+      "claim": "claims/bytereversal-rotate-long.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-endian"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-endian",
+      "revision": "endian",
+      "kind": "driver",
+      "path": "driver/endian/Cases.java"
+    },
+    {
+      "id": "oracle-endian",
+      "revision": "endian",
+      "kind": "oracle",
+      "path": "controls/endian.json"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-134736-compare-strict-native-and-jbmc-on-both-o",
+  "title": "Compare strict native and JBMC on both original decimal parsers",
+  "description": "Use the same frozen classpath, compiled adapter, unrestricted selector within the original guard, 120-second deadline, unwind 256 and array bound 16384 for both engines. Retain raw responses, input identities and an independent original-JVM witness for every counterexample.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "375"
+    ]
+  },
+  "expected": "Four paired records with source, JDK, models, raw outcomes and the public JVM replay of the native parent witness.",
+  "submitted": {
+    "at": "2026-11-23T13:47:36+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 20,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "2m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Paired decimal callers",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/decimal_transfer.py paired",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/decimal-transfer/paired"
+  ]
+}

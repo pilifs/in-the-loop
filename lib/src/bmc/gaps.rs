@@ -43,10 +43,9 @@
 //! model over it (its constructor, `values()`, the collection's `size` and `iterator`, the iterator's `hasNext`
 //! and `next`) and of the model of the list `Arrays.asList` returns (`lib/models/java/util/lists`: `size`, `get`,
 //! `toArray()`), whose evidence is `claims.M` (`lib/tests/claims.rs`). Nor are the
-//! calls of the immutable-list models an evidence record of `values::OPERATIONS` samples (`List.of`'s fixed forms,
-//! `copyOf`, `size`, `isEmpty`, `get`, the iterator's path and the changes they refuse), which it runs as the
-//! models' bytecode; any other method the models implement, called from outside them (`contains`, `equals`,
-//! `hashCode`, `addAll`, `List.of(E...)` …), is outside the values models, and both the engine and the scan take it
+//! calls of the immutable-list models an evidence record of `values::OPERATIONS` samples, including the fixed
+//! and varargs factories, element searches, `copyOf`, indexed access and the iterator. Other methods called
+//! from outside the models, including `equals`, `hashCode` and `addAll`, remain outside the profile. Both the engine and the scan take each
 //! for the JDK call it names ([`outside_the_list_records`]), a gap of its kind.
 //! Nor is an initializer the check has the observed state of (`--observed-initializer`, [`crate::observed`]): it is
 //! neither run nor walked, and what the run then rests on is stated with its result.
@@ -530,8 +529,7 @@ fn dispatched_to_models(cp: &ClassPath, owner: &str, name: &str, descriptor: &st
 
 /// Whether a call from code of class `caller` into `callee`, one of the immutable-list models the engine runs
 /// ([`crate::models::of_the_list_family`]), is outside the values models: no evidence record samples
-/// `name(descriptor)` ([`crate::values::samples_list_call`]: `contains`, `equals`, `hashCode`, `toArray`, `addAll`,
-/// `sort`, `List.of(E...)` …). The engine and the scan then take the call for the JDK call it names, a gap (or a
+/// `name(descriptor)` ([`crate::values::samples_list_call`]). The engine and the scan then take the call for the JDK call it names, a gap (or a
 /// refusal, for an array result), and don't run or walk the model's method. The models' calls among themselves
 /// are theirs, never outside.
 pub fn outside_the_list_records(caller: &str, callee: &str, name: &str, descriptor: &str) -> bool {
@@ -556,7 +554,7 @@ pub enum JdkCall {
 /// ([`unmodelled_instance_call`]), which the engine applies in place of its model where one is given.
 pub fn modelled_jdk_call(owner: &str, name: &str, descriptor: &str) -> bool {
     super::strings::models_builder(owner, name, descriptor)
-        || (owner == "java/lang/String" && name == "<init>" && matches!(descriptor, "([CII)V" | "([C)V" | "(Ljava/lang/String;)V"))
+        || (owner == "java/lang/String" && name == "<init>" && matches!(descriptor, "([BIII)V" | "([CII)V" | "([C)V" | "(Ljava/lang/String;)V"))
         || super::runtime::models_instance(owner, name, descriptor)
         || super::runtime::models_logging(owner, name, descriptor)
         || (name == "<init>" && (super::runtime::plain_constructor(owner, descriptor) || super::runtime::capacity_constructor(owner, descriptor)))
@@ -1278,6 +1276,10 @@ impl<'a> Walker<'a> {
                     let member = cf.pool.member(index).map_err(|e| Error::new(e.to_string()))?;
                     if super::runtime::enum_identity_read(&cf.name, name, &member) {
                         *self.scan.exact.entry("Enum.hashCode (all stable JVM identity hashes)".into()).or_default() += 1;
+                    } else if member.owner == "java/lang/Enum" && member.name == "valueOf"
+                        && member.descriptor == "(Ljava/lang/Class;Ljava/lang/String;)Ljava/lang/Enum;"
+                        && self.cp.enum_values_field(&cf.name).is_some() && self.cp.enum_lookup_image() {
+                        *self.scan.exact.entry("Enum.valueOf (checked enum constants and name)".into()).or_default() += 1;
                     } else if self.cp.platform_native(&member) {
                         *self.scan.exact.entry(format!("System.{} (all JVM values, counterexamples require reachability)", member.name)).or_default() += 1;
                     } else if self.cp.is_application(&member.owner) || self.cp.checked_image_class(&member.owner).is_some() {

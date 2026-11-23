@@ -1,0 +1,110 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "thread-local-presence",
+    "family": "thread-local-presence",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "locals": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "spring-core",
+          "spring-jcl"
+        ],
+        "runtimeLibraries": [
+          "spring-core",
+          "spring-jcl"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-locals",
+      "kind": "replay",
+      "revision": "locals",
+      "target": "ThreadLocalHistory#kernel",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "locals-kernel",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "locals",
+      "target": "ThreadLocalHistory#kernel",
+      "claim": "claims/threadlocalhistory-kernel.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-locals"
+      ]
+    },
+    {
+      "id": "locals-spring",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "locals",
+      "target": "ThreadLocalHistory#spring",
+      "claim": "claims/threadlocalhistory-spring.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-locals"
+      ]
+    },
+    {
+      "id": "locals-null-initializes",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "locals",
+      "target": "ThreadLocalHistory#nullInitializes",
+      "claim": "claims/threadlocalhistory-null-initializes.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-locals"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-locals",
+      "revision": "locals",
+      "kind": "driver",
+      "path": "driver/locals/Cases.java"
+    },
+    {
+      "id": "oracle-locals",
+      "revision": "locals",
+      "kind": "oracle",
+      "path": "controls/locals.json"
+    }
+  ]
+}

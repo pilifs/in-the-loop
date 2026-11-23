@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-134727-qualify-the-four-original-commons-lang-d",
+  "title": "Qualify the four original Commons Lang decimal claims",
+  "description": "Exercise both original Commons Lang #1635 builds on the full registered ordinary startup guard and on bytecode-qualified constant calls. Check the precise coefficient and scale, floating and integral value types, and malformed exception. The negative receipt must replay on the original parent JVM.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "375"
+    ]
+  },
+  "expected": "Three ordinary proofs and one parent refutation, with matching qualified selectors on original class files and controls.",
+  "submitted": {
+    "at": "2026-11-23T13:47:27+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "1m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Original public entry and all admitted selectors",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/decimal_transfer.py ordinary",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/375-commons-lang-decimal-precision/receipts",
+    "examples/375-commons-lang-decimal-precision/records/decimal-transfer",
+    "examples/375-commons-lang-decimal-precision/records/decimal-transfer-selectors",
+    "examples/375-commons-lang-decimal-precision/records/native-selectors",
+    "examples/375-commons-lang-decimal-precision/records/finite-proofs"
+  ]
+}

@@ -470,6 +470,8 @@ pub fn get_static_jdk(m: &mut Machine, class: &str, name: &str) -> Exec<Value> {
 
 pub fn new_jdk_object(m: &mut Machine, class: &str) -> Exec<Value> {
     let native = match class {
+        _ if crate::classpath::ClassPath::big_number(class) => return m.new_instance(class),
+        "java/util/ArrayDeque" | "java/util/ArrayDeque$DeqIterator" => return m.new_instance(class),
         "java/util/Properties" if m.cp.properties_method(class, class, "<init>", "()V", true).is_some() => return m.new_instance(class),
         crate::models::CONCURRENT_MAP if m.cp.concurrent_map_method("<init>", "()V").is_some() => return m.new_instance(class),
         "java/lang/StringBuilder" | "java/lang/StringBuffer" => Native::StringBuilder(JStr::new()),
@@ -536,6 +538,25 @@ pub fn invoke_special_jdk(m: &mut Machine, r: Ref, owner: &str, name: &str, desc
                 }
                 "()V" => JStr::new(),
                 "(Ljava/lang/String;)V" => string_arg(m, args[0])?,
+                "([BIII)V" => {
+                    let (high, offset, count) = (args[1].as_int(), args[2].as_int(), args[3].as_int());
+                    let data = args[0].as_ref().and_then(|a| match m.heap.get(a) {
+                        Object::Array { element: Type::Byte, data } => Some(data), _ => None,
+                    });
+                    match data {
+                        Some(bytes) if offset >= 0 && count >= 0 && i64::from(offset) + i64::from(count) <= bytes.len() as i64 =>
+                            JStr::from_units(bytes[offset as usize..][..count as usize].iter()
+                                .map(|v| ((high as u16) << 8) | u16::from(v.as_int() as u8)).collect()),
+                        _ => {
+                            let Some((class, method)) = m.cp.string_range_constructor(owner, descriptor) else {
+                                return unsupported("String byte range exception needs the selected JDK constructor");
+                            };
+                            let mut full = vec![Value::Ref(r)];
+                            full.extend(args);
+                            return m.invoke(&class, &method, full);
+                        }
+                    }
+                }
                 "([C)V" => {
                     let Some(a) = args[0].as_ref() else { return Err(m.npe()) };
                     char_array_units(m, a).ok_or_else(|| Fault::Unsupported("new String of a non-array".into()))?
@@ -910,6 +931,12 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         // A String's toString is the String itself, which `==` sees.
         ("toString", "()Ljava/lang/String;") if matches!(native, Native::String(_)) => return Ok(Some(Value::Ref(r))),
         ("toString", "()Ljava/lang/String;") => {
+            if let Native::Boxed { class, value } = &native {
+                if m.cp.floating_formatter(class) {
+                    let desc = if class == "java/lang/Float" { "(F)Ljava/lang/String;" } else { "(D)Ljava/lang/String;" };
+                    return m.call_static_jdk(class, "toString", desc, vec![*value]);
+                }
+            }
             let s = native_to_string(m, r)?;
             return Ok(Some(m.new_string(s)));
         }
@@ -1188,9 +1215,16 @@ fn string_method(m: &mut Machine, s: &JStr, name: &str, descriptor: &str, args: 
             Value::bool(units.starts_with(other.units()))
         }
         ("startsWith", "(Ljava/lang/String;I)Z") => {
-            let other = string_arg(m, args[0])?;
             let offset = args[1].as_int();
-            Value::bool(offset >= 0 && (offset as usize) <= units.len() && units[offset as usize..].starts_with(other.units()))
+            if offset < 0 {
+                if args[0] == Value::Null && !m.cp.prefix_checks_negative_first() {
+                    return unsupported("String.startsWith(null, negative offset) on an unqualified JDK");
+                }
+                Value::bool(false)
+            } else {
+                let other = string_arg(m, args[0])?;
+                Value::bool(units.get(offset as usize..).is_some_and(|tail| tail.starts_with(other.units())))
+            }
         }
         ("endsWith", _) => {
             let other = string_arg(m, args[0])?;
@@ -1341,6 +1375,17 @@ fn string_builder_method(m: &mut Machine, r: Ref, s: JStr, name: &str, descripto
     let result = match (name, descriptor) {
         ("appendCodePoint", "(I)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuffer;") => {
             text.push(&checked_code_point(m, args[0].as_int())?);
+            Some(Value::Ref(r))
+        }
+        ("append", "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;") => {
+            let source = if args[0] == Value::Null { JStr::from("null") } else {
+                m.units_of(args[0]).ok_or_else(|| Fault::Unsupported("append slice of an unqualified CharSequence".into()))?
+            };
+            let (begin,end) = (args[1].as_int(),args[2].as_int());
+            if begin < 0 || begin > end || end as usize > source.len() {
+                return Err(m.throw("java/lang/IndexOutOfBoundsException", Some(&format!("Range [{begin}, {end}) out of bounds for length {}",source.len()))));
+            }
+            for &unit in &source.units()[begin as usize..end as usize] { text.push_unit(unit); }
             Some(Value::Ref(r))
         }
         ("append", d) => {
@@ -1521,6 +1566,25 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
     if made.is_some() && matches!(name, "contains" | "indexOf" | "lastIndexOf") && args.first() == Some(&Value::Null) {
         return Err(m.npe());
     }
+    if let Some(kind) = made {
+        if matches!(name, "contains" | "indexOf" | "lastIndexOf") {
+            let query = args[0];
+            let mut found = -1;
+            for step in 0..len {
+                let i = if name == "lastIndexOf" { len - 1 - step } else { step };
+                // ListN uses Objects.equals(query, element). List12 calls query.equals
+                // even on the identical reference, so an observable override still runs.
+                let same = if matches!(kind, crate::interp::ImmutableList::ListN) && query == elements[i] {
+                    true
+                } else {
+                    m.call_virtual(query, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z", vec![elements[i]])?
+                        .expect("equals returns boolean").as_int() != 0
+                };
+                if same { found = i as i32; break; }
+            }
+            return Ok(Some(if name == "contains" { Value::bool(found >= 0) } else { Value::Int(found) }));
+        }
+    }
     let write = |m: &mut Machine| -> Exec<()> {
         if !mutable {
             return Err(immutable(m));
@@ -1643,6 +1707,21 @@ fn list_method(m: &mut Machine, r: Ref, mut elements: Vec<Value>, mutable: bool,
             elements.insert(i as usize, args[1]);
             store(m, elements, true);
             None
+        }
+        ("addAll", "(Ljava/util/Collection;)Z") if m.array_list_mod_count.contains_key(&r) => {
+            // The source's virtual toArray can throw, return a typed array, or mutate this list.
+            // ArrayList increments modCount after the callback, even for an empty or null result.
+            let array = m.call_virtual(args[0], "java/util/Collection", "toArray", "()[Ljava/lang/Object;", Vec::new())?;
+            write(m)?;
+            let count = m.array_list_mod_count.get_mut(&r).expect("an exact ArrayList");
+            *count = count.wrapping_add(1);
+            let Some(array) = array.and_then(Value::as_ref) else { return Err(m.npe()) };
+            let Object::Array { data, .. } = m.heap.get(array) else { return unsupported("Collection.toArray returned a non-array") };
+            let snapshot = data.clone();
+            let changed = !snapshot.is_empty();
+            let Object::Native(Native::List { elements, .. }) = m.heap.get_mut(r) else { return unsupported("ArrayList lost its backing elements") };
+            elements.extend(snapshot);
+            Some(Value::bool(changed))
         }
         ("addAll", "(Ljava/util/Collection;)Z") => {
             write(m)?;
@@ -2243,16 +2322,16 @@ pub fn invoke_static_jdk(m: &mut Machine, owner: &str, name: &str, descriptor: &
             ("format", _) => return unsupported("String.format depends on the default locale"),
             _ => return unsupported(format!("String.{name}{descriptor}")),
         },
-        // A regex of the plain form compiles (`jdk_facts::plain_regex`): a Pattern with nothing in it, whose methods
-        // stay outside the interpreter, as the own checker models it.
+        // Recognize the same constant grammar as strict checking. Methods that need
+        // the matcher's state still require their own implementation.
         "java/util/regex/Pattern" => match (name, descriptor) {
             ("compile", "(Ljava/lang/String;)Ljava/util/regex/Pattern;") => {
                 if a[0] == Value::Null {
                     return Err(m.npe());
                 }
                 let regex = char_sequence(m, a[0])?;
-                if !crate::jdk_facts::plain_regex(regex.units()) {
-                    return unsupported("Pattern.compile of a regex outside the plain form (jdk_facts::plain_regex)");
+                if !crate::jdk_facts::plain_regex(regex.units()) && !crate::bmc::compiles_constant(regex.units()) {
+                    return unsupported("Pattern.compile outside the supported constant grammar");
                 }
                 Value::Ref(m.alloc(Object::Instance { class: owner.into(), fields: Default::default(), base: Base::Object }))
             }
@@ -2764,22 +2843,29 @@ fn floating(m: &mut Machine, owner: &str, name: &str, descriptor: &str, a: &[Val
     let is_double = owner == "java/lang/Double";
     let wrap = |x: f64| if is_double { Value::Double(x) } else { Value::Float(x as f32) };
     Ok(match name {
-        "valueOf" if descriptor.starts_with("(Ljava/lang/String;") => {
+        "valueOf" | "parseFloat" | "parseDouble" if descriptor.starts_with("(Ljava/lang/String;") => {
             let Some(units) = m.units_of(a[0]) else { return Err(m.throw("java/lang/NullPointerException", None)) };
-            // A String with an isolated surrogate is no number: the exception quotes it as it is.
-            match units.text().and_then(|text| text.trim().parse::<f64>().ok()) {
-                Some(x) => box_value(m, owner, wrap(x)),
+            let raw = units.units();
+            let Some(first) = raw.iter().position(|u| *u > 32) else { return Err(m.throw("java/lang/NumberFormatException", Some("empty String"))); };
+            let last = raw.iter().rposition(|u| *u > 32).unwrap();
+            let units = JStr::from_units(raw[first..=last].to_vec());
+            let value = match units.text() {
+                Some(text) => {
+                    let unsigned = text.strip_prefix(['+', '-']).unwrap_or(&text);
+                    match unsigned {
+                        "NaN" => wrap(f64::NAN),
+                        "Infinity" => wrap(if text.starts_with('-') { f64::NEG_INFINITY } else { f64::INFINITY }),
+                        _ if unsigned.starts_with("0x") || unsigned.starts_with("0X") => return unsupported("hexadecimal floating-point text"),
+                        _ if unsigned.bytes().take_while(|b| b.is_ascii_digit() || *b == b'.').filter(|b| *b == b'.').count() > 1 =>
+                            return Err(m.throw("java/lang/NumberFormatException", Some("multiple points"))),
+                        _ => super::value::decimal_float(&text, is_double).ok_or_else(|| number_format(m, Some(&units), 10))?,
+                    }
+                }
                 None => return Err(number_format(m, Some(&units), 10)),
-            }
+            };
+            if name == "valueOf" { box_value(m, owner, value) } else { value }
         }
         "valueOf" => box_value(m, owner, a[0]),
-        "parseDouble" | "parseFloat" => {
-            let Some(units) = m.units_of(a[0]) else { return Err(m.throw("java/lang/NullPointerException", None)) };
-            match units.text().and_then(|text| text.trim().trim_end_matches(['d', 'D', 'f', 'F']).parse::<f64>().ok()) {
-                Some(x) => wrap(x),
-                None => return Err(number_format(m, Some(&units), 10)),
-            }
-        }
         "toString" => m.new_string(if is_double { double_to_string(a[0].as_double()) } else { float_to_string(a[0].as_float()) }),
         "compare" => Value::Int(compare_values(a[0], a[1], &Type::Double)),
         "isNaN" => Value::bool(as_f64(a[0]).is_nan()),

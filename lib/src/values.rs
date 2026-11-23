@@ -295,14 +295,14 @@ impl ValueAdapter for StringAdapter {
 /// The list model's identity, to be bumped whenever its semantics change outside the models' bytecode (the
 /// interpreter's natives, which replay, or how the checker runs the models); [`list_model`] adds the digest of the
 /// bytecode itself.
-pub const LIST_MODEL: &str = "jvmcontract list model 2: lib/models (java.util.List, java.util.ImmutableCollections and its list classes, run by the own checker and JBMC, the checker only for the calls values::OPERATIONS samples), lib/src/interp (Machine::immutable_list, which replays)";
+pub const LIST_MODEL: &str = "jvmcontract list model 3: lib/models (java.util.List and java.util.ImmutableCollections), including caller-owned varargs and element searches; lib/src/interp replays the checked operations";
 
 /// The JDK whose immutable lists the models were written after and sampled against (`lib/tests/values.rs`,
 /// `lib/tests/conformance.rs`, on the JVM).
 pub const LIST_MODEL_JDK: &str = "25.0.5";
 
-/// The most elements a list of the family the adapter makes has: `List.of`'s fixed forms. Its array form
-/// (`List.of(E...)`) is left out.
+/// The most elements a list parameter constructed by the adapter has. A caller's varargs array
+/// is checked separately, at the caller's own array and loop bounds.
 pub const MAX_LIST_LENGTH: u32 = 10;
 
 /// The SHA-256 of the list models' bytecode, in class path order: every model of `java.util.List` and
@@ -334,9 +334,9 @@ pub fn list_model() -> ModelEvidence {
         level: EvidenceLevel::Tested,
         leaves_out: vec![
             "every List implementation but the JDK's immutable List12, ListN and its one empty list: a list made otherwise (an ArrayList) is refused as an input, and copyOf of one reaches its JDK calls, named gaps".into(),
-            format!("List.of's array form, for more than {MAX_LIST_LENGTH} elements: no harness makes one"),
+            format!("list parameters with more than {MAX_LIST_LENGTH} elements: the harness uses the fixed-arity factories"),
             "lists of Strings (ElementKind::String, with its elements' bound): the adapter makes lists of an application class's objects only, and refuses a list of Strings by name".into(),
-            "the models' methods beyond the calls values::OPERATIONS samples (contains, indexOf, equals, hashCode, toArray, addAll, sort, the array form of List.of and the like): the own checker meets each as the JDK call it is, a named gap, though JBMC runs the models' bytecode for them".into(),
+            "the models' methods beyond the calls values::OPERATIONS samples (including equals, hashCode, toArray, addAll and sort): the own checker meets each as the JDK call it is, though JBMC runs the models' bytecode for them".into(),
             "the interpreter's getClass of a list of one or two elements, which names ListN where the JVM's is List12".into(),
         ],
     }
@@ -883,6 +883,12 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["equals(Ljava/lang/Object;)Z"],
     },
     OperationEvidence {
+        operation: "java.lang.String.startsWith(Ljava/lang/String;I)Z", family: Family::String, source: STRINGS_SOURCE,
+        admits: "two UTF-16 strings and any signed offset, including the empty prefix at the end",
+        throws: &[NPE], leaves_out: &["negative offset with a null prefix without the selected JDK's early false return"],
+        level: EvidenceLevel::Tested, sampled_by: &["prefixAt"], calls: &["startsWith(Ljava/lang/String;I)Z"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.startsWith(Ljava/lang/String;)Z",
         family: Family::String,
         source: STRING_SOURCE,
@@ -1166,7 +1172,6 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         admits: "0 to 10 elements, any two of which may be one object; the elements are the objects given, never copies",
         throws: &[NPE],
         leaves_out: &[
-            "the array form List.of(E...), for more than 10 elements",
             "the identity of a list beyond the pinned JDK's: List.of() is the one empty list, and any other a fresh list, as JDK 25.0.5 makes them",
         ],
         level: EvidenceLevel::Tested,
@@ -1184,6 +1189,19 @@ pub const OPERATIONS: &[OperationEvidence] = &[
             "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
             "of(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/util/List;",
         ],
+    },
+    OperationEvidence {
+        operation: "java.util.List.of([Ljava/lang/Object;)Ljava/util/List;", family: Family::List, source: LIST_SOURCE,
+        admits: "a caller-owned reference array, including repeated references; replacing a slot has no effect on the list and mutating an element is visible",
+        throws: &[NPE], leaves_out: &["canonical empty-list identity is scoped to the tested JDK and list models"],
+        level: EvidenceLevel::Tested, sampled_by: &["callerArray"], calls: &["of([Ljava/lang/Object;)Ljava/util/List;"],
+    },
+    OperationEvidence {
+        operation: "java.util.List.contains, indexOf and lastIndexOf", family: Family::List, source: LIST_SOURCE,
+        admits: "search by the query object's equals method, in order for contains and indexOf and in reverse order for lastIndexOf",
+        throws: &[NPE], leaves_out: &["an unmodelled equals implementation keeps its own proof boundary"],
+        level: EvidenceLevel::Tested, sampled_by: &["searchOrder"],
+        calls: &["contains(Ljava/lang/Object;)Z", "indexOf(Ljava/lang/Object;)I", "lastIndexOf(Ljava/lang/Object;)I"],
     },
     OperationEvidence {
         operation: "java.util.List.copyOf(Ljava/util/Collection;)Ljava/util/List;",
@@ -1348,8 +1366,7 @@ pub const OPERATIONS: &[OperationEvidence] = &[
 ];
 
 /// Whether a call `name(descriptor)` into the list models, from outside them, is one a list record of [`OPERATIONS`]
-/// samples. Any other the models implement (`contains`, `indexOf`, `equals`, `hashCode`, `toArray`, `addAll`, `sort`,
-/// `List.of(E...)` …) is outside the models: the own checker and its gap scan meet it as the JDK call it is, a
+/// samples. Any other the models implement (`equals`, `hashCode`, `toArray`, `addAll` or `sort`) is outside the models: the own checker and its gap scan meet it as the JDK call it is, a
 /// named gap under strict ([`crate::bmc::gaps::outside_the_list_records`]), instead of running bytecode no case
 /// samples. The models' own calls among themselves (`contains` calling `indexOf`, `next` calling `get`) are theirs.
 pub fn samples_list_call(name: &str, descriptor: &str) -> bool {
@@ -1374,7 +1391,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 34);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 35);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 
@@ -1419,7 +1436,7 @@ mod tests {
         }
         let object = "Ljava/lang/Object;";
         assert!(samples_list_call("of", &format!("({})Ljava/util/List;", object.repeat(10))));
-        for (name, descriptor) in [("contains", "(Ljava/lang/Object;)Z"), ("indexOf", "(Ljava/lang/Object;)I"), ("equals", "(Ljava/lang/Object;)Z"), ("hashCode", "()I"), ("remove", "(Ljava/lang/Object;)Z"), ("addAll", "(Ljava/util/Collection;)Z"), ("sort", "(Ljava/util/Comparator;)V"), ("toArray", "()[Ljava/lang/Object;"), ("of", "([Ljava/lang/Object;)Ljava/util/List;"), ("length", "()I"), ("get", "(J)Ljava/lang/Object;")] {
+        for (name, descriptor) in [("equals", "(Ljava/lang/Object;)Z"), ("hashCode", "()I"), ("remove", "(Ljava/lang/Object;)Z"), ("addAll", "(Ljava/util/Collection;)Z"), ("sort", "(Ljava/util/Comparator;)V"), ("toArray", "()[Ljava/lang/Object;"), ("length", "()I"), ("get", "(J)Ljava/lang/Object;")] {
             assert!(!samples_list_call(name, descriptor), "{name}{descriptor}");
             assert!(crate::bmc::gaps::outside_the_list_records("shop/Basket", "java/util/ImmutableCollections$AbstractImmutableList", name, descriptor));
             assert!(!crate::bmc::gaps::outside_the_list_records("java/util/ImmutableCollections$ListN", "java/util/ImmutableCollections$AbstractImmutableList", name, descriptor), "the models' own calls");

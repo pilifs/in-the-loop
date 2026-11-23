@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "270f7c5b885949f1",
+    "format": 1,
+    "example": "379",
+    "statement": {
+      "approach": "target",
+      "task": "replay-receiver",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "ReceiverScope#exact",
+      "revisions": [
+        "receiver"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-receiver",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "ReceiverScope#exact",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-receiver",
+            "kind": "driver",
+            "path": "driver/receiver/Cases.java",
+            "sha256": "c6724925cdcdd8899d2d8db359f73f62e1539f96051518a0bec33a42efe62309"
+          },
+          {
+            "id": "oracle-receiver",
+            "kind": "oracle",
+            "path": "controls/receiver.json",
+            "sha256": "b2a308fabe0903a2dde071b3f87ed62a6df036773c9b869bb5e8ead0fc04daff"
+          }
+        ],
+        "key": "1100f4e41122c470"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "f672e7ff40176fdac80b1c09a56bafde27534c2bd8d5f2efc095ee8c0ed7fe18",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-receiver",
+      "sidecar": "12bd087c877c9445ba0816ecc16c7a4f47802b2a01fd49627e9b13d8702eb4bc",
+      "revisions": {
+        "receiver": "986feddcb52e2e275b405c1c2b350df42c68d728"
+      },
+      "dependencies": [
+        {
+          "revision": "receiver",
+          "position": 0,
+          "role": "driver",
+          "sha256": "75dbbdd2b5d429687c67a53e44b76a7bd046585b4ee4c0bf1c39357f33c517ca"
+        },
+        {
+          "revision": "receiver",
+          "position": 1,
+          "role": "original",
+          "sha256": "10a799476cd03d8ef30e20e5262d77b109512ed8adda3f4d4637c8d405c7a7a0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/receiver.json": "b2a308fabe0903a2dde071b3f87ed62a6df036773c9b869bb5e8ead0fc04daff",
+        "driver/receiver/Cases.java": "c6724925cdcdd8899d2d8db359f73f62e1539f96051518a0bec33a42efe62309"
+      },
+      "claimKey": "1100f4e41122c470"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094252Z-4335a0a2",
+    "claim": "270f7c5b885949f1",
+    "startedAt": "2026-11-23T09:42:52+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "6038659b15bd7d349399e821cd1f2f596434de05a6b34680d6c7fe98dcf9897c",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control receiver on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-receiver-jdk21.stdout",
+        "stderr": "records/control-receiver-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "270f7c5b885949f1",
+    "attempt": "20261123T094252Z-4335a0a2",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: receiver holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 27,
+      "code": "\"receiver\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/receiver.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "96d2ab878be64385e516c20a16b1065d470b5f4c35793dc34ed253c15aa6ec43",
+        "bytes": 4076
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "7f7215028804f22878de7cd7e85d837b47976ed3b57ad7eded052eac21411344",
+        "bytes": 182
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "08b6fb278d247fd371a57d52ad1ada3941e671f455b38287913093db5c5102c4",
+        "bytes": 1039
+      },
+      {
+        "path": "records/control-receiver-jdk21.stdout",
+        "sha256": "2c2d7925ec1fc0792901de9cf4dca7ed8b692c12fd4370b5f9ab770eff779a9c",
+        "bytes": 482
+      },
+      {
+        "path": "records/control-receiver-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "487d93ae0d26b9f2b7a899fdb69d9e5432c1fe5f460c90d6695d200bedfc12af",
+        "bytes": 4297
+      }
+    ]
+  }
+}

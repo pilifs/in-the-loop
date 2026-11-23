@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-134806-recheck-38-frozen-historical-java-claims",
+  "title": "Recheck 38 frozen historical Java claims after decimal parsing",
+  "description": "Repeat the historical 13 former JBMC-only statements, all 24 native-only regression controls and the additional positive list-search control with the original benchmark JDK and staged model policy. Check each native verdict and its original JVM witness against the original benchmark.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "All 38 native decisions remain qualified. Both engines produce a raw record for each guarded claim.",
+  "submitted": {
+    "at": "2026-11-23T13:48:06+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 15,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "10m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Historical cohorts",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/decimal_transfer.py history",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/decimal-transfer/historical"
+  ]
+}

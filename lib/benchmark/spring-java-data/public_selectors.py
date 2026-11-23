@@ -6,7 +6,7 @@ import sys
 from measure import ROOT, SETUP, digest, read, run_cmd, seed, write
 from targets import native_selectors, route, sidecar
 
-def run(number, first, only, stage):
+def run(number, first, only, stage, seconds=60):
     folder, = (ROOT / "examples").glob(number+"-*")
     spec=read(folder/"target.json")
     seed(folder)
@@ -26,7 +26,7 @@ def run(number, first, only, stage):
         parent=folder/"records/native-selectors"/side
         previous=set(parent.glob("*"))
         cmd=[sys.executable,"examples/tools/build.py",number,"--native-selectors",",".join(tasks),
-             "--checker-seconds","60","--first",str(first)]
+             "--checker-seconds",str(seconds),"--first",str(first)]
         report["batches"][side]=run_cmd(cmd,out/(side+".log"))
         batch,=set(parent.glob("*"))-previous
         for name in tasks:
@@ -42,6 +42,7 @@ if __name__=="__main__":
     cli.add_argument("number")
     cli.add_argument("--first",type=int,default=0)
     cli.add_argument("--only",nargs="+")
-    cli.add_argument("--stage",choices=["native-final","native-qualified","spring-startup","spring-cache-writers","spring-class-tables","spring-factory-signatures","spring-refills-and-purge"],default="native-final")
+    cli.add_argument("--stage",choices=["native-final","native-qualified","spring-startup","spring-cache-writers","spring-class-tables","spring-factory-signatures","spring-refills-and-purge","semantics-opening","semantics-final","semantics-qualified"],default="native-final")
+    cli.add_argument("--seconds",type=int,default=60)
     args=cli.parse_args()
-    run(args.number,args.first,args.only,args.stage)
+    run(args.number,args.first,args.only,args.stage,args.seconds)

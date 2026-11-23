@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "390",
+  "title": "A stored null differs from an absent thread-local binding",
+  "summary": "Two keys with counting suppliers expose their initializations, fresh references and stored nulls, including the Spring factory.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "A stored null differs from an absent thread-local binding",
+    "file": "adapter/ThreadLocalHistory.java",
+    "symbol": "ThreadLocalHistory#kernel"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Two keys with counting suppliers expose their initializations, fresh references and stored nulls, including the Spring factory."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 3/3",
+  "notes": [
+    "The locals JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening locals.",
+    "The campaign's ordinary native checker decided 1/3 at opening and 3/3 at qualification, with 2 established and 1 refuted on original-JVM replays."
+  ]
+}

@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "ba6414b410c982f9",
+    "format": 1,
+    "example": "378",
+    "statement": {
+      "approach": "target",
+      "task": "replay-prefix",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "OffsetPrefix#small",
+      "revisions": [
+        "prefix"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-prefix",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "OffsetPrefix#small",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-prefix",
+            "kind": "driver",
+            "path": "driver/prefix/Cases.java",
+            "sha256": "8ea0fd8fcfa9ad2e728c5edfd105829057b0231a9579939e27bb1d458276acdb"
+          },
+          {
+            "id": "oracle-prefix",
+            "kind": "oracle",
+            "path": "controls/prefix.json",
+            "sha256": "1e5a6344bebe65e055881d6888e7657b231f81bfe6212244248fd9e949a62e7c"
+          }
+        ],
+        "key": "1a1f710d87b91821"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "a03434ec08d10de929070535e013c41df134c3c2a7abf97984ae00798e625f80",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-prefix",
+      "sidecar": "4bbb993841948d0d1396f91fa65fc93790bd1b740151b6d34e3a7569fb7e0955",
+      "revisions": {
+        "prefix": "7dce0c86033f3e901abd8c77543416fb4053fb18"
+      },
+      "dependencies": [
+        {
+          "revision": "prefix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "884afd9108da213f7b97234b75fb6555bca54d169677fb28075dc2109ed16d4f"
+        },
+        {
+          "revision": "prefix",
+          "position": 1,
+          "role": "original",
+          "sha256": "a89c730cca1a720758cdf4350b939dc709ba1d46271ac0d2bb9d582305456fe8"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/prefix.json": "1e5a6344bebe65e055881d6888e7657b231f81bfe6212244248fd9e949a62e7c",
+        "driver/prefix/Cases.java": "8ea0fd8fcfa9ad2e728c5edfd105829057b0231a9579939e27bb1d458276acdb"
+      },
+      "claimKey": "1a1f710d87b91821"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094250Z-cc0d7d72",
+    "claim": "ba6414b410c982f9",
+    "startedAt": "2026-11-23T09:42:50+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "dbd404314cd93675749ce8927b332115671fef6fccbe2d38423e37a393db015c",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control prefix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-prefix-jdk21.stdout",
+        "stderr": "records/control-prefix-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "ba6414b410c982f9",
+    "attempt": "20261123T094250Z-cc0d7d72",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: prefix holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"prefix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/prefix.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "ec59a4d2acf9dcc390ee5cbf101fc927fca4c803d30b79eaab72a4663b58226a",
+        "bytes": 11021
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "fb2cc45effe42c0db46c412572c0dba2d70fbbcc54ed77cd606353289e1eed9d",
+        "bytes": 178
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "22dccf6b96634c59f5d3301573540cb6bc049651568d85f08082a6cec8de3f46",
+        "bytes": 1031
+      },
+      {
+        "path": "records/control-prefix-jdk21.stdout",
+        "sha256": "24633bfc0a8e1d273732d2b3c5957c4b058c21819a5819c8bee53c92462079dc",
+        "bytes": 3059
+      },
+      {
+        "path": "records/control-prefix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "8eca84f923b742334a38655d9b01f5482bba84c594fe57e7106d2cccebcaa3cf",
+        "bytes": 11236
+      }
+    ]
+  }
+}

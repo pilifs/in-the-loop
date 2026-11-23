@@ -1,0 +1,209 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "c356be0bf7d2f2a3",
+    "format": 1,
+    "example": "379",
+    "statement": {
+      "approach": "target",
+      "task": "replay-gson-parent",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "GsonRequestedClass#compatible",
+      "revisions": [
+        "gson-parent"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-gson-parent",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "GsonRequestedClass#compatible",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-gson-parent",
+            "kind": "driver",
+            "path": "driver/gson-parent/Cases.java",
+            "sha256": "252f84b02e0882f8c0d610c61a3f02b5291477d26798cc1692484d422cb99eda"
+          },
+          {
+            "id": "oracle-gson-parent",
+            "kind": "oracle",
+            "path": "controls/gson-parent.json",
+            "sha256": "2201573f0d58100ff170b26dda7b8597f33412381f8756b8d436e046d75f49ce"
+          }
+        ],
+        "key": "b036f6d3c0f41bcd"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "b0c400a08af7005b58747bbe4de58a75c610cf8800bacce3057c72582007aae1",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-gson-parent",
+      "sidecar": "12bd087c877c9445ba0816ecc16c7a4f47802b2a01fd49627e9b13d8702eb4bc",
+      "revisions": {
+        "gson-parent": "2ec2337acc32d55d5bff1908d1b3f1209a0e410f"
+      },
+      "dependencies": [
+        {
+          "revision": "gson-parent",
+          "position": 0,
+          "role": "driver",
+          "sha256": "d1feb35af830b7081d13d2a89abdb8e657d71dba2cfc8aaa79a111989db71495"
+        },
+        {
+          "revision": "gson-parent",
+          "position": 1,
+          "role": "original",
+          "sha256": "6ed3febd0d9611600922d95cd280b3ed86865d447c2c1b88ba9a5866d74be403"
+        },
+        {
+          "revision": "gson-parent",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "aa5c6883a29f7138e0452f8a9cd5c19efd9adba228f0d67024cd305cdfb3eb89"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/gson-parent.json": "2201573f0d58100ff170b26dda7b8597f33412381f8756b8d436e046d75f49ce",
+        "driver/gson-parent/Cases.java": "252f84b02e0882f8c0d610c61a3f02b5291477d26798cc1692484d422cb99eda"
+      },
+      "claimKey": "b036f6d3c0f41bcd"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094301Z-260d1024",
+    "claim": "c356be0bf7d2f2a3",
+    "startedAt": "2026-11-23T09:43:01+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "c1b6b96ebd3bde512c950ca2db6c99e90c79c2c1ce392083ca3fb8c1136ac3ce",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control gson-parent on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.114,
+        "stdout": "records/control-gson-parent-jdk21.stdout",
+        "stderr": "records/control-gson-parent-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "c356be0bf7d2f2a3",
+    "attempt": "20261123T094301Z-260d1024",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: gson-parent holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 41,
+      "code": "\"gson-parent\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/gson-parent.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "0bd873ef8c72ecbcfdcd18aecacfb90a5d694d1d10262a8f79e49bf931408e33",
+        "bytes": 5324
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "4203fd6cdb7a6ae8db78f431ad0a581109a83a51324bfb28b286734dd1875d30",
+        "bytes": 188
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "98c98858172a9ddd04e37ff0e1b81c2e45b0817ff1d22239a17d30de83032e70",
+        "bytes": 1057
+      },
+      {
+        "path": "records/control-gson-parent-jdk21.stdout",
+        "sha256": "e696c2631fbb18630d9e8f4a1f80917d36ff99ada1fc38da793c2172cd0c1268",
+        "bytes": 843
+      },
+      {
+        "path": "records/control-gson-parent-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "bd0a23097cb7a8b940f5a3c66af14ea4e58bb0f0ed27086254f7b30314c3ee8a",
+        "bytes": 5554
+      }
+    ]
+  }
+}

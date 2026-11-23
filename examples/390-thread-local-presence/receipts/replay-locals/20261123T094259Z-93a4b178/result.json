@@ -1,0 +1,217 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "1bf7c9ab8b6e3ede",
+    "format": 1,
+    "example": "390",
+    "statement": {
+      "approach": "target",
+      "task": "replay-locals",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "ThreadLocalHistory#kernel",
+      "revisions": [
+        "locals"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-locals",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "ThreadLocalHistory#kernel",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-locals",
+            "kind": "driver",
+            "path": "driver/locals/Cases.java",
+            "sha256": "d67a98e282b3a8ef5911ac541f628ed699d9d63f651147276117105cf478da29"
+          },
+          {
+            "id": "oracle-locals",
+            "kind": "oracle",
+            "path": "controls/locals.json",
+            "sha256": "c5d618da5470c77b87acaa9b94992b22eddf25d4e7d157648ca2a125871ac756"
+          }
+        ],
+        "key": "c86a89a973f60dbe"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "8cb16c6349a6e3bd17486e87be0c08c0b4f291d8bda6a21117dcd1615204227e",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-locals",
+      "sidecar": "2f102001799f0e3e1a18e868daf0679e6d5b34ce108c71ae0daf89c54178a646",
+      "revisions": {
+        "locals": "6f1507ecd4756756ea3603aaf4c4d8eeebcf93e6"
+      },
+      "dependencies": [
+        {
+          "revision": "locals",
+          "position": 0,
+          "role": "driver",
+          "sha256": "a394bde2f71e6af3e88c37b0af824cb8d30022f409106b59a868bee2ca0fa6f2"
+        },
+        {
+          "revision": "locals",
+          "position": 1,
+          "role": "original",
+          "sha256": "cb250b955e6cb652a98ebcc7a26bdaae25db5b3c4a74c03880786d24a0536af7"
+        },
+        {
+          "revision": "locals",
+          "position": 2,
+          "role": "dependency",
+          "sha256": "3b82629da38717dd616a70ec1055f9a8e208d58132071a6314a32159f8bce162",
+          "coordinates": "org.springframework:spring-core:6.2.0"
+        },
+        {
+          "revision": "locals",
+          "position": 3,
+          "role": "dependency",
+          "sha256": "2b59288f030ce77a89ec88aa426f32eb9a309056f3646dd5157f9f31f0204fd7",
+          "coordinates": "org.springframework:spring-jcl:6.2.0"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/locals.json": "c5d618da5470c77b87acaa9b94992b22eddf25d4e7d157648ca2a125871ac756",
+        "driver/locals/Cases.java": "d67a98e282b3a8ef5911ac541f628ed699d9d63f651147276117105cf478da29"
+      },
+      "claimKey": "c86a89a973f60dbe"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094259Z-93a4b178",
+    "claim": "1bf7c9ab8b6e3ede",
+    "startedAt": "2026-11-23T09:42:59+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "8f0681a0578b6f5598e8f31ad0ee7bdb560ab749569b09b82663a9afeb9dde57",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control locals on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.065,
+        "stdout": "records/control-locals-jdk21.stdout",
+        "stderr": "records/control-locals-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "1bf7c9ab8b6e3ede",
+    "attempt": "20261123T094259Z-93a4b178",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: locals holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"locals\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/locals.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "47d29d3adea236e03bc52c9470639f816c940837a11715de751d465dbebe46b4",
+        "bytes": 5733
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "c79af2fd4a4e22bbe4632d5c576049cec1158ad73300927fb23b7a93ed182172",
+        "bytes": 178
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "4c5f5e67a57ecee266cf78fe563e4e3fb655e3a28b6c660a0d756f3e87a7fb83",
+        "bytes": 1027
+      },
+      {
+        "path": "records/control-locals-jdk21.stdout",
+        "sha256": "03f99b1db7a3f1f1546699cd3073fccee123cdefd71f9778df79b061607ffcb6",
+        "bytes": 937
+      },
+      {
+        "path": "records/control-locals-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "39e1284e9105d73593c8694aa5e7c71f01d1a8fde156e5a9b5ccceb1169d8520",
+        "bytes": 5948
+      }
+    ]
+  }
+}

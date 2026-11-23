@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-101413-check-java-semantics-changes-against-the",
+  "title": "Check Java semantics changes against the proof-tier conformance corpus",
+  "description": "Run both existing strict JBMC and automatic-selection corpus tests and automatic confirmation, including the unchanged historical list statements and the 24 old native controls. Check every candidate counterexample against the original Java caller.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "strict-conformance"
+  ],
+  "links": {},
+  "expected": "Both proof-tier corpus tests pass on the committed source.",
+  "submitted": {
+    "at": "2026-11-23T10:14:13+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 15,
+  "requires": [
+    "cargo",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "25m",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Standalone corpus tests",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

@@ -1,0 +1,101 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "enum-name-identity",
+    "family": "enum-name-identity",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "enum": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay-enum",
+      "kind": "replay",
+      "revision": "enum",
+      "target": "EnumNames#lookup",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "enum-lookup",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "enum",
+      "target": "EnumNames#lookup",
+      "claim": "claims/enumnames-lookup.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-enum"
+      ]
+    },
+    {
+      "id": "enum-ordinal",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "enum",
+      "target": "EnumNames#ordinal",
+      "claim": "claims/enumnames-ordinal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-enum"
+      ]
+    },
+    {
+      "id": "enum-always-zero",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "enum",
+      "target": "EnumNames#alwaysZero",
+      "claim": "claims/enumnames-always-zero.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-enum"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-enum",
+      "revision": "enum",
+      "kind": "driver",
+      "path": "driver/enum/Cases.java"
+    },
+    {
+      "id": "oracle-enum",
+      "revision": "enum",
+      "kind": "oracle",
+      "path": "controls/enum.json"
+    }
+  ]
+}

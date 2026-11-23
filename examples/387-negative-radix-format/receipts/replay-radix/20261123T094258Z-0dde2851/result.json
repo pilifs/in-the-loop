@@ -1,0 +1,203 @@
+{
+  "format": 2,
+  "claim": {
+    "id": "fe9b957b4a79f28d",
+    "format": 1,
+    "example": "387",
+    "statement": {
+      "approach": "target",
+      "task": "replay-radix",
+      "kind": "replay",
+      "relation": "calibration",
+      "target": "RadixDigits#hex",
+      "revisions": [
+        "radix"
+      ],
+      "expected": "established",
+      "gaps": null,
+      "claim": {
+        "task": "replay-radix",
+        "kind": "replay",
+        "relation": "calibration",
+        "target": "RadixDigits#hex",
+        "file": null,
+        "sha256": null,
+        "property": null,
+        "claimKind": null,
+        "statement": null,
+        "assume": null,
+        "assert": null,
+        "throws": [],
+        "nullable": [],
+        "mayAlias": [],
+        "observations": [],
+        "assumptions": [],
+        "allowedChange": null,
+        "bounds": {},
+        "explicitBounds": {},
+        "defaultBounds": [],
+        "models": [],
+        "plan": null,
+        "contracts": null,
+        "gaps": null,
+        "parent": null,
+        "controls": [
+          {
+            "id": "driver-radix",
+            "kind": "driver",
+            "path": "driver/radix/Cases.java",
+            "sha256": "3eeeeaf2092425f0dc0146f541cf9513af438233f767e82f301f5165ecc7d5f5"
+          },
+          {
+            "id": "oracle-radix",
+            "kind": "oracle",
+            "path": "controls/radix.json",
+            "sha256": "9e09130d6274e9f9de993764e4bd69fdb68d504f98632775fb70d54170b47613"
+          }
+        ],
+        "key": "c026c819467c0060"
+      }
+    },
+    "scope": {},
+    "inputs": {
+      "patch": null,
+      "before": null,
+      "after": {
+        "sha256": "9f885b6008b2950a9576762af29e90a5090a659d2bb5ec3b57e21fbd8bf2326e",
+        "files": 1
+      },
+      "dependencies": "pinned in target.dependencies"
+    },
+    "target": {
+      "task": "replay-radix",
+      "sidecar": "a36d675f6e0c4ca06c8b14f7ac4a79d6c314fc60d7571d943bb190b0400844af",
+      "revisions": {
+        "radix": "d29b5ca3bba5641111fa11bb50efc62698288e02"
+      },
+      "dependencies": [
+        {
+          "revision": "radix",
+          "position": 0,
+          "role": "driver",
+          "sha256": "876c9c6ac98e7a6accf3461a4f8f4f0118356f3258b3c4495ee42826b2f3e710"
+        },
+        {
+          "revision": "radix",
+          "position": 1,
+          "role": "original",
+          "sha256": "b04fbe180d07f51c9b3dd985b3ef28923ebf35df90892392e057ceacb1911497"
+        }
+      ],
+      "jdks": [
+        "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "openjdk version \"25.0.5\" 2026-10-20 LTS"
+      ],
+      "files": {
+        "controls/radix.json": "9e09130d6274e9f9de993764e4bd69fdb68d504f98632775fb70d54170b47613",
+        "driver/radix/Cases.java": "3eeeeaf2092425f0dc0146f541cf9513af438233f767e82f301f5165ecc7d5f5"
+      },
+      "claimKey": "c026c819467c0060"
+    }
+  },
+  "attempt": {
+    "id": "20261123T094258Z-0dde2851",
+    "claim": "fe9b957b4a79f28d",
+    "startedAt": "2026-11-23T09:42:58+00:00",
+    "seconds": 0.1,
+    "engine": null,
+    "options": [],
+    "tools": {
+      "java": "openjdk version \"21.0.13\" 2026-10-20 LTS; openjdk version \"25.0.5\" 2026-10-20 LTS"
+    },
+    "bytecode": {
+      "before": null,
+      "after": {
+        "sha256": "ce76845c47871f55c8d20c38184ce0ae232e4fc092feddbd38ff7fba225a0ab2",
+        "files": 1
+      }
+    },
+    "pipeline": null,
+    "execution": {
+      "status": "completed",
+      "exitCode": 0,
+      "reason": null
+    },
+    "stages": [
+      {
+        "name": "jvm-control radix on JDK 21",
+        "status": "exited",
+        "exitCode": 0,
+        "seconds": 0.064,
+        "stdout": "records/control-radix-jdk21.stdout",
+        "stderr": "records/control-radix-jdk21.stderr"
+      }
+    ],
+    "workspace": null
+  },
+  "conclusion": {
+    "claim": "fe9b957b4a79f28d",
+    "attempt": "20261123T094258Z-0dde2851",
+    "status": null,
+    "vacuous": false,
+    "expectation": "yes",
+    "obligations": [],
+    "label": "Replay: radix holds the oracle, on every JDK named: as the None pair's kind expects",
+    "obligationKeys": {}
+  },
+  "evidence": {
+    "existingTests": null,
+    "before": null,
+    "after": {
+      "file": "target.json",
+      "startLine": 13,
+      "code": "\"radix\": {"
+    },
+    "casesTotal": null,
+    "purityViolations": [],
+    "trustedCalls": [],
+    "sarif": null,
+    "output": "records/summary.txt",
+    "statement": null,
+    "counterexamples": [],
+    "replay": {
+      "by": "jvm",
+      "reproduced": true
+    },
+    "proof": "no proof: 1 concrete control runs of the driver on the oracle's inputs, read by controls/radix.json",
+    "problem": null
+  },
+  "bundle": {
+    "artifacts": [
+      {
+        "path": "records/execution.json",
+        "sha256": "da115a575728c2cf176f720f8157fc859bf43ffe7c3c4fcba0b78ffe8dfc6fc0",
+        "bytes": 4012
+      },
+      {
+        "path": "records/summary.txt",
+        "sha256": "bea1cf0f14a1047e3fbd45ab2f07696f113519e8d1ea0f1daacc286ffd055e91",
+        "bytes": 176
+      },
+      {
+        "path": "records/streams.json",
+        "sha256": "e261e7252d3d242db0d2d0c4fd9398c314473613585984bbc1f0b52b2718745c",
+        "bytes": 1021
+      },
+      {
+        "path": "records/control-radix-jdk21.stdout",
+        "sha256": "306e1fe452a35087082a2da1ecd25c2da62f9d7d7220fcd36e62f9478b2ec09d",
+        "bytes": 459
+      },
+      {
+        "path": "records/control-radix-jdk21.stderr",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      {
+        "path": "records/controls.json",
+        "sha256": "a1d749503f5c4e215227486ef00ed78bfe1e96e3666e76ae3a1c40d7ef10b3ea",
+        "bytes": 4224
+      }
+    ]
+  }
+}

@@ -1,0 +1,122 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "deque-removal-history",
+    "family": "deque-removal-history",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "deque": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-source",
+            "8",
+            "-target",
+            "8",
+            "-parameters",
+            "-g"
+          ]
+        },
+        "compileLibraries": [
+          "commons-collections4"
+        ],
+        "runtimeLibraries": [
+          "commons-collections4"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-deque",
+      "kind": "replay",
+      "revision": "deque",
+      "target": "DequeRemoval#history",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "deque-history",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "deque",
+      "target": "DequeRemoval#history",
+      "claim": "claims/dequeremoval-history.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-deque"
+      ]
+    },
+    {
+      "id": "deque-still-returns",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "deque",
+      "target": "DequeRemoval#stillReturns",
+      "claim": "claims/dequeremoval-still-returns.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-deque"
+      ]
+    },
+    {
+      "id": "deque-singleton",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "deque",
+      "target": "DequeRemoval#singleton",
+      "claim": "claims/dequeremoval-singleton.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-deque"
+      ]
+    },
+    {
+      "id": "deque-filtered",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "deque",
+      "target": "DequeRemoval#filtered",
+      "claim": "claims/dequeremoval-filtered.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-deque"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-deque",
+      "revision": "deque",
+      "kind": "driver",
+      "path": "driver/deque/Cases.java"
+    },
+    {
+      "id": "oracle-deque",
+      "revision": "deque",
+      "kind": "oracle",
+      "path": "controls/deque.json"
+    }
+  ]
+}

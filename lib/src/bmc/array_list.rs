@@ -35,6 +35,14 @@ pub(super) fn empty_storage(cp: &ClassPath, member: &crate::classfile::MemberRef
 
 impl Engine<'_> {
     pub(super) fn image_list_call(&mut self, path: &mut Path, o: usize, special: bool, member: &crate::classfile::MemberRef, args: &[Val]) -> Option<Step> {
+        if !special && path.objects[o].class == "java/util/Arrays$ArrayList" && !path.objects[o].assumed
+            && (member.name.as_str(), member.descriptor.as_str()) == ("isEmpty", "()Z")
+            && self.cp.checked_image_class("java/util/Arrays$ArrayList").is_some() {
+            let (cf, method) = self.cp.find_method("java/util/Arrays$ArrayList","isEmpty","()Z")?;
+            if cf.name == "java/util/AbstractCollection" {
+                return Some(self.enter_method(path,&member.owner,cf,method,vec![Val::R(Some(o))]));
+            }
+        }
         if self.cp.runs_model(LIST) { return None; }
         let class = path.objects[o].class.as_str();
         if !special && !path.objects[o].assumed && self.cp.is_application(class)

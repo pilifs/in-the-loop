@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-101334-check-wide-arithmetic-and-list-ownership",
+  "title": "Check wide arithmetic and list ownership on original callers",
+  "description": "Compare strict native and staged integrated JBMC on each frozen source and original JAR, with a 120-second deadline per claim. Save raw outputs, the declared domain and actual JVM counterexample replays. The numeric, endian and UTF-16 sources also check their independent JVM grids.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "All named original statements retain both engine outcomes with scope, elapsed time and a first refusal or replayable decision.",
+  "submitted": {
+    "at": "2026-11-23T10:13:34+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 13,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "12m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "numbers",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final numbers",
+      "cwd": "."
+    },
+    {
+      "name": "lists",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final lists",
+      "cwd": "."
+    },
+    {
+      "name": "endian",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final endian",
+      "cwd": "."
+    },
+    {
+      "name": "nibble",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/campaign.py final nibble",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/java-semantics-gap/final/numbers",
+    "verification/java-semantics-gap/final/lists",
+    "verification/java-semantics-gap/final/endian",
+    "verification/java-semantics-gap/final/nibble"
+  ]
+}

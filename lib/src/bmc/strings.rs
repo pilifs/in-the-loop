@@ -66,6 +66,7 @@ pub const LOCALE_ASSUMPTION: &str = "the default locale's language is not Turkis
 
 /// Whether the engine models `String.name(descriptor)` here.
 pub fn models(name: &str, descriptor: &str) -> bool {
+    if (name, descriptor) == ("startsWith", "(Ljava/lang/String;I)Z") { return true; }
     matches!(
         (name, descriptor),
         ("intern" | "trim", "()Ljava/lang/String;") | ("isBlank", "()Z") | ("toCharArray", "()[C") | ("codePointAt", "(I)I") | ("getChars", "(II[CI)V") | ("concat", "(Ljava/lang/String;)Ljava/lang/String;") | ("substring", "(I)Ljava/lang/String;" | "(II)Ljava/lang/String;") | ("indexOf", "(I)I" | "(II)I" | "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("lastIndexOf", "(I)I" | "(II)I") | ("endsWith", "(Ljava/lang/String;)Z") | ("toLowerCase", "()Ljava/lang/String;")
@@ -83,7 +84,7 @@ pub fn models_builder(owner: &str, name: &str, descriptor: &str) -> bool {
         && matches!(
             (name, descriptor),
             ("<init>", "()V" | "(I)V" | "(Ljava/lang/String;)V") | ("length", "()I") | ("charAt", "(I)C") | ("setCharAt", "(IC)V") | ("setLength", "(I)V")
-                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "([CII)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
+                | ("append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;" | "(Ljava/lang/Object;)Ljava/lang/StringBuilder;" | "([CII)Ljava/lang/StringBuilder;" | "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;" | "(C)Ljava/lang/StringBuilder;" | "(I)Ljava/lang/StringBuilder;" | "(J)Ljava/lang/StringBuilder;")
                 | ("appendCodePoint", "(I)Ljava/lang/StringBuilder;") | ("indexOf", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") | ("substring", "(II)Ljava/lang/String;") | ("delete", "(II)Ljava/lang/StringBuilder;") | ("toString", "()Ljava/lang/String;")
         )
 }
@@ -173,6 +174,21 @@ impl Engine<'_> {
         unit
     }
 
+    fn matches_units_at(&mut self, text: &Array, needle: &Array, offset: &Bits, fits: Lit) -> Lit {
+        if fits == FALSE { return FALSE; }
+        let mut agree = fits;
+        for (i, unit) in needle.cells.iter().enumerate() {
+            let k = self.b.constant(i as i64, 32);
+            let active = self.b.slt(&k, &needle.length);
+            let at = self.b.add(offset, &k);
+            let actual = self.unit_at(text, &at);
+            let same = self.b.eq(&actual, unit);
+            let matched = self.b.or(-active, same);
+            agree = self.b.and(agree, matched);
+        }
+        agree
+    }
+
     /// A new String of `length` units, `cells`, which is the object `o` under each guard of `same`.
     pub(super) fn new_string(&mut self, path: &mut Path, length: Bits, cells: Vec<Bits>, same: Vec<(Lit, usize)>) -> usize {
         path.objects.push(Obj { array: Some(Array { element: Type::Char, length, cells, refs: Vec::new() }), same: same.into_iter().filter(|(g, _)| *g != FALSE).collect(), ..Obj::new(STRING) });
@@ -225,6 +241,21 @@ impl Engine<'_> {
         }
         let none = self.b.eq(begin, end);
         let empty = self.b.and(-whole, none);
+        let slice = self.sliced_units(s, begin, end);
+        let mut same = Vec::new();
+        if let Some(o) = itself {
+            same.push((whole, o));
+        }
+        if canonical_empty && empty != FALSE {
+            let literal = self.empty_literal(path);
+            same.push((empty, literal));
+        }
+        let made = self.new_string(path, slice.length, slice.cells, same);
+        if !canonical_empty { path.objects[made].limit = Some(TRIM_IDENTITY.into()); }
+        Val::R(Some(made))
+    }
+
+    fn sliced_units(&mut self, s: &Array, begin: &Bits, end: &Bits) -> Array {
         // A begin that is a constant leaves the cells after it; any other, every cell.
         let skipped = self.b.constant_value(begin).and_then(|b| usize::try_from(b).ok()).unwrap_or(0).min(s.cells.len());
         let most = match self.b.constant_value(end).and_then(|e| usize::try_from(e).ok()) {
@@ -238,17 +269,7 @@ impl Engine<'_> {
             cells.push(self.unit_at(s, &at));
         }
         let length = self.b.sub(end, begin);
-        let mut same = Vec::new();
-        if let Some(o) = itself {
-            same.push((whole, o));
-        }
-        if canonical_empty && empty != FALSE {
-            let literal = self.empty_literal(path);
-            same.push((empty, literal));
-        }
-        let made = self.new_string(path, length, cells, same);
-        if !canonical_empty { path.objects[made].limit = Some(TRIM_IDENTITY.into()); }
-        Val::R(Some(made))
+        Array { element: Type::Char, length, cells, refs: Vec::new() }
     }
 
     /// Whether `begin..end` is no range of a sequence of `length` units: the JDK's `checkBoundsBeginEnd`.
@@ -456,29 +477,40 @@ impl Engine<'_> {
         Ok(None)
     }
 
-    /// String(char[], offset, count) owns the selected units even if the array is later mutated.
+    /// Both range constructors copy their array. In the byte form each UTF-16 unit
+    /// combines the low eight bits of the high-byte argument and of the source cell.
     pub(super) fn initialize_string_range(&mut self, path: &mut Path, object: usize, source: Option<usize>,
-                                          offset: &Bits, count: &Bits) -> Step {
+                                          offset: &Bits, count: &Bits, high: Option<&Bits>) -> Step {
         let Some(source) = source else {
-            if let Some((class, method)) = self.cp.string_range_constructor(STRING, "([CII)V") {
-                return self.enter_method(path, STRING, class, method,
-                    vec![Val::R(Some(object)), Val::R(None), Val::I(offset.clone()), Val::I(count.clone())]);
+            let descriptor = if high.is_some() { "([BIII)V" } else { "([CII)V" };
+            if let Some((class, method)) = self.cp.string_range_constructor(STRING, descriptor) {
+                let mut args = vec![Val::R(Some(object)), Val::R(None)];
+                args.extend(high.cloned().map(Val::I));
+                args.extend([Val::I(offset.clone()), Val::I(count.clone())]);
+                return self.enter_method(path, STRING, class, method, args);
             }
             let invalid = self.any(&[self.b.negative(offset), self.b.negative(count)]);
             let mut assumptions = path.cond.clone();
             assumptions.push(invalid);
             if self.solve(&assumptions)? {
-                return unsupported("String(char[], int, int) exception order needs the selected JDK constructor");
+                return unsupported("String range exception order needs the selected JDK constructor");
             }
             return self.raise(path, "java/lang/NullPointerException");
         };
         self.keeps(path, Some(object), "initializes a pre-existing String")?;
         if self.there_before(path, source) {
-            self.reads(path, || "String(char[], int, int) reads an array that existed before the call".into())?;
+            self.reads(path, || "String range constructor reads an array that existed before the call".into())?;
         }
-        let Some(chars) = path.objects[source].as_array().filter(|a| a.element == Type::Char).cloned() else {
-            return unsupported("String constructor needs a known char array");
+        let element = if high.is_some() { Type::Byte } else { Type::Char };
+        let Some(mut chars) = path.objects[source].as_array().filter(|a| a.element == element).cloned() else {
+            return unsupported("String range constructor needs a known source array");
         };
+        if let Some(high) = high {
+            for unit in &mut chars.cells {
+                unit.truncate(8);
+                unit.extend_from_slice(&high[..8]);
+            }
+        }
         // Subtraction preserves the JDK bound even if offset + count would overflow a Java int.
         let last_start = self.b.sub(&chars.length, count);
         let past_end = self.b.slt(&last_start, offset);
@@ -668,6 +700,24 @@ impl Engine<'_> {
                 self.advance(path);
                 Ok(None)
             }
+            ("startsWith", "(Ljava/lang/String;I)Z", [Val::R(None), Val::I(offset)]) => {
+                let negative = self.b.negative(offset);
+                if negative != FALSE && !self.cp.prefix_checks_negative_first() {
+                    return unsupported("String.startsWith(null, offset) requires the selected JDK's negative-offset branch");
+                }
+                self.branch_throw(path, -negative, "java/lang/NullPointerException", Val::I(self.b.constant(0,32)))
+            }
+            ("startsWith", "(Ljava/lang/String;I)Z", [Val::R(other), Val::I(offset)]) => {
+                let t = match self.string_argument(path, *other, (STRING, name, descriptor)) {
+                    Ok(t) => t, Err(step) => return step,
+                };
+                let last = self.b.sub(&s.length, &t.length);
+                let fits = self.b.sle(offset, &last);
+                let fits = self.b.and(-self.b.negative(offset), fits);
+                let truth = self.matches_units_at(s, &t, offset, fits);
+                self.push_truth(path, truth);
+                Ok(None)
+            }
             ("endsWith", _, [Val::R(other)]) => {
                 let t = match self.string_argument(path, *other, (STRING, name, descriptor)) {
                     Ok(t) => t,
@@ -675,16 +725,7 @@ impl Engine<'_> {
                 };
                 let fits = self.b.sle(&t.length, &s.length);
                 let offset = self.b.sub(&s.length, &t.length);
-                let mut agree = vec![fits];
-                for (k, unit) in t.cells.iter().enumerate() {
-                    let index = self.b.constant(k as i64, 32);
-                    let inside = self.b.slt(&index, &t.length);
-                    let at = self.b.add(&offset, &index);
-                    let mine = self.unit_at(s, &at);
-                    let same = self.b.eq(&mine, unit);
-                    agree.push(self.b.or(-inside, same));
-                }
-                let truth = self.b.all(&agree);
+                let truth = self.matches_units_at(s, &t, &offset, fits);
                 self.push_truth(path, truth);
                 Ok(None)
             }
@@ -801,6 +842,24 @@ impl Engine<'_> {
             }
             return Some(unsupported(format!("StringBuilder.{name} on a builder made or changed by a call the engine does not model")));
         };
+        if name == "append" && descriptor == "(Ljava/lang/CharSequence;II)Ljava/lang/StringBuilder;" {
+            let [Val::R(from), Val::I(begin), Val::I(end)] = args else { return None };
+            let text = match from {
+                None => Array { element: Type::Char, length: self.b.constant(4, 32),
+                    cells: "null".encode_utf16().map(|u| self.b.constant(i64::from(u),16)).collect(), refs: Vec::new() },
+                Some(id) if path.objects[*id].class == STRING => path.objects[*id].content()?.clone(),
+                _ => return None, // another CharSequence may run arbitrary length() and charAt() callbacks
+            };
+            let invalid = self.bad_range(begin, end, &text.length);
+            if invalid == TRUE { return Some(self.raise(path,"java/lang/IndexOutOfBoundsException")); }
+            let slice = self.sliced_units(&text,begin,end);
+            if s.cells.len() + slice.cells.len() > MOST_BUILDER_CONTENT { return Some(unsupported("StringBuilder append slice exceeds the content bound")); }
+            return Some(self.branch_throw_or(path, invalid, "java/lang/IndexOutOfBoundsException", move |engine, p| {
+                p.objects[o].array = Some(engine.joined(&s,&slice));
+                engine.push(p,Val::R(Some(o)));
+                engine.advance(p);
+            }));
+        }
         if name == "append" && descriptor == "([CII)Ljava/lang/StringBuilder;" {
             let [Val::R(Some(chars)), Val::I(start), Val::I(count)] = args else { return None };
             let array = path.objects[*chars].as_array()?;

@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "389",
+  "title": "Enum lookup returns the original constant",
+  "summary": "Two equal-but-distinct names, null, lowercase and unknown strings distinguish constant identity and the two lookup exceptions.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "exceptions",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Enum lookup returns the original constant",
+    "file": "adapter/EnumNames.java",
+    "symbol": "EnumNames#lookup"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Two equal-but-distinct names, null, lowercase and unknown strings distinguish constant identity and the two lookup exceptions."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 3/3",
+  "notes": [
+    "The enum JVM controls and both explicit checker entries run with python3 lib/benchmark/java-semantics-gap/campaign.py opening enum.",
+    "The campaign's ordinary native checker decided 2/3 at opening and 3/3 at qualification, with 2 established and 1 refuted on original-JVM replays."
+  ]
+}
