@@ -1,0 +1,86 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "ee5092ec-ea54-4da9-bbb8-6bf560b6984f",
+  "status": "open",
+  "title": null,
+  "first_prompt": "You are the SETUP AGENT for `llm-dlc/loops/jbmc-fast-follow-calls-conversions-and-arrays.md`. Your role is strictly limited to mechanical setup. The goal is that the domain agent who comes after you c",
+  "client": {
+    "tool": "claude-code",
+    "version": "2.1.330"
+  },
+  "models": [
+    "claude-opus-5-5"
+  ],
+  "started": "2026-11-23T15:24:50.733Z",
+  "ended": "2026-11-23T15:31:56.690Z",
+  "duration_seconds": 426,
+  "stats": {
+    "turns": 1,
+    "api_calls": 48,
+    "tool_calls": 50,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 129400,
+    "usage": {
+      "input_tokens": 98,
+      "output_tokens": 36146,
+      "cache_read_input_tokens": 4276382,
+      "cache_creation_input_tokens": 117672
+    }
+  },
+  "tools": {
+    "Bash": 45,
+    "Read": 2,
+    "Monitor": 1,
+    "ToolSearch": 1,
+    "Write": 1
+  },
+  "files_touched": [
+    "llm-dlc/loops/jbmc-fast-follow-calls-conversions-and-arrays-setup.md"
+  ],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-23T15:24:50.733Z",
+      "ended": "2026-11-23T15:31:56.690Z",
+      "turns": 1,
+      "api_calls": 48,
+      "usage": {
+        "input_tokens": 98,
+        "output_tokens": 36146,
+        "cache_read_input_tokens": 4276382,
+        "cache_creation_input_tokens": 117672
+      },
+      "peak_context_tokens": 129400
+    }
+  ],
+  "log": {
+    "sha256": "3e429c542679b467026ceb6993a6b2b416ddc8279fed29338d05e29124749180",
+    "bytes": 1071739,
+    "lines": 367,
+    "gzip_bytes": 214607,
+    "path": "llm-dlc/traces/ee5092ec-ea54-4da9-bbb8-6bf560b6984f/logs/3e429c542679b467026ceb6993a6b2b416ddc8279fed29338d05e29124749180.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "ourotlnmkpltqqpwyyquvvvxqrnkzkvy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up the JBMC fast-follow brief's libraries, sources, tools and JVM controls",
+      "body": "Mechanical setup for llm-dlc/loops/jbmc-fast-follow-calls-conversions-and-arrays.md, recorded in its -setup.md. Resolved Guava 33.4.8-jre, Commons Lang 3.17.0, Collections 4.5.0, Math 3.6.1 and Jackson 2.19.0 from Maven Central with strict checksums; all 23 jars and sources jars have good signatures in a keyring of the setup's own, and jackson-databind matches the brief's sha256. Fetched the five source commits the brief links into shared bare mirrors; each is exactly its release tag, and the named files equal the released sources jars. Re-took both JBMC 6.11.0 packages' digests and extracted Comparator.class and Arrays.class from the Temurin 21.0.13 image (both equal the brief's digests). Built the checker's release binary at this head. Compiled the appendix fixtures on JDK 21 and ran every JVM control: all behave as the brief says (209 graphs with 12 shared rows, 21 matrix shapes 8/7/6, the 0x5a800001 vs 0x5a800000 witness, +0.0f at 2^-150, the disagreement classification on 8,192 bins). No claims, examples, JBMC or verifier runs; no verification job was needed, as every case is an unmodified release.",
+      "log_sha256": "3e429c542679b467026ceb6993a6b2b416ddc8279fed29338d05e29124749180"
+    }
+  ],
+  "logs": {
+    "3e429c542679b467026ceb6993a6b2b416ddc8279fed29338d05e29124749180": {
+      "bytes": 1071739,
+      "lines": 367,
+      "gzip_bytes": 214607,
+      "url": null
+    }
+  },
+  "redaction_policy": 7,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}
