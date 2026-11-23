@@ -20,7 +20,7 @@ The [procedure](../README.md#procedure-for-agents) says how traces are made, and
 | Tokens written | 42,672,741 |
 | Tokens read | 10,348,334,001 (98.5% from cache) |
 | Commits with a trace | 1,735 |
-| Log snapshots | 2,386 (14260.8 MB gzipped, 2,257 uploaded) |
+| Log snapshots | 2,386 (14260.8 MB gzipped, 2,386 uploaded) |
 
 ## Sessions
 
@@ -2325,7 +2325,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`72d38e75`](72d38e75-aae0-402e-9b8a-881beec53824/summary.md) | 19 | 19 | 30.8 MB | [`899d4403f2b2`](https://terminalvalue.net/raw-traces/72d38e75-aae0-402e-9b8a-881beec53824/899d4403f2b2a0909e5a6b90d70b75b6fdd06876f953c84931aeba6ed741b941.jsonl.gz) |
 | [`0c1ceb11`](0c1ceb11-1913-4783-af0d-e3fa5724273b/summary.md) | 6 | 6 | 2.5 MB | [`c1c42ffaf7db`](https://terminalvalue.net/raw-traces/0c1ceb11-1913-4783-af0d-e3fa5724273b/c1c42ffaf7db4e4760ae1c502150d8043c016b95e69700ecace0c390f02645af.jsonl.gz) |
 | [`a4ac2b6c`](a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/summary.md) | 37 | 37 | 175.9 MB | [`4742b15c6bca`](https://terminalvalue.net/raw-traces/a4ac2b6c-a5b9-4507-a21e-1b56ae8b2c31/4742b15c6bca1452a2ada08f549dd989d1da9947643134e5a5daf9359a05a89a.jsonl.gz) |
-| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 497 | 462 | 3354.8 MB | `bc6875f19609`, not uploaded |
+| [`6c5c7798`](6c5c7798-21e3-46a5-b989-5313736bdc7f/summary.md) | 497 | 497 | 3354.8 MB | [`bc6875f19609`](https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/bc6875f196095accf06f10d226559e4a53f115a0aa1065c1fb8d58fc91367fb4.jsonl.gz) |
 | [`48807e20`](48807e20-0bdb-4031-8ced-d21d16fc3816/summary.md) | 4 | 4 | 0.4 MB | [`1d7e417218bd`](https://terminalvalue.net/raw-traces/48807e20-0bdb-4031-8ced-d21d16fc3816/1d7e417218bd36687631cd85bea645246892db4a9d43376d150c17a490bf6a3c.jsonl.gz) |
 | [`3e8cabab`](3e8cabab-4a28-4a79-8207-69568d9e8162/summary.md) | 58 | 58 | 206.3 MB | [`6df3fc1e6f29`](https://terminalvalue.net/raw-traces/3e8cabab-4a28-4a79-8207-69568d9e8162/6df3fc1e6f29987342ee17c15d0b12102c9e7a842d98fd630fcf6384f34a7b0f.jsonl.gz) |
 | [`5399f71b`](5399f71b-f38b-4670-8fbe-9aa44d5cd46d/summary.md) | 3 | 3 | 0.3 MB | [`fdebcf4957a5`](https://terminalvalue.net/raw-traces/5399f71b-f38b-4670-8fbe-9aa44d5cd46d/fdebcf4957a593489f34ce5d5d240d8c0bc494c33a6c1c3efda1eb0013f0e7ad.jsonl.gz) |
@@ -2348,7 +2348,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`b74acbd8`](b74acbd8-95de-40d7-8793-79948e8c27ae/summary.md) | 7 | 7 | 1.9 MB | [`728f5d1c9588`](https://terminalvalue.net/raw-traces/b74acbd8-95de-40d7-8793-79948e8c27ae/728f5d1c9588b8ae8e3cffe6394cbaec4aea15cedce3a404b1811d7e89c710cb.jsonl.gz) |
 | [`6da9b537`](6da9b537-ecce-46cf-99fa-7cae16e7ce99/summary.md) | 2 | 2 | 0.2 MB | [`d5b3ff93d2f4`](https://terminalvalue.net/raw-traces/6da9b537-ecce-46cf-99fa-7cae16e7ce99/d5b3ff93d2f464f79d4c2c3b63c435663917ad81d37a274a6519c9da315b7f3d.jsonl.gz) |
 | [`a13e8c12`](a13e8c12-3309-4127-8c89-e4cfdae07ce6/summary.md) | 1 | 1 | 0.3 MB | [`965570933c02`](https://terminalvalue.net/raw-traces/a13e8c12-3309-4127-8c89-e4cfdae07ce6/965570933c0206c64a18c5652f4f74be1de3807449c6f9f9a26e20a3211055fc.jsonl.gz) |
-| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 106 | 89 | 224.6 MB | `174dbae8ebdd`, not uploaded |
+| [`e61d882b`](e61d882b-5ef7-428e-90df-ffe709ac6962/summary.md) | 106 | 106 | 224.6 MB | [`174dbae8ebdd`](https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/174dbae8ebdd6decd08e3ef8e9bc8d106e01ad7667d3ace52b2a69cb4485cea7.jsonl.gz) |
 | [`7ece8184`](7ece8184-b148-4351-92d8-d634606b823e/summary.md) | 20 | 20 | 36.3 MB | [`b38cb00ee8e3`](https://terminalvalue.net/raw-traces/7ece8184-b148-4351-92d8-d634606b823e/b38cb00ee8e399df658a029f6c5f27883260d8a5bdaeb066de451cd7b1f2e2ba.jsonl.gz) |
 | [`f8bc7b54`](f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/summary.md) | 31 | 31 | 119.0 MB | [`48d54253e884`](https://terminalvalue.net/raw-traces/f8bc7b54-f877-4ee9-8e3a-b5ffbba621bc/48d54253e8843aecedd54821ca07cb9abf899068117a636ea6bbe0bb7d6b2391.jsonl.gz) |
 | [`9896d870`](9896d870-fb47-4f3c-ba4d-5b1d3e64719c/summary.md) | 27 | 27 | 82.8 MB | [`2a57c9145b73`](https://terminalvalue.net/raw-traces/9896d870-fb47-4f3c-ba4d-5b1d3e64719c/2a57c9145b731f5630b7d63c9e4dd9e494aa5d928201a4ec0c936f217b394fc0.jsonl.gz) |
@@ -2356,7 +2356,7 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`88045564`](88045564-cdd1-4d6d-b8b6-9400a81a0b70/summary.md) | 15 | 15 | 9.0 MB | [`75a9c12a10b4`](https://terminalvalue.net/raw-traces/88045564-cdd1-4d6d-b8b6-9400a81a0b70/75a9c12a10b4d8479b8b8c76ac481f00672cf19f5b3cd00efc5aa00f2a9eef13.jsonl.gz) |
 | [`01a1f467`](01a1f467-856b-7d02-9458-ab076e5fef2f/summary.md) | 12 | 12 | 25.2 MB | [`1c2c265597c3`](https://terminalvalue.net/raw-traces/01a1f467-856b-7d02-9458-ab076e5fef2f/1c2c265597c37659fa1b49b921f4c1e0ad0abf96c09da62193d44e2748816936.jsonl.gz) |
 | [`01a1f467`](01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/summary.md) | 10 | 10 | 1.6 MB | [`6dff87bb46e6`](https://terminalvalue.net/raw-traces/01a1f467-8590-7ff3-bcdd-e52e5af7e3bc/6dff87bb46e6100e0f0b869055fb429409675684bbd2d55cfba6f48218164212.jsonl.gz) |
-| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 193 | 189 | 7421.2 MB | `fc39bd45af13`, not uploaded |
+| [`01a1f5be`](01a1f5be-43bd-7532-a80c-5b4f5c304590/summary.md) | 193 | 193 | 7421.2 MB | [`fc39bd45af13`](https://terminalvalue.net/raw-traces/01a1f5be-43bd-7532-a80c-5b4f5c304590/fc39bd45af132f8b8c1833c8960b7ea05ec585038e5f96f7943f629f0818b946.jsonl.gz) |
 | [`01a1f5be`](01a1f5be-43e3-71e0-ac11-7467f893af75/summary.md) | 7 | 7 | 0.9 MB | [`101081c3cd1e`](https://terminalvalue.net/raw-traces/01a1f5be-43e3-71e0-ac11-7467f893af75/101081c3cd1e0521b8580c1861697ba9f712c666ba4bb8a5922da0ac04eb3303.jsonl.gz) |
 | [`01a1f601`](01a1f601-137a-72b2-a3ab-0227452fd2f5/summary.md) | 7 | 7 | 1.7 MB | [`a2195785f93e`](https://terminalvalue.net/raw-traces/01a1f601-137a-72b2-a3ab-0227452fd2f5/a2195785f93e4270b816a485d7754ab39045bc42395ce08e7db032088832d57e.jsonl.gz) |
 | [`01a1f62f`](01a1f62f-fbb3-7c71-b835-9a48011f7fc6/summary.md) | 7 | 7 | 2.1 MB | [`2e0f1c2341eb`](https://terminalvalue.net/raw-traces/01a1f62f-fbb3-7c71-b835-9a48011f7fc6/2e0f1c2341eb84f3445b8e8a80970f0c5cca151dbb8090ba78b32c8ce0328492.jsonl.gz) |
@@ -2394,22 +2394,22 @@ Logs are immutable snapshots: each commit points at the log as it stood when the
 | [`b9b56f5e`](b9b56f5e-fc0e-48ca-a64e-7a46495d814f/summary.md) | 25 | 25 | 41.3 MB | [`94cd11b17191`](https://terminalvalue.net/raw-traces/b9b56f5e-fc0e-48ca-a64e-7a46495d814f/94cd11b17191770b39a9048882302bd0bea56c4f7be0dfef87c1a99e4b8d6038.jsonl.gz) |
 | [`01a20067`](01a20067-8ab2-7471-a36a-124f0f6fa1a0/summary.md) | 11 | 11 | 3.1 MB | [`dcdc280aff16`](https://terminalvalue.net/raw-traces/01a20067-8ab2-7471-a36a-124f0f6fa1a0/dcdc280aff16832ad8618ff8994efa2f67210751b00aa9e6a4a043267205b3f0.jsonl.gz) |
 | [`01a2011b`](01a2011b-0c25-7e50-a716-043a2ca3d43e/summary.md) | 5 | 5 | 1.9 MB | [`034252a87593`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/034252a875936f1ae978adeeda761a16df02ecf7bf3b5069194102d705123c90.jsonl.gz) |
-| [`01a2015e`](01a2015e-daa0-70b0-8a90-7d388c4e7eae/summary.md) | 9 | 8 | 3.1 MB | `e6c752f12ebe`, not uploaded |
-| [`01a201db`](01a201db-3456-7a43-9ca6-a84978ce0ee1/summary.md) | 1 | 0 | 0.2 MB | `5d397306863c`, not uploaded |
-| [`01a201e6`](01a201e6-11c9-7b11-8316-09150509bd4e/summary.md) | 4 | 0 | 1.1 MB | `d83d63252682`, not uploaded |
-| [`01a20324`](01a20324-17e6-78c3-be25-0c0c16fe5fbb/summary.md) | 29 | 0 | 176.4 MB | `307045fae2d4`, not uploaded |
-| [`01a20324`](01a20324-1808-7960-b0aa-ed8a9c7b7090/summary.md) | 6 | 0 | 1.2 MB | `902114625f70`, not uploaded |
-| [`01a20368`](01a20368-d644-7442-bcad-8f06e8569794/summary.md) | 3 | 0 | 0.6 MB | `6364e5f05e4d`, not uploaded |
-| [`01a20390`](01a20390-7e20-77b3-af34-64f1cd1a6152/summary.md) | 4 | 0 | 0.6 MB | `93f448b34442`, not uploaded |
-| [`01a203a4`](01a203a4-deb1-7f43-ac6e-a404ce41fc66/summary.md) | 1 | 0 | 0.1 MB | `9d9e0ce64600`, not uploaded |
-| [`b30353b6`](b30353b6-2017-49c9-b550-ea9010226406/summary.md) | 5 | 0 | 1.7 MB | `507dfc4d8926`, not uploaded |
-| [`01a203f5`](01a203f5-042d-7230-aee2-8b7168f977bf/summary.md) | 7 | 0 | 1.8 MB | `e88f421bc80e`, not uploaded |
-| [`01a2040d`](01a2040d-9fee-7bf0-8ecf-b32326c791d2/summary.md) | 4 | 0 | 0.8 MB | `c6c460127e36`, not uploaded |
-| [`01a2047b`](01a2047b-5e3c-7cd1-9183-67ea76322d45/summary.md) | 3 | 0 | 0.6 MB | `ff67f621412f`, not uploaded |
-| [`01a20483`](01a20483-f4d4-7862-a9c8-04ccab48d362/summary.md) | 1 | 0 | 0.2 MB | `02a5cf95e542`, not uploaded |
-| [`01a2049a`](01a2049a-4a69-7bb1-8844-4cf9359b425c/summary.md) | 2 | 0 | 0.2 MB | `1ad05727518a`, not uploaded |
-| [`01a204a5`](01a204a5-a68e-7902-bb2d-aa0cdac92b0b/summary.md) | 1 | 0 | 0.1 MB | `bb6910bc9cc1`, not uploaded |
-| [`01a20557`](01a20557-6d02-7b90-bb22-7d896294264d/summary.md) | 1 | 0 | 0.2 MB | `8e00f735dc5a`, not uploaded |
+| [`01a2015e`](01a2015e-daa0-70b0-8a90-7d388c4e7eae/summary.md) | 9 | 9 | 3.1 MB | [`e6c752f12ebe`](https://terminalvalue.net/raw-traces/01a2015e-daa0-70b0-8a90-7d388c4e7eae/e6c752f12ebeb70ff3b7f8708989c7ae0c14f35315696d7886a3f042c0d78db6.jsonl.gz) |
+| [`01a201db`](01a201db-3456-7a43-9ca6-a84978ce0ee1/summary.md) | 1 | 1 | 0.2 MB | [`5d397306863c`](https://terminalvalue.net/raw-traces/01a201db-3456-7a43-9ca6-a84978ce0ee1/5d397306863cf50fc509883592150d2391830f29b6254891ee571cb1f4e23e5f.jsonl.gz) |
+| [`01a201e6`](01a201e6-11c9-7b11-8316-09150509bd4e/summary.md) | 4 | 4 | 1.1 MB | [`d83d63252682`](https://terminalvalue.net/raw-traces/01a201e6-11c9-7b11-8316-09150509bd4e/d83d6325268236351ece3694f458b87b765f4230ebee4152e4e25437298bc93a.jsonl.gz) |
+| [`01a20324`](01a20324-17e6-78c3-be25-0c0c16fe5fbb/summary.md) | 29 | 29 | 176.4 MB | [`307045fae2d4`](https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/307045fae2d43d023c034b89d17df5d15ec7f12bd34ce719d8439a00ef6fef0e.jsonl.gz) |
+| [`01a20324`](01a20324-1808-7960-b0aa-ed8a9c7b7090/summary.md) | 6 | 6 | 1.2 MB | [`902114625f70`](https://terminalvalue.net/raw-traces/01a20324-1808-7960-b0aa-ed8a9c7b7090/902114625f70720f0ce6a09b32f1a8f3454ae08c1e3eed7779799af5b22899a3.jsonl.gz) |
+| [`01a20368`](01a20368-d644-7442-bcad-8f06e8569794/summary.md) | 3 | 3 | 0.6 MB | [`6364e5f05e4d`](https://terminalvalue.net/raw-traces/01a20368-d644-7442-bcad-8f06e8569794/6364e5f05e4d770333d99b2283ee01ecffc3dc49d11abaf4eecb2f38105fc30a.jsonl.gz) |
+| [`01a20390`](01a20390-7e20-77b3-af34-64f1cd1a6152/summary.md) | 4 | 4 | 0.6 MB | [`93f448b34442`](https://terminalvalue.net/raw-traces/01a20390-7e20-77b3-af34-64f1cd1a6152/93f448b34442d913a2304f5ee8b7a153d7f016b336fd3c1c71d4f9a8d3684017.jsonl.gz) |
+| [`01a203a4`](01a203a4-deb1-7f43-ac6e-a404ce41fc66/summary.md) | 1 | 1 | 0.1 MB | [`9d9e0ce64600`](https://terminalvalue.net/raw-traces/01a203a4-deb1-7f43-ac6e-a404ce41fc66/9d9e0ce6460000b4d60b4ecb665ca9222aa38390c4e187543a04574e2efadb0e.jsonl.gz) |
+| [`b30353b6`](b30353b6-2017-49c9-b550-ea9010226406/summary.md) | 5 | 5 | 1.7 MB | [`507dfc4d8926`](https://terminalvalue.net/raw-traces/b30353b6-2017-49c9-b550-ea9010226406/507dfc4d8926694c6d6c4a6f96e810619aa1689765641e5d96aa6b2bf900c957.jsonl.gz) |
+| [`01a203f5`](01a203f5-042d-7230-aee2-8b7168f977bf/summary.md) | 7 | 7 | 1.8 MB | [`e88f421bc80e`](https://terminalvalue.net/raw-traces/01a203f5-042d-7230-aee2-8b7168f977bf/e88f421bc80e2f1641e1399b957e16006e52c000a15935c97c8e189269f7673d.jsonl.gz) |
+| [`01a2040d`](01a2040d-9fee-7bf0-8ecf-b32326c791d2/summary.md) | 4 | 4 | 0.8 MB | [`c6c460127e36`](https://terminalvalue.net/raw-traces/01a2040d-9fee-7bf0-8ecf-b32326c791d2/c6c460127e361808b699fb72ad9d771a2544e3fb9e98c7a587beec0bc898a10c.jsonl.gz) |
+| [`01a2047b`](01a2047b-5e3c-7cd1-9183-67ea76322d45/summary.md) | 3 | 3 | 0.6 MB | [`ff67f621412f`](https://terminalvalue.net/raw-traces/01a2047b-5e3c-7cd1-9183-67ea76322d45/ff67f621412f53cf1e07fb1415c887ecec4ba1806468ce7478c496c17700e1ce.jsonl.gz) |
+| [`01a20483`](01a20483-f4d4-7862-a9c8-04ccab48d362/summary.md) | 1 | 1 | 0.2 MB | [`02a5cf95e542`](https://terminalvalue.net/raw-traces/01a20483-f4d4-7862-a9c8-04ccab48d362/02a5cf95e5422fed01a4b9a684da919bad5ed1e2ef481f76e23f98cfbc0f3414.jsonl.gz) |
+| [`01a2049a`](01a2049a-4a69-7bb1-8844-4cf9359b425c/summary.md) | 2 | 2 | 0.2 MB | [`1ad05727518a`](https://terminalvalue.net/raw-traces/01a2049a-4a69-7bb1-8844-4cf9359b425c/1ad05727518ae45509ba55e766a4ab5fd08d18c6e66dc42ba516e47d8cdd3588.jsonl.gz) |
+| [`01a204a5`](01a204a5-a68e-7902-bb2d-aa0cdac92b0b/summary.md) | 1 | 1 | 0.1 MB | [`bb6910bc9cc1`](https://terminalvalue.net/raw-traces/01a204a5-a68e-7902-bb2d-aa0cdac92b0b/bb6910bc9cc18aadd73320c4c5a8b136e8a616faa884bcc681c9c29ac452cb6d.jsonl.gz) |
+| [`01a20557`](01a20557-6d02-7b90-bb22-7d896294264d/summary.md) | 1 | 1 | 0.2 MB | [`8e00f735dc5a`](https://terminalvalue.net/raw-traces/01a20557-6d02-7b90-bb22-7d896294264d/8e00f735dc5a2b57b7d3cdd70a6f331c7c20fa2cf933cc5e92dfa72cec6ba693.jsonl.gz) |
 
 ## Session notes
 

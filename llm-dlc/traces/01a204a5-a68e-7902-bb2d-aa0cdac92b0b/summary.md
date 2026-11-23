@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a204a5-a68e-7902-bb2d-aa0cdac92b0b` (open) |
+| Session | `01a204a5-a68e-7902-bb2d-aa0cdac92b0b` (ended) |
 | When | 2026-11-22 19:05 UTC to 2026-11-22 19:08 UTC (3 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -18,17 +18,21 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### (in progress)
-
-change `mkxnytoxzvpn`, not yet described
-
 ### Collect the release JVM results for role-gated Spring edits
 
-change `wvmztoktovsk` · [log `bb6910bc9cc1`](https://terminalvalue.net/raw-traces/01a204a5-a68e-7902-bb2d-aa0cdac92b0b/bb6910bc9cc18aadd73320c4c5a8b136e8a616faa884bcc681c9c29ac452cb6d.jsonl.gz)
+[`85080ca67c0a`](https://github.com/pilifs/in-the-loop/commit/85080ca67c0aebe8a3ba7d624a64849b490cdf4e) · [log `bb6910bc9cc1`](https://terminalvalue.net/raw-traces/01a204a5-a68e-7902-bb2d-aa0cdac92b0b/bb6910bc9cc18aadd73320c4c5a8b136e8a616faa884bcc681c9c29ac452cb6d.jsonl.gz)
 
 Job 20261122-190127-check-every-role-gated-spring-edit-histo passed at source a28ecb6f168c on vm-1. Four independent JVMs returned identical records for 98,304 histories and 294,912 edit decisions each. Both deliberately wrong callers changed the expected final observation. The run took 10.8 seconds and peaked at 130.3 MiB against estimates of two minutes and 768 MiB.
 
 Collection applied all 11 outputs for one of one jobs with zero conflicts. The recorded file hashes and the four compressed observation streams were checked, index regeneration succeeded, and all five tests selected for the changed files passed.
+
+### Record every role-gated Spring history and its reuse costs
+
+[`d717edd200ec`](https://github.com/pilifs/in-the-loop/commit/d717edd200ec3a781b7c7e179200e4a7dc549740) · [log `bb6910bc9cc1`](https://terminalvalue.net/raw-traces/01a204a5-a68e-7902-bb2d-aa0cdac92b0b/bb6910bc9cc18aadd73320c4c5a8b136e8a616faa884bcc681c9c29ac452cb6d.jsonl.gz)
+
+Four release JVMs each matched both the measured domain and its expected outcomes across 98,304 real three-edit histories. Of 36,864 declines, 10,752 followed a rejected edit and retained the field error. The two combined-graph binder receipts and 32 release decisions supplied 280,896 nonempty prefix expectations. Fresh baselines covered the other 14,016. The complete workflow timings favored different routes in the two pairs.
+
+The two runnable wrong-caller witnesses isolate a changed final bean with the same ledger and a changed final ledger with the same bean. The scorecard recomputed all four physical streams, all eight oracle tables matched, nine damaged evidence controls were rejected, both example validators passed, and all 27 selected suites passed. The original primary dispositions are preserved.
 
 ## Conversation
 

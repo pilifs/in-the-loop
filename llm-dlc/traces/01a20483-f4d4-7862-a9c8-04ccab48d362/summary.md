@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a20483-f4d4-7862-a9c8-04ccab48d362` (open) |
+| Session | `01a20483-f4d4-7862-a9c8-04ccab48d362` (ended) |
 | When | 2026-11-22 18:28 UTC to 2026-11-22 18:33 UTC (5 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -18,17 +18,21 @@
 
 The commits this session made, oldest first, with the message the agent wrote for each.
 
-### (in progress)
-
-change `zoxzsozpnpzu`, not yet described
-
 ### Collect the Commons Lang positive-tolerance proofs
 
-change `plzqnmvqzrzv` · [log `02a5cf95e542`](https://terminalvalue.net/raw-traces/01a20483-f4d4-7862-a9c8-04ccab48d362/02a5cf95e5422fed01a4b9a684da919bad5ed1e2ef481f76e23f98cfbc0f3414.jsonl.gz)
+[`b725c803a56e`](https://github.com/pilifs/in-the-loop/commit/b725c803a56eed239cc68c3ac547b61ac903b8b4) · [log `02a5cf95e542`](https://terminalvalue.net/raw-traces/01a20483-f4d4-7862-a9c8-04ccab48d362/02a5cf95e5422fed01a4b9a684da919bad5ed1e2ef481f76e23f98cfbc0f3414.jsonl.gz)
 
 Managed job 20261122-182432-prove-inclusive-positive-tolerance-on-bo verified the two-cell first-match and raw input preservation claim on both original #1589 JARs. Both strict native receipts are non-vacuous and both 18,900-row JVM grids match the exact-rational oracle.
 
 Collection applied outputs for one of one jobs with zero conflicts. All 12 recorded digests rechecked. The measured step took 3.2 seconds and peaked at 85.3 MiB. Its one-CPU quota accounted for 2.7 seconds of throttling.
+
+### Record both positive-tolerance proofs and their boundary controls
+
+[`54eb6a0be1cf`](https://github.com/pilifs/in-the-loop/commit/54eb6a0be1cf779c5e90cb66d20ac4176f6ae258) · [log `02a5cf95e542`](https://terminalvalue.net/raw-traces/01a20483-f4d4-7862-a9c8-04ccab48d362/02a5cf95e5422fed01a4b9a684da919bad5ed1e2ef481f76e23f98cfbc0f3414.jsonl.gz)
+
+Both original Commons Lang JARs verified first match and raw input preservation for two independently chosen binary64 cells, every Java int start, three exact centers and tolerance 0.25. The caller quiets signaling NaNs before the search. Each JVM independently matched 18,900 exact-rational cases. A lower-exclusive or upper-exclusive rule changes 564 results each, and a last-match rule changes 582.
+
+The scorecard rechecks the raw verdicts and physical observations from job 20261122-182432-prove-inclusive-positive-tolerance-on-bo, the two distinct production classes and the common observer and checker. The original primary populations and previous companion records compare equal. All eight oracle grids and the example validator passed. The selected suite passed 28 of 28 groups, with the JBMC resource-limit stand-in passing on automatic retry.
 
 ## Conversation
 

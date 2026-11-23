@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Execute copying HashSets on the selected JDK (verification pending)
 
-change `lxvryyuprqwq` · [log `f4160017431a`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/f4160017431ade3686a5880ce15514ea8a1b97faa158b8c3e7d11a845c370d02.jsonl.gz)
+[`891965e9d066`](https://github.com/pilifs/in-the-loop/commit/891965e9d06616331f9d2a71cbd4229964c6dc5f) · [log `f4160017431a`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/f4160017431ade3686a5880ce15514ea8a1b97faa158b8c3e7d11a845c370d02.jsonl.gz)
 
 Execute the collection constructor and its actual HashMap, source iterator, hashCode and equals callbacks on exact new HashSets. Verify the selected JDK bytecode that creates the shared membership sentinel. Preserve the separate opt-in model and existing receiver layouts. Avro Schema and the JavaParser printer both use this constructor.
 
@@ -28,7 +28,7 @@ On Temurin 21.0.13, the original JavaParser postorder fix advanced from a refuse
 
 ### Qualify Avro schema construction on both changes (verification pending)
 
-change `lxxxznmwxmxu` · [log `5ff29e128788`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/5ff29e128788d0d877cdecc4be29e62ca0ef648c3ecb2a6b7d9096294f958a74.jsonl.gz)
+[`7609e1d99de2`](https://github.com/pilifs/in-the-loop/commit/7609e1d99de212c117e7170eb66c5f461b7671e9) · [log `5ff29e128788`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/5ff29e128788d0d877cdecc4be29e62ca0ef648c3ecb2a6b7d9096294f958a74.jsonl.gz)
 
 Match all 56 instructions in the reserved-name producer against both original revisions of Avro 3878 and 729, including every literal, call and field. Fresh JVMs agreed at all four sites, and replacing aliases with alias invalidated the match. The pinned pilot refused the copy constructor. The current checker proved that the enum adds default without changing the schema set. The checked interval begins after Jackson startup.
 
@@ -38,7 +38,7 @@ Collected all 124 hashed outputs from the eight JavaParser separator-only contra
 
 ### Prove JavaParser startup from explicit JVM inputs (verification pending)
 
-change `nwoqkmxmzsqv` · [log `777c1e90fea3`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/777c1e90fea3a2abf2b9d4cd18acc3ec571b062d9050f7a08b7f75ef30cc1b65.jsonl.gz)
+[`d973727e8b8a`](https://github.com/pilifs/in-the-loop/commit/d973727e8b8a37a74a1510aad91faa47352d22ae) · [log `777c1e90fea3`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/777c1e90fea3a2abf2b9d4cd18acc3ec571b062d9050f7a08b7f75ef30cc1b65.jsonl.gz)
 
 On the qualified Temurin 21 and 25 string implementations, strict checking replaces a one-unit literal over bounded symbolic UTF-16 while preserving the receiver on misses, fresh changed values, and canonical empty deletion. Arbitrary CharSequence callbacks retain their refusal. JavaParser's original enum now proves its text, escaped description, correlated reads and stability after a later write for all non-null inputs through three units, without a captured class. A cleared property produces the original initialization error and subsequent erroneous use.
 
@@ -48,7 +48,7 @@ Job 20261122-030646-prove-javaparser-startup-for-supplied-an checks text, absenc
 
 ### Prove Jackson's ordinary hex tables across Avro (verification pending)
 
-change `turwxyvlvusq` · [log `dd82b38e6b41`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/dd82b38e6b4199a74f384e3da4faa8fb14774a757abd6a31c5440037b05e5cd8.jsonl.gz)
+[`85b273568908`](https://github.com/pilifs/in-the-loop/commit/85b273568908a69431533c380440bff15da73eb4) · [log `dd82b38e6b41`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/dd82b38e6b4199a74f384e3da4faa8fb14774a757abd6a31c5440037b05e5cd8.jsonl.gz)
 
 Execute the JDK's integer fill and Latin-1 CharacterData path. A strict run may execute a looping application initializer that builds final primitive tables, preserving real failures and explicit initialization contracts. The existing primitive array-copy model continues to enforce the caller's mutable-heap boundary. Fresh JVMs checked every ASCII value on all four original Avro classpaths. The later Jackson maps 0x141 to 10 while the earlier Jackson returns -1, so the ASCII fact cannot be applied to arbitrary integers.
 
@@ -58,7 +58,7 @@ The collected JavaParser verification retained the full separator text and descr
 
 ### Report the qualified Avro and JavaParser startup follow-up
 
-change `zutzksuxxzlu` · [log `034252a87593`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/034252a875936f1ae978adeeda761a16df02ecf7bf3b5069194102d705123c90.jsonl.gz)
+[`acf976dfee77`](https://github.com/pilifs/in-the-loop/commit/acf976dfee77b5e0597540659d6f5b79db7e352c) · [log `034252a87593`](https://terminalvalue.net/raw-traces/01a2011b-0c25-7e50-a716-043a2ca3d43e/034252a875936f1ae978adeeda761a16df02ecf7bf3b5069194102d705123c90.jsonl.gz)
 
 Publish the follow-up scorecard, report and three example records. All eight JavaParser contracts qualified with only the separator enum captured. The public traversal also qualified on a fresh application for every explicitly supplied separator through two UTF-16 units, and the independent text and failed-initialization controls held on both original revisions. The final common checker repeated the seventeen ordinary attempts and the four scoped decimals. The primary score remains 39/46, JavaParser 2/8 and the separate decimal adoption 2/4 at original scope.
 
