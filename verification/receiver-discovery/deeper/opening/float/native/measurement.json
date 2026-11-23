@@ -1,0 +1,1091 @@
+{
+  "schema": "receiver-deep-case/v1",
+  "job": "20261123-225414-measure-two-independent-mutablefloat-ope",
+  "source": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "classes": {
+    "FloatHistory.class": "f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5"
+  },
+  "jars": [
+    {
+      "name": "commons-lang3-3.17.0.jar",
+      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+    }
+  ],
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "originalJvm": [
+    "100081 pairs; x=3f800001 y=3f800000 original=34000000 translated=00000000"
+  ],
+  "checker": "6d7135bec84a4e2153a48f7d4c71fa28f84e54ebafe627a4add9ee7524fbef4d",
+  "results": {
+    "exact": {
+      "verdict": "unverifiable",
+      "firstUnproved": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "FloatHistory#exact",
+        "domain": "x: float \u00d7 y: float",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-exact/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "FloatHistory#exact cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples",
+            "uri": null,
+            "line": 12
+          }
+        ],
+        "output": "\u2717 FloatHistory#exact cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-exact",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.008490743,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 69,
+            "solving_seconds": 0.001014429,
+            "gates_evaluated": 119,
+            "evaluating_seconds": 5.441e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1366,
+            "clauses": 4310,
+            "seconds": 0.007029897,
+            "loading_seconds": 0.000130574,
+            "decoding_seconds": 4.696e-05,
+            "encoding_seconds": 0.00079448,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.007,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.001,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1366,
+                "clauses": 4310
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.022,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.007,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.013
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: float \u00d7 y: float"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      }
+    },
+    "translated": {
+      "verdict": "unverifiable",
+      "firstUnproved": "outside the fragment: Float Add with more than 64 reachable operand tuples",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "FloatHistory#translated",
+        "domain": "x: float \u00d7 y: float",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: Float Add with more than 64 reachable operand tuples",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-translated/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "FloatHistory#translated cannot be verified: outside the fragment: Float Add with more than 64 reachable operand tuples",
+            "uri": null,
+            "line": 15
+          }
+        ],
+        "output": "\u2717 FloatHistory#translated cannot be verified: outside the fragment: Float Add with more than 64 reachable operand tuples\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-translated",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.005224374,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 69,
+            "solving_seconds": 0.001063468,
+            "gates_evaluated": 119,
+            "evaluating_seconds": 6.414e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1327,
+            "clauses": 4218,
+            "seconds": 0.004275758,
+            "loading_seconds": 9.7142e-05,
+            "decoding_seconds": 3.6729e-05,
+            "encoding_seconds": 0.000653327,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.004,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.002,
+                "encoding": 0.001,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1327,
+                "clauses": 4218
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.014,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.004,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.009
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: float \u00d7 y: float"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      }
+    },
+    "afterReturn": {
+      "verdict": "unverifiable",
+      "firstUnproved": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "FloatHistory#afterReturn",
+        "domain": "x: float \u00d7 y: float",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-afterReturn/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "FloatHistory#afterReturn cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples",
+            "uri": null,
+            "line": 26
+          }
+        ],
+        "output": "\u2717 FloatHistory#afterReturn cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-afterReturn",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.00800883,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 69,
+            "solving_seconds": 0.001031423,
+            "gates_evaluated": 119,
+            "evaluating_seconds": 6.893e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1366,
+            "clauses": 4310,
+            "seconds": 0.006803492,
+            "loading_seconds": 0.000121016,
+            "decoding_seconds": 3.9665e-05,
+            "encoding_seconds": 0.000771127,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.007,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.001,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1366,
+                "clauses": 4310
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.018,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.007,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.01
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: float \u00d7 y: float"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      }
+    },
+    "adjacent": {
+      "verdict": "unverifiable",
+      "firstUnproved": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "FloatHistory#adjacent",
+        "domain": "x: float \u00d7 y: float",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-adjacent/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "FloatHistory#adjacent cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples",
+            "uri": null,
+            "line": 13
+          }
+        ],
+        "output": "\u2717 FloatHistory#adjacent cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-adjacent",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.011287661,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 69,
+            "solving_seconds": 0.001500012,
+            "gates_evaluated": 120,
+            "evaluating_seconds": 6.722e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1450,
+            "clauses": 4597,
+            "seconds": 0.009682935,
+            "loading_seconds": 0.000158556,
+            "decoding_seconds": 6.3291e-05,
+            "encoding_seconds": 0.00124696,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.01,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.007,
+                "encoding": 0.001,
+                "solving": 0.002,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1450,
+                "clauses": 4597
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.025,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.01,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.014
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: float \u00d7 y: float"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      }
+    },
+    "rounded": {
+      "verdict": "unverifiable",
+      "firstUnproved": "outside the fragment: Float Add with more than 64 reachable operand tuples",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "FloatHistory#rounded",
+        "domain": "x: float \u00d7 y: float",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: Float Add with more than 64 reachable operand tuples",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-rounded/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "FloatHistory#rounded cannot be verified: outside the fragment: Float Add with more than 64 reachable operand tuples",
+            "uri": null,
+            "line": 21
+          }
+        ],
+        "output": "\u2717 FloatHistory#rounded cannot be verified: outside the fragment: Float Add with more than 64 reachable operand tuples\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-rounded",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.009422367,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 69,
+            "solving_seconds": 0.00136993,
+            "gates_evaluated": 119,
+            "evaluating_seconds": 6.954e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1395,
+            "clauses": 4426,
+            "seconds": 0.008027505,
+            "loading_seconds": 0.00013324,
+            "decoding_seconds": 4.6729e-05,
+            "encoding_seconds": 0.001084878,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.008,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.005,
+                "encoding": 0.001,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1395,
+                "clauses": 4426
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.02,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.008,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.01
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "x",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "y",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "x: float \u00d7 y: float"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 16,
+        "maxArrayLength": 8
+      }
+    },
+    "constructed": {
+      "discovery": {
+        "freshObserverInputs": true,
+        "generatedClass": "ReceiverHistoryf7c8e87d9a578c38",
+        "generatedSha256": "c14b58d9d9287a84b3273c0baddc5e463cdefa1aa8f67ab87dfee3d40df025fb",
+        "maxProducers": 64,
+        "missed": [
+          {
+            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(Ljava/lang/Number;)V",
+            "reason": "reference argument needs another producer or an input domain"
+          },
+          {
+            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(Ljava/lang/String;)V",
+            "reason": "reference argument needs another producer or an input domain"
+          }
+        ],
+        "nullCollaborators": false,
+        "observer": "FloatHistory#exactOn",
+        "observerBinding": {
+          "bound_release": 21,
+          "candidates": [
+            {
+              "entry": "FloatHistory.class",
+              "provider": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/classes",
+              "sha256": "f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5"
+            }
+          ],
+          "class": "FloatHistory",
+          "entry": "FloatHistory.class",
+          "index": 0,
+          "manifest": null,
+          "provider": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/classes",
+          "selected_by": "rule",
+          "sha256": "f30286191b997b1224d8e5a86f2729258309d1302db5bdfc86360e81b116f8f5",
+          "shadowed": []
+        },
+        "observerDescriptor": "(Lorg/apache/commons/lang3/mutable/MutableFloat;F)Z",
+        "plans": [
+          {
+            "binding": {
+              "bound_release": 21,
+              "candidates": [
+                {
+                  "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
+                  "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+                  "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b"
+                }
+              ],
+              "class": "org.apache.commons.lang3.mutable.MutableFloat",
+              "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
+              "index": 1,
+              "manifest": "enabled",
+              "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+              "selected_by": "rule",
+              "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b",
+              "shadowed": []
+            },
+            "descriptor": "(F)Z",
+            "entry": "ReceiverHistoryf7c8e87d9a578c38#history0",
+            "nullArgumentPositions": [],
+            "parameters": [],
+            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>()V"
+          },
+          {
+            "binding": {
+              "bound_release": 21,
+              "candidates": [
+                {
+                  "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
+                  "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+                  "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b"
+                }
+              ],
+              "class": "org.apache.commons.lang3.mutable.MutableFloat",
+              "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
+              "index": 1,
+              "manifest": "enabled",
+              "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+              "selected_by": "rule",
+              "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b",
+              "shadowed": []
+            },
+            "descriptor": "(FF)Z",
+            "entry": "ReceiverHistoryf7c8e87d9a578c38#history1",
+            "nullArgumentPositions": [],
+            "parameters": [
+              "value"
+            ],
+            "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(F)V"
+          }
+        ],
+        "receiver": "org/apache/commons/lang3/mutable/MutableFloat",
+        "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
+      },
+      "selected": {
+        "binding": {
+          "bound_release": 21,
+          "candidates": [
+            {
+              "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
+              "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+              "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b"
+            }
+          ],
+          "class": "org.apache.commons.lang3.mutable.MutableFloat",
+          "entry": "org/apache/commons/lang3/mutable/MutableFloat.class",
+          "index": 1,
+          "manifest": "enabled",
+          "provider": "/home/filip/.cache/in-the-loop/receiver-construction/m2/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar",
+          "selected_by": "rule",
+          "sha256": "4d8d268c4e1dba3d7ab4179ada141a479b661c9d1cb8a5381bce4c6a71876e1b",
+          "shadowed": []
+        },
+        "descriptor": "(FF)Z",
+        "entry": "ReceiverHistoryf7c8e87d9a578c38#history1",
+        "nullArgumentPositions": [],
+        "parameters": [
+          "value"
+        ],
+        "producer": "org/apache/commons/lang3/mutable/MutableFloat#<init>(F)V"
+      },
+      "verdict": "unverifiable",
+      "firstUnproved": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "ReceiverHistoryf7c8e87d9a578c38#history1",
+        "domain": "arg0: float \u00d7 arg1: float",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "outside the fragment: Float Sub with more than 64 reachable operand tuples",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-constructed/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "ReceiverHistoryf7c8e87d9a578c38#history1 cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples",
+            "uri": null,
+            "line": 1
+          }
+        ],
+        "output": "\u2717 ReceiverHistoryf7c8e87d9a578c38#history1 cannot be verified: outside the fragment: Float Sub with more than 64 reachable operand tuples\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpk2hoq0wo/native-constructed",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.006402992,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 5,
+            "merges": 0,
+            "solver_calls": 69,
+            "solving_seconds": 0.000928097,
+            "gates_evaluated": 119,
+            "evaluating_seconds": 5.529e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1366,
+            "clauses": 4310,
+            "seconds": 0.005233702,
+            "loading_seconds": 0.000124822,
+            "decoding_seconds": 4.1366e-05,
+            "encoding_seconds": 0.000692509,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.005,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.003,
+                "encoding": 0.001,
+                "solving": 0.001,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1366,
+                "clauses": 4310
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.017,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.005,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.01
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "arg0",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              },
+              {
+                "name": "arg1",
+                "type": "float",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "arg0: float \u00d7 arg1: float"
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      }
+    }
+  }
+}

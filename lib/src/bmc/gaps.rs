@@ -783,7 +783,10 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
 pub(super) fn assertion_prologue(cf: &crate::classfile::ClassFile, ops: &[(u32, Insn)]) -> Option<u32> {
     let [(_, Insn::Ldc(class)), (pc, Insn::InvokeVirtual(call)), ..] = ops else { return None };
     let method = cf.pool.member(*call).ok()?;
-    if cf.pool.class_name(*class).ok()? != cf.name || method.owner != "java/lang/Class"
+    let status_owner = cf.pool.class_name(*class).ok()?;
+    // javac also emits this prologue in member classes, using the outer class literal.
+    if (status_owner != cf.name && cf.outer_class().as_deref() != Some(status_owner))
+        || method.owner != "java/lang/Class"
         || method.name != "desiredAssertionStatus" || method.descriptor != "()Z" { return None; }
     let field = cf.field("$assertionsDisabled")?;
     (field.is_static() && field.is_final() && field.descriptor == "Z"

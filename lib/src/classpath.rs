@@ -1178,7 +1178,7 @@ impl ClassPath {
     /// JDK array operations and the character and collection methods used by their callers.
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
-            ("java/util/Arrays", "fill", "([CC)V" | "([II)V" | "([IIII)V" | "([Ljava/lang/Object;Ljava/lang/Object;)V")
+            ("java/util/Arrays", "fill", "([BB)V" | "([CC)V" | "([II)V" | "([IIII)V" | "([Ljava/lang/Object;Ljava/lang/Object;)V")
             | ("java/lang/StringUTF16", "newBytesFor", "(I)[B")
             | ("java/lang/StringUTF16", "newBytesLength", "(I)I")
             | ("java/lang/Character", "toLowerCase", "(C)C" | "(I)I")
@@ -1904,7 +1904,8 @@ impl ClassPath {
             | ("java/lang/Math", "multiplyHigh", "(JJ)J")
             | ("java/lang/Integer", "decode", "(Ljava/lang/String;)Ljava/lang/Integer;")
             | ("java/lang/Integer", "parseInt", "(Ljava/lang/CharSequence;III)I")
-            | ("java/lang/Integer", "intValue", "()I")
+            | ("java/lang/Long" | "java/lang/Integer", "intValue", "()I")
+            | ("java/lang/Long" | "java/lang/Integer", "longValue", "()J")
             | ("java/lang/Byte", "<init>", "(B)V") | ("java/lang/Short", "<init>", "(S)V")
             | ("java/lang/Long", "<init>", "(J)V") | ("java/lang/Float", "<init>", "(F)V")
             | ("java/lang/Double", "<init>", "(D)V") | ("java/lang/Number", "<init>", "()V"))

@@ -9,11 +9,12 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import sys
 import tempfile
 import zipfile
 
 from callers import ASSETS, JDK, ROOT, RESULTS, read, sha
-from investigate import command, native, witness_args, write
+from investigate import class_bytes, command, compiler, inventory, native, original, witness_args, write
 from qualification import construct
 from standalone import BINARY, MODELS
 
@@ -29,7 +30,7 @@ DIGESTS = {
 }
 
 
-def build(case, tmp):
+def build(case, tmp, stage="opening"):
     number, owner, release = TYPES[case]
     (home,) = (ROOT / "examples").glob(number + "-*")
     jars = (
@@ -42,6 +43,7 @@ def build(case, tmp):
     )
     if release and sha(jars[0]) != DIGESTS[case]:
         raise ValueError("release binding: " + case)
+    fixture = "single-monitor" if case == "schedule" and stage == "single-monitor" else "original"
     dest = tmp / "classes"
     dest.mkdir()
     command(
@@ -56,7 +58,7 @@ def build(case, tmp):
             os.pathsep.join(map(str, jars)),
             "-d",
             dest,
-            *sorted((home / "original").glob("*.java")),
+            *sorted((home / fixture).glob("*.java")),
         ]
     )
     cp = [dest, *jars]
@@ -95,6 +97,38 @@ def physical(case, cp, drivers):
     if want not in out:
         raise ValueError(out)
     return out.splitlines()
+
+
+def digit_table(checker, cp, drivers, tmp):
+    sys.path.insert(0, str(ROOT / "lib/python"))
+    from jvm_disassembly import methods
+
+    subject = inventory(checker, cp, "com.google.common.primitives.Longs$AsciiDigits#<clinit>")
+    body = tmp / "AsciiDigits.class"
+    body.write_bytes(class_bytes(subject["binding"]))
+    table, _ = methods(JDK / "bin/javap", body)
+    (pc,) = [
+        i.pc
+        for i in table["<clinit>", "()V"]["code"]
+        if i.op == "invokestatic" and "java/util/Arrays.fill:([BB)V" in i.member
+    ]
+    tools = compiler(tmp)
+    jvm = {}
+    for name in ("tilde", "minimum"):
+        entry = inventory(checker, [drivers, *cp], "DigitTableEntry#" + name)
+        lines = original(tools, [drivers, *cp], subject, {"pc": pc, "kind": "call"}, entry, [])
+        if not any(s.startswith("hit ") for s in lines) or lines[-1] != "returned true":
+            raise ValueError((name, lines))
+        jvm[name] = lines
+    return {
+        "classSha256": sha(body),
+        "owner": subject["owner"],
+        "method": subject["method"],
+        "descriptor": subject["descriptor"],
+        "pc": pc,
+        "target": "java/util/Arrays.fill:([BB)V",
+        "originalJvm": jvm,
+    }
 
 
 def string_value(i):
@@ -214,7 +248,7 @@ def native_cases(case, cp, drivers, tmp, checker, stage):
     return rows
 
 
-def comparator(case, cp, drivers, tmp, out):
+def comparator(case, cp, drivers, tmp, out, stage):
     if (
         sha(BINARY) != "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c"
         or sha(MODELS) != "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de"
@@ -287,6 +321,8 @@ def comparator(case, cp, drivers, tmp, out):
                 "--json-ui",
             ]
             if case == "hex":
+                if stage == "nonnull":
+                    flags.append("--java-assume-inputs-non-null")
                 flags += [
                     "--unwindset",
                     "java::com.google.common.primitives.Longs$AsciiDigits.<clinit>:()V.1:27,java::java.util.Arrays.fill:([BB)V.0:129",
@@ -310,15 +346,18 @@ def comparator(case, cp, drivers, tmp, out):
                 raise ValueError("missing property report")
             raw = out / (profile + "-" + name + ".json.gz")
             raw.write_bytes(gzip.compress(run.stdout, mtime=0))
+            action = "finish" if stage == "single-monitor" else "commit"
             selected = [
                 p
                 for p in props
                 if (p.get("sourceLocation") or {}).get("propertyClass") == "assertion"
                 and (
-                    (entry == "Duty" and "Duty$Board.commit" in p["property"])
+                    (entry == "Duty" and p["property"].startswith(f"java::Duty$Board.{action}:(IZ)V."))
                     or p["property"].startswith("java::" + entry + "." + name + ":")
                 )
             ]
+            if len(selected) != 1:
+                raise ValueError((name, "expected one bound user assertion", selected))
             row = {
                 "flags": flags,
                 "exit": run.returncode,
@@ -410,7 +449,7 @@ if __name__ == "__main__":
     dest.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory() as d:
         tmp = Path(d)
-        home, cp, drivers = build(args.case, tmp)
+        home, cp, drivers = build(args.case, tmp, args.stage)
         checker = Path(os.environ["JVMCONTRACT"]).resolve() if args.route == "native" else None
         data = {
             "schema": "receiver-deep-case/v1",
@@ -422,6 +461,8 @@ if __name__ == "__main__":
             "originalJvm": physical(args.case, cp, drivers),
         }
         if args.route == "native":
+            if args.case == "hex" and args.stage != "opening":
+                data["digitTable"] = digit_table(checker, cp, drivers, tmp)
             data.update(
                 checker=sha(checker), results=native_cases(args.case, cp, drivers, tmp, checker, args.stage)
             )
@@ -429,7 +470,7 @@ if __name__ == "__main__":
             data.update(
                 jbmc=sha(BINARY),
                 coreModels=sha(MODELS),
-                results=comparator(args.case, cp, drivers, tmp, dest),
+                results=comparator(args.case, cp, drivers, tmp, dest, args.stage),
             )
         else:
             data["results"] = schedule(cp, drivers)

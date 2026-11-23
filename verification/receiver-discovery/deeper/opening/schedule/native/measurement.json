@@ -1,0 +1,649 @@
+{
+  "schema": "receiver-deep-case/v1",
+  "job": "20261123-225414-measure-strict-native-entry-on-all-three",
+  "source": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "classes": {
+    "Duty.class": "ac0e3a77edcff82cbcdd02289788c5db2f2cdd0261ec4fa65560e728f4b589fe",
+    "Duty$Board.class": "36780c8adf7a34aa4fbcc1bc5a223db639633bbaa306083e3b815edf6a2fbdfc",
+    "Duty$Worker.class": "51ccaa85c2501c09d56a2e1f5762422dabbc62a27ad553a81198bd2e6be39469",
+    "Duty$Gates.class": "e39e95a5aadcde210de4ea47ea1795ee997f45224c82c9fa04f8853a4d1e04f7"
+  },
+  "jars": [],
+  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "originalJvm": null,
+  "checker": "6d7135bec84a4e2153a48f7d4c71fa28f84e54ebafe627a4add9ee7524fbef4d",
+  "results": {
+    "atomic": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#atomic",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-atomic/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#atomic cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 50
+          }
+        ],
+        "output": "\u2717 Duty#atomic cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-atomic",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.005069445,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 0,
+            "solving_seconds": 0.0,
+            "gates_evaluated": 0,
+            "evaluating_seconds": 0.0,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1,
+            "clauses": 1,
+            "seconds": 0.004460995,
+            "loading_seconds": 0.000319159,
+            "decoding_seconds": 6.9299e-05,
+            "encoding_seconds": 0.0,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "Duty$Board.<clinit>:8"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.004,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.013,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.004,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.008
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    },
+    "split": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#split",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-split/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#split cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 51
+          }
+        ],
+        "output": "\u2717 Duty#split cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-split",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.054773558,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 0,
+            "solving_seconds": 0.0,
+            "gates_evaluated": 0,
+            "evaluating_seconds": 0.0,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1,
+            "clauses": 1,
+            "seconds": 0.050352968,
+            "loading_seconds": 0.000405878,
+            "decoding_seconds": 5.3841e-05,
+            "encoding_seconds": 0.0,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "Duty$Board.<clinit>:8"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.05,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.05,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.063,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.05,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.012
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    },
+    "atomicTerminal": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#atomicTerminal",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-atomicTerminal/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#atomicTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 52
+          }
+        ],
+        "output": "\u2717 Duty#atomicTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-atomicTerminal",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.005194319,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 0,
+            "solving_seconds": 0.0,
+            "gates_evaluated": 0,
+            "evaluating_seconds": 0.0,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1,
+            "clauses": 1,
+            "seconds": 0.00450639,
+            "loading_seconds": 0.0002719,
+            "decoding_seconds": 3.8733e-05,
+            "encoding_seconds": 0.0,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "Duty$Board.<clinit>:8"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.005,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.015,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.005,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.009
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    },
+    "splitTerminal": {
+      "verdict": "unverifiable",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "receipt": {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "Duty#splitTerminal",
+        "domain": "",
+        "assume": null,
+        "assert": "result",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-splitTerminal/harness/PropertyHarness.java",
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "Duty#splitTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "uri": null,
+            "line": 53
+          }
+        ],
+        "output": "\u2717 Duty#splitTerminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13 (java.lang.Class.desiredAssertionStatus() at Duty$Board.<clinit>:8). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+        "work": "/home/filip/.cache/in-the-loop/tmp/tmpuull0qyw/native-splitTerminal",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.008370698,
+          "properties": 1,
+          "unwind": 6,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 1,
+            "merges": 0,
+            "solver_calls": 0,
+            "solving_seconds": 0.0,
+            "gates_evaluated": 0,
+            "evaluating_seconds": 0.0,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 1,
+            "clauses": 1,
+            "seconds": 0.004903524,
+            "loading_seconds": 0.000371096,
+            "decoding_seconds": 4.9052e-05,
+            "encoding_seconds": 0.0,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "gaps": [
+            {
+              "id": "jdk-primitive-method:java.lang.Class.desiredAssertionStatus()Z@jdk-21.0.13",
+              "kind": "jdk-primitive-method",
+              "call": "java.lang.Class.desiredAssertionStatus()",
+              "sites": [
+                "Duty$Board.<clinit>:8"
+              ],
+              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+              "treatment": "refused"
+            }
+          ],
+          "deadline_seconds": 120.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 120.0,
+              "seconds": 0.005,
+              "ended": "no-verdict",
+              "ending": "no-verdict",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 1,
+                "clauses": 1
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.021,
+            "setup": 0.001,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.005,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.015
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [],
+            "shared_arrays": false,
+            "text": ""
+          },
+          "assumptions": [
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 6,
+            "max_array_length": null,
+            "complete": false
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null
+        }
+      },
+      "bounds": {
+        "unwind": 6,
+        "maxArrayLength": 8
+      }
+    }
+  }
+}

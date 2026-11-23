@@ -1,0 +1,1512 @@
+--- /dev/null
++++ b/verification/receiver-discovery/deeper/opening/hex/native/measurement.json
+@@ -0,0 +1,1509 @@
++{
++  "schema": "receiver-deep-case/v1",
++  "job": "20261123-225413-measure-guava-direct-null-boxed-and-comp",
++  "source": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
++  "classes": {
++    "HexClient.class": "e59ec81d5a296add7959b3359124f7225b9fcf7ab1599390adb8dd20c9d4bbcb"
++  },
++  "jars": [
++    {
++      "name": "guava-33.4.8-jre.jar",
++      "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
++    },
++    {
++      "name": "failureaccess-1.0.3.jar",
++      "sha256": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb"
++    },
++    {
++      "name": "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
++      "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
++    },
++    {
++      "name": "jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++    },
++    {
++      "name": "error_prone_annotations-2.36.0.jar",
++      "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
++    },
++    {
++      "name": "j2objc-annotations-3.0.0.jar",
++      "sha256": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"
++    }
++  ],
++  "jdkModules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "originalJvm": [
++    "direct 131072 minimum-failures 1 composition [83136, 53862, 208, 51] null malformed",
++    "id=7fffffff 2147483647",
++    "id=80000000 -9223372036854775806",
++    "id=-80000000 -2147483648",
++    "id=-80000001 -9223372036854775806"
++  ],
++  "checker": "6d7135bec84a4e2153a48f7d4c71fa28f84e54ebafe627a4add9ee7524fbef4d",
++  "results": {
++    "nullReturns": {
++      "verdict": "unverifiable",
++      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "HexClient#nullReturns",
++        "domain": "s: String of \u2264 9 code units, not null",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-nullReturns/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "HexClient#nullReturns cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 14
++          }
++        ],
++        "output": "\u2717 HexClient#nullReturns cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-nullReturns",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.011079892,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 9,
++          "stage": null,
++          "native": {
++            "paths": 17,
++            "merges": 0,
++            "solver_calls": 69,
++            "solving_seconds": 0.001231312,
++            "gates_evaluated": 4976,
++            "evaluating_seconds": 8.471e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 1783,
++            "clauses": 5316,
++            "seconds": 0.008299505,
++            "loading_seconds": 0.000914872,
++            "decoding_seconds": 8.7273e-05,
++            "encoding_seconds": 0.0009787,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13",
++              "kind": "jdk-static-method",
++              "call": "java.util.Arrays.fill(byte[], byte)",
++              "sites": [
++                "com.google.common.primitives.Longs$AsciiDigits.<clinit>:347"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.008,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.005,
++                "encoding": 0.001,
++                "solving": 0.001,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 1783,
++                "clauses": 5316
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.023,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.008,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.014
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 9
++              }
++            ],
++            "shared_arrays": false,
++            "text": "s: String of \u2264 9 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 9
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 9
++      }
++    },
++    "boxedValue": {
++      "verdict": "unverifiable",
++      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "HexClient#boxedValue",
++        "domain": "s: String of \u2264 9 code units, not null",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-boxedValue/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "HexClient#boxedValue cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 20
++          }
++        ],
++        "output": "\u2717 HexClient#boxedValue cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-boxedValue",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.009904681,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 9,
++          "stage": null,
++          "native": {
++            "paths": 17,
++            "merges": 0,
++            "solver_calls": 69,
++            "solving_seconds": 0.001234284,
++            "gates_evaluated": 4976,
++            "evaluating_seconds": 8.5897e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 1783,
++            "clauses": 5316,
++            "seconds": 0.007359704,
++            "loading_seconds": 0.000793436,
++            "decoding_seconds": 8.4237e-05,
++            "encoding_seconds": 0.000839588,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13",
++              "kind": "jdk-static-method",
++              "call": "java.util.Arrays.fill(byte[], byte)",
++              "sites": [
++                "com.google.common.primitives.Longs$AsciiDigits.<clinit>:347"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.007,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.004,
++                "encoding": 0.001,
++                "solving": 0.001,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 1783,
++                "clauses": 5316
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.02,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.007,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.012
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 9
++              }
++            ],
++            "shared_arrays": false,
++            "text": "s: String of \u2264 9 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 9
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 9
++      }
++    },
++    "rejectsMinimum": {
++      "verdict": "unverifiable",
++      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "HexClient#rejectsMinimum",
++        "domain": "s: String of \u2264 9 code units, not null",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-rejectsMinimum/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "HexClient#rejectsMinimum cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 28
++          }
++        ],
++        "output": "\u2717 HexClient#rejectsMinimum cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-rejectsMinimum",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.007707876,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 9,
++          "stage": null,
++          "native": {
++            "paths": 3,
++            "merges": 0,
++            "solver_calls": 6,
++            "solving_seconds": 6.9381e-05,
++            "gates_evaluated": 236,
++            "evaluating_seconds": 6.793e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 629,
++            "clauses": 1474,
++            "seconds": 0.00511456,
++            "loading_seconds": 0.000737082,
++            "decoding_seconds": 7.494e-05,
++            "encoding_seconds": 0.000208284,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13",
++              "kind": "jdk-static-method",
++              "call": "java.util.Arrays.fill(byte[], byte)",
++              "sites": [
++                "com.google.common.primitives.Longs$AsciiDigits.<clinit>:347"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.005,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.004,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 629,
++                "clauses": 1474
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.018,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.005,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.012
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 9
++              }
++            ],
++            "shared_arrays": false,
++            "text": "s: String of \u2264 9 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 9
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 9
++      }
++    },
++    "directReached": {
++      "verdict": "unverifiable",
++      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "HexClient#directReached",
++        "domain": "s: String of \u2264 9 code units, not null",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-directReached/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "HexClient#directReached cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 32
++          }
++        ],
++        "output": "\u2717 HexClient#directReached cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-directReached",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.013024354,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 9,
++          "stage": null,
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 11,
++            "solving_seconds": 0.000152918,
++            "gates_evaluated": 407,
++            "evaluating_seconds": 1.2294e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 859,
++            "clauses": 2194,
++            "seconds": 0.009716108,
++            "loading_seconds": 0.000927187,
++            "decoding_seconds": 0.000108123,
++            "encoding_seconds": 0.00041269,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13",
++              "kind": "jdk-static-method",
++              "call": "java.util.Arrays.fill(byte[], byte)",
++              "sites": [
++                "com.google.common.primitives.Longs$AsciiDigits.<clinit>:347"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.01,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.008,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 859,
++                "clauses": 2194
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.026,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.01,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.015
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 9
++              }
++            ],
++            "shared_arrays": false,
++            "text": "s: String of \u2264 9 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 9
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 9
++      }
++    },
++    "composition": {
++      "verdict": "unverifiable",
++      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "HexClient#composition",
++        "domain": "s: String of \u2264 6 code units, not null",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-composition/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "HexClient#composition cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 74
++          }
++        ],
++        "output": "\u2717 HexClient#composition cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-composition",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.993222524,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 6,
++          "stage": null,
++          "native": {
++            "paths": 801,
++            "merges": 285,
++            "solver_calls": 4226,
++            "solving_seconds": 0.771232204,
++            "gates_evaluated": 502775,
++            "evaluating_seconds": 0.010285791,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 28204,
++            "clauses": 98032,
++            "seconds": 0.946685243,
++            "loading_seconds": 0.000986214,
++            "decoding_seconds": 0.000137421,
++            "encoding_seconds": 0.071995542,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13",
++              "kind": "jdk-static-method",
++              "call": "java.util.Arrays.fill(byte[], byte)",
++              "sites": [
++                "com.google.common.primitives.Longs$AsciiDigits.<clinit>:347"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.947,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.102,
++                "encoding": 0.072,
++                "solving": 0.771,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 28204,
++                "clauses": 98032
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 1.01,
++            "setup": 0.002,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.947,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.06
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 6
++              }
++            ],
++            "shared_arrays": false,
++            "text": "s: String of \u2264 6 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 6
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 6
++      }
++    },
++    "earlyKey": {
++      "verdict": "violation",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "violation",
++        "target": "HexClient#earlyKey",
++        "domain": "s: String of \u2264 6 code units, not null",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": {
++          "input": "earlyKey(s=\"==\")",
++          "outcome": "false",
++          "values": [
++            "\"==\""
++          ],
++          "found": "earlyKey(s=\"iiii==\")",
++          "shrink_runs": 6,
++          "inputs": [
++            {
++              "name": "s",
++              "type": "java.lang.String",
++              "value": {
++                "kind": "string",
++                "units": [
++                  61,
++                  61
++                ]
++              }
++            }
++          ],
++          "found_inputs": [
++            {
++              "name": "s",
++              "type": "java.lang.String",
++              "value": {
++                "kind": "string",
++                "units": [
++                  105,
++                  105,
++                  105,
++                  105,
++                  61,
++                  61
++                ]
++              }
++            }
++          ],
++          "call": {
++            "class": "HexClient",
++            "class_file": "HexClient.class",
++            "classes": "after",
++            "method": "earlyKey",
++            "descriptor": "(Ljava/lang/String;)Z",
++            "static": true,
++            "arguments": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "value": {
++                  "kind": "string",
++                  "units": [
++                    61,
++                    61
++                  ]
++                },
++                "from": "s"
++              }
++            ]
++          }
++        },
++        "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as earlyKey(s=\"iiii==\"), shrunk to the input above in 6 interpreter runs, replayed in the interpreter; domain s: String of \u2264 6 code units, not null",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-earlyKey/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "property-violated",
++            "message": "Property of HexClient#earlyKey violated: `result`:\n  earlyKey(s=\"==\")\n    outcome: false",
++            "uri": null,
++            "line": 76
++          }
++        ],
++        "output": "\u2717 Property of HexClient#earlyKey violated: `result`:\n  earlyKey(s=\"==\")\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.1 s searching inputs in [-100000:100000] as earlyKey(s=\"iiii==\"), shrunk to the input above in 6 interpreter runs, replayed in the interpreter; domain s: String of \u2264 6 code units, not null)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-earlyKey",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.061294371,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 6,
++          "stage": "[-100000:100000]",
++          "native": {
++            "paths": 91,
++            "merges": 0,
++            "solver_calls": 646,
++            "solving_seconds": 0.024572901,
++            "gates_evaluated": 27970,
++            "evaluating_seconds": 0.000813072,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 2905,
++            "clauses": 9342,
++            "seconds": 0.05680348,
++            "loading_seconds": 0.000511279,
++            "decoding_seconds": 0.000137307,
++            "encoding_seconds": 0.010977128,
++            "witness_seconds": 3.9861e-05
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.057,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.021,
++                "encoding": 0.011,
++                "solving": 0.025,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 2905,
++                "clauses": 9342
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.085,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.057,
++            "replay": 0.008,
++            "jvm": 0.0,
++            "other": 0.018
++          }
++        },
++        "replay": {
++          "by": "interpreter",
++          "reproduced": true
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 6
++              }
++            ],
++            "shared_arrays": false,
++            "text": "s: String of \u2264 6 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 6
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 6
++      },
++      "originalReplay": {
++        "arguments": [
++          "61,61"
++        ],
++        "jvm": [
++          "returned false"
++        ]
++      }
++    },
++    "dropSign": {
++      "verdict": "unverifiable",
++      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "HexClient#dropSign",
++        "domain": "s: String of \u2264 6 code units, not null",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": null,
++        "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-dropSign/harness/PropertyHarness.java",
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "HexClient#dropSign cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++            "uri": null,
++            "line": 82
++          }
++        ],
++        "output": "\u2717 HexClient#dropSign cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.google.common.primitives.Longs$AsciiDigits.<clinit>:347). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-dropSign",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 1.033439349,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 6,
++          "stage": null,
++          "native": {
++            "paths": 812,
++            "merges": 292,
++            "solver_calls": 4745,
++            "solving_seconds": 0.815285526,
++            "gates_evaluated": 533768,
++            "evaluating_seconds": 0.011075516,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 31310,
++            "clauses": 108567,
++            "seconds": 1.008092856,
++            "loading_seconds": 0.001211576,
++            "decoding_seconds": 0.000173614,
++            "encoding_seconds": 0.078518467,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "gaps": [
++            {
++              "id": "jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13",
++              "kind": "jdk-static-method",
++              "call": "java.util.Arrays.fill(byte[], byte)",
++              "sites": [
++                "com.google.common.primitives.Longs$AsciiDigits.<clinit>:347"
++              ],
++              "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++              "treatment": "refused"
++            }
++          ],
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 1.008,
++              "ended": "no-verdict",
++              "ending": "no-verdict",
++              "phases": {
++                "loading": 0.001,
++                "lowering": 0.0,
++                "symbolic": 0.113,
++                "encoding": 0.079,
++                "solving": 0.815,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 31310,
++                "clauses": 108567
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 1.046,
++            "setup": 0.001,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 1.008,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.037
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "s",
++                "type": "java.lang.String",
++                "kind": "value",
++                "null": false,
++                "max_length": 6
++              }
++            ],
++            "shared_arrays": false,
++            "text": "s: String of \u2264 6 code units, not null"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": false,
++            "max_value_length": 6
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13",
++            "values": [
++              {
++                "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
++                "jdk": "25.0.5",
++                "level": "tested",
++                "leaves_out": [
++                  "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
++                  "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
++                  "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
++                  "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
++                ]
++              }
++            ]
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 6
++      }
++    },
++    "nullShape": {
++      "verdict": "verified",
++      "firstUnproved": null,
++      "receipt": {
++        "wire_version": 1,
++        "verdict": "verified",
++        "target": "HexClient#nullShape",
++        "domain": "",
++        "assume": null,
++        "assert": "result",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 132 times with unwinding assertions",
++        "problem": null,
++        "statement": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-nullShape/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "\u2713 HexClient#nullShape satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 132 times with unwinding assertions)\n",
++        "work": "/home/filip/.cache/in-the-loop/tmp/tmp68v0_2f7/native-nullShape",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.008843803,
++          "properties": 1,
++          "unwind": 132,
++          "max_array_length": 6,
++          "stage": null,
++          "native": {
++            "paths": 1,
++            "merges": 0,
++            "solver_calls": 0,
++            "solving_seconds": 0.0,
++            "gates_evaluated": 0,
++            "evaluating_seconds": 0.0,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 1,
++            "clauses": 1,
++            "seconds": 0.006082803,
++            "loading_seconds": 2.8864e-05,
++            "decoding_seconds": 4.2148e-05,
++            "encoding_seconds": 2.283e-06,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 120.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 120.0,
++              "seconds": 0.006,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.006,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 1,
++                "clauses": 1
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.025,
++            "setup": 0.004,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.006,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.015
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [],
++            "shared_arrays": false,
++            "text": ""
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 132,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "bounds": {
++        "unwind": 132,
++        "maxArrayLength": 6
++      }
++    }
++  }
++}

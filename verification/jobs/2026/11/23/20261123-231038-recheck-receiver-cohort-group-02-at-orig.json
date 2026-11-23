@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-231038-recheck-receiver-cohort-group-02-at-orig",
+  "title": "Recheck receiver cohort group 02 at original scope",
+  "description": "Repeat only the frozen receiver-blocked cases in this group. Bind both original commits, classpaths, public JVM calls and exact paired overloads. Preserve incomplete calls and their first remaining native instruction.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:regress",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:10:38+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Recheck the frozen original inputs",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py 02",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/transfer/cohort/02"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-231038-audit-the-frozen-receiver-generator-on-r",
+  "title": "Audit the frozen receiver generator on released JGraphT",
+  "description": "Discover public makers and registration actions without the held-out evaluator. Replay every automatically generated canonical transition on a fresh graph, independently check transitive closure and all identities after rejection, and measure strict native checking of the separate public identity control.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "examples": [
+      "399"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T23:10:38+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "12m"
+  },
+  "steps": [
+    {
+      "name": "Discover, then independently audit public graph histories",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/holdout.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/transfer/jgrapht"
+  ]
+}

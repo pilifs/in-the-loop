@@ -1,0 +1,173 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-230231-check-javaparser-traversal-in-fresh-sepa",
+  "title": "Check JavaParser traversal in fresh separator environments",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10m39s, peak 377.7 MiB (estimated 5m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "took 10m39s, 2.13× the estimate"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-230231-check-javaparser-traversal-in-fresh-sepa.json",
+    "sha256": "54bc218ac9b635b2c8a100be6503e42f63fd4483d552398bdd606263438bc871",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-230231-check-javaparser-traversal-in-fresh-sepa",
+      "title": "Check JavaParser traversal in fresh separator environments",
+      "description": "Bind the original property-read offset on both JavaParser revisions. Replay ordinary and supplied LF, CRLF and absent settings on separate processes, check first and repeated failed class initialization, and test the four named traversal tasks for all non-null separators up to two UTF-16 units.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:02:31+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Bind the physical read and check the public profiles",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py javaparser",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/transfer/javaparser"
+      ]
+    }
+  },
+  "sourceCommit": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "startedAt": "2026-11-23T23:09:52+00:00",
+  "finishedAt": "2026-11-23T23:25:18+00:00",
+  "wallSeconds": 926.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3922672,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 396095488,
+    "wallSeconds": 639.9,
+    "cpuSeconds": 646.1,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 2.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Bind the physical read and check the public profiles",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py javaparser",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 639.859,
+      "cpuSeconds": 646.066,
+      "cpuThrottledSeconds": 8.49,
+      "peakMemoryBytes": 396095488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-bind-the-physical-read-and-che.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/transfer/javaparser/measurement.json",
+      "change": "added",
+      "bytes": 282420,
+      "sha256": "2d9802cbf35e65930da985a98568d08f28222904b4e956b66fefba773ebb50a3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:25:21+00:00",
+    "applied": [
+      "verification/receiver-discovery/transfer/javaparser/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3a8fe6c0800b92206a3c519f358a1a9e6ee8dc40",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3a8fe6c0800b92206a3c519f358a1a9e6ee8dc40/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T232518Z-4893397d1ae990a0",
+      "outputs": "20261123T232518Z-527635ffb7c5e588",
+      "diff": "20261123T232518Z-555541d5affb5121"
+    }
+  }
+}

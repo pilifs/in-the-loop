@@ -1,0 +1,202 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-225414-check-the-full-paired-float-comparator-a",
+  "title": "Check the full paired-float comparator and reachable negative",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.4s, peak 85.3 MiB (estimated 3m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-225414-check-the-full-paired-float-comparator-a.json",
+    "sha256": "08979953ddf0d158cb66336572c47410fbc187c40d8a207d39ea4ca866ea4ef5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-225414-check-the-full-paired-float-comparator-a",
+      "title": "Check the full paired-float comparator and reachable negative",
+      "description": "Run JBMC 6.11.0 on two independent primitive float parameters. Compare exact subtraction, translation and the post-return control to the raw-bit JVM census.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc:standalone"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:54:14+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "16m"
+      },
+      "steps": [
+        {
+          "name": "Run the standalone float controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float standalone",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/opening/float/standalone"
+      ]
+    }
+  },
+  "sourceCommit": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "startedAt": "2026-11-23T23:09:52+00:00",
+  "finishedAt": "2026-11-23T23:10:19+00:00",
+  "wallSeconds": 27.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3922672,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 89456640,
+    "wallSeconds": 2.4,
+    "cpuSeconds": 3.6,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the standalone float controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float standalone",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 2.405,
+      "cpuSeconds": 3.576,
+      "cpuThrottledSeconds": 0.241,
+      "peakMemoryBytes": 89456640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-standalone-float-contr.log",
+        "lines": 11,
+        "bytes": 814,
+        "sha256": "a94437fe71702eb5a35ab2e7ec670a3dbd207ec7b973c8c04e899cf012c6bb59",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "float packaged exact [('java::DeepAssertions.exact:(FF)V.assertion.1', 'SUCCESS')] []",
+        "float packaged translated [('java::DeepAssertions.translated:(FF)V.assertion.1', 'FAILURE')] []",
+        "float packaged floatReach [('java::DeepAssertions.floatReach:(FF)V.assertion.1', 'FAILURE')] []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/opening/float/standalone/measurement.json",
+      "change": "added",
+      "bytes": 2798,
+      "sha256": "98c83df86e5c9ecf1f5352693b8fffaaf25d68e4604dca4aba9ef9cc9fb44852",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/opening/float/standalone/packaged-exact.json.gz",
+      "change": "added",
+      "bytes": 980,
+      "sha256": "8cb4a6c798840309bf3c9ab154bf43629a6987cf559f0eaf44f0c299568dd660",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/opening/float/standalone/packaged-floatReach.json.gz",
+      "change": "added",
+      "bytes": 5731,
+      "sha256": "7b08fba068c657cc6ad469bb8eee8fdf42785aca89fa5289783758a6e1dee8f7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/deeper/opening/float/standalone/packaged-translated.json.gz",
+      "change": "added",
+      "bytes": 6368,
+      "sha256": "bc8e15e86eaa9c356e46c260383cc985aacfb8e9a9bba452659e51d3ab41714c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:10:38+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/opening/float/standalone/measurement.json",
+      "verification/receiver-discovery/deeper/opening/float/standalone/packaged-exact.json.gz",
+      "verification/receiver-discovery/deeper/opening/float/standalone/packaged-floatReach.json.gz",
+      "verification/receiver-discovery/deeper/opening/float/standalone/packaged-translated.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T231020Z-026826a08df827f0",
+      "outputs": "20261123T231020Z-181758bfb3b6ca59",
+      "diff": "20261123T231020Z-2993556f98f0a2c8"
+    }
+  }
+}

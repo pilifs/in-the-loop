@@ -666,7 +666,7 @@ impl Engine<'_> {
                 || (frame.class.name.starts_with(&format!("{class}$")) && self.cp.load(&class).ok().flatten()
                     .is_some_and(|loaded| matches!(loaded.origin, crate::classpath::Origin::Jdk)));
             if frame.method != "<clinit>" { return None; }
-            let own_prologue = frame.class.name == class && self.cp.is_application(&class)
+            let own_prologue = self.cp.is_application(&frame.class.name) && self.cp.is_application(&class)
                 && frame.class.method("<clinit>", "()V")?.code.as_ref()?.instructions().ok()
                     .and_then(|ops| super::gaps::assertion_prologue(&frame.class, &ops)) == Some(frame.pc());
             if !own_prologue && (self.cp.state_image_class(&frame.class.name).is_none() || !image_host) { return None; }

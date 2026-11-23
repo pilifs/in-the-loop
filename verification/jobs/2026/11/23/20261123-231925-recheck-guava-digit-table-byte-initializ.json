@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-231925-recheck-guava-digit-table-byte-initializ",
+  "title": "Recheck Guava digit-table byte initialization and caller composition",
+  "description": "Run the original JDK byte-array fill method behind the Guava initializer. Recheck the direct null and boxed properties, negative and reach controls and the composed scanner on its original String language.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:19:25+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "7m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Check original bounds and independent controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex native --stage byte-fill",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/byte-fill/hex/native"
+  ]
+}

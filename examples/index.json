@@ -22392,13 +22392,13 @@
           "aliaslaw",
           "unchanged"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "nonnegative": "scaffolded",
-          "taken": "scaffolded",
-          "aliaslaw": "scaffolded",
-          "unchanged": "scaffolded"
+          "nonnegative": "executable",
+          "taken": "executable",
+          "aliaslaw": "executable",
+          "unchanged": "executable"
         },
         "expected": {
           "replay": "established",
@@ -22408,10 +22408,10 @@
           "unchanged": "refuted"
         },
         "claims": {
-          "nonnegative": null,
-          "taken": null,
-          "aliaslaw": null,
-          "unchanged": null
+          "nonnegative": "established",
+          "taken": "established",
+          "aliaslaw": "established",
+          "unchanged": "refuted"
         },
         "receipts": {
           "replay": {
@@ -22419,6 +22419,38 @@
             "attempt": "20261123T222742Z-7d999e2f",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "nonnegative": {
+            "path": "receipts/nonnegative/20261123T225435Z-70400733/result.json",
+            "attempt": "20261123T225435Z-70400733",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "taken": {
+            "path": "receipts/taken/20261123T225437Z-1cb9b50b/result.json",
+            "attempt": "20261123T225437Z-1cb9b50b",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "aliaslaw": {
+            "path": "receipts/aliaslaw/20261123T225438Z-d39402c2/result.json",
+            "attempt": "20261123T225438Z-d39402c2",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "unchanged": {
+            "path": "receipts/unchanged/20261123T225440Z-7754ca01/result.json",
+            "attempt": "20261123T225440Z-7754ca01",
+            "execution": "completed",
+            "status": "refuted",
             "expectation": "yes",
             "attempts": 1
           }
@@ -22484,11 +22516,11 @@
           "caught",
           "sum"
         ],
-        "readiness": "scaffolded",
+        "readiness": "executable",
         "taskReadiness": {
           "replay": "scaffolded",
-          "caught": "scaffolded",
-          "sum": "scaffolded"
+          "caught": "executable",
+          "sum": "executable"
         },
         "expected": {
           "replay": "established",
@@ -22496,8 +22528,8 @@
           "sum": "established"
         },
         "claims": {
-          "caught": null,
-          "sum": null
+          "caught": "established",
+          "sum": "established"
         },
         "receipts": {
           "replay": {
@@ -22505,6 +22537,22 @@
             "attempt": "20261123T222744Z-04d94a71",
             "execution": "completed",
             "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "caught": {
+            "path": "receipts/caught/20261123T225442Z-70bc5647/result.json",
+            "attempt": "20261123T225442Z-70bc5647",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "sum": {
+            "path": "receipts/sum/20261123T225444Z-1a4925da/result.json",
+            "attempt": "20261123T225444Z-1a4925da",
+            "execution": "completed",
+            "status": "established",
             "expectation": "yes",
             "attempts": 1
           }
@@ -22521,6 +22569,88 @@
           "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 398 TASK"
+      }
+    },
+    {
+      "id": "399",
+      "path": "examples/399-jgrapht-receiver-histories",
+      "title": "JGraphT public graph histories and edge identity",
+      "summary": "The released DirectedAcyclicGraph receives a fresh or previously registered edge. Check the returned value, thrown class, and every edge and endpoint identity after accepted and rejected insertions.",
+      "origin": "constructed",
+      "system": "JGraphT 1.5.2",
+      "symbol": "GraphHistory#identities",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Registered receiver and property controls",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The frozen automatic generator and the hand-built evaluator both use canonical public histories. The holdout job separately reports missed producers, per-constructor coverage, independent closure checks and first unsupported native instruction."
+      ],
+      "source": null,
+      "target": {
+        "family": "jgrapht-dag",
+        "role": "control",
+        "case": "jgrapht-receiver-histories",
+        "tasks": [
+          "replay",
+          "edge-identity"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay": "scaffolded",
+          "edge-identity": "scaffolded"
+        },
+        "expected": {
+          "replay": "established",
+          "edge-identity": "established"
+        },
+        "claims": {
+          "edge-identity": null
+        },
+        "receipts": {
+          "replay": {
+            "path": "receipts/replay/20261123T231025Z-ac488a72/result.json",
+            "attempt": "20261123T231025Z-ac488a72",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Registered receiver and property controls",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 399 TASK"
       }
     },
     {
@@ -22778,7 +22908,12 @@
           "atomic",
           "split",
           "atomic-terminal",
-          "split-terminal"
+          "split-terminal",
+          "replay-single-monitor",
+          "atomic-single-monitor",
+          "split-single-monitor",
+          "atomic-terminal-single-monitor",
+          "split-terminal-single-monitor"
         ],
         "readiness": "scaffolded",
         "taskReadiness": {
@@ -22786,25 +22921,47 @@
           "atomic": "scaffolded",
           "split": "scaffolded",
           "atomic-terminal": "scaffolded",
-          "split-terminal": "scaffolded"
+          "split-terminal": "scaffolded",
+          "replay-single-monitor": "scaffolded",
+          "atomic-single-monitor": "scaffolded",
+          "split-single-monitor": "scaffolded",
+          "atomic-terminal-single-monitor": "scaffolded",
+          "split-terminal-single-monitor": "scaffolded"
         },
         "expected": {
           "replay": "established",
           "atomic": "established",
           "split": "refuted",
           "atomic-terminal": "refuted",
-          "split-terminal": "refuted"
+          "split-terminal": "refuted",
+          "replay-single-monitor": "established",
+          "atomic-single-monitor": "established",
+          "split-single-monitor": "refuted",
+          "atomic-terminal-single-monitor": "refuted",
+          "split-terminal-single-monitor": "refuted"
         },
         "claims": {
           "atomic": null,
           "split": null,
           "atomic-terminal": null,
-          "split-terminal": null
+          "split-terminal": null,
+          "atomic-single-monitor": null,
+          "split-single-monitor": null,
+          "atomic-terminal-single-monitor": null,
+          "split-terminal-single-monitor": null
         },
         "receipts": {
           "replay": {
             "path": "receipts/replay/20261123T225322Z-1de169b0/result.json",
             "attempt": "20261123T225322Z-1de169b0",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "replay-single-monitor": {
+            "path": "receipts/replay-single-monitor/20261123T231613Z-7c520dd0/result.json",
+            "attempt": "20261123T231613Z-7c520dd0",
             "execution": "completed",
             "status": null,
             "expectation": "yes",

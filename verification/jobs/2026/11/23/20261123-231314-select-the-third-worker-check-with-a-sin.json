@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-231314-select-the-third-worker-check-with-a-sin",
+  "title": "Select the third-worker check with a single monitor acquisition",
+  "description": "Compare atomic, split and forced failure on each third commit. The bytecode acquires the shared monitor once per action and calls the same private update in either protocol.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:13:14+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Measure the selected original property",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule standalone --stage single-monitor",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/single-monitor/schedule/standalone"
+  ]
+}
