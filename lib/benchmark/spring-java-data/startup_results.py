@@ -90,10 +90,10 @@ def fluent_lines(job, case, graph):
             "guard": "System.lineSeparator() equals LF or CRLF", "physical": physical}
 
 
-def metadata_cases(job, case, graphs, checker):
+def metadata_cases(job, case, graphs, checker, *, ordinary_startup=False, destination=None, locator=rel):
     result = {}
     for side in ("parent", "landed"):
-        base = metadata.DEST.relative_to(ROOT) / side
+        base = ((metadata.ORDINARY if ordinary_startup else metadata.DEST).relative_to(ROOT) if destination is None else destination) / side
         data = read(job.output(base / "measurement.json"))
         stdout = job.output(base / "jvm.stdout")
         graph = graphs[side]
@@ -101,7 +101,8 @@ def metadata_cases(job, case, graphs, checker):
                 and data["libTree"] == job.record["jvmcontract"]["libTree"] and data["checkerSha256"] == checker
                 and data["sourceSha256"] == sha(metadata.OBSERVER)
                 and data["classpath"] == graph["orderedJars"][1:] and data["jdk"] == graph["jdk"]
-                and data["profile"] == metadata.SETTINGS and data["observedRoot"] == metadata.ROOT_CLASS
+                and data["profile"] == (None if ordinary_startup else metadata.SETTINGS)
+                and data["observedRoot"] == (None if ordinary_startup else metadata.ROOT_CLASS)
                 and stdout.read_text().splitlines() == metadata.physical_rows(side) and sha(stdout) == data["jvmSha256"]
                 and set(data["tasks"]) == {"components", "getters"}, "different scoped metadata run")
         provider = data["bindings"][-1]
@@ -121,7 +122,7 @@ def metadata_cases(job, case, graphs, checker):
         for method, task in data["tasks"].items():
             expected = case["claims"][method + "-" + side]
             assertion = read(metadata.FOLDER / "claims" / (method + ".json"))["assert"]
-            ordinary = expected["cacheSelectors"]["assumptions"]
+            ordinary = expected["tableSelectors" if ordinary_startup else "cacheSelectors"]["assumptions"]
             wrappers = job.output(base / method / "Calls.jvm-bytecode")
             native_selectors.bytecode_selectors(wrappers.read_bytes(), "Calls", 0, 2, ("springwork.Accessors", method, "(I)I"))
             require(sha(wrappers) == task["callsSha256"] and set(task["selectors"]) == {"0", "1", "2"}
@@ -141,13 +142,17 @@ def metadata_cases(job, case, graphs, checker):
                         and not raw["throws"] and stated["observations"]["exceptions"] == "none may be thrown"
                         and stated["bounds"]["unwind"] == expected["bounds"]["unwind"]
                         and raw["search"]["max_array_length"] == expected["bounds"]["maxArrayLength"]
-                        and item["observedRoots"] == [metadata.ROOT_CLASS] and sha(rawfile) == item["stdoutSha256"],
+                        and item["observedRoots"] == ([] if ordinary_startup else [metadata.ROOT_CLASS]) and sha(rawfile) == item["stdoutSha256"],
                         "different scoped native metadata assertion or output")
                 require(all(a in ordinary for a in stated["assumptions"] if not a.get("id", "").startswith("observed-initializer:")),
                         "unexpected assumption alongside the recorded ClassUtils initializer")
                 facts = [a["id"].split(":") for a in stated["assumptions"] if a.get("id", "").startswith("observed-initializer:")]
-                require(len(facts) == 1 and facts[0][1:3] == [metadata.ROOT_CLASS, provider["sha256"]]
-                        and item["states"] == {metadata.ROOT_CLASS: facts[0][3]}, "different initialized class or captured state")
+                if ordinary_startup:
+                    require(not facts and item["states"] == {} and raw["verdict"] in ("verified", "violation"),
+                            "incomplete ordinary metadata result or supplied state")
+                else:
+                    require(len(facts) == 1 and facts[0][1:3] == [metadata.ROOT_CLASS, provider["sha256"]]
+                            and item["states"] == {metadata.ROOT_CLASS: facts[0][3]}, "different initialized class or captured state")
                 physical_value = int(metadata.physical_rows(side)[i + (3 if method == "getters" else 0)].split("\t")[-1])
                 verdict = raw["verdict"]
                 if verdict == "verified":
@@ -162,9 +167,9 @@ def metadata_cases(job, case, graphs, checker):
                 else:
                     require(verdict == "unverifiable" and raw["problem"], "unqualified native metadata outcome")
                 selected.append({"selector": i, "verdict": verdict, "jvmResult": physical_value,
-                                 "firstBlocker": raw["problem"], "capturedStateSha256": facts[0][3], "receipt": rel(rawfile)})
+                                 "firstBlocker": raw["problem"], **({} if ordinary_startup else {"capturedStateSha256": facts[0][3]}), "receipt": locator(rawfile)})
             rows[method] = selected
-        result[side] = {"record": rel(job.output(base / "measurement.json")),
+        result[side] = {"record": locator(job.output(base / "measurement.json")),
                         "lookupProviderSha256": provider["sha256"], "tasks": rows}
     return result
 

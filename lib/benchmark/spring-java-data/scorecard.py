@@ -36,6 +36,10 @@ HIERARCHY_EDGE = "20261123-014142-check-the-omitted-spring-hierarchy-edge"
 SPRING_STARTUP = "20261123-011836-recheck-all-ordinary-spring-claims-after"
 CACHE_WRITERS = "20261123-024401-trace-the-four-spring-cache-and-writer-s"
 STARTUP_CONTROLS = "20261123-030518-measure-four-spring-startup-boundaries-o"
+CLASS_TABLES = "20261123-040519-check-ordinary-spring-class-tables-and-r"
+DEPLOYMENT_CONTROLS = "20261123-042108-bind-four-spring-startup-controls-to-the"
+CLASS_TABLE_CONFORMANCE = "20261123-040530-check-class-table-and-jar-resource-seman"
+CLASS_TABLE_COST = "20261123-042542-compare-ordinary-and-recorded-spring-met"
 MATRIX_REFERENCES = "20261122-221543-prove-reference-identity-through-both-hi"
 
 def require(ok,what):
@@ -216,7 +220,7 @@ def selector_result(folder, plan, row, task, run, job, startup=False):
     return answer
 
 
-def case(n, startup_job=None, cache_job=None):
+def case(n, startup_job=None, cache_job=None, tables_job=None):
     folder,=(ROOT/"examples").glob(f"{n}-*")
     from domains import GRIDS, table
     entry, grid=GRIDS[n]
@@ -230,10 +234,13 @@ def case(n, startup_job=None, cache_job=None):
             startup_job = managed(SPRING_STARTUP)
         if cache_job is None:
             cache_job = managed(CACHE_WRITERS)
+        if tables_job is None:
+            tables_job = managed(CLASS_TABLES)
     runs = [("nativeSelectors", end, final)]
     spring_tasks = {t["id"] for t in spec["tasks"] if t["kind"] == "prove"}
     for key, stage, summary, job in (("springStartup", "spring-startup", "startupSelectors", startup_job),
-                                     ("cacheWriters", "spring-cache-writers", "cacheSelectors", cache_job)):
+                                     ("cacheWriters", "spring-cache-writers", "cacheSelectors", cache_job),
+                                     ("classTables", "spring-class-tables", "tableSelectors", tables_job)):
         if job:
             run = run_report(job, folder, stage)
             require(job.record["status"] == "passed" and set(run["tasks"]) == spring_tasks,
@@ -253,12 +260,14 @@ def case(n, startup_job=None, cache_job=None):
         for key, run, job in runs:
             if name not in run.get("tasks", {}):
                 continue
-            answer = selector_result(folder, plan, row, task, run, job, startup=key in ("startupSelectors", "cacheSelectors"))
+            answer = selector_result(folder, plan, row, task, run, job, startup=key in ("startupSelectors", "cacheSelectors", "tableSelectors"))
             row[key] = answer
-            if key == "cacheSelectors" and row["ordinary"]["status"] in ("refuted", "established"):
+            if key in ("cacheSelectors", "tableSelectors") and row["ordinary"]["status"] in ("refuted", "established"):
                 require(answer["status"] == row["ordinary"]["status"], "previously decided Spring claim has regressed")
             if row.get("ordinary", {}).get("status") not in ("refuted", "established"):
                 row["ordinary"] = {k: answer[k] for k in ("status", "record", "admitted", "checked", "firstBlocker", "receipt")}
+                if key == "tableSelectors" and "witness" in answer:
+                    row["ordinary"]["witness"] = answer["witness"]
                 if "blockedSelector" in answer:
                     row["ordinary"]["blockedSelector"] = answer["blockedSelector"]
                 if answer["status"] == "open":
@@ -532,12 +541,29 @@ def gated_histories(job):
             "trials": trials, "controls": controls}
 
 
+def class_table_conformance(job, primary):
+    require(job.record["status"] == "passed" and job.record["sourceCommit"] == primary.record["sourceCommit"],
+            "conformance did not cover the source of the ordinary class-table proofs")
+    step, = job.record["steps"]
+    log = step["log"]
+    path = job.folder / log["path"]
+    lines = path.read_text().splitlines()
+    tests = ["the_corpus_agrees_with_the_jvm_under_jbmc_and_auto", "the_corpus_agrees_with_the_jvm_under_auto_confirm"]
+    require(sha(path) == log["sha256"] and not log["truncated"] and step["exitCode"] == 0
+            and all("test " + test + " ... ok" in lines for test in tests)
+            and any(line.startswith("test result: ok. 2 passed; 0 failed; 0 ignored;") for line in lines),
+            "missing completed JBMC and automatic-confirmation tests")
+    return {**job_info(job), "log": rel(path), "tests": tests, "stepSeconds": step["wallSeconds"],
+            "peakBytes": step["peakMemoryBytes"]}
+
+
 def recount(complete):
     out={}
     for track,numbers in [("spring",(368,370,372,374)),("data",(369,371,373,375))]:
         startup_job = managed(SPRING_STARTUP) if track == "spring" else None
         cache_job = managed(CACHE_WRITERS) if track == "spring" else None
-        cases={str(n):case(n, startup_job, cache_job) for n in numbers}
+        tables_job = managed(CLASS_TABLES) if track == "spring" else None
+        cases={str(n):case(n, startup_job, cache_job, tables_job) for n in numbers}
         totals={}
         rows=[r for c in cases.values() for r in c["claims"].values() if r["primary"]]
         for field in ("opening","ordinary","finite"):
@@ -558,6 +584,19 @@ def recount(complete):
                 require(all(side["checkerSha256"] == checker for side in registrar["sides"].values()),
                         "different checker in the ordinary callback and companion proofs")
                 companions["ordinaryRegistrar"] = registrar
+            conformance = managed(CLASS_TABLE_CONFORMANCE)
+            if conformance and tables_job:
+                companions["classTableConformance"] = class_table_conformance(conformance, tables_job)
+            deployment = managed(DEPLOYMENT_CONTROLS)
+            if deployment and tables_job and controls:
+                from deployment_results import measured_deployments
+                companions["classTableControls"] = {**job_info(deployment), **measured_deployments(
+                    deployment, controls, cases, companions["startupControls"])}
+                timing = managed(CLASS_TABLE_COST)
+                if timing:
+                    from metadata_cost_results import comparison
+                    companions["metadataStartupCost"] = {**job_info(timing), **comparison(
+                        timing, cases["372"], companions["classTableControls"])}
             elif complete:
                 raise ValueError("awaiting the Spring startup controls")
             histories_job = managed(GATED_HISTORIES)
@@ -612,7 +651,8 @@ def recount(complete):
             require((a["jarSha256"],a["classSha256"])==(b["jarSha256"],b["classSha256"]),"B1/B4 parser artifacts differ")
         if complete:
             if track == "spring":
-                require(all("startupSelectors" in row and "cacheSelectors" in row for row in rows), "missing ordinary Spring startup comparison")
+                require({"classTableControls", "metadataStartupCost", "classTableConformance"} <= set(companions), "missing Spring launch or equal-scope lookup controls")
+                require(all("startupSelectors" in row and "cacheSelectors" in row and "tableSelectors" in row for row in rows), "missing ordinary Spring startup comparison")
             require(bound and bound.record["status"]=="passed" and all("nativeFinal" in c["stages"] for c in cases.values()),"outstanding native or loaded-class jobs")
             for n in numbers:
                 require(cases[str(n)]["stages"]["nativeFinal"]["status"]=="passed"

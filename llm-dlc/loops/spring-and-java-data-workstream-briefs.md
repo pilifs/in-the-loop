@@ -236,4 +236,10 @@ All four ordinary startup paths moved again. Both binder graphs now request the 
 
 The cache and writer changes also passed both managed JBMC and automatic-confirmation corpus tests. [Conformance receipt](../../verification/results/2026/11/23/20261123-024401-check-the-spring-cache-and-writer-semant/result.json)
 
+Ordinary Spring verification now decides **8/16** primary claims. Both original metadata artifacts reached the public entry from ordinary startup, and the three parent component violations reproduced individually. Both factory JAR streams were proved byte for byte. The 32 guarded fluent proofs now apply on two bound JVM launches. Both formatters reached the first converter’s generic interfaces. [Ordinary primary receipts](../../verification/results/2026/11/23/20261123-040519-check-ordinary-spring-class-tables-and-r/result.json) · [Four startup measurements](../../verification/results/2026/11/23/20261123-042108-bind-four-spring-startup-controls-to-the/result.json)
+
+Each timing includes preparing the cached historical JARs, compiling and binding the callers, replaying both JVM name tables and checking six native selectors per JAR. Both routes used the same checker and artifact digests. Each produced nine proofs and three JVM-replayed violations. The first pair took **6.18 s from ordinary startup** and **19.72 s with ClassUtils recorded**. In reverse order the recorded route took **24.99 s** and the ordinary route **7.83 s**. Recording ClassUtils took 3.19× as long in both orders on this machine. [Paired workflow measurements](../../verification/results/2026/11/23/20261123-042542-compare-ordinary-and-recorded-spring-met/result.json)
+
+The two JBMC, automatic-selection and automatic-confirmation corpus checks passed on the same source revision as the ordinary Spring recheck. The full step took 24.8 minutes and peaked at 2.25 GiB. [Conformance record](../../verification/results/2026/11/23/20261123-040530-check-class-table-and-jar-resource-seman/result.json)
+
 - Status: done

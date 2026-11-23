@@ -1,0 +1,3522 @@
+Binary file examples/368-spring-binding-history/records/factory-stream/combined/FactoryStream.jvm-bytecode changed
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/combined/FactoryStreamWitness.java
+@@ -0,0 +1,13 @@
++package springwork;
++
++public final class FactoryStreamWitness {
++    public static int check() throws java.io.IOException {
++        byte[] expected = new byte[]{111, 114, 103, 46, 115, 112, 114, 105, 110, 103, 102, 114, 97, 109, 101, 119, 111, 114, 107, 46, 98, 101, 97, 110, 115, 46, 102, 97, 99, 116, 111, 114, 121, 46, 103, 101, 110, 101, 114, 97, 116, 111, 114, 46, 66, 101, 97, 110, 82, 101, 103, 105, 115, 116, 114, 97, 116, 105, 111, 110, 67, 111, 110, 116, 114, 105, 98, 117, 116, 105, 111, 110, 80, 114, 111, 118, 105, 100, 101, 114, 61, 32, 92, 10, 111, 114, 103, 46, 115, 112, 114, 105, 110, 103, 102, 114, 97, 109, 101, 119, 111, 114, 107, 46, 97, 111, 112, 46, 115, 99, 111, 112, 101, 46, 83, 99, 111, 112, 101, 100, 80, 114, 111, 120, 121, 66, 101, 97, 110, 82, 101, 103, 105, 115, 116, 114, 97, 116, 105, 111, 110, 67, 111, 110, 116, 114, 105, 98, 117, 116, 105, 111, 110, 80, 114, 111, 118, 105, 100, 101, 114};
++        if (!FactoryStream.matches(expected)) return 0;
++        expected[expected.length - 1] ^= 1;
++        return FactoryStream.matches(expected) ? 0 : 1;
++    }
++    public static void main(String[] args) throws Exception {
++        System.out.println(check());
++    }
++}
+Binary file examples/368-spring-binding-history/records/factory-stream/combined/FactoryStreamWitness.jvm-bytecode changed
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/combined/entry.bin
+@@ -0,0 +1,2 @@
++org.springframework.beans.factory.generator.BeanRegistrationContributionProvider= \
++org.springframework.aop.scope.ScopedProxyBeanRegistrationContributionProvider
+\ No newline at end of file
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/combined/jvm.stdout
+@@ -0,0 +1 @@
++1
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/combined/measurement.json
+@@ -0,0 +1,127 @@
++{
++  "job": "20261123-042108-bind-four-spring-startup-controls-to-the",
++  "source": "431b775c1c8eea6208d1ddd7c5f2e4bcadc6ad79",
++  "checkerSha256": "1dde0828f2c4d95908c52ae7483abb3d86965ebb13cac2a51daffe34507afde5",
++  "libTree": "cd252bc321d02573aa20831285610a4d0bf90fb4",
++  "classpath": [
++    {
++      "path": "adapter-combined.jar",
++      "sha256": "6a31c7a4e62f1c2da158ffef435c0e7992e24c53d819e8eca691f0a8f1f06dd9"
++    },
++    {
++      "path": "combined.jar",
++      "sha256": "cf9bca4d8d6ce7270e95e51b313d564401df467fb6a75f616ccab03a8c79c37b"
++    },
++    {
++      "path": "libraries/combined-spring-security-core.jar",
++      "sha256": "038a52f99d98f2843be8a382f5b18a2583be8dcb78bf4f7b4ab177fb7b36bd91"
++    },
++    {
++      "path": "libraries/combined-spring-security-crypto.jar",
++      "sha256": "dcce78f18b8cc2bf1cd5dc019b57d3ea43d05aa30e3d01c6be1625853f2e7f66"
++    },
++    {
++      "path": "libraries/combined-spring-aop.jar",
++      "sha256": "726bea14ab37a1898f2aaeeb1e4f4ddc058e13df0b7ee5b29c24403b128180d6"
++    },
++    {
++      "path": "libraries/combined-spring-beans.jar",
++      "sha256": "c65ed71bfbb708a8498c21ac247db22ca8b423639f62f831603e1128a447c8c4"
++    },
++    {
++      "path": "libraries/combined-spring-core.jar",
++      "sha256": "9391d13158b83106ea8d26f03619940ec8cc097254084c98fb0e3061c0eefaa6"
++    },
++    {
++      "path": "libraries/combined-spring-jcl.jar",
++      "sha256": "cd05cf5b2293b5fda10df5b82329af9126fcc45ecea0c1a9d7a0c425e29f67ef"
++    },
++    {
++      "path": "libraries/combined-spring-expression.jar",
++      "sha256": "cca4a10eed0b05348826093b33b9b8794ea73998b26f8e23648e3fbcfd09c275"
++    },
++    {
++      "path": "libraries/combined-micrometer-observation.jar",
++      "sha256": "bbf73132b0fa6e49a36a2c1429422204809f50946caf5806c5446cebff19f7b2"
++    },
++    {
++      "path": "libraries/combined-micrometer-commons.jar",
++      "sha256": "1cefa7dbb651f35ae886158c9d4cf4dd3cc0997fa71e89c119102e2272bfa44c"
++    },
++    {
++      "path": "libraries/combined-spring-context.jar",
++      "sha256": "43cef52930f112dbb8787f7a64eb777c7881408b4c090a03a22cce2b852a3bec"
++    }
++  ],
++  "jdk": {
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_VERSION_DATE": "2026-10-20",
++    "LIBC": "gnu",
++    "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
++    "OS_ARCH": "x86_64",
++    "OS_NAME": "Linux",
++    "SOURCE": ".:git:2ab10ca20c19",
++    "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
++    "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
++    "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
++    "FULL_VERSION": "21.0.13+9-LTS",
++    "SEMANTIC_VERSION": "21.0.13+9",
++    "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
++    "JVM_VARIANT": "Hotspot",
++    "JVM_VERSION": "21.0.13+9-LTS",
++    "IMAGE_TYPE": "JDK"
++  },
++  "provider": {
++    "jar": "combined-spring-aop.jar",
++    "jarSha256": "726bea14ab37a1898f2aaeeb1e4f4ddc058e13df0b7ee5b29c24403b128180d6",
++    "entry": "META-INF/spring.factories",
++    "entrySha256": "ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a",
++    "beanInfoFactory": ""
++  },
++  "bytes": 161,
++  "sourceSha256": "8b26313fe2e8073779082e56d8ac10c63f206d4c9f2f49e9b5a1041c81bd0f46",
++  "callerSha256": "cec6112d73f83b932b5228708b7e34da7546bfef276d88283006d094cbe90f16",
++  "entryClassSha256": "ffe42d6e0556b3a8ebdb50826803666fb2f9ad5dc9332f8a35c098a0a5fb987a",
++  "jvmSha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
++  "result": {
++    "exit": 0,
++    "seconds": 0.037092,
++    "peakRssBytes": 42921984,
++    "log": "stream.stdout",
++    "stdout": "stream.stdout",
++    "stderr": "stream.stderr",
++    "stdoutSha256": "037054839adc757434e75bfea668285eb0aeb6efb59e4e62ae12448aba8a452d",
++    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++    "target": "springwork.FactoryStreamWitness#check()",
++    "guard": null,
++    "assertion": "result == 1",
++    "observedRoots": [],
++    "bounds": [
++      256,
++      16384
++    ],
++    "verdict": "verified",
++    "blocker": null,
++    "assumptions": [
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [6:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
++        "basis": "engine"
++      }
++    ],
++    "states": {}
++  }
++}
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/combined/stream.stdout
+@@ -0,0 +1,152 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "springwork.FactoryStreamWitness#check()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/factory-stream-2gyf1gdm/stream/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ springwork.FactoryStreamWitness#check() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/factory-stream-2gyf1gdm/stream",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.015928367,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.010675608,
++        "loading_seconds": 0.000754623,
++        "decoding_seconds": 0.000105016,
++        "encoding_seconds": 0.000382573,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [6:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.011,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.001,
++            "lowering": 0.0,
++            "symbolic": 0.009,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.033,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.011,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.021
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [6:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+Binary file examples/368-spring-binding-history/records/factory-stream/release/FactoryStream.jvm-bytecode changed
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/release/FactoryStreamWitness.java
+@@ -0,0 +1,13 @@
++package springwork;
++
++public final class FactoryStreamWitness {
++    public static int check() throws java.io.IOException {
++        byte[] expected = new byte[]{111, 114, 103, 46, 115, 112, 114, 105, 110, 103, 102, 114, 97, 109, 101, 119, 111, 114, 107, 46, 98, 101, 97, 110, 115, 46, 102, 97, 99, 116, 111, 114, 121, 46, 103, 101, 110, 101, 114, 97, 116, 111, 114, 46, 66, 101, 97, 110, 82, 101, 103, 105, 115, 116, 114, 97, 116, 105, 111, 110, 67, 111, 110, 116, 114, 105, 98, 117, 116, 105, 111, 110, 80, 114, 111, 118, 105, 100, 101, 114, 61, 32, 92, 10, 111, 114, 103, 46, 115, 112, 114, 105, 110, 103, 102, 114, 97, 109, 101, 119, 111, 114, 107, 46, 97, 111, 112, 46, 115, 99, 111, 112, 101, 46, 83, 99, 111, 112, 101, 100, 80, 114, 111, 120, 121, 66, 101, 97, 110, 82, 101, 103, 105, 115, 116, 114, 97, 116, 105, 111, 110, 67, 111, 110, 116, 114, 105, 98, 117, 116, 105, 111, 110, 80, 114, 111, 118, 105, 100, 101, 114};
++        if (!FactoryStream.matches(expected)) return 0;
++        expected[expected.length - 1] ^= 1;
++        return FactoryStream.matches(expected) ? 0 : 1;
++    }
++    public static void main(String[] args) throws Exception {
++        System.out.println(check());
++    }
++}
+Binary file examples/368-spring-binding-history/records/factory-stream/release/FactoryStreamWitness.jvm-bytecode changed
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/release/entry.bin
+@@ -0,0 +1,2 @@
++org.springframework.beans.factory.generator.BeanRegistrationContributionProvider= \
++org.springframework.aop.scope.ScopedProxyBeanRegistrationContributionProvider
+\ No newline at end of file
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/release/jvm.stdout
+@@ -0,0 +1 @@
++1
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/release/measurement.json
+@@ -0,0 +1,119 @@
++{
++  "job": "20261123-042108-bind-four-spring-startup-controls-to-the",
++  "source": "431b775c1c8eea6208d1ddd7c5f2e4bcadc6ad79",
++  "checkerSha256": "1dde0828f2c4d95908c52ae7483abb3d86965ebb13cac2a51daffe34507afde5",
++  "libTree": "cd252bc321d02573aa20831285610a4d0bf90fb4",
++  "classpath": [
++    {
++      "path": "adapter-release.jar",
++      "sha256": "6a31c7a4e62f1c2da158ffef435c0e7992e24c53d819e8eca691f0a8f1f06dd9"
++    },
++    {
++      "path": "release.jar",
++      "sha256": "cf9bca4d8d6ce7270e95e51b313d564401df467fb6a75f616ccab03a8c79c37b"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "53feea6d8c61a25089d8c474c4f92ebd24f0ef7eb52ecdaf46f11e9a253fdb4e"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "5e6fc3da90c1943f2fce5f06ef04d586187ce0062fe186d80acd53109065205d"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "4e289d6c0aa3ea74633005dae06d7cc827510e5b840d68bfcebdcf0bdd363f44"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "49531684df2304f0e611f775faba79273c77504eb7d856592d830e2389e9eb14"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "8c65ec5ed648966a470e6b48b27cbebf5f1f412bd46b243e0111c5d5d96efe86"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "e901e26baaa0e333ce2cc4f29d910d630c1f7a6c6cb99ac7a3c411a506b5b780"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "28dd4b001c14fc13b0bc48535621214916518895924e3ce528a604205b1ff0a1"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "6bb0f56fb88f65ddb4b080e3d80165eeb1740f2227ba0b8ac386109969f7e9bf"
++    }
++  ],
++  "jdk": {
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_VERSION_DATE": "2026-10-20",
++    "LIBC": "gnu",
++    "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
++    "OS_ARCH": "x86_64",
++    "OS_NAME": "Linux",
++    "SOURCE": ".:git:2ab10ca20c19",
++    "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
++    "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
++    "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
++    "FULL_VERSION": "21.0.13+9-LTS",
++    "SEMANTIC_VERSION": "21.0.13+9",
++    "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
++    "JVM_VARIANT": "Hotspot",
++    "JVM_VERSION": "21.0.13+9-LTS",
++    "IMAGE_TYPE": "JDK"
++  },
++  "provider": {
++    "jar": "spring-aop.jar",
++    "jarSha256": "5e6fc3da90c1943f2fce5f06ef04d586187ce0062fe186d80acd53109065205d",
++    "entry": "META-INF/spring.factories",
++    "entrySha256": "ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a",
++    "beanInfoFactory": ""
++  },
++  "bytes": 161,
++  "sourceSha256": "8b26313fe2e8073779082e56d8ac10c63f206d4c9f2f49e9b5a1041c81bd0f46",
++  "callerSha256": "cec6112d73f83b932b5228708b7e34da7546bfef276d88283006d094cbe90f16",
++  "entryClassSha256": "ffe42d6e0556b3a8ebdb50826803666fb2f9ad5dc9332f8a35c098a0a5fb987a",
++  "jvmSha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
++  "result": {
++    "exit": 0,
++    "seconds": 0.035594,
++    "peakRssBytes": 42676224,
++    "log": "stream.stdout",
++    "stdout": "stream.stdout",
++    "stderr": "stream.stderr",
++    "stdoutSha256": "051a799c2e8c2ee51f93647e760052d1431a8bd783d9de45b010ed226e51be9b",
++    "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++    "target": "springwork.FactoryStreamWitness#check()",
++    "guard": null,
++    "assertion": "result == 1",
++    "observedRoots": [],
++    "bounds": [
++      256,
++      16384
++    ],
++    "verdict": "verified",
++    "blocker": null,
++    "assumptions": [
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++        "basis": "engine"
++      },
++      {
++        "kind": "library",
++        "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [5:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
++        "basis": "engine"
++      }
++    ],
++    "states": {}
++  }
++}
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/factory-stream/release/stream.stdout
+@@ -0,0 +1,152 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "springwork.FactoryStreamWitness#check()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/factory-stream-afolajvo/stream/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ springwork.FactoryStreamWitness#check() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/factory-stream-afolajvo/stream",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.01579145,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.011441313,
++        "loading_seconds": 0.000787285,
++        "decoding_seconds": 0.000121759,
++        "encoding_seconds": 0.000386991,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [5:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.011,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.001,
++            "lowering": 0.0,
++            "symbolic": 0.01,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.031,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.011,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.019
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/spring.factories resources (classpath index and entry SHA-256) are [5:ac11372aeb0f01062f887b563946c31a0c708039c35250a6a0e7c304a4698c6a]",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+Binary file examples/370-spring-role-hierarchy/records/fluent-launches/FluentLaunch.jvm-bytecode changed
+Binary file examples/370-spring-role-hierarchy/records/fluent-launches/RoleChecks.jvm-bytecode changed
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/fluent-launches/crlf.stdout
+@@ -0,0 +1,35 @@
++startup 13 10
++property 13 10
++active 1
++0 1 1 1
++1 1 1 1
++2 1 1 1
++3 1 1 1
++4 1 1 1
++5 1 1 1
++6 1 1 1
++7 1 1 1
++8 1 1 1
++9 1 1 1
++10 1 1 1
++11 1 1 1
++12 1 1 1
++13 1 1 1
++14 1 1 1
++15 1 1 1
++16 1 1 1
++17 1 1 1
++18 1 1 1
++19 1 1 1
++20 1 1 1
++21 1 1 1
++22 1 1 1
++23 1 1 1
++24 1 1 1
++25 1 1 1
++26 1 1 1
++27 1 1 1
++28 1 1 1
++29 1 1 1
++30 1 1 1
++31 1 1 1
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/fluent-launches/default.stdout
+@@ -0,0 +1,35 @@
++startup 10
++property 10
++active 1
++0 1 1 1
++1 1 1 1
++2 1 1 1
++3 1 1 1
++4 1 1 1
++5 1 1 1
++6 1 1 1
++7 1 1 1
++8 1 1 1
++9 1 1 1
++10 1 1 1
++11 1 1 1
++12 1 1 1
++13 1 1 1
++14 1 1 1
++15 1 1 1
++16 1 1 1
++17 1 1 1
++18 1 1 1
++19 1 1 1
++20 1 1 1
++21 1 1 1
++22 1 1 1
++23 1 1 1
++24 1 1 1
++25 1 1 1
++26 1 1 1
++27 1 1 1
++28 1 1 1
++29 1 1 1
++30 1 1 1
++31 1 1 1
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/fluent-launches/measurement.json
+@@ -0,0 +1,126 @@
++{
++  "producer": "20261123-030518-measure-four-spring-startup-boundaries-o",
++  "checkerSha256": "deb4a0c10d2a148f1c58b0e326e71cbf3db96196c3dddcf6d0ea2a05622a22f2",
++  "guardSha256": "ef3131b79702f0a4bf302c5e245f424c268beaef169b263b21dbb505dd185a05",
++  "observersSha256": "d11029ced4b8f2e0910558518f1aba020756477afade14ca71d74f5ae379c2ae",
++  "casesSha256": "54993b171a4e968759879fe17e3c2d9a67287cc5c8fa2e9573e08d12befcb5f5",
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "8a3cf8603ffeccaaa232fcb9393fabc0813bfa192c67230931cc7a0260f40253"
++    },
++    {
++      "path": "landed.jar",
++      "sha256": "65d336fc443902e8594184cb904c3cfd80fadfa5b212598b5a7123aaedff3bb9"
++    },
++    {
++      "path": "libraries/spring-security-14196-landed.jar",
++      "sha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be"
++    },
++    {
++      "path": "libraries/spring-security-crypto.jar",
++      "sha256": "31d6e76aee55aaddcc677cd7da0fd57a8739ca0018f66158e31caac58b616b7a"
++    },
++    {
++      "path": "libraries/spring-aop.jar",
++      "sha256": "a3d5a8e7f7f1dc231c25d1d80669b67c3a306294bc9e36cdd002453e76a481b1"
++    },
++    {
++      "path": "libraries/spring-beans.jar",
++      "sha256": "2bca4b8cdeeb81121db76cc423e4d952e251f708e9abc319c8e3f38511c43b86"
++    },
++    {
++      "path": "libraries/spring-core.jar",
++      "sha256": "a2ef6992edc54d3380ba95c56d86d1baf64afb0eda9296518be21a483318d93f"
++    },
++    {
++      "path": "libraries/spring-jcl.jar",
++      "sha256": "df17daa5812222a83795065dcc920a494dad423171265f8fa392628961c92317"
++    },
++    {
++      "path": "libraries/spring-expression.jar",
++      "sha256": "a787dc92f1f9959069f5be206d5adbd6c1efb2444d458d279f02eda6b0e6b26f"
++    },
++    {
++      "path": "libraries/micrometer-observation.jar",
++      "sha256": "3f160a849da81d2520bbdfe1d6976d1f72568256479576a16bf95babb6520085"
++    },
++    {
++      "path": "libraries/micrometer-commons.jar",
++      "sha256": "f4b8ecae3c8ef40fd9b9da82582aada1cf764b8bb93f4a2a2126575e3f67de47"
++    },
++    {
++      "path": "libraries/spring-context.jar",
++      "sha256": "b46807c32546320560078dddd95f3b2e6a42b7a643830b323f45b0573bdbfaad"
++    }
++  ],
++  "jdk": {
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_VERSION_DATE": "2026-10-20",
++    "LIBC": "gnu",
++    "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
++    "OS_ARCH": "x86_64",
++    "OS_NAME": "Linux",
++    "SOURCE": ".:git:2ab10ca20c19",
++    "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
++    "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
++    "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
++    "FULL_VERSION": "21.0.13+9-LTS",
++    "SEMANTIC_VERSION": "21.0.13+9",
++    "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
++    "JVM_VARIANT": "Hotspot",
++    "JVM_VERSION": "21.0.13+9-LTS",
++    "IMAGE_TYPE": "JDK"
++  },
++  "runtimeSha256": {
++    "bin/java": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++    "lib/server/libjvm.so": "b1a6a98962406718a491922ea6a3f8d898ea7c4a9ebe814a7963defc61ce62b2",
++    "lib/modules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++    "release": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898"
++  },
++  "environment": {
++    "LC_ALL": "C",
++    "TZ": "UTC"
++  },
++  "sourceSha256": "1846e6c4d7628937f329b74116ab14a218f1706d85f3712e1f0f0dac981610d0",
++  "launchClassSha256": "1cdb18f47f67bd54d6b5151709fc32fead064ea14c592c848b6ee9ffef265143",
++  "profiles": {
++    "default": {
++      "vmOptions": [],
++      "initialUnits": [
++        10
++      ],
++      "guardActive": true,
++      "nativeCoverage": 32,
++      "stdoutSha256": "719da9cc385a66d904b364e00bfd916c883dd99b7e5a4b8c1f720cdf0372694a"
++    },
++    "crlf": {
++      "vmOptions": [
++        "-Dline.separator=\r\n"
++      ],
++      "initialUnits": [
++        13,
++        10
++      ],
++      "guardActive": true,
++      "nativeCoverage": 32,
++      "stdoutSha256": "9ef6a776c1247323d684b728f3f3a953bc7a2ddcbd705a9ed47fe613d884c36d"
++    },
++    "pipe": {
++      "vmOptions": [
++        "-Dline.separator=|"
++      ],
++      "initialUnits": [
++        124
++      ],
++      "guardActive": false,
++      "nativeCoverage": 0,
++      "stdoutSha256": "8bbc14af1c0baa7d65a95bfa52db78b06af698ddf09d091e4a9885e118222fbb"
++    }
++  },
++  "job": "20261123-042108-bind-four-spring-startup-controls-to-the",
++  "source": "431b775c1c8eea6208d1ddd7c5f2e4bcadc6ad79"
++}
+--- /dev/null
++++ b/examples/370-spring-role-hierarchy/records/fluent-launches/pipe.stdout
+@@ -0,0 +1,35 @@
++startup 124
++property 124
++active 0
++0 1 1 1
++1 0 0 1
++2 0 0 1
++3 0 0 1
++4 1 1 1
++5 0 0 1
++6 0 0 1
++7 0 0 1
++8 1 1 1
++9 0 1 1
++10 0 1 1
++11 0 1 1
++12 1 1 1
++13 0 1 1
++14 1 1 1
++15 0 1 1
++16 1 1 1
++17 0 0 1
++18 0 0 1
++19 0 0 1
++20 1 1 1
++21 0 0 1
++22 0 0 1
++23 0 0 1
++24 1 1 1
++25 0 1 1
++26 0 1 1
++27 0 1 1
++28 1 1 1
++29 0 1 1
++30 1 1 1
++31 0 1 1
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/components/0.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p0()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-tbxfjc04/components/0/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p0() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-tbxfjc04/components/0",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.01704951,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.014864402,
++        "loading_seconds": 0.003187854,
++        "decoding_seconds": 0.000918008,
++        "encoding_seconds": 0.000850918,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.015,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.01,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.026,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.015,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.01
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/components/1.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p1()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-tbxfjc04/components/1/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p1() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-tbxfjc04/components/1",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.018124345,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.015952472,
++        "loading_seconds": 0.003494717,
++        "decoding_seconds": 0.000967497,
++        "encoding_seconds": 0.000819164,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.016,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.011,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.027,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.016,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.011
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/components/2.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p2()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-tbxfjc04/components/2/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p2() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-tbxfjc04/components/2",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.020294203,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.017102509,
++        "loading_seconds": 0.003451389,
++        "decoding_seconds": 0.000948492,
++        "encoding_seconds": 0.000803919,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.017,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.012,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.03,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.017,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.012
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+Binary file examples/372-spring-property-accessors/records/ordinary-class-tables/landed/components/Calls.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/getters/0.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p0()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-tbxfjc04/getters/0/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p0() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-tbxfjc04/getters/0",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.02265982,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.018283443,
++        "loading_seconds": 0.003479111,
++        "decoding_seconds": 0.000967443,
++        "encoding_seconds": 0.000820124,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.018,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.013,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.038,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.018,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.019
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/getters/1.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p1()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-tbxfjc04/getters/1/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p1() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-tbxfjc04/getters/1",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.023080468,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.019755604,
++        "loading_seconds": 0.00382925,
++        "decoding_seconds": 0.001148947,
++        "encoding_seconds": 0.000862618,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.02,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.014,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.034,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.02,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.013
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/getters/2.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p2()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-tbxfjc04/getters/2/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p2() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-tbxfjc04/getters/2",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.021488814,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.018379022,
++        "loading_seconds": 0.003490808,
++        "decoding_seconds": 0.000977701,
++        "encoding_seconds": 0.000873902,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.018,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.013,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.032,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.018,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.013
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+Binary file examples/372-spring-property-accessors/records/ordinary-class-tables/landed/getters/Calls.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/jvm.stdout
+@@ -0,0 +1,6 @@
++0	budget	1
++1	issue	1
++2	getWidget	1
++3	name	1
++4	name	1
++5	widget	1
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/landed/measurement.json
+@@ -0,0 +1,293 @@
++{
++  "job": "20261123-042108-bind-four-spring-startup-controls-to-the",
++  "source": "431b775c1c8eea6208d1ddd7c5f2e4bcadc6ad79",
++  "libTree": "cd252bc321d02573aa20831285610a4d0bf90fb4",
++  "checkerSha256": "1dde0828f2c4d95908c52ae7483abb3d86965ebb13cac2a51daffe34507afde5",
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038"
++    },
++    {
++      "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
++      "sha256": "913fceb73ae5b156552587cf93f49be053c90aac38abb18cf6410f54524a3c8c"
++    },
++    {
++      "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
++      "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++    }
++  ],
++  "jdk": {
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_VERSION_DATE": "2026-10-20",
++    "LIBC": "gnu",
++    "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
++    "OS_ARCH": "x86_64",
++    "OS_NAME": "Linux",
++    "SOURCE": ".:git:2ab10ca20c19",
++    "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
++    "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
++    "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
++    "FULL_VERSION": "21.0.13+9-LTS",
++    "SEMANTIC_VERSION": "21.0.13+9",
++    "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
++    "JVM_VARIANT": "Hotspot",
++    "JVM_VERSION": "21.0.13+9-LTS",
++    "IMAGE_TYPE": "JDK"
++  },
++  "sourceSha256": "5750084e7d5473c5592a601106731778df0e112257f476f699df385b50e4c756",
++  "profile": null,
++  "observedRoot": null,
++  "jvmSha256": "74cc6418842d18dd681640f1c46a9a2249659b3523ab09d13ce3f481381386f2",
++  "bindings": [
++    {
++      "class": "springwork.Accessors",
++      "provider": "adapter-landed.jar",
++      "entry": "springwork/Accessors.class",
++      "sha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "method": "components",
++      "descriptor": "(I)I"
++    },
++    {
++      "class": "springwork.Accessors",
++      "provider": "adapter-landed.jar",
++      "entry": "springwork/Accessors.class",
++      "sha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "method": "getters",
++      "descriptor": "(I)I"
++    },
++    {
++      "class": "org.springframework.core.convert.Property",
++      "provider": "spring-core-7.1.0-SNAPSHOT.jar",
++      "entry": "org/springframework/core/convert/Property.class",
++      "sha256": "fe3c7e0776deccc7802d96b971f14e89984d44efa43a66646f705ba8a2edb7ad",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "org.springframework.util.ClassUtils",
++      "provider": "spring-core-7.1.0-SNAPSHOT.jar",
++      "entry": "org/springframework/util/ClassUtils.class",
++      "sha256": "70c9e605622ae61dbb6a2a7074d0074f3110a9a81fbacf1a27a689bee59197f1",
++      "method": null,
++      "descriptor": null
++    }
++  ],
++  "tasks": {
++    "components": {
++      "callsSha256": "a1cc3cbcd52be58bcdd5af3c9daa98d08bc460ed60d19912909b7326beb63949",
++      "selectors": {
++        "0": {
++          "exit": 0,
++          "seconds": 0.029189,
++          "peakRssBytes": 42500096,
++          "log": "0.stdout",
++          "stdout": "0.stdout",
++          "stderr": "0.stderr",
++          "stdoutSha256": "7f5722a58d4bf4dfebb4b09c9a2e00d77d81cf8e95ae8003a0900a186d209714",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p0()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "1": {
++          "exit": 0,
++          "seconds": 0.031144,
++          "peakRssBytes": 42500096,
++          "log": "1.stdout",
++          "stdout": "1.stdout",
++          "stderr": "1.stderr",
++          "stdoutSha256": "eed3f6ea9a6ae350a3713d59c58363dc5a0392ecc0ae3189f5be1a644fb66434",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p1()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "2": {
++          "exit": 0,
++          "seconds": 0.034474,
++          "peakRssBytes": 42500096,
++          "log": "2.stdout",
++          "stdout": "2.stdout",
++          "stderr": "2.stderr",
++          "stdoutSha256": "30c12207a59f9ce23477f921086081de767b5045718d6c1b0e5d18b89a95744c",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p2()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        }
++      }
++    },
++    "getters": {
++      "callsSha256": "f18faec1cd3ed70b61b88204f82c10b3fdfda7b798adeea24aa399f712b5015a",
++      "selectors": {
++        "0": {
++          "exit": 0,
++          "seconds": 0.043617,
++          "peakRssBytes": 42500096,
++          "log": "0.stdout",
++          "stdout": "0.stdout",
++          "stderr": "0.stderr",
++          "stdoutSha256": "57e02c9e333eb1d8a010c4f6789a71fc20c1d7b9cad222759fc74220f56078d3",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p0()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "1": {
++          "exit": 0,
++          "seconds": 0.038202,
++          "peakRssBytes": 42500096,
++          "log": "1.stdout",
++          "stdout": "1.stdout",
++          "stderr": "1.stderr",
++          "stdoutSha256": "4e52ba4e934fbe5cead385f5fd0b14aead9e6f869f77d84d72faf4e4aaaab134",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p1()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "2": {
++          "exit": 0,
++          "seconds": 0.036154,
++          "peakRssBytes": 42500096,
++          "log": "2.stdout",
++          "stdout": "2.stdout",
++          "stderr": "2.stderr",
++          "stdoutSha256": "539ef535cd20af028dc7d4134767284f5a9768ccf76761232b7a84efc93876c7",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p2()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        }
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/components/0.stdout
+@@ -0,0 +1,167 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "verificationselectors.Calls#p0()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "p0()",
++      "outcome": "0",
++      "values": [],
++      "shrink_runs": 0,
++      "inputs": [],
++      "call": {
++        "class": "verificationselectors.Calls",
++        "class_file": "verificationselectors/Calls.class",
++        "classes": "after",
++        "method": "p0",
++        "descriptor": "()I",
++        "static": true,
++        "arguments": []
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain ",
++    "problem": null,
++    "statement": "/tmp/property-lookup-_cdh1pb0/components/0/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of verificationselectors.Calls#p0() violated: `result == 1`:\n  p0()\n    outcome: 0",
++        "uri": null,
++        "line": 1
++      }
++    ],
++    "output": "✗ Property of verificationselectors.Calls#p0() violated: `result == 1`:\n  p0()\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain )\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/property-lookup-_cdh1pb0/components/0",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.028976513,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 0.000011141,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.025893112,
++        "loading_seconds": 0.004851011,
++        "decoding_seconds": 0.001211298,
++        "encoding_seconds": 0.001360987,
++        "witness_seconds": 9.047e-6,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.026,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.005,
++            "lowering": 0.001,
++            "symbolic": 0.018,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.17,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.026,
++        "replay": 0.007,
++        "jvm": 0.121,
++        "other": 0.015
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/components/1.stdout
+@@ -0,0 +1,167 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "verificationselectors.Calls#p1()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "p1()",
++      "outcome": "0",
++      "values": [],
++      "shrink_runs": 0,
++      "inputs": [],
++      "call": {
++        "class": "verificationselectors.Calls",
++        "class_file": "verificationselectors/Calls.class",
++        "classes": "after",
++        "method": "p1",
++        "descriptor": "()I",
++        "static": true,
++        "arguments": []
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain ",
++    "problem": null,
++    "statement": "/tmp/property-lookup-_cdh1pb0/components/1/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of verificationselectors.Calls#p1() violated: `result == 1`:\n  p1()\n    outcome: 0",
++        "uri": null,
++        "line": 1
++      }
++    ],
++    "output": "✗ Property of verificationselectors.Calls#p1() violated: `result == 1`:\n  p1()\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain )\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/property-lookup-_cdh1pb0/components/1",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.020935716,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 9.026e-6,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.017668219,
++        "loading_seconds": 0.003548221,
++        "decoding_seconds": 0.000922939,
++        "encoding_seconds": 0.000849928,
++        "witness_seconds": 6.542e-6,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.018,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.012,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.155,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.018,
++        "replay": 0.005,
++        "jvm": 0.117,
++        "other": 0.014
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/components/2.stdout
+@@ -0,0 +1,167 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "violation",
++    "target": "verificationselectors.Calls#p2()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": {
++      "input": "p2()",
++      "outcome": "0",
++      "values": [],
++      "shrink_runs": 0,
++      "inputs": [],
++      "call": {
++        "class": "verificationselectors.Calls",
++        "class_file": "verificationselectors/Calls.class",
++        "classes": "after",
++        "method": "p2",
++        "descriptor": "()I",
++        "static": true,
++        "arguments": []
++      }
++    },
++    "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain ",
++    "problem": null,
++    "statement": "/tmp/property-lookup-_cdh1pb0/components/2/harness/PropertyHarness.java",
++    "findings": [
++      {
++        "rule_id": "property-violated",
++        "message": "Property of verificationselectors.Calls#p2() violated: `result == 1`:\n  p2()\n    outcome: 0",
++        "uri": null,
++        "line": 1
++      }
++    ],
++    "output": "✗ Property of verificationselectors.Calls#p2() violated: `result == 1`:\n  p2()\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain )\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++    "work": "/tmp/property-lookup-_cdh1pb0/components/2",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.017813863,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": "[0:20]",
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 2,
++        "solving_seconds": 5.3e-6,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.015132685,
++        "loading_seconds": 0.003089977,
++        "decoding_seconds": 0.000911206,
++        "encoding_seconds": 0.000843742,
++        "witness_seconds": 6.272e-6,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.015,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.01,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.141,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.015,
++        "replay": 0.002,
++        "jvm": 0.109,
++        "other": 0.014
++      }
++    },
++    "replay": {
++      "by": "jvm",
++      "reproduced": true
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": false
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null
++    }
++  }
++]
+Binary file examples/372-spring-property-accessors/records/ordinary-class-tables/parent/components/Calls.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/getters/0.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p0()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-_cdh1pb0/getters/0/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p0() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-_cdh1pb0/getters/0",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.021160137,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.018043693,
++        "loading_seconds": 0.003872741,
++        "decoding_seconds": 0.000929409,
++        "encoding_seconds": 0.000822257,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.018,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.004,
++            "lowering": 0.001,
++            "symbolic": 0.012,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.031,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.018,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.012
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/getters/1.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p1()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-_cdh1pb0/getters/1/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p1() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-_cdh1pb0/getters/1",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.020443954,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.017402701,
++        "loading_seconds": 0.003358757,
++        "decoding_seconds": 0.000966139,
++        "encoding_seconds": 0.000812605,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.017,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.012,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.031,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.017,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.013
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/getters/2.stdout
+@@ -0,0 +1,146 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "verificationselectors.Calls#p2()",
++    "domain": "",
++    "assume": null,
++    "assert": "result == 1",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions",
++    "problem": null,
++    "statement": "/tmp/property-lookup-_cdh1pb0/getters/2/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ verificationselectors.Calls#p2() satisfies `result == 1` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over  in 0.0 s; loops unwound 256 times with unwinding assertions)\n",
++    "work": "/tmp/property-lookup-_cdh1pb0/getters/2",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.018619443,
++      "properties": 1,
++      "unwind": 256,
++      "max_array_length": 16384,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 1,
++        "clauses": 1,
++        "seconds": 0.016091102,
++        "loading_seconds": 0.003372831,
++        "decoding_seconds": 0.000997149,
++        "encoding_seconds": 0.000861334,
++        "witness_seconds": 0.0,
++        "assumed": [
++          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)"
++        ]
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 60.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 60.0,
++          "seconds": 0.016,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.003,
++            "lowering": 0.001,
++            "symbolic": 0.011,
++            "encoding": 0.001,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 1,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.028,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.016,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.011
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [],
++        "shared_arrays": false,
++        "text": ""
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        },
++        {
++          "kind": "library",
++          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result == 1",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 256,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:d8f9ea3c2e779cde6d722cd242a024bbdb4f3a7c4d51b9f073b31bf949f42f91",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+Binary file examples/372-spring-property-accessors/records/ordinary-class-tables/parent/getters/Calls.jvm-bytecode changed
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/jvm.stdout
+@@ -0,0 +1,6 @@
++0		0
++1	sue	0
++2	widget	0
++3	name	1
++4	name	1
++5	widget	1
+--- /dev/null
++++ b/examples/372-spring-property-accessors/records/ordinary-class-tables/parent/measurement.json
+@@ -0,0 +1,293 @@
++{
++  "job": "20261123-042108-bind-four-spring-startup-controls-to-the",
++  "source": "431b775c1c8eea6208d1ddd7c5f2e4bcadc6ad79",
++  "libTree": "cd252bc321d02573aa20831285610a4d0bf90fb4",
++  "checkerSha256": "1dde0828f2c4d95908c52ae7483abb3d86965ebb13cac2a51daffe34507afde5",
++  "classpath": [
++    {
++      "path": "adapter-parent.jar",
++      "sha256": "eb34da4fda81629b532ff9c7f331e51a11b2526045141f396dfa06a4f6e6b038"
++    },
++    {
++      "path": "built/spring-core-7.1.0-SNAPSHOT.jar",
++      "sha256": "3a71021e67f051718b83337ad2364ac1b5479d7b9414e65579ddf01778eb9f3d"
++    },
++    {
++      "path": "lib/commons-logging/commons-logging/1.3.5/commons-logging-1.3.5.jar",
++      "sha256": "6d7a744e4027649fbb50895df9497d109f98c766a637062fe8d2eabbb3140ba4"
++    },
++    {
++      "path": "lib/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar",
++      "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++    }
++  ],
++  "jdk": {
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_VERSION_DATE": "2026-10-20",
++    "LIBC": "gnu",
++    "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
++    "OS_ARCH": "x86_64",
++    "OS_NAME": "Linux",
++    "SOURCE": ".:git:2ab10ca20c19",
++    "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
++    "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
++    "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
++    "FULL_VERSION": "21.0.13+9-LTS",
++    "SEMANTIC_VERSION": "21.0.13+9",
++    "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
++    "JVM_VARIANT": "Hotspot",
++    "JVM_VERSION": "21.0.13+9-LTS",
++    "IMAGE_TYPE": "JDK"
++  },
++  "sourceSha256": "5750084e7d5473c5592a601106731778df0e112257f476f699df385b50e4c756",
++  "profile": null,
++  "observedRoot": null,
++  "jvmSha256": "c651116aef7d42b15760d04834e01cab1e6c2322dd34656ee40a9d40b7aa7318",
++  "bindings": [
++    {
++      "class": "springwork.Accessors",
++      "provider": "adapter-parent.jar",
++      "entry": "springwork/Accessors.class",
++      "sha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "method": "components",
++      "descriptor": "(I)I"
++    },
++    {
++      "class": "springwork.Accessors",
++      "provider": "adapter-parent.jar",
++      "entry": "springwork/Accessors.class",
++      "sha256": "a11dfd807bd873a096c27906b7a1a5cc92db32ba57766fe79672480c02e0fcec",
++      "method": "getters",
++      "descriptor": "(I)I"
++    },
++    {
++      "class": "org.springframework.core.convert.Property",
++      "provider": "spring-core-7.1.0-SNAPSHOT.jar",
++      "entry": "org/springframework/core/convert/Property.class",
++      "sha256": "345122e8b4337cce5a871cf1ef90e82366360ff048203f84df89fdf0bd62fa8f",
++      "method": null,
++      "descriptor": null
++    },
++    {
++      "class": "org.springframework.util.ClassUtils",
++      "provider": "spring-core-7.1.0-SNAPSHOT.jar",
++      "entry": "org/springframework/util/ClassUtils.class",
++      "sha256": "70c9e605622ae61dbb6a2a7074d0074f3110a9a81fbacf1a27a689bee59197f1",
++      "method": null,
++      "descriptor": null
++    }
++  ],
++  "tasks": {
++    "components": {
++      "callsSha256": "a1cc3cbcd52be58bcdd5af3c9daa98d08bc460ed60d19912909b7326beb63949",
++      "selectors": {
++        "0": {
++          "exit": 1,
++          "seconds": 0.176225,
++          "peakRssBytes": 55828480,
++          "log": "0.stdout",
++          "stdout": "0.stdout",
++          "stderr": "0.stderr",
++          "stdoutSha256": "babf058eebdd6b825becabc4dd633ec5e58dda8b8f1f1214ee18a0d90e82109e",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p0()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "violation",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "1": {
++          "exit": 1,
++          "seconds": 0.160818,
++          "peakRssBytes": 55853056,
++          "log": "1.stdout",
++          "stdout": "1.stdout",
++          "stderr": "1.stderr",
++          "stdoutSha256": "e8f72d8bcb91bc83145887f312ea1c5bd13a1d1152c6251edb1b41d4a4ccdd59",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p1()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "violation",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "2": {
++          "exit": 1,
++          "seconds": 0.147562,
++          "peakRssBytes": 56000512,
++          "log": "2.stdout",
++          "stdout": "2.stdout",
++          "stderr": "2.stderr",
++          "stdoutSha256": "edf140520a95d4909f8ee688a5602759a0be3ff73d895f3ef41bb43769eca29b",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p2()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "violation",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        }
++      }
++    },
++    "getters": {
++      "callsSha256": "f18faec1cd3ed70b61b88204f82c10b3fdfda7b798adeea24aa399f712b5015a",
++      "selectors": {
++        "0": {
++          "exit": 0,
++          "seconds": 0.034949,
++          "peakRssBytes": 41263104,
++          "log": "0.stdout",
++          "stdout": "0.stdout",
++          "stderr": "0.stderr",
++          "stdoutSha256": "f1dd75b94d0c4569c3fff79e584352ff8661119815da6826fb89c166be68ffb6",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p0()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "1": {
++          "exit": 0,
++          "seconds": 0.034923,
++          "peakRssBytes": 41263104,
++          "log": "1.stdout",
++          "stdout": "1.stdout",
++          "stderr": "1.stderr",
++          "stdoutSha256": "e28ba8497540898376aea245c4eca3d4451a0fa70a8983defd2c07b99fb6c76b",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p1()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        },
++        "2": {
++          "exit": 0,
++          "seconds": 0.033006,
++          "peakRssBytes": 41263104,
++          "log": "2.stdout",
++          "stdout": "2.stdout",
++          "stderr": "2.stderr",
++          "stdoutSha256": "8140b45178ad3ff162d793af374cfaf5ed070f3979ec98edf413fd0dd4b527f6",
++          "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
++          "target": "verificationselectors.Calls#p2()",
++          "guard": null,
++          "assertion": "result == 1",
++          "observedRoots": [],
++          "bounds": [
++            256,
++            16384
++          ],
++          "verdict": "verified",
++          "blocker": null,
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            },
++            {
++              "kind": "library",
++              "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
++              "basis": "engine"
++            }
++          ],
++          "states": {}
++        }
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/converter-interfaces/landed/jvm.stdout
+@@ -0,0 +1,4 @@
++org.springframework.core.convert.support.NumberToNumberConverterFactory
++org.springframework.core.convert.converter.ConverterFactory<java.lang.Number, java.lang.Number>
++org.springframework.core.convert.converter.ConditionalConverter
++java.lang.Number java.lang.Number registered
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/converter-interfaces/landed/measurement.json
+@@ -0,0 +1,87 @@
++{
++  "job": "20261123-042108-bind-four-spring-startup-controls-to-the",
++  "source": "431b775c1c8eea6208d1ddd7c5f2e4bcadc6ad79",
++  "sourceSha256": "630ab5efd27799265a67a697264e2ff80b89e7048dddf927b939a3e8b6916aaa",
++  "classpath": [
++    {
++      "path": "adapter-landed.jar",
++      "sha256": "926a705717874d076aec3202f90de800cbeded520b66133e0d7cddc6a8a5674b"
++    },
++    {
++      "path": "slice/landed.jar",
++      "sha256": "0e95f87dfeb68a5200371eb788fed97081f2eefd5026edb3a760e1b777e831e4"
++    },
++    {
++      "path": "lib/org.springframework/spring-context-5.2.0.RELEASE.jar",
++      "sha256": "8cfa528363a4ef6aaecee09218e0c1d2d8bb3f04cd09ca3179d3e78cb3e4b253"
++    },
++    {
++      "path": "lib/org.springframework/spring-aop-5.2.0.RELEASE.jar",
++      "sha256": "bb1d8d2fc3ced40ceed2a6c5fb0b86cca9be5e83453d14ee3e47af7286586a86"
++    },
++    {
++      "path": "lib/org.springframework/spring-beans-5.2.0.RELEASE.jar",
++      "sha256": "7d8dab8ecc1b1575086603a204cf688ec8fd85ecaeeba00ba87cb1328c54c5ed"
++    },
++    {
++      "path": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "sha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede"
++    },
++    {
++      "path": "lib/org.springframework/spring-jcl-5.2.0.RELEASE.jar",
++      "sha256": "8ebb7c28d760a976fcb94fbafdb98c8c71785ba7fbfbf7deb31770326d66cfeb"
++    },
++    {
++      "path": "lib/org.springframework/spring-expression-5.2.0.RELEASE.jar",
++      "sha256": "93d91bffd93ac0417ac24180979fcfefb01e9a39f25201049460bf1a61667559"
++    }
++  ],
++  "jdk": {
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_VERSION_DATE": "2026-10-20",
++    "LIBC": "gnu",
++    "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
++    "OS_ARCH": "x86_64",
++    "OS_NAME": "Linux",
++    "SOURCE": ".:git:2ab10ca20c19",
++    "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
++    "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
++    "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
++    "FULL_VERSION": "21.0.13+9-LTS",
++    "SEMANTIC_VERSION": "21.0.13+9",
++    "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
++    "JVM_VARIANT": "Hotspot",
++    "JVM_VERSION": "21.0.13+9-LTS",
++    "IMAGE_TYPE": "JDK"
++  },
++  "jvmSha256": "6f89b261e6a00207f6ed3a3a74319e0a75aac94962ebe814ea21ef78da114f62",
++  "definitions": {
++    "org.springframework.core.convert.support.NumberToNumberConverterFactory": {
++      "entry": "org/springframework/core/convert/support/NumberToNumberConverterFactory.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "6804606dd976ba314f19a9a28aff0dadd2502ba5616394a0b66ae21496ea2fd3"
++    },
++    "org.springframework.core.convert.support.GenericConversionService": {
++      "entry": "org/springframework/core/convert/support/GenericConversionService.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "839e840601994a74b92ec6c1011222432f7881386b01014bc2ea37e9af65b99c"
++    },
++    "org.springframework.core.convert.support.DefaultConversionService": {
++      "entry": "org/springframework/core/convert/support/DefaultConversionService.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "d443d0d617e8e7a83cee36fc4166510b8c704c387e9493079ebf2ff0fb7fe08b"
++    },
++    "org.springframework.core.ResolvableType": {
++      "entry": "org/springframework/core/ResolvableType.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "f235184e520e16648cebbcf5fe2838227831035f024ed651e92f8c45371b6369"
++    }
++  }
++}
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/converter-interfaces/parent/jvm.stdout
+@@ -0,0 +1,4 @@
++org.springframework.core.convert.support.NumberToNumberConverterFactory
++org.springframework.core.convert.converter.ConverterFactory<java.lang.Number, java.lang.Number>
++org.springframework.core.convert.converter.ConditionalConverter
++java.lang.Number java.lang.Number registered
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/converter-interfaces/parent/measurement.json
+@@ -0,0 +1,87 @@
++{
++  "job": "20261123-042108-bind-four-spring-startup-controls-to-the",
++  "source": "431b775c1c8eea6208d1ddd7c5f2e4bcadc6ad79",
++  "sourceSha256": "630ab5efd27799265a67a697264e2ff80b89e7048dddf927b939a3e8b6916aaa",
++  "classpath": [
++    {
++      "path": "adapter-parent.jar",
++      "sha256": "926a705717874d076aec3202f90de800cbeded520b66133e0d7cddc6a8a5674b"
++    },
++    {
++      "path": "slice/parent.jar",
++      "sha256": "00e929edba07032342befaaa6ef43791ae883af26f4da535c7a4b73a478e51b7"
++    },
++    {
++      "path": "lib/org.springframework/spring-context-5.2.0.RELEASE.jar",
++      "sha256": "8cfa528363a4ef6aaecee09218e0c1d2d8bb3f04cd09ca3179d3e78cb3e4b253"
++    },
++    {
++      "path": "lib/org.springframework/spring-aop-5.2.0.RELEASE.jar",
++      "sha256": "bb1d8d2fc3ced40ceed2a6c5fb0b86cca9be5e83453d14ee3e47af7286586a86"
++    },
++    {
++      "path": "lib/org.springframework/spring-beans-5.2.0.RELEASE.jar",
++      "sha256": "7d8dab8ecc1b1575086603a204cf688ec8fd85ecaeeba00ba87cb1328c54c5ed"
++    },
++    {
++      "path": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "sha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede"
++    },
++    {
++      "path": "lib/org.springframework/spring-jcl-5.2.0.RELEASE.jar",
++      "sha256": "8ebb7c28d760a976fcb94fbafdb98c8c71785ba7fbfbf7deb31770326d66cfeb"
++    },
++    {
++      "path": "lib/org.springframework/spring-expression-5.2.0.RELEASE.jar",
++      "sha256": "93d91bffd93ac0417ac24180979fcfefb01e9a39f25201049460bf1a61667559"
++    }
++  ],
++  "jdk": {
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_VERSION_DATE": "2026-10-20",
++    "LIBC": "gnu",
++    "MODULES": "java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom",
++    "OS_ARCH": "x86_64",
++    "OS_NAME": "Linux",
++    "SOURCE": ".:git:2ab10ca20c19",
++    "BUILD_SOURCE": "git:1cf43d7a3e77886bfea7d550a902e151a87d724d",
++    "BUILD_SOURCE_REPO": "https://github.com/adoptium/temurin-build.git",
++    "SOURCE_REPO": "https://github.com/adoptium/jdk21u.git",
++    "FULL_VERSION": "21.0.13+9-LTS",
++    "SEMANTIC_VERSION": "21.0.13+9",
++    "BUILD_INFO": "OS: Linux Version: 6.8.0-1070-azure",
++    "JVM_VARIANT": "Hotspot",
++    "JVM_VERSION": "21.0.13+9-LTS",
++    "IMAGE_TYPE": "JDK"
++  },
++  "jvmSha256": "6f89b261e6a00207f6ed3a3a74319e0a75aac94962ebe814ea21ef78da114f62",
++  "definitions": {
++    "org.springframework.core.convert.support.NumberToNumberConverterFactory": {
++      "entry": "org/springframework/core/convert/support/NumberToNumberConverterFactory.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "6804606dd976ba314f19a9a28aff0dadd2502ba5616394a0b66ae21496ea2fd3"
++    },
++    "org.springframework.core.convert.support.GenericConversionService": {
++      "entry": "org/springframework/core/convert/support/GenericConversionService.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "839e840601994a74b92ec6c1011222432f7881386b01014bc2ea37e9af65b99c"
++    },
++    "org.springframework.core.convert.support.DefaultConversionService": {
++      "entry": "org/springframework/core/convert/support/DefaultConversionService.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "d443d0d617e8e7a83cee36fc4166510b8c704c387e9493079ebf2ff0fb7fe08b"
++    },
++    "org.springframework.core.ResolvableType": {
++      "entry": "org/springframework/core/ResolvableType.class",
++      "provider": "lib/org.springframework/spring-core-5.2.0.RELEASE.jar",
++      "jarSha256": "3573bfb8809cbb62a125ef03583d2ba2be58c664eb59ee0ab40d1af138e7dede",
++      "classSha256": "f235184e520e16648cebbcf5fe2838227831035f024ed651e92f8c45371b6369"
++    }
++  }
++}
