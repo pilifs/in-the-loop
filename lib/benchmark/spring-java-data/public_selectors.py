@@ -42,6 +42,6 @@ if __name__=="__main__":
     cli.add_argument("number")
     cli.add_argument("--first",type=int,default=0)
     cli.add_argument("--only",nargs="+")
-    cli.add_argument("--stage",choices=["native-final","native-qualified","spring-startup"],default="native-final")
+    cli.add_argument("--stage",choices=["native-final","native-qualified","spring-startup","spring-cache-writers"],default="native-final")
     args=cli.parse_args()
     run(args.number,args.first,args.only,args.stage)

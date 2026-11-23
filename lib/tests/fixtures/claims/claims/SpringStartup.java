@@ -100,8 +100,115 @@ public final class SpringStartup {
             && "a\u00a0>\u00a0b".split("\\s+>\\s+").length == 1;
     }
 
+    static final class ConstantHash {
+        @Override public int hashCode() { return 17; }
+        int inherited() { return super.hashCode(); }
+    }
+
+    public static boolean cacheKeys() {
+        ConstantHash key = new ConstantHash();
+        ClassLoader loader = SpringStartup.class.getClassLoader();
+        return key.hashCode() == 17 && key.inherited() == System.identityHashCode(key)
+            && loader.hashCode() == System.identityHashCode(loader);
+    }
+
+    public static boolean indexSize() {
+        var map = new java.util.IdentityHashMap<String, String>(9);
+        String a = new String("a"), b = new String("a");
+        map.put(a, "1");
+        map.put(b, "2");
+        if (map.size() != 2 || map.get(a) != "1" || map.get(b) != "2") return false;
+        try {
+            new java.util.IdentityHashMap<>(-2);
+            return false;
+        } catch (IllegalArgumentException expected) {
+            return true;
+        }
+    }
+
+    public static boolean queueState() {
+        var queue = new java.lang.ref.ReferenceQueue<>();
+        var counter = new java.util.concurrent.atomic.AtomicInteger(Integer.MAX_VALUE);
+        return queue.poll() == null && counter.incrementAndGet() == Integer.MIN_VALUE
+            && queue.poll() == null && counter.get() == Integer.MIN_VALUE;
+    }
+
+    public static boolean registeredQueue() {
+        var queue = new java.lang.ref.ReferenceQueue<>();
+        Object strong = new Object();
+        var reference = new java.lang.ref.SoftReference<>(strong, queue);
+        boolean empty = queue.poll() == null;
+        java.lang.ref.Reference.reachabilityFence(strong);
+        java.lang.ref.Reference.reachabilityFence(reference);
+        return empty;
+    }
+
+    public static boolean mapCallbacks() {
+        var map = new java.util.LinkedHashMap<String, Integer>();
+        try { map.forEach(null); return false; }
+        catch (NullPointerException expected) {}
+        map.put("a", 1);
+        map.put("b", 2);
+        int[] visited = {0};
+        map.forEach((k,v) -> {
+            visited[0] = 10 * visited[0] + v;
+            if (k.equals("a")) map.put("b", 3);
+        });
+        if (visited[0] != 13) return false;
+        visited[0] = 0;
+        try {
+            map.forEach((k,v) -> {
+                visited[0] = 10 * visited[0] + v;
+                if (k.equals("a")) map.put("c", 4);
+            });
+            return false;
+        } catch (java.util.ConcurrentModificationException expected) {
+            return visited[0] == 134;
+        }
+    }
+
+    public static boolean zones() {
+        String id = new String("UTC");
+        var zone = java.util.TimeZone.getTimeZone(id);
+        var other = java.util.TimeZone.getTimeZone("UTC");
+        if (zone == other || zone.getID() != id || zone.getRawOffset() != 0 || zone.getDSTSavings() != 0
+                || zone.useDaylightTime()) return false;
+        zone.setRawOffset(12345);
+        zone.setID("changed");
+        return zone.getRawOffset() == 12345 && zone.getID().equals("changed")
+            && other.getRawOffset() == 0 && other.getID() == "UTC";
+    }
+
+    public static boolean writeRanges() {
+        var writer = new java.io.StringWriter();
+        StringBuffer buffer = writer.getBuffer();
+        writer.write("Xabc\u00ff\u0100", 1, 4);
+        String early = writer.toString();
+        writer.write("0123456789abcdef", 0, 16);
+        String later = writer.toString();
+        return writer.getBuffer() == buffer && early.equals("abc\u00ff") && later != writer.toString()
+            && buffer.length() == 20 && later.equals("abc\u00ff0123456789abcdef");
+    }
+
+    public static boolean guardedLines() {
+        String sep = System.lineSeparator();
+        if (!"\n".equals(sep) && !sep.equals("\r\n")) return true;
+        var sink = new java.io.StringWriter();
+        var writer = new java.io.PrintWriter(sink);
+        writer.println("a"); writer.println("b");
+        return sink.toString().equals("a" + sep + "b" + sep);
+    }
+
+    public static boolean excludesCRLF() {
+        String sep = System.lineSeparator();
+        if (sep.equals("\n")) return true;
+        return !sep.equals("\r\n");
+    }
+
     public static void main(String[] args) throws Exception {
-        if (!metadata() || !bindings() || !overridingInitialValue() || !split() || !locks() || !writer() || !membership())
+        if (!metadata() || !bindings() || !overridingInitialValue() || !split() || !locks() || !writer() || !membership()
+                || !cacheKeys() || !indexSize() || !queueState() || !registeredQueue() || !mapCallbacks()
+                || !zones() || !writeRanges() || !guardedLines())
             throw new AssertionError();
     }
 }

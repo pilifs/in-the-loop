@@ -1209,10 +1209,14 @@ fn string_method(m: &mut Machine, s: &JStr, name: &str, descriptor: &str, args: 
             let from = if descriptor.ends_with("I)I") && args.len() > 1 { args[1].as_int().max(0) as usize } else { 0 };
             Value::Int(s.find(&needle, from))
         }
-        ("lastIndexOf", "(I)I") => match code_point_units(args[0].as_int()) {
-            Some(needle) => Value::Int((0..=units.len().saturating_sub(needle.len())).rev().find(|&i| units.len() >= needle.len() && units[i..].starts_with(needle.units())).map(|i| i as i32).unwrap_or(-1)),
-            None => Value::Int(-1),
-        },
+        ("lastIndexOf", "(I)I" | "(II)I") => {
+            let from = args.get(1).map(|v| v.as_int()).unwrap_or(i32::MAX);
+            let at = code_point_units(args[0].as_int()).and_then(|needle| {
+                let end = usize::try_from(from).ok()?.min(units.len().checked_sub(needle.len())?);
+                (0..=end).rev().find(|&i| units[i..].starts_with(needle.units()))
+            });
+            Value::Int(at.map_or(-1, |index| index as i32))
+        }
         ("lastIndexOf", "(Ljava/lang/String;)I") => {
             let needle = string_arg(m, args[0])?;
             let mut result = -1;

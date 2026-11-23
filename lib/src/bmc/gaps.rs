@@ -716,6 +716,10 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
         // in its own bytecode. A shared empty array is another common prefix of a metadata cache.
         // In both cases execute to the end, including subsequent calls and exception handlers.
         match insns.as_slice() {
+            [(_, Insn::InvokeStatic(call)), (_, Insn::PutStatic(slot)), (_, Insn::Return(None))]
+                if cf.pool.member(*call).is_ok_and(|m| cp.is_application(&m.owner) && m.descriptor == "()Z")
+                    && cf.pool.member(*slot).is_ok_and(|m| m.owner == cf.name && m.descriptor == "Z"
+                        && cf.field(&m.name).is_some_and(|f| f.descriptor == "Z" && f.is_final() && f.is_static())) => return true,
             [(_, Insn::Ldc(c)), (_, Insn::InvokeVirtual(m)), ..] if cf.pool.class_name(*c).ok() == Some(&cf.name)
                 && cf.pool.member(*m).is_ok_and(|m| (m.owner.as_str(), m.name.as_str(), m.descriptor.as_str())
                     == ("java/lang/Class", "getClassLoader", "()Ljava/lang/ClassLoader;")) => return true,
@@ -740,11 +744,13 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
     code.exception_table.is_empty() && insns.iter().all(|(_, insn)| match insn {
         Insn::Nop | Insn::AConstNull | Insn::IConst(_) | Insn::LConst(_) | Insn::FConst(_) | Insn::DConst(_)
         | Insn::Ldc(_) | Insn::Dup | Insn::Pop | Insn::NewArray(_) | Insn::ANewArray(_) | Insn::ArrayStore(_) | Insn::Return(None) => true,
+        Insn::Load(crate::classfile::Kind::Ref, _) | Insn::Store(crate::classfile::Kind::Ref, _) => cp.is_application(&cf.name),
         Insn::GetStatic(i) => cf.pool.member(*i).is_ok_and(|m| m.descriptor.starts_with(['L', '['])
             && cp.resolve_field(&m.owner, &m.name, &m.descriptor).and_then(|owner| cp.load(&owner).ok().flatten())
                 .is_some_and(|l| l.class.field(&m.name).is_some_and(|f| f.is_static() && f.is_final()))),
         Insn::New(i) => cf.pool.class_name(*i).is_ok_and(|class| cp.is_application(class)
             || (class == "java/util/HashMap" && cp.map_image_class(class).is_some())
+            || (cp.is_application(&cf.name) && matches!(class, "java/util/HashSet" | "java/util/EnumMap"))
             || (class == crate::models::CONCURRENT_MAP && cp.concurrent_map_method("<init>", "(I)V").is_some())),
         Insn::InvokeDynamic(i) => cf.pool.invoke_dynamic(*i).ok().and_then(|(index, _, _)|
             cf.bootstrap_methods().ok()?.into_iter().nth(usize::from(index))).is_some_and(|b|
@@ -755,7 +761,11 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
                 || cp.checked_image_class(&m.owner).is_some()
                 || matches!((m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()),
                     ("java/lang/Class", "getClassLoader", "()Ljava/lang/ClassLoader;")
+                    | ("java/util/TimeZone", "getTimeZone", "(Ljava/lang/String;)Ljava/util/TimeZone;")
+                    | ("java/util/HashSet", "<init>", "(I)V")
+                    | ("java/util/Set", "add", "(Ljava/lang/Object;)Z")
                     | (crate::models::CONCURRENT_MAP, "newKeySet", "(I)Ljava/util/concurrent/ConcurrentHashMap$KeySetView;"))
+                || cp.collection_static(&m.owner, &m.name, &m.descriptor)
                 || (m.owner == crate::models::CONCURRENT_MAP && cp.concurrent_map_method(&m.name, &m.descriptor).is_some())
                 || (m.owner == super::bytes::CHARSET && m.name == "name" && m.descriptor == "()Ljava/lang/String;")
                 || (matches!(m.owner.as_str(), "java/util/Map" | "java/util/HashMap")

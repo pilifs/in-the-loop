@@ -23,6 +23,12 @@ public abstract class IdentityHashMap<K, V> implements Map<K, V> {
 
     public IdentityHashMap() {}
 
+    public IdentityHashMap(int expectedMaxSize) {
+        if (expectedMaxSize < 0) {
+            throw new IllegalArgumentException("expectedMaxSize is negative: " + expectedMaxSize);
+        }
+    }
+
     private Binding<K, V> find(Object key) {
         for (Binding<K, V> b = first; b != null; b = b.next) {
             if (b.key == key) return b;

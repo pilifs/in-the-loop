@@ -377,7 +377,7 @@ pub fn map_model() -> ModelEvidence {
         leaves_out: vec![
             "every Map but a java.util.HashMap made by HashMap() or HashMap(int): another map's constructor (TreeMap, HashMap(int, float), HashMap(Map)) is the JDK call it names. The own checker alone also has a java.util.LinkedHashMap made by LinkedHashMap(), with its values in insertion order (lib/models/java/util/LinkedHashMap.java, whose evidence is claims.M in lib/tests/claims.rs)".into(),
             "the portable model implements put, get, containsKey, size and isEmpty. For an exact fresh HashMap() with a JDK image, the native checker executes the JDK table, entries, keySet and entrySet views and iterators on one heap. An observed or model-backed map needs its own view evidence.".into(),
-            "a key whose hashCode or equals the own checker doesn't run: a String is hashed and compared by content and null is a key, and a key of an application class runs its own hashCode and equals, but Object's hashCode (an identity) is a named gap".into(),
+            "a key whose hashCode or equals the own checker doesn't run: a String is hashed and compared by content and null is a key, and an application key runs its own overrides. With a JDK image an inherited Object.hashCode shares the object's stable, possibly colliding System.identityHashCode. The portable model alone leaves that hash open".into(),
             "the table: the order in which the entries of one hash are compared, and resizing, which a key whose equals and hashCode only compute does not observe".into(),
             "a map as an input: no adapter makes one, so a map parameter or a map inside an object is refused".into(),
         ],
@@ -951,6 +951,17 @@ pub const OPERATIONS: &[OperationEvidence] = &[
         calls: &["lastIndexOf(I)I"],
     },
     OperationEvidence {
+        operation: "java.lang.String.lastIndexOf(II)I",
+        family: Family::String,
+        source: STRINGS_SOURCE,
+        admits: "any code point and signed start: the last matching UTF-16 start index no greater than fromIndex, or -1; a supplementary pair may end past fromIndex",
+        throws: &[NPE],
+        leaves_out: &[],
+        level: EvidenceLevel::Tested,
+        sampled_by: &["lastIndexOfCharFrom"],
+        calls: &["lastIndexOf(II)I"],
+    },
+    OperationEvidence {
         operation: "java.lang.String.indexOf(II)I",
         family: Family::String,
         source: STRINGS_SOURCE,
@@ -1363,7 +1374,7 @@ mod tests {
             assert_eq!(json["level"], "tested");
             assert!(json["sampled_by"].as_array().is_some_and(|c| !c.is_empty()), "{}", record.operation);
         }
-        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 33);
+        assert_eq!(OPERATIONS.iter().filter(|r| r.family == Family::String).count(), 34);
         assert!(OPERATIONS.iter().any(|r| r.family == Family::List && r.throws.contains(&"java.lang.ArrayIndexOutOfBoundsException")));
     }
 

@@ -66,6 +66,30 @@ fn proved(classes: &Path, target: &str, bound: u32) {
 }
 
 #[test]
+fn spring_cache_entries_writers_and_zones_follow_the_original_jvm() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    for settings in [&["-XX:-CompactStrings"][..], &["-Dline.separator=\r\n"], &["-Dline.separator=|"]] {
+        assert!(Command::new("java").args(settings).arg("-cp").arg(classes).arg("claims.SpringStartup").status().unwrap().success());
+    }
+    proved(classes, "claims.SpringStartup#indexSize", 32);
+    proved(classes, "claims.SpringStartup#cacheKeys", 32);
+    proved(classes, "claims.SpringStartup#mapCallbacks", 32);
+    let version = Command::new("java").arg("-version").output().unwrap();
+    if String::from_utf8_lossy(&version.stderr).contains("Temurin-21.0.13+9") {
+        for method in ["queueState", "zones", "writeRanges", "guardedLines"] {
+            proved(classes, &format!("claims.SpringStartup#{method}"), 128);
+        }
+        let custom = run(&options(classes, "claims.SpringStartup#excludesCRLF", 16, "platform-separator"));
+        assert_eq!(custom.verdict, Verdict::Unverifiable, "{}", custom.output);
+        assert!(custom.output.contains("initial line separator"), "{}", custom.output);
+        let result = run(&options(classes, "claims.SpringStartup#registeredQueue", 16, "registered-reference"));
+        assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
+        assert!(result.output.contains("possible GC registration"), "{}", result.output);
+    }
+}
+
+#[test]
 fn fresh_thread_local_and_declared_member_metadata_match_the_selected_jvm() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };

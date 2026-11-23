@@ -155,6 +155,7 @@ const LOADER: &str = "java/lang/ClassLoader";
 const LOGGER: &str = "java/util/logging/Logger";
 const THREAD: &str = "java/lang/Thread";
 pub(super) const LINE_SEPARATOR: &str = "the contents and external string identity of the JVM's initial line separator are not bound";
+const SEPARATOR_EQUALS: &str = "<JVM.equalsInitialLineSeparator>";
 pub(super) fn enum_identity_read(caller: &str, method: &str, m: &crate::classfile::MemberRef) -> bool {
     (caller, method, m.owner.as_str(), m.name.as_str(), m.descriptor.as_str())
         == ("java/lang/Enum", "hashCode", "java/lang/System", "identityHashCode", "(Ljava/lang/Object;)I")
@@ -184,6 +185,7 @@ pub fn property_call(owner: &str, name: &str, descriptor: &str) -> bool {
 }
 
 pub const REENTRANT_LOCK: &str = "java/util/concurrent/locks/ReentrantLock";
+pub(super) const REGISTERED_QUEUE: &str = "<JVM.originalReferenceQueue>";
 pub const HOLD_COUNT: &str = "<JVM.reentrantHoldCount>";
 
 pub fn sequential_lock_call(owner: &str, name: &str, descriptor: &str) -> bool {
@@ -279,6 +281,75 @@ pub fn capacity_constructor(owner: &str, descriptor: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// Content comparisons partition a single immutable startup value. Keep an open
+    /// remainder for every untested string, including an empty or custom separator.
+    pub(super) fn separator_equals(&mut self, path: &mut Path, a: usize, b: usize) -> Option<Step> {
+        let &separator = path.literals.get(&Literal::LineSeparator)?;
+        let other = if a == separator { b } else if b == separator { a } else { return None };
+        let answer = if other == separator {
+            Val::I(self.b.constant(1, 32))
+        } else {
+            let units = self.constant_units(path, other)?;
+            let literal = self.literal(path, Literal::Str(units), STRING);
+            if let Some(eq) = path.objects[literal].fields.get(SEPARATOR_EQUALS) { eq.clone() } else {
+                let mut bit = self.b.var();
+                for &id in path.literals.values() {
+                    if let Some(Val::I(other)) = path.objects[id].fields.get(SEPARATOR_EQUALS) {
+                        bit = self.b.and(bit, -other[0]);
+                    }
+                }
+                let value = Val::I(self.b.zext(&vec![bit], 32));
+                path.objects[literal].fields.insert(SEPARATOR_EQUALS.into(), value.clone());
+                value
+            }
+        };
+        path.unbound_platform_value = Some(LINE_SEPARATOR);
+        self.push(path, answer);
+        self.advance(path);
+        Some(Ok(None))
+    }
+
+    /// Materialize code units only once the caller's own guard entails equality.
+    /// The object's external reference identity remains opaque on every branch.
+    pub(super) fn resolve_separator(&mut self, path: &mut Path, o: usize) -> Result<(), Stop> {
+        if path.objects[o].limit.as_deref() != Some(LINE_SEPARATOR) || path.objects[o].content().is_some() { return Ok(()); }
+        for &id in path.literals.values() {
+            let Some(Val::I(word)) = path.objects[id].fields.get(SEPARATOR_EQUALS) else { continue };
+            let mut no = path.cond.clone();
+            no.push(-word[0]);
+            if !self.solve(&no)? {
+                path.objects[o].array = path.objects[id].array.clone();
+                break;
+            }
+        }
+        Ok(())
+    }
+
+    pub(super) fn identity_hash(&mut self, path: &mut Path, object: usize) -> Val {
+        // An alias observes the same word. Different objects may collide, including at zero.
+        path.unbound_platform_value = Some("a JVM-chosen identity hash");
+        path.objects[object].fields.entry("<JVM.identityHashCode>".into())
+            .or_insert_with(|| Val::I(self.b.fresh(32))).clone()
+    }
+
+    pub(super) fn object_hash(&mut self, path: &mut Path, object: usize, special: bool, m: &crate::classfile::MemberRef) -> Option<Step> {
+        if m.name != "hashCode" || m.descriptor != "()I" || path.objects[object].assumed || path.objects[object].unknown { return None; }
+        let loader = path.literals.get(&Literal::Loader) == Some(&object);
+        let class = &path.objects[object].class;
+        if !special && !loader && class != "java/lang/Object" && class != "java/lang/Class"
+            && !self.cp.is_application(class) { return None; }
+        let lookup = if special { &m.owner } else if loader { "jdk/internal/loader/ClassLoaders$AppClassLoader" }
+            else { &path.objects[object].class };
+        let (declaring, method) = self.cp.find_method(lookup, &m.name, &m.descriptor)?;
+        if declaring.name != "java/lang/Object" || !method.is_native() { return None; }
+        if loader {
+            self.assumed.insert("the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode".into());
+        }
+        let word = self.identity_hash(path, object);
+        self.push(path, word);
+        self.advance(path);
+        Some(Ok(None))
+    }
     /// An exact freshly created lock on the native engine's single executing thread.
     /// Thread starts stay outside this rule. Nonstandard receivers, symbolic
     /// exceptional states and unsupported operations keep their own diagnostics.

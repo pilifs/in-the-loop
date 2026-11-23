@@ -828,6 +828,14 @@ const OPERATION_CASES: &[Case] = &[
     case(OPS, "indexOfChar", &[3, C, C, C, 0x110000]),
     case(OPS, "indexOfChar", &[0, 0, 0, 0, C]),
     case(OPS, "indexOfChar", &[-1, 0, 0, 0, C]),
+    case(OPS, "lastIndexOfCharFrom", &[3, C, 0, C, C, i32::MIN]),
+    case(OPS, "lastIndexOfCharFrom", &[3, C, 0, C, C, 1]),
+    case(OPS, "lastIndexOfCharFrom", &[3, C, 0, C, C, i32::MAX]),
+    case(OPS, "lastIndexOfCharFrom", &[3, C, SMILE.0, SMILE.1, 0x1F600, 1]),
+    case(OPS, "lastIndexOfCharFrom", &[3, C, SMILE.0, SMILE.1, 0x1F600, 0]),
+    case(OPS, "lastIndexOfCharFrom", &[3, C, SMILE.0, SMILE.1, 0x110000, 2]),
+    case(OPS, "lastIndexOfCharFrom", &[0, C, 0, C, C, 0]),
+    case(OPS, "lastIndexOfCharFrom", &[-1, C, 0, C, C, 0]),
     case(OPS, "lastIndexOfChar", &[3, C, 0, C, C]),
     case(OPS, "lastIndexOfChar", &[3, C, 0, C, 0]),
     case(OPS, "lastIndexOfChar", &[3, C, HIGH, LOW, LOW]),
@@ -1335,7 +1343,7 @@ fn an_operation_outside_the_values_models_is_a_named_gap_under_strict() {
         assert_eq!(on_jvm, "null", "{method}: its claim holds on the JVM");
         for merge_after in [0, u64::MAX] {
             let options = Options { parameters: bounded(3), merge_after, ..Options::default() };
-            let image_map = matches!(*method, "mapRemove" | "mapGetOrDefault");
+            let image_map = matches!(*method, "mapRemove" | "mapGetOrDefault" | "mapKeyOfIdentity");
             if image_map {
                 let on_image = bmc::check(&cp, OUTSIDE, method, &options).unwrap();
                 assert_eq!(on_image.verdict, Verdict::Verified, "{method}: {:?}", on_image.problem);

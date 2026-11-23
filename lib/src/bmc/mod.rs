@@ -134,6 +134,7 @@ mod thread_locals;
 pub mod runtime;
 mod ties;
 pub mod sat;
+mod string_buffer;
 pub mod strings;
 pub(crate) mod throwables;
 pub mod transcript;
@@ -3480,6 +3481,10 @@ impl<'a> Engine<'a> {
     /// with their constructors in the harness's fresh state, and a caller's were made in the caller's, so a final
     /// field holds what its constructor made of a state the proof never had.
     fn reads_field(&self, path: &Path, o: usize, owner: &str, name: &str, descriptor: &str) -> Result<(), Stop> {
+        if path.objects[o].fields.contains_key(runtime::REGISTERED_QUEUE) && matches!(name, "referent" | "queue" | "next" | "discovered")
+            && self.cp.resolve_field(owner, name, descriptor).as_deref() == Some("java/lang/ref/Reference") {
+            return unsupported("a GC-sensitive field of a registered reference");
+        }
         if !self.there_before(path, o) {
             return Ok(());
         }
@@ -4023,6 +4028,15 @@ impl<'a> Engine<'a> {
                     return Ok(None);
                 }
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/ref/SoftReference", "clock", "J")
+                    && class.name == declaring && path.frames.last().is_some_and(|f| f.method == "<init>") {
+                    self.reads(path, || "reads the GC soft-reference clock".into())?;
+                    path.unbound_platform_value = Some("the GC soft-reference clock");
+                    let stamp = Val::J(self.b.fresh(64));
+                    self.push(path, stamp);
+                    self.advance(path);
+                    return Ok(None);
+                }
                 let platform_flag = match (declaring.as_str(), member.name.as_str()) {
                     (STRING, "COMPACT_STRINGS") => Some("the JVM's compact-string setting"),
                     ("java/util/ImmutableCollections", "REVERSE") => Some("the JVM's immutable collection iteration order"),
@@ -4406,6 +4420,12 @@ impl<'a> Engine<'a> {
     /// `None` for any other call, and for one whose String has no content, which stays the JDK call it was (a
     /// gap), unless what it lacks is a named limit ([`Obj::limit`]), which ends the path with no verdict.
     fn string_method(&mut self, path: &mut Path, o: usize, name: &str, descriptor: &str, args: &[Val]) -> Option<Step> {
+        if name == "equals" && descriptor == "(Ljava/lang/Object;)Z" {
+            if let [Val::R(Some(other))] = args {
+                if let Some(step) = self.separator_equals(path, o, *other) { return Some(step); }
+            }
+        }
+        if let Err(stop) = self.resolve_separator(path, o) { return Some(Err(stop)); }
         if self.gap_mode == GapMode::Strict && name == "replace" && descriptor == "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;" {
             return self.replace_string_unit(path, o, args);
         }
@@ -5196,6 +5216,15 @@ impl<'a> Engine<'a> {
             }
         }
         let args = self.pop_args(path, descriptor.params.len())?;
+        if caller == "java/io/PrintWriter" && path.frames.last().is_some_and(|f| f.method == "<clinit>")
+            && self.gap_mode == GapMode::Strict {
+            if let Some(field) = self.cp.print_writer_access_field(member) {
+                self.keeps(path, None, "registers the JDK PrintWriter access object")?;
+                path.statics.insert((member.owner.clone(), field), args[0].clone());
+                self.advance(path);
+                return Ok(None);
+            }
+        }
         if caller == throwables::THROWABLE && member.owner == "java/util/Objects" && self.cp.throwable_image_method(&member.owner, &member.name, &member.descriptor).is_some() {
             return self.call(path, &member.owner, &member.name, &member.descriptor, args);
         }
@@ -5288,11 +5317,7 @@ impl<'a> Engine<'a> {
                     Val::J(self.b.fresh(64))
                 }
                 ("identityHashCode", [Val::R(None)]) => Val::I(self.b.constant(0, 32)),
-                ("identityHashCode", [Val::R(Some(o))]) => {
-                    // Stable for the same object. Distinct objects may collide, including at zero.
-                    path.unbound_platform_value = Some("a JVM-chosen identity hash");
-                    path.objects[*o].fields.entry("<JVM.identityHashCode>".into()).or_insert_with(|| Val::I(self.b.fresh(32))).clone()
-                }
+                ("identityHashCode", [Val::R(Some(o))]) => self.identity_hash(path, *o),
                 _ => return unsupported("the JVM identity hash needs a resolved reference"),
             };
             self.push(path, value);
@@ -5511,6 +5536,10 @@ impl<'a> Engine<'a> {
         // A contract given for the call stands in place of the engine's own model of it ([`gaps::modelled_jdk_call`]):
         // the call is then the gap it is to a checker with no such model, closed as the contract says.
         if !contracted {
+            if special {
+                if let Some(step) = self.string_buffer_copy(path, o, member, &args) { return step; }
+            }
+            if let Some(step) = self.object_hash(path, o, special, member) { return step; }
             if let Some(step) = self.fresh_thread_local(path, o, special, member, &args) { return step; }
             // Set12 puts the bootstrap EMPTY object in its second slot. Its virtual equals
             // runs Object's reference comparison. Keep normal dispatch for every subclass.
@@ -5541,6 +5570,35 @@ impl<'a> Engine<'a> {
             }
             if let Some(step) = self.image_map_call(path, o, special, member, &args) { return step; }
             if !path.objects[o].assumed && !path.objects[o].given {
+                const QUEUE: &str = "java/lang/ref/ReferenceQueue";
+                const FRESH_QUEUE: &str = "<JDK.freshReferenceQueue>";
+                const COUNTER: &str = "java/util/concurrent/atomic/AtomicInteger";
+                const FRESH_COUNTER: &str = "<JDK.freshAtomicInteger>";
+                if !special && member.owner == COUNTER && member.name == "incrementAndGet" && member.descriptor == "()I"
+                    && path.objects[o].fields.contains_key(FRESH_COUNTER) && self.cp.atomic_integer_increment() {
+                    self.keeps(path, Some(o), "increments an atomic integer")?;
+                    if self.there_before(path, o) { self.reads(path, || "reads an atomic integer before its increment".into())?; }
+                    let old = path.objects[o].fields.get("value").cloned().unwrap_or_else(|| Val::I(self.b.constant(0, 32)));
+                    let Val::I(old) = old else { return unsupported("unexpected AtomicInteger value field"); };
+                    let value = Val::I(self.b.add(&old, &self.b.constant(1, 32)));
+                    path.objects[o].fields.insert("value".into(), value.clone());
+                    self.push(path, value);
+                    self.advance(path);
+                    return Ok(None);
+                }
+                if path.objects[o].fields.contains_key(FRESH_QUEUE) && member.owner == QUEUE
+                    && matches!((member.name.as_str(), member.descriptor.as_str()),
+                        ("poll", "()Ljava/lang/ref/Reference;") | ("headIsNull", "()Z")) {
+                    // A reference allocated before a fresh queue cannot have been registered
+                    // with it. Once a later reference exists, the GC could enqueue it.
+                    if path.objects[o + 1..].iter().any(|r| self.cp.is_subtype(&r.class, "java/lang/ref/Reference")
+                        && !matches!(r.fields.get(runtime::REGISTERED_QUEUE), Some(Val::R(q)) if *q != Some(o))) {
+                        return unsupported("polling a reference queue after a possible GC registration");
+                    }
+                    if let Some((cf, method)) = self.cp.find_method(QUEUE, &member.name, &member.descriptor) {
+                        return self.enter_method(path, QUEUE, cf, method, vec![Val::R(Some(o))]);
+                    }
+                }
                 if member.owner == "java/util/concurrent/atomic/AtomicReference" && path.objects[o].class == member.owner
                     && !path.objects[o].unknown {
                     if let Some((cf, method)) = self.cp.fresh_atomic_method(&member.name, &member.descriptor, special) {
@@ -5550,6 +5608,15 @@ impl<'a> Engine<'a> {
                     }
                 }
                 if let Some((cf,method)) = self.cp.fresh_state_method(&path.objects[o].class, &member.owner, &member.name, &member.descriptor, special) {
+                    if special && member.owner == COUNTER && member.name == "<init>" {
+                        path.objects[o].fields.insert(FRESH_COUNTER.into(), Val::I(self.b.constant(1, 32)));
+                    }
+                    if special && member.owner == "java/lang/ref/Reference" {
+                        path.objects[o].fields.insert(runtime::REGISTERED_QUEUE.into(), args[1].clone());
+                    }
+                    if special && member.owner == QUEUE && member.name == "<init>" {
+                        path.objects[o].fields.insert(FRESH_QUEUE.into(), Val::I(self.b.constant(1, 32)));
+                    }
                     if special && member.owner == runtime::REENTRANT_LOCK {
                         // The original constructor initializes sync. The existing single-thread
                         // lock operations also keep their public hold-count observation.

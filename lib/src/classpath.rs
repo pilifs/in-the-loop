@@ -382,6 +382,8 @@ pub struct ClassPath {
     string_unit_replacement: std::cell::OnceCell<bool>,
     reflection_copies: std::cell::OnceCell<bool>,
     thread_local_keys: std::cell::OnceCell<bool>,
+    explicit_utc: std::cell::OnceCell<bool>,
+    string_buffer_layout: std::cell::OnceCell<Option<bool>>,
     basic_base64: std::cell::OnceCell<bool>,
     heap_buffer_copy: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
@@ -408,7 +410,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -491,6 +493,8 @@ impl ClassPath {
         self.string_unit_replacement.take();
         self.reflection_copies.take();
         self.thread_local_keys.take();
+        self.explicit_utc.take();
+        self.string_buffer_layout.take();
         self.basic_base64.take();
         self.heap_buffer_copy.take();
         self.concurrent_table_layout.take();
@@ -1038,6 +1042,24 @@ impl ClassPath {
         Some(implementation.pool.loadable(*name).ok()?.string_units()?.into_owned())
     }
 
+    /// The PrintWriter access registration in this image stores its one argument in
+    /// a bootstrap field. Qualify that write without taking over other SharedSecrets state.
+    pub(crate) fn print_writer_access_field(&self, setter: &crate::classfile::MemberRef) -> Option<String> {
+        use crate::classfile::{Insn::*, Kind};
+        let desc = "Ljdk/internal/access/JavaIOPrintWriterAccess;";
+        if (setter.owner.as_str(), setter.name.as_str(), setter.descriptor.as_str()) !=
+            ("jdk/internal/access/SharedSecrets", "setJavaIOCPrintWriterAccess", "(Ljdk/internal/access/JavaIOPrintWriterAccess;)V") { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(&setter.owner).ok()?? else { return None };
+        let method = class.method(&setter.name, &setter.descriptor)?;
+        let code = method.code.as_ref()?;
+        let ops = code.instructions().ok()?;
+        let [(_, Load(Kind::Ref, 0)), (_, PutStatic(i)), (_, Return(None))] = ops.as_slice() else { return None };
+        let f = class.pool.member(*i).ok()?;
+        let field = class.field(&f.name)?;
+        (method.is_static() && code.exception_table.is_empty() && f.owner == class.name && f.descriptor == desc
+            && field.is_static() && field.descriptor == desc).then_some(f.name)
+    }
+
     /// Follow the read-only UTF-8 decoder callback to the JavaLangAccess
     /// implementation installed by System during VM startup in this image.
     pub(crate) fn utf8_language_access(&self) -> Option<String> {
@@ -1094,7 +1116,7 @@ impl ClassPath {
             | ("java/lang/Character", "toLowerCase", "(C)C" | "(I)I")
             | ("java/lang/reflect/Modifier", "isStatic", "(I)Z")
             | ("java/util/Set", "of", "([Ljava/lang/Object;)Ljava/util/Set;")
-            | ("java/lang/Character", "isJavaIdentifierPart", "(C)Z" | "(I)Z")
+            | ("java/lang/Character", "isJavaIdentifierPart" | "isUpperCase", "(C)Z" | "(I)Z")
             | ("java/util/Arrays", "rangeCheck", "(III)V")
             | ("jdk/internal/util/ArraysSupport", "newLength", "(III)I")
             | ("jdk/internal/util/ArraysSupport", "hugeLength", "(II)I")
@@ -1118,6 +1140,7 @@ impl ClassPath {
             | ("java/util/Arrays", "stream", "([Ljava/lang/Object;)Ljava/util/stream/Stream;" | "([Ljava/lang/Object;II)Ljava/util/stream/Stream;")
             | ("java/util/Arrays", "spliterator", "([Ljava/lang/Object;II)Ljava/util/Spliterator;")
             | ("java/util/Collections", "unmodifiableSet", "(Ljava/util/Set;)Ljava/util/Set;")
+            | ("java/util/Collections", "unmodifiableMap", "(Ljava/util/Map;)Ljava/util/Map;")
             | ("java/util/Collections", "newSetFromMap", "(Ljava/util/Map;)Ljava/util/Set;")
             | ("java/util/Collections", "synchronizedSet", "(Ljava/util/Set;Ljava/lang/Object;)Ljava/util/Set;")
             | ("java/util/concurrent/ConcurrentHashMap", "spread" | "tableSizeFor", "(I)I")
@@ -1179,6 +1202,27 @@ impl ClassPath {
             &["java/lang/ThreadLocal", "java/lang/InheritableThreadLocal", "java/lang/ThreadLocal$ThreadLocalMap",
               "java/lang/ThreadLocal$ThreadLocalMap$Entry", "java/lang/Thread", "java/util/concurrent/atomic/AtomicInteger"],
             &["3c3c4c6a6b22ae5d97b167d5dae2c9a812bd66a6af51b2320c1d51218f490cc8"])) // Temurin 21.0.13
+    }
+
+    /// The bounded StringBuffer copy uses this image's growth rule and its actual UTF-16 byte order.
+    pub(crate) fn string_buffer_byte_order(&self) -> Option<bool> {
+        *self.string_buffer_layout.get_or_init(|| {
+            let matches = self.matches_jdk_classes(&["java/lang/AbstractStringBuilder", "java/lang/StringBuffer",
+                "java/lang/String", "java/lang/StringUTF16", "java/lang/StringLatin1", "jdk/internal/util/ArraysSupport"],
+                &["b4f23eff462728cd8564aff1ac1eab77f4be441c1a418aa9f1e2ee06d183155f"]);
+            if matches { self.jdk()?.hot_spot_big_endian() } else { None }
+        })
+    }
+
+    /// This Temurin 21 image and tzdb resolve UTC to a fixed zero-offset ZoneInfo.
+    /// The public factory clones its cached prototype and sets the caller's actual ID on the clone.
+    pub(crate) fn explicit_utc(&self) -> bool {
+        *self.explicit_utc.get_or_init(|| self.matches_jdk_classes(
+            &["java/util/TimeZone", "sun/util/calendar/ZoneInfo", "sun/util/calendar/ZoneInfoFile",
+              "sun/util/calendar/ZoneInfoFile$1", "sun/util/calendar/ZoneInfoFile$ZoneOffsetTransitionRule"],
+            &["36b2b18547c61bf0bd54a9d78ce40a09538626ada9c2c61b8fa8fd71a239bb60"])
+            && self.jdk().and_then(JImage::tzdb_sha256).as_deref() ==
+                Some("a02e3a23d67255782b11ab81070902235ab564080f0f65ffe2a989cdaa86fe89"))
     }
 
     /// Class.getMethod and getDeclaredField return copies on this image. Their scalar metadata
@@ -1291,6 +1335,12 @@ impl ClassPath {
         (method.is_public() && !method.is_static() && method.code.is_some()).then_some((class, method))
     }
 
+    /// VALUE is the offset of the int field 'value' and incrementAndGet is getAndAddInt(1) + 1.
+    pub(crate) fn atomic_integer_increment(&self) -> bool {
+        self.matches_jdk_classes(&["java/util/concurrent/atomic/AtomicInteger"],
+            &["9195c151584c60db712f4de7684f7d92ec5018e9a94621dd94d9512197172295"])
+    }
+
     /// Methods of an image-backed byte or char buffer with an ordinary Java heap array.
     /// Foreign segments and native memory operations keep their separate call boundaries.
     pub(crate) fn heap_buffer_method(&self, owner: &str, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
@@ -1359,6 +1409,9 @@ impl ClassPath {
             LOCK => owner == LOCK && matches!((name, desc), ("<init>", "()V") | ("newCondition", "()Ljava/util/concurrent/locks/Condition;")),
             // invokespecial selects the named superclass constructor even on a user-defined segment.
             _ if special && owner == LOCK && self.is_subtype(receiver, LOCK) => name == "<init>" && desc == "()V",
+            _ if special && matches!(owner, "java/lang/ref/Reference" | "java/lang/ref/SoftReference")
+                && self.is_subtype(receiver, "java/lang/ref/SoftReference") =>
+                name == "<init>" && desc == "(Ljava/lang/Object;Ljava/lang/ref/ReferenceQueue;)V",
             "java/lang/ref/ReferenceQueue" => owner == receiver && name == "<init>" && desc == "()V",
             "java/lang/StringBuffer" => owner == "java/lang/AbstractStringBuilder" && name == "<init>" && desc == "(I)V",
             SYNC => matches!((owner,name,desc), (SYNC | "java/util/concurrent/locks/ReentrantLock$Sync"
@@ -1680,7 +1733,7 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }
-        if matches!(name, "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
+        if matches!(name, "java/io/PrintWriter$1" | "java/util/Collections$UnmodifiableMap" | "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
             | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
             | "java/util/concurrent/ConcurrentHashMap$EntryIterator" | "java/util/concurrent/ConcurrentHashMap$BaseIterator"
