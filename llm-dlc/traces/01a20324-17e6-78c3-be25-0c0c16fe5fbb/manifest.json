@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20324-17e6-78c3-be25-0c0c16fe5fbb",
-  "status": "open",
+  "status": "ended",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/java-domain-proof-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize quality and efficien",
   "client": {
@@ -12,27 +12,27 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T14:48:11.399Z",
-  "duration_seconds": 96264,
+  "ended": "2026-11-23T15:01:28.116Z",
+  "duration_seconds": 97061,
   "stats": {
-    "turns": 19,
-    "api_calls": 3865,
-    "tool_calls": 8966,
-    "tool_errors": 226,
-    "compactions": 15,
+    "turns": 20,
+    "api_calls": 3887,
+    "tool_calls": 9034,
+    "tool_errors": 229,
+    "compactions": 16,
     "peak_context_tokens": 550118,
     "usage": {
-      "input_tokens": 5607748,
-      "output_tokens": 1747301,
-      "cache_read_input_tokens": 1041212544,
+      "input_tokens": 5685108,
+      "output_tokens": 1770118,
+      "cache_read_input_tokens": 1046675328,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 4828,
-    "exec": 3514,
+    "Bash": 4877,
+    "exec": 3530,
     "apply_patch": 388,
-    "wait": 129,
+    "wait": 132,
     "sleep": 38,
     "send_message": 25,
     "wait_agent": 19,
@@ -424,24 +424,38 @@
     {
       "index": 15,
       "started": "2026-11-23T13:21:09.829Z",
-      "ended": "2026-11-23T14:48:11.399Z",
+      "ended": "2026-11-23T14:53:32.095Z",
       "turns": 1,
-      "api_calls": 296,
+      "api_calls": 307,
       "usage": {
-        "input_tokens": 447936,
-        "output_tokens": 123690,
-        "cache_read_input_tokens": 91944064,
+        "input_tokens": 453505,
+        "output_tokens": 129321,
+        "cache_read_input_tokens": 96807808,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 440478
+      "peak_context_tokens": 445076
+    },
+    {
+      "index": 16,
+      "started": "2026-11-23T14:53:32.104Z",
+      "ended": "2026-11-23T15:01:28.116Z",
+      "turns": 1,
+      "api_calls": 11,
+      "usage": {
+        "input_tokens": 71791,
+        "output_tokens": 17186,
+        "cache_read_input_tokens": 599040,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 84652
     }
   ],
   "log": {
-    "sha256": "4281cf8320320bf5b7b933f4ecab924a37c8c70eafc1655dad86ed3632b3a9f9",
-    "bytes": 57412099,
-    "lines": 29188,
-    "gzip_bytes": 10808791,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/4281cf8320320bf5b7b933f4ecab924a37c8c70eafc1655dad86ed3632b3a9f9.jsonl.gz"
+    "sha256": "3ed16e4d0e8290e66dcfdf56e1ec2dce14bff12847aec400c6f364a7a2777861",
+    "bytes": 58370040,
+    "lines": 29409,
+    "gzip_bytes": 11011277,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/3ed16e4d0e8290e66dcfdf56e1ec2dce14bff12847aec400c6f364a7a2777861.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1646,22 +1660,6 @@
       "log_sha256": "88ec75736d2263f90f97548a68d8a00067bc04b144270c794a74811035ba09f5"
     },
     {
-      "change_id": "oultnyrqxyxwvnnsxwyqwotlmmpnpkvk",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Check the original Commons Lang decimal parsers (verification pending)",
-      "body": "Round concrete decimal literals directly to binary32 or binary64. Run the selected JDK formatter bytecode, integer decoder, BigDecimal constructors and comparisons, and BigInteger magnitude operations. Five read-only arithmetic tables come from the fingerprinted Temurin 21 class initializers. Preserve the original UTF-16 units when a String copies a byte range.\n\nThe interpreter now recognizes the native checker's supported constant regex grammar during StringUtils startup. An unmodeled initializer that wrote partial state prevents subsequent interpretation on that machine. Confirmed the six outcomes per original artifact in the interpreter and checked the exact runtime classes, raw float bits, signed coefficients and scales independently on Temurin 21. Both full-guard fix probes proved their claims and the parent precision probe produced a JVM-replayed counterexample.\n\nThe changed-test selection passed all eight groups, including 59 Rust binaries. One unrelated JBMC process-limit timing test passed on its automatic second run. The pinned-JDK regression, example 375 validation and test-cost lint passed. Jobs 20261123-134727-qualify-the-four-original-commons-lang-d and 20261123-134736-compare-strict-native-and-jbmc-on-both-o qualify the original tasks and compare both engines. Jobs 20261123-134759-recheck-60-original-java-callers-on-the, 20261123-134806-recheck-38-frozen-historical-java-claims and 20261123-135311-recheck-proof-tier-conformance-after-dec recheck the frozen controls and both proof-tier conformance tests.",
-      "log_sha256": "3eb514c92f24e592629638fed9e528a2f483e18664687cc1d470080117fd87ff"
-    },
-    {
-      "change_id": "tmqvwpvmrtrpswromtkmmxmwnznmmxpp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Trace inherited state through the original monitor worker startup",
-      "body": "Bind the unchanged Worker and caller class files and disassemble the platform constructor directly from the measured JDK modules. Eight fresh JVM runs distinguish absent, removed, stored-null and populated parent bindings. A returning callback completes on the caller thread. A throwing callback escapes each original public caller as the identical exception before any shared-field write or worker start. The ordinary three-claim score remains separate from these explicitly installed parent environments.\n\nRebuilt and repeated all eight observations with monitor_startup.py --check, validated example 391 and its router, and ran the changed-test selection. All 31 selected groups passed, including 59 Rust test binaries and 30 Python test files.",
-      "log_sha256": "2db9f139c56e0b328099b6feb49477c17a440a3dee0e468d40cebe8a66113964"
-    },
-    {
       "change_id": "lwoyqyptykmmtzkwmlyquprwqknlpqtz",
       "commit_id": null,
       "immutable": false,
@@ -1724,6 +1722,22 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-135311-recheck-proof-tier-conformance-after-dec: passed: 1 passed step(s) in 24m41s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.",
       "log_sha256": "4281cf8320320bf5b7b933f4ecab924a37c8c70eafc1655dad86ed3632b3a9f9"
+    },
+    {
+      "change_id": "oultnyrqxyxwvnnsxwyqwotlmmpnpkvk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Check the original Commons Lang decimal parsers (verification pending)",
+      "body": "Round concrete decimal literals directly to binary32 or binary64. Run the selected JDK formatter bytecode, integer decoder, BigDecimal constructors and comparisons, and BigInteger magnitude operations. Five read-only arithmetic tables come from the fingerprinted Temurin 21 class initializers. Preserve the original UTF-16 units when a String copies a byte range.\n\nThe interpreter now recognizes the native checker's supported constant regex grammar during StringUtils startup. An unmodeled initializer that wrote partial state prevents subsequent interpretation on that machine. Confirmed the six outcomes per original artifact in the interpreter and checked the exact runtime classes, raw float bits, signed coefficients and scales independently on Temurin 21. Both full-guard fix probes proved their claims and the parent precision probe produced a JVM-replayed counterexample.\n\nThe changed-test selection passed all eight groups, including 59 Rust binaries. One unrelated JBMC process-limit timing test passed on its automatic second run. The pinned-JDK regression, example 375 validation and test-cost lint passed. Jobs 20261123-134727-qualify-the-four-original-commons-lang-d and 20261123-134736-compare-strict-native-and-jbmc-on-both-o qualify the original tasks and compare both engines. Jobs 20261123-134759-recheck-60-original-java-callers-on-the, 20261123-134806-recheck-38-frozen-historical-java-claims and 20261123-135311-recheck-proof-tier-conformance-after-dec recheck the frozen controls and both proof-tier conformance tests.",
+      "log_sha256": "3eb514c92f24e592629638fed9e528a2f483e18664687cc1d470080117fd87ff"
+    },
+    {
+      "change_id": "tmqvwpvmrtrpswromtkmmxmwnznmmxpp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Trace inherited state through the original monitor worker startup",
+      "body": "Bind the unchanged Worker and caller class files and disassemble the platform constructor directly from the measured JDK modules. Eight fresh JVM runs distinguish absent, removed, stored-null and populated parent bindings. A returning callback completes on the caller thread. A throwing callback escapes each original public caller as the identical exception before any shared-field write or worker start. The ordinary three-claim score remains separate from these explicitly installed parent environments.\n\nRebuilt and repeated all eight observations with monitor_startup.py --check, validated example 391 and its router, and ran the changed-test selection. All 31 selected groups passed, including 59 Rust test binaries and 30 Python test files.",
+      "log_sha256": "2db9f139c56e0b328099b6feb49477c17a440a3dee0e468d40cebe8a66113964"
     },
     {
       "change_id": "ztxynrywrvlzuwkyrprtoqskmzlotkvp",
@@ -1835,6 +1849,12 @@
       "bytes": 56083066,
       "lines": 28115,
       "gzip_bytes": 10610616,
+      "url": null
+    },
+    "3ed16e4d0e8290e66dcfdf56e1ec2dce14bff12847aec400c6f364a7a2777861": {
+      "bytes": 58370040,
+      "lines": 29409,
+      "gzip_bytes": 11011277,
       "url": null
     },
     "412375cd218faf9278455227749341990bc5eedcc093f555b9019b3820c7db19": {
