@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-191505-capture-real-bounded-solver-queries-for",
+  "title": "Capture real bounded solver queries for independent LRAT",
+  "description": "Run Guava's first-8-release native task on its real JDK and released JAR, retain its per-query assumptions and outcomes, and fall back to the recorded prefix-sums workload only if the first task emits no UNSAT calls.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "sat-certificate"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T19:15:05+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/trusted-kernel/capture.py",
+      "run": "python3 -B lib/benchmark/trusted-kernel/capture.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/sat"
+  ]
+}

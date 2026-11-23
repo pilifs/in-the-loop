@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-191504-reproduce-both-guava-any-length-producer",
+  "title": "Reproduce both Guava any-length producer baselines",
+  "description": "Repeat the original 336 and 346 comparisons, regenerate each record in scratch, and require established with the named domain and proof obligations on the release bytes.",
+  "kind": "library",
+  "capabilities": [
+    "array-induction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T19:15:04+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "python3",
+    "java",
+    "javap",
+    "z3"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Ints original comparison and obligations",
+      "run": "python3 -B lib/benchmark/trusted-kernel/baseline.py 336",
+      "cwd": "."
+    },
+    {
+      "name": "Longs original comparison and obligations",
+      "run": "python3 -B lib/benchmark/trusted-kernel/baseline.py 346",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/baseline"
+  ]
+}
