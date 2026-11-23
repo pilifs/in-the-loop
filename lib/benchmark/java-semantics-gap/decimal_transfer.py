@@ -57,7 +57,7 @@ def exact_classes(work, cp, env, rev):
             "stdoutSha256": hashlib.sha256(out).hexdigest(), "rows": observations}
 
 
-def paired():
+def paired(dest=DEST):
     seed(FOLDER)
     example = read(FOLDER / "example.json")
     target = sidecar.load(FOLDER, example)
@@ -101,7 +101,7 @@ def paired():
                 for engine in ("native", "jbmc"):
                     scratch = work / task / engine
                     scratch.mkdir(parents=True)
-                    raw = DEST / "paired" / task / engine
+                    raw = dest / "paired" / task / engine
                     raw.mkdir(parents=True, exist_ok=True)
                     row = integrated(subject, claim, engine, scratch, raw, cp, env, plan.claim["assert"])
                     if engine == "native" and row["disposition"] != "correct":
@@ -112,7 +112,7 @@ def paired():
                     print(task, engine, row["disposition"], row["seconds"], flush=True)
                 summary["tasks"][task] = {"claimKey": plan.claim["key"], "entry": invocation.entry, "bounds": bounds,
                         "assume": claim.guard, "assert": plan.claim["assert"], "classpath": graph, "runs": results}
-    write(DEST / "paired/measurement.json", summary)
+    write(dest / "paired/measurement.json", summary)
 
 
 def callers():

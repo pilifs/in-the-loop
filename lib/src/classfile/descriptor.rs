@@ -54,6 +54,15 @@ impl Type {
         matches!(self, Type::Object(_) | Type::Array(_))
     }
 
+    /// Primitive invocation conversions permitted by JLS 5.1.2, including identity.
+    pub(crate) fn widens_to(&self, to: &Type) -> bool {
+        use Type::*;
+        self.is_primitive() && (self == to || matches!((self, to),
+            (Byte, Short) | (Byte | Short | Char, Int) | (Byte | Short | Char | Int, Long)
+            | (Byte | Short | Char | Int | Long, Float)
+            | (Byte | Short | Char | Int | Long | Float, Double)))
+    }
+
     /// The number of local-variable or stack slots the type takes: two for `long` and `double`.
     pub fn slots(&self) -> u16 {
         match self {

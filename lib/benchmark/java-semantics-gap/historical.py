@@ -50,7 +50,7 @@ def selected(rows, group):
     return [k for k, v in rows.items() if v["historical"] == "jbmc-only" and k not in listed]
 
 
-def measure(phase, group):
+def measure(phase, group, output_root=None):
     rows = freeze()
     ids = selected(rows, group)
     checker = Path(os.environ["JVMCONTRACT"]).resolve()
@@ -75,7 +75,7 @@ def measure(phase, group):
     result["binaries"] = {p.name: digest(p) for p in (checker, jbmc, java, java.parents[1]/"lib/modules",
                                                       Path("/usr/lib/core-models.jar"))}
     result["repositoryModels"] = {p.relative_to(models).as_posix(): digest(p) for p in sorted(models.rglob("*.class"))}
-    out = ROOT / "verification/java-semantics-gap" / phase
+    out = (output_root or ROOT / "verification/java-semantics-gap") / phase
     out.mkdir(parents=True, exist_ok=True)
     (out / f"{group}.json").write_text(json.dumps(result, indent=1) + "\n")
     print(group, Counter((r["engine"], r["class"]) for r in result["runs"]))

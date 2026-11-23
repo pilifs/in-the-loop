@@ -1,0 +1,134 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "queue-array-fill",
+    "family": "queue-array-fill",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "queue": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "commons-lang3",
+          "commons-collections4"
+        ],
+        "runtimeLibraries": [
+          "commons-lang3",
+          "commons-collections4"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-queue",
+      "kind": "replay",
+      "revision": "queue",
+      "target": "QueueFill#queue",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "queue-fill-queue",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "queue",
+      "target": "QueueFill#queue",
+      "claim": "claims/queue-fill-queue.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-queue"
+      ]
+    },
+    {
+      "id": "queue-fill-full-means-occupied",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "queue",
+      "target": "QueueFill#fullMeansOccupied",
+      "claim": "claims/queue-fill-full-means-occupied.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-queue"
+      ]
+    },
+    {
+      "id": "queue-fill-fill",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "queue",
+      "target": "QueueFill#fill",
+      "claim": "claims/queue-fill-fill.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-queue"
+      ]
+    },
+    {
+      "id": "queue-fill-stale-survives",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "queue",
+      "target": "QueueFill#staleSurvives",
+      "claim": "claims/queue-fill-stale-survives.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-queue"
+      ]
+    },
+    {
+      "id": "queue-fill-covariant",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "queue",
+      "target": "QueueFill#covariant",
+      "claim": "claims/queue-fill-covariant.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-queue"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-queue",
+      "revision": "queue",
+      "kind": "driver",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle-queue",
+      "revision": "queue",
+      "kind": "oracle",
+      "path": "controls/original.json"
+    }
+  ]
+}

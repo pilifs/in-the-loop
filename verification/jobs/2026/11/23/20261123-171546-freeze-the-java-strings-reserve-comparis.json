@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-171546-freeze-the-java-strings-reserve-comparis",
+  "title": "Freeze the Java strings reserve comparison",
+  "description": "Compare exact UTF-16 difference and first-reference tie selection across Commons Lang, Guava and the JDK. Include both packaged JBMC pairs, the strict CLIs and 5329 original JVM inputs.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow/measure.py"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:15:46+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 20,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "2m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "strings paired",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings paired",
+      "cwd": "."
+    },
+    {
+      "name": "strings packaged",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings packaged",
+      "cwd": "."
+    },
+    {
+      "name": "strings packaged-22",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening strings packaged-22",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/opening/strings/paired",
+    "verification/jbmc-fast-follow/opening/strings/packaged",
+    "verification/jbmc-fast-follow/opening/strings/packaged-22"
+  ]
+}

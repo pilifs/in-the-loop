@@ -346,6 +346,17 @@ public final class Operations {
     // java.lang.String, called as the Object or the CharSequence it is: the bytecode names that class, and the JVM
     // runs the String's method.
 
+    static int compareUnits(int n, int a, int b, int c, int m, int d, int e, int f) {
+        return of(n, a, b, c).compareTo(of(m, d, e, f));
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    static int compareBridge(int kind) {
+        Comparable value = of(1, 0xd800, 0, 0);
+        Object other = kind == 0 ? of(1, 0xd802, 0, 0) : kind == 1 ? null : new Object();
+        return value.compareTo(other);
+    }
+
     static int hashCodeThroughObject(int n, int a, int b, int c) {
         Object o = of(n, a, b, c);
         return o.hashCode();

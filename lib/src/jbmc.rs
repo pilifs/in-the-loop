@@ -159,6 +159,55 @@ impl ObjectCell {
     }
 }
 
+/// One primitive row in the initial graph. An alias names the first live
+/// definition, so equal cell values never imply equal references.
+#[derive(Debug, Clone, PartialEq)]
+pub enum PrimitiveRow {
+    Null,
+    Same(usize),
+    Cells(Vec<Value>),
+}
+
+impl PrimitiveRow {
+    pub(crate) fn json(&self, element: &Type) -> serde_json::Value {
+        match self {
+            Self::Null => serde_json::Value::Null,
+            Self::Same(index) => serde_json::json!({"sameCell": index}),
+            Self::Cells(values) => serde_json::Value::Array(values.iter().map(|v| crate::witness::exact(*v, element)).collect()),
+        }
+    }
+
+    pub(crate) fn read(rows: &[serde_json::Value], element: &Type) -> Result<Vec<Self>, Error> {
+        let mut result = Vec::with_capacity(rows.len());
+        for row in rows {
+            let parsed = match row {
+                serde_json::Value::Null => Self::Null,
+                serde_json::Value::Array(items) => {
+                    let mut cells = Vec::with_capacity(items.len());
+                    for item in items {
+                        let value = match (element, item) {
+                            (Type::Int, _) => item.as_i64().and_then(|n| i32::try_from(n).ok()).map(Value::Int),
+                            (Type::Long, serde_json::Value::String(s)) => s.parse().ok().map(Value::Long),
+                            _ => None,
+                        }.ok_or_else(|| Error::new(format!("invalid {} row cell", element.java_name())))?;
+                        cells.push(value);
+                    }
+                    Self::Cells(cells)
+                }
+                serde_json::Value::Object(obj) if obj.len() == 1 => {
+                    let index = obj.get("sameCell").and_then(|v| v.as_u64()).and_then(|n| usize::try_from(n).ok())
+                        .filter(|&i| matches!(result.get(i), Some(Self::Cells(_))))
+                        .ok_or_else(|| Error::new("row alias must name an earlier defined row"))?;
+                    Self::Same(index)
+                }
+                _ => return Err(Error::new("expected null, a primitive row or a row alias")),
+            };
+            result.push(parsed);
+        }
+        Ok(result)
+    }
+}
+
 /// An argument of a counterexample: a primitive, an array, a String's UTF-16 code units, `null`, or
 /// the same object as an earlier argument (by its index), which a replay passes again rather than a copy of it.
 #[derive(Debug, Clone, PartialEq)]
@@ -171,6 +220,7 @@ pub enum Argument {
     /// A `String[]`: each cell null or a String's code units, each String an object of its own.
     Strings(Vec<Option<Vec<u16>>>),
     Objects(Vec<ObjectCell>),
+    Rows(Vec<PrimitiveRow>),
     Null,
     Same(usize),
 }
@@ -207,6 +257,15 @@ impl JbmcResult {
                     Some(Some(raw)) => Argument::Strings(raw.iter().map(|r| crate::bmc::read_string_element(r)).collect::<Result<Vec<_>, _>>().map_err(|e| Error::new(format!("the counterexample's String[] in slot {slot}: {e}")))?),
                     Some(None) => Argument::Null,
                     None => Argument::Strings(Vec::new()),
+                },
+                _ if crate::bmc::reference_inputs::row_element(t).is_some() => match self.raw_arrays.get(&slot) {
+                    Some(Some(raw)) => {
+                        let cells = raw.iter().map(|s| serde_json::from_str(s)).collect::<Result<Vec<_>, _>>()
+                            .map_err(|e| Error::new(format!("ragged argument in slot {slot}: {e}")))?;
+                        Argument::Rows(PrimitiveRow::read(&cells, crate::bmc::reference_inputs::row_element(t).unwrap())?)
+                    }
+                    Some(None) => Argument::Null,
+                    None => return Err(Error::new(format!("the counterexample has no ragged array in slot {slot}"))),
                 },
                 _ if crate::bmc::reference_inputs::component(t).is_some() => match self.raw_arrays.get(&slot) {
                     Some(Some(raw)) => {
@@ -424,6 +483,16 @@ pub fn run(run: &JbmcRun) -> Result<JbmcResult, Error> {
 /// [`run`], with the Z3 for the second attempt named, or none for a run without one, and how long the run goes
 /// before that attempt.
 pub(crate) fn run_with(run: &JbmcRun, z3: Option<&Path>, patience: Duration) -> Result<JbmcResult, Error> {
+    run_checking(run, z3, patience, &run.class, &run.function)
+}
+
+/// An input factory has its own scalar entry point, while the checked
+/// assertion still belongs to the original, unmodified property harness.
+pub(crate) fn run_for_property(run: &JbmcRun, class: &str, function: &str) -> Result<JbmcResult, Error> {
+    run_checking(run, crate::congruence::solver().as_deref(), crate::congruence::patience(run.timeout), class, function)
+}
+
+fn run_checking(run: &JbmcRun, z3: Option<&Path>, patience: Duration, class: &str, function: &str) -> Result<JbmcResult, Error> {
     let memory_mb = memory_limit_mb();
     let cmd = limited(command(run), memory_mb);
     if !available(&run.executable) {
@@ -472,14 +541,25 @@ pub(crate) fn run_with(run: &JbmcRun, z3: Option<&Path>, patience: Duration) -> 
     let seconds = started.elapsed().as_secs_f64();
     let output = notes + &output;
     std::fs::write(&run.log, &output)?;
-    let mut result = parse_json(&output, &run.class, &run.function, run.unwind, run.stage.clone());
+    let mut result = parse_json(&output, class, function, run.unwind, run.stage.clone());
+    let items = json_items(&output);
+    if result.verdict == Verdict::Verified && run.stage.is_none() && (class != run.class || function != run.function) {
+        let marker = format!("java::{class}.{function}:");
+        let source_checked = items.iter().filter_map(|m| m["result"].as_array()).flatten().any(|p|
+            p["status"] == "SUCCESS" && p["property"].as_str().is_some_and(|id| id.starts_with(&marker) && id.contains(".assertion.")));
+        if !source_checked {
+            result.verdict = Verdict::Unverifiable;
+            result.ending = Ending::OtherFailure;
+            result.problem = Some(format!("JBMC did not establish a named assertion in {class}.{function} through the row-input harness"));
+        }
+    }
     if let Some(record) = proved.filter(|_| result.verdict == Verdict::Verified) {
         result.version = record.checker(&result.version);
         result.congruence = Some(record);
     }
     result.log = run.log.clone();
     result.seconds = seconds;
-    result.profile = crate::phases::of_jbmc(&json_items(&output), seconds);
+    result.profile = crate::phases::of_jbmc(&items, seconds);
     if output.contains("did not finish within") {
         result.verdict = Verdict::Unverifiable;
         result.ending = Ending::Timeout;
@@ -810,6 +890,13 @@ fn scalar(value: &serde_json::Value) -> Option<String> {
 
 /// `Float.NaN`, `-Double.POSITIVE_INFINITY`, and an array element's `(byte)-128`).
 pub fn parse_value(t: &Type, raw: &str) -> Result<Value, Error> {
+    if let Some(hex) = raw.strip_prefix("bits:0x") {
+        return match t {
+            Type::Float if hex.len() == 8 => u32::from_str_radix(hex, 16).ok().map(f32::from_bits).map(Value::Float),
+            Type::Double if hex.len() == 16 => u64::from_str_radix(hex, 16).ok().map(f64::from_bits).map(Value::Double),
+            _ => None,
+        }.ok_or_else(|| Error::new(format!("invalid {} input bits: {raw}", t.java_name())));
+    }
     // An array element carries its type as a cast: `(byte)-128`, `(short)7`.
     let raw = match raw.strip_prefix('(').and_then(|r| r.split_once(')')) {
         Some(("byte" | "short" | "char" | "int" | "long", rest)) => rest.trim_start(),

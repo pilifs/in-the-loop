@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-165951-measure-final-java-numeric-on-both-ordin",
+  "title": "Measure final Java numeric on both ordinary engines",
+  "description": "Five original numeric claims, the full Jackson disagreement predicate, a direct opcode and a mantissa adapter. Bind original JAR and class hashes on the JVM and checker, inspect the actual method descriptors, keep complete raw responses and replay each candidate on the original JVM.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T16:59:51+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 20,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "2m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Measure final Java numeric on both ordinary engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py final numeric paired",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/final/numeric/paired"
+  ]
+}

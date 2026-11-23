@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "395",
+  "title": "Exact UTF-16 comparison and tie identity",
+  "summary": "Commons Lang and Guava compare two bounded strings over unrestricted UTF-16 units. Guava min exposes which equal reference it retained.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Exact UTF-16 comparison and tie identity",
+    "file": "adapter/ExactOrder.java",
+    "symbol": "ExactOrder#commons"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Commons Lang and Guava compare two bounded strings over unrestricted UTF-16 units. Guava min exposes which equal reference it retained."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 7/7",
+  "notes": [
+    "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+    "The JVM checked 5,329 boundary pairs. Sign normalization failed on 4,756, and Guava min kept the first reference on all 73 equal-valued distinct ties."
+  ]
+}

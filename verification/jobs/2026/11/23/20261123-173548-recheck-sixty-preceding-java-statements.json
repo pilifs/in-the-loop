@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-173548-recheck-sixty-preceding-java-statements",
+  "title": "Recheck sixty preceding Java statements on the qualified successor",
+  "description": "Preserve every matched decision at the frozen JAR, class, assertion, JVM and bounds. Collect raw native and integrated responses and re-run each qualified witness.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:35:48+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Sixty paired callers",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers --output verification/jbmc-fast-follow/successor/regressions",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/successor/regressions/callers"
+  ]
+}

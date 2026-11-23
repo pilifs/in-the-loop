@@ -601,3 +601,20 @@ javac bootstrap descriptors are recorded in the setup record's
 All JBMC and project-verifier runs (the four-column opening comparison), the replay regression, any example scaffolding
 and claims, the choice of standalone classpath profiles (stock models vs. adding `Comparator.class` or `Arrays.class`),
 the `-source 8` question, the encodings for the numeric and nested-array work, and every checker change.
+
+## Results
+
+The ordinary native checker decided all 37 statements across method references, numeric conversions and caller-owned primitive rows. It also decided the 12 reserve statements on string ordering and queue histories. Of the 49 decisions, 29 were proofs and 20 were refutations replayed on the original JVM. Strict integrated JBMC decided 26 at matched scope. The per-entry results give both opening checkpoints, named standalone profiles, original JVM controls and the first unresolved comparator operation. [Campaign results](jbmc-fast-follow-calls-conversions-and-arrays-results.md) · [Machine-readable scorecard](../../verification/jbmc-fast-follow/scorecard.json)
+
+The receiver-construction brief can use direct floating-point inputs and a bounded caller-owned `int[][]` or `long[][]`, including nullable, shared and equal-valued distinct rows. The checked examples use height and width two. Automatic discovery of a legal receiver history remains a separate task. [Input and replay handoff](jbmc-fast-follow-calls-conversions-and-arrays-results.md#handoff-to-receiver-construction)
+
+### Method-reference descriptors in the classfiles
+
+These four `LambdaMetafactory.metafactory` sites appear in the opening classfiles. The archived `javap -v` listings identify the interface method type, static target and instantiated method type in that order. [Opening archive with Lift.javap and Chain.javap](../../verification/jbmc-fast-follow/opening/callbacks/paired/raw.tar.gz)
+
+| Caller | Interface method type | Static target | Instantiated method type |
+|---|---|---|---|
+| Primitive Guava comparison | `(II)J` | `Longs.compare:(JJ)I` | `(II)J` |
+| Boxed Guava comparison | `(Ljava/lang/Integer;Ljava/lang/Integer;)J` | `Longs.compare:(JJ)I` | `(Ljava/lang/Integer;Ljava/lang/Integer;)J` |
+| Commons Lang short comparison | `(SS)J` | `NumberUtils.compare:(SS)I` | `(SS)J` |
+| Guava comparison chain | `(Ljava/lang/Object;Ljava/lang/Object;)I` | `Longs.compare:(JJ)I` | `(Ljava/lang/Integer;Ljava/lang/Integer;)I` |

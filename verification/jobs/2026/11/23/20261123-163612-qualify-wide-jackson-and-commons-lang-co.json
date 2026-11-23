@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-163612-qualify-wide-jackson-and-commons-lang-co",
+  "title": "Qualify wide Jackson and Commons Lang conversions and classify ties",
+  "description": "Check the original five native and staged JBMC statements first, including direct double input, full 2^54 long range and exact JVM counterexamples. After those ten answers qualify, check the independent characterization in both engines and record the separately scoped opcode and mantissa controls. Compare the physical signed zero and double-rounding bits and the 8192-bin grid.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "examples/393-wide-floating-conversions/target.json"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T16:36:12+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "2m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Five original conversions",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py qualified numeric paired --cohort numeric --require",
+      "cwd": "."
+    },
+    {
+      "name": "All 16777216 disagreements",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py classification numeric paired --cohort classification --require",
+      "cwd": "."
+    },
+    {
+      "name": "Independent opcode and mantissa controls",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py controls numeric paired --cohort intrinsic mantissa",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/qualified/numeric/paired",
+    "verification/jbmc-fast-follow/classification/numeric/paired",
+    "verification/jbmc-fast-follow/controls/numeric/paired"
+  ]
+}

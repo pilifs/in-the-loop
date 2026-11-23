@@ -1,0 +1,38 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "394",
+  "title": "Caller-owned rows in public array operations",
+  "summary": "Bounded nullable arrays preserve independent row widths, primitive values and shared identities across Commons Lang, Collections and Math.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "array-utilities",
+    "aliasing",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Caller-owned rows in public array operations",
+    "file": "adapter/RaggedProof.java",
+    "symbol": "RaggedProof#reversed"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Bounded nullable arrays preserve independent row widths, primitive values and shared identities across Commons Lang, Collections and Math."
+  },
+  "target": "target.json",
+  "verdictLabel": "Ordinary native 16/16",
+  "notes": [
+    "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+    "Both dimensions and every cell are independent at the direct entry. An alias names an earlier row, while equal separate rows have their own cell lists. The 209-graph JVM census contains 12 shared nonempty cases. The direct Commons Math transfer retains actual and expected mismatch dimensions."
+  ]
+}

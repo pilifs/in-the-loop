@@ -322,6 +322,9 @@ pub fn witness_arguments(types: &[Type], witness: &str) -> Option<Vec<Argument>>
                 crate::spec::plans::WitnessValue::String { units } => Some(Argument::String(units)),
                 _ => None,
             },
+            (t, Value::Array(items)) if crate::bmc::reference_inputs::row_element(t).is_some() => {
+                crate::jbmc::PrimitiveRow::read(items, crate::bmc::reference_inputs::row_element(t)?).ok().map(Argument::Rows)
+            }
             (t, v @ Value::Array(_)) if crate::bmc::reference_inputs::component(t).is_some() => {
                 crate::jbmc::ObjectCell::checked(serde_json::from_value(v.clone()).ok()?).ok().map(Argument::Objects)
             }

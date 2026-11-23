@@ -1,5 +1,5 @@
-//! Direct parameters of type T[] for a final, flat application class T. Each non-null
-//! cell can point to any earlier allocation or to a fresh object with independent int fields.
+//! Bounded direct reference arrays. A cell may hold null, share another cell's object,
+//! or refer to a fresh flat application object or a fresh primitive row.
 
 use super::{choice, Array, Bits, Blaster, Lit, Obj, Val, TRUE};
 use crate::classfile::{flags, Insn, Kind, Type};
@@ -17,22 +17,33 @@ pub(crate) fn component(ty: &Type) -> Option<&str> {
     }
 }
 
-pub(crate) struct Shape {
-    class: String,
-    fields: Vec<String>,
+pub(crate) fn row_element(ty: &Type) -> Option<&Type> {
+    let Type::Array(row) = ty else { return None };
+    let Type::Array(element) = row.as_ref() else { return None };
+    matches!(element.as_ref(), Type::Int | Type::Long).then_some(element)
 }
 
-/// Check the actual component bytes. A subclass, inherited state, static initialization or
-/// a constructor with effects would require a different object factory and replay.
+pub(crate) fn heap_array(ty: &Type) -> bool {
+    component(ty).is_some() || row_element(ty).is_some()
+}
+
+pub(crate) enum Shape {
+    Object { class: String, fields: Vec<String> },
+    Rows(Type),
+}
+
+/// An application component needs a qualified constructor. Primitive rows
+/// instead receive independent lengths and complete signed cell domains.
 pub(crate) fn shape(cp: &ClassPath, params: &[Type], bound: u32) -> Result<Option<Shape>, String> {
-    let Some(class) = params.iter().find_map(component) else { return Ok(None) };
+    let Some(ty) = params.iter().find(|t| heap_array(t)) else { return Ok(None) };
     if params.iter().filter(|t| !t.is_primitive()).count() != 1 {
         return Err("a direct object-array input together with another reference parameter: sharing between their heaps is not supported".into());
     }
-    // Each pair of cells can be an alias. Refuse before building the quadratic choice table.
     if bound > 32 {
-        return Err(format!("a direct {class}[] input of bound {bound}: the native object factory supports up to 32 cells"));
+        return Err(format!("a direct {} input of bound {bound}: the native object factory supports up to 32 cells", ty.java_name()));
     }
+    if let Some(element) = row_element(ty) { return Ok(Some(Shape::Rows(element.clone()))); }
+    let class = component(ty).expect("classified application component");
     let Some(cf) = cp.application(class).map_err(|e| e.to_string())? else {
         return Err(format!("the component of {class}[] is not an application class"));
     };
@@ -55,7 +66,12 @@ pub(crate) fn shape(cp: &ClassPath, params: &[Type], bound: u32) -> Result<Optio
         }
         fields.push(f.name.clone());
     }
-    Ok(Some(Shape { class: class.into(), fields }))
+    Ok(Some(Shape::Object { class: class.into(), fields }))
+}
+
+enum InitialNode {
+    Object(BTreeMap<String, Bits>),
+    Row { element: Type, length: Bits, cells: Vec<Bits> },
 }
 
 pub(super) struct InputArray {
@@ -63,24 +79,57 @@ pub(super) struct InputArray {
     length: Bits,
     // Per index, guards select null or an index into the original, unmodified field vectors.
     choices: Vec<Vec<(Lit, Option<usize>)>>,
-    fields: Vec<BTreeMap<String, Bits>>,
+    nodes: Vec<InitialNode>,
 }
 
 impl InputArray {
-    pub(super) fn field_words(&self) -> impl Iterator<Item = &Bits> {
-        self.fields.iter().flat_map(BTreeMap::values)
+    pub(super) fn input_literals(&self, into: &mut Vec<Lit>) {
+        into.extend_from_slice(&self.length);
+        for options in &self.choices { into.extend(options.iter().map(|(guard, _)| *guard)); }
+        for node in &self.nodes {
+            match node {
+                InitialNode::Object(fields) => into.extend(fields.values().flatten().copied()),
+                InitialNode::Row { length, cells, .. } => {
+                    into.extend_from_slice(length);
+                    into.extend(cells.iter().flatten().copied());
+                }
+            }
+        }
     }
 
-    pub(super) fn allocate(shape: &Shape, slot: u32, length: Bits, bound: u32, b: &mut Blaster, objects: &mut Vec<Obj>) -> Self {
+    pub(super) fn stage_words(&self, values: &mut Vec<(Type, Bits)>) {
+        for node in &self.nodes {
+            match node {
+                InitialNode::Object(fields) => values.extend(fields.values().map(|v| (Type::Int, v.clone()))),
+                InitialNode::Row { element, cells, .. } => values.extend(cells.iter().map(|v| (element.clone(), v.clone()))),
+            }
+        }
+    }
+
+    pub(super) fn allocate(shape: &Shape, slot: u32, length: Bits, bound: u32, b: &mut Blaster, objects: &mut Vec<Obj>, cond: &mut Vec<Lit>) -> Self {
         let first = objects.len();
-        let mut input = Self { slot, length: length.clone(), choices: Vec::new(), fields: Vec::new() };
+        let mut input = Self { slot, length: length.clone(), choices: Vec::new(), nodes: Vec::new() };
+        let element = match shape { Shape::Object { class, .. } => Type::object(class),
+            Shape::Rows(primitive) => Type::Array(Box::new(primitive.clone())) };
         let mut refs = Vec::new();
         for index in 0..bound as usize {
-            let mut object = Obj::new(&shape.class);
-            let fields: BTreeMap<_, _> = shape.fields.iter().map(|name| (name.clone(), b.fresh(32))).collect();
-            object.fields = fields.iter().map(|(name, bits)| (name.clone(), Val::I(bits.clone()))).collect();
+            let mut object = Obj::new(&super::class_of(&element));
+            let node = match shape {
+                Shape::Object { fields, .. } => {
+                    let initial: BTreeMap<_, _> = fields.iter().map(|name| (name.clone(), b.fresh(32))).collect();
+                    object.fields = initial.iter().map(|(name, bits)| (name.clone(), Val::I(bits.clone()))).collect();
+                    InitialNode::Object(initial)
+                }
+                Shape::Rows(primitive) => {
+                    let n = b.fresh(32);
+                    cond.push(-b.ult(&b.constant(i64::from(bound), 32), &n));
+                    let cells: Vec<_> = (0..bound).map(|_| b.fresh(super::cell_width(primitive))).collect();
+                    object.array = Some(Array { element: primitive.clone(), length: n.clone(), refs: Vec::new(), cells: cells.clone() });
+                    InitialNode::Row { element: primitive.clone(), length: n, cells }
+                }
+            };
+            input.nodes.push(node);
             objects.push(object);
-            input.fields.push(fields);
 
             let mut remaining = TRUE;
             let mut picks = Vec::new();
@@ -93,7 +142,6 @@ impl InputArray {
             refs.push(choice(b, picks.iter().map(|&(guard, node)| (guard, node.map(|i| first + i))).collect()));
             input.choices.push(picks);
         }
-        let element = Type::Object(shape.class.clone());
         let descriptor = format!("[{}", element.descriptor());
         objects.push(Obj { array: Some(Array { element, length, refs, cells: Vec::new() }), ..Obj::new(&descriptor) });
         input
@@ -105,17 +153,23 @@ impl InputArray {
         let mut first = BTreeMap::new();
         self.choices.iter().take(b.eval(&self.length) as usize).enumerate().map(|(i, picks)| {
             let node = picks.iter().find(|(guard, _)| b.value(*guard)).expect("exhaustive cell choices").1;
-            let cell = match node {
-                None => ObjectCell::Null,
-                Some(node) => match first.get(&node) {
-                    Some(&index) => ObjectCell::Same { index },
-                    None => {
-                        first.insert(node, i);
-                        ObjectCell::Object { fields: self.fields[node].iter().map(|(name, bits)| (name.clone(), b.eval(bits) as i32)).collect() }
-                    }
-                },
-            };
-            serde_json::to_string(&cell).expect("an object cell is JSON")
+            let Some(node) = node else { return "null".into() };
+            if let Some(&index) = first.get(&node) {
+                return serde_json::to_string(&ObjectCell::Same { index }).expect("alias is JSON");
+            }
+            first.insert(node, i);
+            match &self.nodes[node] {
+                InitialNode::Object(fields) => serde_json::to_string(&ObjectCell::Object {
+                    fields: fields.iter().map(|(name, bits)| (name.clone(), b.eval(bits) as i32)).collect(),
+                }).expect("object fields are JSON"),
+                InitialNode::Row { element, length, cells } => {
+                    let values = cells[..b.eval(length) as usize].iter().map(|word| {
+                        let n = b.eval(word);
+                        if *element == Type::Long { serde_json::Value::String(n.to_string()) } else { serde_json::Value::from(n as i32) }
+                    }).collect();
+                    serde_json::Value::Array(values).to_string()
+                }
+            }
         }).collect()
     }
 }

@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20324-17e6-78c3-be25-0c0c16fe5fbb",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/java-domain-proof-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize quality and efficien",
   "client": {
@@ -12,31 +12,31 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T15:01:28.116Z",
-  "duration_seconds": 97061,
+  "ended": "2026-11-23T18:34:26.735Z",
+  "duration_seconds": 109840,
   "stats": {
-    "turns": 20,
-    "api_calls": 3887,
-    "tool_calls": 9034,
-    "tool_errors": 229,
-    "compactions": 16,
-    "peak_context_tokens": 550118,
+    "turns": 21,
+    "api_calls": 4399,
+    "tool_calls": 10123,
+    "tool_errors": 266,
+    "compactions": 17,
+    "peak_context_tokens": 550375,
     "usage": {
-      "input_tokens": 5685108,
-      "output_tokens": 1770118,
-      "cache_read_input_tokens": 1046675328,
+      "input_tokens": 6307316,
+      "output_tokens": 2024089,
+      "cache_read_input_tokens": 1208895232,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 4877,
-    "exec": 3530,
-    "apply_patch": 388,
-    "wait": 132,
-    "sleep": 38,
+    "Bash": 5428,
+    "exec": 4019,
+    "apply_patch": 415,
+    "wait": 147,
+    "sleep": 44,
     "send_message": 25,
     "wait_agent": 19,
-    "list_agents": 10,
+    "list_agents": 11,
     "spawn_agent": 7,
     "followup_task": 6,
     "request_user_input_async": 1,
@@ -94,6 +94,9 @@
     "examples/391-class-monitor-identity/controls/ObserveSchedule.java",
     "examples/391-class-monitor-identity/controls/WorkerStartup.java",
     "examples/391-class-monitor-identity/example.json",
+    "examples/393-wide-floating-conversions/controls/jvm/RoundingBoundaries.java",
+    "examples/394-caller-owned-ragged-arrays/adapter/RowIdentities.java",
+    "examples/394-caller-owned-ragged-arrays/controls/MatrixMetadata.java",
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/workflow_ingest.py",
     "lib/README.md",
@@ -125,6 +128,12 @@
     "lib/benchmark/java-semantics-gap/subjects.py",
     "lib/benchmark/java-semantics-gap/test_monitor_schedules.py",
     "lib/benchmark/java-semantics-gap/test_scorecard.py",
+    "lib/benchmark/jbmc-fast-follow/builder_layout.py",
+    "lib/benchmark/jbmc-fast-follow/example_tasks.py",
+    "lib/benchmark/jbmc-fast-follow/matrix_transfer.py",
+    "lib/benchmark/jbmc-fast-follow/measure.py",
+    "lib/benchmark/jbmc-fast-follow/predecessor.py",
+    "lib/benchmark/jbmc-fast-follow/results.py",
     "lib/benchmark/run.py",
     "lib/benchmark/spring-java-data/domains.py",
     "lib/benchmark/spring-java-data/factory_results.py",
@@ -160,11 +169,14 @@
     "lib/src/bmc/reference_queues.rs",
     "lib/src/bmc/reflection.rs",
     "lib/src/bmc/regex.rs",
+    "lib/src/bmc/row_jbmc.rs",
     "lib/src/bmc/runtime.rs",
     "lib/src/bmc/string_buffer.rs",
     "lib/src/bmc/strings.rs",
     "lib/src/bmc/thread_locals.rs",
     "lib/src/bmc/throwables.rs",
+    "lib/src/bmc/ties.rs",
+    "lib/src/classfile/descriptor.rs",
     "lib/src/classpath.rs",
     "lib/src/harness/mod.rs",
     "lib/src/interp/mod.rs",
@@ -188,12 +200,14 @@
     "lib/tests/fixtures/claims/claims/L.java",
     "lib/tests/fixtures/claims/claims/ListConversions.java",
     "lib/tests/fixtures/claims/claims/LiveMapViews.java",
+    "lib/tests/fixtures/claims/claims/MethodReferenceReplay.java",
     "lib/tests/fixtures/claims/claims/P.java",
     "lib/tests/fixtures/claims/claims/ReaderAndListeners.java",
     "lib/tests/fixtures/claims/claims/Samples.java",
     "lib/tests/fixtures/claims/claims/SpringStartup.java",
     "lib/tests/fixtures/claims/claims/T.java",
     "lib/tests/fixtures/claims/claims/ValueConstants.java",
+    "lib/tests/fixtures/floating/FloatingChecks.java",
     "lib/tests/fixtures/observed-countermodels/app/oc/PublishedLookup.java",
     "lib/tests/fixtures/values/values/Lists.java",
     "lib/tests/fixtures/values/values/Operations.java",
@@ -204,6 +218,7 @@
     "llm-dlc/loops/jbmc-java-semantics-gap-brief.md",
     "llm-dlc/loops/spring-and-java-data-workstream-briefs.md",
     "llm-dlc/loops/spring-and-java-data-workstream-results.md",
+    "llm-dlc/tools/test_performance.py",
     "~/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/ObserveSchedule.java",
     "~/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/heap_and_monitors.py",
     "~/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/monitor_schedules.py",
@@ -438,24 +453,38 @@
     {
       "index": 16,
       "started": "2026-11-23T14:53:32.104Z",
-      "ended": "2026-11-23T15:01:28.116Z",
-      "turns": 1,
-      "api_calls": 11,
+      "ended": "2026-11-23T18:08:37.064Z",
+      "turns": 2,
+      "api_calls": 421,
       "usage": {
-        "input_tokens": 71791,
-        "output_tokens": 17186,
-        "cache_read_input_tokens": 599040,
+        "input_tokens": 565914,
+        "output_tokens": 241695,
+        "cache_read_input_tokens": 152089216,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 84652
+      "peak_context_tokens": 550375
+    },
+    {
+      "index": 17,
+      "started": "2026-11-23T18:08:37.072Z",
+      "ended": "2026-11-23T18:34:26.735Z",
+      "turns": 0,
+      "api_calls": 102,
+      "usage": {
+        "input_tokens": 128085,
+        "output_tokens": 29462,
+        "cache_read_input_tokens": 10729728,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 135220
     }
   ],
   "log": {
-    "sha256": "3ed16e4d0e8290e66dcfdf56e1ec2dce14bff12847aec400c6f364a7a2777861",
-    "bytes": 58370040,
-    "lines": 29409,
-    "gzip_bytes": 11011277,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/3ed16e4d0e8290e66dcfdf56e1ec2dce14bff12847aec400c6f364a7a2777861.jsonl.gz"
+    "sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061",
+    "bytes": 65150524,
+    "lines": 33226,
+    "gzip_bytes": 12215692,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1746,6 +1775,254 @@
       "summary": "Record four ordinary Commons Lang decimal decisions",
       "body": "Merge the five passed verification jobs on checker source 36542708757f and bind the generated scorecard and example pages to their original classpaths, asserted statements, raw results and JVM evidence. The native checker proves three of the four Commons Lang #1635 statements and refutes precision on the parent. Selector 0 returned Float bits 0x3dcccccd on the parent and a BigDecimal with coefficient 100000001490116121 and scale 18 on the fix. Integrated JBMC reproduced the parent refutation. Its three other candidates held on the original JVM.\n\nBoth full-guard native checking and qualified selector calls agree on all four statements. At the original scopes the same build kept 33 proofs and 24 replayed refutations on the 60 frozen caller claims, and 22 proofs and 16 replayed refutations on all 38 historical controls. All three ordinary monitor entries still stop at platform-thread construction. The report links their eight original JVM constructor controls and keeps the four decimal transfers outside that denominator.\n\nBoth proof-tier conformance tests passed. Independently reproduced the scorecard under two hash seeds, 283 class bindings on 21 JVM graphs, and eight constructor histories. All 17 example validators and all 30 changed-test groups passed, including 59 Rust binaries and 29 Python suites. Checked 631 local links across 19 pages.",
       "log_sha256": "4281cf8320320bf5b7b933f4ecab924a37c8c70eafc1655dad86ed3632b3a9f9"
+    },
+    {
+      "change_id": "pknwtynmmqurlouprmuulwtossvtkwkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decision D001 on jbmc-fast-follow-setup (stop, complete)",
+      "body": "The Opus setup phase for the JBMC fast-follow brief finished in one cycle, within setup's scope: only its setup record and one allow-list proposal were committed. Decision record only.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "msvsqwpqnqpzvtnlvkkxpyqwlzsyoxpl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Re-snapshot sessions under redaction policy 7",
+      "body": "The Codex sessions' transcripts belong to this workspace, so their logs are redacted here. sync --all --full re-redacted them under policy 7, which removes the encrypted reasoning that Astra quoted in text. Every session's current log now holds no such blob. Older snapshots keep theirs. Generated trace files only.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "lupnwonmswylrlqzmynvlmoslzttvmnu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Adopt the watcher's and advisor's logs into the workspace",
+      "body": "The merged line's trailers name logs of the watcher and advisor sessions that were stored only in the default checkout; sync.py adopt-logs copied them here, each checked against its name. Generated trace files only.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "ourotlnmkpltqqpwyyquvvvxqrnkzkvy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up the JBMC fast-follow brief's libraries, sources, tools and JVM controls",
+      "body": "Mechanical setup for llm-dlc/loops/jbmc-fast-follow-calls-conversions-and-arrays.md, recorded in its -setup.md. Resolved Guava 33.4.8-jre, Commons Lang 3.17.0, Collections 4.5.0, Math 3.6.1 and Jackson 2.19.0 from Maven Central with strict checksums; all 23 jars and sources jars have good signatures in a keyring of the setup's own, and jackson-databind matches the brief's sha256. Fetched the five source commits the brief links into shared bare mirrors; each is exactly its release tag, and the named files equal the released sources jars. Re-took both JBMC 6.11.0 packages' digests and extracted Comparator.class and Arrays.class from the Temurin 21.0.13 image (both equal the brief's digests). Built the checker's release binary at this head. Compiled the appendix fixtures on JDK 21 and ran every JVM control: all behave as the brief says (209 graphs with 12 shared rows, 21 matrix shapes 8/7/6, the 0x5a800001 vs 0x5a800000 witness, +0.0f at 2^-150, the disagreement classification on 8,192 bins). No claims, examples, JBMC or verifier runs; no verification job was needed, as every case is an unmodified release.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "mtnkmnmzppqrxuyyzqoxuwwykqwqlson",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose the Adoptium key file name for the allow list",
+      "body": "The setup session for the JBMC fast-follow brief listed the previous setup's keys folder, whose Adoptium public key file is named after the key's public fingerprint; the long-token rule flagged it. Proposed (bdc3a059), not approved: a person decides.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "zzqoplxszkxmktlkwkrpsqnwpuxxyntw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run jbmc-fast-follow-setup into the line",
+      "body": "The single-agent run jbmc-fast-follow-setup (session ee5092ec-ea54-4da9-bbb8-6bf560b6984f) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "xqvknpvvqqsqsqktsvsxrmtvsvwunqvz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add the setup agent's notes to the JBMC fast-follow brief",
+      "body": "single_run.py notes copied the '## Setup Agent Notes' section of the setup record into the brief's repository copy and the user's copy in ~/code/scripts/analysis (the original is backed up), so that the Astra run reads what setup prepared and found. Brief text only.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "vqpmrnnplxmttqpospxrkqynqkzwnttv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze Java callback, conversion and row inputs (verification pending)",
+      "body": "Register 37 statements in examples 392–394 on the released Guava, Jackson and Apache Commons JARs. Keep product and assertion classes separate, inspect the actual method-handle descriptors and bind each checker comparison to class and tool digests. Pin predecessor a273d0af and the e41539fd checker. Its original Guava negative exited 101 in replay when an int occupied the target long slot. The preceding scorecard rechecked all 38 historical and 60 public statements.\n\nAll three prepared example validators and original replay tasks passed, including 98 frozen physical observations, the 209-graph and 21-matrix censuses and the independent 8,192-bin numeric grid. The selected Rust binaries and Python suites passed after isolating the note-count test from the checkout's live redaction stamp. All 110 performance tests passed on rerun.\n\nOpening jobs 20261123-160648-open-the-seven-method-reference-claims-a, 20261123-160648-open-the-jackson-and-commons-lang-floati and 20261123-160649-open-original-nullable-ragged-arrays-and collect strict native, staged JBMC, standalone assertion and reachability results alongside the JVM controls.",
+      "log_sha256": "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330"
+    },
+    {
+      "change_id": "xwuustrnytksyvxokvszooootrmrxstp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Adapt method-reference arguments and results (verification pending)",
+      "body": "Follow the erased and instantiated SAM descriptors through the implementation handle. Cast and unbox each argument in invocation order, apply legal primitive widening, and adapt only the normal result. The native checker uses its existing word conversions and the interpreter now passes the JVM stack width to the target. A regression exercises the normal staged CLI replay for three distinct javac adapters.\n\nThe original integrated Guava check that exited 101 now returns a typed violation at (0, 1), which the original JVM reproduces. A bounded native run established the boxed Guava comparison for every pair of signed ints. The CLI regression, legacy lambda controls, cost lint and all seven changed-test groups passed, including 59 Rust test binaries. Job 20261123-162554-qualify-original-guava-method-reference freezes the ten Guava engine outcomes before the Commons Lang and ComparisonChain transfers. Job 20261123-162554-recheck-proof-tier-conformance-after-met checks proof-tier conformance.",
+      "log_sha256": "ff0396bdc10e652145f9e85d9c8c0d8b43f7c6e5546749a1e6d585fa79fbcfe9"
+    },
+    {
+      "change_id": "nwuzqtkqtrvtplpmnmkptwmqxxyzumyn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Round wide Java operands directly to binary32 (verification pending)",
+      "body": "Encode signed int and long to binary32 and binary64 and non-NaN binary64 narrowing with exact ties to even, including subnormal and overflow boundaries. Pass direct floating parameters at their JVM widths, preserve witness bits through the original JVM and cache, and avoid double rounding when a boxed Long returns a float. The fallback regression now uses unbounded multiplication, since a raw floating parameter is supported.\n\nThe native Jackson LongNode establishes the independent rounding rule over all 2^54 inputs. The direct DoubleNode negative produced the exact 2^-150 counterexample. Constant-circuit checks, a noncanonical NaN round trip, the direct-double post-return regression and all 23 changed-test groups passed. Job 20261123-163612-qualify-wide-jackson-and-commons-lang-co checks all five primary statements and proceeds to the exact two-path disagreement classification only if the primary checks pass.\n\nThe earlier Guava comparison on source 550cf8a2 established three statements and replayed two violations on each engine. Job 20261123-163524-transfer-proven-guava-adapters-to-common holds that source fixed for Commons Lang return widening and the public ComparisonChain transfer.",
+      "log_sha256": "dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71"
+    },
+    {
+      "change_id": "vxzpsxkuxtnmkkpnsvwtznvlppunpyzw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind caller-owned primitive row graphs (verification pending)",
+      "body": "Take direct int[][] and long[][] inputs with bounded independent row lengths, null rows, unrestricted cell words and arbitrary row sharing. Native constructs all such graphs. Integrated JBMC calls the unchanged property harness through a scalar graph generator and identifies the original assertion. Both witness paths reconstruct fresh and shared rows on the original JVM and preserve exact long values in the proof cache. Save checker and JVM class bindings, entry descriptors, generated comparator inputs and independently reconstructed standalone traces.\n\nA bounded native proof established Commons Lang reversal including visibility of writes through shared rows. Integrated JBMC refuted the false distinct-row rule on two references to the same nonempty row. The original Commons Math descriptor proved the equal-width and unequal-width exception cases, and all six physical mismatches distinguished expected from actual width. Native, JVM and cache tests recovered a shared long row containing 9007199254740993. The 26 changed-test groups, test-cost lint and example 394 validator passed.\n\nThe three 20261123-165951-measure-final-java jobs compare all 37 registered entries on this checker. The three 20261123-165951-recheck jobs repeat 60 preceding public claims, 38 historical controls, the four original decimal parser tasks and both proof-tier conformance tests. Job 20261123-170333-check-the-original-commons-math-matrix-d checks the original public descriptor and exact exception fields separately.",
+      "log_sha256": "61f0a1368fb01823b48de13a8478a2eba5c9460a3a3132505efd9be535b15a52"
+    },
+    {
+      "change_id": "sxmspypryzsorwvvtyqllqqumuooxyov",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Freeze UTF-16 and queue transfer cases (verification pending)",
+      "body": "Add twelve independently registered reserve statements in examples 395 and 396. Compare exact UTF-16 ordering and tie identity on Commons Lang and Guava, four-operation CircularFifoQueue histories, and ArrayFill ownership and covariance. Keep the two stock JBMC packages and the individual JDK Arrays overlay distinct.\n\nBoth ordinary replay tasks and example validators passed. The original JVM checked 5329 string pairs, with 4756 sign-normalization failures and 73 distinct equal ties. All 256 queue histories agreed with the independent oracle, and 128 distinguish isFull from occupancy. Opening native probes reached erased Comparable.compareTo and Arrays.fill(Object[],Object). All 59 changed-test groups passed, one acceptance suite on retry. Jobs 20261123-171546-freeze-the-java-strings-reserve-comparis and 20261123-171546-freeze-the-java-queue-reserve-comparison capture the full opening profiles before changing either operation.",
+      "log_sha256": "5da3eabc7966f396c3b4b248deb5458acac951f72af26a84bcf3d441a1c80411"
+    },
+    {
+      "change_id": "ynnkxxwkkzormqlsztuuvqkmonwrkkko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify row witnesses and Java transfers (verification pending)",
+      "body": "Five direct row candidates first stopped when the checker allowed the input heap to change while quantifying the JVM assertion setting. Fix the initial input literals, including lengths, values and aliases, without fixing any platform choice. The original iterator counterexample now replays, while a genuinely setting-dependent property stays open.\n\nModel exact UTF-16 comparison on a known String receiver through both descriptors, including the erased bridge cast and signed unit difference. Execute the selected JDK reference-array fill bytecode. The Guava tie-identity and entire Commons Collections queue-history probes proved. The JVM, interpreter and checker operation register, the long-row cache and JVM regression, all 26 changed-test groups and the predecessor evidence check passed.\n\nThe eight 20261123-173547, 20261123-173548 and 20261123-173549 jobs remeasure the five families, the 60 earlier callers and 38 historical statements, the decimal controls, the original matrix descriptor with comparator memory headroom, and proof-tier conformance. Job 20261123-173701-record-all-49-ordinary-native-example-ta runs every standard numbered-example native task, preserving independent receipts. The original 4 GiB matrix comparator attempt recorded kernel memory kills and is kept separately.",
+      "log_sha256": "e7ff4ee0170b0a2ca31c20039efb3396d93d5681fd9fcb03e3c2a7eca460880d"
+    },
+    {
+      "change_id": "turomnyxolzxkxmyyyvxpkpnrsosksup",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-160648-open-the-seven-method-reference-claims-a: passed: 3 passed step(s) in 34.3s, peak 133.3 MiB (estimated 3m00s, 4.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "pxoppuxyzztmwpynqsusovrwoqvlqmpo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 3 of the 3 job(s). 20261123-160648-open-the-jackson-and-commons-lang-floati: passed: 2 passed step(s) in 1m11s, peak 418.3 MiB (estimated 3m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261123-160649-open-original-nullable-ragged-arrays-and: passed: 3 passed step(s) in 1m45s, peak 1.2 GiB (estimated 3m00s, 4.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261123-162554-qualify-original-guava-method-reference: passed: 1 passed step(s) in 12.6s, peak 133.5 MiB (estimated 1m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "klpmmtxknyxmnvtwrwstkpnyywktvqkr",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-163524-transfer-proven-guava-adapters-to-common: passed: 3 passed step(s) in 21.6s, peak 135.6 MiB (estimated 1m00s, 3.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "svwpwlwrvwwswqspqupuznolqlopnyuu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-163612-qualify-wide-jackson-and-commons-lang-co: passed: 3 passed step(s) in 49.3s, peak 388.4 MiB (estimated 2m00s, 4.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "qszuukssnumoorqqmxzzvosmxnprwpsn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-162554-recheck-proof-tier-conformance-after-met: passed: 1 passed step(s) in 25m14s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "vpqzvortponunqqmkoqlvmtpmomkunvu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-165951-measure-final-java-callbacks-on-both-ord: passed: 1 passed step(s) in 29.9s, peak 135.2 MiB (estimated 2m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "qtyvlvlrwvklqlkkpnzqqyupuzouvtrt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 4 of the 4 job(s). 20261123-165951-measure-final-java-numeric-on-both-ordin: passed: 1 passed step(s) in 1m12s, peak 392.2 MiB (estimated 2m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-165951-measure-final-java-rows-on-both-ordinary: passed: 1 passed step(s) in 3m12s, peak 2.8 GiB (estimated 2m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-165951-recheck-the-sixty-java-callers-on-the-di: passed: 1 passed step(s) in 3m51s, peak 663.3 MiB (estimated 5m00s, 4.0 GiB); 42 output file(s) changed Applied 42 output(s). 20261123-170333-check-the-original-commons-math-matrix-d: passed: 1 passed step(s) in 5m18s, peak 4.5 GiB (estimated 1m00s, 3.0 GiB); 21 output file(s) changed Applied 21 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "qsvoqtrpsuzukwwzzuzxmnyxmvyynxkm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-165951-recheck-the-historical-38-and-decimal-pa: passed: 1 passed step(s) in 12m14s, peak 10.2 GiB (estimated 11m00s, 7.0 GiB); 21 output file(s) changed Applied 21 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "yvylxrsssxyytxkmpzmqskuksnuttuvq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261123-171546-freeze-the-java-queue-reserve-comparison: passed: 3 passed step(s) in 1m03s, peak 1.4 GiB (estimated 2m00s, 4.0 GiB); 6 output file(s) changed Applied 6 output(s). 20261123-171546-freeze-the-java-strings-reserve-comparis: passed: 3 passed step(s) in 1m11s, peak 316.9 MiB (estimated 2m00s, 4.0 GiB); 6 output file(s) changed Applied 6 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "vqwsurszyytmllxnlnxnstpulwnkxvwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-165951-recheck-proof-tier-conformance-on-the-di: passed: 1 passed step(s) in 25m54s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "vzrymswrxozlovtpqypyuyyomvokxqlv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay standalone witnesses and isolate row drivers (verification pending)",
+      "body": "Merge the first sixteen collected campaign jobs. Reconstruct every failing standalone assertion on the original JVM, including actual UTF-16 input words, independently allocated equal rows, shared rows and the numeric operand bits. All 26 traces repeated from their saved graphs. Twenty-two refuted the original statement, and four model candidates held.\n\nThe primitive-builder comparison at opening reached the assertion-status initializer in the combined RaggedProof class. Prepare a second layout that moves only the assertion entry points to their own class. Its six original methods retain their resolved instructions and handlers, and MadeRows is byte-identical. All 209 JVM graphs agree in both layouts with assertions enabled and disabled. Job 20261123-175431-compare-the-same-ragged-operations-with measures both strict engines separately on these layouts. The predecessor evidence check, the repeated standalone audit and the selected 59 Rust test binaries passed.",
+      "log_sha256": "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce"
+    },
+    {
+      "change_id": "tmuxsxslmvwlrqlmmrlzukuqrnysqvol",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-173547-qualify-bounded-utf-16-ordering-and-iden: passed: 1 passed step(s) in 5.2s, peak 99.9 MiB (estimated 3m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061"
+    },
+    {
+      "change_id": "lsrrpvsqoomkkltlswxoukmxnxzwsxrz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 5 job(s)",
+      "body": "Outputs applied for 5 of the 5 job(s). 20261123-173547-qualify-direct-row-witnesses-at-a-fixed: passed: 1 passed step(s) in 3m18s, peak 2.8 GiB (estimated 3m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-173547-recheck-the-primary-callback-and-numeric: passed: 2 passed step(s) in 1m41s, peak 392.2 MiB (estimated 3m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261123-173548-qualify-all-queue-histories-and-referenc: passed: 1 passed step(s) in 23.4s, peak 186.4 MiB (estimated 3m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261123-173548-recheck-sixty-preceding-java-statements: passed: 1 passed step(s) in 3m47s, peak 662.4 MiB (estimated 5m00s, 4.0 GiB); 42 output file(s) changed Applied 42 output(s). 20261123-173701-record-all-49-ordinary-native-example-ta: passed: 1 passed step(s) in 2m01s, peak 368.9 MiB (estimated 4m00s, 4.0 GiB); 692 output file(s) changed Applied 692 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061"
+    },
+    {
+      "change_id": "onyysrmlzoxppyrtkouztoqlwlpokrxs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-173549-retry-original-commons-math-matrix-contr: passed: 1 passed step(s) in 5m45s, peak 5.6 GiB (estimated 7m00s, 10.0 GiB); 21 output file(s) changed Applied 21 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061"
+    },
+    {
+      "change_id": "toomozputlpvkvowmlwoyrkymttnkmop",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-175431-compare-the-same-ragged-operations-with: passed: 1 passed step(s) in 22.2s, peak 160.4 MiB (estimated 2m00s, 4.0 GiB); 33 output file(s) changed Applied 33 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061"
+    },
+    {
+      "change_id": "rkookkuquztwlvyottonkqpnrtqwnrww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-173548-recheck-the-historical-controls-and-comm: passed: 2 passed step(s) in 12m11s, peak 10.2 GiB (estimated 11m00s, 7.0 GiB); 21 output file(s) changed Applied 21 output(s). Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061"
+    },
+    {
+      "change_id": "soplykxynsmylzuswxxumvoqzmmmzprn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-173549-qualify-both-proof-tier-conformance-test: passed: 1 passed step(s) in 25m41s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061"
+    },
+    {
+      "change_id": "uytqvpmxokzwsswzpvrmsmorluvlomls",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record 49 ordinary Java fast-follow decisions",
+      "body": "Examples 392–396 went from 7 opening native decisions to 49 on checker source 701ca64e1980. All 29 proofs are non-vacuous at the declared bounds, and the original JVM reproduced all 20 refutations. Strict integrated JBMC decided 26 at matching scope. The report follows the Guava and Commons method references, the exact 16,777,216 Jackson double-rounding disagreements, caller-owned primitive rows, UTF-16 ordering and reference-array fills through their public callers.\n\nMerge the final collector receipts and bind each scorecard entry to its ordinary task, product classes, standalone target and post-return sentinel, and original JVM controls. Reconstruct all 26 failing standalone traces. The JVM refuted 22 and held on four. Five original row counterexamples also reproduced with assertions enabled and disabled. The 8 GiB Commons Math retry reached the solver on all three direct descriptors' guards and records the remaining strict exception-model refusal.\n\nAll 26 campaign jobs passed, including both final proof-tier conformance suites. Rechecked the 60 preceding callers, 38 historical controls and four Commons Lang decimal cases. All five numbered examples validated as decided. Both hash-seeded scorecard checks, the physical replay check, pipeline validation and all 101 local documentation links passed. The changed-test selection passed all 30 groups, including 59 Rust test binaries and 29 Python suites.",
+      "log_sha256": "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061"
     }
   ],
   "logs": {
@@ -1833,6 +2110,12 @@
       "gzip_bytes": 5384400,
       "url": null
     },
+    "353b9eb31b19c1fa14b5d4f777d1187fc414f8cad6c8f029cb065b771e142330": {
+      "bytes": 60177604,
+      "lines": 30035,
+      "gzip_bytes": 11394086,
+      "url": null
+    },
     "38ac17f90b785c131324f25e559a4c87e7d3a02409276264654cfe086a0ffeec": {
       "bytes": 26308240,
       "lines": 9082,
@@ -1849,12 +2132,6 @@
       "bytes": 56083066,
       "lines": 28115,
       "gzip_bytes": 10610616,
-      "url": null
-    },
-    "3ed16e4d0e8290e66dcfdf56e1ec2dce14bff12847aec400c6f364a7a2777861": {
-      "bytes": 58370040,
-      "lines": 29409,
-      "gzip_bytes": 11011277,
       "url": null
     },
     "412375cd218faf9278455227749341990bc5eedcc093f555b9019b3820c7db19": {
@@ -1917,16 +2194,34 @@
       "gzip_bytes": 5518243,
       "url": null
     },
+    "568a07e57ea544ab825e4be90a8d9f1721a794e506c52489e777aef1d99e7061": {
+      "bytes": 65150524,
+      "lines": 33226,
+      "gzip_bytes": 12215692,
+      "url": null
+    },
     "5986ffe33c3b62d1159c56c165067ed4964d2821e46cba208687972425e27a55": {
       "bytes": 24283981,
       "lines": 8501,
       "gzip_bytes": 9521246,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/5986ffe33c3b62d1159c56c165067ed4964d2821e46cba208687972425e27a55.jsonl.gz"
     },
+    "5da3eabc7966f396c3b4b248deb5458acac951f72af26a84bcf3d441a1c80411": {
+      "bytes": 62733608,
+      "lines": 31643,
+      "gzip_bytes": 11798043,
+      "url": null
+    },
     "5f3051bb78920407c61c817d4e5158588a5ce3f61d9aeeb7a39718986a6c35ad": {
       "bytes": 35839467,
       "lines": 17918,
       "gzip_bytes": 6910242,
+      "url": null
+    },
+    "61f0a1368fb01823b48de13a8478a2eba5c9460a3a3132505efd9be535b15a52": {
+      "bytes": 62089282,
+      "lines": 31237,
+      "gzip_bytes": 11700250,
       "url": null
     },
     "6979f6c0a67f3fac34f7e1462c5f3698667f79ec10bad34accd7da8a80652452": {
@@ -2073,6 +2368,12 @@
       "gzip_bytes": 4691610,
       "url": null
     },
+    "c87e30fb440e3015db7f45cf2a0d5355e0354d63fcc201ce95ec06d7caab92ce": {
+      "bytes": 63613561,
+      "lines": 32310,
+      "gzip_bytes": 11934623,
+      "url": null
+    },
     "d83ea8951d95c531ef438d58669f9583b58fa694f10d7311c1e3e944d0e6d007": {
       "bytes": 40157320,
       "lines": 20345,
@@ -2085,10 +2386,22 @@
       "gzip_bytes": 2126217,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/d84e774cc5be9e73aa8bfc8dfe16955668ccd9951649fbc1bd014a7db2a2a2f5.jsonl.gz"
     },
+    "dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71": {
+      "bytes": 61266686,
+      "lines": 30643,
+      "gzip_bytes": 11573555,
+      "url": null
+    },
     "e7acf5b22cbfa03b155fedc7af2be318272f0387bbc0e6a80a18b92f86a4170d": {
       "bytes": 51631902,
       "lines": 25953,
       "gzip_bytes": 9771382,
+      "url": null
+    },
+    "e7ff4ee0170b0a2ca31c20039efb3396d93d5681fd9fcb03e3c2a7eca460880d": {
+      "bytes": 63332480,
+      "lines": 32089,
+      "gzip_bytes": 11890947,
       "url": null
     },
     "f29cdf611248d0969d5b8dec9b3e2394fc62b2384859bf84d5ba6b96c90d3e70": {
@@ -2102,6 +2415,12 @@
       "lines": 5292,
       "gzip_bytes": 5881830,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/f87916f7f4729d9c4e4ed57bed2e386ec4e32622c951043d9a4e517d6c480e07.jsonl.gz"
+    },
+    "ff0396bdc10e652145f9e85d9c8c0d8b43f7c6e5546749a1e6d585fa79fbcfe9": {
+      "bytes": 60562654,
+      "lines": 30228,
+      "gzip_bytes": 11458898,
+      "url": null
     },
     "ff173a3522995fb1d23530b515fc32c84e3fe7e86da19d7c5c540783aca6fbe9": {
       "bytes": 11779758,

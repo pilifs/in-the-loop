@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-173549-retry-original-commons-math-matrix-contr",
+  "title": "Retry original Commons Math matrix contracts with comparator headroom",
+  "description": "The earlier 4 GiB comparator measurement exhausted its limit at the original Commons Math descriptor. Repeat at the same 120-second claim deadlines and row bounds, with up to 8192 MiB for JBMC. Keep native and integrated outcomes, exact exception fields, measured resources and the first unproved operation.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:35:49+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "10G",
+    "duration": "7m",
+    "memoryLimit": "13G",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Public matrix and original metadata",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=8192 python3 -B lib/benchmark/jbmc-fast-follow/matrix_transfer.py --output verification/jbmc-fast-follow/successor/matrix",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/successor/matrix"
+  ]
+}

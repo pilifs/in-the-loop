@@ -138,10 +138,6 @@ fn box_class_of(t: &Type) -> Option<&'static str> {
     })
 }
 
-fn is_box_class(name: &str) -> bool {
-    matches!(name, "java/lang/Boolean" | "java/lang/Byte" | "java/lang/Character" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double")
-}
-
 /// Boxes a primitive as the JDK's `valueOf` does, with the JDK's identity cache for small values.
 pub fn box_value(m: &mut Machine, class: &str, v: Value) -> Value {
     let v = match (class, v) {
@@ -1130,7 +1126,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
         },
         Native::Lambda { sam_name, sam_descriptor, implementation, captured, instantiated, interface, .. } => {
             if name == sam_name && sam_descriptor.as_deref().is_none_or(|d| d == descriptor) {
-                call_lambda(m, &implementation, captured, &instantiated, args)
+                call_lambda(m, &implementation, captured, &instantiated, descriptor, args)
             } else {
                 unsupported(format!("{}.{name} on a lambda (only its functional method {sam_name} is modelled)", interface.replace('/', ".")))
             }
@@ -1169,7 +1165,10 @@ fn string_method(m: &mut Machine, s: &JStr, name: &str, descriptor: &str, args: 
             _ => Value::bool(false),
         },
         ("hashCode", _) => Value::Int(s.hash_code()),
-        ("compareTo", _) => {
+        ("compareTo", "(Ljava/lang/String;)I" | "(Ljava/lang/Object;)I") => {
+            if let Value::Ref(r) = args[0] {
+                if m.heap.string(r).is_none() { return Err(m.throw("java/lang/ClassCastException", None)); }
+            }
             let other = string_arg(m, args[0])?;
             let o = other.units();
             let mut result = 0;
@@ -1499,7 +1498,7 @@ fn boxed_method(m: &mut Machine, _r: Ref, class: &str, value: Value, name: &str,
         "shortValue" => Value::Int(as_i64(value) as i16 as i32),
         "byteValue" => Value::Int(as_i64(value) as i8 as i32),
         "doubleValue" => Value::Double(as_f64(value)),
-        "floatValue" => Value::Float(as_f64(value) as f32),
+        "floatValue" => super::convert(value, crate::classfile::Narrow::To(crate::classfile::Kind::Float)),
         "booleanValue" | "charValue" => value,
         "compareTo" | "compare" => {
             let other = unbox(m, args[0])?;
@@ -1970,95 +1969,108 @@ fn optional_method(m: &mut Machine, value: Option<Value>, name: &str, descriptor
 
 // Lambdas
 
-fn call_lambda(m: &mut Machine, handle: &MethodHandle, captured: Vec<Value>, instantiated: &str, args: Vec<Value>) -> Exec<Option<Value>> {
-    let target = MethodDescriptor::parse(&handle.member.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
-    let instantiated = MethodDescriptor::parse(instantiated).map_err(|e| Fault::Unsupported(e.to_string()))?;
-    if args.len() != instantiated.params.len() { return unsupported("a lambda called through an incompatible argument descriptor"); }
-    for (arg, ty) in args.iter().zip(&instantiated.params) {
-        if let (Value::Ref(r), true) = (*arg, ty.is_reference()) {
-            let name = match ty { Type::Object(c) => c.clone(), _ => ty.descriptor() };
-            if !m.is_instance(r, &name) { return Err(m.throw("java/lang/ClassCastException", None)); }
+/// Check a reference cast at the adapter, before the implementation is invoked.
+fn lambda_cast(m: &mut Machine, value: Value, to: &Type) -> Exec<Value> {
+    match value {
+        Value::Null => Ok(value),
+        Value::Ref(r) => {
+            let name = match to { Type::Object(c) => c.clone(), Type::Array(_) => to.descriptor(),
+                _ => return unsupported("reference adapter without a reference descriptor") };
+            if m.is_instance(r, &name) { Ok(value) } else { Err(m.throw("java/lang/ClassCastException", None)) }
         }
+        _ => unsupported("a primitive in a reference adapter slot"),
     }
-    let mut full = captured;
-    full.extend(args);
-    let owner = handle.member.owner.clone();
-    let name = handle.member.name.clone();
-    let descriptor = handle.member.descriptor.clone();
-    let result = match handle.kind {
-        6 => {
-            let adapted = adapt_args(m, full, &target.params)?;
-            if m.cp.is_application(&owner) {
-                m.call_static(&owner, &name, &descriptor, adapted)?
-            } else {
-                invoke_static_jdk(m, &owner, &name, &descriptor, adapted)?
-            }
-        }
-        5 | 9 | 7 => {
-            let receiver = *full.first().ok_or_else(|| Fault::Unsupported("lambda without a receiver".into()))?;
-            let rest = adapt_args(m, full[1..].to_vec(), &target.params)?;
-            if handle.kind == 7 && m.cp.is_application(&owner) {
-                let (cf, method) = m.cp.find_method(&owner, &name, &descriptor).ok_or_else(|| Fault::Unsupported(format!("method not found: {owner}.{name}")))?;
-                let mut all = vec![receiver];
-                all.extend(rest);
-                m.invoke(&cf, &method, all)?
-            } else {
-                m.call_virtual(receiver, &owner, &name, &descriptor, rest)?
-            }
-        }
-        8 => {
-            let adapted = adapt_args(m, full, &target.params)?;
-            if m.cp.is_application(&owner) {
-                Some(m.construct(&owner, &descriptor, adapted)?)
-            } else {
-                let object = new_jdk_object(m, &owner)?;
-                let r = object.as_ref().expect("allocated");
-                invoke_special_jdk(m, r, &owner, "<init>", &descriptor, adapted)?;
-                Some(object)
-            }
-        }
-        other => return unsupported(format!("method handle kind {other}")),
-    };
-    // Adapt the return value to the functional interface's type.
-    let returned_type = if handle.kind == 8 { Type::Object(owner) } else { target.ret };
-    Ok(match (result, &returned_type, &instantiated.ret) {
-        (Some(v), t, Type::Object(_)) if t.is_primitive() => Some(box_value(m, box_class_of(t).unwrap_or("java/lang/Integer"), v)),
-        (Some(v), Type::Object(_), t) if t.is_primitive() => Some(unbox(m, v)?),
-        (None, _, Type::Void) => None,
-        (None, _, _) => Some(Value::Null),
-        (v, _, Type::Void) => {
-            let _ = v;
-            None
-        }
-        (v, _, _) => v,
+}
+
+fn widen_lambda_value(value: Value, from: &Type, to: &Type) -> Exec<Value> {
+    use crate::classfile::{Kind, Narrow};
+    let compatible = matches!((value, from),
+        (Value::Int(_), Type::Boolean | Type::Byte | Type::Short | Type::Char | Type::Int)
+        | (Value::Long(_), Type::Long) | (Value::Float(_), Type::Float) | (Value::Double(_), Type::Double));
+    if !compatible || !from.widens_to(to) {
+        return unsupported(format!("lambda conversion from {} to {}", from.java_name(), to.java_name()));
+    }
+    Ok(match to {
+        Type::Long => super::convert(value, Narrow::To(Kind::Long)),
+        Type::Float => super::convert(value, Narrow::To(Kind::Float)),
+        Type::Double => super::convert(value, Narrow::To(Kind::Double)),
+        _ => value, // byte, short, char and int occupy an int on the operand stack.
     })
 }
 
-fn adapt_args(m: &mut Machine, values: Vec<Value>, params: &[Type]) -> Exec<Vec<Value>> {
-    let mut out = Vec::with_capacity(values.len());
-    for (i, v) in values.into_iter().enumerate() {
-        let Some(param) = params.get(i) else {
-            out.push(v);
-            continue;
-        };
-        out.push(match (param.is_primitive(), v) {
-            (true, Value::Ref(_)) | (true, Value::Null) => unbox(m, v)?,
-            (false, Value::Int(_)) | (false, Value::Long(_)) | (false, Value::Float(_)) | (false, Value::Double(_)) => {
-                let class = match param {
-                    Type::Object(n) if is_box_class(n) => n.clone(),
-                    _ => match v {
-                        Value::Long(_) => "java/lang/Long".into(),
-                        Value::Float(_) => "java/lang/Float".into(),
-                        Value::Double(_) => "java/lang/Double".into(),
-                        _ => "java/lang/Integer".into(),
-                    },
-                };
-                box_value(m, &class, v)
-            }
-            _ => v,
-        });
+fn adapt_lambda_value(m: &mut Machine, value: Value, from: &Type, to: &Type) -> Exec<Value> {
+    if from.is_primitive() {
+        if to.is_primitive() { return widen_lambda_value(value, from, to); }
+        let box_type = to.class_name().and_then(Type::for_wrapper).unwrap_or_else(|| from.clone());
+        let primitive = widen_lambda_value(value, from, &box_type)?;
+        let class = box_class_of(&box_type).ok_or_else(|| Fault::Unsupported("boxing void".into()))?;
+        let boxed = box_value(m, class, primitive);
+        return lambda_cast(m, boxed, to);
     }
-    Ok(out)
+    let value = lambda_cast(m, value, from)?;
+    if to.is_reference() { return lambda_cast(m, value, to); }
+    let Some(r) = value.as_ref() else { return Err(m.npe()); };
+    // A wrapper-typed argument unboxes that exact wrapper, then widens. A
+    // reference-typed result may require virtual Number.xxxValue on a subclass.
+    if let Some(source) = from.class_name().and_then(Type::for_wrapper) {
+        return widen_lambda_value(unbox(m, value)?, &source, to);
+    }
+    let (owner, method) = match to {
+        Type::Byte => ("java/lang/Number", "byteValue"), Type::Short => ("java/lang/Number", "shortValue"),
+        Type::Int => ("java/lang/Number", "intValue"), Type::Long => ("java/lang/Number", "longValue"),
+        Type::Float => ("java/lang/Number", "floatValue"), Type::Double => ("java/lang/Number", "doubleValue"),
+        Type::Char => ("java/lang/Character", "charValue"), Type::Boolean => ("java/lang/Boolean", "booleanValue"),
+        _ => return unsupported("invalid lambda unboxing destination"),
+    };
+    if !m.is_instance(r, owner) { return Err(m.throw("java/lang/ClassCastException", None)); }
+    m.call_virtual(value, owner, method, &format!("(){}", to.descriptor()), Vec::new())?
+        .ok_or_else(|| Fault::Unsupported("unboxing returned void".into()))
+}
+
+fn call_lambda(m: &mut Machine, handle: &MethodHandle, mut full: Vec<Value>, instantiated: &str, called: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+    let parse = |d: &str| MethodDescriptor::parse(d).map_err(|e| Fault::Unsupported(e.to_string()));
+    let target = parse(&handle.member.descriptor)?;
+    let instantiated = parse(instantiated)?;
+    let called = parse(called)?;
+    let owner = &handle.member.owner;
+    let name = &handle.member.name;
+    let descriptor = &handle.member.descriptor;
+    let mut takes = target.params;
+    if matches!(handle.kind, 5 | 7 | 9) { takes.insert(0, Type::object(owner)); }
+    if args.len() != instantiated.params.len() || args.len() + full.len() != takes.len() {
+        return unsupported("a lambda called through an incompatible argument descriptor");
+    }
+    let captured = full.len();
+    for ((arg, src), dst) in args.into_iter().zip(&instantiated.params).zip(&takes[captured..]) {
+        full.push(adapt_lambda_value(m, arg, src, dst)?);
+    }
+    let result = match handle.kind {
+        6 if m.cp.is_application(owner) => m.call_static(owner, name, descriptor, full)?,
+        6 => invoke_static_jdk(m, owner, name, descriptor, full)?,
+        5 | 7 | 9 => {
+            let receiver = full.remove(0);
+            if handle.kind == 7 && m.cp.is_application(owner) {
+                let (cf, method) = m.cp.find_method(owner, name, descriptor)
+                    .ok_or_else(|| Fault::Unsupported(format!("method not found: {owner}.{name}")))?;
+                full.insert(0, receiver);
+                m.invoke(&cf, &method, full)?
+            } else {
+                m.call_virtual(receiver, owner, name, descriptor, full)?
+            }
+        }
+        8 if m.cp.is_application(owner) => Some(m.construct(owner, descriptor, full)?),
+        8 => {
+            let object = new_jdk_object(m, owner)?;
+            invoke_special_jdk(m, object.as_ref().expect("allocated"), owner, "<init>", descriptor, full)?;
+            Some(object)
+        }
+        other => return unsupported(format!("method handle kind {other}")),
+    };
+    if called.ret == Type::Void { return Ok(None); }
+    let returned = if handle.kind == 8 { Type::object(owner) } else { target.ret };
+    let value = result.ok_or_else(|| Fault::Unsupported("lambda implementation returned void for a value call".into()))?;
+    let adapted = adapt_lambda_value(m, value, &returned, &instantiated.ret)?;
+    adapt_lambda_value(m, adapted, &instantiated.ret, &called.ret).map(Some)
 }
 
 // invokedynamic

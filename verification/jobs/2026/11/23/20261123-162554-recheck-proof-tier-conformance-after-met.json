@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-162554-recheck-proof-tier-conformance-after-met",
+  "title": "Recheck proof-tier conformance after method-reference replay",
+  "description": "Run the two proof-tier Rust conformance tests with real JBMC against the corrected symbolic and concrete method-reference adaptation. Retain the corpus comparisons, strict and confirmation results.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/interp/natives.rs"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T16:25:54+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 15,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "cargo"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "25m",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Real comparator conformance",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

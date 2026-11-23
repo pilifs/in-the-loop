@@ -21358,6 +21358,990 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 391 TASK"
       }
+    },
+    {
+      "id": "392",
+      "path": "examples/392-method-reference-conversions",
+      "title": "Method-reference conversions on Guava and Commons Lang",
+      "summary": "Java method references widen comparison operands and results, unbox nullable arguments, and respect ComparisonChain short-circuiting.",
+      "origin": "constructed",
+      "system": "Method-reference conversions on Guava and Commons Lang",
+      "symbol": "Lift#primitiveGood",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 13/13",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+        "The integrated Guava (0, 1) witness originally exited during replay. The same input now returns a signed negative long through the method reference. A settled ComparisonChain skips null unboxing and a tied chain performs it."
+      ],
+      "source": null,
+      "target": {
+        "family": "method-reference-conversions",
+        "role": "control",
+        "case": "method-reference-conversions",
+        "tasks": [
+          "replay-callbacks",
+          "lift-primitive-good",
+          "lift-primitive-wrong",
+          "lift-boxed-good",
+          "lift-boxed-wrong",
+          "lift-return-good",
+          "lift-return-wrong",
+          "lift-boxed-null",
+          "lift-static-good",
+          "lift-static-wrong",
+          "chain-good",
+          "chain-wrong",
+          "chain-skips-null",
+          "chain-rejects-null"
+        ],
+        "readiness": "executable",
+        "taskReadiness": {
+          "replay-callbacks": "scaffolded",
+          "lift-primitive-good": "executable",
+          "lift-primitive-wrong": "executable",
+          "lift-boxed-good": "executable",
+          "lift-boxed-wrong": "executable",
+          "lift-return-good": "executable",
+          "lift-return-wrong": "executable",
+          "lift-boxed-null": "executable",
+          "lift-static-good": "executable",
+          "lift-static-wrong": "executable",
+          "chain-good": "executable",
+          "chain-wrong": "executable",
+          "chain-skips-null": "executable",
+          "chain-rejects-null": "executable"
+        },
+        "expected": {
+          "replay-callbacks": "established",
+          "lift-primitive-good": "established",
+          "lift-primitive-wrong": "refuted",
+          "lift-boxed-good": "established",
+          "lift-boxed-wrong": "refuted",
+          "lift-return-good": "established",
+          "lift-return-wrong": "refuted",
+          "lift-boxed-null": "established",
+          "lift-static-good": "established",
+          "lift-static-wrong": "refuted",
+          "chain-good": "established",
+          "chain-wrong": "refuted",
+          "chain-skips-null": "established",
+          "chain-rejects-null": "established"
+        },
+        "claims": {
+          "lift-primitive-good": "established",
+          "lift-primitive-wrong": "refuted",
+          "lift-boxed-good": "established",
+          "lift-boxed-wrong": "refuted",
+          "lift-return-good": "established",
+          "lift-return-wrong": "refuted",
+          "lift-boxed-null": "established",
+          "lift-static-good": "established",
+          "lift-static-wrong": "refuted",
+          "chain-good": "established",
+          "chain-wrong": "refuted",
+          "chain-skips-null": "established",
+          "chain-rejects-null": "established"
+        },
+        "receipts": {
+          "replay-callbacks": {
+            "path": "receipts/replay-callbacks/20261123T161214Z-ecb42299/result.json",
+            "attempt": "20261123T161214Z-ecb42299",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-primitive-good": {
+            "path": "receipts/lift-primitive-good/20261123T175607Z-a0c0ae53/result.json",
+            "attempt": "20261123T175607Z-a0c0ae53",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-primitive-wrong": {
+            "path": "receipts/lift-primitive-wrong/20261123T175610Z-62a64258/result.json",
+            "attempt": "20261123T175610Z-62a64258",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-boxed-good": {
+            "path": "receipts/lift-boxed-good/20261123T175613Z-47350036/result.json",
+            "attempt": "20261123T175613Z-47350036",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-boxed-wrong": {
+            "path": "receipts/lift-boxed-wrong/20261123T175616Z-269ad62c/result.json",
+            "attempt": "20261123T175616Z-269ad62c",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-return-good": {
+            "path": "receipts/lift-return-good/20261123T175619Z-9a1d025a/result.json",
+            "attempt": "20261123T175619Z-9a1d025a",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-return-wrong": {
+            "path": "receipts/lift-return-wrong/20261123T175622Z-a4f3d13e/result.json",
+            "attempt": "20261123T175622Z-a4f3d13e",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-boxed-null": {
+            "path": "receipts/lift-boxed-null/20261123T175625Z-884e700b/result.json",
+            "attempt": "20261123T175625Z-884e700b",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-static-good": {
+            "path": "receipts/lift-static-good/20261123T175628Z-2d803720/result.json",
+            "attempt": "20261123T175628Z-2d803720",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "lift-static-wrong": {
+            "path": "receipts/lift-static-wrong/20261123T175630Z-d2927ef7/result.json",
+            "attempt": "20261123T175630Z-d2927ef7",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "chain-good": {
+            "path": "receipts/chain-good/20261123T175633Z-93ff59ec/result.json",
+            "attempt": "20261123T175633Z-93ff59ec",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "chain-wrong": {
+            "path": "receipts/chain-wrong/20261123T175636Z-377322c5/result.json",
+            "attempt": "20261123T175636Z-377322c5",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "chain-skips-null": {
+            "path": "receipts/chain-skips-null/20261123T175638Z-ee77ce49/result.json",
+            "attempt": "20261123T175638Z-ee77ce49",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "chain-rejects-null": {
+            "path": "receipts/chain-rejects-null/20261123T175641Z-98494327/result.json",
+            "attempt": "20261123T175641Z-98494327",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 13/13",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 392 TASK"
+      }
+    },
+    {
+      "id": "393",
+      "path": "examples/393-wide-floating-conversions",
+      "title": "Rounding across two Jackson numeric conversion paths",
+      "summary": "Jackson and Commons Lang convert wide integer and tiny binary64 inputs to binary32 at independently checked rounding boundaries.",
+      "origin": "constructed",
+      "system": "Rounding across two Jackson numeric conversion paths",
+      "symbol": "NodeChecks#direct",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 8/8",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+        "The Jackson conversions disagree at 16,777,216 of the 2⁵⁴ admitted long values. The direct binary64 underflow interval contains 2⁵² + 1 values, including the halfway input that rounds to positive zero."
+      ],
+      "source": null,
+      "target": {
+        "family": "wide-floating-conversions",
+        "role": "control",
+        "case": "wide-floating-conversions",
+        "tasks": [
+          "replay-numeric",
+          "node-checks-direct",
+          "node-checks-same",
+          "node-checks-public-subnormal",
+          "node-checks-wrong-subnormal",
+          "node-checks-commons",
+          "conversion-equivalence-classified",
+          "node-checks-intrinsic-subnormal",
+          "node-checks-mantissa-subnormal"
+        ],
+        "readiness": "executable",
+        "taskReadiness": {
+          "replay-numeric": "scaffolded",
+          "node-checks-direct": "executable",
+          "node-checks-same": "executable",
+          "node-checks-public-subnormal": "executable",
+          "node-checks-wrong-subnormal": "executable",
+          "node-checks-commons": "executable",
+          "conversion-equivalence-classified": "executable",
+          "node-checks-intrinsic-subnormal": "executable",
+          "node-checks-mantissa-subnormal": "executable"
+        },
+        "expected": {
+          "replay-numeric": "established",
+          "node-checks-direct": "established",
+          "node-checks-same": "refuted",
+          "node-checks-public-subnormal": "established",
+          "node-checks-wrong-subnormal": "refuted",
+          "node-checks-commons": "established",
+          "conversion-equivalence-classified": "established",
+          "node-checks-intrinsic-subnormal": "established",
+          "node-checks-mantissa-subnormal": "established"
+        },
+        "claims": {
+          "node-checks-direct": "established",
+          "node-checks-same": "refuted",
+          "node-checks-public-subnormal": "established",
+          "node-checks-wrong-subnormal": "refuted",
+          "node-checks-commons": "established",
+          "conversion-equivalence-classified": "established",
+          "node-checks-intrinsic-subnormal": "established",
+          "node-checks-mantissa-subnormal": "established"
+        },
+        "receipts": {
+          "replay-numeric": {
+            "path": "receipts/replay-numeric/20261123T161214Z-ed3101bf/result.json",
+            "attempt": "20261123T161214Z-ed3101bf",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "node-checks-direct": {
+            "path": "receipts/node-checks-direct/20261123T175644Z-8930bcde/result.json",
+            "attempt": "20261123T175644Z-8930bcde",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "node-checks-same": {
+            "path": "receipts/node-checks-same/20261123T175647Z-adfae7f5/result.json",
+            "attempt": "20261123T175647Z-adfae7f5",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "node-checks-public-subnormal": {
+            "path": "receipts/node-checks-public-subnormal/20261123T175650Z-67315f52/result.json",
+            "attempt": "20261123T175650Z-67315f52",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "node-checks-wrong-subnormal": {
+            "path": "receipts/node-checks-wrong-subnormal/20261123T175653Z-07357b73/result.json",
+            "attempt": "20261123T175653Z-07357b73",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "node-checks-commons": {
+            "path": "receipts/node-checks-commons/20261123T175655Z-932ae667/result.json",
+            "attempt": "20261123T175655Z-932ae667",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "conversion-equivalence-classified": {
+            "path": "receipts/conversion-equivalence-classified/20261123T175658Z-a06b7e22/result.json",
+            "attempt": "20261123T175658Z-a06b7e22",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "node-checks-intrinsic-subnormal": {
+            "path": "receipts/node-checks-intrinsic-subnormal/20261123T175701Z-4ee8468e/result.json",
+            "attempt": "20261123T175701Z-4ee8468e",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "node-checks-mantissa-subnormal": {
+            "path": "receipts/node-checks-mantissa-subnormal/20261123T175703Z-c6c8cecb/result.json",
+            "attempt": "20261123T175703Z-c6c8cecb",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 8/8",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 393 TASK"
+      }
+    },
+    {
+      "id": "394",
+      "path": "examples/394-caller-owned-ragged-arrays",
+      "title": "Caller-owned rows in public array operations",
+      "summary": "Bounded nullable arrays preserve independent row widths, primitive values and shared identities across Commons Lang, Collections and Math.",
+      "origin": "constructed",
+      "system": "Caller-owned rows in public array operations",
+      "symbol": "RaggedProof#reversed",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 16/16",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+        "Both dimensions and every cell are independent at the direct entry. An alias names an earlier row, while equal separate rows have their own cell lists. The 209-graph JVM census contains 12 shared nonempty cases. The direct Commons Math transfer retains actual and expected mismatch dimensions."
+      ],
+      "source": null,
+      "target": {
+        "family": "caller-owned-ragged-arrays",
+        "role": "control",
+        "case": "caller-owned-ragged-arrays",
+        "tasks": [
+          "replay-rows",
+          "ragged-proof-reversed",
+          "ragged-proof-wrong",
+          "ragged-proof-iter",
+          "ragged-proof-snapshot",
+          "ragged-proof-distinct",
+          "row-identities-non-null-outer",
+          "row-identities-no-empty-outer",
+          "row-identities-no-distinct-equal-rows",
+          "made-rows-reverse",
+          "made-rows-iterator",
+          "made-rows-always-distinct",
+          "matrix-rows-rectangular",
+          "matrix-rows-single-shape",
+          "matrix-rows-shape",
+          "matrix-rows-same",
+          "matrix-rows-no-null"
+        ],
+        "readiness": "executable",
+        "taskReadiness": {
+          "replay-rows": "scaffolded",
+          "ragged-proof-reversed": "executable",
+          "ragged-proof-wrong": "executable",
+          "ragged-proof-iter": "executable",
+          "ragged-proof-snapshot": "executable",
+          "ragged-proof-distinct": "executable",
+          "row-identities-non-null-outer": "executable",
+          "row-identities-no-empty-outer": "executable",
+          "row-identities-no-distinct-equal-rows": "executable",
+          "made-rows-reverse": "executable",
+          "made-rows-iterator": "executable",
+          "made-rows-always-distinct": "executable",
+          "matrix-rows-rectangular": "executable",
+          "matrix-rows-single-shape": "executable",
+          "matrix-rows-shape": "executable",
+          "matrix-rows-same": "executable",
+          "matrix-rows-no-null": "executable"
+        },
+        "expected": {
+          "replay-rows": "established",
+          "ragged-proof-reversed": "established",
+          "ragged-proof-wrong": "refuted",
+          "ragged-proof-iter": "established",
+          "ragged-proof-snapshot": "refuted",
+          "ragged-proof-distinct": "refuted",
+          "row-identities-non-null-outer": "refuted",
+          "row-identities-no-empty-outer": "refuted",
+          "row-identities-no-distinct-equal-rows": "refuted",
+          "made-rows-reverse": "established",
+          "made-rows-iterator": "established",
+          "made-rows-always-distinct": "refuted",
+          "matrix-rows-rectangular": "established",
+          "matrix-rows-single-shape": "established",
+          "matrix-rows-shape": "established",
+          "matrix-rows-same": "refuted",
+          "matrix-rows-no-null": "refuted"
+        },
+        "claims": {
+          "ragged-proof-reversed": "established",
+          "ragged-proof-wrong": "refuted",
+          "ragged-proof-iter": "established",
+          "ragged-proof-snapshot": "refuted",
+          "ragged-proof-distinct": "refuted",
+          "row-identities-non-null-outer": "refuted",
+          "row-identities-no-empty-outer": "refuted",
+          "row-identities-no-distinct-equal-rows": "refuted",
+          "made-rows-reverse": "established",
+          "made-rows-iterator": "established",
+          "made-rows-always-distinct": "refuted",
+          "matrix-rows-rectangular": "established",
+          "matrix-rows-single-shape": "established",
+          "matrix-rows-shape": "established",
+          "matrix-rows-same": "refuted",
+          "matrix-rows-no-null": "refuted"
+        },
+        "receipts": {
+          "replay-rows": {
+            "path": "receipts/replay-rows/20261123T161214Z-ebe8c627/result.json",
+            "attempt": "20261123T161214Z-ebe8c627",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ragged-proof-reversed": {
+            "path": "receipts/ragged-proof-reversed/20261123T175707Z-1b7412ef/result.json",
+            "attempt": "20261123T175707Z-1b7412ef",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ragged-proof-wrong": {
+            "path": "receipts/ragged-proof-wrong/20261123T175709Z-d9e1b917/result.json",
+            "attempt": "20261123T175709Z-d9e1b917",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ragged-proof-iter": {
+            "path": "receipts/ragged-proof-iter/20261123T175712Z-c6e65ff5/result.json",
+            "attempt": "20261123T175712Z-c6e65ff5",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ragged-proof-snapshot": {
+            "path": "receipts/ragged-proof-snapshot/20261123T175715Z-782bde6e/result.json",
+            "attempt": "20261123T175715Z-782bde6e",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "ragged-proof-distinct": {
+            "path": "receipts/ragged-proof-distinct/20261123T175718Z-4ba33cc0/result.json",
+            "attempt": "20261123T175718Z-4ba33cc0",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "row-identities-non-null-outer": {
+            "path": "receipts/row-identities-non-null-outer/20261123T175721Z-1a85d62d/result.json",
+            "attempt": "20261123T175721Z-1a85d62d",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "row-identities-no-empty-outer": {
+            "path": "receipts/row-identities-no-empty-outer/20261123T175723Z-d3df30ad/result.json",
+            "attempt": "20261123T175723Z-d3df30ad",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "row-identities-no-distinct-equal-rows": {
+            "path": "receipts/row-identities-no-distinct-equal-rows/20261123T175726Z-49f781c2/result.json",
+            "attempt": "20261123T175726Z-49f781c2",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "made-rows-reverse": {
+            "path": "receipts/made-rows-reverse/20261123T175728Z-6b282d04/result.json",
+            "attempt": "20261123T175728Z-6b282d04",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "made-rows-iterator": {
+            "path": "receipts/made-rows-iterator/20261123T175730Z-74723008/result.json",
+            "attempt": "20261123T175730Z-74723008",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "made-rows-always-distinct": {
+            "path": "receipts/made-rows-always-distinct/20261123T175732Z-82e316a9/result.json",
+            "attempt": "20261123T175732Z-82e316a9",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "matrix-rows-rectangular": {
+            "path": "receipts/matrix-rows-rectangular/20261123T175734Z-92106f55/result.json",
+            "attempt": "20261123T175734Z-92106f55",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "matrix-rows-single-shape": {
+            "path": "receipts/matrix-rows-single-shape/20261123T175736Z-98476e3d/result.json",
+            "attempt": "20261123T175736Z-98476e3d",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "matrix-rows-shape": {
+            "path": "receipts/matrix-rows-shape/20261123T175738Z-7d392230/result.json",
+            "attempt": "20261123T175738Z-7d392230",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "matrix-rows-same": {
+            "path": "receipts/matrix-rows-same/20261123T175740Z-9a40c62b/result.json",
+            "attempt": "20261123T175740Z-9a40c62b",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "matrix-rows-no-null": {
+            "path": "receipts/matrix-rows-no-null/20261123T175742Z-ea990a08/result.json",
+            "attempt": "20261123T175742Z-ea990a08",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 16/16",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 394 TASK"
+      }
+    },
+    {
+      "id": "395",
+      "path": "examples/395-exact-utf16-comparison",
+      "title": "Exact UTF-16 comparison and tie identity",
+      "summary": "Commons Lang and Guava compare two bounded strings over unrestricted UTF-16 units. Guava min exposes which equal reference it retained.",
+      "origin": "constructed",
+      "system": "Exact UTF-16 comparison and tie identity",
+      "symbol": "ExactOrder#commons",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case",
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 7/7",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+        "The JVM checked 5,329 boundary pairs. Sign normalization failed on 4,756, and Guava min kept the first reference on all 73 equal-valued distinct ties."
+      ],
+      "source": null,
+      "target": {
+        "family": "exact-utf16-comparison",
+        "role": "control",
+        "case": "exact-utf16-comparison",
+        "tasks": [
+          "replay-strings",
+          "exact-order-commons",
+          "exact-order-only-sign",
+          "exact-order-guava",
+          "exact-order-first-on-tie",
+          "exact-order-second-on-tie",
+          "exact-order-direct",
+          "exact-order-same-reference"
+        ],
+        "readiness": "executable",
+        "taskReadiness": {
+          "replay-strings": "scaffolded",
+          "exact-order-commons": "executable",
+          "exact-order-only-sign": "executable",
+          "exact-order-guava": "executable",
+          "exact-order-first-on-tie": "executable",
+          "exact-order-second-on-tie": "executable",
+          "exact-order-direct": "executable",
+          "exact-order-same-reference": "executable"
+        },
+        "expected": {
+          "replay-strings": "established",
+          "exact-order-commons": "established",
+          "exact-order-only-sign": "refuted",
+          "exact-order-guava": "established",
+          "exact-order-first-on-tie": "established",
+          "exact-order-second-on-tie": "refuted",
+          "exact-order-direct": "established",
+          "exact-order-same-reference": "established"
+        },
+        "claims": {
+          "exact-order-commons": "established",
+          "exact-order-only-sign": "refuted",
+          "exact-order-guava": "established",
+          "exact-order-first-on-tie": "established",
+          "exact-order-second-on-tie": "refuted",
+          "exact-order-direct": "established",
+          "exact-order-same-reference": "established"
+        },
+        "receipts": {
+          "replay-strings": {
+            "path": "receipts/replay-strings/20261123T171546Z-d23261c5/result.json",
+            "attempt": "20261123T171546Z-d23261c5",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-order-commons": {
+            "path": "receipts/exact-order-commons/20261123T175745Z-7551c733/result.json",
+            "attempt": "20261123T175745Z-7551c733",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-order-only-sign": {
+            "path": "receipts/exact-order-only-sign/20261123T175747Z-8673e13a/result.json",
+            "attempt": "20261123T175747Z-8673e13a",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-order-guava": {
+            "path": "receipts/exact-order-guava/20261123T175749Z-8b187587/result.json",
+            "attempt": "20261123T175749Z-8b187587",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-order-first-on-tie": {
+            "path": "receipts/exact-order-first-on-tie/20261123T175751Z-91f9b6ce/result.json",
+            "attempt": "20261123T175751Z-91f9b6ce",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-order-second-on-tie": {
+            "path": "receipts/exact-order-second-on-tie/20261123T175753Z-8e325330/result.json",
+            "attempt": "20261123T175753Z-8e325330",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-order-direct": {
+            "path": "receipts/exact-order-direct/20261123T175755Z-92f00fee/result.json",
+            "attempt": "20261123T175755Z-92f00fee",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "exact-order-same-reference": {
+            "path": "receipts/exact-order-same-reference/20261123T175757Z-81562309/result.json",
+            "attempt": "20261123T175757Z-81562309",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 7/7",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 395 TASK"
+      }
+    },
+    {
+      "id": "396",
+      "path": "examples/396-queue-array-fill",
+      "title": "Circular queue histories and reference-array fill",
+      "summary": "Commons Collections queue histories and Commons Lang ArrayFill observe replacement, identity and covariant array stores.",
+      "origin": "constructed",
+      "system": "Circular queue histories and reference-array fill",
+      "symbol": "QueueFill#queue",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Ordinary native 5/5",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement.",
+        "The independent two-slot oracle checked all 256 histories. Full occupancy disagreed with isFull on 128. Reference fill preserves the array and replacement identity and checks covariance on the first store."
+      ],
+      "source": null,
+      "target": {
+        "family": "queue-array-fill",
+        "role": "control",
+        "case": "queue-array-fill",
+        "tasks": [
+          "replay-queue",
+          "queue-fill-queue",
+          "queue-fill-full-means-occupied",
+          "queue-fill-fill",
+          "queue-fill-stale-survives",
+          "queue-fill-covariant"
+        ],
+        "readiness": "executable",
+        "taskReadiness": {
+          "replay-queue": "scaffolded",
+          "queue-fill-queue": "executable",
+          "queue-fill-full-means-occupied": "executable",
+          "queue-fill-fill": "executable",
+          "queue-fill-stale-survives": "executable",
+          "queue-fill-covariant": "executable"
+        },
+        "expected": {
+          "replay-queue": "established",
+          "queue-fill-queue": "established",
+          "queue-fill-full-means-occupied": "refuted",
+          "queue-fill-fill": "established",
+          "queue-fill-stale-survives": "refuted",
+          "queue-fill-covariant": "established"
+        },
+        "claims": {
+          "queue-fill-queue": "established",
+          "queue-fill-full-means-occupied": "refuted",
+          "queue-fill-fill": "established",
+          "queue-fill-stale-survives": "refuted",
+          "queue-fill-covariant": "established"
+        },
+        "receipts": {
+          "replay-queue": {
+            "path": "receipts/replay-queue/20261123T171546Z-d20cd26c/result.json",
+            "attempt": "20261123T171546Z-d20cd26c",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "queue-fill-queue": {
+            "path": "receipts/queue-fill-queue/20261123T175759Z-e2bd4a3f/result.json",
+            "attempt": "20261123T175759Z-e2bd4a3f",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "queue-fill-full-means-occupied": {
+            "path": "receipts/queue-fill-full-means-occupied/20261123T175801Z-d94569f4/result.json",
+            "attempt": "20261123T175801Z-d94569f4",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "queue-fill-fill": {
+            "path": "receipts/queue-fill-fill/20261123T175803Z-a0d22aca/result.json",
+            "attempt": "20261123T175803Z-a0d22aca",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "queue-fill-stale-survives": {
+            "path": "receipts/queue-fill-stale-survives/20261123T175805Z-54c3ed67/result.json",
+            "attempt": "20261123T175805Z-54c3ed67",
+            "execution": "completed",
+            "status": "refuted",
+            "expectation": "yes",
+            "attempts": 1
+          },
+          "queue-fill-covariant": {
+            "path": "receipts/queue-fill-covariant/20261123T175806Z-e2464b5d/result.json",
+            "attempt": "20261123T175806Z-e2464b5d",
+            "execution": "completed",
+            "status": "established",
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Ordinary native 5/5",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 396 TASK"
+      }
     }
   ]
 }

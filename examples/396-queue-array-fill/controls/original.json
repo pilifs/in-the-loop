@@ -1,0 +1,164 @@
+{
+  "schema": "finite-jvm-observations/v1",
+  "fields": {
+    "holds": {}
+  },
+  "cases": [
+    {
+      "id": 0,
+      "input": {
+        "entry": "QueueFill#queue",
+        "arguments": [
+          "0"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 1,
+      "input": {
+        "entry": "QueueFill#queue",
+        "arguments": [
+          "255"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 2,
+      "input": {
+        "entry": "QueueFill#queue",
+        "arguments": [
+          "39"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 3,
+      "input": {
+        "entry": "QueueFill#queue",
+        "arguments": [
+          "76"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 4,
+      "input": {
+        "entry": "QueueFill#fullMeansOccupied",
+        "arguments": [
+          "255"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 5,
+      "input": {
+        "entry": "QueueFill#fullMeansOccupied",
+        "arguments": [
+          "0"
+        ]
+      },
+      "expected": {
+        "holds": false
+      }
+    },
+    {
+      "id": 6,
+      "input": {
+        "entry": "QueueFill#fill",
+        "arguments": [
+          "0"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 7,
+      "input": {
+        "entry": "QueueFill#fill",
+        "arguments": [
+          "Integer.MIN_VALUE"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 8,
+      "input": {
+        "entry": "QueueFill#fill",
+        "arguments": [
+          "Integer.MAX_VALUE"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 9,
+      "input": {
+        "entry": "QueueFill#staleSurvives",
+        "arguments": [
+          "0"
+        ]
+      },
+      "expected": {
+        "holds": false
+      }
+    },
+    {
+      "id": 10,
+      "input": {
+        "entry": "QueueFill#staleSurvives",
+        "arguments": [
+          "-1"
+        ]
+      },
+      "expected": {
+        "holds": false
+      }
+    },
+    {
+      "id": 11,
+      "input": {
+        "entry": "QueueFill#covariant",
+        "arguments": [
+          "true"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    },
+    {
+      "id": 12,
+      "input": {
+        "entry": "QueueFill#covariant",
+        "arguments": [
+          "false"
+        ]
+      },
+      "expected": {
+        "holds": true
+      }
+    }
+  ]
+}

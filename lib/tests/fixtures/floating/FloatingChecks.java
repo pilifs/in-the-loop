@@ -151,7 +151,14 @@ public class FloatingChecks {
         return (Double.doubleToRawLongBits((double) n) < 0) == (n < 0);
     }
 
+    public static boolean halfwayReturnsPositive(double input) {
+        if (input != 0x1p-150) return true;
+        float result = (float)input;
+        return Float.floatToRawIntBits(result) != 0;
+    }
+
     public static void main(String[] args) {
+        if (halfwayReturnsPositive(0x1p-150) || !halfwayReturnsPositive(Math.nextUp(0x1p-150))) throw new AssertionError();
         for (int n = 0; n < 81; n++) if (order(n) != 1) throw new AssertionError(n);
         for (int n = 0; n < 6; n++) if (!axes(n)) throw new AssertionError(n);
         for (int n = 0; n < 5; n++) if (!hypot(n)) throw new AssertionError(n);

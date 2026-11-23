@@ -63,12 +63,6 @@ public final class Outside {
         }
     }
 
-    public static void compareTo(String s) {
-        if (s != null && s.compareTo(s) != 0) {
-            throw new AssertionError();
-        }
-    }
-
     /** subSequence called through CharSequence. */
     public static void subSequence(String s) {
         CharSequence c = s;

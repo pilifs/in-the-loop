@@ -12,7 +12,7 @@ use crate::classfile::{MethodDescriptor, Type};
 use crate::classpath::ClassPath;
 use crate::harness::{self, Layout, Param, Slot};
 use crate::interp::{render, Fault, Machine, Object, Ref, Value};
-use crate::jbmc::{Argument, ObjectCell};
+use crate::jbmc::{Argument, ObjectCell, PrimitiveRow};
 use crate::shrink::{self, Shrunk};
 use crate::spec::plans::WitnessValue;
 use crate::values::ValueAdapter;
@@ -27,6 +27,7 @@ pub fn argument(argument: &Argument, t: &Type) -> String {
         (Argument::Array(_), _) => "<array>".into(),
         (Argument::String(units), _) => string_literal(units),
         (Argument::Strings(items), _) => strings_literal(items),
+        (Argument::Rows(_), _) => exact_argument(argument, t).to_string(),
         (Argument::Objects(cells), _) => serde_json::to_string(cells).expect("an object array is JSON"),
         (Argument::Null, _) => "null".into(),
         (Argument::Same(i), _) => format!("@{i}"),
@@ -81,7 +82,7 @@ pub fn locals_of(params: &[Param], arguments: &[Argument], arrays_after: &[(u16,
                 Value::Ref(k as Ref + 1)
             }
             // A String is a reference of its own, which no expression reads into; so is an array of them.
-            Argument::String(_) | Argument::Strings(_) | Argument::Objects(_) => Value::Ref(k as Ref + 1),
+            Argument::String(_) | Argument::Strings(_) | Argument::Objects(_) | Argument::Rows(_) => Value::Ref(k as Ref + 1),
             Argument::Null => Value::Null,
             Argument::Same(i) => {
                 if let Some((_, d)) = arrays.iter().find(|(s, _)| Some(*s) == params.get(*i).map(|q| q.slot)).cloned() {
@@ -218,7 +219,7 @@ pub struct Typed {
     pub ty: String,
     /// The value: a boolean; a number for `byte`, `short` and `int`, and for `char` its UTF-16 code unit; a string
     /// for `long` (in decimal, exact past 2^53) and for `float` and `double` (Java's `toString` of it, which reads
-    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`); an array of those; null; or `{"same": i}` for
+    /// back as the same value: `0.1`, `-0.0`, `NaN`, `Infinity`, with `bits:0x...` for a noncanonical NaN); an array of those; null; or `{"same": i}` for
     /// the same array as the `i`th input. Absent for a record, whose components give it. For an object parameter a
     /// choice made null or the same object as another (step H2), null or `{"same": "a"}` by that one's name.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -290,6 +291,8 @@ pub fn exact(v: Value, t: &Type) -> serde_json::Value {
         (Type::Char, Value::Int(x)) => J::from(x as u16),
         (_, Value::Int(x)) => J::from(x),
         (_, Value::Long(x)) => J::String(x.to_string()),
+        (_, Value::Float(x)) if x.is_nan() && x.to_bits() != f32::NAN.to_bits() => J::String(format!("bits:0x{:08x}", x.to_bits())),
+        (_, Value::Double(x)) if x.is_nan() && x.to_bits() != f64::NAN.to_bits() => J::String(format!("bits:0x{:016x}", x.to_bits())),
         (_, Value::Float(x)) => J::String(render::float_to_string(x)),
         (_, Value::Double(x)) => J::String(render::double_to_string(x)),
         (_, Value::Ref(_)) => J::Null,
@@ -306,6 +309,10 @@ pub fn exact_argument(argument: &Argument, t: &Type) -> serde_json::Value {
             Some(units) => serde_json::to_value(crate::spec::plans::WitnessValue::String { units: units.clone() }).unwrap_or_default(),
             None => serde_json::Value::Null,
         }).collect()),
+        (Argument::Rows(rows), _) => {
+            let element = crate::bmc::reference_inputs::row_element(t).expect("checked primitive row type");
+            serde_json::Value::Array(rows.iter().map(|r| r.json(element)).collect())
+        }
         (Argument::Objects(cells), _) => serde_json::to_value(cells).expect("an object array is JSON"),
         (Argument::Scalar(v), _) => exact(*v, t),
         (Argument::Array(data), Type::Array(element)) => serde_json::Value::Array(data.iter().map(|v| exact(*v, element)).collect()),
@@ -539,6 +546,18 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> crate:
             Argument::Strings(items) => {
                 let cells: Vec<Value> = items.iter().map(|s| s.as_deref().map(|units| crate::values::new_string(m, units)).unwrap_or(Value::Null)).collect();
                 m.new_array_of(Type::Object("java/lang/String".into()), cells)
+            }
+            Argument::Rows(rows) => {
+                let element = crate::bmc::reference_inputs::row_element(t).ok_or_else(|| Fault::Unsupported("missing primitive row type".into()))?;
+                let mut cells = Vec::with_capacity(rows.len());
+                for row in rows {
+                    cells.push(match row {
+                        PrimitiveRow::Null => Value::Null,
+                        PrimitiveRow::Same(index) => *cells.get(*index).ok_or_else(|| Fault::Unsupported(format!("invalid row alias {index}")))?,
+                        PrimitiveRow::Cells(values) => m.new_array_of(element.clone(), values.clone()),
+                    });
+                }
+                m.new_array_of(Type::Array(Box::new(element.clone())), cells)
             }
             Argument::Objects(items) => {
                 let class = crate::bmc::reference_inputs::component(t).ok_or_else(|| Fault::Unsupported("object cells without a component class".into()))?;
@@ -1190,6 +1209,10 @@ mod tests {
         assert_eq!(exact(Value::Double(0.1), &Type::Double), json!("0.1"));
         assert_eq!(exact(Value::Double(-0.0), &Type::Double), json!("-0.0"));
         assert_eq!(exact(Value::Double(f64::NAN), &Type::Double), json!("NaN"));
+        let payload = 0xfff8_0000_0000_0123;
+        let exact_nan = exact(Value::Double(f64::from_bits(payload)), &Type::Double);
+        let Value::Double(restored) = crate::jbmc::parse_value(&Type::Double, exact_nan.as_str().unwrap()).unwrap() else { unreachable!() };
+        assert_eq!(restored.to_bits(), payload);
         assert_eq!(exact(Value::Double(f64::NEG_INFINITY), &Type::Double), json!("-Infinity"));
         // The smallest float reads as "1.0E-45" (Java writes 1.4E-45): either reads back as the same float.
         for x in [1.0e-45f32, 0.1, f32::MAX, -3.5] {

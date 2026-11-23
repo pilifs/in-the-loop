@@ -1,0 +1,172 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "exact-utf16-comparison",
+    "family": "exact-utf16-comparison",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "strings": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "guava",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations",
+          "commons-lang3"
+        ],
+        "runtimeLibraries": [
+          "guava",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations",
+          "commons-lang3"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-strings",
+      "kind": "replay",
+      "revision": "strings",
+      "target": "ExactOrder#commons",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "exact-order-commons",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "strings",
+      "target": "ExactOrder#commons",
+      "claim": "claims/exact-order-commons.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-strings"
+      ]
+    },
+    {
+      "id": "exact-order-only-sign",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "strings",
+      "target": "ExactOrder#onlySign",
+      "claim": "claims/exact-order-only-sign.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-strings"
+      ]
+    },
+    {
+      "id": "exact-order-guava",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "strings",
+      "target": "ExactOrder#guava",
+      "claim": "claims/exact-order-guava.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-strings"
+      ]
+    },
+    {
+      "id": "exact-order-first-on-tie",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "strings",
+      "target": "ExactOrder#firstOnTie",
+      "claim": "claims/exact-order-first-on-tie.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-strings"
+      ]
+    },
+    {
+      "id": "exact-order-second-on-tie",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "strings",
+      "target": "ExactOrder#secondOnTie",
+      "claim": "claims/exact-order-second-on-tie.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-strings"
+      ]
+    },
+    {
+      "id": "exact-order-direct",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "strings",
+      "target": "ExactOrder#direct",
+      "claim": "claims/exact-order-direct.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-strings"
+      ]
+    },
+    {
+      "id": "exact-order-same-reference",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "strings",
+      "target": "ExactOrder#sameReference",
+      "claim": "claims/exact-order-same-reference.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-strings"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-strings",
+      "revision": "strings",
+      "kind": "driver",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle-strings",
+      "revision": "strings",
+      "kind": "oracle",
+      "path": "controls/original.json"
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-173701-record-all-49-ordinary-native-example-ta",
+  "title": "Record all 49 ordinary native example task receipts",
+  "description": "Execute the standard numbered example entry point for every frozen native task in examples 392–396 with its original bounds, compiled public classpath and 120-second budget. Collect fresh per-claim proof or replay receipts and compare each with the registered expectation.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow/example_tasks.py"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:37:01+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "4m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Normal example tasks",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/example_tasks.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/successor/example-tasks",
+    "examples/392-method-reference-conversions/receipts",
+    "examples/393-wide-floating-conversions/receipts",
+    "examples/394-caller-owned-ragged-arrays/receipts",
+    "examples/395-exact-utf16-comparison/receipts",
+    "examples/396-queue-array-fill/receipts"
+  ]
+}

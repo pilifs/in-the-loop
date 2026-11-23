@@ -1151,6 +1151,32 @@ fn refuted_by_jbmc(class: &str, descriptor: &str, input: i32) -> Answer {
     }
 }
 
+#[test]
+fn integrated_method_reference_witnesses_apply_argument_and_result_conversions() {
+    jvmcontract::tool_tier!();
+    if !has("javac") { return; }
+    let jbmc = fake_jbmc("method-reference-replay");
+    let dir = jbmc.parent().unwrap();
+    let classes = dir.join("classes");
+    std::fs::create_dir_all(&classes).unwrap();
+    let fixture = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/claims/claims/MethodReferenceReplay.java");
+    assert!(Command::new("javac").args(["-g", "-parameters", "-d"]).arg(&classes).arg(fixture).status().unwrap().success());
+    write_answer(dir, &refuted_by_jbmc("PropertyHarness", "(I)V", 0));
+    for method in ["primitive", "boxed", "resultOnly"] {
+        let target = format!("claims.MethodReferenceReplay#{method}");
+        let cli = Command::new(env!("CARGO_BIN_EXE_jvmcontract"))
+            .args(["prove", &target, "--assert", "result", "--engine", "jbmc", "--gaps", "strict", "--classes"])
+            .arg(&classes).arg("--jbmc").arg(&jbmc).arg("--work").arg(dir.join(method)).arg("--json").output().unwrap();
+        let output: serde_json::Value = serde_json::from_slice(&cli.stdout)
+            .unwrap_or_else(|e| panic!("{target}: {e}: {}", String::from_utf8_lossy(&cli.stderr)));
+        let row = &output[0];
+        assert_eq!(row["verdict"], "violation", "{row}");
+        assert_eq!(row["search"]["engine"], "jbmc");
+        assert_eq!(row["counterexample"]["inputs"][0]["value"], 0);
+        assert_eq!(row["counterexample"]["outcome"], "false");
+    }
+}
+
 /// `--engine auto --confirm`: a proof of the own checker's that JBMC proves too is confirmed, one JBMC refutes is
 /// neither verdict, one JBMC has no verdict on stays the own checker's and says so, and one that assumed a JDK call
 /// JBMC would approximate as well is not sent to JBMC. JBMC is a stand-in script here; the real one runs the

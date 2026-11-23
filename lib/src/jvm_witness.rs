@@ -70,9 +70,10 @@ pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], argum
 fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
     for t in types {
         // A String is passed as a new String of the witness's code units ([`push`]).
-        if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::component(t).is_some() {
+        if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::heap_array(t) {
             continue;
         }
+        if matches!(t, Type::Float | Type::Double) { continue; }
         let element = match t {
             Type::Array(e) => e.as_ref(),
             other => other,
@@ -146,12 +147,20 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
         main.bind(end);
         match &call.ret {
             Type::Void => print_line(&mut main, &mut writer, &format!("@call {k} void")),
-            Type::Long => {
-                main.store(Kind::Long, 1);
+            ty @ (Type::Long | Type::Float | Type::Double) => {
+                // Carry floating results as raw bits, including signed zero and NaN payloads.
+                let wide = *ty != Type::Float;
+                if matches!(ty, Type::Double | Type::Float) {
+                    let raw = if wide { ("java/lang/Double", "doubleToRawLongBits", "(D)J") }
+                        else { ("java/lang/Float", "floatToRawIntBits", "(F)I") };
+                    main.op_u16(0xb8, writer.pool.method_ref(raw.0, raw.1, raw.2));
+                }
+                let kind = if wide { Kind::Long } else { Kind::Int };
+                main.store(kind, 1);
                 print(&mut main, &mut writer, &format!("@call {k} value "));
                 out(&mut main, &mut writer);
-                main.load(Kind::Long, 1);
-                let println = writer.pool.method_ref("java/io/PrintStream", "println", "(J)V");
+                main.load(kind, 1);
+                let println = writer.pool.method_ref("java/io/PrintStream", "println", if wide { "(J)V" } else { "(I)V" });
                 main.op_u16(0xb6, println);
             }
             Type::Array(element) => {
@@ -348,6 +357,8 @@ fn parse(text: &str, jdk: String, types: &[Type], slots: &[u16], calls: &[Direct
                 "object" => r.outcome = "<an object>".into(),
                 "value" => {
                     let v = match calls[k].ret {
+                        Type::Float => Value::Float(f32::from_bits(value.parse::<i32>().map_err(|_| format!("unreadable line {line}"))? as u32)),
+                        Type::Double => Value::Double(f64::from_bits(value.parse::<i64>().map_err(|_| format!("unreadable line {line}"))? as u64)),
                         Type::Long => Value::Long(value.parse().map_err(|_| format!("unreadable line {line}"))?),
                         _ => Value::Int(value.parse().map_err(|_| format!("unreadable line {line}"))?),
                     };
@@ -544,6 +555,23 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
                 code.op(0x53); // aastore
             }
         }
+        (Argument::Rows(rows), Type::Array(row_type)) => {
+            use crate::jbmc::PrimitiveRow;
+            code.iconst(rows.len() as i32);
+            code.op_u16(0xbd, writer.pool.class(&row_type.descriptor()));
+            for (index, row) in rows.iter().enumerate() {
+                match row {
+                    PrimitiveRow::Null => continue,
+                    PrimitiveRow::Same(first) => push_earlier_cell(code, index, *first),
+                    PrimitiveRow::Cells(values) => {
+                        code.op(0x59);
+                        code.iconst(index as i32);
+                        push(&Argument::Array(values.clone()), row_type, code, writer);
+                    }
+                }
+                code.op(0x53);
+            }
+        }
         (Argument::Objects(items), t) => {
             let class = crate::bmc::reference_inputs::component(t).expect("checked direct component");
             let component = writer.pool.class(class);
@@ -553,14 +581,7 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
             for (i, cell) in items.iter().enumerate() {
                 match cell {
                     ObjectCell::Null => continue,
-                    ObjectCell::Same { index } => {
-                        code.op(0x59); // keep the array for the store
-                        code.op(0x59);
-                        code.iconst(*index as i32);
-                        code.op(0x32); // aaload the original object
-                        code.iconst(i as i32);
-                        code.op(0x5f); // swap index and object for aastore
-                    }
+                    ObjectCell::Same { index } => push_earlier_cell(code, i, *index),
                     ObjectCell::Object { fields } => {
                         code.op(0x59);
                         code.iconst(i as i32);
@@ -600,7 +621,22 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
     }
 }
 
+/// Leave the outer array, destination index and the existing reference on the stack.
+fn push_earlier_cell(code: &mut CodeBuilder, dest: usize, source: usize) {
+    code.op(0x59); // preserve the outer array
+    code.op(0x59);
+    code.iconst(source as i32);
+    code.op(0x32); // aaload
+    code.iconst(dest as i32);
+    code.op(0x5f); // swap
+}
+
 fn push_scalar(v: Value, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter) {
+    match v {
+        Value::Float(x) => { code.ldc(writer.pool.float(x)); return; }
+        Value::Double(x) => { code.ldc2(writer.pool.double(x)); return; }
+        _ => {}
+    }
     let wide = match v {
         Value::Long(x) => x,
         Value::Int(x) => i64::from(x),

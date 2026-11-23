@@ -566,6 +566,17 @@ fn direct_object_array_replays_field_values_and_aliases_in_a_named_package() {
                 a[0].count++;
                 return a[2].count == a[3].count;
             }
+            public static boolean longRows(long[][] a) {
+                if (a == null || a.length != 2 || a[0] == null || a[0].length != 1 || a[1] != a[0]
+                    || a[0][0] != 9007199254740993L) return true;
+                a[1][0] = -1L;
+                return a[0][0] != -1L;
+            }
+            public static boolean conditional(long[][] a) {
+                boolean enabled = false;
+                assert enabled = true;
+                return !enabled || longRows(a);
+            }
             public static boolean subtype(Parent[] a) { return true; }
             public static boolean edge(Edge[] a) { return true; }
             public static boolean constructor(Initialized[] a) { return true; }
@@ -582,6 +593,23 @@ fn direct_object_array_replays_field_values_and_aliases_in_a_named_package() {
     let object = serde_json::json!({"fields": {"count": i32::MAX, "tag": 17}});
     let cells = serde_json::json!([object, null, object, {"sameCell": 0}]);
     assert_eq!(result.counterexample.unwrap().inputs[0].value, Some(cells));
+
+    options.target = "arrayinput.Heaps#longRows".into();
+    options.max_array_length = 2;
+    let result = property::run(&options).unwrap();
+    assert_eq!(result.verdict, Verdict::Violation, "{}", result.output);
+    assert!(result.replay.as_ref().unwrap().reproduced);
+    let typed = result.counterexample.unwrap().inputs;
+    assert_eq!(typed[0].value, Some(serde_json::json!([["9007199254740993"], {"sameCell": 0}])));
+    let ty = jvmcontract::classfile::Type::parse("[[J").unwrap();
+    let cache = serde_json::to_string(&typed).unwrap();
+    let restored = jvmcontract::proof_cache::witness_arguments(std::slice::from_ref(&ty), &cache).unwrap();
+    assert_eq!(jvmcontract::witness::exact_argument(&restored[0], &ty), typed[0].value.clone().unwrap());
+
+    options.target = "arrayinput.Heaps#conditional".into();
+    let conditional = property::run(&options).unwrap();
+    assert_eq!(conditional.verdict, Verdict::Unverifiable, "{}", conditional.output);
+    assert!(conditional.problem.unwrap().contains("assertion setting"));
 
     for (method, reason) in [("subtype", "final direct subclass"), ("edge", "writable"), ("constructor", "only calls Object()"), ("roots", "sharing between their heaps")] {
         options.target = format!("arrayinput.Heaps#{method}");
@@ -647,6 +675,7 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         ("correlated", "n >= 0 && n <= 64", "result == n * (n + 1)", Verdict::Unverifiable),
         ("rotated", "true", "result", Verdict::Verified),
         ("wideningSign", "true", "result", Verdict::Verified),
+        ("halfwayReturnsPositive", "true", "result", Verdict::Violation),
     ] {
         let mut options = property::Options::new(std::slice::from_ref(&classes), &format!("fixtures.FloatingChecks#{method}"));
         options.engine = jvmcontract::Engine::Native;
@@ -654,6 +683,12 @@ fn native_ieee_comparisons_and_raw_words_agree_with_the_jvm() {
         options.assert = Some(assertion.into());
         let result = property::run(&options).unwrap();
         assert_eq!(result.verdict, expected, "{method}: {}", result.output);
+        if method == "halfwayReturnsPositive" {
+            let witness = result.counterexample.as_ref().unwrap();
+            let value = witness.inputs[0].value.as_ref().unwrap().as_str().unwrap().parse::<f64>().unwrap();
+            assert_eq!(value.to_bits(), 0x3690_0000_0000_0000);
+            assert_eq!(witness.outcome, "false");
+        }
         if method == "zeroAngle" && expected == Verdict::Violation {
             assert!(result.replay.as_ref().is_some_and(|r| r.reproduced));
         }
@@ -2829,8 +2864,8 @@ fn jbmc_applies_the_contracts_for_its_gaps() {
     assert!(search.gaps.iter().any(|g| g.id.starts_with("monitor:") && g.treatment == Some(GapTreatment::Refused)), "{:?}", search.gaps);
     assert!(o.problem.as_deref().unwrap().contains("(--gaps advised): monitor:fixtures.Contracted.lockedCapacity(I)I"), "{}", o.output);
 
-    // Under auto, JBMC's turn applies the own checker's contracts: the own checker refuses the floating point after
-    // the call, and JBMC proves the method through the same contract.
+    // Under auto, JBMC applies the same contract when the unbounded floating-point
+    // multiplication after the constructor exceeds native arithmetic coverage.
     let file = dir.join("scaled.contracts");
     std::fs::write(&file, format!("kind: gap-contracts\n{throwing}")).unwrap();
     let mut options = property::Options::new(std::slice::from_ref(&classes), "fixtures.Contracted#scaled");
@@ -3002,7 +3037,7 @@ public class Contracted {
     public static int bits(int n) { return 32 - Integer.numberOfTrailingZeros(n); }
     public static int roll(int sides) { return new java.util.Random(7).nextInt(sides) + 1; }
     public static int lockedCapacity(int n) { synchronized (Contracted.class) { new java.util.ArrayList<Object>(n); } return 1; }
-    public static int scaled(int n, float f) { new java.util.ArrayList<Object>(n); return f == f ? 1 : 1; }
+    public static int scaled(int n, float f) { new java.util.ArrayList<Object>(n); float square = f * f; return square == square ? 1 : 1; }
 }
 "#;
 

@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-171546-freeze-the-java-queue-reserve-comparison",
+  "title": "Freeze the Java queue reserve comparison",
+  "description": "Check all 256 four-operation histories, replacement of shared mutable references and covariant empty/nonempty stores. Compare the packaged model with the pinned JDK Arrays class and preserve all other property failures.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow/measure.py"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:15:46+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 20,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "2m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "queue paired",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening queue paired",
+      "cwd": "."
+    },
+    {
+      "name": "queue packaged",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening queue packaged",
+      "cwd": "."
+    },
+    {
+      "name": "queue arrays",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py opening queue arrays",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/opening/queue/paired",
+    "verification/jbmc-fast-follow/opening/queue/packaged",
+    "verification/jbmc-fast-follow/opening/queue/arrays"
+  ]
+}

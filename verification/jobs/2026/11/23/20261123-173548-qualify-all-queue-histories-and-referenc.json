@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-173548-qualify-all-queue-histories-and-referenc",
+  "title": "Qualify all queue histories and reference-fill covariance",
+  "description": "Run all five two-library transfer statements and repeat the 256 original queue histories. Check replacement, subsequent mutation, array identity, and both covariant store cases.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:35:48+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "3m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "queue paired engines",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/measure.py successor queue paired",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/successor/queue/paired"
+  ]
+}
