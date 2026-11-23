@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-23T18:43:59.292Z",
-  "duration_seconds": 695793,
+  "ended": "2026-11-23T18:59:52.411Z",
+  "duration_seconds": 696746,
   "stats": {
-    "turns": 1048,
-    "api_calls": 4663,
-    "tool_calls": 4187,
+    "turns": 1049,
+    "api_calls": 4679,
+    "tool_calls": 4203,
     "tool_errors": 56,
     "compactions": 13,
     "peak_context_tokens": 626480,
     "usage": {
-      "input_tokens": 11406,
-      "output_tokens": 2078236,
-      "cache_read_input_tokens": 1376778123,
-      "cache_creation_input_tokens": 7084074
+      "input_tokens": 11440,
+      "output_tokens": 2085713,
+      "cache_read_input_tokens": 1381498613,
+      "cache_creation_input_tokens": 7096072
     }
   },
   "tools": {
-    "Bash": 4021,
+    "Bash": 4037,
     "SendMessage": 35,
     "Edit": 33,
     "ToolSearch": 22,
@@ -261,24 +261,24 @@
     {
       "index": 13,
       "started": "2026-11-23T13:16:11.056Z",
-      "ended": "2026-11-23T18:43:59.292Z",
-      "turns": 41,
-      "api_calls": 191,
+      "ended": "2026-11-23T18:59:52.411Z",
+      "turns": 42,
+      "api_calls": 207,
       "usage": {
-        "input_tokens": 462,
-        "output_tokens": 84495,
-        "cache_read_input_tokens": 41287263,
-        "cache_creation_input_tokens": 259371
+        "input_tokens": 496,
+        "output_tokens": 91972,
+        "cache_read_input_tokens": 46007753,
+        "cache_creation_input_tokens": 271369
       },
-      "peak_context_tokens": 290044
+      "peak_context_tokens": 302042
     }
   ],
   "log": {
-    "sha256": "00090eb580f7d92e23762d9b72a4427855802c9bb0399bf56fce31c1c48be5cb",
-    "bytes": 74386329,
-    "lines": 39674,
-    "gzip_bytes": 11649185,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/00090eb580f7d92e23762d9b72a4427855802c9bb0399bf56fce31c1c48be5cb.jsonl.gz"
+    "sha256": "fc1427485ee01425bbd1798c3956ef131791546d090a30fba3ae28152e24494b",
+    "bytes": 74613572,
+    "lines": 39818,
+    "gzip_bytes": 11680487,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/fc1427485ee01425bbd1798c3956ef131791546d090a30fba3ae28152e24494b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -9473,6 +9473,14 @@
       "summary": "Merge the single-agent run jbmc-fast-follow into the line",
       "body": "The single-agent run jbmc-fast-follow (session 3394e768-9d57-4a38-9c2b-54011210333d) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "00090eb580f7d92e23762d9b72a4427855802c9bb0399bf56fce31c1c48be5cb"
+    },
+    {
+      "change_id": "nlzykzmutqpuqyrqovkzsqvkmzwouvwz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let a checkpoint read gzip blobs that open to up to 512 MiB",
+      "body": "The checkpoint refused the JBMC fast-follow's verification/jbmc-fast-follow/opening/rows/packaged/raw.tar.gz as compressed-beyond-scan: the 5.4 MB archive of packaged-JBMC output opens to 267 MiB, over the 256 MiB the checkpoint would decompress to scan. Repacking it would break its evidence chain (results.py checks its digest against the job's output), so the scan room is raised to 512 MiB instead. Nothing is loosened: the blob is still read in full and refused for anything the rules find. test_checkpoint passes.",
+      "log_sha256": "fc1427485ee01425bbd1798c3956ef131791546d090a30fba3ae28152e24494b"
     }
   ],
   "logs": {
@@ -12925,6 +12933,12 @@
       "lines": 28562,
       "gzip_bytes": 9234238,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/fb203f13cfbe76e55deda6d4babeea13f0e176da34c3a94df35be03d13481811.jsonl.gz"
+    },
+    "fc1427485ee01425bbd1798c3956ef131791546d090a30fba3ae28152e24494b": {
+      "bytes": 74613572,
+      "lines": 39818,
+      "gzip_bytes": 11680487,
+      "url": null
     },
     "fc315e83cc673fd47c55127f054a5e307599099d778f428e0a6b9d0e07fd9028": {
       "bytes": 22453465,

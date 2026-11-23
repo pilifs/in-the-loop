@@ -49,8 +49,9 @@ SUMMARIES = "llm-dlc/artifacts/"
 SUMMARY_MAX, CATALOG_MAX = 64 << 10, 256 << 10
 # A gzip blob is read as what it opens to: a pack of per-case records (examples/tools/targets/case_pack.py) publishes
 # every byte inside it, and the rules see none of them in the compressed form. One that opens to more than this is
-# refused, since nothing read it.
-OPENED_MAX = 256 << 20
+# refused, since nothing read it. 512 MiB since 2026-11-23: the JBMC fast-follow's packaged-JBMC rows archive opens
+# to 267 MiB of JSON (50-64 MiB per file), which is read in full in a few seconds within the watcher's memory cap.
+OPENED_MAX = 512 << 20
 UNREAD = "compressed-beyond-scan"
 # Paths that hold raw payloads or private records and are never committed on purpose: each is gitignored, so one
 # among the outgoing objects was forced in or came from a broken ignore file.
