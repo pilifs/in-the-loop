@@ -1,0 +1,209 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-104845-recheck-conformance-on-the-qualified-jav",
+  "title": "Recheck conformance on the qualified Java semantics source",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 24m36s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-104845-recheck-conformance-on-the-qualified-jav.json",
+    "sha256": "ac4aa6e28801df989ba31b9798ad795dabb86ce47b32baf6b2c079fe3d69a22d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-104845-recheck-conformance-on-the-qualified-jav",
+      "title": "Recheck conformance on the qualified Java semantics source",
+      "description": "Run the explicit and automatically selected JBMC corpus and the confirmation corpus against their original JVM witnesses. The qualified source now resolves checked enum names and thread-local initializers, follows JDK deque operations and integer formatting, and preserves exception details as an explicit boundary.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "Both tests pass on the qualified source with no new JVM-contradicted verdict.",
+      "submitted": {
+        "at": "2026-11-23T10:48:45+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 16,
+      "requires": [
+        "cargo",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "5G",
+        "duration": "25m",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Both conformance proof-tier tests",
+          "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "f17b8fb17723b29b5985e257f420cc3b21d7c2d9",
+  "startedAt": "2026-11-23T10:56:23+00:00",
+  "finishedAt": "2026-11-23T11:21:20+00:00",
+  "wallSeconds": 1497.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 130452,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2451320832,
+    "wallSeconds": 1476.9,
+    "cpuSeconds": 2248.7,
+    "memoryOfEstimate": 0.46,
+    "durationOfEstimate": 0.98
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Both conformance proof-tier tests",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 1476.948,
+      "cpuSeconds": 2248.733,
+      "cpuThrottledSeconds": 0.756,
+      "peakMemoryBytes": 2451320832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-both-conformance-proof-tier-te.log",
+        "lines": 71,
+        "bytes": 2697,
+        "sha256": "179626882da4d216d5529283633521babcd7c47d924616c096f71edbbe18631c",
+        "truncated": false
+      },
+      "signalCounts": {
+        "cargo:tests": 1
+      },
+      "signals": [
+        {
+          "tool": "cargo",
+          "kind": "tests",
+          "line": 69,
+          "text": "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1254.28s",
+          "groups": [
+            "ok",
+            "2",
+            "0"
+          ]
+        }
+      ],
+      "tail": [
+        "   Compiling simd-adler32 v0.3.10",
+        "   Compiling serde v1.0.229",
+        "   Compiling psm v0.1.32",
+        "   Compiling adler2 v2.0.1",
+        "   Compiling heck v0.5.0",
+        "   Compiling strsim v0.11.1",
+        "   Compiling clap_lex v1.1.1",
+        "   Compiling serde_json v1.0.154",
+        "   Compiling regex-syntax v0.8.11",
+        "   Compiling clap_builder v4.6.7",
+        "   Compiling clap_derive v4.6.7",
+        "   Compiling regex-automata v0.4.18",
+        "   Compiling miniz_oxide v0.9.1",
+        "   Compiling serde_derive v1.0.229",
+        "   Compiling num-bigint v0.4.8",
+        "   Compiling itoa v1.0.18",
+        "   Compiling rustix v1.1.6",
+        "   Compiling getrandom v0.4.3",
+        "   Compiling num-rational v0.4.2",
+        "   Compiling flate2 v1.1.10",
+        "   Compiling regex v1.13.1",
+        "   Compiling clap v4.6.7",
+        "   Compiling linux-raw-sys v0.12.1",
+        "   Compiling bitflags v2.13.2",
+        "   Compiling once_cell v1.21.4",
+        "   Compiling fastrand v2.5.0",
+        "   Compiling tempfile v3.27.0",
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-104845-recheck-conformance-on-the-qualified-jav/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 42s",
+        "     Running tests/conformance.rs (lib/target/release/deps/conformance-72e36f225237934f)",
+        "",
+        "running 2 tests",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm has been running for over 60 seconds",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto has been running for over 60 seconds",
+        "test the_corpus_agrees_with_the_jvm_under_jbmc_and_auto ... ok",
+        "test the_corpus_agrees_with_the_jvm_under_auto_confirm ... ok",
+        "",
+        "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 10 filtered out; finished in 1254.28s",
+        "",
+        "proof tier: 1 of 1 passed"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-23T11:21:24+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T112120Z-365148ba0acceeee"
+    }
+  }
+}
