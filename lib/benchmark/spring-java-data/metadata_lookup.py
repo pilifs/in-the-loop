@@ -1,4 +1,4 @@
-"""Check the unchanged Spring Property callers with one recorded ClassUtils lookup table."""
+"""Check each original Property selector from ordinary startup or with one recorded lookup table."""
 import argparse
 import os
 from pathlib import Path
@@ -16,6 +16,7 @@ from companions import PROFILE, hash_bytes, proof, selected_class
 FOLDER = ROOT / "examples/372-spring-property-accessors"
 OBSERVER = FOLDER / "companions/MetadataNames.java"
 DEST = FOLDER / "records/class-utils-lookup"
+ORDINARY = FOLDER / "records/ordinary-class-tables"
 ROOT_CLASS = "org.springframework.util.ClassUtils"
 SETTINGS = {**PROFILE, "captureObjects": ["java.util.HashMap"]}
 BOUNDS = (256, 16384)
@@ -26,7 +27,7 @@ def physical_rows(side):
     return [f"{i}\t{name}\t{int(i >= 3 or side == 'landed')}" for i, name in enumerate(names + ["name", "name", "widget"])]
 
 
-def measure(side, replay):
+def measure(side, replay, ordinary=False):
     with tempfile.TemporaryDirectory(prefix="property-lookup-") as scratch:
         work = Path(scratch)
         jdk, graph, paths, bound = prepare_graph(FOLDER, side, "components-" + side, work)
@@ -43,7 +44,7 @@ def measure(side, replay):
         print(side, repr(raw.decode().splitlines()), flush=True)
         if replay:
             return
-        dest = DEST / side
+        dest = (ORDINARY if ordinary else DEST) / side
         dest.mkdir(parents=True, exist_ok=True)
         (dest / "jvm.stdout").write_bytes(raw)
         checker = Path(os.environ["JVMCONTRACT"])
@@ -58,7 +59,7 @@ def measure(side, replay):
         report = {"job": os.environ["VERIFY_JOB_ID"], "source": os.environ["VERIFY_SOURCE_COMMIT"],
                   "libTree": os.environ["JVMCONTRACT_LIB_TREE"], "checkerSha256": digest(checker),
                   "classpath": bound[1:], "jdk": graph["jdk"], "sourceSha256": digest(OBSERVER),
-                  "profile": SETTINGS, "observedRoot": ROOT_CLASS, "jvmSha256": digest(dest / "jvm.stdout"),
+                  "profile": None if ordinary else SETTINGS, "observedRoot": None if ordinary else ROOT_CLASS, "jvmSha256": digest(dest / "jvm.stdout"),
                   "bindings": bind(checker, env, work, side, bindings, classpath=[classes,*jars]), "tasks": {}}
         for method in ("components", "getters"):
             scope = dest / method
@@ -69,9 +70,18 @@ def measure(side, replay):
             for i in range(3):
                 target = f"{native_selectors.PACKAGE}.Calls#{native_selectors.case_name(i)}()"
                 result = proof(checker, classes, jars, work / method, env, scope, target, str(i),
-                               roots=[ROOT_CLASS], bounds=BOUNDS, profile=SETTINGS)
+                               roots=[] if ordinary else [ROOT_CLASS], bounds=BOUNDS, profile=SETTINGS)
                 task["selectors"][str(i)] = result
                 actual = int(physical_rows(side)[i + (3 if method == "getters" else 0)].split("\t")[-1])
+                if ordinary:
+                    expected = "verified" if actual else "violation"
+                    if result["verdict"] != expected or result["states"] or result["observedRoots"]:
+                        raise ValueError(f"{method}/{side}/{i}: incomplete ordinary {expected}")
+                    if not actual:
+                        outcome, = read(scope / result["stdout"])
+                        facts = native_selectors.checker_output.wire.facts(outcome)
+                        if facts["reproduced"] is not True or facts["replayedBy"] != "jvm":
+                            raise ValueError("ordinary component counterexample lacks an original JVM replay")
                 if result["verdict"] in ("verified", "violation") and (result["verdict"] == "verified") != bool(actual):
                     raise ValueError("the original JVM disagrees with a scoped native outcome")
         write(dest / "measurement.json", report)
@@ -80,6 +90,7 @@ def measure(side, replay):
 if __name__ == "__main__":
     cli = argparse.ArgumentParser(description=__doc__)
     cli.add_argument("--replay", action="store_true")
+    cli.add_argument("--ordinary", action="store_true")
     args = cli.parse_args()
     for side in ("parent", "landed"):
-        measure(side, args.replay)
+        measure(side, args.replay, args.ordinary)
