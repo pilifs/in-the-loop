@@ -1,0 +1,1434 @@
+--- /dev/null
++++ b/verification/jbmc-fast-follow/qualified/numeric/paired/measurement.json
+@@ -0,0 +1,889 @@
++{
++  "phase": "qualified",
++  "family": "numeric",
++  "lane": "paired",
++  "predecessor": {
++    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
++    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
++  },
++  "measuredSource": "a02e15bb9cb6321413701a7e811864cff8d5f843",
++  "job": "20261123-163612-qualify-wide-jackson-and-commons-lang-co",
++  "checkerSha256": "9fc18e6357bf6a6a56ae34c6e9c670afe0d7bb12e072210aedc8f74b1a2dd6eb",
++  "jbmcSha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jars": [
++    {
++      "name": "jackson-databind-2.19.0.jar",
++      "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a"
++    },
++    {
++      "name": "jackson-core-2.19.0.jar",
++      "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430"
++    },
++    {
++      "name": "jackson-annotations-2.19.0.jar",
++      "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7"
++    },
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    }
++  ],
++  "productClasses": {
++    "ConversionEquivalence.class": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442",
++    "NodeChecks.class": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f"
++  },
++  "driverClasses": {
++    "Cases.class": "b9d3c4667149a8b34a668f1c3d7a6046e4b4ecaf7f5400cc940468abcdbc47c5",
++    "NodeAssertions.class": "9fe33752d57d23e0463230889efea3a9d567e68b1ce125a33624389d205d8eef",
++    "RoundingBoundaries.class": "16e5f4f353d0a7d12ef667530d979f38c1c2e4c1efe98ef71cba1a601fd58090",
++    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
++  },
++  "originalJvm": {
++    "Cases": {
++      "sha256": "4dbb0ca0b9eff64887e2c4bec2e13d7b79c1344efc32795460d7fa3ba77f3e3e",
++      "seconds": 0.061,
++      "cases": 22
++    },
++    "NodeAssertions": {
++      "sha256": "ca164401976b59faf56377db3d3f11ba1d6f6a802739fc27f217c1ff40d31dd2",
++      "seconds": 0.056
++    },
++    "RoundingBoundaries": {
++      "sha256": "41b061ac5ae853044699687d3ff638b38d2b5689a6b011624be1fa008c029d57",
++      "seconds": 0.05
++    }
++  },
++  "rows": [
++    {
++      "task": "node-checks-direct",
++      "cohort": "numeric",
++      "parameters": "long n",
++      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
++      "standalone": "NodeAssertions.direct",
++      "target": "NodeChecks#direct",
++      "expected": "established",
++      "specSha256": "8a1cc8eb2f75969005136efd4fc69a441d451cd51de85834001df45e318dda92",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.032,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 0,
++        "seconds": 5.775,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/home/filip/.cache/in-the-loop/jbmc-fast-follow/jbmc/ubuntu-22.04/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    },
++    {
++      "task": "node-checks-same",
++      "cohort": "numeric",
++      "parameters": "long n",
++      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
++      "standalone": "NodeAssertions.same",
++      "target": "NodeChecks#same",
++      "expected": "refuted",
++      "specSha256": "7dd55f854141ca79839bc7edd8dc809f881df8add332af5ab0ce7d8c9bb6cdc7",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.044,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "n",
++              "type": "long",
++              "value": "18014401730707454"
++            }
++          ],
++          "sourceSha256": "e45152e9ab75adb25a6462d973b1a51f29fc68b3ad4ac230554aa88752ce1eb8",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 5.434,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/home/filip/.cache/in-the-loop/jbmc-fast-follow/jbmc/ubuntu-22.04/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "n",
++              "type": "long",
++              "value": "18014399583223809"
++            }
++          ],
++          "sourceSha256": "d0c48dfebaf22cb05457ec3bf515e388253cee1546fde02954a3844a437ad4db",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    },
++    {
++      "task": "node-checks-public-subnormal",
++      "cohort": "numeric",
++      "parameters": "double x",
++      "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
++      "standalone": "NodeAssertions.sub",
++      "target": "NodeChecks#publicSubnormal",
++      "expected": "established",
++      "specSha256": "6104b4aa9ecab50a8697922ab6a01cddec3d95bf3188ddde507a50cff773b5bc",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.022,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "double",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: double"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 0,
++        "seconds": 6.982,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "double",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: double"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/home/filip/.cache/in-the-loop/jbmc-fast-follow/jbmc/ubuntu-22.04/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    },
++    {
++      "task": "node-checks-wrong-subnormal",
++      "cohort": "numeric",
++      "parameters": "double x",
++      "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
++      "standalone": "NodeAssertions.bad",
++      "target": "NodeChecks#wrongSubnormal",
++      "expected": "refuted",
++      "specSha256": "ffe84c08db9dc9f4c625216ac2cc8e0856814e870ce6123230816deafad7ceca",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 1,
++        "seconds": 0.034,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "double",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: double"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "double",
++              "value": "7.006492321624085E-46"
++            }
++          ],
++          "sourceSha256": "18e79ef935a3a35785bd61355b390c353248be4b24291412aa77c9fc35de51ad",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 2.729,
++        "expected": "violation",
++        "verdict": "violation",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "double",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: double"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": false
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/home/filip/.cache/in-the-loop/jbmc-fast-follow/jbmc/ubuntu-22.04/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null
++        },
++        "jvmReplay": {
++          "outcome": "refuted",
++          "inputs": [
++            {
++              "name": "x",
++              "type": "double",
++              "value": "7.006492321624085E-46"
++            }
++          ],
++          "sourceSha256": "18e79ef935a3a35785bd61355b390c353248be4b24291412aa77c9fc35de51ad",
++          "exit": 0,
++          "diagnostic": ""
++        }
++      }
++    },
++    {
++      "task": "node-checks-commons",
++      "cohort": "numeric",
++      "parameters": "long n",
++      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
++      "standalone": "NodeAssertions.commons",
++      "target": "NodeChecks#commons",
++      "expected": "established",
++      "specSha256": "481aacfabcd62d9fd88dd80c9b5cc8f1309d7c5775b7a2c227eebe59eb209b89",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.04,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 0,
++        "seconds": 5.572,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/home/filip/.cache/in-the-loop/jbmc-fast-follow/jbmc/ubuntu-22.04/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    }
++  ],
++  "rawSha256": "2db2326506e16c9e12204eb1405a0cbf09159d134878041be150e50c74634c1c"
++}
+Binary file verification/jbmc-fast-follow/qualified/numeric/paired/raw.tar.gz changed
+--- /dev/null
++++ b/verification/jbmc-fast-follow/classification/numeric/paired/measurement.json
+@@ -0,0 +1,220 @@
++{
++  "phase": "classification",
++  "family": "numeric",
++  "lane": "paired",
++  "predecessor": {
++    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
++    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
++  },
++  "measuredSource": "a02e15bb9cb6321413701a7e811864cff8d5f843",
++  "job": "20261123-163612-qualify-wide-jackson-and-commons-lang-co",
++  "checkerSha256": "9fc18e6357bf6a6a56ae34c6e9c670afe0d7bb12e072210aedc8f74b1a2dd6eb",
++  "jbmcSha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jars": [
++    {
++      "name": "jackson-databind-2.19.0.jar",
++      "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a"
++    },
++    {
++      "name": "jackson-core-2.19.0.jar",
++      "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430"
++    },
++    {
++      "name": "jackson-annotations-2.19.0.jar",
++      "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7"
++    },
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    }
++  ],
++  "productClasses": {
++    "ConversionEquivalence.class": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442",
++    "NodeChecks.class": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f"
++  },
++  "driverClasses": {
++    "Cases.class": "b9d3c4667149a8b34a668f1c3d7a6046e4b4ecaf7f5400cc940468abcdbc47c5",
++    "NodeAssertions.class": "9fe33752d57d23e0463230889efea3a9d567e68b1ce125a33624389d205d8eef",
++    "RoundingBoundaries.class": "16e5f4f353d0a7d12ef667530d979f38c1c2e4c1efe98ef71cba1a601fd58090",
++    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
++  },
++  "originalJvm": {
++    "Cases": {
++      "sha256": "4dbb0ca0b9eff64887e2c4bec2e13d7b79c1344efc32795460d7fa3ba77f3e3e",
++      "seconds": 0.062,
++      "cases": 22
++    },
++    "NodeAssertions": {
++      "sha256": "ca164401976b59faf56377db3d3f11ba1d6f6a802739fc27f217c1ff40d31dd2",
++      "seconds": 0.06
++    },
++    "RoundingBoundaries": {
++      "sha256": "41b061ac5ae853044699687d3ff638b38d2b5689a6b011624be1fa008c029d57",
++      "seconds": 0.052
++    }
++  },
++  "rows": [
++    {
++      "task": "conversion-equivalence-classified",
++      "cohort": "classification",
++      "parameters": "long n",
++      "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
++      "target": "ConversionEquivalence#classified",
++      "expected": "established",
++      "specSha256": "cecb4ea14eb45147ee03bf4052873f997171f18f04a767a4e992aa29481a1a12",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.033,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 0,
++        "seconds": 4.908,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "n",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "n: long"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/home/filip/.cache/in-the-loop/jbmc-fast-follow/jbmc/ubuntu-22.04/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    }
++  ],
++  "rawSha256": "96d8531793e329edd7c9c271119a56af0549e546b686250ebf86e9d758b57d12"
++}
+Binary file verification/jbmc-fast-follow/classification/numeric/paired/raw.tar.gz changed
+--- /dev/null
++++ b/verification/jbmc-fast-follow/controls/numeric/paired/measurement.json
+@@ -0,0 +1,313 @@
++{
++  "phase": "controls",
++  "family": "numeric",
++  "lane": "paired",
++  "predecessor": {
++    "source": "a273d0afc61725080795a6af9731e3decc9aab71",
++    "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"
++  },
++  "measuredSource": "a02e15bb9cb6321413701a7e811864cff8d5f843",
++  "job": "20261123-163612-qualify-wide-jackson-and-commons-lang-co",
++  "checkerSha256": "9fc18e6357bf6a6a56ae34c6e9c670afe0d7bb12e072210aedc8f74b1a2dd6eb",
++  "jbmcSha256": "2cf572542163ad3926d0030f4594e4697fcd09a0c60b62dc58901ca3aa18065c",
++  "coreModelsSha256": "2a05026b3ab948ebb4820ccc2fc01040b96e226dc1f58a3be36dfe0c15ed14de",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "javaSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++  "jars": [
++    {
++      "name": "jackson-databind-2.19.0.jar",
++      "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a"
++    },
++    {
++      "name": "jackson-core-2.19.0.jar",
++      "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430"
++    },
++    {
++      "name": "jackson-annotations-2.19.0.jar",
++      "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7"
++    },
++    {
++      "name": "commons-lang3-3.17.0.jar",
++      "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
++    }
++  ],
++  "productClasses": {
++    "ConversionEquivalence.class": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442",
++    "NodeChecks.class": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f"
++  },
++  "driverClasses": {
++    "Cases.class": "b9d3c4667149a8b34a668f1c3d7a6046e4b4ecaf7f5400cc940468abcdbc47c5",
++    "NodeAssertions.class": "9fe33752d57d23e0463230889efea3a9d567e68b1ce125a33624389d205d8eef",
++    "RoundingBoundaries.class": "16e5f4f353d0a7d12ef667530d979f38c1c2e4c1efe98ef71cba1a601fd58090",
++    "org/intheloop/controls/Grid.class": "9731d8136a980963787b8e97561f131ce8b2dc8f798b38afe8d3f645b2d2c929"
++  },
++  "originalJvm": {
++    "Cases": {
++      "sha256": "4dbb0ca0b9eff64887e2c4bec2e13d7b79c1344efc32795460d7fa3ba77f3e3e",
++      "seconds": 0.06,
++      "cases": 22
++    },
++    "NodeAssertions": {
++      "sha256": "ca164401976b59faf56377db3d3f11ba1d6f6a802739fc27f217c1ff40d31dd2",
++      "seconds": 0.055
++    },
++    "RoundingBoundaries": {
++      "sha256": "41b061ac5ae853044699687d3ff638b38d2b5689a6b011624be1fa008c029d57",
++      "seconds": 0.05
++    }
++  },
++  "rows": [
++    {
++      "task": "node-checks-intrinsic-subnormal",
++      "cohort": "intrinsic",
++      "parameters": "double x",
++      "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
++      "standalone": "NodeAssertions.intrinsic",
++      "target": "NodeChecks#intrinsicSubnormal",
++      "expected": "established",
++      "specSha256": "6f68007ec2b367a0758ab7ba249dd4a13c2821e19ed6114cd45d5b98efbfa8ae",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.023,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "double",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: double"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 0,
++        "seconds": 5.362,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "x",
++                "type": "double",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "x: double"
++          },
++          "assumptions": [
++            {
++              "kind": "library",
++              "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "jbmc",
++            "name": "JBMC 6.11.0",
++            "solver": "cadical",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "3.0.0",
++              "source": "linked into JBMC (/home/filip/.cache/in-the-loop/jbmc-fast-follow/jbmc/ubuntu-22.04/bin/jbmc), the version as its signature there reads",
++              "configuration": [
++                "--trace",
++                "--throw-runtime-exceptions",
++                "--unwinding-assertions",
++                "--json-ui",
++                "--timestamp",
++                "monotonic",
++                "--no-refine-strings",
++                "--sat-solver",
++                "cadical"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      }
++    },
++    {
++      "task": "node-checks-mantissa-subnormal",
++      "cohort": "mantissa",
++      "parameters": "long k",
++      "reachGuard": "true",
++      "target": "NodeChecks#mantissaSubnormal",
++      "expected": "established",
++      "specSha256": "2c31466d131e4971009a0b7a1f482b8dec6371e589c05e95c8de05fc900a5ee7",
++      "bounds": {
++        "unwind": 10,
++        "maxArrayLength": 8
++      },
++      "native": {
++        "engine": "native",
++        "exit": 0,
++        "seconds": 0.021,
++        "expected": "verified",
++        "verdict": "verified",
++        "disposition": "correct",
++        "firstUnproved": "",
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "k",
++                "type": "long",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "k: long"
++          },
++          "assumptions": [
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 10,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "harness",
++            "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++          }
++        }
++      },
++      "jbmc": {
++        "engine": "jbmc",
++        "exit": 1,
++        "seconds": 5.316,
++        "expected": "verified",
++        "verdict": "unverifiable",
++        "disposition": "unsupported",
++        "firstUnproved": "JBMC's counterexample mantissaSubnormal(k=0) does not reproduce: the method returns true in the interpreter and the property holds on it. The path to it probably goes through what JBMC approximates (jdk-static-method:java.lang.Double.longBitsToDouble(J)D@jdk-21.0.13): a stub returns any value of its type, which may be one the JDK's call never returns"
++      }
++    }
++  ],
++  "rawSha256": "b8a22f224004f3f38f85755839e25466b328da1891753c02133590aa66d4a857"
++}
+Binary file verification/jbmc-fast-follow/controls/numeric/paired/raw.tar.gz changed
