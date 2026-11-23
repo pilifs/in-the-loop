@@ -181,6 +181,21 @@ class Redaction(unittest.TestCase):
                 self.assertFalse(r.hits_of_line(line)[0])            # a log stored before policy 6 is not an error
         self.assertIn('"encrypted_content":null', r(json.dumps(lines[-1]) + "\n").decode())  # only strings go
 
+    def test_encrypted_reasoning_in_text(self):
+        r = sync.Redactor()
+        blob = "gAAAAABmadeUpCiphertext" + "QUJD" * 40 + "=="     # made up: the shape of a Fernet token, no real bytes
+        texts = [f"python3 - <<'EOF'\nx = '{blob}'\nEOF", f"payload {blob}.", f'{{"encrypted_content":"{blob}"}}']
+        for text in texts:
+            line = json.dumps({"type": "response_item", "payload": {"type": "function_call", "arguments": text}})
+            out = r(line + "\n").decode()
+            self.assertNotIn("gAAAAABmadeUp", out)
+            self.assertIn("[REDACTED:encrypted-reasoning]", out)
+            self.assertEqual(r(out).decode(), out)                   # idempotent
+            self.assertFalse(r.hits_of_line(out.strip())[1])         # no long-token warning left
+            self.assertFalse(r.hits_of_line(line)[0])                # a log stored before policy 7 is not an error
+        for kept in ("gAAAAAshort", "xgAAAAA" + "QUJD" * 20, "the word gAAAAA alone"):
+            self.assertEqual(r.string(kept), kept)                   # too short, or inside a longer word
+
 
 if __name__ == "__main__":
     unittest.main()

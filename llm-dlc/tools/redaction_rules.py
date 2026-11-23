@@ -17,7 +17,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Callable, NamedTuple
 
-REDACTION_POLICY = 6           # bump when redaction changes the bytes it produces (5: Codex account identifiers and usage; 6: Codex encrypted reasoning)
+REDACTION_POLICY = 7           # bump when redaction changes the bytes it produces (5: Codex account identifiers and usage; 6: Codex encrypted reasoning; 7: the same quoted in text)
 REDACT_KEYS = {"organizationUuid", "accountUuid", "userID",  # account identifiers Claude Code records,
                "creator_user_id", "creator_account_id", "chatgpt_user_id", "chatgpt_account_id"}  # and Codex
 # Account usage Codex records with its token counts (plan, credit balance, how much of each limit is used):
@@ -29,6 +29,11 @@ REDACT_OBJECTS = {"rate_limits": "[REDACTED:account-usage]"}
 # signature of a Claude thinking block does. Not audited as a leak (`_unscrubbed`): a log stored before policy 6 that
 # holds one is no secret's carrier, and its long-token warnings stay what they were.
 REDACT_VALUES = {"encrypted_content": "[REDACTED:encrypted-reasoning]"}
+# The same ciphertext is a Fernet token (version byte 0x80, then a timestamp whose top bytes are zero), so it starts
+# `gAAAAA` in URL-safe base64. Policy 7 removes it wherever an agent quoted it in text: a command's arguments, a tool's
+# output, a file it wrote. Like policy 6 it is not audited as a leak (UNAUDITED_KINDS): a log stored before holds no
+# secret, and its long-token warnings stay what they were.
+UNAUDITED_KINDS = frozenset({"encrypted-reasoning"})
 # Email addresses that are public by design or placeholders; every other address is redacted.
 PUBLIC_EMAILS = ("@example.com", "@example.org", "@users.noreply.github.com", "noreply@github.com",
                  "noreply@anthropic.com", "git@github.com", "@langfuse.local", "@localhost")
@@ -58,6 +63,7 @@ SECRET_PATTERNS = [
     ("huggingface-token", r"\bhf_[A-Za-z0-9]{30,}\b"),
     ("stripe-key", r"\b[sr]k_(?:live|test)_[A-Za-z0-9]{20,}"),
     ("sendgrid-key", r"\bSG\.[A-Za-z0-9_\-]{22}\.[A-Za-z0-9_\-]{43}"),
+    ("encrypted-reasoning", r"(?<![A-Za-z0-9_\-])gAAAAA[A-Za-z0-9_\-]{60,}={0,2}"),  # see UNAUDITED_KINDS
     ("jwt", r"\beyJ[A-Za-z0-9_\-]{8,}\.eyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,}"),
     ("private-key", r"-----BEGIN [A-Z ]*PRIVATE KEY-----.*?-----END [A-Z ]*PRIVATE KEY-----"),
     ("bearer", r"(?i)\bbearer\s+[A-Za-z0-9._\-]{20,}"),
@@ -124,6 +130,7 @@ GATES = {
     "huggingface-token": Gate(("hf_",)),
     "stripe-key": Gate(("k_live_", "k_test_")),
     "sendgrid-key": Gate(("SG.",)),
+    "encrypted-reasoning": Gate(("gAAAAA",)),
     "jwt": Gate(("eyJ",)),
     "private-key": Gate(("-----BEGIN ",)),
     "bearer": Gate(("bearer",), ignorecase=True),
@@ -408,7 +415,8 @@ class Rules:
             return lambda t: rx.sub(rep, t) if self._may_match(kind, t) else t
 
         leaks = [(gate(rx), _min_width(rx), found(kind, rx)) for kind, rx, _ in self.literals]
-        leaks += [(gate(rx), _min_width(rx), hinted(kind, rx)) for kind, rx, _ in self.secret_res]
+        leaks += [(gate(rx), _min_width(rx), (lambda s, out: None) if kind in UNAUDITED_KINDS else hinted(kind, rx))
+                  for kind, rx, _ in self.secret_res]  # one entry per rule, in order: tests pair them
         leaks += [(gate(EMAIL_RE), _min_width(EMAIL_RE), emails), (gate(WIN_USER_RE), _min_width(WIN_USER_RE), win_users)]
         steps = [(gate(rx), _min_width(rx), literal(rx, rep)) for _kind, rx, rep in self.literals]
         steps += [(gate(rx), _min_width(rx), secret(kind, rx, rep)) for kind, rx, rep in self.secret_res]

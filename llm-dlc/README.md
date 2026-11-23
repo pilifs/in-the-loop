@@ -569,7 +569,8 @@ cycle, the commit check, the decision, the conductor's questions, the verificati
   person has open (`codex queue`) and waits for nothing.
 - **Traces.** A Codex session is traced as a Claude Code session is: `sync.py` finds the rollouts of the Codex
   sessions that started in the checkout, stores each redacted (policy 5 removes the account identifiers and the
-  account usage Codex records, policy 6 its encrypted reasoning), and reads it through [`tools/codex_rollout.py`](tools/codex_rollout.py) as a
+  account usage Codex records, policy 6 its encrypted reasoning, and policy 7 the same
+  ciphertext quoted in text), and reads it through [`tools/codex_rollout.py`](tools/codex_rollout.py) as a
   transcript, so a commit a Codex worker makes with `sync.py commit` carries its own session's `LLM-Trace` line
   and `check` verifies it ([specification](specification.md)). A thread that was only asked a question is not a
   session of the checkout.
