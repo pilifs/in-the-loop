@@ -1,0 +1,323 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11",
+  "title": "Setup: rerun the brief's stock JBMC 6.11.0 preflight with the preflight and the installed binary and models",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 11.6s, peak 87.8 MiB (estimated 1h00m, 4.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11.json",
+    "sha256": "954a18f86506d8e04f948d7ccec503f9ac19d88665bf71ed1e65bef8878dae04",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11",
+      "title": "Setup: rerun the brief's stock JBMC 6.11.0 preflight with the preflight and the installed binary and models",
+      "description": "Setup for llm-dlc/loops/jbmc-java-semantics-gap-brief.md, no claims and no project verifier. Reruns the brief's two runnable seeds (Semantics: 8 entries; ExtraOpeners: 6 entries; the brief's flags) and the named upstream JBMC regressions (StartsWith, toCodePoint, synchronized-methods, virtual5, default-methods, no-main-object-array-elements-maybe-null1/2; their test.desc files, fixtures compiled by the setup) with stock JBMC 6.11.0 in three pairings: (1) the Ubuntu 22.04 release binary and its core-models.jar, whose digests equal the brief's preflight (2cf57254…, 2a05026b…); (2) the installed Ubuntu 24.04 binary and models (200f4cbb…, a31ef93b…); (3) the installed binary with the 22.04 models. A capped probe already showed ExtraOpeners.firstDeclared FAILURE with the 22.04 models and SUCCESS with the installed ones, so the job records which pairing reproduces each preflight result. Compiled seeds: ~/.cache/in-the-loop/jbmc-java-semantics-gap/probes/seed/cls. Script: scripts/jbmc_repro.py in that folder (sha256 in the setup record). Per-run timeout 1200 s.",
+      "kind": "other",
+      "capabilities": [
+        "setup:comparator-preflight",
+        "jbmc"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md"
+        ]
+      },
+      "expected": "Pairing 1 gives the brief's results: SUCCESS for fraction, narrow, prefix, categories, dispatch, endian, hex; FAILURE for floorOnly, wraps, noNullCell, noItemCell, firstDeclared, halfSwap, lowFirst; CORE regressions pass. Differences in pairings 2 and 3 are recorded, not failures.",
+      "submitted": {
+        "at": "2026-11-23T07:50:49+00:00",
+        "session": "970bfd4f-5faa-49d7-bcbc-626f36895cc8",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "jbmc",
+        "java",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "4G",
+        "duration": "60m"
+      },
+      "steps": [
+        {
+          "name": "preflight pairing: Ubuntu 22.04 jbmc + its models",
+          "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py preflight-22.04 $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/bin/jbmc $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/preflight-22.04",
+          "cwd": "."
+        },
+        {
+          "name": "installed pairing: /usr/bin/jbmc + /usr/lib models",
+          "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py installed-24.04 /usr/bin/jbmc /usr/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/installed-24.04",
+          "cwd": "."
+        },
+        {
+          "name": "installed binary + 22.04 models",
+          "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py installed-bin-22.04-models /usr/bin/jbmc $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/installed-bin-22.04-models",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "9b3916acca21ab3e0c768f6582d03ef3e5163b6c",
+  "startedAt": "2026-11-23T08:00:15+00:00",
+  "finishedAt": "2026-11-23T08:00:35+00:00",
+  "wallSeconds": 20.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2824466,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 14400.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 3600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 92033024,
+    "wallSeconds": 11.6,
+    "cpuSeconds": 11.2,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "preflight pairing: Ubuntu 22.04 jbmc + its models",
+      "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py preflight-22.04 $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/bin/jbmc $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/preflight-22.04",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 3.605,
+      "cpuSeconds": 3.428,
+      "cpuThrottledSeconds": 0.036,
+      "peakMemoryBytes": 91512832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-preflight-pairing-ubuntu-22-04.log",
+        "lines": 28,
+        "bytes": 3604,
+        "sha256": "68fa664aa8f779b9c1b06f56a9e73a8c77270d0468a9e0bcb52f904225883792",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preflight-22.04 seed Semantics.fraction: exit=0 0.2s maxrss=54MB assertions=[('SUCCESS', '11')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "preflight-22.04 seed Semantics.floorOnly: exit=10 0.2s maxrss=54MB assertions=[('FAILURE', '15')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "preflight-22.04 seed Semantics.narrow: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '22')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "preflight-22.04 seed Semantics.wraps: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '26')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "preflight-22.04 seed Semantics.prefix: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '31')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "preflight-22.04 seed Semantics.categories: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '40')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "preflight-22.04 seed Semantics.noNullCell: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '42')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "preflight-22.04 seed Semantics.noItemCell: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '43')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "preflight-22.04 seed ExtraOpeners.dispatch: exit=0 0.2s maxrss=77MB assertions=[('SUCCESS', '18')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "preflight-22.04 seed ExtraOpeners.firstDeclared: exit=10 0.2s maxrss=77MB assertions=[('FAILURE', '20')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "preflight-22.04 seed ExtraOpeners.endian: exit=0 0.2s maxrss=77MB assertions=[('SUCCESS', '22')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "preflight-22.04 seed ExtraOpeners.halfSwap: exit=10 0.2s maxrss=77MB assertions=[('FAILURE', '23')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "preflight-22.04 seed ExtraOpeners.hex: exit=0 0.4s maxrss=86MB assertions=[('SUCCESS', '29')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "preflight-22.04 seed ExtraOpeners.lowFirst: exit=10 0.3s maxrss=86MB assertions=[('FAILURE', '34')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "preflight-22.04 regression StartsWith/test.desc [CORE]: exit=10 0.2s -> PASSES",
+        "preflight-22.04 regression StartsWith/test_det.desc [CORE]: exit=10 0.0s -> PASSES",
+        "preflight-22.04 regression StartsWith/test_nondet.desc [KNOWNBUG]: exit=-6 0.0s -> DOES NOT PASS missing=['^EXIT=10$', 'assertion at file Test.java line 66 .*: SUCCESS', 'assertion at file Test.java line 69 .*: FAILURE']",
+        "preflight-22.04 regression default-methods/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "preflight-22.04 regression no-main-object-array-elements-maybe-null1/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "preflight-22.04 regression no-main-object-array-elements-maybe-null2/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "preflight-22.04 regression synchronized-methods/test1.desc [CORE]: exit=0 0.1s -> PASSES",
+        "preflight-22.04 regression synchronized-methods/test2.desc [CORE]: exit=0 0.1s -> PASSES",
+        "preflight-22.04 regression synchronized-methods/test3.desc [CORE]: exit=0 0.1s -> PASSES",
+        "preflight-22.04 regression synchronized-methods/test_sync.desc [CORE]: exit=0 0.1s -> PASSES",
+        "preflight-22.04 regression synchronized-methods/test_sync_baseline.desc [CORE]: exit=0 0.1s -> PASSES",
+        "preflight-22.04 regression synchronized-methods/test_sync_static.desc [KNOWNBUG]: exit=10 0.1s -> DOES NOT PASS missing=['^EXIT=0$', '^VERIFICATION SUCCESSFUL$']",
+        "preflight-22.04 regression toCodePoint/test.desc [CORE]: exit=10 0.1s -> PASSES",
+        "preflight-22.04 regression virtual5/test.desc [CORE]: exit=0 0.0s -> PASSES"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "installed pairing: /usr/bin/jbmc + /usr/lib models",
+      "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py installed-24.04 /usr/bin/jbmc /usr/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/installed-24.04",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 4.008,
+      "cpuSeconds": 3.921,
+      "cpuThrottledSeconds": 0.019,
+      "peakMemoryBytes": 92033024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-installed-pairing-usr-bin-jbmc.log",
+        "lines": 28,
+        "bytes": 3602,
+        "sha256": "b55645774944e7054bdaaf424fd04575b04c8b0fb374b66249ed4d79852c6eb3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "installed-24.04 seed Semantics.fraction: exit=0 0.2s maxrss=54MB assertions=[('SUCCESS', '11')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-24.04 seed Semantics.floorOnly: exit=10 0.4s maxrss=54MB assertions=[('FAILURE', '15')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-24.04 seed Semantics.narrow: exit=0 0.2s maxrss=54MB assertions=[('SUCCESS', '22')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-24.04 seed Semantics.wraps: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '26')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-24.04 seed Semantics.prefix: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '31')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-24.04 seed Semantics.categories: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '40')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-24.04 seed Semantics.noNullCell: exit=10 0.2s maxrss=54MB assertions=[('FAILURE', '42')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-24.04 seed Semantics.noItemCell: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '43')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-24.04 seed ExtraOpeners.dispatch: exit=10 0.2s maxrss=77MB assertions=[('FAILURE', '18')] properties=2 other-failures=0 want=SUCCESS -> DIFFERS",
+        "installed-24.04 seed ExtraOpeners.firstDeclared: exit=0 0.2s maxrss=77MB assertions=[('SUCCESS', '20')] properties=2 other-failures=0 want=FAILURE -> DIFFERS",
+        "installed-24.04 seed ExtraOpeners.endian: exit=0 0.2s maxrss=77MB assertions=[('SUCCESS', '22')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-24.04 seed ExtraOpeners.halfSwap: exit=10 0.2s maxrss=77MB assertions=[('FAILURE', '23')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-24.04 seed ExtraOpeners.hex: exit=0 0.3s maxrss=86MB assertions=[('SUCCESS', '29')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-24.04 seed ExtraOpeners.lowFirst: exit=10 0.3s maxrss=86MB assertions=[('FAILURE', '34')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-24.04 regression StartsWith/test.desc [CORE]: exit=10 0.2s -> PASSES",
+        "installed-24.04 regression StartsWith/test_det.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-24.04 regression StartsWith/test_nondet.desc [KNOWNBUG]: exit=-6 0.0s -> DOES NOT PASS missing=['^EXIT=10$', 'assertion at file Test.java line 66 .*: SUCCESS', 'assertion at file Test.java line 69 .*: FAILURE']",
+        "installed-24.04 regression default-methods/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-24.04 regression no-main-object-array-elements-maybe-null1/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-24.04 regression no-main-object-array-elements-maybe-null2/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-24.04 regression synchronized-methods/test1.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-24.04 regression synchronized-methods/test2.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-24.04 regression synchronized-methods/test3.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-24.04 regression synchronized-methods/test_sync.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-24.04 regression synchronized-methods/test_sync_baseline.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-24.04 regression synchronized-methods/test_sync_static.desc [KNOWNBUG]: exit=10 0.1s -> DOES NOT PASS missing=['^EXIT=0$', '^VERIFICATION SUCCESSFUL$']",
+        "installed-24.04 regression toCodePoint/test.desc [CORE]: exit=10 0.1s -> PASSES",
+        "installed-24.04 regression virtual5/test.desc [CORE]: exit=0 0.0s -> PASSES"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "installed binary + 22.04 models",
+      "run": "python3 -I $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/jbmc_repro.py installed-bin-22.04-models /usr/bin/jbmc $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/lib $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/jbmc-runs/installed-bin-22.04-models",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 14400.0,
+      "cancelled": false,
+      "wallSeconds": 4.008,
+      "cpuSeconds": 3.854,
+      "cpuThrottledSeconds": 0.039,
+      "peakMemoryBytes": 91447296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-installed-binary-22-04-models.log",
+        "lines": 28,
+        "bytes": 3912,
+        "sha256": "2f72014e05334dbde72da7810b2154abd6215c4a3018365b1dd7c00ad7d13025",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "installed-bin-22.04-models seed Semantics.fraction: exit=0 0.2s maxrss=54MB assertions=[('SUCCESS', '11')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-bin-22.04-models seed Semantics.floorOnly: exit=10 0.3s maxrss=54MB assertions=[('FAILURE', '15')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-bin-22.04-models seed Semantics.narrow: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '22')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-bin-22.04-models seed Semantics.wraps: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '26')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-bin-22.04-models seed Semantics.prefix: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '31')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-bin-22.04-models seed Semantics.categories: exit=0 0.1s maxrss=54MB assertions=[('SUCCESS', '40')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-bin-22.04-models seed Semantics.noNullCell: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '42')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-bin-22.04-models seed Semantics.noItemCell: exit=10 0.1s maxrss=54MB assertions=[('FAILURE', '43')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-bin-22.04-models seed ExtraOpeners.dispatch: exit=0 0.2s maxrss=77MB assertions=[('SUCCESS', '18')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-bin-22.04-models seed ExtraOpeners.firstDeclared: exit=10 0.3s maxrss=77MB assertions=[('FAILURE', '20')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-bin-22.04-models seed ExtraOpeners.endian: exit=0 0.3s maxrss=77MB assertions=[('SUCCESS', '22')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-bin-22.04-models seed ExtraOpeners.halfSwap: exit=10 0.2s maxrss=77MB assertions=[('FAILURE', '23')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-bin-22.04-models seed ExtraOpeners.hex: exit=0 0.4s maxrss=86MB assertions=[('SUCCESS', '29')] properties=2 other-failures=0 want=SUCCESS -> AS BRIEF",
+        "installed-bin-22.04-models seed ExtraOpeners.lowFirst: exit=10 0.3s maxrss=86MB assertions=[('FAILURE', '34')] properties=2 other-failures=0 want=FAILURE -> AS BRIEF",
+        "installed-bin-22.04-models regression StartsWith/test.desc [CORE]: exit=10 0.2s -> PASSES",
+        "installed-bin-22.04-models regression StartsWith/test_det.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-bin-22.04-models regression StartsWith/test_nondet.desc [KNOWNBUG]: exit=-6 0.0s -> DOES NOT PASS missing=['^EXIT=10$', 'assertion at file Test.java line 66 .*: SUCCESS', 'assertion at file Test.java line 69 .*: FAILURE']",
+        "installed-bin-22.04-models regression default-methods/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-bin-22.04-models regression no-main-object-array-elements-maybe-null1/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-bin-22.04-models regression no-main-object-array-elements-maybe-null2/test.desc [CORE]: exit=10 0.0s -> PASSES",
+        "installed-bin-22.04-models regression synchronized-methods/test1.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-bin-22.04-models regression synchronized-methods/test2.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-bin-22.04-models regression synchronized-methods/test3.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-bin-22.04-models regression synchronized-methods/test_sync.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-bin-22.04-models regression synchronized-methods/test_sync_baseline.desc [CORE]: exit=0 0.1s -> PASSES",
+        "installed-bin-22.04-models regression synchronized-methods/test_sync_static.desc [KNOWNBUG]: exit=10 0.1s -> DOES NOT PASS missing=['^EXIT=0$', '^VERIFICATION SUCCESSFUL$']",
+        "installed-bin-22.04-models regression toCodePoint/test.desc [CORE]: exit=10 0.1s -> PASSES",
+        "installed-bin-22.04-models regression virtual5/test.desc [CORE]: exit=0 0.0s -> PASSES"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-23T08:00:54+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T080035Z-489227d1b2ca703e"
+    }
+  }
+}
