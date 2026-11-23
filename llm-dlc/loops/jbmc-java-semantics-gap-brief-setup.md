@@ -8,7 +8,8 @@ allocated no example ids, ran no project verifier and changed nothing in `lib/` 
 downloaded or built is outside the checkout, under `~/.cache/in-the-loop/`.
 
 `$B` below is `~/.cache/in-the-loop/jbmc-java-semantics-gap`. The status of each brief section is in the
-[summary](#summary). Two builds and the stock-JBMC rerun are [verification jobs](#jobs).
+[summary](#summary). The stock-JBMC rerun and the Guava build ran as [verification jobs](#jobs); the Guava build is
+on its second attempt.
 
 ## Layout
 
@@ -47,11 +48,33 @@ brief's preflight digests are the **22.04** package's:
 | `ubuntu-24.04-cbmc-6.11.0-Linux.deb` `b3721aa541038384d7801ea3aeabbcddc3e8845ac8f1cbff637cf8dec7481ac8` (installed, files identical to `/usr/bin/jbmc` and `/usr/lib/core-models.jar`) | `200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35` (= `lib/benchmark/external-upgrades/v0.json`) | `a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df` | JDK 17.0.20 |
 
 Both report `6.11.0 (cbmc-6.11.0)`. The 22.04 binary runs on this machine (no missing libraries). The two model jars
-hold the same 91 classes, all compiled differently. **The models change an answer:** a capped probe of
-`ExtraOpeners.firstDeclared` with the brief's flags gave exit 10 (the brief's FAILURE) with the 22.04 models, under
-either binary, and exit 0 (assertion SUCCESS) with the installed 24.04 models. The [JBMC job](#jobs) reruns every
-seed entry and regression in three pairings to show which results depend on which file. `lib/benchmark/run.py`'s
-`--jbmc` defaults to `jbmc` on `PATH`, which is the installed 24.04 binary.
+hold the same 91 classes, all compiled differently. **The models change two answers**, both in #6
+([below](#the-stock-jbmc-rerun)). `lib/benchmark/run.py`'s `--jbmc` defaults to `jbmc` on `PATH`, which is the
+installed 24.04 binary.
+
+### The stock JBMC rerun
+
+Job `20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11` **passed** (3 steps in 11.6 s, peak 88 MiB; the
+hour's estimate was a guess before any entry had been timed, and every entry takes under half a second). It ran
+`scripts/jbmc_repro.py` on the 14 seed entries with the brief's flags (seed classes from `probes/seed/cls/`,
+`LANG_CP` = `artifacts/commons-lang-5904c573.jar`, `IO_JAR` = the released IO 2.19.0) and on the 13 `test.desc`
+files of the 7 regression folders, in three pairings. Per-entry JSON and logs, and `summary.txt`, are in
+`$B/jbmc-runs/PAIRING/`; the job's logs are in `verification/results/2026/11/23/20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11/`
+(collected on the default workspace's line, commit `de484000`, not yet merged into this one).
+
+| Pairing | Seeds as the brief says | Regression `test.desc` files that pass |
+|---|---|---|
+| `preflight-22.04`: 22.04 `jbmc` + 22.04 models (the brief's digests) | **14 of 14** | 11 of 11 `CORE`; the 2 `KNOWNBUG` do not pass, as upstream marks them |
+| `installed-24.04`: `/usr/bin/jbmc` + `/usr/lib/core-models.jar` | 12 of 14: **`dispatch` FAILURE** (brief: SUCCESS) and **`firstDeclared` SUCCESS** (brief: FAILURE) | the same |
+| `installed-bin-22.04-models`: `/usr/bin/jbmc` + 22.04 models | **14 of 14** | the same |
+
+So the models jar alone decides #6, in both directions: with the installed models, JBMC's answer is the
+declaration-order one (`x+1` on the first receiver), which the JVM refutes. Every other seed entry and every
+regression gives the same result under all three pairings. Every seed run had exactly 2 properties, with no other
+failures. The two `KNOWNBUG` files behave as their markers say: `StartsWith/test_nondet.desc` ends in an invariant
+violation report (exit −6, SIGABRT), and `synchronized-methods/test_sync_static.desc` exits 10 with the warning the
+brief cites ("Java method 'java::C.static_set:()V' is static and synchronized. This is unsupported, the synchronized
+keyword will be ignored.").
 
 ### JDKs
 
@@ -151,7 +174,7 @@ between each release and the commits (`Platform.java` at the parent equals neith
 | `commons-lang-3e50a7f9.jar` (3.21.0-SNAPSHOT) | `5489541c16fe228f13443d8c7bb951722da80b25c56b73412707cab4011b032c` | here, Maven, JDK 21.0.13, commons-parent 102 | `Conversion.class` `7080056a627f12f1` |
 | `gson-719-parent.jar` (2.5-SNAPSHOT) | `aa5c6883a29f7138e0452f8a9cd5c19efd9adba228f0d67024cd305cdfb3eb89` | here, Maven, JDK 8u512, source/target 1.5 | `internal/bind/TypeAdapters.class` `996c8d93736c6166` |
 | `gson-719-fix.jar` (2.5-SNAPSHOT) | `f0c093dc10b6830cc7eef6d94bf8a40c2bfa46322d714b716807d9ed6a481477` | the same | `internal/bind/TypeAdapters.class` `ff3098521e48f63c` |
-| `guava-7955-{parent,fix}.jar` | pending | [Guava job](#jobs) | |
+| `guava-7955-{parent,fix}.jar` | pending (second attempt) | [Guava job](#jobs) | |
 
 Jar digests include build timestamps. The two Gson jars differ only in `TypeAdapters` and its nested classes (the fix
 adds `TypeAdapters$31$1`). Gson has no runtime dependencies. The Commons Lang `3e50a7f9` worktree keeps its
@@ -205,13 +228,21 @@ export JAVA_HOME=$(readlink -f ~/.sdkman/candidates/java/21.0.13.0+9-tem) TMPDIR
        MAVEN_USER_HOME=$B/mvn-home/.m2 MAVEN_OPTS="-Duser.home=$B/mvn-home"
 cd $B/src/guava-7955-fix      # or guava-7955-parent
 ./mvnw -B -ntp -s $B/maven-settings.xml -t $B/toolchains.xml -pl guava,guava-testlib,guava-tests -am \
-  test -Dtest=com.google.common.base.StringsTest -Dsurefire.failIfNoSpecifiedTests=false
-./mvnw -B -ntp -s $B/maven-settings.xml -t $B/toolchains.xml -o -pl guava -DskipTests package
+  verify -Dmaven.javadoc.skip=true -Dmaven.source.skip=true \
+  -Dtest=com.google.common.base.StringsTest -Dsurefire.failIfNoSpecifiedTests=false
+# the jar is then guava/target/guava-999.0.0-HEAD-jre-SNAPSHOT.jar
 ```
+
+Use `verify`, not `test`. The first job ran `test` and failed after 36 s at `guava-testlib`'s `compile-java9`
+execution: `module-info.java:[18,32] error: module not found: com.google.common`. Guava compiles its
+`module-info.class` into `target/classes/META-INF/versions/9/` only (a multi-release jar), so a reactor build finds
+the module only once `guava` is packaged. Upstream CI runs `install -DskipTests` and then `verify`. Nothing is
+installed here, because both sides have the same version (`999.0.0-HEAD-jre-SNAPSHOT`) and would overwrite each other
+in `$B/m2`.
 
 A `validate` of the `guava` module (inline, 10 s) confirmed both toolchains resolve to those JDKs and nothing was
 written to `~/.m2`. The test build compiles `guava-tests`, which takes minutes, so it runs as a job. The job
-(`scripts/guava_job.sh`) runs the commands above on both sides, then the fix's `StringsTest.java` on the parent
+(`scripts/guava_job.sh`) runs the command above on both sides, then the fix's `StringsTest.java` on the parent
 (which adds `lenientFormat("%s + %s = %s", (Object[]) new Integer[] {5, 6, 11})`), the fix's test offline, and
 removes the build trees.
 
@@ -269,12 +300,14 @@ revisions through its own target route (`records/setup/build-{parent,landed}.jso
 
 | Job | What | Status |
 |---|---|---|
-| `20261123-075049-setup-build-guava-at-the-7955-parent-and` | Guava #7955: both sides' `StringsTest`, both jars, the fix's test on the parent, offline rerun, cleanup (4 CPU, 5 GB, ~30 min est.) | pending |
-| `20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11` | Stock JBMC: the 14 seed entries and the 7 regression folders' 13 `test.desc` files, in three pairings (22.04 binary + 22.04 models = the preflight; installed binary + installed models; installed binary + 22.04 models). Per-entry exit, time, peak memory and property results go to `$B/jbmc-runs/PAIRING/` (`summary.txt` there). (1 CPU, 4 GB, ~60 min est.) | pending |
+| `20261123-075049-setup-build-guava-at-the-7955-parent-and` | Guava #7955: both sides' `StringsTest`, both jars, the fix's test on the parent, offline rerun, cleanup (4 CPU, 5 GB, ~30 min est.) | **failed** at step 1 after 36 s: Maven's `test` phase cannot resolve module `com.google.common` for `guava-testlib` ([why](#guava-7955-as-a-job)); steps 2–5 skipped. Superseded. |
+| `20261123-081114-setup-build-guava-at-the-7955-parent-and` | The same five steps, with `verify` in place of `test` (script sha256 `f8c7111b…48b6be`) (6 CPU, 5 GB, ~20 min est.) | pending |
+| `20261123-075049-setup-rerun-the-brief-s-stock-jbmc-6-11` | Stock JBMC: the 14 seed entries and the 7 regression folders' 13 `test.desc` files, in three pairings (22.04 binary + 22.04 models = the preflight; installed binary + installed models; installed binary + 22.04 models). Per-entry exit, time, peak memory and property results go to `$B/jbmc-runs/PAIRING/` (`summary.txt` there). (1 CPU, 4 GB, ~60 min est.) | **passed** in 11.6 s; results [above](#the-stock-jbmc-rerun) |
 
 ## Scripts and probes
 
-sha256: `scripts/guava_job.sh` `ca02907a53a4fbc5571922e76dad4ba13b2e5d0a605b47f253a00623d9023bef`,
+sha256: `scripts/guava_job.sh` `f8c7111b9f5d84fad55f68bfae5cb54d4a1e7cb7772dd6928a56b5343948b6be` (the first job's
+version, with `test`, is kept as `guava_job.sh.v1`, `ca02907a…9023bef`),
 `scripts/jbmc_repro.py` `3f424d4b4275d3f740e8201f4747b5cd6bd7cad80ef4fe93d2f395522e6e508d`, `scripts/mirror.sh`
 `04ae4cf4…f74760`; `probes/seed/Semantics.java` `29c9f00b9d25e744e1baba932dd01e6235bba532ae1216b9d154cd48dfeeee19` and
 `ExtraOpeners.java` `ce08e8bc2909229a2d01197b01bdf2c8994816faa51d485b28a7e8c401be9416` (lines 186–243 and 265–320 of
@@ -295,13 +328,13 @@ dependencies.
 | §2 numeric callers | Lang `5904c573` | built jar | yes: seed oracle; floor-only 4,194,304 failures; narrowing witness at `0x41e0…` |
 | §3 prefix | Lang `5904c573`, `StartsWith` fixture | | yes: seed oracle over offsets −1..6 |
 | §4 reference arrays, Gson #719 | null-cell fixtures, `virtual5`, Gson pair | Gson jars built (JDK 8) | yes: own tests pass on both sides; the fix's test fails on the parent (`ClassCastException`); 18 observations; `virtual5` |
-| §5 covariant stores | Collections 4.5.0, Guava pair | Collections and Guava 33.4.8/33.5.0 released and signed; Guava build **pending (job)** | yes: kernel; 12-case grid; Guava parent/fix by slice and by release |
+| §5 covariant stores | Collections 4.5.0, Guava pair | Collections and Guava 33.4.8/33.5.0 released and signed; Guava build **pending (job, second attempt)** | yes: kernel; 12-case grid; Guava parent/fix by slice and by release |
 | #6–#15 | as listed | as listed | yes, each as the table above says |
-| Comparator | CBMC 6.11.0 regressions | both JBMC packages; the brief's preflight binary and models found | rerun **pending (job)**; one probe showed the models jar decides `firstDeclared` |
+| Comparator | CBMC 6.11.0 regressions | both JBMC packages; the brief's preflight binary and models found | rerun **passed (job)**: the preflight pairing gives all 14 seed results and all 11 `CORE` regressions; the installed models flip `dispatch` and `firstDeclared` |
 
 **Refused:** nothing. **Not done, on purpose:** no examples, claims, sidecars, adapters or recipes; no verifier runs;
 no opening score; no grids beyond the brief's named observations (#7's 65,536 inputs, #8's boundary grid, #15's
-schedules); no investigation of why the models jar changes `firstDeclared`.
+schedules); no investigation of why the models jar changes #6's two answers.
 
 ## Setup Agent Notes
 
@@ -313,12 +346,13 @@ schedules); no investigation of why the models jar changes `firstDeclared`.
 - Commons Lang `5904c573` (§2, §3: `commons-lang-5904c573.jar`) and `3e50a7f9` (#12, `target/` kept). Released Lang
   3.14.0, IO 2.19.0, Text 1.12.0, Collections 4.5.0, Spring Core 6.2.0, and Guava 33.4.8-jre and 33.5.0-jre, all
   signature-checked.
-- Gson #719 parent and fix jars (JDK 8). The Guava #7955 build is a pending job; until it lands, 33.4.8-jre and
+- Gson #719 parent and fix jars (JDK 8). The Guava #7955 build is a pending job (its first attempt failed on module
+  order, [fixed](#guava-7955-as-a-job)); until it lands, 33.4.8-jre and
   33.5.0-jre carry exactly the parent's and the fix's `Strings.java`, and `probes/guava/slice-{parent,fix}/` holds
   each side's own `Strings.class` built against 33.4.8.
 - JBMC 6.11.0 in two forms. `/usr/bin/jbmc` with `/usr/lib/core-models.jar` is the 24.04 package, what the runner
   uses by default. `$B/releases/cbmc-6.11.0/ubuntu-22.04/{bin/jbmc,lib/core-models.jar}` is the brief's preflight
-  pair, with matching digests.
+  pair, with matching digests. That pair reproduces all 14 seed results; its runs are in `$B/jbmc-runs/preflight-22.04/`.
 - The upstream JBMC fixtures, compiled, in `$B/regressions/`. The brief's two seeds, compiled, in
   `$B/probes/seed/cls/`. The JDK 21.0.13 classes the brief names, with digests, in `$B/jdk/temurin-21.0.13/`.
 
@@ -329,12 +363,16 @@ lists them. This covers both seeds' oracles, the §2 counts and witnesses, Gson'
 (the fix's test fails on the parent with `ClassCastException`), the §5 kernel, iterator grid and Guava parent/fix,
 and #6–#15. Only Gson's upstream test was run as a parent/fix pair here; Guava's is the pending job.
 
+On the comparator side (not a JVM check, but the brief's other preflight): the brief's JBMC binary and models
+reproduce all 14 seed results, and all 11 `CORE` upstream regression files pass under each pairing.
+
 ### What to know before starting
 
 - **Two JBMC packages, and the models matter.** The installed JBMC and models are not the brief's preflight pair. With
-  the installed `core-models.jar`, `ExtraOpeners.firstDeclared` reports SUCCESS where the brief (and the 22.04 models,
-  under either binary) reports FAILURE. Name the binary and models jar in every comparator row. The JBMC job's
-  `$B/jbmc-runs/*/summary.txt` will say which other results move.
+  the installed `core-models.jar`, #6 flips both ways: `ExtraOpeners.dispatch` reports FAILURE (brief: SUCCESS) and
+  `firstDeclared` reports SUCCESS (brief: FAILURE), the declaration-order answer the JVM refutes. With the 22.04
+  models, under either binary, both are as the brief says. Nothing else moves. Name the binary and models jar in
+  every comparator row (`$B/jbmc-runs/*/summary.txt`).
 - **JDK:** Temurin 21.0.13, not Debian's build. The named `java.base` sources are identical to jdk21u at `ba94eace`;
   class bytes may differ from the brief's preflight, so the #9 hashes recorded here are Temurin's.
 - **Gson** needs JDK 8 and Surefire 2.18.1 on the command line (the default Surefire refuses JUnit 3.8.2).
@@ -351,5 +389,5 @@ and #6–#15. Only Gson's upstream test was run as a parent/fix pair here; Guava
 All claims and scopes, example ids and scaffolding, adapters and sidecars. Also: the opening score (recounting the
 historical 13, freezing model hashes for the score), every native and integrated JBMC run, and the choice of §1's
 and §3's transfer callers. The grids the brief only sketches (#7's patterned inputs, #8's boundary grid, #15's
-schedules) and the #6 classfile-variant comparator regression are not built. Why the models jar flips
-`firstDeclared` is not investigated.
+schedules) and the #6 classfile-variant comparator regression are not built. Why the models jar flips #6's
+`dispatch` and `firstDeclared` is not investigated.

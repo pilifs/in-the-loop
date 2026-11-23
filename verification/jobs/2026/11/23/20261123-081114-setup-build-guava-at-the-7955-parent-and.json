@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-081114-setup-build-guava-at-the-7955-parent-and",
+  "title": "Setup: build Guava at the #7955 parent and fix, run StringsTest, and the fix's test on the parent",
+  "description": "Setup for llm-dlc/loops/jbmc-java-semantics-gap-brief.md (section 5, organic change), no claims. In the worktrees ~/.cache/in-the-loop/jbmc-java-semantics-gap/src/guava-7955-{parent,fix} (47b7e9e5 and 148cea07), with the project's own Maven wrapper (3.9.9, sha256-pinned), the JDK 24 toolchain Guava asks for (Temurin 24.0.2, checked against Adoptium's sha256 and signature, in the cache) and tests on JDK 21.0.13. Maven's user.home and toolchains.xml point into the cache folder so nothing is written to ~/.m2. Each side builds guava, guava-testlib and guava-tests and runs com.google.common.base.StringsTest, then packages the guava jar to artifacts/guava-7955-SIDE.jar and prints its sha256 and classpath. The fix's StringsTest (which adds the Integer[] lenientFormat assertion) is then run on the parent's code and must fail testLenientFormat; the fix's test is rerun offline; the build trees are removed. Script: ~/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh (sha256 in the setup record). Second attempt: the first (20261123-075049-setup-build-guava-at-the-7955-parent-and) ran Maven's test phase and failed at guava-testlib's compile-java9 with 'module not found: com.google.common', because guava's module-info.class sits only in META-INF/versions/9 of target/classes and is found only in the packaged jar. Every Maven call in the script now runs verify (with javadoc and source jars skipped), as upstream CI does; nothing is installed, so the two sides' identical SNAPSHOT versions cannot overwrite each other in the cache's m2. Script sha256 f8c7111b9f5d84fad55f68bfae5cb54d4a1e7cb7772dd6928a56b5343948b6be.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "maven"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/jbmc-java-semantics-gap-brief-setup.md"
+    ]
+  },
+  "expected": "StringsTest passes on both sides; on the parent the transplanted fix test fails testLenientFormat with ArrayStoreException; the offline rerun passes; both jars are built",
+  "submitted": {
+    "at": "2026-11-23T08:11:14+00:00",
+    "session": "970bfd4f-5faa-49d7-bcbc-626f36895cc8",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "5G",
+    "duration": "20m",
+    "notes": "first attempt failed after 36 s at guava-testlib's compile-java9 (peak 1.4 GiB, CPU-throttled at 4); a full guava + guava-testlib + guava-tests verify per side is several minutes"
+  },
+  "steps": [
+    {
+      "name": "guava-7955-fix: build, StringsTest, jar",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side fix",
+      "cwd": "."
+    },
+    {
+      "name": "guava-7955-parent: build, StringsTest, jar",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh side parent",
+      "cwd": "."
+    },
+    {
+      "name": "the fix's StringsTest on the parent (expected to fail testLenientFormat)",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh transplant",
+      "cwd": "."
+    },
+    {
+      "name": "the fix's StringsTest offline",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh offline",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "bash $HOME/.cache/in-the-loop/jbmc-java-semantics-gap/scripts/guava_job.sh clean",
+      "cwd": "."
+    }
+  ],
+  "outputs": [],
+  "supersedes": "20261123-075049-setup-build-guava-at-the-7955-parent-and"
+}
