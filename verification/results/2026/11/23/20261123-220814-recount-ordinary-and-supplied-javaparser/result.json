@@ -1,0 +1,224 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-220814-recount-ordinary-and-supplied-javaparser",
+  "title": "Recount ordinary and supplied JavaParser startup decisions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m05s, peak 430.8 MiB (estimated 4m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-220814-recount-ordinary-and-supplied-javaparser.json",
+    "sha256": "6b7f32403ebe49bcd4b920621ff3d010a5581aef0819c145ac65ff46d9eede10",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-220814-recount-ordinary-and-supplied-javaparser",
+      "title": "Recount ordinary and supplied JavaParser startup decisions",
+      "description": "Repeat all eight ordinary JavaParser PR 4538 traversals and the eight supplied LineSeparator companions. Retain their original assertions, bounds, JVM entry and separate outcomes.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "receiver-construction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:08:14+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "4m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "Measure 360",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening 360",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/opening/360"
+      ]
+    }
+  },
+  "sourceCommit": "52b851bb76067dfe9f730298390b870c578dc7d0",
+  "startedAt": "2026-11-23T22:17:35+00:00",
+  "finishedAt": "2026-11-23T22:23:46+00:00",
+  "wallSeconds": 371.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3192283,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 451682304,
+    "wallSeconds": 185.2,
+    "cpuSeconds": 198.9,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.77
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 176.66,
+      "cpuSeconds": 176.848,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2334048256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "9a195d8d8f224487046a94ad2d2fa146a97c481491a924cb3a603f83360fd09f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-220814-recount-ordinary-and-supplied-javaparser/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 56s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Measure 360",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening 360",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 185.225,
+      "cpuSeconds": 198.869,
+      "cpuThrottledSeconds": 4.475,
+      "peakMemoryBytes": 451682304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-360.log",
+        "lines": 1,
+        "bytes": 581,
+        "sha256": "64ae55ee766adf1c842026314263b329780143c894db90f1aac047b0b581a415",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"postorder-parent\": \"unresolved\", \"postorder-fix\": \"unresolved\", \"terminal-parent\": \"unresolved\", \"terminal-fix\": \"unresolved\", \"preorder-parent\": \"unresolved\", \"preorder-fix\": \"unresolved\", \"nonempty-parent\": \"unresolved\", \"nonempty-fix\": \"unresolved\", \"postorder-parent-observed\": \"refuted\", \"post"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/opening/360/measurement.json",
+      "change": "added",
+      "bytes": 7347,
+      "sha256": "2845511ddc33d74e1cd82c85199afa9805640aea977dd45c40bfd8facdb8716b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/opening/360/receipts.tar.gz",
+      "change": "added",
+      "bytes": 20743,
+      "sha256": "7de1cce2979cab100adee796f5ef493141696d57502fb9d1f3ac367e0cf87c52",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/opening/360/workflow.log",
+      "change": "added",
+      "bytes": 4068,
+      "sha256": "f388dc25035d22311142ac2129bf189126389c37670b042243f35ec42086d1e0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:26:05+00:00",
+    "applied": [
+      "verification/receiver-discovery/opening/360/measurement.json",
+      "verification/receiver-discovery/opening/360/receipts.tar.gz",
+      "verification/receiver-discovery/opening/360/workflow.log"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "559abf5ae9b419691eabad507b55a542062ae943",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/559abf5ae9b419691eabad507b55a542062ae943/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T222346Z-478873210c9916df",
+      "outputs": "20261123T222346Z-501079feb4b12d39",
+      "diff": "20261123T222346Z-5195080cd44d7017"
+    }
+  }
+}
