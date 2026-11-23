@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T16:45:54.158Z",
-  "duration_seconds": 103327,
+  "ended": "2026-11-23T17:11:04.973Z",
+  "duration_seconds": 104838,
   "stats": {
     "turns": 21,
-    "api_calls": 4051,
-    "tool_calls": 9396,
-    "tool_errors": 243,
+    "api_calls": 4131,
+    "tool_calls": 9557,
+    "tool_errors": 250,
     "compactions": 16,
     "peak_context_tokens": 550118,
     "usage": {
-      "input_tokens": 5951336,
-      "output_tokens": 1849155,
-      "cache_read_input_tokens": 1087584384,
+      "input_tokens": 6029814,
+      "output_tokens": 1895701,
+      "cache_read_input_tokens": 1118056448,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5065,
-    "exec": 3692,
-    "apply_patch": 399,
+    "Bash": 5134,
+    "exec": 3773,
+    "apply_patch": 410,
     "wait": 132,
     "sleep": 38,
     "send_message": 25,
@@ -96,6 +96,7 @@
     "examples/391-class-monitor-identity/example.json",
     "examples/393-wide-floating-conversions/controls/jvm/RoundingBoundaries.java",
     "examples/394-caller-owned-ragged-arrays/adapter/RowIdentities.java",
+    "examples/394-caller-owned-ragged-arrays/controls/MatrixMetadata.java",
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/workflow_ingest.py",
     "lib/README.md",
@@ -127,7 +128,9 @@
     "lib/benchmark/java-semantics-gap/subjects.py",
     "lib/benchmark/java-semantics-gap/test_monitor_schedules.py",
     "lib/benchmark/java-semantics-gap/test_scorecard.py",
+    "lib/benchmark/jbmc-fast-follow/matrix_transfer.py",
     "lib/benchmark/jbmc-fast-follow/measure.py",
+    "lib/benchmark/jbmc-fast-follow/predecessor.py",
     "lib/benchmark/run.py",
     "lib/benchmark/spring-java-data/domains.py",
     "lib/benchmark/spring-java-data/factory_results.py",
@@ -163,6 +166,7 @@
     "lib/src/bmc/reference_queues.rs",
     "lib/src/bmc/reflection.rs",
     "lib/src/bmc/regex.rs",
+    "lib/src/bmc/row_jbmc.rs",
     "lib/src/bmc/runtime.rs",
     "lib/src/bmc/string_buffer.rs",
     "lib/src/bmc/strings.rs",
@@ -446,24 +450,24 @@
     {
       "index": 16,
       "started": "2026-11-23T14:53:32.104Z",
-      "ended": "2026-11-23T16:45:54.158Z",
+      "ended": "2026-11-23T17:11:04.973Z",
       "turns": 2,
-      "api_calls": 175,
+      "api_calls": 255,
       "usage": {
-        "input_tokens": 338019,
-        "output_tokens": 96223,
-        "cache_read_input_tokens": 41508096,
+        "input_tokens": 416497,
+        "output_tokens": 142769,
+        "cache_read_input_tokens": 71980160,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 339464
+      "peak_context_tokens": 412260
     }
   ],
   "log": {
-    "sha256": "dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71",
-    "bytes": 61266686,
-    "lines": 30643,
-    "gzip_bytes": 11573555,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71.jsonl.gz"
+    "sha256": "61f0a1368fb01823b48de13a8478a2eba5c9460a3a3132505efd9be535b15a52",
+    "bytes": 62089282,
+    "lines": 31237,
+    "gzip_bytes": 11700250,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/61f0a1368fb01823b48de13a8478a2eba5c9460a3a3132505efd9be535b15a52.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1834,6 +1838,14 @@
       "summary": "Round wide Java operands directly to binary32 (verification pending)",
       "body": "Encode signed int and long to binary32 and binary64 and non-NaN binary64 narrowing with exact ties to even, including subnormal and overflow boundaries. Pass direct floating parameters at their JVM widths, preserve witness bits through the original JVM and cache, and avoid double rounding when a boxed Long returns a float. The fallback regression now uses unbounded multiplication, since a raw floating parameter is supported.\n\nThe native Jackson LongNode establishes the independent rounding rule over all 2^54 inputs. The direct DoubleNode negative produced the exact 2^-150 counterexample. Constant-circuit checks, a noncanonical NaN round trip, the direct-double post-return regression and all 23 changed-test groups passed. Job 20261123-163612-qualify-wide-jackson-and-commons-lang-co checks all five primary statements and proceeds to the exact two-path disagreement classification only if the primary checks pass.\n\nThe earlier Guava comparison on source 550cf8a2 established three statements and replayed two violations on each engine. Job 20261123-163524-transfer-proven-guava-adapters-to-common holds that source fixed for Commons Lang return widening and the public ComparisonChain transfer.",
       "log_sha256": "dcf5c1a76b15338a4e9005b48374fc799ef347521eea7c76dc7ed56c25467e71"
+    },
+    {
+      "change_id": "vxzpsxkuxtnmkkpnsvwtznvlppunpyzw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind caller-owned primitive row graphs (verification pending)",
+      "body": "Take direct int[][] and long[][] inputs with bounded independent row lengths, null rows, unrestricted cell words and arbitrary row sharing. Native constructs all such graphs. Integrated JBMC calls the unchanged property harness through a scalar graph generator and identifies the original assertion. Both witness paths reconstruct fresh and shared rows on the original JVM and preserve exact long values in the proof cache. Save checker and JVM class bindings, entry descriptors, generated comparator inputs and independently reconstructed standalone traces.\n\nA bounded native proof established Commons Lang reversal including visibility of writes through shared rows. Integrated JBMC refuted the false distinct-row rule on two references to the same nonempty row. The original Commons Math descriptor proved the equal-width and unequal-width exception cases, and all six physical mismatches distinguished expected from actual width. Native, JVM and cache tests recovered a shared long row containing 9007199254740993. The 26 changed-test groups, test-cost lint and example 394 validator passed.\n\nThe three 20261123-165951-measure-final-java jobs compare all 37 registered entries on this checker. The three 20261123-165951-recheck jobs repeat 60 preceding public claims, 38 historical controls, the four original decimal parser tasks and both proof-tier conformance tests. Job 20261123-170333-check-the-original-commons-math-matrix-d checks the original public descriptor and exact exception fields separately.",
+      "log_sha256": "61f0a1368fb01823b48de13a8478a2eba5c9460a3a3132505efd9be535b15a52"
     }
   ],
   "logs": {
@@ -2015,6 +2027,12 @@
       "bytes": 35839467,
       "lines": 17918,
       "gzip_bytes": 6910242,
+      "url": null
+    },
+    "61f0a1368fb01823b48de13a8478a2eba5c9460a3a3132505efd9be535b15a52": {
+      "bytes": 62089282,
+      "lines": 31237,
+      "gzip_bytes": 11700250,
       "url": null
     },
     "6979f6c0a67f3fac34f7e1462c5f3698667f79ec10bad34accd7da8a80652452": {

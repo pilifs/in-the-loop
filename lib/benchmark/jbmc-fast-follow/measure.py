@@ -15,6 +15,7 @@ sys.path.insert(0, str(HERE.parent / "java-semantics-gap"))
 from campaign import JDK, ROOT, command, digest, integrated, javaenv, replay_witness, write
 from standalone import decode
 from subjects import Claim, Subject
+from jvm_disassembly import methods
 
 CACHE = Path.home() / ".cache/in-the-loop/jbmc-fast-follow"
 EVIDENCE = ROOT / "verification/jbmc-fast-follow"
@@ -24,6 +25,14 @@ ORACLES = {"callbacks": ("LiftChecks", "Replay", "ChainTests"), "numeric": ("Nod
 OPENING = {"source": "a273d0afc61725080795a6af9731e3decc9aab71",
            "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"}
 GRID = ROOT / "examples/tools/targets/java/org/intheloop/controls/Grid.java"
+PUBLIC = {
+    "callbacks": ["com.google.common.primitives.Longs", "com.google.common.collect.ComparisonChain",
+                  "org.apache.commons.lang3.math.NumberUtils"],
+    "numeric": ["com.fasterxml.jackson.databind.node.LongNode", "com.fasterxml.jackson.databind.node.DoubleNode",
+                "org.apache.commons.lang3.mutable.MutableLong"],
+    "rows": ["org.apache.commons.lang3.ArrayUtils", "org.apache.commons.collections4.iterators.ObjectArrayIterator",
+             "org.apache.commons.math3.util.MathArrays", "org.apache.commons.math3.exception.DimensionMismatchException"],
+}
 
 
 def load(path):
@@ -56,6 +65,28 @@ def library_paths(folder, family):
     return jars
 
 
+def bindings(checker, family, cp, work, env):
+    sys.path.insert(0, str(ROOT / "examples/tools"))
+    from targets import class_binding
+    helper = work / "binding"
+    compile_sources([ROOT / "examples/tools/targets/java/LoadedClasses.java"], helper, [], env)
+    names = [p.stem for p in sorted(cp[0].glob("*.class"))] + PUBLIC[family]
+    output = subprocess.check_output([JDK / "bin/java", "-XX:-UsePerfData", "-cp", classpath([helper, *cp]), "LoadedClasses",
+                                      work, *names], env=env, text=True)
+    observed = {n: ((work / p).resolve(), sha) for n, p, sha in (line.split("\t") for line in output.splitlines())}
+    result, release = class_binding.ask(checker, env, work, {"original": {"classpath": list(map(str, cp)),
+                                             "classes": [{"class": n} for n in names]}})
+    if release != 21 or set(observed) != set(names):
+        raise ValueError("incomplete original class bindings")
+    providers = {}
+    for name, bound in zip(names, result["original"]["bindings"], strict=True):
+        path, sha = observed[name]
+        if class_binding.disagreement(name, bound, str(path), sha):
+            raise ValueError(f"different original JVM and checker class for {name}")
+        providers[name] = {"classpathIndex": cp.index(path), "entry": bound["entry"], "sha256": sha}
+    return providers
+
+
 def original(folder, family, work, jars, raw, env):
     adapter = work / "adapter"
     driver = work / "driver"
@@ -65,7 +96,7 @@ def original(folder, family, work, jars, raw, env):
                     driver, cp, env)
     observations = {}
     for main in ("Cases", *ORACLES[family]):
-        code, out, err, seconds = command([JDK / "bin/java", "-ea", "-cp", classpath([driver, *cp]), main], env, 45)
+        code, out, err, seconds = command([JDK / "bin/java", "-XX:-UsePerfData", "-ea", "-cp", classpath([driver, *cp]), main], env, 45)
         if code != 0:
             raise ValueError(f"{main} failed: {err.decode()}")
         (raw / (main + ".stdout")).write_bytes(out)
@@ -191,6 +222,9 @@ def measure(args):
                   "productClasses": {p.name: digest(p) for p in sorted(cp[0].glob("*.class"))},
                   "driverClasses": {p.relative_to(driver).as_posix(): digest(p) for p in sorted(driver.rglob("*.class"))},
                   "originalJvm": physical, "rows": []}
+        descriptors = {}
+        if args.phase == "final":
+            report["classBindings"] = bindings(checker, family, cp, work, env)
         for item in register:
             task = tasks[item["task"]]
             owner, method = task["target"].split("#")
@@ -203,6 +237,13 @@ def measure(args):
                           nullable=next(iter(spec.get("nullable", [])), ""))
             subject = Subject(FAMILIES[family], owner, family, (claim,), spec["bounds"]["maxArrayLength"], spec["bounds"]["unwind"])
             row = dict(item, target=task["target"], expected=task["expected"], specSha256=digest(folder / task["claim"]), bounds=spec["bounds"])
+            if args.phase == "final":
+                if owner not in descriptors:
+                    entries, dis = methods(JDK / "bin/javap", cp[0] / (owner + ".class"))
+                    descriptors[owner] = entries
+                    (raw / (owner + ".bytecode")).write_text(dis)
+                descriptor, = [desc for name, desc in descriptors[owner] if name == method]
+                row["descriptor"] = descriptor
             for lane in (("native", "jbmc") if args.lane == "paired" else (args.lane,)):
                 if lane == "jvm": continue
                 scratch = work / task["id"] / lane
@@ -211,6 +252,16 @@ def measure(args):
                 outputs.mkdir(parents=True)
                 if lane in ("native", "jbmc"):
                     result = integrated(subject, claim, lane, scratch, outputs, cp, env, record_process_errors=True)
+                    input_dir = scratch / "proof/ragged-input"
+                    if input_dir.is_dir():
+                        sources = list(input_dir.glob("*.java"))
+                        if len(sources) != 1:
+                            raise ValueError("missing generated row-input source")
+                        src, = sources
+                        shutil.copyfile(src, outputs / src.name)
+                        cls = src.with_suffix(".class")
+                        result["rowInput"] = {"source": src.name, "sha256": digest(src),
+                                              "classSha256": digest(cls) if cls.exists() else None}
                     if args.require and (result["disposition"] != "correct" or result.get("jvmReplay", {}).get("outcome", "refuted") != "refuted"):
                         raise ValueError(f"{task['target']} {lane}: {result}")
                     row[lane] = result

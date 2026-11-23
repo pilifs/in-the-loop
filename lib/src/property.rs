@@ -488,12 +488,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         Ok(shape) => shape.is_some(),
         Err(why) => return refuse(&mut out, line, why),
     };
+    let direct_rows = descriptor.params.iter().any(|ty| crate::bmc::reference_inputs::row_element(ty).is_some());
+    let jbmc_rows = direct_rows && !options.confirm;
     if reference_array {
         if receiver.is_some() || plan.is_some() || options.writes.is_some() {
             return refuse(&mut out, line, "a direct object-array heap with a constructed receiver, an explicit heap plan or a write-set frame is unsupported".into());
         }
-        if options.engine == crate::Engine::Jbmc || options.confirm {
-            return refuse(&mut out, line, "the integrated JBMC harness does not bind the direct native object-array domain with nullable and shared cells".into());
+        if (options.engine == crate::Engine::Jbmc || options.confirm) && !jbmc_rows {
+            let domain = if direct_rows { "cross-engine confirmation does not yet bind the row-graph witness in both harnesses" }
+                else { "the integrated JBMC harness does not bind the direct native object-array domain with nullable and shared cells" };
+            return refuse(&mut out, line, domain.into());
         }
     }
     // A parameter of an application class is an object made by its constructor (step H2 of
@@ -522,7 +526,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         // A String is a value under the check's bound, and a String[] an array of such (the own checker's alone).
         if t.is_primitive() || harness::expr::element_ty(t).is_some() || crate::values::is_string(t) || harness::is_string_array(t)
-            || crate::bmc::reference_inputs::component(t).is_some() {
+            || crate::bmc::reference_inputs::heap_array(t) {
             records.push(None);
             continue;
         }
@@ -683,7 +687,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     }
     // JBMC gives each array parameter an array of its own, never null: it would prove a narrower claim.
     let widened = !parameters.is_default() || !given.is_empty() || reference_array;
-    if widened && strings.is_none() && (options.engine == crate::Engine::Jbmc || options.confirm) {
+    if widened && !jbmc_rows && strings.is_none() && (options.engine == crate::Engine::Jbmc || options.confirm) {
         let how = if options.confirm { "--confirm would have JBMC check a narrower claim than this one" } else { "JBMC is not given it" };
         let mut refused = refuse(&mut out, line, format!("the domain {domain} lets an array parameter be null or one array with another, which only the tool's own checker takes, and {how}: check it with --engine native or auto"))?;
         refused.refused = Some(WIDENED_DOMAIN);
@@ -1100,9 +1104,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let budget = crate::equivalence::own_budget(&deadline, options.engine);
         let result = crate::bmc::run_for_proof_with(&entries, options.models, harness::PROPERTY_CLASS, harness::METHOD, options.unwind, options.max_array_length, budget, &gap_setting, &parameters, &summaries, pure.clone(), own_induction, options.writes.as_ref().map(|_| (class_internal.clone(), method_name.clone(), method.descriptor.clone())), options.effect, &stubs, &work)?;
         runs.push(Run::of(&result, "proof", budget));
-        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || widened {
+        if result.verdict != Verdict::Unverifiable || options.engine == crate::Engine::Native || crate::equivalence::refuses_gaps(&result) || (widened && !jbmc_rows) {
             if options.engine == crate::Engine::Auto && result.verdict == Verdict::Unverifiable {
-                let _ = writeln!(out, "{}", if strings.is_some() { NOT_JBMC_STRINGS } else if !given.is_empty() { NOT_JBMC_GIVEN } else if reference_array { "the integrated JBMC harness does not bind the direct object-array heap" } else if widened { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
+                let _ = writeln!(out, "{}", if strings.is_some() { NOT_JBMC_STRINGS } else if !given.is_empty() { NOT_JBMC_GIVEN } else if reference_array && !jbmc_rows { "the integrated JBMC harness does not bind the direct object-array heap" } else if widened && !jbmc_rows { NOT_JBMC_DOMAIN } else { crate::equivalence::NOT_JBMC });
             }
             stages.clear();
             last = Some(result);
@@ -1133,12 +1137,24 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         extra_args: extra_args.clone(),
         tells_exceptions: !options.throws.is_empty(),
     };
+    let mut base = base;
+    let row_plan = if jbmc_rows && !stages.is_empty() {
+        let dir = work.join("ragged-input");
+        let root = params.iter().find(|p| crate::bmc::reference_inputs::row_element(&p.ty).is_some()).expect("row domain");
+        let plan = match crate::bmc::row_jbmc::Plan::prepare(&cp, &params, options.max_array_length, options.nullable.contains(&root.name), &dir) {
+            Ok(plan) => plan,
+            Err(reason) => return refuse(&mut out, line, reason),
+        };
+        base.class = plan.class.clone();
+        base.classpath.insert(0, dir);
+        let _ = writeln!(out, "JBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.");
+        Some(plan)
+    } else { None };
     // What JBMC approximates on the way (its stubs, the call sites it does not link), from its goto program.
     let mut preflight = if stages.is_empty() { None } else { Some(crate::jbmc_gaps::preflight(&base, deadline.share(crate::deadline::STAGE_SHARE))?) };
     // Under advised, JBMC applies the contracts for its gaps ([`crate::jbmc_contracts`]): under `--engine jbmc` they
     // are read for the gaps its program reaches, with the advice when one has none; under `auto`, they are the own
     // checker's.
-    let mut base = base;
     let mut applied = None;
     if let (crate::bmc::gaps::GapMode::Advised, Some(pre)) = (options.gaps, preflight.as_ref()) {
         if options.engine == crate::Engine::Jbmc {
@@ -1164,7 +1180,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     for stage in &stages {
         let budget = deadline.for_stage(*stage, options.jbmc_staging);
         let run = JbmcRun { timeout: budget, stage: stage.map(str::to_string), log: work.join(format!("jbmc{}.log", stage.map(|s| format!("-{}", s.replace(|c: char| !c.is_ascii_digit() && c != '-', "_"))).unwrap_or_default())), ..base.clone() };
-        let result = jbmc::run(&run)?;
+        let result = if let Some(plan) = &row_plan {
+            let mut result = jbmc::run_for_property(&run, harness::PROPERTY_CLASS, harness::METHOD)?;
+            plan.project(&mut result);
+            result
+        } else { jbmc::run(&run)? };
         runs.push(Run::of(&result, purpose, budget));
         // A preliminary stage out of its budget hands on: only the last stage is the proof.
         let stop = result.verdict != Verdict::Verified && !(stage.is_some() && result.out_of_time());

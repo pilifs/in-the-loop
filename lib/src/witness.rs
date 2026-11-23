@@ -12,7 +12,7 @@ use crate::classfile::{MethodDescriptor, Type};
 use crate::classpath::ClassPath;
 use crate::harness::{self, Layout, Param, Slot};
 use crate::interp::{render, Fault, Machine, Object, Ref, Value};
-use crate::jbmc::{Argument, ObjectCell};
+use crate::jbmc::{Argument, ObjectCell, PrimitiveRow};
 use crate::shrink::{self, Shrunk};
 use crate::spec::plans::WitnessValue;
 use crate::values::ValueAdapter;
@@ -27,6 +27,7 @@ pub fn argument(argument: &Argument, t: &Type) -> String {
         (Argument::Array(_), _) => "<array>".into(),
         (Argument::String(units), _) => string_literal(units),
         (Argument::Strings(items), _) => strings_literal(items),
+        (Argument::Rows(_), _) => exact_argument(argument, t).to_string(),
         (Argument::Objects(cells), _) => serde_json::to_string(cells).expect("an object array is JSON"),
         (Argument::Null, _) => "null".into(),
         (Argument::Same(i), _) => format!("@{i}"),
@@ -81,7 +82,7 @@ pub fn locals_of(params: &[Param], arguments: &[Argument], arrays_after: &[(u16,
                 Value::Ref(k as Ref + 1)
             }
             // A String is a reference of its own, which no expression reads into; so is an array of them.
-            Argument::String(_) | Argument::Strings(_) | Argument::Objects(_) => Value::Ref(k as Ref + 1),
+            Argument::String(_) | Argument::Strings(_) | Argument::Objects(_) | Argument::Rows(_) => Value::Ref(k as Ref + 1),
             Argument::Null => Value::Null,
             Argument::Same(i) => {
                 if let Some((_, d)) = arrays.iter().find(|(s, _)| Some(*s) == params.get(*i).map(|q| q.slot)).cloned() {
@@ -308,6 +309,10 @@ pub fn exact_argument(argument: &Argument, t: &Type) -> serde_json::Value {
             Some(units) => serde_json::to_value(crate::spec::plans::WitnessValue::String { units: units.clone() }).unwrap_or_default(),
             None => serde_json::Value::Null,
         }).collect()),
+        (Argument::Rows(rows), _) => {
+            let element = crate::bmc::reference_inputs::row_element(t).expect("checked primitive row type");
+            serde_json::Value::Array(rows.iter().map(|r| r.json(element)).collect())
+        }
         (Argument::Objects(cells), _) => serde_json::to_value(cells).expect("an object array is JSON"),
         (Argument::Scalar(v), _) => exact(*v, t),
         (Argument::Array(data), Type::Array(element)) => serde_json::Value::Array(data.iter().map(|v| exact(*v, element)).collect()),
@@ -541,6 +546,18 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> crate:
             Argument::Strings(items) => {
                 let cells: Vec<Value> = items.iter().map(|s| s.as_deref().map(|units| crate::values::new_string(m, units)).unwrap_or(Value::Null)).collect();
                 m.new_array_of(Type::Object("java/lang/String".into()), cells)
+            }
+            Argument::Rows(rows) => {
+                let element = crate::bmc::reference_inputs::row_element(t).ok_or_else(|| Fault::Unsupported("missing primitive row type".into()))?;
+                let mut cells = Vec::with_capacity(rows.len());
+                for row in rows {
+                    cells.push(match row {
+                        PrimitiveRow::Null => Value::Null,
+                        PrimitiveRow::Same(index) => *cells.get(*index).ok_or_else(|| Fault::Unsupported(format!("invalid row alias {index}")))?,
+                        PrimitiveRow::Cells(values) => m.new_array_of(element.clone(), values.clone()),
+                    });
+                }
+                m.new_array_of(Type::Array(Box::new(element.clone())), cells)
             }
             Argument::Objects(items) => {
                 let class = crate::bmc::reference_inputs::component(t).ok_or_else(|| Fault::Unsupported("object cells without a component class".into()))?;

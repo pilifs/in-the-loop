@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-165951-recheck-the-historical-38-and-decimal-pa",
+  "title": "Recheck the historical 38 and decimal parser on the direct-row checker",
+  "description": "Recount both strict engines on all 13 previous JBMC-only cases, 24 native controls and the positive list control. Then check all four original Commons Lang parser claims and the exact original class, coefficient, scale and binary32 observations on both artifacts.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T16:59:51+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 20,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "7G",
+    "duration": "11m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Recheck the historical 38 and decimal parser on the direct-row checker",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py historical && python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py decimal",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/regressions/historical",
+    "verification/jbmc-fast-follow/regressions/decimal"
+  ]
+}

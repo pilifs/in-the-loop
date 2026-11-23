@@ -37,8 +37,9 @@
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
 //! division by zero is. An array of references holds an object or null per cell, and an index into one that is not
 //! a constant splits the path per cell. A direct array of a flat final application class admits null
-//! cells, every partition of the other cells into shared objects, and arbitrary writable int fields
-//! (`reference_inputs`). An application class's static fields are path state, and its initializer
+//! cells, every partition of the other cells into shared objects, and arbitrary writable int fields.
+//! A direct int[][] or long[][] root admits independently sized nullable rows with the same alias choices
+//! and unrestricted primitive cells (`reference_inputs`). An application class's static fields are path state, and its initializer
 //! runs where the JVM runs it (JVMS §5.5); an enum's is one, its constants made through `java.lang.Enum`'s model
 //! and its `$VALUES` an array of references. IEEE 754 comparisons and signed zero use raw bit-vectors.
 //! Arithmetic over bounded floating-point operands uses their complete reachable tuples. Unmodeled static state and the rest of the
@@ -124,6 +125,7 @@ mod class_tables;
 mod jar_resources;
 mod reference_queues;
 pub(crate) mod reference_inputs;
+pub(crate) mod row_jbmc;
 mod generic_interfaces;
 mod map_views;
 mod enum_universe;
@@ -591,7 +593,7 @@ pub fn unsupported_parameter(t: &Type) -> Option<String> {
         t if t.is_primitive() => None,
         Type::Array(element) if matches!(**element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) => None,
         Type::Array(element) if is_string(element) => None,
-        t if reference_inputs::component(t).is_some() => None,
+        t if reference_inputs::heap_array(t) => None,
         t if is_string(t) => None,
         other => Some(format!("a {} parameter", other.java_name())),
     }
@@ -1754,7 +1756,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
                     engine.string_arrays.push((slot, length.clone(), elements));
                     objects.push(Obj { array: Some(Array { element, length, cells: Vec::new(), refs }), ..Obj::new(&class) });
                 } else if let Some(shape) = &object_shape {
-                    engine.object_arrays.push(reference_inputs::InputArray::allocate(shape, slot, length, bound, &mut engine.b, &mut objects));
+                    engine.object_arrays.push(reference_inputs::InputArray::allocate(shape, slot, length, bound, &mut engine.b, &mut objects, &mut cond));
                 } else {
                     let cells: Vec<Bits> = (0..bound).map(|_| engine.b.fresh(cell_width(&element))).collect();
                     engine.arrays.push((slot, element.clone(), length.clone(), cells.clone()));
@@ -2265,7 +2267,7 @@ impl<'a> Engine<'a> {
             }
         }
         for array in &self.object_arrays {
-            values.extend(array.field_words().map(|bits| (Type::Int, bits.clone())));
+            array.stage_words(&mut values);
         }
         for (t, bits) in values {
             if t == Type::Boolean {

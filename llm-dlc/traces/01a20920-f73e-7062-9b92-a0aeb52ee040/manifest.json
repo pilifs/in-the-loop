@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-23T15:58:05.126Z",
-  "ended": "2026-11-23T16:41:07.786Z",
-  "duration_seconds": 2583,
+  "ended": "2026-11-23T17:03:54.539Z",
+  "duration_seconds": 3949,
   "stats": {
-    "turns": 7,
-    "api_calls": 11,
+    "turns": 13,
+    "api_calls": 18,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 118689,
+    "peak_context_tokens": 153465,
     "usage": {
-      "input_tokens": 436755,
-      "output_tokens": 983,
-      "cache_read_input_tokens": 437504,
+      "input_tokens": 863910,
+      "output_tokens": 1450,
+      "cache_read_input_tokens": 1009024,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-23T15:58:05.126Z",
-      "ended": "2026-11-23T16:41:07.786Z",
-      "turns": 7,
-      "api_calls": 11,
+      "ended": "2026-11-23T17:03:54.539Z",
+      "turns": 13,
+      "api_calls": 18,
       "usage": {
-        "input_tokens": 436755,
-        "output_tokens": 983,
-        "cache_read_input_tokens": 437504,
+        "input_tokens": 863910,
+        "output_tokens": 1450,
+        "cache_read_input_tokens": 1009024,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 118689
+      "peak_context_tokens": 153465
     }
   ],
   "log": {
-    "sha256": "52ef7dc6db1eee4eece334ee4371f8dfb9a87a64aa723cbac69993db2d088be5",
-    "bytes": 857886,
-    "lines": 139,
-    "gzip_bytes": 196751,
-    "path": "llm-dlc/traces/01a20920-f73e-7062-9b92-a0aeb52ee040/logs/52ef7dc6db1eee4eece334ee4371f8dfb9a87a64aa723cbac69993db2d088be5.jsonl.gz"
+    "sha256": "ff2ab06365da9da9dffb926427575ff118641bb82bf593f75dbbbb87bc6a9e06",
+    "bytes": 1182228,
+    "lines": 222,
+    "gzip_bytes": 255582,
+    "path": "llm-dlc/traces/01a20920-f73e-7062-9b92-a0aeb52ee040/logs/ff2ab06365da9da9dffb926427575ff118641bb82bf593f75dbbbb87bc6a9e06.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -78,6 +78,14 @@
       "summary": "Round wide Java operands directly to binary32 (verification pending)",
       "body": "Encode signed int and long to binary32 and binary64 and non-NaN binary64 narrowing with exact ties to even, including subnormal and overflow boundaries. Pass direct floating parameters at their JVM widths, preserve witness bits through the original JVM and cache, and avoid double rounding when a boxed Long returns a float. The fallback regression now uses unbounded multiplication, since a raw floating parameter is supported.\n\nThe native Jackson LongNode establishes the independent rounding rule over all 2^54 inputs. The direct DoubleNode negative produced the exact 2^-150 counterexample. Constant-circuit checks, a noncanonical NaN round trip, the direct-double post-return regression and all 23 changed-test groups passed. Job 20261123-163612-qualify-wide-jackson-and-commons-lang-co checks all five primary statements and proceeds to the exact two-path disagreement classification only if the primary checks pass.\n\nThe earlier Guava comparison on source 550cf8a2 established three statements and replayed two violations on each engine. Job 20261123-163524-transfer-proven-guava-adapters-to-common holds that source fixed for Commons Lang return widening and the public ComparisonChain transfer.",
       "log_sha256": "52ef7dc6db1eee4eece334ee4371f8dfb9a87a64aa723cbac69993db2d088be5"
+    },
+    {
+      "change_id": "vxzpsxkuxtnmkkpnsvwtznvlppunpyzw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind caller-owned primitive row graphs (verification pending)",
+      "body": "Take direct int[][] and long[][] inputs with bounded independent row lengths, null rows, unrestricted cell words and arbitrary row sharing. Native constructs all such graphs. Integrated JBMC calls the unchanged property harness through a scalar graph generator and identifies the original assertion. Both witness paths reconstruct fresh and shared rows on the original JVM and preserve exact long values in the proof cache. Save checker and JVM class bindings, entry descriptors, generated comparator inputs and independently reconstructed standalone traces.\n\nA bounded native proof established Commons Lang reversal including visibility of writes through shared rows. Integrated JBMC refuted the false distinct-row rule on two references to the same nonempty row. The original Commons Math descriptor proved the equal-width and unequal-width exception cases, and all six physical mismatches distinguished expected from actual width. Native, JVM and cache tests recovered a shared long row containing 9007199254740993. The 26 changed-test groups, test-cost lint and example 394 validator passed.\n\nThe three 20261123-165951-measure-final-java jobs compare all 37 registered entries on this checker. The three 20261123-165951-recheck jobs repeat 60 preceding public claims, 38 historical controls, the four original decimal parser tasks and both proof-tier conformance tests. Job 20261123-170333-check-the-original-commons-math-matrix-d checks the original public descriptor and exact exception fields separately.",
+      "log_sha256": "ff2ab06365da9da9dffb926427575ff118641bb82bf593f75dbbbb87bc6a9e06"
     }
   ],
   "logs": {
@@ -97,6 +105,12 @@
       "bytes": 533588,
       "lines": 80,
       "gzip_bytes": 134637,
+      "url": null
+    },
+    "ff2ab06365da9da9dffb926427575ff118641bb82bf593f75dbbbb87bc6a9e06": {
+      "bytes": 1182228,
+      "lines": 222,
+      "gzip_bytes": 255582,
       "url": null
     }
   },

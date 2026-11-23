@@ -70,7 +70,7 @@ pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], argum
 fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
     for t in types {
         // A String is passed as a new String of the witness's code units ([`push`]).
-        if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::component(t).is_some() {
+        if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::heap_array(t) {
             continue;
         }
         if matches!(t, Type::Float | Type::Double) { continue; }
@@ -555,6 +555,23 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
                 code.op(0x53); // aastore
             }
         }
+        (Argument::Rows(rows), Type::Array(row_type)) => {
+            use crate::jbmc::PrimitiveRow;
+            code.iconst(rows.len() as i32);
+            code.op_u16(0xbd, writer.pool.class(&row_type.descriptor()));
+            for (index, row) in rows.iter().enumerate() {
+                match row {
+                    PrimitiveRow::Null => continue,
+                    PrimitiveRow::Same(first) => push_earlier_cell(code, index, *first),
+                    PrimitiveRow::Cells(values) => {
+                        code.op(0x59);
+                        code.iconst(index as i32);
+                        push(&Argument::Array(values.clone()), row_type, code, writer);
+                    }
+                }
+                code.op(0x53);
+            }
+        }
         (Argument::Objects(items), t) => {
             let class = crate::bmc::reference_inputs::component(t).expect("checked direct component");
             let component = writer.pool.class(class);
@@ -564,14 +581,7 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
             for (i, cell) in items.iter().enumerate() {
                 match cell {
                     ObjectCell::Null => continue,
-                    ObjectCell::Same { index } => {
-                        code.op(0x59); // keep the array for the store
-                        code.op(0x59);
-                        code.iconst(*index as i32);
-                        code.op(0x32); // aaload the original object
-                        code.iconst(i as i32);
-                        code.op(0x5f); // swap index and object for aastore
-                    }
+                    ObjectCell::Same { index } => push_earlier_cell(code, i, *index),
                     ObjectCell::Object { fields } => {
                         code.op(0x59);
                         code.iconst(i as i32);
@@ -609,6 +619,16 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
         }
         _ => code.op(0x01), // aconst_null
     }
+}
+
+/// Leave the outer array, destination index and the existing reference on the stack.
+fn push_earlier_cell(code: &mut CodeBuilder, dest: usize, source: usize) {
+    code.op(0x59); // preserve the outer array
+    code.op(0x59);
+    code.iconst(source as i32);
+    code.op(0x32); // aaload
+    code.iconst(dest as i32);
+    code.op(0x5f); // swap
 }
 
 fn push_scalar(v: Value, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter) {

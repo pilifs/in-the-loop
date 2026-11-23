@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-165951-recheck-proof-tier-conformance-on-the-di",
+  "title": "Recheck proof-tier conformance on the direct-row and rounding changes",
+  "description": "Require both full conformance suites on the final fast-follow source using the deployed comparator, including strict native, auto and independent confirmation.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T16:59:51+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 20,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "25m",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Recheck proof-tier conformance on the direct-row and rounding changes",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

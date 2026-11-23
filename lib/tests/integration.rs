@@ -566,6 +566,12 @@ fn direct_object_array_replays_field_values_and_aliases_in_a_named_package() {
                 a[0].count++;
                 return a[2].count == a[3].count;
             }
+            public static boolean longRows(long[][] a) {
+                if (a == null || a.length != 2 || a[0] == null || a[0].length != 1 || a[1] != a[0]
+                    || a[0][0] != 9007199254740993L) return true;
+                a[1][0] = -1L;
+                return a[0][0] != -1L;
+            }
             public static boolean subtype(Parent[] a) { return true; }
             public static boolean edge(Edge[] a) { return true; }
             public static boolean constructor(Initialized[] a) { return true; }
@@ -582,6 +588,18 @@ fn direct_object_array_replays_field_values_and_aliases_in_a_named_package() {
     let object = serde_json::json!({"fields": {"count": i32::MAX, "tag": 17}});
     let cells = serde_json::json!([object, null, object, {"sameCell": 0}]);
     assert_eq!(result.counterexample.unwrap().inputs[0].value, Some(cells));
+
+    options.target = "arrayinput.Heaps#longRows".into();
+    options.max_array_length = 2;
+    let result = property::run(&options).unwrap();
+    assert_eq!(result.verdict, Verdict::Violation, "{}", result.output);
+    assert!(result.replay.as_ref().unwrap().reproduced);
+    let typed = result.counterexample.unwrap().inputs;
+    assert_eq!(typed[0].value, Some(serde_json::json!([["9007199254740993"], {"sameCell": 0}])));
+    let ty = jvmcontract::classfile::Type::parse("[[J").unwrap();
+    let cache = serde_json::to_string(&typed).unwrap();
+    let restored = jvmcontract::proof_cache::witness_arguments(std::slice::from_ref(&ty), &cache).unwrap();
+    assert_eq!(jvmcontract::witness::exact_argument(&restored[0], &ty), typed[0].value.clone().unwrap());
 
     for (method, reason) in [("subtype", "final direct subclass"), ("edge", "writable"), ("constructor", "only calls Object()"), ("roots", "sharing between their heaps")] {
         options.target = format!("arrayinput.Heaps#{method}");

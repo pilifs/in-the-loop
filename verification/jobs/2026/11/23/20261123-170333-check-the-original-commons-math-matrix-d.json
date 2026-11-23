@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-170333-check-the-original-commons-math-matrix-d",
+  "title": "Check the original Commons Math matrix descriptor and mismatch fields",
+  "description": "Call MathArrays.checkRectangular([[J)V itself on two non-null equal-width rows, a singleton null row, and unequal widths with the declared exception. Separately check both fields of DimensionMismatchException and refute swapping the actual and expected widths on a freshly reconstructed JVM matrix.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/jbmc-fast-follow/matrix_transfer.py"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-23T17:03:33+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 20,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "1m",
+    "timeout": "15m"
+  },
+  "steps": [
+    {
+      "name": "Original descriptor and exact metadata",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/matrix_transfer.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/jbmc-fast-follow/matrix"
+  ]
+}
