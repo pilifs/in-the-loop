@@ -9,9 +9,11 @@ changes. This file is not itself a brief: don't run a loop on it.
 **Why.** This was first done on 2026-11-22, for the Spring and Java data brief. Claude Opus 5.5 did the setup in two
 cycles, about an hour. The domain agent (Codex Astra) then scaffolded and scored the whole brief in its first cycle,
 fetching nothing. In the campaign before it, Astra had done its own fetching and building, and the client's
-cybersecurity filter stopped it three times in 36 minutes. The lessons of that first run are in the rules below:
+cybersecurity filter stopped it three times in 36 minutes. The lessons of that run and the next ones (2026-11-23) are in the rules below:
 - waiting for jobs;
 - the dead repository;
+- plugins resolved online before an offline job;
+- digests copied whole into the notes;
 - the gpg agent left running;
 - which instructions count.
 
@@ -27,7 +29,7 @@ DO, mechanically and nothing more:
 - Verify every hash and signature you can: commits, distributions, wrapper jars and released artifacts, against their publishers' checksums. Check signatures with a keyring of your own (`GNUPGHOME` in this work's cache folder), never the user's, and stop its agent when you are done (`gpgconf --homedir DIR --kill gpg-agent`): an agent left running keeps the loop's scope alive, and the next start waits on it.
 - Build or resolve the original artifacts and their runtime classpaths, and record the digests.
 - Check that each original regression or reproduction the brief names behaves on a JVM as the brief says: the landed test passes on the landed code and fails on the parent's. Builds and upstream test runs that take over a minute are verification jobs under CLAUDE.md: queue them with `verification/pipeline.py submit` and commit them.
-- Record the exact build and test commands for each checkout, and where it helps, the offline form (`mvn -o`, `gradle --offline`), once you have checked it works.
+- Record the exact build and test commands for each checkout, and where it helps, the offline form (`mvn -o`, `gradle --offline`), once you have checked it works. Resolve every plugin and dependency an offline command needs online first, in the same cache, before you run it offline in a job: a job's late offline step that can't resolve a plugin fails the job after its build has already passed.
 - Write everything down in one place, `{record}`: revisions, cache paths, hashes, commands, what worked and what failed. Commit it as you go.
 
 DO NOT, under any circumstances: write or freeze claims; create `examples/NNN` folders or allocate example ids (scaffolding is the domain agent's job); write sidecars, adapters or proof recipes; run the verifier on claims; change the checker, `lib/` or any library code; score anything; or make design decisions the brief leaves to the domain work. If a setup step would need any of that, stop that step and write down what is missing instead. When in doubt, leave it for the domain agent.
@@ -42,7 +44,7 @@ End `{record}` with a section headed exactly `## Setup Agent Notes`, written for
 - what to know before starting (gaps, substitutions, unstable inputs such as snapshot dependencies);
 - what is left for the domain work on purpose.
 
-Keep it to what the domain agent needs; the rest of the record has the detail.
+Keep it to what the domain agent needs; the rest of the record has the detail. Copy a digest, revision or path into the notes in full, or point to the row of the record that has it: never shorten one there (a shortened digest once took its tail from the wrong class).
 
 When setup is complete, end your turn with a summary of what was set up, what was verified and what could not be done, and say plainly that setup is complete.
 
