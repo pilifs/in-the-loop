@@ -1,0 +1,618 @@
+{
+ "about": "Results of lib/benchmark/run.py: see lib/benchmark/README.md.",
+ "environment": {
+  "date": "2026-11-23T14:09:02+0000",
+  "jvmcontract": "jvmcontract 0.1.0",
+  "jbmc": "6.11.0 (cbmc-6.11.0)",
+  "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+  "machine": "x86_64",
+  "cpu": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+  "cpus": 30,
+  "job": "20261123-134806-recheck-38-frozen-historical-java-claims",
+  "commit": "36542708757ff25866f04e65714bea631132ac28",
+  "sat": {
+   "native": [
+    {
+     "solver": "CaDiCaL",
+     "version": "1.9.5",
+     "source": "bundled by the Rust crate cadical 0.1.16",
+     "configuration": [
+      "CaDiCaL's default options",
+      "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+      "the run's deadline through CaDiCaL's terminate callback",
+      "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+     ]
+    }
+   ],
+   "jbmc": [
+    {
+     "solver": "CaDiCaL",
+     "version": "3.0.0",
+     "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+     "configuration": [
+      "--trace",
+      "--throw-runtime-exceptions",
+      "--unwinding-assertions",
+      "--json-ui",
+      "--timestamp",
+      "monotonic",
+      "--no-refine-strings",
+      "--sat-solver",
+      "cadical"
+     ]
+    }
+   ]
+  }
+ },
+ "settings": {
+  "timeout": 120,
+  "unwind": 16,
+  "maxArrayLength": 8,
+  "referenceSearch": 200000,
+  "engines": [
+   "native",
+   "jbmc"
+  ],
+  "modes": [
+   "strict"
+  ],
+  "groups": [
+   1,
+   2,
+   3,
+   4
+  ],
+  "jbmcStaging": [
+   "staged"
+  ],
+  "selection": "java-semantics-gap/listOfArray",
+  "caseSpecificationsSha256": "80c3151bda9f30c60461c9f9119beea6071784c634ae98777b70bcf6ebe5ab8f",
+  "classesSha256": {
+   "conformance/conformance/Conformance$1.class": "1504889c98b5077ac95d5c42cee10fc8a6a381d86209b87194807db1734ace57",
+   "conformance/conformance/Conformance$A.class": "4f70965f5fe8dff91400173c7b468e2164c4567c7c32d5c00fd8f468415c6825",
+   "conformance/conformance/Conformance$B.class": "26ae821725806dce997ae681cf47906d284402270b4de2faf5f15749567133bb",
+   "conformance/conformance/Conformance$Bare.class": "688564f5c4a91f8bed08d77f17339023746e23567bcf0c5a4e47e7b371a3b039",
+   "conformance/conformance/Conformance$Base.class": "ba7a13b97910eff338709fca6f45f97b551aba3eb993409af90c41ab725620d4",
+   "conformance/conformance/Conformance$Boom.class": "6bfb86246e7ac0979c7f4faaa7f300ffb3ceffeb91215bb65086d24e9bc13da7",
+   "conformance/conformance/Conformance$Broken.class": "98b62b8aa1e37423c33146c386b2566e7424a4af41efbf19e3f436908735f62c",
+   "conformance/conformance/Conformance$Child.class": "bd81f11f6f5f3ae8f9688e07c8d814a45e0dddfd6c5dfe50f33b5a0613986476",
+   "conformance/conformance/Conformance$Clamp.class": "b786e94752441ec6ceeb5492f2c49a538009f5afaa148cfec01361da2c23cad4",
+   "conformance/conformance/Conformance$Counter.class": "af26533c9dc1c34821819eee32d1dfbb50d8e766667b5abf63667e6caa012671",
+   "conformance/conformance/Conformance$Custom.class": "bfa946bb9b9d11975030af5b3953798b1a1d54b008936d5bb68a5f3e6071c030",
+   "conformance/conformance/Conformance$CycleA.class": "b6a4fe3225d57bb3418fd15372d4ad2e6c30a8c6e0ddadae419a587ae6a0ead4",
+   "conformance/conformance/Conformance$CycleB.class": "f1301a7afbc597921d8d6439004e00c28d52d9a25ccfae7e62234fae1b43ed5a",
+   "conformance/conformance/Conformance$Derived.class": "95fedc9b3d50e2ab0365b3087d59b80f073bd6b1a7d8b5a64799eff1c5c23183",
+   "conformance/conformance/Conformance$Elder.class": "f85fd4616826eab8c0aa038cbdcddd415df74e040238d34efb5eedfd5a49819a",
+   "conformance/conformance/Conformance$Fatal.class": "e866d287ad56941215e86627776b11ffb2b87947646bb2ef28dc65a853c2f80a",
+   "conformance/conformance/Conformance$Greeter.class": "91df61472e10cbddf5b9711657fa72d9f9f3a9384f5c5e6df389dbd8d7a1fda6",
+   "conformance/conformance/Conformance$Hello.class": "65ffbd4c3255f92a8a794351c9fd9242d84a53506414d0505f132de212c5ce00",
+   "conformance/conformance/Conformance$Holder.class": "05cb26fad6c4c5f35385393b37a7cc04a7251a27dd79c654a24474a2faa90dd4",
+   "conformance/conformance/Conformance$Made.class": "0d939e2c458e8ddfaf34ab6b231f813be3470298c4f22618284910024998b708",
+   "conformance/conformance/Conformance$Named.class": "8acf87cce0fc0bb9ebb2650d732e56ed32c6674abb9ef191c6663837810b87b0",
+   "conformance/conformance/Conformance$Other.class": "1a17f267dcac72854d0dbc7efe1d9de1d9233e2ef780beebfeaecd8eb18023f5",
+   "conformance/conformance/Conformance$Pair.class": "62cb176c4bab39324b66df2f3e27ebb2affaeae6c08db6529520b05f4b92d750",
+   "conformance/conformance/Conformance$Plain.class": "09127921c45533e59fd254837d6ad1918a967c07a61a88026f57b8ad0f3b85f0",
+   "conformance/conformance/Conformance$Quiet.class": "204af0f5c28105f1a65a08ede1c046c31a41cf2e7667ebe733863d7e7c9abf23",
+   "conformance/conformance/Conformance$Range.class": "cb1ef8523f8f6f5a7926c8bd30702c679f0fa4e2e58896d95757b8fdfd091dc2",
+   "conformance/conformance/Conformance$Shade.class": "a12e53e168dc318ebd252ffbdc641ebb8e43ddf2d89584ed40350fd21f9c5afb",
+   "conformance/conformance/Conformance$Shape.class": "529054215c946cdce99212c00818a085d9d12ee019ba64bc36a6a4ec84fdebe3",
+   "conformance/conformance/Conformance$Sized.class": "e8a87b57abc9b3eff1f6f2f8b59d06f58d18db4d8a7eb6d4bfdde2275bee09d9",
+   "conformance/conformance/Conformance$Source.class": "395e2c24eb4ec3075445bf293fca4a4370e312cbaf84da172fe92d276ee1bc5c",
+   "conformance/conformance/Conformance$Square.class": "604b3660db2d0d2c460af58bc2a1f71942f26a65b2c97b90afae0a035df1fa8b",
+   "conformance/conformance/Conformance$Step$1.class": "a42c49e00e8982b853b8db2809590b1714b20b1f482bb3e85b569d2bc3a39644",
+   "conformance/conformance/Conformance$Step$2.class": "47b835608b99fa1eada8267e3cee865560fe70cf9a9e7484fd5c56f2f158c1cb",
+   "conformance/conformance/Conformance$Step.class": "53f230c635410c908f77ef77e8043bfa0083db445de255bc8bf0c3105dd56d63",
+   "conformance/conformance/Conformance$Sub.class": "09f59f9e351105126b1103301c350cc12ad3cffec596dc491474496bb853d4d5",
+   "conformance/conformance/Conformance$Trace.class": "8b95d234c3d9ae05ab8e458c27caf74ac74200c891ab0ce2dad5f283c7acbaf3",
+   "conformance/conformance/Conformance$Younger.class": "8cb76177bc67b15c8337666434fed324e5a6af97cccf98c091c8bac295a7e7b3",
+   "conformance/conformance/Conformance.class": "6d3f27d43170fc4c161d6cef9294fc3728cf48fcaabbd09f6662211448c4c0a7",
+   "conformance/conformance/Hue.class": "ab9dbeb05a2a107c1e725ae27f6aee9d7299c5dbd292be3ebaced4fe1ad6f3fc"
+  },
+  "oraclesSha256": {
+   "Runner.java": "64362c765effed0b94f916b3ac871b179b5e2756a5a972ed21f492729f89d131",
+   "Reference.java": "e0b7b6afd68f27d2c43b29ef92cbff71d11c390bba212d2a824db657a20ce291"
+  },
+  "checkerLibTree": "264ac161d93b5f54ce34683cd0cc8b035ca0f334",
+  "cpuBudget": "2",
+  "memoryBudgetMiB": "6144",
+  "proofCache": "disabled",
+  "hostPageCache": "unmeasured"
+ },
+ "cases": [
+  {
+   "id": "conformance/listOfArray/1",
+   "group": 1,
+   "workload": "semantics",
+   "kind": "property",
+   "expected": "verified"
+  },
+  {
+   "id": "conformance/listOfArray/2",
+   "group": 1,
+   "workload": "semantics",
+   "kind": "property",
+   "expected": "violation"
+  }
+ ],
+ "reference": {},
+ "runs": [
+  {
+   "case": "conformance/listOfArray/1",
+   "engine": "native",
+   "mode": "strict",
+   "exit": 0,
+   "seconds": 0.041,
+   "cpuSeconds": 0.031,
+   "peakMB": 55.7,
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "witness": null,
+   "solver": {
+    "paths": 2,
+    "merges": 0,
+    "solver_calls": 4,
+    "solving_seconds": 0.000106671,
+    "variables": 633,
+    "clauses": 1902,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.007,
+      "ended": "verified",
+      "ending": "verified",
+      "phases": {
+       "loading": 0.001,
+       "lowering": 0.0,
+       "symbolic": 0.006,
+       "encoding": 0.0,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 633,
+       "clauses": 1902
+      },
+      "budget": 120.0
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.002,
+      "ended": "violation",
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.002,
+       "encoding": 0.0,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 130,
+       "clauses": 323
+      },
+      "budget": 119.992
+     }
+    ]
+   },
+   "sat": {
+    "solver": "CaDiCaL",
+    "version": "1.9.5",
+    "source": "bundled by the Rust crate cadical 0.1.16",
+    "configuration": [
+     "CaDiCaL's default options",
+     "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+     "the run's deadline through CaDiCaL's terminate callback",
+     "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+    ]
+   },
+   "phases": {
+    "loading": 0.001,
+    "lowering": 0.0,
+    "symbolic": 0.008,
+    "encoding": 0.0,
+    "solving": 0.0,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.004,
+    "driver": 0.028
+   },
+   "formula": {
+    "variables": 633,
+    "clauses": 1902
+   }
+  },
+  {
+   "case": "conformance/listOfArray/1",
+   "engine": "jbmc",
+   "mode": "strict",
+   "exit": 0,
+   "seconds": 0.68,
+   "cpuSeconds": 0.538,
+   "peakMB": 55.7,
+   "staging": "staged",
+   "verdict": "verified",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "witness": null,
+   "solver": {
+    "runs": [
+     {
+      "checker": "jbmc",
+      "purpose": "proof",
+      "stage": "[0:20]",
+      "seconds": 0.151,
+      "ended": "verified",
+      "ending": "verified",
+      "phases": {
+       "loading": 0.045,
+       "lowering": 0.019,
+       "symbolic": 0.026,
+       "encoding": 0.005,
+       "solving": 0.002,
+       "trace": 0.0,
+       "other": 0.053
+      },
+      "formula": {
+       "steps": 1836,
+       "conditions": 2,
+       "variables": 9825,
+       "clauses": 4817
+      },
+      "budget": 15.0
+     },
+     {
+      "checker": "jbmc",
+      "purpose": "proof",
+      "stage": "[-100000:100000]",
+      "seconds": 0.101,
+      "ended": "verified",
+      "ending": "verified",
+      "phases": {
+       "loading": 0.034,
+       "lowering": 0.014,
+       "symbolic": 0.023,
+       "encoding": 0.003,
+       "solving": 0.002,
+       "trace": 0.0,
+       "other": 0.025
+      },
+      "formula": {
+       "steps": 1836,
+       "conditions": 2,
+       "variables": 9825,
+       "clauses": 4817
+      },
+      "budget": 15.0
+     },
+     {
+      "checker": "jbmc",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.201,
+      "ended": "verified",
+      "ending": "verified",
+      "phases": {
+       "loading": 0.046,
+       "lowering": 0.024,
+       "symbolic": 0.044,
+       "encoding": 0.008,
+       "solving": 0.003,
+       "trace": 0.0,
+       "other": 0.077
+      },
+      "formula": {
+       "steps": 1835,
+       "conditions": 2,
+       "variables": 9758,
+       "clauses": 4680
+      },
+      "budget": 119.563
+     },
+     {
+      "checker": "native",
+      "purpose": "probe",
+      "stage": null,
+      "seconds": 0.004,
+      "ended": "violation",
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.0,
+       "lowering": 0.0,
+       "symbolic": 0.004,
+       "encoding": 0.0,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 130,
+       "clauses": 323
+      },
+      "budget": 119.359
+     }
+    ]
+   },
+   "sat": {
+    "solver": "CaDiCaL",
+    "version": "3.0.0",
+    "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+    "configuration": [
+     "--trace",
+     "--throw-runtime-exceptions",
+     "--unwinding-assertions",
+     "--json-ui",
+     "--timestamp",
+     "monotonic",
+     "--no-refine-strings",
+     "--sat-solver",
+     "cadical"
+    ]
+   },
+   "phases": {
+    "loading": 0.125,
+    "lowering": 0.057,
+    "symbolic": 0.097,
+    "encoding": 0.016,
+    "solving": 0.007,
+    "trace": 0.0,
+    "checker-other": 0.155,
+    "gaps": 0.179,
+    "contracts": 0.0,
+    "replay": 0.0,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.001,
+    "driver": 0.043
+   },
+   "formula": {
+    "steps": 1836,
+    "conditions": 2,
+    "variables": 9825,
+    "clauses": 4817
+   }
+  },
+  {
+   "case": "conformance/listOfArray/2",
+   "engine": "native",
+   "mode": "strict",
+   "exit": 1,
+   "seconds": 0.051,
+   "cpuSeconds": 0.045,
+   "peakMB": 55.7,
+   "verdict": "violation",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "witness": "9",
+   "witnessSize": {
+    "elements": 0,
+    "largest": 9
+   },
+   "solver": {
+    "paths": 2,
+    "merges": 0,
+    "solver_calls": 6,
+    "solving_seconds": 0.000175,
+    "variables": 698,
+    "clauses": 2127,
+    "runs": [
+     {
+      "checker": "native",
+      "purpose": "proof",
+      "stage": null,
+      "seconds": 0.009,
+      "ended": "violation",
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.001,
+       "lowering": 0.0,
+       "symbolic": 0.007,
+       "encoding": 0.0,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.0
+      },
+      "formula": {
+       "variables": 698,
+       "clauses": 2127
+      },
+      "budget": 120.0
+     }
+    ]
+   },
+   "sat": {
+    "solver": "CaDiCaL",
+    "version": "1.9.5",
+    "source": "bundled by the Rust crate cadical 0.1.16",
+    "configuration": [
+     "CaDiCaL's default options",
+     "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+     "the run's deadline through CaDiCaL's terminate callback",
+     "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+    ]
+   },
+   "phases": {
+    "loading": 0.001,
+    "lowering": 0.0,
+    "symbolic": 0.007,
+    "encoding": 0.0,
+    "solving": 0.0,
+    "trace": 0.0,
+    "checker-other": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "replay": 0.014,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.001,
+    "driver": 0.028
+   },
+   "formula": {
+    "variables": 698,
+    "clauses": 2127
+   },
+   "witnessOnTheJvm": "refuted"
+  },
+  {
+   "case": "conformance/listOfArray/2",
+   "engine": "jbmc",
+   "mode": "strict",
+   "exit": 1,
+   "seconds": 0.355,
+   "cpuSeconds": 0.292,
+   "peakMB": 55.7,
+   "staging": "staged",
+   "verdict": "violation",
+   "assumed": [],
+   "contracts": [],
+   "class": "correct",
+   "witness": "9",
+   "witnessSize": {
+    "elements": 0,
+    "largest": 9
+   },
+   "solver": {
+    "runs": [
+     {
+      "checker": "jbmc",
+      "purpose": "proof",
+      "stage": "[0:20]",
+      "seconds": 0.101,
+      "ended": "violation",
+      "ending": "counterexample",
+      "phases": {
+       "loading": 0.038,
+       "lowering": 0.016,
+       "symbolic": 0.024,
+       "encoding": 0.003,
+       "solving": 0.0,
+       "trace": 0.0,
+       "other": 0.019
+      },
+      "formula": {
+       "steps": 1698,
+       "conditions": 2,
+       "variables": 9672,
+       "clauses": 4401
+      },
+      "budget": 15.0
+     }
+    ]
+   },
+   "sat": {
+    "solver": "CaDiCaL",
+    "version": "3.0.0",
+    "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+    "configuration": [
+     "--trace",
+     "--throw-runtime-exceptions",
+     "--unwinding-assertions",
+     "--json-ui",
+     "--timestamp",
+     "monotonic",
+     "--no-refine-strings",
+     "--sat-solver",
+     "cadical"
+    ]
+   },
+   "phases": {
+    "loading": 0.038,
+    "lowering": 0.016,
+    "symbolic": 0.024,
+    "encoding": 0.003,
+    "solving": 0.0,
+    "trace": 0.0,
+    "checker-other": 0.019,
+    "gaps": 0.198,
+    "contracts": 0.0,
+    "replay": 0.011,
+    "jvm": 0.0,
+    "harness": 0.0,
+    "setup": 0.001,
+    "driver": 0.045
+   },
+   "formula": {
+    "steps": 1698,
+    "conditions": 2,
+    "variables": 9672,
+    "clauses": 4401
+   },
+   "witnessOnTheJvm": "refuted"
+  }
+ ],
+ "historical": {
+  "conformance/listOfArray/1": {
+   "historical": "jbmc-only",
+   "expected": "verified"
+  },
+  "conformance/listOfArray/2": {
+   "historical": "jbmc-only",
+   "expected": "violation"
+  }
+ },
+ "frozenResultSha256": "14c25280da82eaba7116753d704c33527aedf0e2008ff0eb664a805068d1de75",
+ "binaries": {
+  "jvmcontract": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+  "jbmc": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "java": "1bf1aaef01e4f8d7c85d913c60fb2ee4624cbe54d4053254c59657b7ea913b25",
+  "modules": "f5463cffa81c51b3c13f57e2c23eacceab2b12e842069acf2facd5485f63bc85",
+  "core-models.jar": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
+ },
+ "repositoryModels": {
+  "java/beans/PropertyChangeEvent.class": "6822267fde4fb61dfb2a7de8641058bd03ec5ec90b5a66ef6e4ba2c30449f0fc",
+  "java/lang/Byte$ByteCache.class": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+  "java/lang/Character.class": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+  "java/lang/Enum.class": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+  "java/lang/Integer$IntegerCache.class": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+  "java/lang/Long$LongCache.class": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+  "java/lang/Short$ShortCache.class": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+  "java/nio/charset/Charset.class": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+  "java/nio/charset/IllegalCharsetNameException.class": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+  "java/nio/charset/StandardCharsets$Standard.class": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+  "java/nio/charset/StandardCharsets.class": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+  "java/nio/charset/UnsupportedCharsetException.class": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+  "java/util/ArrayAsList.class": "32fdf560d6e926a5c2938128b5dc89f85b246b8bf58f0695ebcfe4a736e6461f",
+  "java/util/ArrayDeque.class": "dfad039583469d26d7e5e1a7e4bc7a572459f4361c378ea88a11f8046e0cac8f",
+  "java/util/ArrayList$Itr.class": "03a9594c3b7f356c92473fa2060e0158b6c3769ba76a2266a67402c577ec3234",
+  "java/util/ArrayList.class": "5d5d41996c27e0164afc34de907dfb4de987c617d37491283d2b5083c10cc0b6",
+  "java/util/EventObject.class": "e524b9a754efa3f5e51359c678d5aa76308446925e6bc1b7c7071b56368631f9",
+  "java/util/HashMap$Node.class": "c66aca00b2b1e53462fa6fdc3a2c1af902f30331d6ad899a42adf504c6068fd4",
+  "java/util/HashMap.class": "207980788541bb406059227942b40bbbf5be4af515c005b1afefdb9bd796af54",
+  "java/util/HashSet.class": "4732c7ef0393e3b2935e45015a45599e6ebfdb9f539f9d1c1ccbb832005bd541",
+  "java/util/IdentityHashMap$Binding.class": "906ef61a01853c89eb94ae47c3c98e0c475544a65360adf242b9b2df1c83e601",
+  "java/util/IdentityHashMap.class": "1a779b6073bbed8aee10114ea629cc51569e19dd0865604085d6b64f2c6184fc",
+  "java/util/ImmutableCollections$AbstractImmutableList.class": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+  "java/util/ImmutableCollections$List12.class": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+  "java/util/ImmutableCollections$ListItr.class": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+  "java/util/ImmutableCollections$ListN.class": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+  "java/util/ImmutableCollections.class": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+  "java/util/LinkedHashMap$LinkedValueIterator.class": "d993c6b19be0c7ebda009d977c67509ceb09b987bdeba047efaf78ea79aa2481",
+  "java/util/LinkedHashMap$LinkedValues.class": "6bfaeec2677743d9e5e74cd533885eeaff7da4d93377eb560c81a9f14794bde6",
+  "java/util/LinkedHashMap.class": "635dd611777e824d4685e5639b954158b5e8be829804f93081ebd178bf4172cb",
+  "java/util/LinkedHashSet.class": "7b405a480e0ada3dad7867bd4918e9a59267bbe7f7569d75c495f84f283a8040",
+  "java/util/List.class": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5",
+  "java/util/StringJoiner.class": "32276fa6698d95d1a52bbd92ee8e06ae3f2470df3d8831b55402c7781fb12c3b",
+  "java/util/concurrent/ConcurrentHashMap.class": "d7693ef2622a0b0d389a2e45087ff7cd03685013849ec8d5fc0820ec22a1bfed",
+  "java/util/stream/CharsStream.class": "6e4046ec26ae609a9c5fc8522d9c8e4732978738652023168468400400318817",
+  "java/util/stream/IntArrayStream.class": "9073ed3490462d7463860fa175f41fb644df4496425ad8cc6136e8a13c3821b4",
+  "java/util/stream/IntStream.class": "a278499d43cf30cca1c4b6c2c2ce866ddfd4f4f04eeb3cfa5367b8bc00cf6155",
+  "java/util/stream/RangeStream.class": "2f35abc8b95b2f16f7d1eb5f6ff8c4a56774441e7f52647e8260b97ccd50039c",
+  "java/util/stream/SequentialArrayStream.class": "535b50421c52a7e6d0aea6234c76ea0c24a385a44e78b22aab95e32d4a896402",
+  "java/util/stream/Stream.class": "a53f73d1acb465bc5566f28a9752373007ee26c56ccc14778405416e6d233de4"
+ }
+}
