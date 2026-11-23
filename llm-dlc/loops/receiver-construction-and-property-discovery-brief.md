@@ -266,3 +266,68 @@ public final class SafetySites {
 [guava]: https://github.com/google/guava/blob/f06690fa3e874f65515e8fd338a74d636e2c792f/guava/src/com/google/common/primitives/Ints.java#L834-L840
 [guava-longs]: https://github.com/google/guava/blob/f06690fa3e874f65515e8fd338a74d636e2c792f/guava/src/com/google/common/primitives/Longs.java#L404-L442
 [lang]: https://github.com/apache/commons-lang/blob/29ccc7665f3bc5d84155a3092ab2209a053324e6/src/main/java/org/apache/commons/lang3/mutable/MutableFloat.java#L374-L376
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- `$B = ~/.cache/in-the-loop/receiver-construction`. Use JDK 21 by full path,
+  `~/.sdkman/candidates/java/21.0.13.0+9-tem/bin/` (the default `java` is 25).
+- **Released libraries** (checksummed, 20/20 signatures valid, with sources jars and ordered classpaths):
+  `$B/releases/{jgrapht-core-1.5.2,guava-33.4.8-jre,commons-lang3-3.17.0,xz-1.11,xz-1.12,jackson-2.18.3,jackson-2.19.0,snakeyaml-2.4,snakeyaml-2.5}/classpath.txt`.
+  The JGraphT, Guava and Lang JARs match the brief's SHA-256 values. Offline re-resolution works
+  (`mvn -o -s $B/maven-settings.xml` in `$B/resolve/NAME`).
+- **Sources at every pinned revision** (`$B/src/`): JavaParser 360 parent and fix, CSV 366 parent and fix,
+  Configuration 565 and 601 old and new, Compress 767 old and new, JGraphT 1.5.2, XZ 1.11 and 1.12, Guava 33.4.8,
+  Lang 3.17.0. The released sources equal the tags for every file the brief links.
+- **Cases 4 and 6, and the 23 historically receiver-blocked targets**: the earlier campaign's area and Maven cache
+  are intact (586 classpath files, 0 changed). Keep pointing `receiver_campaign.py` at the original paths. Ordered
+  classpaths for 565, 601 and 767, both sides, are in `$B/receivers/cp/`, with a hard-link snapshot under
+  `$B/receivers/`.
+- **Examples 360 and 366**: their four captured upstream JARs are in the target cache (`build.py` restores them) and
+  linked in `$B/originals/`. The build plan is in `$B/logs/build-plan-360-366.json`.
+- **Appendix fixtures**: compiled in `$B/fixtures/appendix/out`.
+- **Comparator inputs**: JBMC 6.11.0 preflight package `$B/jbmc/ubuntu-22.04/` and the `Arrays.class` directory
+  `$B/jdk/temurin-21.0.13/classes/`, both matching the brief's digests.
+- **Checker**: `lib/target/release/jvmcontract` is current for `lib/` at `11665a89`.
+
+### What was verified on a JVM
+
+Every observation the brief states for an existing library or fixture reproduced exactly. The detail is in the
+[table above](#what-was-replayed-on-a-jvm).
+- Case 1: `Checkout`.
+- Case 2: the `SafetySites` outputs and offsets 19/21/44/54, and the `mode > 3` mutant's NPE.
+- Case 3: CSV `a||b||`, parent against fix.
+- Case 4: the four registered observations on all four Configuration sides.
+- Case 6: the 767 frames on both sides, and the XZ cache profiles on 1.11 and 1.12 (absent, `Dummy`, `Basic`, and
+  `Bogus` giving `Error` then `NoClassDefFoundError`). JavaParser's traversals and the cleared-`line.separator`
+  failures on both sides.
+- Case 5: the JGraphT census (25/150, 48/48/54) and the identity control.
+- Case 7: the Guava 131,072-string agreement and the single minimum failure.
+- Case 8: the Commons Lang witness bits.
+- The landed regressions of #218 and #4538 (fail on parent, pass on fix) are on record from 2026-11-22 runs at the
+  same commits. They were not re-run.
+
+### What to know before starting
+
+- **JGraphT's signing key has expired** (Kinable, 2025-05-01). The signature is valid and was made while the key was
+  live. The JGraphT tag is unsigned.
+- The **XZ initializer is byte-identical in 1.11 and 1.12**, and so is each Configuration or Compress pair's compiled
+  `client.jar`. Only the named dependency differs between sides. **601 runs Jackson 2.20.0 on both sides.**
+- The 360 and 366 originals are **SNAPSHOT builds of exact commits** (`3.26.2-SNAPSHOT`, `1.10.0-SNAPSHOT`), pinned by
+  digest in the target cache. A rebuild is a job, recipe in the plan. JavaParser's recipe builds on JDK 17.
+- The receiver area and its Maven cache live under `~/.cache/in-the-loop/tmp/` and `agent-tmp/`, and the
+  `prepared.json` paths point there. If they disappear, the bytes are in `$B/receivers/`, but the absolute paths
+  would need re-preparing.
+- `tryParse("7ffffff~",16)` is null on the JVM. The brief's stock-JBMC acceptance of it is a comparator artifact.
+- `$B/probes/released/DagCensus.java` is an evaluation-side reproduction. Keep it out of the generator's inputs for
+  case 5.
+
+### What is left for the domain work on purpose
+
+- Repeating the named jobs of 360 and 366, and the Configuration receipts, as opening results. Those are B11 and
+  campaign runs, so they are jobs.
+- Every JBMC comparator run and every native run. None was made.
+- The isolation control of case 4, the property-read approach of case 6, case 7's `id=<hex>` client and its
+  137,257-string census, case 8's adjacent-range transfer, and case 9's three-worker fixture and schedule enumerator.
+- All claims, examples, sidecars, scoring and the frozen generator.
