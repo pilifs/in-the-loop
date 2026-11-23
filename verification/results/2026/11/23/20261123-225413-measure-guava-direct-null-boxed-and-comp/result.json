@@ -1,0 +1,184 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-225413-measure-guava-direct-null-boxed-and-comp",
+  "title": "Measure Guava direct null boxed and composition claims",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.2s, peak 80.7 MiB (estimated 6m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-225413-measure-guava-direct-null-boxed-and-comp.json",
+    "sha256": "fb47894ead7a2beb8589d102b73e6d1f3e04f5ddfe0b694706c87b107a5a48ef",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-225413-measure-guava-direct-null-boxed-and-comp",
+      "title": "Measure Guava direct null boxed and composition claims",
+      "description": "Run strict native queries on direct symbolic UTF-16 Strings on the pinned Guava JAR, calibrate with every suffix and the complete seven-unit alphabet census, and retain first unsupported operations and original replays.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:54:13+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "6m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Run the native hex controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex native",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/opening/hex/native"
+      ]
+    }
+  },
+  "sourceCommit": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "startedAt": "2026-11-23T23:09:52+00:00",
+  "finishedAt": "2026-11-23T23:14:42+00:00",
+  "wallSeconds": 290.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3922672,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 84598784,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 5.3,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the native hex controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex native",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 4.213,
+      "cpuSeconds": 5.26,
+      "cpuThrottledSeconds": 0.166,
+      "peakMemoryBytes": 84598784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-native-hex-controls.log",
+        "lines": 12,
+        "bytes": 1817,
+        "sha256": "aa220ff68d7b500df59a6ceab82d5b9bac9533a6d538c0f90be2c5ba74283d18",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "hex nullReturns unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.g",
+        "hex boxedValue unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.g",
+        "hex rejectsMinimum unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.g",
+        "hex directReached unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.g",
+        "hex composition unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.g",
+        "hex earlyKey violation ",
+        "hex dropSign unverifiable the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Arrays.fill([BB)V@jdk-21.0.13 (java.util.Arrays.fill(byte[], byte) at com.g",
+        "hex nullShape verified "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/opening/hex/native/measurement.json",
+      "change": "added",
+      "bytes": 71442,
+      "sha256": "1ab8301eb16818067b94aec99e10c8fc9785af42d62a44dd6d65f88aca2ea8f8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:16:40+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/opening/hex/native/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3a8fe6c0800b92206a3c519f358a1a9e6ee8dc40",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3a8fe6c0800b92206a3c519f358a1a9e6ee8dc40/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T231442Z-85625521e899f4c2",
+      "outputs": "20261123T231442Z-896607c3a7b79a5c",
+      "diff": "20261123T231442Z-931588cb2015af56"
+    }
+  }
+}

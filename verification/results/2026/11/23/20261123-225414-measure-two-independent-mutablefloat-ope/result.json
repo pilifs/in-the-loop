@@ -1,0 +1,215 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-225414-measure-two-independent-mutablefloat-ope",
+  "title": "Measure two independent MutableFloat operands before arithmetic changes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.6s, peak 83.3 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-225414-measure-two-independent-mutablefloat-ope.json",
+    "sha256": "da38c74d4b1d1552ef467a49afe9e94c36fc5501aa4101cc8e28243ca61cda08",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-225414-measure-two-independent-mutablefloat-ope",
+      "title": "Measure two independent MutableFloat operands before arithmetic changes",
+      "description": "Run the registered full binary32 Cartesian product on the public receiver, its generated float constructor history, the translated negative, and adjacent-grid and rounded-sum transfers.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:54:14+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "16m"
+      },
+      "steps": [
+        {
+          "name": "Run the native float controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float native",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/opening/float/native"
+      ]
+    }
+  },
+  "sourceCommit": "6bed4882f9fee7adb9855d9a67930a58ec681e2f",
+  "startedAt": "2026-11-23T23:09:52+00:00",
+  "finishedAt": "2026-11-23T23:14:40+00:00",
+  "wallSeconds": 288.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3922672,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 87367680,
+    "wallSeconds": 1.6,
+    "cpuSeconds": 2.4,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 260.786,
+      "cpuSeconds": 261.026,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2345127936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "10c70615757c92fb2738ee810b39bd86ae293d56d917b31181d214b3a2566cac",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-225414-measure-two-independent-mutablefloat-ope/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 20s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run the native float controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float native",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 1.61,
+      "cpuSeconds": 2.418,
+      "cpuThrottledSeconds": 0.209,
+      "peakMemoryBytes": 87367680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-native-float-controls.log",
+        "lines": 9,
+        "bytes": 784,
+        "sha256": "d5edb15035b767d5fdc0725de2417ced9e958808fc8842b93f0ca74698fa9c3f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "float exact unverifiable outside the fragment: Float Sub with more than 64 reachable operand tuples",
+        "float translated unverifiable outside the fragment: Float Add with more than 64 reachable operand tuples",
+        "float afterReturn unverifiable outside the fragment: Float Sub with more than 64 reachable operand tuples",
+        "float adjacent unverifiable outside the fragment: Float Sub with more than 64 reachable operand tuples",
+        "float rounded unverifiable outside the fragment: Float Add with more than 64 reachable operand tuples"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/opening/float/native/measurement.json",
+      "change": "added",
+      "bytes": 38951,
+      "sha256": "57c7ac471fcd0a8448ad8d4af77049c5ac37caade5e4c1a99e0db90992af52e5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T23:16:40+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/opening/float/native/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3a8fe6c0800b92206a3c519f358a1a9e6ee8dc40",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3a8fe6c0800b92206a3c519f358a1a9e6ee8dc40/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T231440Z-23884262d823f4d2",
+      "outputs": "20261123T231440Z-276965f42190ab8a",
+      "diff": "20261123T231440Z-319680f7347836fd"
+    }
+  }
+}
