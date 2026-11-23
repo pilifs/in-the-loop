@@ -1,0 +1,181 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "unverifiable",
+    "target": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V",
+    "domain": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array",
+    "assume": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
+    "assert": "true",
+    "throws": [
+      "org.apache.commons.math3.exception.DimensionMismatchException when true"
+    ],
+    "throws_checked": [
+      "org.apache.commons.math3.exception.DimensionMismatchException when true"
+    ],
+    "counterexample": null,
+    "proof": null,
+    "problem": "JBMC was killed before it finished, possibly for lack of memory (the limit is 4096 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)",
+    "statement": "/tmp/matrix-transfer-nk0t_p1a/unequal-widthjbmc/harness/PropertyHarness.java",
+    "findings": [
+      {
+        "rule_id": "unverifiable",
+        "message": "org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC was killed before it finished, possibly for lack of memory (the limit is 4096 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)",
+        "uri": null,
+        "line": 562
+      }
+    ],
+    "output": "note: the expressions are Java beyond the tool's own expression compiler (in the assumption: parameter in has type long[][]; only arrays of integral or boolean elements can appear in the expression); javac 21.0.13 compiled them as they are written, and the checker runs the result as bytecode, as it runs the target\nJBMC constructs every bounded row graph from primitive inputs, including null, independent rows and aliases to earlier rows.\nnote: which stubs JBMC's paths reach is not known, since its symbolic execution of the proof could not tell (it did not finish within 9.8 s): the gaps are those of its call graph\nnote: JBMC reaches 3 constructs it approximates (its stubs and unlinked call sites, /tmp/matrix-transfer-nk0t_p1a/unequal-widthjbmc/jbmc-goto.txt):\n  jbmc gap: jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13: java.util.ArrayList.<init>() is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.<init>:65\n  jbmc gap: jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13: java.util.List.toArray() is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ArgUtils.flatten:53\n  jbmc gap: jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13: java.util.List.add(java.lang.Object) is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments, at org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86\nnote: JBMC runs 4 constructs otherwise than the JVM, whatever its class path:\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.Error) catches java.lang.AssertionError on the JVM, which the program may raise, but JBMC has no class file of java.lang.Error and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.IndexOutOfBoundsException) catches java.lang.ArrayIndexOutOfBoundsException on the JVM, which the program may raise, but JBMC has no class file of java.lang.IndexOutOfBoundsException and its stub has no superclass, so JBMC does not know the exception's class extends it: the exception escapes the handler\n  jbmc defect: stubbed-handler at PropertyHarness.check: catch (java.lang.RuntimeException) catches java.lang.ArrayIndexOutOfBoundsException, java.lang.ClassCastException, java.lang.NegativeArraySizeException, java.lang.NullPointerException, org.apache.commons.math3.exception.DimensionMismatchException, org.apache.commons.math3.exception.NullArgumentException on the JVM, which the program may raise, but JBMC has no class file of java.lang.RuntimeException and its stub has no superclass, so JBMC does not know their classes extend it: the exception escapes the handler\n  jbmc defect: throwing-initializer at org.apache.commons.math3.exception.MathIllegalNumberException.<clinit>: the initializer of org.apache.commons.math3.exception.MathIllegalNumberException may throw java.lang.ArrayIndexOutOfBoundsException, java.lang.NullPointerException, which the JVM gives its caller as an ExceptionInInitializerError, and later uses of the class as a NoClassDefFoundError (JVMS §5.5); JBMC gives the caller the exception as it is, and runs later uses as if the class were initialized, and catch (java.lang.ArrayIndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.Error) at PropertyHarness.check, catch (java.lang.IndexOutOfBoundsException) at PropertyHarness.check, catch (java.lang.NullPointerException) at PropertyHarness.check, catch (java.lang.RuntimeException) at PropertyHarness.check tell them apart\n✗ org.apache.commons.math3.util.MathArrays#checkRectangular([[J)V cannot be verified: JBMC was killed before it finished, possibly for lack of memory (the limit is 4096 MiB; JVMCONTRACT_JBMC_MEMORY_MB changes it)\n",
+    "work": "/tmp/matrix-transfer-nk0t_p1a/unequal-widthjbmc",
+    "search": {
+      "engine": "jbmc",
+      "checker": "JBMC 6.11.0",
+      "seconds": 73.143676236,
+      "properties": 0,
+      "unwind": 7,
+      "max_array_length": 2,
+      "stage": null,
+      "staging": "staged",
+      "gap_mode": "strict",
+      "gaps": [
+        {
+          "id": "jdk-constructor:java.util.ArrayList.<init>()V@jdk-21.0.13",
+          "kind": "jdk-constructor",
+          "call": "java.util.ArrayList.<init>()",
+          "sites": [
+            "org.apache.commons.math3.exception.util.ExceptionContext.<init>:65"
+          ],
+          "approximation": "is JBMC's stub: it constructs the object and does nothing else: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused",
+          "checker": "jbmc"
+        },
+        {
+          "id": "jdk-reference-method:java.util.List.toArray()[Ljava/lang/Object;@jdk-21.0.13",
+          "kind": "jdk-reference-method",
+          "call": "java.util.List.toArray()",
+          "sites": [
+            "org.apache.commons.math3.exception.util.ArgUtils.flatten:53"
+          ],
+          "approximation": "is JBMC's stub: it returns null or a new object of its type, with any contents: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused",
+          "checker": "jbmc"
+        },
+        {
+          "id": "jdk-primitive-method:java.util.List.add(Ljava/lang/Object;)Z@jdk-21.0.13",
+          "kind": "jdk-primitive-method",
+          "call": "java.util.List.add(java.lang.Object)",
+          "sites": [
+            "org.apache.commons.math3.exception.util.ExceptionContext.addMessage:86"
+          ],
+          "approximation": "is JBMC's stub: it returns either boolean: it throws nothing and changes neither its receiver nor its arguments",
+          "treatment": "refused",
+          "checker": "jbmc"
+        }
+      ],
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "jbmc",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 104.442,
+          "seconds": 57.574,
+          "ended": "no-verdict",
+          "ending": "killed",
+          "phases": {
+            "loading": 0.684,
+            "lowering": 2.56,
+            "symbolic": 47.925,
+            "encoding": 5.981,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.425
+          },
+          "formula": {
+            "steps": 998956,
+            "conditions": 10,
+            "variables": null,
+            "clauses": null
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 73.722,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 15.18,
+        "contracts": 0.0,
+        "runs": 57.574,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.967
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "in",
+            "type": "long[][]",
+            "kind": "array",
+            "null": true,
+            "max_length": 2
+          }
+        ],
+        "shared_arrays": false,
+        "text": "in: long[][] of length ≤ 2, or null, each row null or of length ≤ 2 with unrestricted elements, any rows may share an array"
+      },
+      "assumptions": [
+        {
+          "kind": "precondition",
+          "text": "in != null && in.length == 2 && in[0] != null && in[1] != null && in[0].length != in[1].length",
+          "basis": "stated"
+        },
+        {
+          "kind": "library",
+          "text": "a JDK class is initialized by its static initializer as JBMC runs it, where a JDK method it calls outside the tool's models and the JDK classes JBMC is given (java.lang.Math, java.lang.StrictMath, java.lang.Integer, java.lang.Long, java.lang.Short, java.lang.Byte) is JBMC's stub, which throws nothing and returns any value of its type",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "nothing beyond returning",
+        "exceptions": "none may be thrown but as a throws clause says: org.apache.commons.math3.exception.DimensionMismatchException when true"
+      },
+      "bounds": {
+        "unwind": 7,
+        "max_array_length": 2,
+        "complete": false
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "jbmc",
+        "name": "JBMC 6.11.0",
+        "solver": "cadical",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "3.0.0",
+          "source": "linked into JBMC (/usr/bin/jbmc), the version as its signature there reads",
+          "configuration": [
+            "--trace",
+            "--throw-runtime-exceptions",
+            "--unwinding-assertions",
+            "--json-ui",
+            "--timestamp",
+            "monotonic",
+            "--no-refine-strings",
+            "--sat-solver",
+            "cadical"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null
+    }
+  }
+]
