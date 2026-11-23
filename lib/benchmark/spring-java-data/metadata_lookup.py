@@ -27,7 +27,7 @@ def physical_rows(side):
     return [f"{i}\t{name}\t{int(i >= 3 or side == 'landed')}" for i, name in enumerate(names + ["name", "name", "widget"])]
 
 
-def measure(side, replay, ordinary=False):
+def measure(side, replay, ordinary=False, *, destination=None):
     with tempfile.TemporaryDirectory(prefix="property-lookup-") as scratch:
         work = Path(scratch)
         jdk, graph, paths, bound = prepare_graph(FOLDER, side, "components-" + side, work)
@@ -44,7 +44,8 @@ def measure(side, replay, ordinary=False):
         print(side, repr(raw.decode().splitlines()), flush=True)
         if replay:
             return
-        dest = (ORDINARY if ordinary else DEST) / side
+        root = (ORDINARY if ordinary else DEST) if destination is None else destination
+        dest = root / side
         dest.mkdir(parents=True, exist_ok=True)
         (dest / "jvm.stdout").write_bytes(raw)
         checker = Path(os.environ["JVMCONTRACT"])
