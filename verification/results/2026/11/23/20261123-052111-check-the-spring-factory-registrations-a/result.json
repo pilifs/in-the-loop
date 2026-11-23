@@ -1,0 +1,625 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-052111-check-the-spring-factory-registrations-a",
+  "title": "Check the Spring factory registrations and fluent counterexample",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 17.6s, peak 211.7 MiB (estimated 3m00s, 3.0 GiB); 45 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-052111-check-the-spring-factory-registrations-a.json",
+    "sha256": "bdc952fa411b0384a49e6fd29c6e40cec3adc683a01f2207d6e7b54e17491a9a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-052111-check-the-spring-factory-registrations-a",
+      "title": "Check the Spring factory registrations and fluent counterexample",
+      "description": "Prove the exact factory filename and reproduce the properties table across every fixed refill cap on both binder graphs. Check both original formatter graphs through the first Number-to-Number factory registration, including mutation of returned reflection arrays. Certify the two original fluent-observer failures on the A-only pipe launch and replay both names and grant on LF, CRLF and pipe with the class-binding protocol set to Java 21.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "ordinary-startup",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "368",
+          "370",
+          "374"
+        ],
+        "jobs": [
+          "20261123-050140-certify-the-startup-counterexample-to-bo"
+        ]
+      },
+      "expected": "Four complete strict native factory checks, two complete fluent-witness implications, and all original JVM observations match their expected calls and ordered artifacts.",
+      "submitted": {
+        "at": "2026-11-23T05:21:11+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Both factory filenames and bounded reader chunks",
+          "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py filename",
+          "cwd": "."
+        },
+        {
+          "name": "First factory and complete original registration",
+          "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py signature",
+          "cwd": "."
+        },
+        {
+          "name": "Fluent A-only witness and launch controls",
+          "run": "python3 -B lib/benchmark/spring-java-data/fluent_witness.py",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "examples/368-spring-binding-history/records/factory-startup",
+        "examples/374-spring-formatter-binding/records/factory-startup",
+        "examples/370-spring-role-hierarchy/records/fluent-counterexample"
+      ]
+    }
+  },
+  "sourceCommit": "2132a16578eca1f3b35e7441a3cc8dd9636e7d4c",
+  "startedAt": "2026-11-23T05:31:25+00:00",
+  "finishedAt": "2026-11-23T05:34:56+00:00",
+  "wallSeconds": 211.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1410949,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 222007296,
+    "wallSeconds": 17.6,
+    "cpuSeconds": 29.8,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Both factory filenames and bounded reader chunks",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py filename",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 5.809,
+      "cpuSeconds": 10.193,
+      "cpuThrottledSeconds": 0.779,
+      "peakMemoryBytes": 127807488,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-both-factory-filenames-and-bou.log",
+        "lines": 2,
+        "bytes": 185,
+        "sha256": "05b00f6151f5354d6519573338dd2eb7a23f727cbb6f14e8990ac627fac1604f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "filename release 1 161 161 03ebb6b2cd6b055918cbe01cd5355adcef84257d4ee873495913f1da0233278d",
+        "filename combined 1 161 161 2bbe5530cdc8c8b7dc15bfea8a009c17f1e83e0f23cd4ce4d50110b1bd70b1d5"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "First factory and complete original registration",
+      "run": "python3 -B lib/benchmark/spring-java-data/factory_startup.py signature",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 8.013,
+      "cpuSeconds": 13.264,
+      "cpuThrottledSeconds": 0.871,
+      "peakMemoryBytes": 222007296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-first-factory-and-complete-ori.log",
+        "lines": 2,
+        "bytes": 38,
+        "sha256": "1d0d2bf2209fd5b2d3a716a4817e0e5a2cddc6e3e08e30a307330cb44e0b1f2c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "signature parent 1",
+        "signature landed 1"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Fluent A-only witness and launch controls",
+      "run": "python3 -B lib/benchmark/spring-java-data/fluent_witness.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 3.808,
+      "cpuSeconds": 6.357,
+      "cpuThrottledSeconds": 0.414,
+      "peakMemoryBytes": 127557632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-fluent-a-only-witness-and-laun.log",
+        "lines": 1,
+        "bytes": 120,
+        "sha256": "cb85941d738d82caafac2bd011d6e84592bfdd41bf52cbde0bb976ad3a3baad8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "A alone grants on LF and CRLF. On pipe the reachable names contain three pipe-suffixed or joined terms and D is denied."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/combined/FactoryFilename$1.jvm-bytecode",
+      "change": "added",
+      "bytes": 548,
+      "sha256": "cd1734d0c701abbc2e724ef43b010df1b6316ca1169c9ce2589723fb76dd7e43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/combined/FactoryFilename.jvm-bytecode",
+      "change": "added",
+      "bytes": 3653,
+      "sha256": "ee736909aca18b33a40babb2a19cabf299b17758c93801ac01dcf8f7c4069e8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/combined/jvm.stdout",
+      "change": "added",
+      "bytes": 75,
+      "sha256": "37bc021a85435e5144e0345b90a6e5d20ecc9cf4d109757de4fe0a1a58bb2adc",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/combined/measurement.json",
+      "change": "added",
+      "bytes": 7362,
+      "sha256": "7642c528735337ba57ff67774c2066df993828ab8bc11508a437b0cb65a48683",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/combined/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/combined/native.stdout",
+      "change": "added",
+      "bytes": 6145,
+      "sha256": "b89d6f002eea6f0858d659105afedf7275f8331acb8785d580948284d260f707",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/release/FactoryFilename$1.jvm-bytecode",
+      "change": "added",
+      "bytes": 548,
+      "sha256": "cd1734d0c701abbc2e724ef43b010df1b6316ca1169c9ce2589723fb76dd7e43",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/release/FactoryFilename.jvm-bytecode",
+      "change": "added",
+      "bytes": 3653,
+      "sha256": "ee736909aca18b33a40babb2a19cabf299b17758c93801ac01dcf8f7c4069e8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/release/jvm.stdout",
+      "change": "added",
+      "bytes": 75,
+      "sha256": "b17ed3970027682e986340b864c9578e2f9fa35d9033254a96ae855aa456672e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/release/measurement.json",
+      "change": "added",
+      "bytes": 6953,
+      "sha256": "70d6ab326f81738e8720510679bedcde6bbd1dc1e9636b956731da01be8e97a0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/release/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/factory-startup/release/native.stdout",
+      "change": "added",
+      "bytes": 6146,
+      "sha256": "aa2038beec6221b81086c7e693a3c5bd0dfbbfba91de05d5a73e269a183eff59",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/landed/FirstSignature$Checked.jvm-bytecode",
+      "change": "added",
+      "bytes": 249,
+      "sha256": "2738a9ff78c38d2f673b26a6b3249e2a2e604b81516aeb964aa90730638f9eaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/landed/FirstSignature$Registry.jvm-bytecode",
+      "change": "added",
+      "bytes": 1498,
+      "sha256": "245379d88990cb2d2d8fb06d32654ecf37269ad39b2a3703d8757fae3465016e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/landed/FirstSignature.jvm-bytecode",
+      "change": "added",
+      "bytes": 765,
+      "sha256": "b4ad5831bfb211d4818246f9aa951b2f9f63e5882efe023743f832cb96a79aba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/landed/jvm.stdout",
+      "change": "added",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/landed/measurement.json",
+      "change": "added",
+      "bytes": 7369,
+      "sha256": "b051d5f3e8ecb0756d4e78699c631187422680c2d934a34d00eee1a38fe56386",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/landed/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/landed/native.stdout",
+      "change": "added",
+      "bytes": 4907,
+      "sha256": "8990b57ffcaf819537478c75e1faea4a4f7acfa8a22befc4b944b7d7578be27b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/parent/FirstSignature$Checked.jvm-bytecode",
+      "change": "added",
+      "bytes": 249,
+      "sha256": "2738a9ff78c38d2f673b26a6b3249e2a2e604b81516aeb964aa90730638f9eaf",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/parent/FirstSignature$Registry.jvm-bytecode",
+      "change": "added",
+      "bytes": 1498,
+      "sha256": "245379d88990cb2d2d8fb06d32654ecf37269ad39b2a3703d8757fae3465016e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/parent/FirstSignature.jvm-bytecode",
+      "change": "added",
+      "bytes": 765,
+      "sha256": "b4ad5831bfb211d4818246f9aa951b2f9f63e5882efe023743f832cb96a79aba",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/parent/jvm.stdout",
+      "change": "added",
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/parent/measurement.json",
+      "change": "added",
+      "bytes": 7369,
+      "sha256": "ecfc52e2bfdd46f557d4d99bdcb79c2e65a89c3ece0be5b6db13cc8b35f7a7ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/parent/native.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/factory-startup/parent/native.stdout",
+      "change": "added",
+      "bytes": 4908,
+      "sha256": "fd442aab499e1c4fcfb6ddbe02486679096c0f855924d3a37363abce0bf32585",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentDecisionReplay.java",
+      "change": "added",
+      "bytes": 438,
+      "sha256": "5aa6b343f83906bc3c01a9019b1f51820826d7bf7ecfdfebb0dddc37bf289cf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentDecisionReplay.jvm-bytecode",
+      "change": "added",
+      "bytes": 642,
+      "sha256": "cfadcfd5d5a40fedaa70fd6bb658bdf078ab52be41e3fa50df22b32dcf534ee7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentNamesReplay.java",
+      "change": "added",
+      "bytes": 432,
+      "sha256": "1231b5a618b5458c072416c56617a02700bfd9b2fc4d77b3b022b2359539c0fe",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentNamesReplay.jvm-bytecode",
+      "change": "added",
+      "bytes": 636,
+      "sha256": "46ad36235b7157c9fd8effa471f645bd677c6cf29a832985c71ced21704f4e90",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentWitness.jvm-bytecode",
+      "change": "added",
+      "bytes": 2057,
+      "sha256": "6a7ccc6519b15ead506e732adba27a31c7ece950e4d81f44e88035144f2187a8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/crlf-decision.stdout",
+      "change": "added",
+      "bytes": 8,
+      "sha256": "3e181f09921c3234ea0bb4494460014d466b5d427625a9a2d933d99bae6f0c81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/crlf-names.stdout",
+      "change": "added",
+      "bytes": 8,
+      "sha256": "3e181f09921c3234ea0bb4494460014d466b5d427625a9a2d933d99bae6f0c81",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/crlf.stdout",
+      "change": "added",
+      "bytes": 102,
+      "sha256": "d401c7d78825e9d587db495ea07571efbd3894f49b8d14b8f6cf0623e6c3d1e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/decision.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/decision.stdout",
+      "change": "added",
+      "bytes": 5675,
+      "sha256": "5c4fe816c84c7cf065582a7e5a660dd287928dd6b9e24bcd036ede8f37871934",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/default-decision.stdout",
+      "change": "added",
+      "bytes": 5,
+      "sha256": "a93f1571782f8417b59d54581630ad251043e1750a52bd5250ab5175fad576b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/default-names.stdout",
+      "change": "added",
+      "bytes": 5,
+      "sha256": "a93f1571782f8417b59d54581630ad251043e1750a52bd5250ab5175fad576b4",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/default.stdout",
+      "change": "added",
+      "bytes": 99,
+      "sha256": "33b7b814eefb985432d9393569786208e4a3710082aa8d66515c105d830c7528",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/measurement.json",
+      "change": "added",
+      "bytes": 10605,
+      "sha256": "c4497d6bd3a9103728981b2022f92d033a5980333ddc57d554df8d9683910054",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/names.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/names.stdout",
+      "change": "added",
+      "bytes": 5663,
+      "sha256": "99fd9b86ab2b0b71986ceaaecd4f4a37ad9f66d8354fa9d4b3bcd20175bbf63b",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-decision.stdout",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "81040986c23d635981088f64009d35804f8d6085f5781809b42826801244245c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-names.stdout",
+      "change": "added",
+      "bytes": 6,
+      "sha256": "81040986c23d635981088f64009d35804f8d6085f5781809b42826801244245c",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe.stdout",
+      "change": "added",
+      "bytes": 116,
+      "sha256": "b489db6890e7eb600c6d3d3dbcdc99b7b6705ce2f585365a708645da089fe281",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T05:35:07+00:00",
+    "applied": [
+      "examples/368-spring-binding-history/records/factory-startup/combined/FactoryFilename$1.jvm-bytecode",
+      "examples/368-spring-binding-history/records/factory-startup/combined/FactoryFilename.jvm-bytecode",
+      "examples/368-spring-binding-history/records/factory-startup/combined/jvm.stdout",
+      "examples/368-spring-binding-history/records/factory-startup/combined/measurement.json",
+      "examples/368-spring-binding-history/records/factory-startup/combined/native.stderr",
+      "examples/368-spring-binding-history/records/factory-startup/combined/native.stdout",
+      "examples/368-spring-binding-history/records/factory-startup/release/FactoryFilename$1.jvm-bytecode",
+      "examples/368-spring-binding-history/records/factory-startup/release/FactoryFilename.jvm-bytecode",
+      "examples/368-spring-binding-history/records/factory-startup/release/jvm.stdout",
+      "examples/368-spring-binding-history/records/factory-startup/release/measurement.json",
+      "examples/368-spring-binding-history/records/factory-startup/release/native.stderr",
+      "examples/368-spring-binding-history/records/factory-startup/release/native.stdout",
+      "examples/374-spring-formatter-binding/records/factory-startup/landed/FirstSignature$Checked.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/factory-startup/landed/FirstSignature$Registry.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/factory-startup/landed/FirstSignature.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/factory-startup/landed/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/factory-startup/landed/measurement.json",
+      "examples/374-spring-formatter-binding/records/factory-startup/landed/native.stderr",
+      "examples/374-spring-formatter-binding/records/factory-startup/landed/native.stdout",
+      "examples/374-spring-formatter-binding/records/factory-startup/parent/FirstSignature$Checked.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/factory-startup/parent/FirstSignature$Registry.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/factory-startup/parent/FirstSignature.jvm-bytecode",
+      "examples/374-spring-formatter-binding/records/factory-startup/parent/jvm.stdout",
+      "examples/374-spring-formatter-binding/records/factory-startup/parent/measurement.json",
+      "examples/374-spring-formatter-binding/records/factory-startup/parent/native.stderr",
+      "examples/374-spring-formatter-binding/records/factory-startup/parent/native.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentDecisionReplay.java",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentDecisionReplay.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentNamesReplay.java",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentNamesReplay.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/FluentWitness.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/crlf-decision.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/crlf-names.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/crlf.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/decision.stderr",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/decision.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/default-decision.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/default-names.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/default.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/measurement.json",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/names.stderr",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/names.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-decision.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe-names.stdout",
+      "examples/370-spring-role-hierarchy/records/fluent-counterexample/pipe.stdout"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "670a7f2f5b61d176943db7b0eb41bb3813b98a2e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/670a7f2f5b61d176943db7b0eb41bb3813b98a2e/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T053456Z-337105634639dd99",
+      "outputs": "20261123T053456Z-3652667eab4b1958",
+      "diff": "20261123T053456Z-385656f20ecaaf1f"
+    }
+  }
+}
