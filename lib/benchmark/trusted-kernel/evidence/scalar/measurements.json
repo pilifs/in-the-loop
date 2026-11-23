@@ -1,0 +1,194 @@
+{
+  "schema": "trusted-scalar/v1",
+  "rustBuild": {
+    "exit": 0,
+    "stdout": "warning: fields `0` and `1` are never read\n  --> /home/filip/code/in-the-loop/verification/.state/work/20261123-192639-compare-isolated-rust-and-lean-on-compil/lib/benchmark/trusted-kernel/classfile.rs:47:14\n   |\n47 |     NameType(u16, u16),\n   |     -------- ^^^  ^^^\n   |     |\n   |     fields in this variant\n   |\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\nhelp: consider changing the fields to be of unit type to suppress this warning while preserving the field numbering, or remove the fields\n   |\n47 -     NameType(u16, u16),\n47 +     NameType((), ()),\n   |\n\nwarning: fields `0` and `1` are never read\n  --> /home/filip/code/in-the-loop/verification/.state/work/20261123-192639-compare-isolated-rust-and-lean-on-compil/lib/benchmark/trusted-kernel/classfile.rs:48:12\n   |\n48 |     Method(u16, u16),\n   |     ------ ^^^  ^^^\n   |     |\n   |     fields in this variant\n   |\nhelp: consider changing the fields to be of unit type to suppress this warning while preserving the field numbering, or remove the fields\n   |\n48 -     Method(u16, u16),\n48 +     Method((), ()),\n   |\n\nwarning: field `locals` is never read\n  --> /home/filip/code/in-the-loop/verification/.state/work/20261123-192639-compare-isolated-rust-and-lean-on-compil/lib/benchmark/trusted-kernel/classfile.rs:56:9\n   |\n51 | pub struct Code<'a> {\n   |            ---- field in this struct\n...\n56 |     pub locals: u16,\n   |         ^^^^^^\n\nwarning: method `method_ref` is never used\n   --> /home/filip/code/in-the-loop/verification/.state/work/20261123-192639-compare-isolated-rust-and-lean-on-compil/lib/benchmark/trusted-kernel/classfile.rs:179:12\n    |\n 67 | impl<'a> Class<'a> {\n    | ------------------ method in this implementation\n...\n179 |     pub fn method_ref(&self, i: u16) -> Result<(&'a str, &'a str, &'a str)> {\n    |            ^^^^^^^^^^\n\nwarning: 4 warnings emitted",
+    "wallSeconds": 0.637932,
+    "peakKiB": 157140,
+    "binarySha256": "33c049cfda1ec39cc64adebe15c771a30c213b70620c6384bc9b74a1158a8962"
+  },
+  "rustVersion": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "leanVersion": "Lean (version 4.36.0, x86_64-unknown-linux-gnu, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
+  "cases": [
+    {
+      "route": "Rust",
+      "checkerVersion": "33c049cfda1ec39cc64adebe15c771a30c213b70620c6384bc9b74a1158a8962",
+      "classSha256": "61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112",
+      "request": "request 1\ntheorem scalar-equality-v1\nenvironment initialized-verified-jvm-v1\nclass fixtures/Scalar 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112\nentry multiply (I)I\ncompanion add (I)I\n",
+      "requestSha256": "b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99",
+      "control": "add",
+      "expected": "accepted",
+      "actual": "accepted",
+      "sizes": {
+        "class": 256,
+        "request": 203,
+        "certificate": 173
+      },
+      "generation": {
+        "exit": 0,
+        "stdout": "",
+        "wallSeconds": 0.320008,
+        "peakKiB": 54084
+      },
+      "exit": 0,
+      "outcome": "accepted scalar-equality-v1 fixtures/Scalar#multiply(I)I companion add(I)I environment initialized-verified-jvm-v1 class 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112 request b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99 obligations 2",
+      "checks": [
+        {
+          "exit": 0,
+          "stdout": "accepted scalar-equality-v1 fixtures/Scalar#multiply(I)I companion add(I)I environment initialized-verified-jvm-v1 class 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112 request b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99 obligations 2",
+          "wallSeconds": 0.047953,
+          "peakKiB": 26664
+        },
+        {
+          "exit": 0,
+          "stdout": "accepted scalar-equality-v1 fixtures/Scalar#multiply(I)I companion add(I)I environment initialized-verified-jvm-v1 class 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112 request b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99 obligations 2",
+          "wallSeconds": 0.00194,
+          "peakKiB": 26664
+        },
+        {
+          "exit": 0,
+          "stdout": "accepted scalar-equality-v1 fixtures/Scalar#multiply(I)I companion add(I)I environment initialized-verified-jvm-v1 class 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112 request b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99 obligations 2",
+          "wallSeconds": 0.001858,
+          "peakKiB": 26664
+        }
+      ],
+      "medianPeakKiB": 26664,
+      "medianWallSeconds": 0.00194
+    },
+    {
+      "route": "Lean",
+      "checkerVersion": "22197a6a727a2cfee86ce57fa4eee218f5284be8661d56d312294e99197a12f5",
+      "classSha256": "61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112",
+      "request": "request 1\ntheorem scalar-equality-v1\nenvironment initialized-verified-jvm-v1\nclass fixtures/Scalar 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112\nentry multiply (I)I\ncompanion add (I)I\n",
+      "requestSha256": "b5eab27770a866418dab3c37e45220979645347d348dc71b5a670ac85ee47c99",
+      "control": "add",
+      "expected": "accepted",
+      "actual": "accepted",
+      "sizes": {
+        "class": 256,
+        "request": 203,
+        "certificate": 173
+      },
+      "generation": {
+        "exit": 0,
+        "stdout": "",
+        "wallSeconds": 0.320008,
+        "peakKiB": 54084
+      },
+      "exit": 0,
+      "outcome": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\naccepted scalar-equality-v1 originalBytesEqual",
+      "checks": [
+        {
+          "exit": 0,
+          "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\naccepted scalar-equality-v1 originalBytesEqual",
+          "wallSeconds": 1.379051,
+          "peakKiB": 1661648
+        },
+        {
+          "exit": 0,
+          "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\naccepted scalar-equality-v1 originalBytesEqual",
+          "wallSeconds": 1.356199,
+          "peakKiB": 1666104
+        },
+        {
+          "exit": 0,
+          "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\naccepted scalar-equality-v1 originalBytesEqual",
+          "wallSeconds": 1.411942,
+          "peakKiB": 1665712
+        }
+      ],
+      "medianPeakKiB": 1665712,
+      "medianWallSeconds": 1.379051
+    },
+    {
+      "route": "Rust",
+      "checkerVersion": "33c049cfda1ec39cc64adebe15c771a30c213b70620c6384bc9b74a1158a8962",
+      "classSha256": "61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112",
+      "request": "request 1\ntheorem scalar-equality-v1\nenvironment initialized-verified-jvm-v1\nclass fixtures/Scalar 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112\nentry multiply (I)I\ncompanion shifted (I)I\n",
+      "requestSha256": "9b15eaac81c4447983575fce169442def27e9f1b5e950733a2fef9a154540393",
+      "control": "shifted",
+      "expected": "rejected",
+      "actual": "rejected",
+      "sizes": {
+        "class": 256,
+        "request": 207,
+        "certificate": 177
+      },
+      "generation": {
+        "exit": 0,
+        "stdout": "",
+        "wallSeconds": 0.275236,
+        "peakKiB": 54352
+      },
+      "exit": 2,
+      "outcome": "rejected scalar values differ at x=0: 0 versus 1",
+      "checks": [
+        {
+          "exit": 2,
+          "stdout": "rejected scalar values differ at x=0: 0 versus 1",
+          "wallSeconds": 0.001792,
+          "peakKiB": 26664
+        },
+        {
+          "exit": 2,
+          "stdout": "rejected scalar values differ at x=0: 0 versus 1",
+          "wallSeconds": 0.001493,
+          "peakKiB": 26664
+        },
+        {
+          "exit": 2,
+          "stdout": "rejected scalar values differ at x=0: 0 versus 1",
+          "wallSeconds": 0.001124,
+          "peakKiB": 26664
+        }
+      ],
+      "medianPeakKiB": 26664,
+      "medianWallSeconds": 0.001493
+    },
+    {
+      "route": "Lean",
+      "checkerVersion": "22197a6a727a2cfee86ce57fa4eee218f5284be8661d56d312294e99197a12f5",
+      "classSha256": "61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112",
+      "request": "request 1\ntheorem scalar-equality-v1\nenvironment initialized-verified-jvm-v1\nclass fixtures/Scalar 61a083957089663346136b0060db71bc69554b4a0387183d7bc13cf50c3a0112\nentry multiply (I)I\ncompanion shifted (I)I\n",
+      "requestSha256": "9b15eaac81c4447983575fce169442def27e9f1b5e950733a2fef9a154540393",
+      "control": "shifted",
+      "expected": "rejected",
+      "actual": "rejected",
+      "sizes": {
+        "class": 256,
+        "request": 207,
+        "certificate": 177
+      },
+      "generation": {
+        "exit": 0,
+        "stdout": "",
+        "wallSeconds": 0.275236,
+        "peakKiB": 54352
+      },
+      "exit": 2,
+      "outcome": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\nrejected scalar values differ at x=0: shiftedRefuted",
+      "checks": [
+        {
+          "exit": 2,
+          "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\nrejected scalar values differ at x=0: shiftedRefuted",
+          "wallSeconds": 1.668679,
+          "peakKiB": 1663264
+        },
+        {
+          "exit": 2,
+          "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\nrejected scalar values differ at x=0: shiftedRefuted",
+          "wallSeconds": 1.397915,
+          "peakKiB": 1668672
+        },
+        {
+          "exit": 2,
+          "stdout": "'ScalarKernel.originalBytesEqual' depends on axioms: [propext, Classical.choice, Quot.sound]\n'ScalarKernel.shiftedRefuted' depends on axioms: [propext, Classical.choice, Quot.sound]\nrejected scalar values differ at x=0: shiftedRefuted",
+          "wallSeconds": 1.391481,
+          "peakKiB": 1664060
+        }
+      ],
+      "medianPeakKiB": 1664060,
+      "medianWallSeconds": 1.397915
+    }
+  ]
+}

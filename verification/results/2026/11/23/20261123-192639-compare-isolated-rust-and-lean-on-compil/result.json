@@ -1,0 +1,188 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-192639-compare-isolated-rust-and-lean-on-compil",
+  "title": "Compare isolated Rust and Lean on compiled scalar equality",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.2s, peak 210.3 MiB (estimated 1m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/trusted-kernel/replay.py) was held back 6.7s by its 1-CPU quota in 10.2s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-192639-compare-isolated-rust-and-lean-on-compil.json",
+    "sha256": "d260c3fb066c167aed138cdb904a3ffb9069dc9c94116e85751528186574a992",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-192639-compare-isolated-rust-and-lean-on-compil",
+      "title": "Compare isolated Rust and Lean on compiled scalar equality",
+      "description": "Use the exact same 256 class bytes, requests and certificates for both routes. Check all 32-bit inputs against compiled multiply/add, refute the shifted peer at zero, inspect Lean axioms and measure each fresh isolated process three times.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "lean-kernel"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T19:26:39+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "rustc",
+        "lean",
+        "javap",
+        "setpriv",
+        "python3"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "3G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/trusted-kernel/replay.py",
+          "run": "python3 -B lib/benchmark/trusted-kernel/replay.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/scalar"
+      ]
+    }
+  },
+  "sourceCommit": "e28ab5f2fd5bb1db97ec11b7d4431a068bfd0c9f",
+  "startedAt": "2026-11-23T19:39:42+00:00",
+  "finishedAt": "2026-11-23T19:39:59+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1807608,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 220549120,
+    "wallSeconds": 10.2,
+    "cpuSeconds": 10.0,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/trusted-kernel/replay.py",
+      "run": "python3 -B lib/benchmark/trusted-kernel/replay.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 10.225,
+      "cpuSeconds": 10.02,
+      "cpuThrottledSeconds": 6.716,
+      "peakMemoryBytes": 220549120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-truste.log",
+        "lines": 1,
+        "bytes": 125,
+        "sha256": "acfcf6cbc5759bdca48dd2a19582889b99856b3ba4eac6f4d4ae150050208e3b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('Rust', 'add', 'accepted'), ('Lean', 'add', 'accepted'), ('Rust', 'shifted', 'rejected'), ('Lean', 'shifted', 'rejected')]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/scalar/add.cert",
+      "change": "added",
+      "bytes": 173,
+      "sha256": "a442daee9095c5b6bb632c8d779819450dc36f80e80eb0d916221ca85df51bdb",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/scalar/measurements.json",
+      "change": "added",
+      "bytes": 10981,
+      "sha256": "d44555eb4dbaaef1cffcf4f16081e2a00b4b9bbc2b2ee73d34bfe7067dbb7df6",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/scalar/shifted.cert",
+      "change": "added",
+      "bytes": 177,
+      "sha256": "8474b03f25971ab704be2425d5e6fa25d3d1102e1226a56fcd40b7ffa43c13db",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T19:40:18+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/scalar/add.cert",
+      "lib/benchmark/trusted-kernel/evidence/scalar/measurements.json",
+      "lib/benchmark/trusted-kernel/evidence/scalar/shifted.cert"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T193959Z-93305293a753f2fb",
+      "outputs": "20261123T193959Z-954125843fe0e83d",
+      "diff": "20261123T193959Z-972488396e4f6e8b"
+    }
+  }
+}
