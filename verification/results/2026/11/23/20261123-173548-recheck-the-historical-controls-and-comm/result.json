@@ -1,0 +1,461 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-173548-recheck-the-historical-controls-and-comm",
+  "title": "Recheck the historical controls and Commons decimal on the qualified successor",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 12m11s, peak 10.2 GiB (estimated 11m00s, 7.0 GiB); 21 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-173548-recheck-the-historical-controls-and-comm.json",
+    "sha256": "c2fcfb5eb9d8bc56f4f72b9304249e20504ea8771820ec281349ca09e4a6b957",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-173548-recheck-the-historical-controls-and-comm",
+      "title": "Recheck the historical controls and Commons decimal on the qualified successor",
+      "description": "Rerun 38 historical statements in both engines, including the 24 original native-only controls. Recheck the four original Commons Lang decimal claims over their three selectors with full-guard results, raw JVM classes, bits and decimal scales.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/jbmc-fast-follow"
+        ]
+      },
+      "submitted": {
+        "at": "2026-11-23T17:35:48+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "7G",
+        "duration": "11m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Historical cohort",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py historical --output verification/jbmc-fast-follow/successor/regressions",
+          "cwd": "."
+        },
+        {
+          "name": "Original decimal artifacts",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py decimal --output verification/jbmc-fast-follow/successor/regressions",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/jbmc-fast-follow/successor/regressions/historical",
+        "verification/jbmc-fast-follow/successor/regressions/decimal"
+      ]
+    }
+  },
+  "sourceCommit": "701ca64e1980b6052b3409b882ff63438b973a6c",
+  "startedAt": "2026-11-23T17:52:01+00:00",
+  "finishedAt": "2026-11-23T18:07:42+00:00",
+  "wallSeconds": 941.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 710475,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 11274289152,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 7516192768,
+    "durationSeconds": 660.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 10967420928,
+    "wallSeconds": 732.0,
+    "cpuSeconds": 756.2,
+    "memoryOfEstimate": 1.46,
+    "durationOfEstimate": 1.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 190.276,
+      "cpuSeconds": 190.516,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2332372992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "319341e461461fd8fe58c953e185a1f7bbf540f50045e18ac10c8b29d0d7439c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-173548-recheck-the-historical-controls-and-comm/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 10s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Historical cohort",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py historical --output verification/jbmc-fast-follow/successor/regressions",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 721.947,
+      "cpuSeconds": 742.749,
+      "cpuThrottledSeconds": 2.908,
+      "peakMemoryBytes": 10967420928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-historical-cohort.log",
+        "lines": 80,
+        "bytes": 10055,
+        "sha256": "19e046f53bfb4b5f0d7113045dd1542b77f77c55bcb36cba2a3a2d3663a1f68f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "conformance/declaring/2                      jbmc   strict  staged     unverifiable unsupported               0.46 s    61.7 MB",
+        "conformance/defaults/1                       native strict             verified     correct                   0.03 s    61.7 MB",
+        "conformance/defaults/1                       jbmc   strict  staged     unverifiable unsupported               0.29 s    61.7 MB",
+        "conformance/defaults/3                       native strict             violation    correct                   0.04 s    61.7 MB",
+        "conformance/defaults/3                       jbmc   strict  staged     unverifiable unsupported               0.42 s    61.7 MB",
+        "conformance/boomTwice/1                      native strict             verified     correct                   0.03 s    61.7 MB",
+        "conformance/boomTwice/1                      jbmc   strict  staged     unverifiable unsupported               0.27 s    61.7 MB",
+        "conformance/enumBroken/1                     native strict             verified     correct                   0.03 s    61.7 MB",
+        "conformance/enumBroken/1                     jbmc   strict  staged     unverifiable unsupported               0.26 s    61.7 MB",
+        "conformance/caught/1                         native strict             verified     correct                   0.03 s    61.7 MB",
+        "conformance/caught/1                         jbmc   strict  staged     unverifiable unsupported               0.26 s    61.7 MB",
+        "conformance/caught/3                         native strict             violation    correct                   0.04 s    61.7 MB",
+        "conformance/caught/3                         jbmc   strict  staged     unverifiable unsupported               0.64 s    61.7 MB",
+        "conformance/caughtAsRuntime/1                native strict             verified     correct                   0.03 s    61.7 MB",
+        "conformance/caughtAsRuntime/1                jbmc   strict  staged     unverifiable unsupported               0.29 s    61.7 MB",
+        "conformance/caughtAsRuntime/2                native strict             violation    correct                   0.06 s    61.7 MB",
+        "conformance/caughtAsRuntime/2                jbmc   strict  staged     unverifiable unsupported               0.65 s    61.7 MB",
+        "conformance/nestedHandler/1                  native strict             verified     correct                   0.04 s    61.7 MB",
+        "conformance/nestedHandler/1                  jbmc   strict  staged     unverifiable unsupported               0.28 s    61.7 MB",
+        "conformance/divide/3                         native strict             verified     correct                   0.05 s    61.7 MB",
+        "conformance/divide/3                         jbmc   strict  staged     unverifiable unsupported             120.19 s    61.7 MB",
+        "conformance/shiftRight/1                     native strict             verified     correct                   0.03 s    61.7 MB",
+        "conformance/shiftRight/1                     jbmc   strict  staged     unverifiable unsupported               0.30 s    61.7 MB",
+        "conformance/shiftRight/3                     native strict             violation    correct                   0.03 s    61.7 MB",
+        "conformance/shiftRight/3                     jbmc   strict  staged     unverifiable unsupported               0.25 s    61.7 MB",
+        "conformance/shiftUnsigned/2                  native strict             verified     correct                   0.02 s    61.7 MB",
+        "conformance/shiftUnsigned/2                  jbmc   strict  staged     unverifiable unsupported               0.30 s    61.7 MB",
+        "conformance/shiftUnsigned/3                  native strict             violation    correct                   0.03 s    61.7 MB",
+        "conformance/shiftUnsigned/3                  jbmc   strict  staged     unverifiable unsupported               0.26 s    61.7 MB",
+        "real/bucket/fix-confined                     native strict             verified     correct                   0.05 s    61.7 MB",
+        "real/bucket/fix-confined                     jbmc   strict  staged     unverifiable unsupported             120.14 s    61.7 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.05 s    61.7 MB",
+        "held/floor-mod/jdk                           jbmc   strict  staged     unverifiable unsupported             120.14 s    61.7 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.03 s    61.7 MB",
+        "held/ceil-div                                jbmc   strict  staged     unverifiable unsupported             120.12 s    61.7 MB",
+        "held/reverse                                 native strict             verified     correct                   0.16 s    61.7 MB",
+        "held/reverse                                 jbmc   strict  staged     unverifiable unsupported             121.00 s  6965.3 MB",
+        "example/142                                  native strict             verified     correct                   5.04 s    75.3 MB",
+        "example/142                                  jbmc   strict  staged     unverifiable unsupported              36.81 s  9968.4 MB",
+        "native-controls Counter({('native', 'correct'): 24, ('jbmc', 'unsupported'): 24})"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Original decimal artifacts",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py decimal --output verification/jbmc-fast-follow/successor/regressions",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 10.018,
+      "cpuSeconds": 13.447,
+      "cpuThrottledSeconds": 0.607,
+      "peakMemoryBytes": 172339200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-original-decimal-artifacts.log",
+        "lines": 8,
+        "bytes": 299,
+        "sha256": "cd01adf872a30e13150c9ee1faa0b95b34511ad714b9d8334da891d771ed5537",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "precise-parent native correct 0.034",
+        "precise-parent jbmc correct 1.248",
+        "preserved-parent native correct 0.035",
+        "preserved-parent jbmc unsupported 1.228",
+        "precise-landed native correct 0.05",
+        "precise-landed jbmc unsupported 1.265",
+        "preserved-landed native correct 0.034",
+        "preserved-landed jbmc unsupported 1.188"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/historical/listOfArray.json",
+      "change": "added",
+      "bytes": 21433,
+      "sha256": "cb356ad976d14f148f5a11d15bdb9e358afce7496ebd2c7ed124a4536676675f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/historical/listSearch.json",
+      "change": "added",
+      "bytes": 20625,
+      "sha256": "94a6a8731c2667f8e658f28e15903ada7748d4a342744e1cdf236970de38b34a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/historical/native-controls.json",
+      "change": "added",
+      "bytes": 139686,
+      "sha256": "8f677c52ea6d348252f787f8af57e765f0dd4f4393a3be006982aade4430b1b9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/historical/other-leads.json",
+      "change": "added",
+      "bytes": 55814,
+      "sha256": "083a9586388da81334d1f25052e19d53a907a8a20c491c68cf155cbf4ca1a14f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/measurement.json",
+      "change": "added",
+      "bytes": 23036,
+      "sha256": "e7212e7e5dca23706c5d4e27b86a4d10d5ef0f899b27486315584ed55ac2fca0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6762,
+      "sha256": "8ff92b3d599396094d21c995dcb67426821d76eb04841921638e4526c6993e81",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/native/stdout.json",
+      "change": "added",
+      "bytes": 5333,
+      "sha256": "8ea1df1ec7e6c97a683fc6c456bc37e371f5ced4cc33575e9732b432ddcded13",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 7054,
+      "sha256": "6de1415a6677f25d9aa502d3824d5d32cc103dc79afa8480bf096077e29ec014",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/native/stdout.json",
+      "change": "added",
+      "bytes": 6028,
+      "sha256": "5dfbfc4a790818bcfde80506f9e3e23ccd8f42f281b6193a2d70ee1647ffcfa1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6761,
+      "sha256": "7eccecbc90e936fa52450dee09789831c425fab1d026a1df4b0cd108e869ec50",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/native/stdout.json",
+      "change": "added",
+      "bytes": 5347,
+      "sha256": "7a69773f7154563290435a036d1045480770e8aaa70dbd0c975b8e4db03780ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/jbmc/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/jbmc/stdout.json",
+      "change": "added",
+      "bytes": 6791,
+      "sha256": "4a0fdd965b88a87bf62545c6b3f88cdf4035abcc824255b0559924079f98fff8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/native/stderr.txt",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/native/stdout.json",
+      "change": "added",
+      "bytes": 5347,
+      "sha256": "7e29320f81429a49bcc74db1a44656a3da69211151ddc31fb8a9b2293dcf52f3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T18:08:10+00:00",
+    "applied": [
+      "verification/jbmc-fast-follow/successor/regressions/historical/listOfArray.json",
+      "verification/jbmc-fast-follow/successor/regressions/historical/listSearch.json",
+      "verification/jbmc-fast-follow/successor/regressions/historical/native-controls.json",
+      "verification/jbmc-fast-follow/successor/regressions/historical/other-leads.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/measurement.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-landed/native/stdout.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/precise-parent/native/stdout.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-landed/native/stdout.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/jbmc/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/jbmc/stdout.json",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/native/stderr.txt",
+      "verification/jbmc-fast-follow/successor/regressions/decimal/paired/preserved-parent/native/stdout.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "565c1e1ae507778f5e662c22623357df27a054a5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/565c1e1ae507778f5e662c22623357df27a054a5/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T180742Z-59122007e357b4d6",
+      "outputs": "20261123T180742Z-6157906715e7a08a",
+      "diff": "20261123T180742Z-636090f9cc418bdd"
+    }
+  }
+}
