@@ -1,6 +1,6 @@
 # Independent Java proof experiment
 
-**Fund one more semantic claim family, starting with the single-root write frame of JDK `Arrays.fill` in example 337.** The Rust checker established the complete public `Ints.indexOf` and `Longs.indexOf` contracts on Guava 33.4.8-jre. For every legal array length and signed cell and target, each call terminates, returns the first match or exactly −1, and preserves the heap. The assumptions include verified classes and successful initialization. Six rebound behavioral mutants failed with checked witnesses. A different wrapper layout and a same-value store both passed. The controls recorded zero false acceptances. [Frozen protocol](protocol.md) · [Assurance argument and trusted components](assurance.md) · [Case table and bundle digests](evidence/cases.json)
+**Advance the opt-in semantic checker.** On the original class bytes, Guava 33.4.8-jre's `Ints.indexOf` and `Longs.indexOf` terminate for every legal array length and signed target, return the first match or exactly −1, and preserve the heap. Temurin 21's `Arrays.fill(int[], int, int, int)` writes exactly the requested valid interval. The checker also proves the result that example 337 observes through a second array reference and refutes its extra-write variant. The assumptions include verified classes and successful initialization. [Frozen Guava protocol](protocol.md) · [Assurance argument and trusted components](assurance.md) · [Case table and bundle digests](evidence/cases.json)
 
 ## What the independent check caught
 
@@ -51,11 +51,26 @@ CaDiCaL 1.9.5 and cake_lpr `033aad53` certified **8/8 Guava and 10/10 prefix-sum
 
 Guava's eight proofs took 20.5 ms to generate and 27.2 ms for one check of each, excluding the native verifier run. They occupy 27,157 bytes packed. Query 23 used 48,803 bytes of DIMACS, 25 assumption units and a 15,934-byte proof. The truncated proof and satisfiable formula both lost the checker's UNSAT signal. Production integration would still need coverage accounting and durable formula/proof binding for every relevant solve. [Guava proof inventory](evidence/bounded-sat/guava/queries.json) · [Prefix-sums inventory](evidence/bounded-sat/prefix-sums/queries.json)
 
-## Next family
+## Transfer to a write frame and an aliased caller
 
-The frozen independent checker refused all three range-fill requests. The historical route established the original fill and caller. Its extra-write caller remained unresolved at the caller-read obligation. A separately bound JVM run supplied a counterexample. With both roots equal to `[11]`, empty range `[0,0)`, value 7 and `k=0`, the extra caller returned 7 and changed the heap to `[7]`. The original returned 11. The JVM covered 50 fills and 75 cases per caller. The extra caller produced 4 wrong observations and 31 frame differences. [Range-fill evidence](evidence/range-fill.json)
+The sealed Guava checker first refused the three example 337 requests. The follow-up proved the JDK range check, loop and outside-range frame directly from the 59,937-byte `Arrays.class`. The caller's external request also binds its own 505-byte class and the callee digest. Its proof covers shared roots with the observation inside or outside the range and distinct roots with independent lengths. The job rebuilt every range bundle, repeated all 18 Guava transfer controls and checked 14 range outcomes. [First refusals and historical results](evidence/range-fill.json) · [Follow-up results](evidence/range-proof/results.json)
 
-A fill proof needs range checking, an invariant for the written prefix and preservation outside the range. The caller adds alias identity and independently sized roots. Budget this as another induction family. It takes priority over widening read-only opcode coverage or porting Guava induction to Lean. A production rollout requires a separate decision.
+| Example 337 | Historical Python/Z3 | Independent Rust result |
+|---|---|---|
+| `fill-any-length` | Established | Proved normal termination and the exact heap frame, with 37 obligations. |
+| `caller-any-length` | Established | Proved the frame and `other[k]` observation, with 51 obligations. |
+| `caller-extra-any-length` | Unresolved at the caller-read obligation | Refuted. At call PC 17 the upper bound can be `to+1`. On shared `[11]`, range `[0,0)`, value 7 and `k=0`, the public caller returns 7 and leaves `[7]`. The theorem requires 11 and `[11]`. |
+
+The JVM confirmed that witness and found four wrong returns and 31 frame differences in 75 extra-caller cases. A second rebound caller reads from the filled root. With `a=[]` and `other=[31]`, both Rust and the JVM reach a bounds exception at the read when `k=0`. A layout that saves the fill value in another local passed. Missing and wrong stores failed at the back edge and store, respectively. A guard that rejects empty ranges stopped at `strictRangeCheck@2`, where the valid input allows equality and the branch tests strict inequality. The JVM then demonstrated the exception. Omitting an exit frame, distinct-root read or loop decrease also failed. [JVM observations and first unproved steps](evidence/range-proof/results.json)
+
+| Route | Certificate | Generate, median time / peak RSS | Check, median time / peak RSS |
+|---|---:|---:|---:|
+| Direct JDK fill | 1,197 bytes | 439 ms / 86.3 MiB | 1.24 ms / 1.79 MiB |
+| Original 337 caller and JDK callee | 1,683 bytes | 630 ms / 86.7 MiB | 1.28 ms / 1.79 MiB |
+
+The transfer reused the class reader, branch decoder, obligation keys and isolated process. The Rust change added 633 lines and removed 7 across seven files, including the concrete refutations. Of these, 308 lines implement the range induction and 281 implement the caller and witness domains. The 63 model calls through the implementation commit cost an estimated $5.67 at the repository's prices. The qualification job took 9.4 seconds. [Effort and measurement boundary](evidence/effort.json) · [Qualification receipt](../../../verification/results/2026/11/23/20261123-204925-qualify-jdk-range-fill-and-the-independe/result.json)
+
+The next reuse measurement is the JDK `long[]` range-fill overload. Its disassembly retains the same bounds, guard and induction head, moves the cursor to local 5 and uses `lastore` for the 64-bit value. Measure that transfer before widening opcode coverage or budgeting a production rollout. [Pinned JDK disassembly](../../../examples/337-jdk-range-fill-alias/records/array-induction/fill-any-length/6b85ebd4829039081f32/class.javap)
 
 ## Replay
 
@@ -66,8 +81,17 @@ K=lib/benchmark/trusted-kernel
 python3 -B "$K/consumer.py" rust "$K/requests/Ints.request" "$K/evidence/transfer/Ints/evidence.cert" "$K/inputs/Ints.bin" "$K/inputs/IntsMethodsForWeb.bin"
 python3 -B "$K/consumer.py" rust "$K/requests/Longs.request" "$K/evidence/transfer/Longs/evidence.cert" "$K/inputs/Longs.bin"
 python3 -B "$K/consumer.py" lean "$K/requests/add.request" "$K/evidence/scalar/add.cert" "$K/inputs/Scalar.bin"
+python3 -B "$K/range_qualification.py" --check
 python3 -B "$K/bounded_sat.py" --check
 python3 -B "$K/decision_evidence.py" --check
 ```
 
 Use `shifted.request` and `shifted.cert` together for the Lean negative. The Rust CLI accepts user-supplied inputs. Exit 0 means accepted, 2 rejected, and 3 unsupported. The clean-replay job rebuilt the frozen and final consumers and replayed their saved cases. [Clean replay receipt](evidence/clean-replay.json)
+
+For an individual range request, extract the pinned class from the installed Temurin 21.0.13+9 JDK. The caller and its dependency are separate inputs to the isolated checker.
+
+```bash
+R="$K/evidence/range-proof"
+python3 -B "$K/range_qualification.py" --extract-arrays "$TMPDIR/Arrays.class"
+python3 -B "$K/consumer.py" rust "$R/caller-any-length.request" "$R/caller-any-length.cert" "$R/original.bin" "$TMPDIR/Arrays.class"
+```

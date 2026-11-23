@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-205832-replay-original-solver-failures-on-the-i",
+  "title": "Replay original solver failures on the independently witnessed inputs",
+  "description": "Recheck the saved 14 range bundles in a separate checkout and process. Regenerate the unaltered Guava heap-writing proof, bind its complete original SMT by digest, and replay its failing frame obligation and the 337 caller-read obligation with only the actual JVM witness inputs fixed. Check each original scope also with a benign input, then replay the committed formulas without the producer.",
+  "kind": "library",
+  "capabilities": [
+    "independent-java-proof",
+    "array-induction"
+  ],
+  "links": {
+    "examples": [
+      "337",
+      "336"
+    ]
+  },
+  "expected": "All 14 saved Rust outcomes repeat. The two original failing VCs are SAT at their witnessed inputs and UNSAT on their corresponding benign controls, under the pinned Z3.",
+  "submitted": {
+    "at": "2026-11-23T20:58:32+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "python3",
+    "rustc",
+    "java",
+    "javap",
+    "setpriv",
+    "z3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Replay the saved range certificates",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/range_qualification.py --check",
+      "cwd": "."
+    },
+    {
+      "name": "Bind the original failing conditions to concrete inputs",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/frame_witness.py --record lib/benchmark/trusted-kernel/evidence/frame-witness",
+      "cwd": "."
+    },
+    {
+      "name": "Recheck both saved original solver scopes",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/frame_witness.py --check",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/evidence/frame-witness"
+  ]
+}

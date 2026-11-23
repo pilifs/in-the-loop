@@ -78,8 +78,8 @@
       "bytes": 21056
     },
     "evidence/effort.json": {
-      "sha256": "6168552a72a2c500b963b434682f27b3cd4044e80239081848ce2cfd33799b56",
-      "bytes": 1803
+      "sha256": "d8d58143646aa82520e988810c10d961a6bbf29c7dc079456b951836ed448603",
+      "bytes": 3248
     },
     "evidence/freeze/Ints/artifact.bin": {
       "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
@@ -260,6 +260,10 @@
     "evidence/range-proof/original.bin": {
       "sha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
       "bytes": 505
+    },
+    "evidence/range-proof/results.json": {
+      "sha256": "5a4aaba4f313edb5af30211afc1dd7ce35a8b8f5e6fea8f7dea3c5c5e847fcc8",
+      "bytes": 28463
     },
     "evidence/range-proof/saved-local.cert": {
       "sha256": "38f136ab607bbd67f03a99ee656c54a07d81e3ca2390f9595e4fda59b53cf71d",
@@ -637,6 +641,14 @@
       "summary": "passed: 1 passed step(s) in 16.2s, peak 158.7 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed",
       "attention": [],
       "receipt": "verification/results/2026/11/23/20261123-200520-measure-the-range-fill-and-aliased-calle/result.json"
+    },
+    {
+      "id": "20261123-204925-qualify-jdk-range-fill-and-the-independe",
+      "status": "passed",
+      "sourceCommit": "9e9006dcc7c021a2e46fa633b28666c6a8539b97",
+      "summary": "passed: 1 passed step(s) in 9.4s, peak 109.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+      "attention": [],
+      "receipt": "verification/results/2026/11/23/20261123-204925-qualify-jdk-range-fill-and-the-independe/result.json"
     }
   ],
   "key": [
@@ -2178,6 +2190,215 @@
         "cases 75 shared 15 distinct 60 observed-mismatch 4 frame-mismatch 31"
       ],
       "evidence": "range-fill.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+      "requestedClaim": "130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5",
+      "control": "fill-any-length",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "accepted",
+      "actual": "accepted",
+      "reason": "accepted range-fill-frame-v1 java/util/Arrays#fill([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab request 130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5 obligations 37",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "requestedClaim": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
+      "control": "caller-any-length",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "accepted",
+      "actual": "accepted",
+      "reason": "accepted range-fill-caller-frame-observation-v1 fill/Range#observe([I[IIIII)I companion fill([IIII)V environment initialized-verified-jvm-v1 class 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742 request ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9 obligations 51",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+      "requestedClaim": "e0d37834af4cf3309a5d5c1b8b67315741e9fef41475f40c0755ee9f93cfe545",
+      "control": "caller-extra-any-length",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected checked witness shared [11], from=0 to=0 value=7 k=0: returned 7, after [7], expected 11 and [11]; first rule: callee write interval or arguments at 17: [Root, From, Next, Value]",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "a1e70a9f14b89a97ed47739c9e8b5224c1fcc07f2ce2300024cabf79ae9247c7",
+      "control": "saved-local",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "accepted",
+      "actual": "accepted",
+      "reason": "accepted range-fill-frame-v1 fixtures/RangeLoops#savedValue([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a request a1e70a9f14b89a97ed47739c9e8b5224c1fcc07f2ce2300024cabf79ae9247c7 obligations 39",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "6456c75d0d2a8b9f4672bdec8ae01745e223a6172ba5614858796ac5b96468ff",
+      "control": "missing-store",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected written prefix or progress at back edge 19",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "735d45547de1b2191403225a1957e3ec8be23a1fa392b9ed043448365f0077a2",
+      "control": "wrong-value",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected written prefix or outside frame at store 20",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "fdedc369085ea68310fb7de2589d5ad2a03a24c064222d86fa74390230150893",
+      "control": "strict-empty-guard",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "unsupported",
+      "actual": "unsupported",
+      "reason": "unsupported range guard From Lt To at strictRangeCheck@2",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "9f8bf21820950778f9ee51dbfc8e82499506f65921c53f7503ee7ec0a87f8a08",
+      "control": "wrong-observed-root",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected checked witness distinct a=[] other=[31], from=0 to=0 value=7 k=0: array bounds exception at read 11, expected normal return 31; first rule: caller read needs a valid index in the observed root",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "requestedClaim": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
+      "control": "omit-caller-frame",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected missing obligation observe([I[IIIII)I@12>exit exact-write-frame",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "requestedClaim": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
+      "control": "omit-distinct-read",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected missing obligation observe([I[IIIII)I@11>12 distinct-root",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "requestedClaim": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
+      "control": "omit-loop-decrease",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected missing obligation fill([IIII)V@24>10 variant-decreases",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "requestedClaim": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
+      "control": "missing-callee",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected expected one external callee class",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "requestedClaim": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
+      "control": "substitute-callee",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "rejected",
+      "actual": "rejected",
+      "reason": "rejected external callee class digest",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Rust range",
+      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
+      "requestedClaim": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
+      "control": "wrong-loop-slot",
+      "checkerVersion": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+      "expected": "unsupported",
+      "actual": "unsupported",
+      "reason": "unsupported range cut point or cursor",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Temurin 21 JVM",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "a1e70a9f14b89a97ed47739c9e8b5224c1fcc07f2ce2300024cabf79ae9247c7",
+      "control": "saved-local",
+      "checkerVersion": "openjdk 21.0.13 2026-10-20 LTS",
+      "expected": "sampled control held",
+      "actual": "sampled control held",
+      "reason": "savedValue [7, 19]",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Temurin 21 JVM",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "6456c75d0d2a8b9f4672bdec8ae01745e223a6172ba5614858796ac5b96468ff",
+      "control": "missing-store",
+      "checkerVersion": "openjdk 21.0.13 2026-10-20 LTS",
+      "expected": "replayed refutation",
+      "actual": "replayed refutation",
+      "reason": "missingStore [11, 19]",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Temurin 21 JVM",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "735d45547de1b2191403225a1957e3ec8be23a1fa392b9ed043448365f0077a2",
+      "control": "wrong-value",
+      "checkerVersion": "openjdk 21.0.13 2026-10-20 LTS",
+      "expected": "replayed refutation",
+      "actual": "replayed refutation",
+      "reason": "wrongValue [0, 19]",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Temurin 21 JVM",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "fdedc369085ea68310fb7de2589d5ad2a03a24c064222d86fa74390230150893",
+      "control": "strict-empty-guard",
+      "checkerVersion": "openjdk 21.0.13 2026-10-20 LTS",
+      "expected": "replayed refutation",
+      "actual": "replayed refutation",
+      "reason": "rejectsEmpty IllegalArgumentException",
+      "evidence": "range-proof/results.json"
+    },
+    {
+      "route": "Temurin 21 JVM",
+      "classSha256": "9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a",
+      "requestedClaim": "9f8bf21820950778f9ee51dbfc8e82499506f65921c53f7503ee7ec0a87f8a08",
+      "control": "wrong-observed-root",
+      "checkerVersion": "openjdk 21.0.13 2026-10-20 LTS",
+      "expected": "replayed refutation",
+      "actual": "replayed refutation",
+      "reason": "readsFilledRoot ArrayIndexOutOfBoundsException",
+      "evidence": "range-proof/results.json"
     }
   ],
   "coverage": {

@@ -126,7 +126,7 @@ Deliver one replay command for each completed route, a minimal immutable evidenc
   checksum-checked: `$B/releases/guava-33.4.8-jre/lib/`; sources jars beside it. The preparer's cache
   (`~/.cache/in-the-loop/targets/sha256/`) already holds what 336 and 346 list.
 - The class bytes, extracted: `$B/classes/guava-33.4.8-jre/com/google/common/primitives/`. `Ints.class`
-  `ae581f72…a7151`, `IntsMethodsForWeb.class` (its superclass) `a31b9770…17bd6`, `Longs.class` `b8c75a5f…96d9`; all
+  `ae581f72…4edbb`, `IntsMethodsForWeb.class` (its superclass) `a31b9770…17bd6`, `Longs.class` `b8c75a5f…96d9`; all
   equal to the existing records. `javap` of each: `$B/logs/javap-*.txt`.
 - Guava source at the release commit `f06690fa`: `$B/src/guava-33.4.8`.
 - CaDiCaL 1.9.5 CLI: `$B/src/cadical-1.9.5/build/cadical`. `cake_lpr`: `$B/src/cake_lpr-033aad53/cake_lpr`. LRAT
@@ -172,4 +172,4 @@ None of the brief's mutants exists yet.
 
 The independent Rust consumer proved both original public Guava calls at full scope. The frozen int checker first refused the long descriptor. The transfer added 49 net lines on the acceptance path and kept the certificate format and induction invariant. Six rebound behavioral mutants have checked witnesses. The Lean scalar theorem is bound to the compiled bytes. The LRAT comparison certified every observed UNSAT in the bounded Guava task and the prefix-sums workload.
 
-The decision recommends one further write-frame family in example 337. Its historical extra-write caller remains unresolved at the caller-read obligation. A separate JVM run demonstrates a wrong return on a shared singleton. [Decision, costs and replay commands](../../lib/benchmark/trusted-kernel/README.md) · [Per-case results and artifact digests](../../lib/benchmark/trusted-kernel/evidence/cases.json)
+The follow-up proved the exact JDK range-fill frame and example 337's original caller observation for every valid range and both alias relationships. Its extra-write caller has a checked counterexample on a shared singleton. The historical producer's caller-read obligation remains unresolved. A second caller control reaches a bounds exception with distinct arrays of lengths zero and one. The clean Rust checks of the original fill and caller took 1.24 and 1.28 ms. [Decision, costs and replay commands](../../lib/benchmark/trusted-kernel/README.md) · [Per-case results and artifact digests](../../lib/benchmark/trusted-kernel/evidence/cases.json)

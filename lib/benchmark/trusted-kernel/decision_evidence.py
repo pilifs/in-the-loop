@@ -38,6 +38,7 @@ def job_ledger():
         "20261123-200519-reconcile-both-guava-solver-passes-with",
         "20261123-200519-replay-clean-java-proof-bundles-and-meas",
         "20261123-200520-measure-the-range-fill-and-aliased-calle",
+        "20261123-204925-qualify-jdk-range-fill-and-the-independe",
     )
     root = HERE.parents[2]
     result = []
@@ -298,6 +299,68 @@ def report():
             physical["stdout"],
             "range-fill.json",
         )
+    rel = "range-proof/results.json"
+    transfer = read(EV / rel)
+    version = transfer["checker"]["binarySha256"]
+    require(transfer["previousGuavaCasesReplayed"] == 18, "range checker Guava regressions")
+    for name, sha in transfer["consumerSources"].items():
+        require(digest((HERE / name).read_bytes()) == sha, "range checker source " + name)
+    rows = {r["control"]: r for r in transfer["cases"]}
+    require(len(rows) == len(transfer["cases"]) == 14, "range case inventory")
+    for control, r in rows.items():
+        require(
+            r["checkerVersion"] == version and r["reason"].split()[0] == r["actual"],
+            "range checker version or disposition",
+        )
+        folder = EV / "range-proof"
+        req = folder / (control + ".request")
+        if req.exists():
+            cert = folder / (control + ".cert")
+            require(
+                digest(req.read_bytes()) == r["requestedClaim"]
+                and digest(cert.read_bytes()) == r["certificateSha256"],
+                "range input binding",
+            )
+            fields = dict(line.split(" ", 1) for line in req.read_text().splitlines())
+            owner, bound = fields["class"].split()
+            require(bound == r["classSha256"] and len(r["checking"]["checks"]) == 3, "range class or samples")
+            artifact = {
+                "fill/Range": "extra.bin" if control == "caller-extra-any-length" else "original.bin",
+                "fixtures/RangeLoops": "loops.bin",
+            }.get(owner)
+            if artifact:
+                require(digest((folder / artifact).read_bytes()) == bound, "range class bytes")
+            if "callee" in fields:
+                require(
+                    fields["callee"].split() == ["java/util/Arrays", rows["fill-any-length"]["classSha256"]]
+                    and r["calleeClassSha256"] == [rows["fill-any-length"]["classSha256"]],
+                    "range callee",
+                )
+        case(
+            r["route"],
+            r["classSha256"],
+            r["requestedClaim"],
+            control,
+            version,
+            r["expected"],
+            r["actual"],
+            r["reason"],
+            rel,
+        )
+    physical = transfer["jvm"]["rebound-controls"]
+    fixtures = [
+        ("saved-local", "savedValue [7, 19]", "sampled control held"),
+        ("missing-store", "missingStore [11, 19]", "replayed refutation"),
+        ("wrong-value", "wrongValue [0, 19]", "replayed refutation"),
+        ("strict-empty-guard", "rejectsEmpty IllegalArgumentException", "replayed refutation"),
+        ("wrong-observed-root", "readsFilledRoot ArrayIndexOutOfBoundsException", "replayed refutation"),
+    ]
+    require(len(physical) == len(fixtures), "JVM range controls")
+    for (control, expected, disposition), observed in zip(fixtures, physical):
+        require(expected == observed, "JVM range control " + control)
+        r = rows[control]
+        case("Temurin 21 JVM", r["classSha256"], r["requestedClaim"], control, transfer["runtime"],
+             disposition, disposition, observed, rel)
     keys = {
         (
             r["route"],

@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T20:51:58.250Z",
-  "duration_seconds": 118091,
+  "ended": "2026-11-23T21:06:31.545Z",
+  "duration_seconds": 118964,
   "stats": {
     "turns": 24,
-    "api_calls": 4760,
-    "tool_calls": 10974,
-    "tool_errors": 304,
+    "api_calls": 4810,
+    "tool_calls": 11126,
+    "tool_errors": 311,
     "compactions": 19,
     "peak_context_tokens": 550375,
     "usage": {
-      "input_tokens": 6847020,
-      "output_tokens": 2235604,
-      "cache_read_input_tokens": 1288160128,
+      "input_tokens": 6907894,
+      "output_tokens": 2262523,
+      "cache_read_input_tokens": 1298083712,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5913,
-    "exec": 4365,
-    "apply_patch": 425,
+    "Bash": 6011,
+    "exec": 4415,
+    "apply_patch": 429,
     "wait": 157,
     "sleep": 44,
     "send_message": 25,
@@ -148,10 +148,12 @@
     "lib/benchmark/spring-java-data/role_edge.py",
     "lib/benchmark/spring-java-data/scorecard.py",
     "lib/benchmark/spring-java-data/test_spring_startup_evidence.py",
+    "lib/benchmark/trusted-kernel/README.md",
     "lib/benchmark/trusted-kernel/assurance.md",
     "lib/benchmark/trusted-kernel/bytecode.rs",
     "lib/benchmark/trusted-kernel/classfile.rs",
     "lib/benchmark/trusted-kernel/decision_evidence.py",
+    "lib/benchmark/trusted-kernel/frame_witness.py",
     "lib/benchmark/trusted-kernel/index.rs",
     "lib/benchmark/trusted-kernel/java/RangeLoops.java",
     "lib/benchmark/trusted-kernel/main.rs",
@@ -227,6 +229,7 @@
     "lib/tests/fixtures/values/values/Operations.java",
     "lib/tests/integration.rs",
     "lib/tests/values.rs",
+    "llm-dlc/loops/in-the-loop-trusted-kernel-experiment-brief.md",
     "llm-dlc/loops/java-domain-proof-campaign-results.md",
     "llm-dlc/loops/java-domain-proof-campaign.md",
     "llm-dlc/loops/jbmc-java-semantics-gap-brief.md",
@@ -509,24 +512,24 @@
     {
       "index": 19,
       "started": "2026-11-23T20:33:28.261Z",
-      "ended": "2026-11-23T20:51:58.250Z",
+      "ended": "2026-11-23T21:06:31.545Z",
       "turns": 1,
-      "api_calls": 63,
+      "api_calls": 113,
       "usage": {
-        "input_tokens": 156282,
-        "output_tokens": 37577,
-        "cache_read_input_tokens": 7286016,
+        "input_tokens": 217156,
+        "output_tokens": 64496,
+        "cache_read_input_tokens": 17209600,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 165238
+      "peak_context_tokens": 222388
     }
   ],
   "log": {
-    "sha256": "820d86fb9ff414ac41c56679dedb13b5c984f68a25bb180f9f746e60b0738ca9",
-    "bytes": 70902377,
-    "lines": 36019,
-    "gzip_bytes": 13278744,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/820d86fb9ff414ac41c56679dedb13b5c984f68a25bb180f9f746e60b0738ca9.jsonl.gz"
+    "sha256": "0800120f6fe7cdb5ff91ce79719a2191ab7769fd7d5d2b4f7a28609570c6119d",
+    "bytes": 71494139,
+    "lines": 36433,
+    "gzip_bytes": 13374158,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/0800120f6fe7cdb5ff91ce79719a2191ab7769fd7d5d2b4f7a28609570c6119d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -2225,6 +2228,30 @@
       "summary": "Check JDK range fill and its caller frame (verification pending)",
       "body": "Starting from the sealed Guava checker, prove the valid-range guards, growing written prefix, unchanged outside heap and signed termination for the released Arrays.fill. Bind the caller and callee separately and prove the observed value for shared and independently sized roots. Rebound controls distinguish missing writes, the wrong cell value, invalid empty-range handling and observing the wrong root.\n\nBuilt the opt-in Rust kernel with warnings denied. Capped probes accepted the original JDK fill and 337 caller, refuted the original extra-write caller on a shared singleton and checked a bounds exception with distinct lengths. The changed suite passed all five groups, including 59 Rust test binaries. Job 20261123-204925-qualify-jdk-range-fill-and-the-independe rebuilds the bundles, rechecks 14 range cases and the 18 previous Guava controls, compares real JVM behavior and measures clean check costs.",
       "log_sha256": "820d86fb9ff414ac41c56679dedb13b5c984f68a25bb180f9f746e60b0738ca9"
+    },
+    {
+      "change_id": "mryyxynrmvzorkxxxmynooyxwqklzrlp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decision D001 on trusted-kernel (continue)",
+      "body": "Cycle 1 proved both public Guava indexOf methods with an independent Rust checker from release bytes and recommended advancing to Arrays.fill. The watcher continued for one cycle, because the brief's own criterion of a producer error that has lost the ability to cause acceptance (the corrupted historical producer) is still unmeasured, and the 337 historical induction result is unresolved. Decision record only.",
+      "log_sha256": "0800120f6fe7cdb5ff91ce79719a2191ab7769fd7d5d2b4f7a28609570c6119d"
+    },
+    {
+      "change_id": "mtnrknsmxxpvunqnnkyyuvuuouqnxupn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261123-204925-qualify-jdk-range-fill-and-the-independe: passed: 1 passed step(s) in 9.4s, peak 109.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel run, which keeps the queue while the run is under way.",
+      "log_sha256": "0800120f6fe7cdb5ff91ce79719a2191ab7769fd7d5d2b4f7a28609570c6119d"
+    },
+    {
+      "change_id": "mokloprplpnponwtolypvvtotmwzvzpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay original frame failures on JVM inputs (verification pending)",
+      "body": "Land the passing range qualification and retain its 14 Rust outcomes, five new JVM controls, 18 Guava regressions and median costs. The JDK fill and its caller check in 1.24 and 1.28 ms. The case ledger now records 107 outcomes. Update the decision and correct the abbreviated Ints.class hash in the setup notes.\n\nAdd a witness replay for the genuine historical Guava frame and JDK caller-read conditions. It binds the unaltered formula and failing query scope by digest and adds only concrete input equalities. Job 20261123-205832-replay-original-solver-failures-on-the-i also rechecks the saved range bundles in a separate checkout. Verified the 337 scope extraction byte for byte, checked every local decision link and passed all five selected test groups.",
+      "log_sha256": "0800120f6fe7cdb5ff91ce79719a2191ab7769fd7d5d2b4f7a28609570c6119d"
     }
   ],
   "logs": {
@@ -2245,6 +2272,12 @@
       "lines": 7956,
       "gzip_bytes": 8651415,
       "url": "https://terminalvalue.net/raw-traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/053a8a33c4dc1970f6d4d70bc31c02abc12701482c37c0bd5f6b72c832685f5d.jsonl.gz"
+    },
+    "0800120f6fe7cdb5ff91ce79719a2191ab7769fd7d5d2b4f7a28609570c6119d": {
+      "bytes": 71494139,
+      "lines": 36433,
+      "gzip_bytes": 13374158,
+      "url": null
     },
     "0ce5f557b5730881c7d5eaed2bdd01f28a7bfdae24cb97b56991a8c11dae35da": {
       "bytes": 23835789,
