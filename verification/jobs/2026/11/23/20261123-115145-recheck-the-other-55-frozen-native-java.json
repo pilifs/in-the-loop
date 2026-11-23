@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-115145-recheck-the-other-55-frozen-native-java",
+  "title": "Recheck the other 55 frozen native Java statements after array binding",
+  "description": "Run all 20 other original caller classpaths at their frozen 120-second budgets on the same checker. Compare claim, class and JDK digests, keep open results, and reject loss of a previous proof or original-JVM-confirmed violation.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Every frozen input matches its earlier measurement and all earlier native decisions qualify again.",
+  "submitted": {
+    "at": "2026-11-23T11:51:45+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Repeat the other native classpaths",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/direct_arrays.py --controls",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/direct-arrays/lists",
+    "verification/java-semantics-gap/direct-arrays/numbers",
+    "verification/java-semantics-gap/direct-arrays/prefix",
+    "verification/java-semantics-gap/direct-arrays/receiver",
+    "verification/java-semantics-gap/direct-arrays/stores",
+    "verification/java-semantics-gap/direct-arrays/store-iterator",
+    "verification/java-semantics-gap/direct-arrays/dispatch",
+    "verification/java-semantics-gap/direct-arrays/endian",
+    "verification/java-semantics-gap/direct-arrays/surrogates",
+    "verification/java-semantics-gap/direct-arrays/deque",
+    "verification/java-semantics-gap/direct-arrays/construction",
+    "verification/java-semantics-gap/direct-arrays/radix",
+    "verification/java-semantics-gap/direct-arrays/nibble",
+    "verification/java-semantics-gap/direct-arrays/enum",
+    "verification/java-semantics-gap/direct-arrays/locals",
+    "verification/java-semantics-gap/direct-arrays/monitors",
+    "verification/java-semantics-gap/direct-arrays/gson-parent",
+    "verification/java-semantics-gap/direct-arrays/guava-parent",
+    "verification/java-semantics-gap/direct-arrays/gson-fix",
+    "verification/java-semantics-gap/direct-arrays/guava-fix"
+  ]
+}

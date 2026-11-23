@@ -36,7 +36,9 @@
 //! [`Options::parameters`] lets it be, a symbolic reference then), a read is a choice among the cells by the index and a write a
 //! conditional update of each, and an index out of bounds or a negative size is a branch to the exception, as a
 //! division by zero is. An array of references holds an object or null per cell, and an index into one that is not
-//! a constant splits the path per cell. An application class's static fields are path state, and its initializer
+//! a constant splits the path per cell. A direct array of a flat final application class admits null
+//! cells, every partition of the other cells into shared objects, and arbitrary writable int fields
+//! (`reference_inputs`). An application class's static fields are path state, and its initializer
 //! runs where the JVM runs it (JVMS §5.5); an enum's is one, its constants made through `java.lang.Enum`'s model
 //! and its `$VALUES` an array of references. IEEE 754 comparisons and signed zero use raw bit-vectors.
 //! Arithmetic over bounded floating-point operands uses their complete reachable tuples. Unmodeled static state and the rest of the
@@ -120,6 +122,7 @@ mod calendar;
 mod class_tables;
 mod jar_resources;
 mod reference_queues;
+pub(crate) mod reference_inputs;
 mod generic_interfaces;
 mod map_views;
 mod enum_universe;
@@ -579,13 +582,14 @@ impl Stats {
     }
 }
 
-/// Why a parameter type is outside the fragment, if it is. A `String` is in it under a bound
-/// ([`Parameters::max_string_length`]).
+/// The type filter at entry. Strings also require a length bound, and an application array's
+/// component and accompanying parameters must pass the classpath check in `reference_inputs::shape`.
 pub fn unsupported_parameter(t: &Type) -> Option<String> {
     match t {
         Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long => None,
         Type::Array(element) if matches!(**element, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long) => None,
         Type::Array(element) if is_string(element) => None,
+        t if reference_inputs::component(t).is_some() => None,
         t if is_string(t) => None,
         other => Some(format!("a {} parameter", other.java_name())),
     }
@@ -1482,6 +1486,7 @@ struct Engine<'a> {
     /// Each `String[]` parameter's own array, by slot: its length, and for each cell whether it is null, and the
     /// length and code units of the String it holds otherwise.
     string_arrays: Vec<(u32, Bits, Vec<(Lit, Bits, Vec<Bits>)>)>,
+    object_arrays: Vec<reference_inputs::InputArray>,
     /// The array parameters that are a choice ([`Parameters`]): slot, and each option's guard with the slot whose
     /// own array it is, or null.
     choices: Vec<(u32, Vec<(Lit, Option<u32>)>)>,
@@ -1603,6 +1608,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         params: Vec::new(),
         arrays: Vec::new(),
         string_arrays: Vec::new(),
+        object_arrays: Vec::new(),
         assumed: Default::default(),
         trig_brackets: HashMap::new(),
         assumption_ids: Default::default(),
@@ -1696,6 +1702,10 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         // Each array parameter's own array: slot, type and object.
         let mut own: Vec<(u32, Type, usize)> = Vec::new();
         let options_in = &options.parameters;
+        let object_shape = match reference_inputs::shape(cp, &descriptor.params, options.max_array_length) {
+            Ok(shape) => shape,
+            Err(why) => break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(why))),
+        };
         for t in &descriptor.params {
             if let Some(why) = unsupported_parameter(t) {
                 break 'search Ok(outcome(&engine, Verdict::Unverifiable, Input::default(), None, Some(format!("outside the fragment: {why}"))));
@@ -1737,6 +1747,8 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
                     }
                     engine.string_arrays.push((slot, length.clone(), elements));
                     objects.push(Obj { array: Some(Array { element, length, cells: Vec::new(), refs }), ..Obj::new(&class) });
+                } else if let Some(shape) = &object_shape {
+                    engine.object_arrays.push(reference_inputs::InputArray::allocate(shape, slot, length, bound, &mut engine.b, &mut objects));
                 } else {
                     let cells: Vec<Bits> = (0..bound).map(|_| engine.b.fresh(cell_width(&element))).collect();
                     engine.arrays.push((slot, element.clone(), length.clone(), cells.clone()));
@@ -2245,6 +2257,9 @@ impl<'a> Engine<'a> {
                 values.extend(cells.iter().map(|c| (Type::Char, self.b.extend_cell(&Type::Char, c))));
             }
         }
+        for array in &self.object_arrays {
+            values.extend(array.field_words().map(|bits| (Type::Int, bits.clone())));
+        }
         for (t, bits) in values {
             if t == Type::Boolean {
                 continue;
@@ -2377,6 +2392,9 @@ impl<'a> Engine<'a> {
             input.scalars.insert(*slot, unsigned(t, self.b.eval(bits)).to_string());
         }
         let contents = |own: u32| -> Option<Vec<String>> {
+            if let Some(array) = self.object_arrays.iter().find(|a| a.slot == own) {
+                return Some(array.witness(&self.b));
+            }
             // A String[]'s cells, each as [`string_element`] spells it.
             if let Some((_, length, elements)) = self.string_arrays.iter().find(|(s, ..)| *s == own) {
                 let n = usize::try_from(self.b.eval(length)).unwrap_or(0).min(elements.len());
@@ -2391,7 +2409,8 @@ impl<'a> Engine<'a> {
         };
         // Which array each parameter holds (its own, unless it is a choice), and the first parameter to hold each.
         let mut first: BTreeMap<u32, u32> = BTreeMap::new();
-        let mut slots: Vec<u32> = self.arrays.iter().map(|(s, ..)| *s).chain(self.string_arrays.iter().map(|(s, ..)| *s)).collect();
+        let mut slots: Vec<u32> = self.arrays.iter().map(|(s, ..)| *s).chain(self.string_arrays.iter().map(|(s, ..)| *s))
+            .chain(self.object_arrays.iter().map(|a| a.slot)).collect();
         slots.sort_unstable();
         for slot in &slots {
             let held = match self.choices.iter().find(|(s, _)| s == slot) {

@@ -12,7 +12,7 @@ use crate::classfile::{MethodDescriptor, Type};
 use crate::classpath::ClassPath;
 use crate::harness::{self, Layout, Param, Slot};
 use crate::interp::{render, Fault, Machine, Object, Ref, Value};
-use crate::jbmc::Argument;
+use crate::jbmc::{Argument, ObjectCell};
 use crate::shrink::{self, Shrunk};
 use crate::spec::plans::WitnessValue;
 use crate::values::ValueAdapter;
@@ -27,6 +27,7 @@ pub fn argument(argument: &Argument, t: &Type) -> String {
         (Argument::Array(_), _) => "<array>".into(),
         (Argument::String(units), _) => string_literal(units),
         (Argument::Strings(items), _) => strings_literal(items),
+        (Argument::Objects(cells), _) => serde_json::to_string(cells).expect("an object array is JSON"),
         (Argument::Null, _) => "null".into(),
         (Argument::Same(i), _) => format!("@{i}"),
     }
@@ -80,7 +81,7 @@ pub fn locals_of(params: &[Param], arguments: &[Argument], arrays_after: &[(u16,
                 Value::Ref(k as Ref + 1)
             }
             // A String is a reference of its own, which no expression reads into; so is an array of them.
-            Argument::String(_) | Argument::Strings(_) => Value::Ref(k as Ref + 1),
+            Argument::String(_) | Argument::Strings(_) | Argument::Objects(_) => Value::Ref(k as Ref + 1),
             Argument::Null => Value::Null,
             Argument::Same(i) => {
                 if let Some((_, d)) = arrays.iter().find(|(s, _)| Some(*s) == params.get(*i).map(|q| q.slot)).cloned() {
@@ -305,6 +306,7 @@ pub fn exact_argument(argument: &Argument, t: &Type) -> serde_json::Value {
             Some(units) => serde_json::to_value(crate::spec::plans::WitnessValue::String { units: units.clone() }).unwrap_or_default(),
             None => serde_json::Value::Null,
         }).collect()),
+        (Argument::Objects(cells), _) => serde_json::to_value(cells).expect("an object array is JSON"),
         (Argument::Scalar(v), _) => exact(*v, t),
         (Argument::Array(data), Type::Array(element)) => serde_json::Value::Array(data.iter().map(|v| exact(*v, element)).collect()),
         (Argument::Array(data), _) => serde_json::Value::Array(data.iter().map(|v| exact(*v, &Type::Int)).collect()),
@@ -416,7 +418,7 @@ fn typed_made(name: &str, record: &crate::harness::RecordType, arguments: &[Argu
 }
 
 /// The method's behaviour on a counterexample, replayed in the interpreter (or run on a JVM, [`crate::jvm_witness`]).
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Replayed {
     /// The outcome as text: the result, or the exception thrown.
     pub outcome: String,
@@ -526,7 +528,7 @@ impl Replayed {
 
 /// The argument values for a call in the interpreter, with each array allocated afresh, once: an argument that is
 /// the same array as an earlier one is passed that one.
-fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Value> {
+fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> crate::interp::Exec<Vec<Value>> {
     let mut values: Vec<Value> = Vec::with_capacity(arguments.len());
     for (argument, t) in arguments.iter().zip(types) {
         let v = match argument {
@@ -538,6 +540,25 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
                 let cells: Vec<Value> = items.iter().map(|s| s.as_deref().map(|units| crate::values::new_string(m, units)).unwrap_or(Value::Null)).collect();
                 m.new_array_of(Type::Object("java/lang/String".into()), cells)
             }
+            Argument::Objects(items) => {
+                let class = crate::bmc::reference_inputs::component(t).ok_or_else(|| Fault::Unsupported("object cells without a component class".into()))?;
+                let mut cells = Vec::with_capacity(items.len());
+                for cell in items {
+                    cells.push(match cell {
+                        ObjectCell::Null => Value::Null,
+                        ObjectCell::Same { index } => *cells.get(*index).ok_or_else(|| Fault::Unsupported(format!("invalid object cell {index}")))?,
+                        ObjectCell::Object { fields } => {
+                            let object = m.construct(class, "()V", Vec::new())?;
+                            for (name, value) in fields {
+                                m.get_field(object, name)?;
+                                m.put_field(object, name, Value::Int(*value))?;
+                            }
+                            object
+                        }
+                    });
+                }
+                m.new_array_of(Type::Object(class.into()), cells)
+            }
             Argument::Array(data) => {
                 let element = match t {
                     Type::Array(e) => (**e).clone(),
@@ -548,7 +569,7 @@ fn values_for(m: &mut Machine, arguments: &[Argument], types: &[Type]) -> Vec<Va
         };
         values.push(v);
     }
-    values
+    Ok(values)
 }
 
 /// Runs the counterexample through `class_internal.method` in the interpreter, with the effect monitor off.
@@ -576,7 +597,10 @@ fn replay_in_untimed(cp: &ClassPath, layout: &Layout, prefix: Option<&str>, clas
     m.monitor = false;
     let _ = m.begin_case();
     let ret = &signature.ret;
-    let flat = values_for(&mut m, arguments, &layout.types());
+    let flat = match values_for(&mut m, arguments, &layout.types()) {
+        Ok(values) => values,
+        Err(f) => return Replayed { outcome: format!("<could not replay: {}>", render::fault(&m, &f)), ..Default::default() },
+    };
     // What the choices make of each object parameter (step H2), as the harness does: null, the same object as an
     // earlier one, or its own.
     let chosen = layout.made_on(arguments);
@@ -1109,12 +1133,11 @@ pub fn fails_in_harness(cp: &ClassPath, harness_class: &str, types: &[Type], arg
 fn fails_in(m: &mut Machine, harness_class: &str, types: &[Type], arguments: &[Argument]) -> Option<bool> {
     let check_descriptor = format!("({})V", types.iter().map(Type::descriptor).collect::<String>());
     let mark = m.begin_case();
-    let values = values_for(m, arguments, types);
-    let verdict = match m.call_static(harness_class, harness::METHOD, &check_descriptor, values) {
+    let verdict = values_for(m, arguments, types).ok().and_then(|values| match m.call_static(harness_class, harness::METHOD, &check_descriptor, values) {
         Ok(_) => Some(false),
         Err(Fault::Throw(r)) if m.class_of(r) == "java/lang/AssertionError" => Some(true),
         Err(_) => None,
-    };
+    });
     m.end_case(mark);
     verdict
 }

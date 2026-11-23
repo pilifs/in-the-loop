@@ -20,7 +20,7 @@ use std::time::{Duration, Instant};
 use crate::classfile::writer::{ClassWriter, CodeBuilder, Label, MethodWriter};
 use crate::classfile::{flags, Cond, Kind, Type};
 use crate::interp::Value;
-use crate::jbmc::Argument;
+use crate::jbmc::{Argument, ObjectCell};
 use crate::witness::Replayed;
 
 /// The generated class.
@@ -70,7 +70,7 @@ pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], argum
 fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
     for t in types {
         // A String is passed as a new String of the witness's code units ([`push`]).
-        if crate::values::is_string(t) || crate::harness::is_string_array(t) {
+        if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::component(t).is_some() {
             continue;
         }
         let element = match t {
@@ -85,7 +85,18 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     let java = home.join("bin").join("java");
     let jdk = crate::bmc::gaps::jdk_release().unwrap_or_else(|| "of unknown version".into());
 
-    let mut writer = ClassWriter::new(CLASS);
+    // Writing a direct array's fields and invoking its constructor have ordinary package access.
+    let mut driver = CLASS.to_string();
+    if let Some(component) = types.iter().find_map(crate::bmc::reference_inputs::component) {
+        if let Some((package, _)) = component.rsplit_once('/') {
+            driver = format!("{package}/{CLASS}");
+        }
+        let cp = crate::witness::classpath(entries.iter().map(PathBuf::as_path)).map_err(|e| e.to_string())?;
+        while cp.application(&driver).map_err(|e| e.to_string())?.is_some() {
+            driver.push('$');
+        }
+    }
+    let mut writer = ClassWriter::new(&driver);
     writer.default_constructor();
     let check_descriptor = format!("({})V", types.iter().map(Type::descriptor).collect::<String>());
     let mut main = CodeBuilder::new();
@@ -198,7 +209,9 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
 
     let _ = std::fs::remove_dir_all(dir);
     std::fs::create_dir_all(dir).map_err(|e| format!("cannot write the JVM run into {}: {e}", dir.display()))?;
-    std::fs::write(dir.join(format!("{CLASS}.class")), writer.to_bytes()).map_err(|e| format!("cannot write the JVM run: {e}"))?;
+    let driver_path = dir.join(format!("{driver}.class"));
+    std::fs::create_dir_all(driver_path.parent().expect("a class in the run directory")).map_err(|e| e.to_string())?;
+    std::fs::write(driver_path, writer.to_bytes()).map_err(|e| format!("cannot write the JVM run: {e}"))?;
     let absolute = |p: &Path| std::path::absolute(p).unwrap_or_else(|_| p.to_path_buf());
     let mut class_path = vec![absolute(dir)];
     if open_classes(&dir.join(OPENED), harness_class, calls, entries)? {
@@ -211,7 +224,7 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     let mut child = Command::new(&java)
         .args(["-Xmx256m", "-XX:+UseSerialGC", "-XX:TieredStopAtLevel=1", "-XX:-UsePerfData", "-cp"])
         .arg(&class_path)
-        .arg(CLASS)
+        .arg(driver.replace('/', "."))
         .current_dir(dir)
         .stdout(stdout)
         .stderr(stderr)
@@ -528,6 +541,40 @@ fn push(a: &Argument, t: &Type, code: &mut CodeBuilder, writer: &mut ClassWriter
                 code.op(0x59); // dup
                 code.iconst(k as i32);
                 push(&Argument::String(units.clone()), &Type::Object("java/lang/String".into()), code, writer);
+                code.op(0x53); // aastore
+            }
+        }
+        (Argument::Objects(items), t) => {
+            let class = crate::bmc::reference_inputs::component(t).expect("checked direct component");
+            let component = writer.pool.class(class);
+            let init = writer.pool.method_ref(class, "<init>", "()V");
+            code.iconst(items.len() as i32);
+            code.op_u16(0xbd, component);
+            for (i, cell) in items.iter().enumerate() {
+                match cell {
+                    ObjectCell::Null => continue,
+                    ObjectCell::Same { index } => {
+                        code.op(0x59); // keep the array for the store
+                        code.op(0x59);
+                        code.iconst(*index as i32);
+                        code.op(0x32); // aaload the original object
+                        code.iconst(i as i32);
+                        code.op(0x5f); // swap index and object for aastore
+                    }
+                    ObjectCell::Object { fields } => {
+                        code.op(0x59);
+                        code.iconst(i as i32);
+                        code.op_u16(0xbb, component);
+                        code.op(0x59);
+                        code.op_u16(0xb7, init);
+                        for (name, value) in fields {
+                            code.op(0x59);
+                            push_scalar(Value::Int(*value), &Type::Int, code, writer);
+                            let field = writer.pool.field_ref(class, name, "I");
+                            code.op_u16(0xb5, field);
+                        }
+                    }
+                }
                 code.op(0x53); // aastore
             }
         }

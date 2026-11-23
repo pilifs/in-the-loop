@@ -1665,7 +1665,8 @@ pub fn domain(parts: Vec<(String, bool)>, max_array_length: u32) -> String {
 pub fn domain_of(params: &[Param], max_array_length: u32, nullable: &[String], groups: &[Vec<String>]) -> String {
     let is_array = |p: &Param| matches!(p.ty, Type::Array(_));
     let has_strings = params.iter().any(|p| crate::values::is_string(&p.ty) || is_string_array(&p.ty));
-    if nullable.is_empty() && groups.is_empty() && !has_strings {
+    let has_objects = params.iter().any(|p| crate::bmc::reference_inputs::component(&p.ty).is_some());
+    if nullable.is_empty() && groups.is_empty() && !has_strings && !has_objects {
         return domain(params.iter().map(|p| (format!("{}: {}", p.name, p.ty.java_name()), is_array(p))).collect(), max_array_length);
     }
     let or_null = |p: &Param| if nullable.contains(&p.name) { "or null" } else { "not null" };
@@ -1675,6 +1676,7 @@ pub fn domain_of(params: &[Param], max_array_length: u32, nullable: &[String], g
             // A String is a value of at most the bound in code units, and a String[] an array of such, null among them.
             _ if crate::values::is_string(&p.ty) => format!("{}: String of ≤ {max_array_length} code units, {}", p.name, or_null(p)),
             _ if is_string_array(&p.ty) => format!("{}: String[] of length ≤ {max_array_length}, {}, each element a String of ≤ {max_array_length} code units of its own or null", p.name, or_null(p)),
+            _ if crate::bmc::reference_inputs::component(&p.ty).is_some() => format!("{}: {} of length ≤ {max_array_length}, {}, cells null or fresh exact component instances with arbitrary int fields, any cells may share an instance", p.name, p.ty.java_name(), or_null(p)),
             (true, true) => format!("{}: {} of length ≤ {max_array_length}, or null", p.name, p.ty.java_name()),
             (true, false) => format!("{}: {} of length ≤ {max_array_length}, not null", p.name, p.ty.java_name()),
             (false, _) => format!("{}: {}", p.name, p.ty.java_name()),

@@ -550,6 +550,48 @@ fn compile_writers(name: &str, class: &str, source: &str) -> Option<PathBuf> {
 }
 
 #[test]
+fn direct_object_array_replays_field_values_and_aliases_in_a_named_package() {
+    jvmcontract::tool_tier!();
+    let source = r#"package arrayinput;
+        public class Heaps {
+            static final class Cell { int count, tag; }
+            static class Parent { int count; }
+            static final class Edge { Cell child; }
+            static final class Initialized { int count = 7; }
+            public static boolean history(Cell[] a) {
+                if (a == null || a.length != 4 || a[0] == null || a[1] != null
+                    || a[2] == null || a[0] == a[2] || a[0] != a[3]) return true;
+                if (a[0].count != Integer.MAX_VALUE || a[0].tag != 17
+                    || a[2].count != Integer.MAX_VALUE || a[2].tag != 17) return true;
+                a[0].count++;
+                return a[2].count == a[3].count;
+            }
+            public static boolean subtype(Parent[] a) { return true; }
+            public static boolean edge(Edge[] a) { return true; }
+            public static boolean constructor(Initialized[] a) { return true; }
+            public static boolean roots(Cell[] a, Cell[] b) { return true; }
+        }"#;
+    let Some(classes) = compile_writers("direct-object-array", "Heaps", source) else { return };
+    let mut options = property::Options::new(&[classes], "arrayinput.Heaps#history");
+    options.engine = jvmcontract::Engine::Native;
+    options.nullable = vec!["a".into()];
+    options.max_array_length = 4;
+    let result = property::run(&options).unwrap();
+    assert_eq!(result.verdict, Verdict::Violation, "{}", result.output);
+    assert!(result.replay.is_some_and(|r| r.by == "jvm" && r.reproduced), "{}", result.output);
+    let object = serde_json::json!({"fields": {"count": i32::MAX, "tag": 17}});
+    let cells = serde_json::json!([object, null, object, {"sameCell": 0}]);
+    assert_eq!(result.counterexample.unwrap().inputs[0].value, Some(cells));
+
+    for (method, reason) in [("subtype", "final direct subclass"), ("edge", "writable"), ("constructor", "only calls Object()"), ("roots", "sharing between their heaps")] {
+        options.target = format!("arrayinput.Heaps#{method}");
+        let refused = property::run(&options).unwrap();
+        assert_eq!(refused.verdict, Verdict::Unverifiable);
+        assert!(refused.problem.unwrap().contains(reason), "{method}");
+    }
+}
+
+#[test]
 fn native_identity_map_and_boxed_booleans_agree_with_the_jvm() {
     jvmcontract::tool_tier!();
     let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/identitymap/IdentityKeys.java");

@@ -4,6 +4,7 @@ from dataclasses import asdict
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -102,6 +103,32 @@ def replay_literal(typ, value):
     raise ValueError(f"no exact JVM reconstruction for {typ}")
 
 
+def replay_declaration(typ, name, value):
+    if not typ.endswith("[]") or value is None:
+        return f"{typ} {name} = {replay_literal(typ, value)};"
+    if not isinstance(value, list):
+        raise ValueError("an object-array witness must contain its cells")
+    component = typ[:-2]
+    lines = [f"{typ} {name} = new {component}[{len(value)}];"]
+    for i, cell in enumerate(value):
+        if cell is None:
+            continue
+        if isinstance(cell, dict) and set(cell) == {"sameCell"}:
+            j = cell["sameCell"]
+            if type(j) is not int or not 0 <= j < i or not isinstance(value[j], dict) or "fields" not in value[j]:
+                raise ValueError("an alias must name an earlier object")
+            lines.append(f"{name}[{i}] = {name}[{j}];")
+            continue
+        if not isinstance(cell, dict) or set(cell) != {"fields"} or not isinstance(cell["fields"], dict):
+            raise ValueError("an object cell must supply its initial fields")
+        lines.append(f"{name}[{i}] = new {component}();")
+        for field, initial in cell["fields"].items():
+            if not re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*", field) or type(initial) is not int or not -(1<<31) <= initial < (1<<31):
+                raise ValueError("invalid int field in an object cell")
+            lines.append(f"{name}[{i}].{field} = {initial};")
+    return "\n".join(lines)
+
+
 def replay_witness(subject, claim, data, work, cp, env):
     args = data.get("counterexample", {}).get("inputs")
     if args is None:
@@ -110,10 +137,9 @@ def replay_witness(subject, claim, data, work, cp, env):
     if len(args) != len(params):
         return {"outcome": "different parameter list"}
     try:
-        literals = [replay_literal(p[0], a["value"]) for p,a in zip(params,args)]
+        declared = "\n".join(replay_declaration(typ, name, a["value"]) for (typ, name), a in zip(params, args))
     except (ValueError, TypeError, KeyError):
         return {"outcome": "input reconstruction unsupported"}
-    declared = "\n".join(f"{typ} {name} = {literal};" for (typ,name),literal in zip(params,literals))
     guard = claim.guard or "true"
     call = f"{subject.owner}.{claim.method}({', '.join(p[1] for p in params)})"
     source = java_source(work/"OriginalWitness.java", "class OriginalWitness {public static void main(String[] args) throws Exception { check(); } static void check() throws Exception {\n"
