@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-191504-reproduce-both-guava-any-length-producer",
+  "title": "Reproduce both Guava any-length producer baselines",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 7.8s, peak 137.3 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (Ints original comparison and obligations) was held back 3.5s by its 1-CPU quota in 4.0s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Longs original comparison and obligations) was held back 2.4s by its 1-CPU quota in 3.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-191504-reproduce-both-guava-any-length-producer.json",
+    "sha256": "46a332b99b9bf6e04b37daecbb4fc0999cca25fe4c36e05128bf4c40a15920fe",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-191504-reproduce-both-guava-any-length-producer",
+      "title": "Reproduce both Guava any-length producer baselines",
+      "description": "Repeat the original 336 and 346 comparisons, regenerate each record in scratch, and require established with the named domain and proof obligations on the release bytes.",
+      "kind": "library",
+      "capabilities": [
+        "array-induction"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T19:15:04+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "python3",
+        "java",
+        "javap",
+        "z3"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Ints original comparison and obligations",
+          "run": "python3 -B lib/benchmark/trusted-kernel/baseline.py 336",
+          "cwd": "."
+        },
+        {
+          "name": "Longs original comparison and obligations",
+          "run": "python3 -B lib/benchmark/trusted-kernel/baseline.py 346",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/evidence/baseline"
+      ]
+    }
+  },
+  "sourceCommit": "3c41a8d9b697551a590c725d6945b6c416561338",
+  "startedAt": "2026-11-23T19:24:32+00:00",
+  "finishedAt": "2026-11-23T19:24:49+00:00",
+  "wallSeconds": 17.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1655333,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 143958016,
+    "wallSeconds": 7.8,
+    "cpuSeconds": 7.7,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Ints original comparison and obligations",
+      "run": "python3 -B lib/benchmark/trusted-kernel/baseline.py 336",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 4.009,
+      "cpuSeconds": 3.952,
+      "cpuThrottledSeconds": 3.5,
+      "peakMemoryBytes": 142909440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-ints-original-comparison-and-o.log",
+        "lines": 4,
+        "bytes": 547,
+        "sha256": "302d5df0f9cbe066d11c6cc293b861e9de518734b15fbfba009c5f779e53776a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 10 solver answers, /tmp/tmpitbnfp0a/first-any-length/4396f8e89adf63fa0f2a",
+        "first-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/first-any-length/58996c50200b0046ffaa: the same result",
+        "first-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
+        "first-any-length: established, 10 solver answers, /tmp/tmpa5oalyaz/first-any-length/4396f8e89adf63fa0f2a"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Longs original comparison and obligations",
+      "run": "python3 -B lib/benchmark/trusted-kernel/baseline.py 346",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 3.808,
+      "cpuSeconds": 3.748,
+      "cpuThrottledSeconds": 2.416,
+      "peakMemoryBytes": 143958016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-longs-original-comparison-and.log",
+        "lines": 5,
+        "bytes": 716,
+        "sha256": "0c01b318edf991acd1f1d689615dd71b77fc046d00c335b7510162cb3b72e093",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 11 solver answers, /tmp/tmpt7sd_w63/first-any-length/bd44ba74c9da6a37ad4b",
+        "first-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/0e84bb986daf03cbffef: the same result",
+        "first-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/30437c63909c329614e6: the same result",
+        "first-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py",
+        "first-any-length: established, 11 solver answers, /tmp/tmperigwlz8/first-any-length/bd44ba74c9da6a37ad4b"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/baseline/336.json",
+      "change": "added",
+      "bytes": 6445,
+      "sha256": "dab2ef65a48b483277d15f13ecb2e3f7aa5a1ec67932a0f5e437cb81e66b77b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "lib/benchmark/trusted-kernel/evidence/baseline/346.json",
+      "change": "added",
+      "bytes": 6644,
+      "sha256": "40208d8df1d1eed83ec72f0fb454570c12a873e847b89070f4dcab8e4c7fc523",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T19:25:07+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/evidence/baseline/336.json",
+      "lib/benchmark/trusted-kernel/evidence/baseline/346.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T192449Z-335887f9b56bd433",
+      "outputs": "20261123T192449Z-3697766a5ab48d44",
+      "diff": "20261123T192449Z-415088ac0a4839f2"
+    }
+  }
+}
