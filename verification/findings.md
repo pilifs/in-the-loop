@@ -18,6 +18,24 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-056: three ordinary monitor claims stop at the platform `Thread` constructor, left by jbmc-java-semantics-gap
+
+- **Status**: open. Deferred by the user to pick up later; nothing in the queue waits on it.
+- **Raised**: 2026-11-23 by the watcher, when jbmc-java-semantics-gap was stopped after cycle 3 as a handover to the JBMC fast-follow brief (decision single-jbmc-java-semantics-gap-D003, at the user's instruction).
+- **Found**:
+  - **Where the run left the campaign:**
+    - Strict native checking decides 57 of the 60 frozen statements (33 proofs, 24 refutations, all replayed on the original JVM), against 24/60 for integrated JBMC on the same build and budgets.
+    - It decides all 13 historical claims only JBMC decided, and keeps all 24 native regression controls.
+    - Commons Lang #1635 went from 0/4 to 4/4 in cycle 3.
+  - **The three open statements** are example 391's `monitors/matched`, `monitors/mixed` and `monitors/synchronizedMethod`. All three stop at their first unproved step, `jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13`, called from `MonitorIdentity$Worker.<init>`. The checker refuses to assume what the platform thread constructor does.
+  - **What already exists toward them:**
+    - A separate, exhaustive check of the completed sequentially consistent two-thread interleavings (`verification/java-semantics-gap/monitor-schedules/measurement.json`). With class-matched locks, the read is always protected. With mixed locks, the worker's write shows in 715 schedules. The original JVM reproduced both mixed-lock outcomes.
+    - Eight fresh JVM runs (example 391's README). A callback that throws escapes each of the three original callers before the first write to the shared field.
+  - **One transfer is also outside the fragment:** Spring #374's formatter claim stops at `Class.getGenericInterfaces()` on `EnumToStringConverter`, in `ResolvableType.getInterfaces`.
+- **Needs**: a sound native account of platform thread construction and start, and of interleaving at monitor boundaries, so that the checker itself decides the three claims rather than a separate checker. It may reuse the schedule enumeration as an oracle. Generic-signature reflection (`getGenericInterfaces`) is a separate, smaller piece.
+- **Tracked in**: this finding. Evidence: `llm-dlc/loops/jbmc-java-semantics-gap-results.md` ("Remaining direct native claims", row 374 of the transfer table), `verification/java-semantics-gap/scorecard.json`, `examples/391-class-monitor-identity/`.
+- **Closes when**: the three statements are decided natively at original scope, or a brief takes them up and this points to it.
+
 ### VF-055: the native checker chose the declaration-order interface default, accepting a result the JVM refutes
 
 - **Status**: fixed in the checker; the audit of earlier verdicts is open.
@@ -31,6 +49,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - **The fix.** Commit `stypsqmy` ("Check wide conversions and Java dispatch") resolves maximally specific interface defaults (`lib/src/bmc/`, `lib/src/classpath.rs`). After it, 382 `dispatch` is proved and `firstDeclared` is refuted, matching the JVM.
   - **What was rechecked.** All 38 historical and 60 campaign statements of the brief (jobs `20261123-101334-*`, `20261123-101335-*`), and the proof-tier conformance tests (`20261123-101413-*`, `20261123-104845-*`). All passed, and no other verdict changed.
   - **Exposure elsewhere.** No Java source under `examples/` declares an interface default method (a search of 1,023 files found none). An earlier verdict could still have gone through a library default, from the JDK or a dependency, wherever more than one interface in a hierarchy supplies a default for the same method.
+- **A second checker fix in the same run:** in cycle 3 (commit `oultnyrq`), Astra found that a class initializer the interpreter refused could leave partial state, which a later interpretation in the same process could then see. Now a refused initializer that wrote state stops further interpretation on that machine. Replays on the original JVM were never affected. After the fix, the recheck of the 38 historical statements (`20261123-134806-*`), the 60 original callers (`20261123-134759-*`) and proof-tier conformance (`20261123-135311-*`) all passed, with no verdict changed. The audit below covers it too: any earlier verdict that rested on repeated interpreter runs in one process.
 - **Needs**: an audit of earlier native verdicts that dispatch through inherited interface defaults. The cheapest form is to rerun the native replays of every example with an established or refuted native verdict on the fixed checker, as a job, and compare verdicts. Any change is a finding of its own.
 - **Tracked in**: this finding. Evidence: `llm-dlc/loops/jbmc-java-semantics-gap-results.md` (row 382, "JVM-contradicted"), `verification/java-semantics-gap/scorecard.json`, and the jobs above.
 - **Closes when**: the audit has run and every changed verdict, if any, is recorded.
