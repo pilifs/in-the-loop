@@ -112,6 +112,11 @@ def replay_literal(typ, value):
         return str(n) + ("L" if typ == "long" else "")
     if value is None and (typ == "String" or typ.endswith("[]")):
         return "null"
+    if typ == "String" and isinstance(value, dict) and value.get("kind") == "string":
+        units = value["units"]
+        if not isinstance(units, list) or any(type(u) != int or not 0 <= u <= 65535 for u in units):
+            raise ValueError("invalid UTF-16 units")
+        return "new String(new char[]{" + ",".join(f"(char){unit}" for unit in units) + "})"
     if typ == "String" and isinstance(value, str):
         units = value.encode("utf-16-be", errors="surrogatepass")
         return "new String(new char[]{" + ",".join(f"(char){int.from_bytes(units[i:i+2], 'big')}"

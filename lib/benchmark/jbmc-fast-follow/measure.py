@@ -19,13 +19,15 @@ from jvm_disassembly import methods
 
 CACHE = Path.home() / ".cache/in-the-loop/jbmc-fast-follow"
 EVIDENCE = ROOT / "verification/jbmc-fast-follow"
-FAMILIES = {"callbacks": 392, "numeric": 393, "rows": 394}
+FAMILIES = {"callbacks": 392, "numeric": 393, "rows": 394, "strings": 395, "queue": 396}
 ORACLES = {"callbacks": ("LiftChecks", "Replay", "ChainTests"), "numeric": ("NodeAssertions", "RoundingBoundaries"),
-           "rows": ("RaggedJvm", "MatrixJvm")}
+           "rows": ("RaggedJvm", "MatrixJvm"), "strings": ("OrderGrid",), "queue": ("QueueGrid",)}
 OPENING = {"source": "a273d0afc61725080795a6af9731e3decc9aab71",
            "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65"}
 GRID = ROOT / "examples/tools/targets/java/org/intheloop/controls/Grid.java"
 PUBLIC = {
+    "strings": ["org.apache.commons.lang3.ObjectUtils", "com.google.common.collect.Ordering", "com.google.common.collect.NaturalOrdering"],
+    "queue": ["org.apache.commons.collections4.queue.CircularFifoQueue", "org.apache.commons.lang3.ArrayFill"],
     "callbacks": ["com.google.common.primitives.Longs", "com.google.common.collect.ComparisonChain",
                   "org.apache.commons.lang3.math.NumberUtils"],
     "numeric": ["com.fasterxml.jackson.databind.node.LongNode", "com.fasterxml.jackson.databind.node.DoubleNode",
@@ -148,21 +150,28 @@ def stock_check(subject, claim, item, profile, work, raw, cp, driver, binary, co
     compiled = work / "assertions"
     compile_sources([src], compiled, cp, env)
     ordered = [compiled, driver, *cp]
-    if profile == "comparator":
+    layers = {"comparator": ("Comparator", "31213c77d79b01f269b7e3ee1008a1cbe0ce11b4442d2401346de6ca80d8d095"),
+              "arrays": ("Arrays", "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab")}
+    selected = []
+    if profile in layers:
+        class_name, wanted = layers[profile]
         layer = work / "jdk-layer"
-        rel = Path("java/util/Comparator.class")
+        rel = Path(f"java/util/{class_name}.class")
         (layer / rel).parent.mkdir(parents=True)
         shutil.copyfile(CACHE / "jdk/temurin-21.0.13/classes" / rel, layer / rel)
-        if digest(layer / rel) != "31213c77d79b01f269b7e3ee1008a1cbe0ce11b4442d2401346de6ca80d8d095":
-            raise ValueError("different Comparator class")
+        if digest(layer / rel) != wanted:
+            raise ValueError(f"different {class_name} class")
+        selected.append("jdk:" + rel.as_posix())
         ordered.append(layer)
-    flags = ["--unwind", "8" if subject.example == 392 else "7", "--unwinding-assertions",
+    flags = ["--unwind", "8" if subject.example in (392, 395, 396) else "7", "--unwinding-assertions",
              "--throw-runtime-exceptions", "--sat-solver", "cadical", "--trace", "--json-ui"]
+    if subject.example == 395:
+        flags += ["--java-assume-inputs-non-null", "--max-nondet-string-length", "2", "--max-nondet-array-length", "2"]
     if subject.example == 394:
         flags += ["--max-nondet-array-length", "2", "--max-nondet-tree-depth", "5"]
     results = {"flags": flags, "driverSha256": digest(compiled / "FollowAssertions.class"),
                "classpath": ["assertions", "drivers", "product", *[jar.name for jar in cp[1:]],
-                             *(["jdk:java/util/Comparator.class"] if profile == "comparator" else []), core.name]}
+                             *selected, core.name]}
     for key, entry in [("target", target), ("reached", "FollowAssertions.reached")]:
         cls, name = entry.split(".")
         code, out, err, secs = command([binary, cls, "--function", entry, "-cp", classpath([*ordered, core]), *flags], env, 120)
@@ -170,7 +179,7 @@ def stock_check(subject, claim, item, profile, work, raw, cp, driver, binary, co
         (raw / (key + ".stderr")).write_bytes(err)
         summary = decode(out, err, code, name, cls)
         summary.update(seconds=secs, entry=entry)
-        if key == "target" and summary["status"] == "FAILURE" and all("[]" not in p[0] for p in params):
+        if key == "target" and summary["status"] == "FAILURE" and all(p[0] != "String" and "[]" not in p[0] for p in params):
             inputs = []
             for typ, param in params:
                 if param not in summary["inputs"]:
@@ -197,8 +206,8 @@ def measure(args):
                 cache.store(jar, sha)
         return
     env = javaenv()
-    binary = (CACHE / "jbmc/ubuntu-22.04/bin/jbmc") if family == "numeric" else Path("/usr/bin/jbmc")
-    core = binary.parent.parent / "lib/core-models.jar" if family == "numeric" else Path("/usr/lib/core-models.jar")
+    binary = (CACHE / "jbmc/ubuntu-22.04/bin/jbmc") if family == "numeric" or args.lane == "packaged-22" else Path("/usr/bin/jbmc")
+    core = binary.parent.parent / "lib/core-models.jar" if family == "numeric" or args.lane == "packaged-22" else Path("/usr/lib/core-models.jar")
     env["PATH"] = str(binary.parent) + os.pathsep + env["PATH"]
     checker = Path(env.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve()
     env["JVMCONTRACT"] = str(checker)
@@ -231,6 +240,7 @@ def measure(args):
             spec = load(folder / task["claim"])
             if args.cohort and item["cohort"] not in args.cohort: continue
             if args.methods and method not in args.methods: continue
+            if args.lane == "arrays" and item["cohort"] != "fill": continue
             if args.lane == "comparator" and owner != "Chain": continue
             if args.lane == "alias" and (owner != "RaggedProof" or method not in ("reversed", "distinct")): continue
             claim = Claim(method, item["parameters"], fails=((),) if task["expected"] == "refuted" else (),
@@ -281,7 +291,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("phase")
     parser.add_argument("family", choices=FAMILIES)
-    parser.add_argument("lane", choices=("seed", "jvm", "paired", "native", "jbmc", "packaged", "comparator", "alias"))
+    parser.add_argument("lane", choices=("seed", "jvm", "paired", "native", "jbmc", "packaged", "packaged-22", "comparator", "arrays", "alias"))
     parser.add_argument("--cohort", nargs="+")
     parser.add_argument("--methods", nargs="+")
     parser.add_argument("--require", action="store_true", help="require every selected project verdict to qualify")

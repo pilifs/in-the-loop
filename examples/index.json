@@ -21740,6 +21740,211 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 394 TASK"
       }
+    },
+    {
+      "id": "395",
+      "path": "examples/395-exact-utf16-comparison",
+      "title": "Exact UTF-16 comparison and tie identity",
+      "summary": "Commons Lang and Guava compare two bounded strings over unrestricted UTF-16 units. Guava min exposes which equal reference it retained.",
+      "origin": "constructed",
+      "system": "Exact UTF-16 comparison and tie identity",
+      "symbol": "ExactOrder#commons",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "dropped-case",
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Frozen public caller statements",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement."
+      ],
+      "source": null,
+      "target": {
+        "family": "exact-utf16-comparison",
+        "role": "control",
+        "case": "exact-utf16-comparison",
+        "tasks": [
+          "replay-strings",
+          "exact-order-commons",
+          "exact-order-only-sign",
+          "exact-order-guava",
+          "exact-order-first-on-tie",
+          "exact-order-second-on-tie",
+          "exact-order-direct",
+          "exact-order-same-reference"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-strings": "scaffolded",
+          "exact-order-commons": "scaffolded",
+          "exact-order-only-sign": "scaffolded",
+          "exact-order-guava": "scaffolded",
+          "exact-order-first-on-tie": "scaffolded",
+          "exact-order-second-on-tie": "scaffolded",
+          "exact-order-direct": "scaffolded",
+          "exact-order-same-reference": "scaffolded"
+        },
+        "expected": {
+          "replay-strings": "established",
+          "exact-order-commons": "established",
+          "exact-order-only-sign": "refuted",
+          "exact-order-guava": "established",
+          "exact-order-first-on-tie": "established",
+          "exact-order-second-on-tie": "refuted",
+          "exact-order-direct": "established",
+          "exact-order-same-reference": "established"
+        },
+        "claims": {
+          "exact-order-commons": null,
+          "exact-order-only-sign": null,
+          "exact-order-guava": null,
+          "exact-order-first-on-tie": null,
+          "exact-order-second-on-tie": null,
+          "exact-order-direct": null,
+          "exact-order-same-reference": null
+        },
+        "receipts": {
+          "replay-strings": {
+            "path": "receipts/replay-strings/20261123T171546Z-d23261c5/result.json",
+            "attempt": "20261123T171546Z-d23261c5",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public caller statements",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 395 TASK"
+      }
+    },
+    {
+      "id": "396",
+      "path": "examples/396-queue-array-fill",
+      "title": "Circular queue histories and reference-array fill",
+      "summary": "Commons Collections queue histories and Commons Lang ArrayFill observe replacement, identity and covariant array stores.",
+      "origin": "constructed",
+      "system": "Circular queue histories and reference-array fill",
+      "symbol": "QueueFill#queue",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Frozen public caller statements",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement."
+      ],
+      "source": null,
+      "target": {
+        "family": "queue-array-fill",
+        "role": "control",
+        "case": "queue-array-fill",
+        "tasks": [
+          "replay-queue",
+          "queue-fill-queue",
+          "queue-fill-full-means-occupied",
+          "queue-fill-fill",
+          "queue-fill-stale-survives",
+          "queue-fill-covariant"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-queue": "scaffolded",
+          "queue-fill-queue": "scaffolded",
+          "queue-fill-full-means-occupied": "scaffolded",
+          "queue-fill-fill": "scaffolded",
+          "queue-fill-stale-survives": "scaffolded",
+          "queue-fill-covariant": "scaffolded"
+        },
+        "expected": {
+          "replay-queue": "established",
+          "queue-fill-queue": "established",
+          "queue-fill-full-means-occupied": "refuted",
+          "queue-fill-fill": "established",
+          "queue-fill-stale-survives": "refuted",
+          "queue-fill-covariant": "established"
+        },
+        "claims": {
+          "queue-fill-queue": null,
+          "queue-fill-full-means-occupied": null,
+          "queue-fill-fill": null,
+          "queue-fill-stale-survives": null,
+          "queue-fill-covariant": null
+        },
+        "receipts": {
+          "replay-queue": {
+            "path": "receipts/replay-queue/20261123T171546Z-d20cd26c/result.json",
+            "attempt": "20261123T171546Z-d20cd26c",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public caller statements",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 396 TASK"
+      }
     }
   ]
 }

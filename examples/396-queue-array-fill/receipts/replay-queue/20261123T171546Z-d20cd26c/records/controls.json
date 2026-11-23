@@ -1,0 +1,267 @@
+{
+  "task": "replay-queue",
+  "records": [
+    {
+      "kind": "jvm-control",
+      "revision": "queue",
+      "argv": [
+        "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
+        "-Xmx512m",
+        "-Dfile.encoding=UTF-8",
+        "-Dstdout.encoding=UTF-8",
+        "-Dstderr.encoding=UTF-8",
+        "-Duser.language=en",
+        "-Duser.country=US",
+        "-Duser.timezone=UTC",
+        "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d",
+        "-cp",
+        "driver.jar:queue.jar:libraries/commons-lang3.jar:libraries/commons-collections4.jar",
+        "Cases",
+        "--all"
+      ],
+      "status": "exited",
+      "exitCode": 0,
+      "seconds": 0.064,
+      "stdout": "controls/control-queue-jdk21.stdout",
+      "stderr": "controls/control-queue-jdk21.stderr",
+      "identities": {
+        "jdk": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+        "jdkFeature": "21",
+        "jdkHome": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+        "jdkRelease": {
+          "JAVA_VERSION": "21.0.13",
+          "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+          "OS_ARCH": "x86_64"
+        },
+        "commit": "fixture:adapter",
+        "classpath": [
+          {
+            "path": "driver.jar",
+            "sha256": "82df220432949ef7af46297174832032b99d010cb0a94df96f17984683935e66",
+            "role": "driver"
+          },
+          {
+            "path": "queue.jar",
+            "sha256": "1aae25b0f5f147c8c522fa62c173e088b6d6815f068850c08d61f7511b70e3ac",
+            "role": "original"
+          },
+          {
+            "path": "libraries/commons-lang3.jar",
+            "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+            "role": "dependency"
+          },
+          {
+            "path": "libraries/commons-collections4.jar",
+            "sha256": "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
+            "role": "dependency"
+          }
+        ],
+        "driver": {
+          "control": "driver-queue",
+          "main": "Cases"
+        },
+        "inputs": {
+          "from": "driver_args",
+          "oracle": "controls/original.json",
+          "oracleSha256": "9179dfd18de8f10561f1115cffa47234c1ce87a568dcf441f2437f87ab2797b3"
+        },
+        "environment": {
+          "LANG": "C.UTF-8",
+          "LC_ALL": "C.UTF-8",
+          "TZ": "UTC"
+        },
+        "flags": [
+          "-Xmx512m",
+          "-Dfile.encoding=UTF-8",
+          "-Dstdout.encoding=UTF-8",
+          "-Dstderr.encoding=UTF-8",
+          "-Duser.language=en",
+          "-Duser.country=US",
+          "-Duser.timezone=UTC",
+          "-Djava.io.tmpdir=/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d"
+        ],
+        "replay": "original-jvm"
+      },
+      "observations": [
+        {
+          "id": 0,
+          "input": {
+            "entry": "QueueFill#queue",
+            "arguments": [
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 1,
+          "input": {
+            "entry": "QueueFill#queue",
+            "arguments": [
+              "255"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 2,
+          "input": {
+            "entry": "QueueFill#queue",
+            "arguments": [
+              "39"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 3,
+          "input": {
+            "entry": "QueueFill#queue",
+            "arguments": [
+              "76"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 4,
+          "input": {
+            "entry": "QueueFill#fullMeansOccupied",
+            "arguments": [
+              "255"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 5,
+          "input": {
+            "entry": "QueueFill#fullMeansOccupied",
+            "arguments": [
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 6,
+          "input": {
+            "entry": "QueueFill#fill",
+            "arguments": [
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 7,
+          "input": {
+            "entry": "QueueFill#fill",
+            "arguments": [
+              "Integer.MIN_VALUE"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 8,
+          "input": {
+            "entry": "QueueFill#fill",
+            "arguments": [
+              "Integer.MAX_VALUE"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 9,
+          "input": {
+            "entry": "QueueFill#staleSurvives",
+            "arguments": [
+              "0"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 10,
+          "input": {
+            "entry": "QueueFill#staleSurvives",
+            "arguments": [
+              "-1"
+            ]
+          },
+          "direct": {
+            "holds": false
+          },
+          "adapter": {}
+        },
+        {
+          "id": 11,
+          "input": {
+            "entry": "QueueFill#covariant",
+            "arguments": [
+              "true"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        },
+        {
+          "id": 12,
+          "input": {
+            "entry": "QueueFill#covariant",
+            "arguments": [
+              "false"
+            ]
+          },
+          "direct": {
+            "holds": true
+          },
+          "adapter": {}
+        }
+      ],
+      "control": "driver-queue",
+      "directory": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/examples-b_d6v9cp/targets/396/replay-queue/20261123T171546Z-d20cd26c",
+      "record": "controls/controls.json",
+      "reason": null,
+      "log": {
+        "cwd": "/home/filip/.cache/in-the-loop/agent-tmp/3394e768-9d57-4a38-9c2b-54011210333d/examples-b_d6v9cp/targets/396/replay-queue/20261123T171546Z-d20cd26c/prepare/queue"
+      }
+    }
+  ]
+}
