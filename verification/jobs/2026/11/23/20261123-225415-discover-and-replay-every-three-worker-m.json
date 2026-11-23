@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-225415-discover-and-replay-every-three-worker-m",
+  "title": "Discover and replay every three-worker monitor-boundary schedule",
+  "description": "Choose actors from actual waiting participants without the oracle, explore on real Java threads and one checked receiver, then compare terminal states with the independent read-before-commit enumerator and repeat the discovered failing schedule on a fresh JVM.",
+  "kind": "library",
+  "capabilities": [
+    "monitor-histories"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:54:15+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "Run the schedules schedule controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule schedules",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/opening/schedule/schedules"
+  ]
+}

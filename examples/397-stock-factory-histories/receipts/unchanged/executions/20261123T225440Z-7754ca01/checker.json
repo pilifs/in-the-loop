@@ -1,0 +1,251 @@
+{
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b68aa1dc2bec5e16476d1e8e48e9455a04f20053/jvmcontract",
+    "prove",
+    "FactoryClaims#unchanged",
+    "--classes",
+    "prepare/original/original.jar",
+    "--assert",
+    "result",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "9",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "60",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "status": "exited",
+  "exitCode": 1,
+  "seconds": 0.031,
+  "reason": null,
+  "outcomes": [
+    {
+      "wire_version": 1,
+      "verdict": "violation",
+      "target": "FactoryClaims#unchanged",
+      "domain": "n: int × same: boolean",
+      "assume": null,
+      "assert": "result",
+      "throws": [],
+      "throws_checked": [],
+      "counterexample": {
+        "input": "unchanged(n=1, same=true)",
+        "outcome": "false",
+        "values": [
+          "1",
+          "true"
+        ],
+        "found": "unchanged(n=20, same=true)",
+        "shrink_runs": 8,
+        "inputs": [
+          {
+            "name": "n",
+            "type": "int",
+            "value": 1
+          },
+          {
+            "name": "same",
+            "type": "boolean",
+            "value": true
+          }
+        ],
+        "found_inputs": [
+          {
+            "name": "n",
+            "type": "int",
+            "value": 20
+          },
+          {
+            "name": "same",
+            "type": "boolean",
+            "value": true
+          }
+        ],
+        "call": {
+          "class": "FactoryClaims",
+          "class_file": "FactoryClaims.class",
+          "classes": "after",
+          "method": "unchanged",
+          "descriptor": "(IZ)Z",
+          "static": true,
+          "arguments": [
+            {
+              "name": "n",
+              "type": "int",
+              "value": 1,
+              "from": "n"
+            },
+            {
+              "name": "same",
+              "type": "boolean",
+              "value": true,
+              "from": "same"
+            }
+          ]
+        }
+      },
+      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as unchanged(n=20, same=true), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain n: int × same: boolean",
+      "problem": null,
+      "statement": "verifier/work/harness/PropertyHarness.java",
+      "findings": [
+        {
+          "rule_id": "property-violated",
+          "message": "Property of FactoryClaims#unchanged violated: `result`:\n  unchanged(n=1, same=true)\n    outcome: false",
+          "uri": null,
+          "line": 5
+        }
+      ],
+      "output": "✗ Property of FactoryClaims#unchanged violated: `result`:\n  unchanged(n=1, same=true)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as unchanged(n=20, same=true), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain n: int × same: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
+      "work": "verifier/work",
+      "search": {
+        "engine": "native",
+        "checker": "jvmcontract's own checker (CaDiCaL)",
+        "seconds": 0.004994957,
+        "properties": 1,
+        "unwind": 9,
+        "max_array_length": 8,
+        "stage": "[0:20]",
+        "native": {
+          "paths": 3,
+          "merges": 0,
+          "solver_calls": 6,
+          "solving_seconds": 5.1496e-05,
+          "gates_evaluated": 66,
+          "evaluating_seconds": 3.337e-06,
+          "divisions": 0,
+          "divisions_built": 0,
+          "multiplications": 0,
+          "multiplications_built": 0,
+          "variables": 253,
+          "clauses": 750,
+          "seconds": 0.004359909,
+          "loading_seconds": 0.000150953,
+          "decoding_seconds": 4.3448e-05,
+          "encoding_seconds": 9.5745e-05,
+          "witness_seconds": 1.1133e-05
+        },
+        "gap_mode": "strict",
+        "deadline_seconds": 60.0,
+        "runs": [
+          {
+            "checker": "native",
+            "purpose": "proof",
+            "stage": null,
+            "budget_seconds": 60.0,
+            "seconds": 0.004,
+            "ended": "violation",
+            "ending": "counterexample",
+            "phases": {
+              "loading": 0.0,
+              "lowering": 0.0,
+              "symbolic": 0.004,
+              "encoding": 0.0,
+              "solving": 0.0,
+              "trace": 0.0,
+              "other": 0.0
+            },
+            "formula": {
+              "variables": 253,
+              "clauses": 750
+            }
+          }
+        ],
+        "phases": {
+          "seconds": 0.02,
+          "setup": 0.001,
+          "harness": 0.0,
+          "gaps": 0.0,
+          "contracts": 0.0,
+          "runs": 0.004,
+          "replay": 0.006,
+          "jvm": 0.0,
+          "other": 0.009
+        }
+      },
+      "replay": {
+        "by": "interpreter",
+        "reproduced": true
+      },
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "n",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            },
+            {
+              "name": "same",
+              "type": "boolean",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "n: int × same: boolean"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 9,
+          "max_array_length": null,
+          "complete": false
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null
+      }
+    }
+  ],
+  "stdout": {
+    "bytes": 6303,
+    "sha256": "e285661cb9424c05f1ad0d176234d105d65b77a2b68cd42c55112080a721f997"
+  },
+  "stderr": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "excerpt": ""
+  }
+}

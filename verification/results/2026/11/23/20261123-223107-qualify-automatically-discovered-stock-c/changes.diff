@@ -1,0 +1,2856 @@
+--- /dev/null
++++ b/verification/receiver-discovery/qualification/stock/measurement.json
+@@ -0,0 +1,2180 @@
++{
++  "checkerSha256": "6d7135bec84a4e2153a48f7d4c71fa28f84e54ebafe627a4add9ee7524fbef4d",
++  "source": "edb82317d3aa1ddb0b0d5631de347361c664a76d",
++  "job": "20261123-223107-qualify-automatically-discovered-stock-c",
++  "jdk": "openjdk 21.0.13 2026-10-20 LTS",
++  "result": {
++    "classes": {
++      "Checkout$Pair.class": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++      "Checkout$Stock.class": "2ad22dd17898c3f447ddb71e9b4ba8a3043d2e61337f70349d346f1e5281dd82",
++      "Checkout.class": "9c096987e0cd4e60009530e24eef884570b7a8ae78f03924d804dd7d29854aaf",
++      "FactoryClaims.class": "6ffcb8d166a46444add867192d1f5f0c9a2a15c16ba47e21263237258a1c6a61",
++      "InventoryChecks.class": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2"
++    },
++    "claims": {
++      "nonnegative": {
++        "construction": {
++          "freshObserverInputs": false,
++          "generatedClass": "ReceiverHistory056505eb232fd6b1",
++          "generatedSha256": "b8f88bd832fc1a0f9ff2631c89ea0a486d58dfc7ac3118f264393246143f2eb0",
++          "maxProducers": 64,
++          "missed": [],
++          "nullCollaborators": false,
++          "observer": "InventoryChecks#nonnegative",
++          "observerBinding": {
++            "bound_release": 21,
++            "candidates": [
++              {
++                "entry": "InventoryChecks.class",
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2"
++              }
++            ],
++            "class": "InventoryChecks",
++            "entry": "InventoryChecks.class",
++            "index": 0,
++            "manifest": null,
++            "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++            "selected_by": "rule",
++            "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2",
++            "shadowed": []
++          },
++          "observerDescriptor": "(LCheckout$Pair;)Z",
++          "plans": [
++            {
++              "binding": {
++                "bound_release": 21,
++                "candidates": [
++                  {
++                    "entry": "Checkout$Pair.class",
++                    "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                    "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863"
++                  }
++                ],
++                "class": "Checkout$Pair",
++                "entry": "Checkout$Pair.class",
++                "index": 0,
++                "manifest": null,
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "selected_by": "rule",
++                "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++                "shadowed": []
++              },
++              "descriptor": "(IZ)Z",
++              "entry": "ReceiverHistory056505eb232fd6b1#history0",
++              "nullArgumentPositions": [],
++              "parameters": [
++                "n",
++                "shared"
++              ],
++              "producer": "Checkout$Pair#open(IZ)LCheckout$Pair;"
++            }
++          ],
++          "receiver": "Checkout$Pair",
++          "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
++        },
++        "automatic": {
++          "wire_version": 1,
++          "verdict": "verified",
++          "target": "ReceiverHistory056505eb232fd6b1#history0",
++          "domain": "arg0: int \u00d7 arg1: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticnonnegative/harness/PropertyHarness.java",
++          "findings": [],
++          "output": "\u2713 ReceiverHistory056505eb232fd6b1#history0 satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticnonnegative",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.004792137,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": null,
++            "native": {
++              "paths": 4,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 2.117e-05,
++              "gates_evaluated": 2,
++              "evaluating_seconds": 1.132e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 34,
++              "clauses": 1,
++              "seconds": 0.004198547,
++              "loading_seconds": 6.3068e-05,
++              "decoding_seconds": 3.6668e-05,
++              "encoding_seconds": 4.56e-06,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.004,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.004,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 34,
++                  "clauses": 1
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.016,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.004,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.01
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "arg0: int \u00d7 arg1: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          }
++        },
++        "supplied": {
++          "wire_version": 1,
++          "verdict": "verified",
++          "target": "FactoryClaims#nonnegative",
++          "domain": "n: int \u00d7 same: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int \u00d7 same: boolean in 0.0 s; loops unwound 9 times with unwinding assertions",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliednonnegative/harness/PropertyHarness.java",
++          "findings": [],
++          "output": "\u2713 FactoryClaims#nonnegative satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int \u00d7 same: boolean in 0.0 s; loops unwound 9 times with unwinding assertions)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliednonnegative",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.004102717,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": null,
++            "native": {
++              "paths": 4,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 2.0337e-05,
++              "gates_evaluated": 2,
++              "evaluating_seconds": 1.162e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 34,
++              "clauses": 1,
++              "seconds": 0.003542308,
++              "loading_seconds": 6.1468e-05,
++              "decoding_seconds": 3.8823e-05,
++              "encoding_seconds": 4.561e-06,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.004,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.003,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 34,
++                  "clauses": 1
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.013,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.004,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.007
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "n",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "same",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "n: int \u00d7 same: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          }
++        }
++      },
++      "taken": {
++        "construction": {
++          "freshObserverInputs": false,
++          "generatedClass": "ReceiverHistory9c0b1d57ac9459a3",
++          "generatedSha256": "656e8842e77a0ed18b17c7764507cd394d042312ee558e1cc83bc162232e80f9",
++          "maxProducers": 64,
++          "missed": [],
++          "nullCollaborators": false,
++          "observer": "InventoryChecks#taken",
++          "observerBinding": {
++            "bound_release": 21,
++            "candidates": [
++              {
++                "entry": "InventoryChecks.class",
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2"
++              }
++            ],
++            "class": "InventoryChecks",
++            "entry": "InventoryChecks.class",
++            "index": 0,
++            "manifest": null,
++            "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++            "selected_by": "rule",
++            "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2",
++            "shadowed": []
++          },
++          "observerDescriptor": "(LCheckout$Pair;I)Z",
++          "plans": [
++            {
++              "binding": {
++                "bound_release": 21,
++                "candidates": [
++                  {
++                    "entry": "Checkout$Pair.class",
++                    "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                    "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863"
++                  }
++                ],
++                "class": "Checkout$Pair",
++                "entry": "Checkout$Pair.class",
++                "index": 0,
++                "manifest": null,
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "selected_by": "rule",
++                "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++                "shadowed": []
++              },
++              "descriptor": "(IZ)Z",
++              "entry": "ReceiverHistory9c0b1d57ac9459a3#history0",
++              "nullArgumentPositions": [],
++              "parameters": [
++                "n",
++                "shared"
++              ],
++              "producer": "Checkout$Pair#open(IZ)LCheckout$Pair;"
++            }
++          ],
++          "receiver": "Checkout$Pair",
++          "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
++        },
++        "automatic": {
++          "wire_version": 1,
++          "verdict": "verified",
++          "target": "ReceiverHistory9c0b1d57ac9459a3#history0",
++          "domain": "arg0: int \u00d7 arg1: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automatictaken/harness/PropertyHarness.java",
++          "findings": [],
++          "output": "\u2713 ReceiverHistory9c0b1d57ac9459a3#history0 satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automatictaken",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.00441963,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": null,
++            "native": {
++              "paths": 6,
++              "merges": 0,
++              "solver_calls": 11,
++              "solving_seconds": 4.2609e-05,
++              "gates_evaluated": 105,
++              "evaluating_seconds": 4.268e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 189,
++              "clauses": 527,
++              "seconds": 0.00385851,
++              "loading_seconds": 7.0111e-05,
++              "decoding_seconds": 4.2356e-05,
++              "encoding_seconds": 7.8228e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.004,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.004,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 189,
++                  "clauses": 527
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.013,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.004,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.008
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "arg0: int \u00d7 arg1: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          }
++        },
++        "supplied": {
++          "wire_version": 1,
++          "verdict": "verified",
++          "target": "FactoryClaims#taken",
++          "domain": "n: int \u00d7 same: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int \u00d7 same: boolean in 0.0 s; loops unwound 9 times with unwinding assertions",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliedtaken/harness/PropertyHarness.java",
++          "findings": [],
++          "output": "\u2713 FactoryClaims#taken satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int \u00d7 same: boolean in 0.0 s; loops unwound 9 times with unwinding assertions)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliedtaken",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.00412561,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": null,
++            "native": {
++              "paths": 6,
++              "merges": 0,
++              "solver_calls": 11,
++              "solving_seconds": 5.4722e-05,
++              "gates_evaluated": 105,
++              "evaluating_seconds": 4.479e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 189,
++              "clauses": 527,
++              "seconds": 0.003536648,
++              "loading_seconds": 6.3711e-05,
++              "decoding_seconds": 4.1349e-05,
++              "encoding_seconds": 8.1488e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.004,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.003,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 189,
++                  "clauses": 527
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.013,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.004,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.007
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "n",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "same",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "n: int \u00d7 same: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          }
++        }
++      },
++      "aliasLaw": {
++        "construction": {
++          "freshObserverInputs": false,
++          "generatedClass": "ReceiverHistory5619fb94c4172e8b",
++          "generatedSha256": "f2b800287c7ac9cca7f14eff6bbd821c94dc60f7f3b90adc2bfdbd0f2e798f5e",
++          "maxProducers": 64,
++          "missed": [],
++          "nullCollaborators": false,
++          "observer": "InventoryChecks#aliasLaw",
++          "observerBinding": {
++            "bound_release": 21,
++            "candidates": [
++              {
++                "entry": "InventoryChecks.class",
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2"
++              }
++            ],
++            "class": "InventoryChecks",
++            "entry": "InventoryChecks.class",
++            "index": 0,
++            "manifest": null,
++            "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++            "selected_by": "rule",
++            "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2",
++            "shadowed": []
++          },
++          "observerDescriptor": "(LCheckout$Pair;)Z",
++          "plans": [
++            {
++              "binding": {
++                "bound_release": 21,
++                "candidates": [
++                  {
++                    "entry": "Checkout$Pair.class",
++                    "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                    "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863"
++                  }
++                ],
++                "class": "Checkout$Pair",
++                "entry": "Checkout$Pair.class",
++                "index": 0,
++                "manifest": null,
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "selected_by": "rule",
++                "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++                "shadowed": []
++              },
++              "descriptor": "(IZ)Z",
++              "entry": "ReceiverHistory5619fb94c4172e8b#history0",
++              "nullArgumentPositions": [],
++              "parameters": [
++                "n",
++                "shared"
++              ],
++              "producer": "Checkout$Pair#open(IZ)LCheckout$Pair;"
++            }
++          ],
++          "receiver": "Checkout$Pair",
++          "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
++        },
++        "automatic": {
++          "wire_version": 1,
++          "verdict": "verified",
++          "target": "ReceiverHistory5619fb94c4172e8b#history0",
++          "domain": "arg0: int \u00d7 arg1: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticaliasLaw/harness/PropertyHarness.java",
++          "findings": [],
++          "output": "\u2713 ReceiverHistory5619fb94c4172e8b#history0 satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticaliasLaw",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.006012,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": null,
++            "native": {
++              "paths": 6,
++              "merges": 0,
++              "solver_calls": 9,
++              "solving_seconds": 6.8589e-05,
++              "gates_evaluated": 101,
++              "evaluating_seconds": 3.898e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 189,
++              "clauses": 527,
++              "seconds": 0.005395446,
++              "loading_seconds": 7.3689e-05,
++              "decoding_seconds": 5.0863e-05,
++              "encoding_seconds": 9.2155e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.005,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.005,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 189,
++                  "clauses": 527
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.017,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.005,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.01
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "arg0: int \u00d7 arg1: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          }
++        },
++        "supplied": {
++          "wire_version": 1,
++          "verdict": "verified",
++          "target": "FactoryClaims#aliasLaw",
++          "domain": "n: int \u00d7 same: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int \u00d7 same: boolean in 0.0 s; loops unwound 9 times with unwinding assertions",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliedaliasLaw/harness/PropertyHarness.java",
++          "findings": [],
++          "output": "\u2713 FactoryClaims#aliasLaw satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int \u00d7 same: boolean in 0.0 s; loops unwound 9 times with unwinding assertions)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliedaliasLaw",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.003999705,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": null,
++            "native": {
++              "paths": 6,
++              "merges": 0,
++              "solver_calls": 9,
++              "solving_seconds": 6.3627e-05,
++              "gates_evaluated": 101,
++              "evaluating_seconds": 3.967e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 189,
++              "clauses": 527,
++              "seconds": 0.003434507,
++              "loading_seconds": 6.3177e-05,
++              "decoding_seconds": 4.6528e-05,
++              "encoding_seconds": 9.3366e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.003,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.003,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 189,
++                  "clauses": 527
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.013,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.003,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.008
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "n",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "same",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "n: int \u00d7 same: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          }
++        }
++      },
++      "unchanged": {
++        "construction": {
++          "freshObserverInputs": false,
++          "generatedClass": "ReceiverHistory1502736c3a112c59",
++          "generatedSha256": "15ee21b17bbd685e1b3b31d196152cd60fea25041a2f628f37692553363096b4",
++          "maxProducers": 64,
++          "missed": [],
++          "nullCollaborators": false,
++          "observer": "InventoryChecks#unchanged",
++          "observerBinding": {
++            "bound_release": 21,
++            "candidates": [
++              {
++                "entry": "InventoryChecks.class",
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2"
++              }
++            ],
++            "class": "InventoryChecks",
++            "entry": "InventoryChecks.class",
++            "index": 0,
++            "manifest": null,
++            "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++            "selected_by": "rule",
++            "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2",
++            "shadowed": []
++          },
++          "observerDescriptor": "(LCheckout$Pair;)Z",
++          "plans": [
++            {
++              "binding": {
++                "bound_release": 21,
++                "candidates": [
++                  {
++                    "entry": "Checkout$Pair.class",
++                    "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                    "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863"
++                  }
++                ],
++                "class": "Checkout$Pair",
++                "entry": "Checkout$Pair.class",
++                "index": 0,
++                "manifest": null,
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "selected_by": "rule",
++                "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++                "shadowed": []
++              },
++              "descriptor": "(IZ)Z",
++              "entry": "ReceiverHistory1502736c3a112c59#history0",
++              "nullArgumentPositions": [],
++              "parameters": [
++                "n",
++                "shared"
++              ],
++              "producer": "Checkout$Pair#open(IZ)LCheckout$Pair;"
++            }
++          ],
++          "receiver": "Checkout$Pair",
++          "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
++        },
++        "automatic": {
++          "wire_version": 1,
++          "verdict": "violation",
++          "target": "ReceiverHistory1502736c3a112c59#history0",
++          "domain": "arg0: int \u00d7 arg1: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": {
++            "input": "history0(arg0=1, arg1=true)",
++            "outcome": "false",
++            "values": [
++              "1",
++              "true"
++            ],
++            "found": "history0(arg0=20, arg1=true)",
++            "shrink_runs": 8,
++            "inputs": [
++              {
++                "name": "arg0",
++                "type": "int",
++                "value": 1
++              },
++              {
++                "name": "arg1",
++                "type": "boolean",
++                "value": true
++              }
++            ],
++            "found_inputs": [
++              {
++                "name": "arg0",
++                "type": "int",
++                "value": 20
++              },
++              {
++                "name": "arg1",
++                "type": "boolean",
++                "value": true
++              }
++            ],
++            "call": {
++              "class": "ReceiverHistory1502736c3a112c59",
++              "class_file": "ReceiverHistory1502736c3a112c59.class",
++              "classes": "after",
++              "method": "history0",
++              "descriptor": "(IZ)Z",
++              "static": true,
++              "arguments": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "value": 1,
++                  "from": "arg0"
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "value": true,
++                  "from": "arg1"
++                }
++              ]
++            }
++          },
++          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as history0(arg0=20, arg1=true), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticunchanged/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "property-violated",
++              "message": "Property of ReceiverHistory1502736c3a112c59#history0 violated: `result`:\n  history0(arg0=1, arg1=true)\n    outcome: false",
++              "uri": null,
++              "line": 1
++            }
++          ],
++          "output": "\u2717 Property of ReceiverHistory1502736c3a112c59#history0 violated: `result`:\n  history0(arg0=1, arg1=true)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as history0(arg0=20, arg1=true), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticunchanged",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.004778933,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": "[0:20]",
++            "native": {
++              "paths": 3,
++              "merges": 0,
++              "solver_calls": 6,
++              "solving_seconds": 6.8247e-05,
++              "gates_evaluated": 66,
++              "evaluating_seconds": 3.967e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 253,
++              "clauses": 750,
++              "seconds": 0.004048045,
++              "loading_seconds": 0.000180568,
++              "decoding_seconds": 5.1234e-05,
++              "encoding_seconds": 0.000160984,
++              "witness_seconds": 1.3657e-05
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.004,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.004,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 253,
++                  "clauses": 750
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.021,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.004,
++              "replay": 0.005,
++              "jvm": 0.0,
++              "other": 0.011
++            }
++          },
++          "replay": {
++            "by": "interpreter",
++            "reproduced": true
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "arg0: int \u00d7 arg1: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        },
++        "automaticWitness": {
++          "inputs": [
++            "1",
++            "true"
++          ],
++          "steps": [
++            "Checkout$Pair#open(IZ)LCheckout$Pair;",
++            "InventoryChecks#unchanged"
++          ],
++          "jvm": [
++            "class 9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++            "returned false"
++          ]
++        },
++        "supplied": {
++          "wire_version": 1,
++          "verdict": "violation",
++          "target": "FactoryClaims#unchanged",
++          "domain": "n: int \u00d7 same: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": {
++            "input": "unchanged(n=1, same=true)",
++            "outcome": "false",
++            "values": [
++              "1",
++              "true"
++            ],
++            "found": "unchanged(n=20, same=true)",
++            "shrink_runs": 8,
++            "inputs": [
++              {
++                "name": "n",
++                "type": "int",
++                "value": 1
++              },
++              {
++                "name": "same",
++                "type": "boolean",
++                "value": true
++              }
++            ],
++            "found_inputs": [
++              {
++                "name": "n",
++                "type": "int",
++                "value": 20
++              },
++              {
++                "name": "same",
++                "type": "boolean",
++                "value": true
++              }
++            ],
++            "call": {
++              "class": "FactoryClaims",
++              "class_file": "FactoryClaims.class",
++              "classes": "after",
++              "method": "unchanged",
++              "descriptor": "(IZ)Z",
++              "static": true,
++              "arguments": [
++                {
++                  "name": "n",
++                  "type": "int",
++                  "value": 1,
++                  "from": "n"
++                },
++                {
++                  "name": "same",
++                  "type": "boolean",
++                  "value": true,
++                  "from": "same"
++                }
++              ]
++            }
++          },
++          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as unchanged(n=20, same=true), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain n: int \u00d7 same: boolean",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliedunchanged/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "property-violated",
++              "message": "Property of FactoryClaims#unchanged violated: `result`:\n  unchanged(n=1, same=true)\n    outcome: false",
++              "uri": null,
++              "line": 5
++            }
++          ],
++          "output": "\u2717 Property of FactoryClaims#unchanged violated: `result`:\n  unchanged(n=1, same=true)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as unchanged(n=20, same=true), shrunk to the input above in 8 interpreter runs, replayed in the interpreter; domain n: int \u00d7 same: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/suppliedunchanged",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.004362113,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": "[0:20]",
++            "native": {
++              "paths": 3,
++              "merges": 0,
++              "solver_calls": 6,
++              "solving_seconds": 5.8649e-05,
++              "gates_evaluated": 66,
++              "evaluating_seconds": 4.118e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 253,
++              "clauses": 750,
++              "seconds": 0.003752301,
++              "loading_seconds": 0.000129634,
++              "decoding_seconds": 4.2521e-05,
++              "encoding_seconds": 0.000108054,
++              "witness_seconds": 1.09e-05
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.004,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.003,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 253,
++                  "clauses": 750
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.02,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.004,
++              "replay": 0.005,
++              "jvm": 0.0,
++              "other": 0.01
++            }
++          },
++          "replay": {
++            "by": "interpreter",
++            "reproduced": true
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "n",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "same",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "n: int \u00d7 same: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        },
++        "suppliedWitness": {
++          "inputs": [
++            "1",
++            "true"
++          ],
++          "steps": [
++            "Checkout$Pair#open(IZ)LCheckout$Pair;",
++            "InventoryChecks#unchanged"
++          ],
++          "jvm": [
++            "class 9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++            "returned false"
++          ]
++        }
++      },
++      "shared": {
++        "construction": {
++          "freshObserverInputs": false,
++          "generatedClass": "ReceiverHistorya6c64fb5e295916f",
++          "generatedSha256": "a93f7745ce2e27fe26e6a2a764a76fb6bdb51cf66b3c12374aac3a6877cdd0ca",
++          "maxProducers": 64,
++          "missed": [],
++          "nullCollaborators": false,
++          "observer": "InventoryChecks#shared",
++          "observerBinding": {
++            "bound_release": 21,
++            "candidates": [
++              {
++                "entry": "InventoryChecks.class",
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2"
++              }
++            ],
++            "class": "InventoryChecks",
++            "entry": "InventoryChecks.class",
++            "index": 0,
++            "manifest": null,
++            "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++            "selected_by": "rule",
++            "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2",
++            "shadowed": []
++          },
++          "observerDescriptor": "(LCheckout$Pair;)Z",
++          "plans": [
++            {
++              "binding": {
++                "bound_release": 21,
++                "candidates": [
++                  {
++                    "entry": "Checkout$Pair.class",
++                    "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                    "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863"
++                  }
++                ],
++                "class": "Checkout$Pair",
++                "entry": "Checkout$Pair.class",
++                "index": 0,
++                "manifest": null,
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "selected_by": "rule",
++                "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++                "shadowed": []
++              },
++              "descriptor": "(IZ)Z",
++              "entry": "ReceiverHistorya6c64fb5e295916f#history0",
++              "nullArgumentPositions": [],
++              "parameters": [
++                "n",
++                "shared"
++              ],
++              "producer": "Checkout$Pair#open(IZ)LCheckout$Pair;"
++            }
++          ],
++          "receiver": "Checkout$Pair",
++          "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
++        },
++        "automatic": {
++          "wire_version": 1,
++          "verdict": "violation",
++          "target": "ReceiverHistorya6c64fb5e295916f#history0",
++          "domain": "arg0: int \u00d7 arg1: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": {
++            "input": "history0(arg0=0, arg1=false)",
++            "outcome": "false",
++            "values": [
++              "0",
++              "false"
++            ],
++            "found": "history0(arg0=20, arg1=false)",
++            "shrink_runs": 1,
++            "inputs": [
++              {
++                "name": "arg0",
++                "type": "int",
++                "value": 0
++              },
++              {
++                "name": "arg1",
++                "type": "boolean",
++                "value": false
++              }
++            ],
++            "found_inputs": [
++              {
++                "name": "arg0",
++                "type": "int",
++                "value": 20
++              },
++              {
++                "name": "arg1",
++                "type": "boolean",
++                "value": false
++              }
++            ],
++            "call": {
++              "class": "ReceiverHistorya6c64fb5e295916f",
++              "class_file": "ReceiverHistorya6c64fb5e295916f.class",
++              "classes": "after",
++              "method": "history0",
++              "descriptor": "(IZ)Z",
++              "static": true,
++              "arguments": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "value": 0,
++                  "from": "arg0"
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "value": false,
++                  "from": "arg1"
++                }
++              ]
++            }
++          },
++          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as history0(arg0=20, arg1=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticshared/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "property-violated",
++              "message": "Property of ReceiverHistorya6c64fb5e295916f#history0 violated: `result`:\n  history0(arg0=0, arg1=false)\n    outcome: false",
++              "uri": null,
++              "line": 1
++            }
++          ],
++          "output": "\u2717 Property of ReceiverHistorya6c64fb5e295916f#history0 violated: `result`:\n  history0(arg0=0, arg1=false)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as history0(arg0=20, arg1=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticshared",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.004209216,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": "[0:20]",
++            "native": {
++              "paths": 1,
++              "merges": 0,
++              "solver_calls": 4,
++              "solving_seconds": 2.4805e-05,
++              "gates_evaluated": 2,
++              "evaluating_seconds": 1.212e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 100,
++              "clauses": 230,
++              "seconds": 0.003571393,
++              "loading_seconds": 0.000135254,
++              "decoding_seconds": 3.6628e-05,
++              "encoding_seconds": 3.5707e-05,
++              "witness_seconds": 9.327e-06
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.004,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.003,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 100,
++                  "clauses": 230
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.018,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.004,
++              "replay": 0.005,
++              "jvm": 0.0,
++              "other": 0.008
++            }
++          },
++          "replay": {
++            "by": "interpreter",
++            "reproduced": true
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "arg0: int \u00d7 arg1: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        },
++        "automaticWitness": {
++          "inputs": [
++            "0",
++            "false"
++          ],
++          "steps": [
++            "Checkout$Pair#open(IZ)LCheckout$Pair;",
++            "InventoryChecks#shared"
++          ],
++          "jvm": [
++            "class 9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++            "returned false"
++          ]
++        }
++      },
++      "distinct": {
++        "construction": {
++          "freshObserverInputs": false,
++          "generatedClass": "ReceiverHistory80bd716fd0a5e519",
++          "generatedSha256": "adb0b862779d948139043a1776f5ce17662a319b66035d5cd30c2c6e268a8eab",
++          "maxProducers": 64,
++          "missed": [],
++          "nullCollaborators": false,
++          "observer": "InventoryChecks#distinct",
++          "observerBinding": {
++            "bound_release": 21,
++            "candidates": [
++              {
++                "entry": "InventoryChecks.class",
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2"
++              }
++            ],
++            "class": "InventoryChecks",
++            "entry": "InventoryChecks.class",
++            "index": 0,
++            "manifest": null,
++            "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++            "selected_by": "rule",
++            "sha256": "c21526daf16e39b4c5743de038e3c9a2565f636a2e9a282a09bc4e4476ff81c2",
++            "shadowed": []
++          },
++          "observerDescriptor": "(LCheckout$Pair;)Z",
++          "plans": [
++            {
++              "binding": {
++                "bound_release": 21,
++                "candidates": [
++                  {
++                    "entry": "Checkout$Pair.class",
++                    "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                    "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863"
++                  }
++                ],
++                "class": "Checkout$Pair",
++                "entry": "Checkout$Pair.class",
++                "index": 0,
++                "manifest": null,
++                "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++                "selected_by": "rule",
++                "sha256": "9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++                "shadowed": []
++              },
++              "descriptor": "(IZ)Z",
++              "entry": "ReceiverHistory80bd716fd0a5e519#history0",
++              "nullArgumentPositions": [],
++              "parameters": [
++                "n",
++                "shared"
++              ],
++              "producer": "Checkout$Pair#open(IZ)LCheckout$Pair;"
++            }
++          ],
++          "receiver": "Checkout$Pair",
++          "scope": "one public producer with symbolic primitive arguments on the supplied application classpath; subsequent calls are those of the observer"
++        },
++        "automatic": {
++          "wire_version": 1,
++          "verdict": "violation",
++          "target": "ReceiverHistory80bd716fd0a5e519#history0",
++          "domain": "arg0: int \u00d7 arg1: boolean",
++          "assume": null,
++          "assert": "result",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": {
++            "input": "history0(arg0=0, arg1=true)",
++            "outcome": "false",
++            "values": [
++              "0",
++              "true"
++            ],
++            "found": "history0(arg0=20, arg1=true)",
++            "shrink_runs": 2,
++            "inputs": [
++              {
++                "name": "arg0",
++                "type": "int",
++                "value": 0
++              },
++              {
++                "name": "arg1",
++                "type": "boolean",
++                "value": true
++              }
++            ],
++            "found_inputs": [
++              {
++                "name": "arg0",
++                "type": "int",
++                "value": 20
++              },
++              {
++                "name": "arg1",
++                "type": "boolean",
++                "value": true
++              }
++            ],
++            "call": {
++              "class": "ReceiverHistory80bd716fd0a5e519",
++              "class_file": "ReceiverHistory80bd716fd0a5e519.class",
++              "classes": "after",
++              "method": "history0",
++              "descriptor": "(IZ)Z",
++              "static": true,
++              "arguments": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "value": 0,
++                  "from": "arg0"
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "value": true,
++                  "from": "arg1"
++                }
++              ]
++            }
++          },
++          "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as history0(arg0=20, arg1=true), shrunk to the input above in 2 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticdistinct/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "property-violated",
++              "message": "Property of ReceiverHistory80bd716fd0a5e519#history0 violated: `result`:\n  history0(arg0=0, arg1=true)\n    outcome: false",
++              "uri": null,
++              "line": 1
++            }
++          ],
++          "output": "\u2717 Property of ReceiverHistory80bd716fd0a5e519#history0 violated: `result`:\n  history0(arg0=0, arg1=true)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as history0(arg0=20, arg1=true), shrunk to the input above in 2 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/automaticdistinct",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 0.006969111,
++            "properties": 1,
++            "unwind": 9,
++            "max_array_length": 8,
++            "stage": "[0:20]",
++            "native": {
++              "paths": 2,
++              "merges": 0,
++              "solver_calls": 4,
++              "solving_seconds": 3.5938e-05,
++              "gates_evaluated": 2,
++              "evaluating_seconds": 1.502e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 100,
++              "clauses": 230,
++              "seconds": 0.006091148,
++              "loading_seconds": 0.000213569,
++              "decoding_seconds": 7.2706e-05,
++              "encoding_seconds": 6.41e-05,
++              "witness_seconds": 1.2224e-05
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.006,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.0,
++                  "lowering": 0.0,
++                  "symbolic": 0.006,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 100,
++                  "clauses": 230
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 0.033,
++              "setup": 0.002,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 0.006,
++              "replay": 0.01,
++              "jvm": 0.0,
++              "other": 0.015
++            }
++          },
++          "replay": {
++            "by": "interpreter",
++            "reproduced": true
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "arg0",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                },
++                {
++                  "name": "arg1",
++                  "type": "boolean",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "arg0: int \u00d7 arg1: boolean"
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 9,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        },
++        "automaticWitness": {
++          "inputs": [
++            "0",
++            "true"
++          ],
++          "steps": [
++            "Checkout$Pair#open(IZ)LCheckout$Pair;",
++            "InventoryChecks#distinct"
++          ],
++          "jvm": [
++            "class 9425ed3eeea3301517726325be36dd91c1b7189e9288ba505021c3b48efca863",
++            "returned false"
++          ]
++        }
++      }
++    },
++    "boundaryJvm": "Shared backup changed from 1 to 0"
++  }
++}
+--- /dev/null
++++ b/verification/receiver-discovery/qualification/stock/selected/result.json
+@@ -0,0 +1,670 @@
++{
++  "schema": "physical-site-investigation/v1",
++  "entry": {
++    "owner": "ReceiverHistory9c0b1d57ac9459a3",
++    "method": "history0",
++    "descriptor": "(IZ)Z",
++    "binding": {
++      "bound_release": 21,
++      "candidates": [
++        {
++          "entry": "ReceiverHistory9c0b1d57ac9459a3.class",
++          "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/site-history",
++          "sha256": "656e8842e77a0ed18b17c7764507cd394d042312ee558e1cc83bc162232e80f9"
++        }
++      ],
++      "class": "ReceiverHistory9c0b1d57ac9459a3",
++      "entry": "ReceiverHistory9c0b1d57ac9459a3.class",
++      "index": 0,
++      "manifest": null,
++      "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/site-history",
++      "selected_by": "rule",
++      "sha256": "656e8842e77a0ed18b17c7764507cd394d042312ee558e1cc83bc162232e80f9",
++      "shadowed": []
++    }
++  },
++  "subject": {
++    "owner": "Checkout$Stock",
++    "method": "take",
++    "descriptor": "()Z",
++    "binding": {
++      "bound_release": 21,
++      "candidates": [
++        {
++          "entry": "Checkout$Stock.class",
++          "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++          "sha256": "2ad22dd17898c3f447ddb71e9b4ba8a3043d2e61337f70349d346f1e5281dd82"
++        }
++      ],
++      "class": "Checkout$Stock",
++      "entry": "Checkout$Stock.class",
++      "index": 1,
++      "manifest": null,
++      "provider": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/original",
++      "selected_by": "rule",
++      "sha256": "2ad22dd17898c3f447ddb71e9b4ba8a3043d2e61337f70349d346f1e5281dd82",
++      "shadowed": []
++    }
++  },
++  "site": {
++    "branchTargets": [
++      9
++    ],
++    "followingPc": 7,
++    "handlers": [],
++    "kind": "branch",
++    "line": 7,
++    "opcode": 154,
++    "ordinal": 2,
++    "pc": 4,
++    "selection": "supported"
++  },
++  "policy": "taken",
++  "boundary": "selected method activation",
++  "assume": null,
++  "unwind": 9,
++  "maxArrayLength": 8,
++  "checkerSha256": "6d7135bec84a4e2153a48f7d4c71fa28f84e54ebafe627a4add9ee7524fbef4d",
++  "projectionSha256": "a53507b7f0a28e81370eb52b9a53ca362f7e05285612d13b68640b8e27de2c2f",
++  "wrapperSha256": "033ea3d8f4d248d72ac4e5c8c9216d0cc840cb133759a32f4e3ab3b8c806b0fa",
++  "expectedReturn": null,
++  "queries": {
++    "complete": {
++      "wire_version": 1,
++      "verdict": "verified",
++      "target": "SelectedSiteQuery#complete",
++      "domain": "arg0: int \u00d7 arg1: boolean",
++      "assume": null,
++      "assert": "result",
++      "throws": [],
++      "throws_checked": [],
++      "counterexample": null,
++      "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions",
++      "problem": null,
++      "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/stock-query/complete/harness/PropertyHarness.java",
++      "findings": [],
++      "output": "\u2713 SelectedSiteQuery#complete satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over arg0: int \u00d7 arg1: boolean in 0.0 s; loops unwound 9 times with unwinding assertions)\n",
++      "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/stock-query/complete",
++      "search": {
++        "engine": "native",
++        "checker": "jvmcontract's own checker (CaDiCaL)",
++        "seconds": 0.006200393,
++        "properties": 1,
++        "unwind": 9,
++        "max_array_length": 8,
++        "stage": null,
++        "native": {
++          "paths": 6,
++          "merges": 0,
++          "solver_calls": 11,
++          "solving_seconds": 4.4016e-05,
++          "gates_evaluated": 105,
++          "evaluating_seconds": 4.428e-06,
++          "divisions": 0,
++          "divisions_built": 0,
++          "multiplications": 0,
++          "multiplications_built": 0,
++          "variables": 189,
++          "clauses": 527,
++          "seconds": 0.005451632,
++          "loading_seconds": 9.7174e-05,
++          "decoding_seconds": 5.4011e-05,
++          "encoding_seconds": 8.9796e-05,
++          "witness_seconds": 0.0
++        },
++        "gap_mode": "strict",
++        "deadline_seconds": 60.0,
++        "runs": [
++          {
++            "checker": "native",
++            "purpose": "proof",
++            "stage": null,
++            "budget_seconds": 60.0,
++            "seconds": 0.005,
++            "ended": "verified",
++            "ending": "verified",
++            "phases": {
++              "loading": 0.0,
++              "lowering": 0.0,
++              "symbolic": 0.005,
++              "encoding": 0.0,
++              "solving": 0.0,
++              "trace": 0.0,
++              "other": 0.0
++            },
++            "formula": {
++              "variables": 189,
++              "clauses": 527
++            }
++          }
++        ],
++        "phases": {
++          "seconds": 0.02,
++          "setup": 0.001,
++          "harness": 0.0,
++          "gaps": 0.0,
++          "contracts": 0.0,
++          "runs": 0.005,
++          "replay": 0.0,
++          "jvm": 0.0,
++          "other": 0.013
++        }
++      },
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "arg0",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            },
++            {
++              "name": "arg1",
++              "type": "boolean",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "arg0: int \u00d7 arg1: boolean"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 9,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++          "classes": 40,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "harness",
++          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++        }
++      }
++    },
++    "absent": {
++      "wire_version": 1,
++      "verdict": "violation",
++      "target": "SelectedSiteQuery#absent",
++      "domain": "arg0: int \u00d7 arg1: boolean",
++      "assume": null,
++      "assert": "result",
++      "throws": [],
++      "throws_checked": [],
++      "counterexample": {
++        "input": "absent(arg0=0, arg1=false)",
++        "outcome": "false",
++        "values": [
++          "0",
++          "false"
++        ],
++        "found": "absent(arg0=20, arg1=false)",
++        "shrink_runs": 1,
++        "inputs": [
++          {
++            "name": "arg0",
++            "type": "int",
++            "value": 0
++          },
++          {
++            "name": "arg1",
++            "type": "boolean",
++            "value": false
++          }
++        ],
++        "found_inputs": [
++          {
++            "name": "arg0",
++            "type": "int",
++            "value": 20
++          },
++          {
++            "name": "arg1",
++            "type": "boolean",
++            "value": false
++          }
++        ],
++        "call": {
++          "class": "SelectedSiteQuery",
++          "class_file": "SelectedSiteQuery.class",
++          "classes": "after",
++          "method": "absent",
++          "descriptor": "(IZ)Z",
++          "static": true,
++          "arguments": [
++            {
++              "name": "arg0",
++              "type": "int",
++              "value": 0,
++              "from": "arg0"
++            },
++            {
++              "name": "arg1",
++              "type": "boolean",
++              "value": false,
++              "from": "arg1"
++            }
++          ]
++        }
++      },
++      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as absent(arg0=20, arg1=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean",
++      "problem": null,
++      "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/stock-query/absent/harness/PropertyHarness.java",
++      "findings": [
++        {
++          "rule_id": "property-violated",
++          "message": "Property of SelectedSiteQuery#absent violated: `result`:\n  absent(arg0=0, arg1=false)\n    outcome: false",
++          "uri": null,
++          "line": 8
++        }
++      ],
++      "output": "\u2717 Property of SelectedSiteQuery#absent violated: `result`:\n  absent(arg0=0, arg1=false)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as absent(arg0=20, arg1=false), shrunk to the input above in 1 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++      "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/stock-query/absent",
++      "search": {
++        "engine": "native",
++        "checker": "jvmcontract's own checker (CaDiCaL)",
++        "seconds": 0.006018161,
++        "properties": 1,
++        "unwind": 9,
++        "max_array_length": 8,
++        "stage": "[0:20]",
++        "native": {
++          "paths": 1,
++          "merges": 0,
++          "solver_calls": 6,
++          "solving_seconds": 9.4768e-05,
++          "gates_evaluated": 67,
++          "evaluating_seconds": 3.415e-06,
++          "divisions": 0,
++          "divisions_built": 0,
++          "multiplications": 0,
++          "multiplications_built": 0,
++          "variables": 252,
++          "clauses": 745,
++          "seconds": 0.005312702,
++          "loading_seconds": 0.000177282,
++          "decoding_seconds": 5.7476e-05,
++          "encoding_seconds": 0.000137086,
++          "witness_seconds": 1.6151e-05
++        },
++        "gap_mode": "strict",
++        "deadline_seconds": 60.0,
++        "runs": [
++          {
++            "checker": "native",
++            "purpose": "proof",
++            "stage": null,
++            "budget_seconds": 60.0,
++            "seconds": 0.005,
++            "ended": "violation",
++            "ending": "counterexample",
++            "phases": {
++              "loading": 0.0,
++              "lowering": 0.0,
++              "symbolic": 0.005,
++              "encoding": 0.0,
++              "solving": 0.0,
++              "trace": 0.0,
++              "other": 0.0
++            },
++            "formula": {
++              "variables": 252,
++              "clauses": 745
++            }
++          }
++        ],
++        "phases": {
++          "seconds": 0.029,
++          "setup": 0.001,
++          "harness": 0.0,
++          "gaps": 0.0,
++          "contracts": 0.0,
++          "runs": 0.005,
++          "replay": 0.01,
++          "jvm": 0.0,
++          "other": 0.012
++        }
++      },
++      "replay": {
++        "by": "interpreter",
++        "reproduced": true
++      },
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "arg0",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            },
++            {
++              "name": "arg1",
++              "type": "boolean",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "arg0: int \u00d7 arg1: boolean"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 9,
++          "max_array_length": null,
++          "complete": false
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++          "classes": 40,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      }
++    },
++    "safe": {
++      "wire_version": 1,
++      "verdict": "violation",
++      "target": "SelectedSiteQuery#safe",
++      "domain": "arg0: int \u00d7 arg1: boolean",
++      "assume": null,
++      "assert": "result",
++      "throws": [],
++      "throws_checked": [],
++      "counterexample": {
++        "input": "safe(arg0=1, arg1=false)",
++        "outcome": "false",
++        "values": [
++          "1",
++          "false"
++        ],
++        "found": "safe(arg0=20, arg1=false)",
++        "shrink_runs": 7,
++        "inputs": [
++          {
++            "name": "arg0",
++            "type": "int",
++            "value": 1
++          },
++          {
++            "name": "arg1",
++            "type": "boolean",
++            "value": false
++          }
++        ],
++        "found_inputs": [
++          {
++            "name": "arg0",
++            "type": "int",
++            "value": 20
++          },
++          {
++            "name": "arg1",
++            "type": "boolean",
++            "value": false
++          }
++        ],
++        "call": {
++          "class": "SelectedSiteQuery",
++          "class_file": "SelectedSiteQuery.class",
++          "classes": "after",
++          "method": "safe",
++          "descriptor": "(IZ)Z",
++          "static": true,
++          "arguments": [
++            {
++              "name": "arg0",
++              "type": "int",
++              "value": 1,
++              "from": "arg0"
++            },
++            {
++              "name": "arg1",
++              "type": "boolean",
++              "value": false,
++              "from": "arg1"
++            }
++          ]
++        }
++      },
++      "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as safe(arg0=20, arg1=false), shrunk to the input above in 7 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean",
++      "problem": null,
++      "statement": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/stock-query/safe/harness/PropertyHarness.java",
++      "findings": [
++        {
++          "rule_id": "property-violated",
++          "message": "Property of SelectedSiteQuery#safe violated: `result`:\n  safe(arg0=1, arg1=false)\n    outcome: false",
++          "uri": null,
++          "line": 9
++        }
++      ],
++      "output": "\u2717 Property of SelectedSiteQuery#safe violated: `result`:\n  safe(arg0=1, arg1=false)\n    outcome: false\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20] as safe(arg0=20, arg1=false), shrunk to the input above in 7 interpreter runs, replayed in the interpreter; domain arg0: int \u00d7 arg1: boolean)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++      "work": "/home/filip/.cache/in-the-loop/tmp/tmpuz4g4p21/stock-query/safe",
++      "search": {
++        "engine": "native",
++        "checker": "jvmcontract's own checker (CaDiCaL)",
++        "seconds": 0.008014888,
++        "properties": 1,
++        "unwind": 9,
++        "max_array_length": 8,
++        "stage": "[0:20]",
++        "native": {
++          "paths": 1,
++          "merges": 0,
++          "solver_calls": 6,
++          "solving_seconds": 0.00010088,
++          "gates_evaluated": 67,
++          "evaluating_seconds": 4.019e-06,
++          "divisions": 0,
++          "divisions_built": 0,
++          "multiplications": 0,
++          "multiplications_built": 0,
++          "variables": 252,
++          "clauses": 745,
++          "seconds": 0.007092663,
++          "loading_seconds": 0.000237524,
++          "decoding_seconds": 7.4059e-05,
++          "encoding_seconds": 0.00016547,
++          "witness_seconds": 1.646e-05
++        },
++        "gap_mode": "strict",
++        "deadline_seconds": 60.0,
++        "runs": [
++          {
++            "checker": "native",
++            "purpose": "proof",
++            "stage": null,
++            "budget_seconds": 60.0,
++            "seconds": 0.007,
++            "ended": "violation",
++            "ending": "counterexample",
++            "phases": {
++              "loading": 0.0,
++              "lowering": 0.0,
++              "symbolic": 0.006,
++              "encoding": 0.0,
++              "solving": 0.0,
++              "trace": 0.0,
++              "other": 0.0
++            },
++            "formula": {
++              "variables": 252,
++              "clauses": 745
++            }
++          }
++        ],
++        "phases": {
++          "seconds": 0.038,
++          "setup": 0.002,
++          "harness": 0.0,
++          "gaps": 0.0,
++          "contracts": 0.0,
++          "runs": 0.007,
++          "replay": 0.012,
++          "jvm": 0.0,
++          "other": 0.017
++        }
++      },
++      "replay": {
++        "by": "interpreter",
++        "reproduced": true
++      },
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "arg0",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            },
++            {
++              "name": "arg1",
++              "type": "boolean",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "arg0: int \u00d7 arg1: boolean"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 9,
++          "max_array_length": null,
++          "complete": false
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++          "classes": 40,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null
++      }
++    }
++  },
++  "originalJvm": {
++    "absent": {
++      "inputs": [
++        "0",
++        "false"
++      ],
++      "events": [
++        "hit Checkout$Stock#take()Z@4",
++        "next Checkout$Stock#take()Z@7",
++        "class 2ad22dd17898c3f447ddb71e9b4ba8a3043d2e61337f70349d346f1e5281dd82",
++        "returned true"
++      ]
++    },
++    "safe": {
++      "inputs": [
++        "1",
++        "false"
++      ],
++      "events": [
++        "hit Checkout$Stock#take()Z@4",
++        "next Checkout$Stock#take()Z@9",
++        "class 2ad22dd17898c3f447ddb71e9b4ba8a3043d2e61337f70349d346f1e5281dd82",
++        "returned true"
++      ]
++    }
++  },
++  "reachability": "reached",
++  "disposition": "refuted"
++}

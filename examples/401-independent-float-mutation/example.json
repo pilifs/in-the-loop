@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "401",
+  "title": "Independent binary32 inputs to a mutable receiver",
+  "summary": "Two independently chosen binary32 values mutate a released MutableFloat. Adjacent ranges, cancellation and a rounded sum test reuse across inputs.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "rounding",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Independent binary32 inputs to a mutable receiver",
+    "file": "original/FloatHistory.java",
+    "symbol": "FloatHistory#exact"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Two independently chosen binary32 values mutate a released MutableFloat. Adjacent ranges, cancellation and a rounded sum test reuse across inputs."
+  },
+  "target": "target.json",
+  "verdictLabel": "Registered receiver and property controls",
+  "notes": [
+    "The campaign keeps strict native results, exact comparator profiles, original inputs and independent JVM observations under verification/receiver-discovery."
+  ]
+}

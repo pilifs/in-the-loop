@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-223107-qualify-automatically-discovered-stock-c",
+  "title": "Qualify automatically discovered stock construction and alias history",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4.4s, peak 98.2 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-223107-qualify-automatically-discovered-stock-c.json",
+    "sha256": "acd2622e899e473a1de32913cab31d096309e6e870bf0f05035572775c382d99",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-223107-qualify-automatically-discovered-stock-c",
+      "title": "Qualify automatically discovered stock construction and alias history",
+      "description": "Compare discovered and explicitly supplied public producers on full signed counts and both identity choices. Replay actual violating constructor inputs and select the take guard inside a factory-made receiver.",
+      "kind": "library",
+      "capabilities": [
+        "receiver-construction",
+        "physical-property-selection"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:31:07+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Run the bound stock controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/qualification.py stock",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/qualification/stock"
+      ]
+    }
+  },
+  "sourceCommit": "edb82317d3aa1ddb0b0d5631de347361c664a76d",
+  "startedAt": "2026-11-23T22:50:49+00:00",
+  "finishedAt": "2026-11-23T22:54:39+00:00",
+  "wallSeconds": 230.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3562698,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 102940672,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 6.0,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the bound stock controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/qualification.py stock",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 4.407,
+      "cpuSeconds": 5.999,
+      "cpuThrottledSeconds": 0.595,
+      "peakMemoryBytes": 102940672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-bound-stock-controls.log",
+        "lines": 1,
+        "bytes": 51,
+        "sha256": "e2d35b3eb024336d640715f83ea517fbdadf299505006ef70bc650f54ce93344",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Checkout$Stock#take 4 branch taken reached refuted"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/qualification/stock/measurement.json",
+      "change": "added",
+      "bytes": 82873,
+      "sha256": "870db89045896f196b787301f45733c16ba9fe2aad841bf2553841f1f6ab9984",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/stock/selected/result.json",
+      "change": "added",
+      "bytes": 21707,
+      "sha256": "77f9c478826b4bfbf77b66bf67c1ac80be1a4bb17c134239a64b1a98aec85a76",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:57:22+00:00",
+    "applied": [
+      "verification/receiver-discovery/qualification/stock/measurement.json",
+      "verification/receiver-discovery/qualification/stock/selected/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b68aa1dc2bec5e16476d1e8e48e9455a04f20053",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b68aa1dc2bec5e16476d1e8e48e9455a04f20053/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T225439Z-61146734b2cebb6f",
+      "outputs": "20261123T225439Z-6288673782321945",
+      "diff": "20261123T225439Z-6426078efc0c8c76"
+    }
+  }
+}

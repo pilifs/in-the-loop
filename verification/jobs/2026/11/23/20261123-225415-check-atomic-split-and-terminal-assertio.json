@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-225415-check-atomic-split-and-terminal-assertio",
+  "title": "Check atomic split and terminal assertions under JBMC threading",
+  "description": "Select the real Board.commit assertion with two started workers and the caller. Keep all unwind and threading obligations alongside the user property for each variant.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc:standalone"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:54:15+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "Run the standalone schedule controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule standalone",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/opening/schedule/standalone"
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "guava-hex-property-selection",
+    "family": "guava-hex-property-selection",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "guava",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations"
+        ],
+        "runtimeLibraries": [
+          "guava",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "revision": "original",
+      "target": "HexClient#nullReturns",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "null-returns",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#nullReturns",
+      "relation": "calibration",
+      "claim": "claims/null-returns.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "boxed-value",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#boxedValue",
+      "relation": "calibration",
+      "claim": "claims/boxed-value.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "rejects-minimum",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#rejectsMinimum",
+      "relation": "calibration",
+      "claim": "claims/rejects-minimum.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "direct-reached",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#directReached",
+      "relation": "calibration",
+      "claim": "claims/direct-reached.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "composition",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#composition",
+      "relation": "calibration",
+      "claim": "claims/composition.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "early-key",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#earlyKey",
+      "relation": "calibration",
+      "claim": "claims/early-key.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "drop-sign",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#dropSign",
+      "relation": "calibration",
+      "claim": "claims/drop-sign.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "null-shape",
+      "kind": "prove",
+      "revision": "original",
+      "target": "HexClient#nullShape",
+      "relation": "calibration",
+      "claim": "claims/null-shape.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "revision": "original",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle",
+      "kind": "oracle",
+      "revision": "original",
+      "path": "controls/original.json"
+    }
+  ]
+}
