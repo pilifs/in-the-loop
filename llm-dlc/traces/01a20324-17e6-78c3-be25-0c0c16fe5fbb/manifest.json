@@ -12,33 +12,33 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-22T12:03:47.185Z",
-  "ended": "2026-11-23T14:02:39.669Z",
-  "duration_seconds": 93532,
+  "ended": "2026-11-23T14:26:21.132Z",
+  "duration_seconds": 94954,
   "stats": {
     "turns": 19,
-    "api_calls": 3718,
-    "tool_calls": 8693,
-    "tool_errors": 220,
+    "api_calls": 3796,
+    "tool_calls": 8845,
+    "tool_errors": 224,
     "compactions": 15,
     "peak_context_tokens": 550118,
     "usage": {
-      "input_tokens": 5487815,
-      "output_tokens": 1690276,
-      "cache_read_input_tokens": 983345408,
+      "input_tokens": 5564222,
+      "output_tokens": 1723630,
+      "cache_read_input_tokens": 1011645312,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 4707,
-    "exec": 3395,
-    "apply_patch": 375,
-    "wait": 116,
+    "Bash": 4779,
+    "exec": 3460,
+    "apply_patch": 384,
+    "wait": 118,
     "sleep": 38,
-    "send_message": 23,
+    "send_message": 25,
     "wait_agent": 16,
-    "list_agents": 9,
+    "list_agents": 10,
     "spawn_agent": 7,
-    "followup_task": 5,
+    "followup_task": 6,
     "request_user_input_async": 1,
     "send_message_to_user_async": 1
   },
@@ -87,10 +87,13 @@
     "examples/388-commons-lang-unsigned-nibble/adapter/UnsignedNibble.java",
     "examples/389-enum-name-identity/adapter/EnumNames.java",
     "examples/390-thread-local-presence/adapter/ThreadLocalHistory.java",
+    "examples/391-class-monitor-identity/README.md",
     "examples/391-class-monitor-identity/adapter/MonitorIdentity.java",
     "examples/391-class-monitor-identity/controls/MonitorLaunch.java",
     "examples/391-class-monitor-identity/controls/MonitorProfiles.java",
     "examples/391-class-monitor-identity/controls/ObserveSchedule.java",
+    "examples/391-class-monitor-identity/controls/WorkerStartup.java",
+    "examples/391-class-monitor-identity/example.json",
     "examples/tools/targets/test_packets.py",
     "examples/tools/targets/workflow_ingest.py",
     "lib/README.md",
@@ -114,6 +117,7 @@
     "lib/benchmark/java-semantics-gap/heap_and_monitors.py",
     "lib/benchmark/java-semantics-gap/historical.py",
     "lib/benchmark/java-semantics-gap/monitor_schedules.py",
+    "lib/benchmark/java-semantics-gap/monitor_startup.py",
     "lib/benchmark/java-semantics-gap/origins.py",
     "lib/benchmark/java-semantics-gap/scorecard.py",
     "lib/benchmark/java-semantics-gap/seed_profiles.py",
@@ -420,24 +424,24 @@
     {
       "index": 15,
       "started": "2026-11-23T13:21:09.829Z",
-      "ended": "2026-11-23T14:02:39.669Z",
+      "ended": "2026-11-23T14:26:21.132Z",
       "turns": 1,
-      "api_calls": 149,
+      "api_calls": 227,
       "usage": {
-        "input_tokens": 328003,
-        "output_tokens": 66665,
-        "cache_read_input_tokens": 34076928,
+        "input_tokens": 404410,
+        "output_tokens": 100019,
+        "cache_read_input_tokens": 62376832,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 330810
+      "peak_context_tokens": 403119
     }
   ],
   "log": {
-    "sha256": "3eb514c92f24e592629638fed9e528a2f483e18664687cc1d470080117fd87ff",
-    "bytes": 56083066,
-    "lines": 28115,
-    "gzip_bytes": 10610616,
-    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/3eb514c92f24e592629638fed9e528a2f483e18664687cc1d470080117fd87ff.jsonl.gz"
+    "sha256": "2db9f139c56e0b328099b6feb49477c17a440a3dee0e468d40cebe8a66113964",
+    "bytes": 56944340,
+    "lines": 28695,
+    "gzip_bytes": 10761603,
+    "path": "llm-dlc/traces/01a20324-17e6-78c3-be25-0c0c16fe5fbb/logs/2db9f139c56e0b328099b6feb49477c17a440a3dee0e468d40cebe8a66113964.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1648,6 +1652,22 @@
       "summary": "Check the original Commons Lang decimal parsers (verification pending)",
       "body": "Round concrete decimal literals directly to binary32 or binary64. Run the selected JDK formatter bytecode, integer decoder, BigDecimal constructors and comparisons, and BigInteger magnitude operations. Five read-only arithmetic tables come from the fingerprinted Temurin 21 class initializers. Preserve the original UTF-16 units when a String copies a byte range.\n\nThe interpreter now recognizes the native checker's supported constant regex grammar during StringUtils startup. An unmodeled initializer that wrote partial state prevents subsequent interpretation on that machine. Confirmed the six outcomes per original artifact in the interpreter and checked the exact runtime classes, raw float bits, signed coefficients and scales independently on Temurin 21. Both full-guard fix probes proved their claims and the parent precision probe produced a JVM-replayed counterexample.\n\nThe changed-test selection passed all eight groups, including 59 Rust binaries. One unrelated JBMC process-limit timing test passed on its automatic second run. The pinned-JDK regression, example 375 validation and test-cost lint passed. Jobs 20261123-134727-qualify-the-four-original-commons-lang-d and 20261123-134736-compare-strict-native-and-jbmc-on-both-o qualify the original tasks and compare both engines. Jobs 20261123-134759-recheck-60-original-java-callers-on-the, 20261123-134806-recheck-38-frozen-historical-java-claims and 20261123-135311-recheck-proof-tier-conformance-after-dec recheck the frozen controls and both proof-tier conformance tests.",
       "log_sha256": "3eb514c92f24e592629638fed9e528a2f483e18664687cc1d470080117fd87ff"
+    },
+    {
+      "change_id": "wkwzrozvyzxmnokrykspkqpqkvokwmrp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "2db9f139c56e0b328099b6feb49477c17a440a3dee0e468d40cebe8a66113964"
+    },
+    {
+      "change_id": "tmqvwpvmrtrpswromtkmmxmwnznmmxpp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Trace inherited state through the original monitor worker startup",
+      "body": "Bind the unchanged Worker and caller class files and disassemble the platform constructor directly from the measured JDK modules. Eight fresh JVM runs distinguish absent, removed, stored-null and populated parent bindings. A returning callback completes on the caller thread. A throwing callback escapes each original public caller as the identical exception before any shared-field write or worker start. The ordinary three-claim score remains separate from these explicitly installed parent environments.\n\nRebuilt and repeated all eight observations with monitor_startup.py --check, validated example 391 and its router, and ran the changed-test selection. All 31 selected groups passed, including 59 Rust test binaries and 30 Python test files.",
+      "log_sha256": "2db9f139c56e0b328099b6feb49477c17a440a3dee0e468d40cebe8a66113964"
     }
   ],
   "logs": {
@@ -1709,6 +1729,12 @@
       "bytes": 24531065,
       "lines": 12311,
       "gzip_bytes": 4739073,
+      "url": null
+    },
+    "2db9f139c56e0b328099b6feb49477c17a440a3dee0e468d40cebe8a66113964": {
+      "bytes": 56944340,
+      "lines": 28695,
+      "gzip_bytes": 10761603,
       "url": null
     },
     "307045fae2d43d023c034b89d17df5d15ec7f12bd34ce719d8439a00ef6fef0e": {

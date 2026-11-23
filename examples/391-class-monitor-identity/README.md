@@ -14,6 +14,12 @@ Inspect each strict task with `python3 examples/tools/build.py --plan 391`. The 
 python3 lib/benchmark/java-semantics-gap/campaign.py jvm monitors --output "$TMPDIR/semantics"
 ```
 
+## Platform-thread construction
+
+The ordinary checker stops when the original worker calls `Thread.<init>()`. On Temurin 21.0.13 that constructor reads the current platform thread. If the parent has an inheritable binding, the JDK copies it and calls the key's `childValue` on the parent thread before the worker starts. A stored null triggered one callback. An absent or removed key triggered none.
+
+Eight fresh JVM runs kept the original worker class files. A callback that returned normally let the class-matched caller finish with the shared field at 6. A callback that threw escaped each of the three original callers as the identical exception, before the first write to the shared field. These runs install the parent binding explicitly. The schedule enumeration below starts with successful platform-thread construction. Reproduce the JVM controls with `python3 -B lib/benchmark/java-semantics-gap/monitor_startup.py --check`. [JDK call sites and observed values](../../verification/java-semantics-gap/monitor-startup/measurement.json)
+
 ## Measured results
 
 The campaign's ordinary native checker decided 0/3 at opening and 0/3 at qualification, with 0 established and 0 refuted on original-JVM replays.
