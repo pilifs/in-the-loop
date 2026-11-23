@@ -66,6 +66,32 @@ fn proved(classes: &Path, target: &str, bound: u32) {
 }
 
 #[test]
+fn fresh_thread_local_and_declared_member_metadata_match_the_selected_jvm() {
+    jvmcontract::tool_tier!();
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.SpringStartup").status().unwrap().success());
+    proved(classes, "claims.SpringStartup#split", 16);
+    proved(classes, "claims.SpringStartup#locks", 16);
+    let version = Command::new("java").arg("-version").output().unwrap();
+    let pinned = String::from_utf8_lossy(&version.stderr).contains("Temurin-21.0.13+9");
+    if pinned {
+        proved(classes, "claims.SpringStartup#writer", 32);
+        proved(classes, "claims.SpringStartup#membership", 8);
+    }
+    for (method, boundary) in [("metadata", "java.lang.Class.getMethod"), ("bindings", "java.lang.ThreadLocal.<init>"),
+                               ("overridingInitialValue", "java.lang.ThreadLocal.<init>")] {
+        let result = run(&options(classes, &format!("claims.SpringStartup#{method}"), 16, method));
+        if pinned && method != "overridingInitialValue" {
+            assert_eq!(result.verdict, Verdict::Verified, "{}", result.output);
+        } else {
+            assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
+            let refusal = if pinned { "overriding initialValue" } else { boundary };
+            assert!(result.output.contains(refusal), "{}", result.output);
+        }
+    }
+}
+
+#[test]
 fn the_string_and_builder_methods_are_the_definitions_written_out_over_char_at() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
@@ -602,10 +628,8 @@ fn a_hash_set_is_the_jdks_until_a_check_asks_for_the_model_which_is_its_definiti
     assert_eq!(String::from_utf8_lossy(&sampled.stdout).trim(), "ok", "{}", String::from_utf8_lossy(&sampled.stderr));
 
     let unasked = run(&options(classes, "claims.Sets#added", 2, "Sets-unasked"));
-    assert_eq!(unasked.verdict, Verdict::Unverifiable, "{}", unasked.output);
-    // With the JDK image the fresh constructor runs and the first missing operation is size.
-    assert!(unasked.output.contains("java.util.Set.size()I") || unasked.output.contains("java.util.HashSet.<init>()V"),
-            "{}", unasked.output);
+    assert_eq!(unasked.verdict, Verdict::Verified, "{}", unasked.output);
+    assert!(!unasked.stated.as_ref().unwrap().assumptions.iter().any(|a| a.text.contains("--model java.util.HashSet")));
 
     let asking = |method: &str| {
         let mut o = options(classes, &format!("claims.Sets#{method}"), 2, &format!("Sets-{method}"));

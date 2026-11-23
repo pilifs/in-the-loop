@@ -1,0 +1,71 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-011836-recheck-all-ordinary-spring-claims-after",
+  "title": "Recheck all ordinary Spring claims after four startup changes",
+  "description": "Run the frozen public Spring binder histories, legacy and fluent hierarchies with the public authorization manager, reflected property names and formatter bindings on the exact original classpaths. Use the strict native selector workflow with no supplied initializer state. Record complete selector coverage or the first unproved instruction, including both parent controls and both binder graphs.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "ordinary-startup",
+    "original-jvm-replay"
+  ],
+  "links": {
+    "examples": [
+      "368",
+      "370",
+      "372",
+      "374"
+    ]
+  },
+  "expected": "Each of the 18 tasks has its hash-bound original graph, selector result, and either a complete proof, an original-JVM witness, or the first strict blocker.",
+  "submitted": {
+    "at": "2026-11-23T01:18:36+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 10,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "Spring binder histories",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 368 --stage spring-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Reachable authorities and public decisions",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 370 --stage spring-startup --first 1",
+      "cwd": "."
+    },
+    {
+      "name": "Reflected property names",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 372 --stage spring-startup",
+      "cwd": "."
+    },
+    {
+      "name": "Formatter bean and error histories",
+      "run": "python3 -B lib/benchmark/spring-java-data/public_selectors.py 374 --stage spring-startup",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "examples/368-spring-binding-history/records/spring-startup",
+    "examples/368-spring-binding-history/records/native-selectors",
+    "examples/370-spring-role-hierarchy/records/spring-startup",
+    "examples/370-spring-role-hierarchy/records/native-selectors",
+    "examples/372-spring-property-accessors/records/spring-startup",
+    "examples/372-spring-property-accessors/records/native-selectors",
+    "examples/374-spring-formatter-binding/records/spring-startup",
+    "examples/374-spring-formatter-binding/records/native-selectors"
+  ]
+}

@@ -226,4 +226,8 @@ The A1 → A2 transfer now covers all 98,304 histories with a separate authority
 
 The B2 reference experiment added four strict native proofs on the original parent and landed JARs. Both preserved cell identity through two transposes of six independently selected references, preserved the outer list on the three fast paths and lost the height of two or three empty rows. Each JVM checked 1,754 rectangular histories and 40 boundary cases. The data scorecard records these proofs alongside the four primary transpose claims. [Example and controls](../../examples/371-javaslang-matrix-transpose/README.md#cell-identity-through-two-transposes) · [Managed result](../../verification/results/2026/11/22/20261122-221543-prove-reference-identity-through-both-hi/result.json)
 
-- Status: done
+The Spring startup follow-up runs all 16 primary claims and both binder controls with the original classpaths. The probes reached the factory map inside bean introspection, the JDK collections populated by the role parser, the optional dependencies consulted by reflected method metadata, and the explicit UTC lookup after reading the locale holder. The managed run checks every frozen selector or records the first strict refusal. [Verification job](../../verification/jobs/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after.json)
+
+The conformance job also checks the real negative-capacity HashSet witness on the existing JBMC, automatic and confirmed routes. [Conformance job](../../verification/jobs/2026/11/23/20261123-012155-check-spring-startup-changes-against-the.json)
+
+- Status: waiting on jobs 20261123-011836-recheck-all-ordinary-spring-claims-after 20261123-012155-check-spring-startup-changes-against-the

@@ -711,6 +711,20 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
     let Some(code) = cf.method("<clinit>", "()V").and_then(|m| m.code.as_ref()) else { return false };
     let Ok(insns) = code.instructions() else { return false };
     if cp.is_application(&cf.name) && assertion_prologue(cf, &insns).is_some() { return true; }
+    if cp.is_application(&cf.name) {
+        // Optional dependency discovery uses the declaring class's loader and handles lookup failures
+        // in its own bytecode. A shared empty array is another common prefix of a metadata cache.
+        // In both cases execute to the end, including subsequent calls and exception handlers.
+        match insns.as_slice() {
+            [(_, Insn::Ldc(c)), (_, Insn::InvokeVirtual(m)), ..] if cf.pool.class_name(*c).ok() == Some(&cf.name)
+                && cf.pool.member(*m).is_ok_and(|m| (m.owner.as_str(), m.name.as_str(), m.descriptor.as_str())
+                    == ("java/lang/Class", "getClassLoader", "()Ljava/lang/ClassLoader;")) => return true,
+            [(_, Insn::IConst(0)), (_, Insn::ANewArray(_)), (_, Insn::PutStatic(slot)), ..]
+                if cf.pool.member(*slot).is_ok_and(|m| m.owner == cf.name && m.descriptor.starts_with('[')
+                    && cf.field(&m.name).is_some_and(|f| f.is_final() && f.is_static() && f.descriptor == m.descriptor)) => return true,
+            _ => {}
+        }
+    }
     // A straight-line initializer can publish a singleton before configuring it.
     // Execute the entire initializer, including later calls, static writes and failures.
     if let [(_, Insn::New(owner)), (_, Insn::Dup), (_, Insn::InvokeSpecial(ctor)), (_, Insn::PutStatic(slot)), ..] = insns.as_slice() {
@@ -730,7 +744,8 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
             && cp.resolve_field(&m.owner, &m.name, &m.descriptor).and_then(|owner| cp.load(&owner).ok().flatten())
                 .is_some_and(|l| l.class.field(&m.name).is_some_and(|f| f.is_static() && f.is_final()))),
         Insn::New(i) => cf.pool.class_name(*i).is_ok_and(|class| cp.is_application(class)
-            || (class == "java/util/HashMap" && cp.map_image_class(class).is_some())),
+            || (class == "java/util/HashMap" && cp.map_image_class(class).is_some())
+            || (class == crate::models::CONCURRENT_MAP && cp.concurrent_map_method("<init>", "(I)V").is_some())),
         Insn::InvokeDynamic(i) => cf.pool.invoke_dynamic(*i).ok().and_then(|(index, _, _)|
             cf.bootstrap_methods().ok()?.into_iter().nth(usize::from(index))).is_some_and(|b|
             b.method.member.owner == "java/lang/invoke/LambdaMetafactory"
@@ -738,6 +753,10 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
         Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) =>
             cf.pool.member(*i).is_ok_and(|m| cp.is_application(&m.owner)
                 || cp.checked_image_class(&m.owner).is_some()
+                || matches!((m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()),
+                    ("java/lang/Class", "getClassLoader", "()Ljava/lang/ClassLoader;")
+                    | (crate::models::CONCURRENT_MAP, "newKeySet", "(I)Ljava/util/concurrent/ConcurrentHashMap$KeySetView;"))
+                || (m.owner == crate::models::CONCURRENT_MAP && cp.concurrent_map_method(&m.name, &m.descriptor).is_some())
                 || (m.owner == super::bytes::CHARSET && m.name == "name" && m.descriptor == "()Ljava/lang/String;")
                 || (matches!(m.owner.as_str(), "java/util/Map" | "java/util/HashMap")
                     && cp.map_image_method("java/util/HashMap", &m.name, &m.descriptor).is_some())),

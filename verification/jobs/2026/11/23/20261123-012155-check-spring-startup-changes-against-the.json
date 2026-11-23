@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-012155-check-spring-startup-changes-against-the",
+  "title": "Check Spring startup changes against the JVM conformance corpus",
+  "description": "The real JDK HashSet constructor now reaches a negative-capacity exception and the native corpus expects the JVM witness. Run the two existing proof-tier conformance tests so JBMC, automatic selection and confirmation are checked on the same corpus. The ordinary native and sampled-JVM proxy runs with the source tests.",
+  "kind": "library",
+  "capabilities": [
+    "tests:proof",
+    "jbmc:conformance"
+  ],
+  "links": {
+    "paths": [
+      "lib/tests/conformance.rs"
+    ]
+  },
+  "expected": "The two proof-tier conformance tests reproduce the recorded JVM outcomes and accepted engine boundaries.",
+  "submitted": {
+    "at": "2026-11-23T01:21:55+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "cargo",
+    "javac",
+    "java",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "22m",
+    "timeout": "55m",
+    "notes": "The recorded corpus tests took approximately 11 and 20 minutes individually. They can run beside each other."
+  },
+  "steps": [
+    {
+      "name": "JBMC, auto and confirmed native conformance",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

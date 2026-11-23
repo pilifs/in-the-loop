@@ -587,6 +587,8 @@ and the root precondition define its input heaps. The compiled comparison recons
 choices separately for each version. A refutation carries the JVM's observed values, the chosen roots and
 their identity. [Two array roots](../examples/197-shared-int-array-poststates/README.md) · [Gradebook](../examples/198-gradebook-final-slot/README.md)
 
+On Temurin 21.0.13 the native checker can follow a fresh thread-local key through `get`, `set` and `remove` on the executing platform thread. It distinguishes an absent binding from a binding to null and checks virtual dispatch before using the JDK's default initializer. It can also read a directly declared public zero-argument method and a declared field from the bytes of a final application class extending Object or Record. The rule checks the types of the other declarations that reflection may resolve. Each successful lookup returns a fresh reflective object. [JVM and native controls](tests/fixtures/claims/claims/SpringStartup.java)
+
 ## Library use
 
 ```rust

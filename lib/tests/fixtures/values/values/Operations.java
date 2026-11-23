@@ -228,6 +228,11 @@ public final class Operations {
         return of(n, a, b, c).split(null, -1).length;
     }
 
+    static int splitDefault(int n, int a, int b, int c, int delimiter) {
+        String pattern = delimiter == 0 ? ":" : delimiter == 1 ? "\\s+>\\s+" : null;
+        return of(n, a, b, c).split(pattern).length;
+    }
+
     /** Whether every code unit, as the int the stream gives, is below the limit. */
     static boolean chars(int n, int a, int b, int c, int limit) {
         return of(n, a, b, c).chars().allMatch(u -> u >= 0 && u < limit);

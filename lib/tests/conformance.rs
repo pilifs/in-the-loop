@@ -117,7 +117,7 @@ fn corpus() -> Vec<Case> {
         Case::new("builderCapacity", &[("-1", "throws java.lang.NegativeArraySizeException"), ("3", "returns 1")]).refuted(None, "result == 1", &[], U),
         // `HashMap(int)` is no gap since the own checker runs a model of the map (lib/models/java/util/HashMap.java).
         Case::new("mapCapacity", &[("-1", IAE), ("3", "returns 1")]).refuted(None, "result == 1", &[], X).holds(Some("n >= 0"), "result == 1", &[], V),
-        Case::new("setCapacity", &[("-1", IAE), ("3", "returns 1")]).refuted(None, "result == 1", &[], U),
+        Case::new("setCapacity", &[("-1", IAE), ("3", "returns 1")]).refuted(None, "result == 1", &[], X),
         Case::new("loadFactor", &[("0", IAE), ("-1", IAE), ("1", "returns 1")]).refuted(None, "result == 1", &[], U),
         Case::new("nullMonitor", &[("0", "throws java.lang.NullPointerException")]).refuted(None, "result == 1", &[], X),
         Case::new("monitor", &[("4", "returns 4")]).holds(None, "result == n", &[], V),

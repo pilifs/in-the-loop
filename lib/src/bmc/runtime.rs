@@ -283,7 +283,7 @@ impl Engine<'_> {
     /// Thread starts stay outside this rule. Nonstandard receivers, symbolic
     /// exceptional states and unsupported operations keep their own diagnostics.
     pub(super) fn sequential_lock(&mut self, path: &mut Path, o: usize, name: &str) -> Step {
-        if path.objects[o].class != REENTRANT_LOCK || path.objects[o].assumed {
+        if !self.cp.is_subtype(&path.objects[o].class, REENTRANT_LOCK) || path.objects[o].assumed {
             return unsupported("a reentrant lock without a known implementation");
         }
         let count = if name == "<init>" { 0 } else {
@@ -536,7 +536,8 @@ impl Engine<'_> {
             let exception = !o_.given && !o_.assumed && (super::throwables::jdk_throwable(self.cp, &class) || (self.cp.loads(&class) && self.cp.is_subtype(&class, "java/lang/Throwable")));
             let array = o_.is_array() && !o_.assumed && !self.there_before(path, o);
             let list_storage = class == "java/util/ArrayList" && !self.cp.runs_model(&class) && o_.fields.contains_key("elementData");
-            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || o_.initialized_big_number() || self.cp.state_image_class(&class).is_some());
+            let image_object = !o_.assumed && !self.there_before(path, o) && (list_storage || o_.fields.contains_key(map_views::IMAGE)
+                || o_.initialized_big_number() || self.cp.state_image_class(&class).is_some());
             let final_image_class = !o_.assumed && self.cp.load(&class).ok().flatten()
                 .is_some_and(|loaded| loaded.origin == crate::classpath::Origin::Jdk && loaded.class.is_final());
             // javac 8 emits dup/getClass/pop before capturing a bound method reference. The JVM

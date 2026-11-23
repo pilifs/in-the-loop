@@ -41,8 +41,9 @@ impl Engine<'_> {
         let image_caller = path.frames.last().is_some_and(|f| self.cp.is_map_image(&f.class));
         let new_map = constructor && class == MAP && owner == MAP
             && (descriptor == "()V" || (image_caller && descriptor == "(I)V"));
-        let new_set = constructor && self.gap_mode == GapMode::Strict && class == "java/util/HashSet"
-            && owner == class && descriptor == "(Ljava/util/Collection;)V";
+        let new_set = constructor && !path.objects[o].given && !path.objects[o].assumed && !path.objects[o].unknown
+            && self.gap_mode == GapMode::Strict && class == "java/util/HashSet"
+            && owner == class && matches!(descriptor, "()V" | "(I)V" | "(Ljava/util/Collection;)V");
         let nested = constructor && image_caller && class.starts_with("java/util/HashMap$") && class == owner;
         // The Commons Collections view itself extends AbstractSet. These two JDK constructors
         // just chain to Object; their actual bodies run on the application's receiver as well.

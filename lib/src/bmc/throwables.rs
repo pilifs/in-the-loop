@@ -142,6 +142,14 @@ pub fn jdk_throwable(cp: &ClassPath, class: &str) -> bool {
 }
 
 impl Engine<'_> {
+    /// The selected Class.getDeclaredField throws new NoSuchFieldException(name) on a miss.
+    pub(super) fn missing_declared_field(&mut self, path: &mut Path, name: usize) -> Step {
+        let object = self.alloc(path, "java/lang/NoSuchFieldException");
+        path.objects[object].fields.insert(MESSAGE.into(), Val::R(Some(name)));
+        path.objects[object].fields.insert(CAUSE.into(), Val::R(Some(object)));
+        self.throw(path, object)
+    }
+
     /// The first failed initialization wraps the original non-Error throwable with a null detail message.
     pub(super) fn initialization_error(&mut self, path: &mut Path, cause: usize) -> usize {
         let wrapper = self.alloc(path, "java/lang/ExceptionInInitializerError");
