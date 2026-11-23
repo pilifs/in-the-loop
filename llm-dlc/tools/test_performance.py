@@ -1308,6 +1308,7 @@ class CommitChecks(unittest.TestCase):
                  mock.patch.object(sync, "check_trailers", return_value=([], [])), \
                  mock.patch.object(sync, "check_global_files", return_value=[]), \
                  mock.patch.object(sync, "run_notes", return_value=[]), \
+                 mock.patch.object(sync.redaction_rules, "source_hash", return_value=sync.redaction_rules.RULES_HASH), \
                  mock.patch.object(sync, "Redactor", MadeUpRedactor), mock.patch("sys.stdout", io.StringIO()) as out:
                 self.assertEqual(sync.cmd_check([], notes_listed=listed), 0)
             return out.getvalue()

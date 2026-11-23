@@ -1,0 +1,290 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "caller-owned-ragged-arrays",
+    "family": "caller-owned-ragged-arrays",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "rows": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "commons-lang3",
+          "commons-collections4",
+          "commons-math3"
+        ],
+        "runtimeLibraries": [
+          "commons-lang3",
+          "commons-collections4",
+          "commons-math3"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-rows",
+      "kind": "replay",
+      "revision": "rows",
+      "target": "RaggedProof#reversed",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "ragged-proof-reversed",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RaggedProof#reversed",
+      "claim": "claims/ragged-proof-reversed.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "ragged-proof-wrong",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RaggedProof#wrong",
+      "claim": "claims/ragged-proof-wrong.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "ragged-proof-iter",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RaggedProof#iter",
+      "claim": "claims/ragged-proof-iter.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "ragged-proof-snapshot",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RaggedProof#snapshot",
+      "claim": "claims/ragged-proof-snapshot.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "ragged-proof-distinct",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RaggedProof#distinct",
+      "claim": "claims/ragged-proof-distinct.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "row-identities-non-null-outer",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RowIdentities#nonNullOuter",
+      "claim": "claims/row-identities-non-null-outer.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "row-identities-no-empty-outer",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RowIdentities#noEmptyOuter",
+      "claim": "claims/row-identities-no-empty-outer.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "row-identities-no-distinct-equal-rows",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "RowIdentities#noDistinctEqualRows",
+      "claim": "claims/row-identities-no-distinct-equal-rows.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "made-rows-reverse",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MadeRows#reverse",
+      "claim": "claims/made-rows-reverse.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "made-rows-iterator",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MadeRows#iterator",
+      "claim": "claims/made-rows-iterator.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "made-rows-always-distinct",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MadeRows#alwaysDistinct",
+      "claim": "claims/made-rows-always-distinct.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "matrix-rows-rectangular",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MatrixRows#rectangular",
+      "claim": "claims/matrix-rows-rectangular.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "matrix-rows-single-shape",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MatrixRows#singleShape",
+      "claim": "claims/matrix-rows-single-shape.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "matrix-rows-shape",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MatrixRows#shape",
+      "claim": "claims/matrix-rows-shape.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "matrix-rows-same",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MatrixRows#same",
+      "claim": "claims/matrix-rows-same.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    },
+    {
+      "id": "matrix-rows-no-null",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "rows",
+      "target": "MatrixRows#noNull",
+      "claim": "claims/matrix-rows-no-null.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-rows"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-rows",
+      "revision": "rows",
+      "kind": "driver",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle-rows",
+      "revision": "rows",
+      "kind": "oracle",
+      "path": "controls/original.json"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "wide-floating-conversions",
+    "family": "wide-floating-conversions",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "numeric": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "jackson-databind",
+          "jackson-core",
+          "jackson-annotations",
+          "commons-lang3"
+        ],
+        "runtimeLibraries": [
+          "jackson-databind",
+          "jackson-core",
+          "jackson-annotations",
+          "commons-lang3"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-numeric",
+      "kind": "replay",
+      "revision": "numeric",
+      "target": "NodeChecks#direct",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "node-checks-direct",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "NodeChecks#direct",
+      "claim": "claims/node-checks-direct.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numeric"
+      ]
+    },
+    {
+      "id": "node-checks-same",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "NodeChecks#same",
+      "claim": "claims/node-checks-same.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-numeric"
+      ]
+    },
+    {
+      "id": "node-checks-public-subnormal",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "NodeChecks#publicSubnormal",
+      "claim": "claims/node-checks-public-subnormal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numeric"
+      ]
+    },
+    {
+      "id": "node-checks-wrong-subnormal",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "NodeChecks#wrongSubnormal",
+      "claim": "claims/node-checks-wrong-subnormal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-numeric"
+      ]
+    },
+    {
+      "id": "node-checks-commons",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "NodeChecks#commons",
+      "claim": "claims/node-checks-commons.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numeric"
+      ]
+    },
+    {
+      "id": "conversion-equivalence-classified",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "ConversionEquivalence#classified",
+      "claim": "claims/conversion-equivalence-classified.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numeric"
+      ]
+    },
+    {
+      "id": "node-checks-intrinsic-subnormal",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "NodeChecks#intrinsicSubnormal",
+      "claim": "claims/node-checks-intrinsic-subnormal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numeric"
+      ]
+    },
+    {
+      "id": "node-checks-mantissa-subnormal",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "numeric",
+      "target": "NodeChecks#mantissaSubnormal",
+      "claim": "claims/node-checks-mantissa-subnormal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-numeric"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-numeric",
+      "revision": "numeric",
+      "kind": "driver",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle-numeric",
+      "revision": "numeric",
+      "kind": "oracle",
+      "path": "controls/original.json"
+    }
+  ]
+}

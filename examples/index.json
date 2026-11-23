@@ -21358,6 +21358,388 @@
         },
         "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 391 TASK"
       }
+    },
+    {
+      "id": "392",
+      "path": "examples/392-method-reference-conversions",
+      "title": "Method-reference conversions on Guava and Commons Lang",
+      "summary": "Java method references widen comparison operands and results, unbox nullable arguments, and respect ComparisonChain short-circuiting.",
+      "origin": "constructed",
+      "system": "Method-reference conversions on Guava and Commons Lang",
+      "symbol": "Lift#primitiveGood",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Frozen public caller statements",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement."
+      ],
+      "source": null,
+      "target": {
+        "family": "method-reference-conversions",
+        "role": "control",
+        "case": "method-reference-conversions",
+        "tasks": [
+          "replay-callbacks",
+          "lift-primitive-good",
+          "lift-primitive-wrong",
+          "lift-boxed-good",
+          "lift-boxed-wrong",
+          "lift-return-good",
+          "lift-return-wrong",
+          "lift-boxed-null",
+          "lift-static-good",
+          "lift-static-wrong",
+          "chain-good",
+          "chain-wrong",
+          "chain-skips-null",
+          "chain-rejects-null"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-callbacks": "scaffolded",
+          "lift-primitive-good": "scaffolded",
+          "lift-primitive-wrong": "scaffolded",
+          "lift-boxed-good": "scaffolded",
+          "lift-boxed-wrong": "scaffolded",
+          "lift-return-good": "scaffolded",
+          "lift-return-wrong": "scaffolded",
+          "lift-boxed-null": "scaffolded",
+          "lift-static-good": "scaffolded",
+          "lift-static-wrong": "scaffolded",
+          "chain-good": "scaffolded",
+          "chain-wrong": "scaffolded",
+          "chain-skips-null": "scaffolded",
+          "chain-rejects-null": "scaffolded"
+        },
+        "expected": {
+          "replay-callbacks": "established",
+          "lift-primitive-good": "established",
+          "lift-primitive-wrong": "refuted",
+          "lift-boxed-good": "established",
+          "lift-boxed-wrong": "refuted",
+          "lift-return-good": "established",
+          "lift-return-wrong": "refuted",
+          "lift-boxed-null": "established",
+          "lift-static-good": "established",
+          "lift-static-wrong": "refuted",
+          "chain-good": "established",
+          "chain-wrong": "refuted",
+          "chain-skips-null": "established",
+          "chain-rejects-null": "established"
+        },
+        "claims": {
+          "lift-primitive-good": null,
+          "lift-primitive-wrong": null,
+          "lift-boxed-good": null,
+          "lift-boxed-wrong": null,
+          "lift-return-good": null,
+          "lift-return-wrong": null,
+          "lift-boxed-null": null,
+          "lift-static-good": null,
+          "lift-static-wrong": null,
+          "chain-good": null,
+          "chain-wrong": null,
+          "chain-skips-null": null,
+          "chain-rejects-null": null
+        },
+        "receipts": {
+          "replay-callbacks": {
+            "path": "receipts/replay-callbacks/20261123T161214Z-ecb42299/result.json",
+            "attempt": "20261123T161214Z-ecb42299",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public caller statements",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 392 TASK"
+      }
+    },
+    {
+      "id": "393",
+      "path": "examples/393-wide-floating-conversions",
+      "title": "Rounding across two Jackson numeric conversion paths",
+      "summary": "Jackson and Commons Lang convert wide integer and tiny binary64 inputs to binary32 at independently checked rounding boundaries.",
+      "origin": "constructed",
+      "system": "Rounding across two Jackson numeric conversion paths",
+      "symbol": "NodeChecks#direct",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "rounding"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Frozen public caller statements",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement."
+      ],
+      "source": null,
+      "target": {
+        "family": "wide-floating-conversions",
+        "role": "control",
+        "case": "wide-floating-conversions",
+        "tasks": [
+          "replay-numeric",
+          "node-checks-direct",
+          "node-checks-same",
+          "node-checks-public-subnormal",
+          "node-checks-wrong-subnormal",
+          "node-checks-commons",
+          "conversion-equivalence-classified",
+          "node-checks-intrinsic-subnormal",
+          "node-checks-mantissa-subnormal"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-numeric": "scaffolded",
+          "node-checks-direct": "scaffolded",
+          "node-checks-same": "scaffolded",
+          "node-checks-public-subnormal": "scaffolded",
+          "node-checks-wrong-subnormal": "scaffolded",
+          "node-checks-commons": "scaffolded",
+          "conversion-equivalence-classified": "scaffolded",
+          "node-checks-intrinsic-subnormal": "scaffolded",
+          "node-checks-mantissa-subnormal": "scaffolded"
+        },
+        "expected": {
+          "replay-numeric": "established",
+          "node-checks-direct": "established",
+          "node-checks-same": "refuted",
+          "node-checks-public-subnormal": "established",
+          "node-checks-wrong-subnormal": "refuted",
+          "node-checks-commons": "established",
+          "conversion-equivalence-classified": "established",
+          "node-checks-intrinsic-subnormal": "established",
+          "node-checks-mantissa-subnormal": "established"
+        },
+        "claims": {
+          "node-checks-direct": null,
+          "node-checks-same": null,
+          "node-checks-public-subnormal": null,
+          "node-checks-wrong-subnormal": null,
+          "node-checks-commons": null,
+          "conversion-equivalence-classified": null,
+          "node-checks-intrinsic-subnormal": null,
+          "node-checks-mantissa-subnormal": null
+        },
+        "receipts": {
+          "replay-numeric": {
+            "path": "receipts/replay-numeric/20261123T161214Z-ed3101bf/result.json",
+            "attempt": "20261123T161214Z-ed3101bf",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public caller statements",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 393 TASK"
+      }
+    },
+    {
+      "id": "394",
+      "path": "examples/394-caller-owned-ragged-arrays",
+      "title": "Caller-owned rows in public array operations",
+      "summary": "Bounded nullable arrays preserve independent row widths, primitive values and shared identities across Commons Lang, Collections and Math.",
+      "origin": "constructed",
+      "system": "Caller-owned rows in public array operations",
+      "symbol": "RaggedProof#reversed",
+      "approach": "B11",
+      "approaches": [
+        "B11"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "external-target",
+          "own-checker"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "feature",
+      "verdict": null,
+      "verdictLabel": "Frozen public caller statements",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement."
+      ],
+      "source": null,
+      "target": {
+        "family": "caller-owned-ragged-arrays",
+        "role": "control",
+        "case": "caller-owned-ragged-arrays",
+        "tasks": [
+          "replay-rows",
+          "ragged-proof-reversed",
+          "ragged-proof-wrong",
+          "ragged-proof-iter",
+          "ragged-proof-snapshot",
+          "ragged-proof-distinct",
+          "row-identities-non-null-outer",
+          "row-identities-no-empty-outer",
+          "row-identities-no-distinct-equal-rows",
+          "made-rows-reverse",
+          "made-rows-iterator",
+          "made-rows-always-distinct",
+          "matrix-rows-rectangular",
+          "matrix-rows-single-shape",
+          "matrix-rows-shape",
+          "matrix-rows-same",
+          "matrix-rows-no-null"
+        ],
+        "readiness": "scaffolded",
+        "taskReadiness": {
+          "replay-rows": "scaffolded",
+          "ragged-proof-reversed": "scaffolded",
+          "ragged-proof-wrong": "scaffolded",
+          "ragged-proof-iter": "scaffolded",
+          "ragged-proof-snapshot": "scaffolded",
+          "ragged-proof-distinct": "scaffolded",
+          "row-identities-non-null-outer": "scaffolded",
+          "row-identities-no-empty-outer": "scaffolded",
+          "row-identities-no-distinct-equal-rows": "scaffolded",
+          "made-rows-reverse": "scaffolded",
+          "made-rows-iterator": "scaffolded",
+          "made-rows-always-distinct": "scaffolded",
+          "matrix-rows-rectangular": "scaffolded",
+          "matrix-rows-single-shape": "scaffolded",
+          "matrix-rows-shape": "scaffolded",
+          "matrix-rows-same": "scaffolded",
+          "matrix-rows-no-null": "scaffolded"
+        },
+        "expected": {
+          "replay-rows": "established",
+          "ragged-proof-reversed": "established",
+          "ragged-proof-wrong": "refuted",
+          "ragged-proof-iter": "established",
+          "ragged-proof-snapshot": "refuted",
+          "ragged-proof-distinct": "refuted",
+          "row-identities-non-null-outer": "refuted",
+          "row-identities-no-empty-outer": "refuted",
+          "row-identities-no-distinct-equal-rows": "refuted",
+          "made-rows-reverse": "established",
+          "made-rows-iterator": "established",
+          "made-rows-always-distinct": "refuted",
+          "matrix-rows-rectangular": "established",
+          "matrix-rows-single-shape": "established",
+          "matrix-rows-shape": "established",
+          "matrix-rows-same": "refuted",
+          "matrix-rows-no-null": "refuted"
+        },
+        "claims": {
+          "ragged-proof-reversed": null,
+          "ragged-proof-wrong": null,
+          "ragged-proof-iter": null,
+          "ragged-proof-snapshot": null,
+          "ragged-proof-distinct": null,
+          "row-identities-non-null-outer": null,
+          "row-identities-no-empty-outer": null,
+          "row-identities-no-distinct-equal-rows": null,
+          "made-rows-reverse": null,
+          "made-rows-iterator": null,
+          "made-rows-always-distinct": null,
+          "matrix-rows-rectangular": null,
+          "matrix-rows-single-shape": null,
+          "matrix-rows-shape": null,
+          "matrix-rows-same": null,
+          "matrix-rows-no-null": null
+        },
+        "receipts": {
+          "replay-rows": {
+            "path": "receipts/replay-rows/20261123T161214Z-ebe8c627/result.json",
+            "attempt": "20261123T161214Z-ebe8c627",
+            "execution": "completed",
+            "status": null,
+            "expectation": "yes",
+            "attempts": 1
+          }
+        },
+        "staleReceipts": [],
+        "unreadable": [],
+        "gaps": [],
+        "gapIds": [],
+        "unevidencedGaps": [],
+        "predictedGaps": [],
+        "historical": {
+          "verdictLabel": "Frozen public caller statements",
+          "source": null,
+          "note": "the example's authored label, a historical report's or the case's own: context only; no receipt or claim status is derived from it"
+        },
+        "handoff": "python3 examples/tools/targets/workflow_handoff.py handoff 394 TASK"
+      }
     }
   ]
 }

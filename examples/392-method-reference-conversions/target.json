@@ -1,0 +1,256 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "method-reference-conversions",
+    "family": "method-reference-conversions",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "callbacks": {
+        "fixture": "adapter",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "guava",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations",
+          "commons-lang3"
+        ],
+        "runtimeLibraries": [
+          "guava",
+          "failureaccess",
+          "listenablefuture",
+          "jspecify",
+          "error-prone-annotations",
+          "j2objc-annotations",
+          "commons-lang3"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay-callbacks",
+      "kind": "replay",
+      "revision": "callbacks",
+      "target": "Lift#primitiveGood",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "lift-primitive-good",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#primitiveGood",
+      "claim": "claims/lift-primitive-good.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-primitive-wrong",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#primitiveWrong",
+      "claim": "claims/lift-primitive-wrong.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-boxed-good",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#boxedGood",
+      "claim": "claims/lift-boxed-good.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-boxed-wrong",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#boxedWrong",
+      "claim": "claims/lift-boxed-wrong.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-return-good",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#returnGood",
+      "claim": "claims/lift-return-good.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-return-wrong",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#returnWrong",
+      "claim": "claims/lift-return-wrong.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-boxed-null",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#boxedNull",
+      "claim": "claims/lift-boxed-null.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-static-good",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#staticGood",
+      "claim": "claims/lift-static-good.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "lift-static-wrong",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Lift#staticWrong",
+      "claim": "claims/lift-static-wrong.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "chain-good",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Chain#good",
+      "claim": "claims/chain-good.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "chain-wrong",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Chain#wrong",
+      "claim": "claims/chain-wrong.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "chain-skips-null",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Chain#skipsNull",
+      "claim": "claims/chain-skips-null.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    },
+    {
+      "id": "chain-rejects-null",
+      "kind": "prove",
+      "relation": "calibration",
+      "revision": "callbacks",
+      "target": "Chain#rejectsNull",
+      "claim": "claims/chain-rejects-null.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-callbacks"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver-callbacks",
+      "revision": "callbacks",
+      "kind": "driver",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle-callbacks",
+      "revision": "callbacks",
+      "kind": "oracle",
+      "path": "controls/original.json"
+    }
+  ]
+}

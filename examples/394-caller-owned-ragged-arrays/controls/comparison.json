@@ -1,0 +1,108 @@
+[
+  {
+    "task": "ragged-proof-reversed",
+    "cohort": "ragged",
+    "parameters": "int[][] a",
+    "reachGuard": "a != null && a.length == 2",
+    "standalone": "RaggedProof.testReverse"
+  },
+  {
+    "task": "ragged-proof-wrong",
+    "cohort": "ragged",
+    "parameters": "int[][] a",
+    "reachGuard": "a != null && a.length == 2",
+    "standalone": "RaggedProof.testWrong"
+  },
+  {
+    "task": "ragged-proof-iter",
+    "cohort": "ragged",
+    "parameters": "int[][] a",
+    "reachGuard": "a != null && a.length == 2",
+    "standalone": "RaggedProof.testIter"
+  },
+  {
+    "task": "ragged-proof-snapshot",
+    "cohort": "ragged",
+    "parameters": "int[][] a",
+    "reachGuard": "a != null && a.length == 2",
+    "standalone": "RaggedProof.testSnapshot"
+  },
+  {
+    "task": "ragged-proof-distinct",
+    "cohort": "identity",
+    "parameters": "int[][] a",
+    "reachGuard": "a != null && a.length == 2",
+    "standalone": "RaggedProof.testDistinct"
+  },
+  {
+    "task": "row-identities-non-null-outer",
+    "cohort": "identity",
+    "parameters": "int[][] rows",
+    "reachGuard": "true"
+  },
+  {
+    "task": "row-identities-no-empty-outer",
+    "cohort": "identity",
+    "parameters": "int[][] rows",
+    "reachGuard": "true"
+  },
+  {
+    "task": "row-identities-no-distinct-equal-rows",
+    "cohort": "identity",
+    "parameters": "int[][] rows",
+    "reachGuard": "rows != null && rows.length == 2"
+  },
+  {
+    "task": "made-rows-reverse",
+    "cohort": "builder",
+    "parameters": "int x, int y, boolean tied",
+    "reachGuard": "true"
+  },
+  {
+    "task": "made-rows-iterator",
+    "cohort": "builder",
+    "parameters": "int x, int y, boolean tied",
+    "reachGuard": "true"
+  },
+  {
+    "task": "made-rows-always-distinct",
+    "cohort": "builder",
+    "parameters": "int x, int y, boolean tied",
+    "reachGuard": "true"
+  },
+  {
+    "task": "matrix-rows-rectangular",
+    "cohort": "matrix",
+    "parameters": "long[][] a",
+    "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null && a[0].length == a[1].length",
+    "standalone": "MatrixRows.good"
+  },
+  {
+    "task": "matrix-rows-single-shape",
+    "cohort": "matrix",
+    "parameters": "long[][] a",
+    "reachGuard": "a != null && a.length == 1 && a[0] == null",
+    "standalone": "MatrixRows.singleGood"
+  },
+  {
+    "task": "matrix-rows-shape",
+    "cohort": "matrix-exceptions",
+    "parameters": "long[][] a",
+    "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
+    "standalone": "MatrixRows.correct"
+  },
+  {
+    "task": "matrix-rows-same",
+    "cohort": "matrix-exceptions",
+    "parameters": "long[][] a",
+    "reachGuard": "a != null && a.length == 2 && a[0] != null && a[1] != null",
+    "standalone": "MatrixRows.wrong"
+  },
+  {
+    "task": "matrix-rows-no-null",
+    "cohort": "matrix-exceptions",
+    "parameters": "long[][] a",
+    "reachGuard": "a != null && a.length == 1 && a[0] == null",
+    "standalone": "MatrixRows.singleton"
+  }
+]

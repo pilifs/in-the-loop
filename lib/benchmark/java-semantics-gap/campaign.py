@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import tarfile
@@ -86,6 +87,15 @@ def jvm_controls(subject, work, cp, env):
 
 
 def replay_literal(typ, value):
+    if typ in ("byte", "short") and type(value) in (str, int):
+        width = 8 if typ == "byte" else 16
+        number = int(value)
+        if -(1 << (width-1)) <= number < 1 << (width-1):
+            return f"({typ}){number}"
+        raise ValueError(f"out-of-range {typ}")
+    if typ == "double" and type(value) in (float, int, str):
+        bits = struct.pack(">d", float(value)).hex()
+        return f"Double.longBitsToDouble(0x{bits}L)"
     if typ == "boolean" and type(value) is bool:
         return str(value).lower()
     if typ == "char" and isinstance(value, str) and len(value) == 1:
@@ -108,6 +118,24 @@ def replay_declaration(typ, name, value):
         return f"{typ} {name} = {replay_literal(typ, value)};"
     if not isinstance(value, list):
         raise ValueError("an object-array witness must contain its cells")
+    if typ in ("int[][]", "long[][]"):
+        primitive = typ[:-4]
+        lines = [f"{typ} {name} = new {primitive}[{len(value)}][];"]
+        for index, row in enumerate(value):
+            if row is None:
+                continue
+            if isinstance(row, dict) and set(row) == {"sameCell"}:
+                first = row["sameCell"]
+                if type(first) != int or not 0 <= first < index or not isinstance(value[first], list):
+                    raise ValueError("invalid shared primitive row")
+                expr = f"{name}[{first}]"
+            elif isinstance(row, list):
+                cells = ", ".join(replay_literal(primitive, cell) for cell in row)
+                expr = f"new {primitive}[]{{{cells}}}"
+            else:
+                raise ValueError("invalid primitive row")
+            lines.append(f"{name}[{index}] = {expr};")
+        return "\n".join(lines)
     component = typ[:-2]
     lines = [f"{typ} {name} = new {component}[{len(value)}];"]
     for i, cell in enumerate(value):
@@ -156,12 +184,12 @@ def replay_witness(subject, claim, data, work, cp, env, assertion="result"):
             "sourceSha256":digest(source), "exit":code, "diagnostic":err.decode(errors="replace").strip()}
 
 
-def integrated(subject, claim, engine, work, raw, cp, env, assertion="result"):
+def integrated(subject, claim, engine, work, raw, cp, env, assertion="result", record_process_errors=False):
     title = subject.owner + "#" + claim.method
     checker = Path(env["JVMCONTRACT"]).resolve()
     argv = [checker,"prove","--classes",cp[0],title,"--assert",assertion,"--engine",engine,"--gaps","strict",
             "--timeout","120","--unwind",str(subject.unwind),"--max-array-length",str(subject.bound),
-            "--jbmc-staging","staged","--jbmc",shutil.which("jbmc"),"--work",work/"proof","--json"]
+            "--jbmc-staging","staged","--jbmc",shutil.which("jbmc", path=env["PATH"]),"--work",work/"proof","--json"]
     if claim.guard: argv += ["--assume",claim.guard]
     if claim.nullable: argv += ["--nullable",claim.nullable]
     for jar in cp[1:]: argv += ["--classes",jar]
@@ -172,6 +200,8 @@ def integrated(subject, claim, engine, work, raw, cp, env, assertion="result"):
     data = wire.decode(out.decode(errors="replace"), "prove")
     if not data.ok or len(data.outcomes) != 1:
         msg = (err or out).decode(errors="replace").strip()
+        if record_process_errors and code not in (2, 124) and code != 0:
+            return dict(record, verdict="process error", disposition="process error", firstUnproved=msg[:1500])
         if code != 124 and (code != 2 or not msg):
             raise ValueError(f"{title}: unreadable prover result at exit {code}: {msg[:180]}")
         return dict(record, verdict="unverifiable", disposition="timeout" if code == 124 else "frontend refusal", firstUnproved=msg[:1500])

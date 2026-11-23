@@ -1,0 +1,56 @@
+[
+  {
+    "task": "node-checks-direct",
+    "cohort": "numeric",
+    "parameters": "long n",
+    "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
+    "standalone": "NodeAssertions.direct"
+  },
+  {
+    "task": "node-checks-same",
+    "cohort": "numeric",
+    "parameters": "long n",
+    "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
+    "standalone": "NodeAssertions.same"
+  },
+  {
+    "task": "node-checks-public-subnormal",
+    "cohort": "numeric",
+    "parameters": "double x",
+    "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
+    "standalone": "NodeAssertions.sub"
+  },
+  {
+    "task": "node-checks-wrong-subnormal",
+    "cohort": "numeric",
+    "parameters": "double x",
+    "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
+    "standalone": "NodeAssertions.bad"
+  },
+  {
+    "task": "node-checks-commons",
+    "cohort": "numeric",
+    "parameters": "long n",
+    "reachGuard": "n >= (1L << 54) && n < (1L << 55)",
+    "standalone": "NodeAssertions.commons"
+  },
+  {
+    "task": "conversion-equivalence-classified",
+    "cohort": "classification",
+    "parameters": "long n",
+    "reachGuard": "n >= (1L << 54) && n < (1L << 55)"
+  },
+  {
+    "task": "node-checks-intrinsic-subnormal",
+    "cohort": "intrinsic",
+    "parameters": "double x",
+    "reachGuard": "x >= 0x1p-150 && x <= 0x1p-149",
+    "standalone": "NodeAssertions.intrinsic"
+  },
+  {
+    "task": "node-checks-mantissa-subnormal",
+    "cohort": "mantissa",
+    "parameters": "long k",
+    "reachGuard": "true"
+  }
+]

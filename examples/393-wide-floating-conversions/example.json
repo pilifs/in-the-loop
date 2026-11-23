@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "393",
+  "title": "Rounding across two Jackson numeric conversion paths",
+  "summary": "Jackson and Commons Lang convert wide integer and tiny binary64 inputs to binary32 at independently checked rounding boundaries.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "numeric-code",
+    "rounding",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Rounding across two Jackson numeric conversion paths",
+    "file": "adapter/NodeChecks.java",
+    "symbol": "NodeChecks#direct"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Jackson and Commons Lang convert wide integer and tiny binary64 inputs to binary32 at independently checked rounding boundaries."
+  },
+  "target": "target.json",
+  "verdictLabel": "Frozen public caller statements",
+  "notes": [
+    "The opening comparison uses the released JARs and Temurin 21.0.13. The standalone, ordinary native, integrated JBMC and physical JVM evidence is measured per statement."
+  ]
+}
