@@ -1,0 +1,249 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-223108-compare-raw-and-factory-inputs-and-both",
+  "title": "Compare raw and factory inputs and both exception shapes with JBMC",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.2s, peak 83.4 MiB (estimated 2m00s, 2.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-223108-compare-raw-and-factory-inputs-and-both.json",
+    "sha256": "0c100ad1ad09a85f27fd02db133193a2c44d1a9a25770c396f7e9e4e14a8405a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-223108-compare-raw-and-factory-inputs-and-both",
+      "title": "Compare raw and factory inputs and both exception shapes with JBMC",
+      "description": "Repeat the pinned raw-field and public-history assertions, original and helper exception dispatch, and both unwind budgets, retaining every non-user property and the original property IDs.",
+      "kind": "library",
+      "capabilities": [
+        "receiver-construction",
+        "physical-property-selection"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T22:31:08+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "15m"
+      },
+      "steps": [
+        {
+          "name": "Run the bound standalone controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/standalone.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/qualification/standalone"
+      ]
+    }
+  },
+  "sourceCommit": "edb82317d3aa1ddb0b0d5631de347361c664a76d",
+  "startedAt": "2026-11-23T22:50:49+00:00",
+  "finishedAt": "2026-11-23T22:51:07+00:00",
+  "wallSeconds": 18.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3562698,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 87449600,
+    "wallSeconds": 2.2,
+    "cpuSeconds": 3.1,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run the bound standalone controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/standalone.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 900.0,
+      "cancelled": false,
+      "wallSeconds": 2.207,
+      "cpuSeconds": 3.131,
+      "cpuThrottledSeconds": 0.268,
+      "peakMemoryBytes": 87449600,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-the-bound-standalone-contr.log",
+        "lines": 9,
+        "bytes": 1011,
+        "sha256": "a77f1338bdd26975b6a9899f1d2a77dbbfe1216ecd81e0bddc8f337045a89ed5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "raw [('java::Checkout.raw:(LCheckout$Pair;)V.assertion.1', 'FAILURE')] ['java::Checkout.raw:(LCheckout$Pair;)V.assertion.1']",
+        "factory [('java::Checkout.viaFactory:(IZ)V.assertion.1', 'SUCCESS'), ('java::Checkout.viaFactory:(IZ)V.assertion.2', 'SUCCESS')] []",
+        "alias-blind [('java::Checkout.assumesDistinct:(IZ)V.assertion.1', 'FAILURE')] ['java::Checkout.assumesDistinct:(IZ)V.assertion.1']",
+        "caught-occurrence [('java::SafetySites.caught:(I)V.assertion.1', 'SUCCESS')] ['java::SafetySites.run:(II)I.integer-divide-by-zero.1']",
+        "caught-exception [('java::SafetySites.caught:(I)V.assertion.1', 'SUCCESS')] ['java::SafetySites.caught:(I)V.1']",
+        "helper-caught [('java::SafetySites.caught:(I)V.assertion.1', 'SUCCESS')] []",
+        "helper-wrong [('java::SafetySites.caughtMutant:(I)V.assertion.1', 'FAILURE')] ['java::SafetySites.caughtMutant:(I)V.assertion.1']",
+        "short [('java::SafetySites.loop:()V.assertion.1', 'SUCCESS')] ['java::SafetySites.run:(II)I.unwind.0']",
+        "complete [('java::SafetySites.loop:()V.assertion.1', 'SUCCESS')] []"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/alias-blind.json.gz",
+      "change": "added",
+      "bytes": 6707,
+      "sha256": "90ed6021bcf3e9496b99479b3665a429362a9f52d34c92730247b4f7e3b8b259",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/caught-exception.json.gz",
+      "change": "added",
+      "bytes": 3879,
+      "sha256": "7d831ed274a96dd4aefa5b6cc2ded6ad2f432964c861a216c8e77f49ec948eda",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/caught-occurrence.json.gz",
+      "change": "added",
+      "bytes": 4018,
+      "sha256": "ca9c8a5bc8c5ec83676a4b68ea3282d57edd9c35be588717d3224e02a9be5289",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/complete.json.gz",
+      "change": "added",
+      "bytes": 820,
+      "sha256": "206382476cbd4c179c4afbcd0412fb00abccc8a60e31506a0ae4145443a0bb0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/factory.json.gz",
+      "change": "added",
+      "bytes": 2182,
+      "sha256": "7c3d3f6ed394975f43930ddb3433a419d9ea8c0d508b76fde9bb876e23e47e31",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/helper-caught.json.gz",
+      "change": "added",
+      "bytes": 752,
+      "sha256": "186564bd7cde707b98fc263a99d20b7a563f853fc99f5457163590ea3319eea1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/helper-wrong.json.gz",
+      "change": "added",
+      "bytes": 4654,
+      "sha256": "53ce49e8c2ef91cf9573c6328570125ace606ebb29b2c9944cff4b682ff4514e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/measurement.json",
+      "change": "added",
+      "bytes": 13333,
+      "sha256": "9feba5f398aa33e4f3f3448bd8af4d7a0592b31d77b57549d44783d8ea2c8960",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/raw.json.gz",
+      "change": "added",
+      "bytes": 5580,
+      "sha256": "61d09604fc9733550d525754be2c50f38c2ac9df7bd69b72d1a433367be79635",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/qualification/standalone/short.json.gz",
+      "change": "added",
+      "bytes": 3118,
+      "sha256": "9262ca02e13c7078fe0b6591d47e83233db69154773db550c44c5649d884ce1b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T22:51:28+00:00",
+    "applied": [
+      "verification/receiver-discovery/qualification/standalone/alias-blind.json.gz",
+      "verification/receiver-discovery/qualification/standalone/caught-exception.json.gz",
+      "verification/receiver-discovery/qualification/standalone/caught-occurrence.json.gz",
+      "verification/receiver-discovery/qualification/standalone/complete.json.gz",
+      "verification/receiver-discovery/qualification/standalone/factory.json.gz",
+      "verification/receiver-discovery/qualification/standalone/helper-caught.json.gz",
+      "verification/receiver-discovery/qualification/standalone/helper-wrong.json.gz",
+      "verification/receiver-discovery/qualification/standalone/measurement.json",
+      "verification/receiver-discovery/qualification/standalone/raw.json.gz",
+      "verification/receiver-discovery/qualification/standalone/short.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T225107Z-812306a166061ef9",
+      "outputs": "20261123T225107Z-837518a492ee7880",
+      "diff": "20261123T225107Z-859942ac98686a78"
+    }
+  }
+}
