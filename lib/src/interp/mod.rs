@@ -92,6 +92,9 @@ pub struct Machine<'a> {
     pub heap: Heap,
     statics: HashMap<String, BTreeMap<String, Value>>,
     init: HashMap<String, InitState>,
+    /// An interrupted model of a class initializer may have written other classes'
+    /// fields already. Only a fresh machine can run another case from a known state.
+    incomplete_initializer: Option<Fault>,
     interned: HashMap<Vec<u16>, Ref>,
     trimmed: HashSet<Ref>,
     class_objects: HashMap<Type, Ref>,
@@ -133,6 +136,7 @@ impl<'a> Machine<'a> {
             heap: Heap::new(),
             statics: HashMap::new(),
             init: HashMap::new(),
+            incomplete_initializer: None,
             interned: HashMap::new(),
             trimmed: HashSet::new(),
             class_objects: HashMap::new(),
@@ -306,11 +310,16 @@ impl<'a> Machine<'a> {
 
     // Class initialisation
 
+    fn check_initialization(&self) -> Exec<()> {
+        match &self.incomplete_initializer { Some(fault) => Err(fault.clone()), None => Ok(()) }
+    }
+
     /// Runs the static initialiser of an application class once, after its superclass's and those of its
     /// superinterfaces that declare a default method (JVMS §5.5). An exception that leaves an initialiser makes
     /// the class erroneous, and those that waited on it, and is wrapped in `ExceptionInInitializerError` unless it
     /// is an `Error`; a later use of an erroneous class throws `NoClassDefFoundError`.
     pub fn ensure_initialized(&mut self, class: &str) -> Exec<()> {
+        self.check_initialization()?;
         match self.init.get(class) {
             Some(InitState::Done | InitState::InProgress) => return Ok(()),
             Some(InitState::Erroneous) => {
@@ -323,7 +332,6 @@ impl<'a> Machine<'a> {
             self.init.insert(class.to_string(), InitState::Done); // JDK classes without a model have no state here
             return Ok(());
         };
-        self.init.insert(class.to_string(), InitState::InProgress);
         let mut fields = BTreeMap::new();
         for field in cf.fields.iter().filter(|f| f.is_static()) {
             let t = Type::parse(&field.descriptor).map_err(|e| Fault::Unsupported(e.to_string()))?;
@@ -345,12 +353,15 @@ impl<'a> Machine<'a> {
             fields.insert(field.name.clone(), value);
         }
         self.statics.insert(class.to_string(), fields);
+        self.init.insert(class.to_string(), InitState::InProgress);
         let mut first: Vec<String> = cf.super_class.iter().cloned().collect();
         first.extend(crate::bmc::gaps::initialization_supers(self.cp, class).into_iter().filter(|i| Some(i) != cf.super_class.as_ref()));
         for s in first {
             if let Err(e) = self.ensure_initialized(&s) {
                 if matches!(e, Fault::Throw(_)) {
                     self.init.insert(class.to_string(), InitState::Erroneous);
+                } else {
+                    self.incomplete_initializer = Some(e.clone());
                 }
                 return Err(e);
             }
@@ -375,7 +386,10 @@ impl<'a> Machine<'a> {
                     }));
                     return Err(Fault::Throw(wrapped));
                 }
-                Err(other) => return Err(other),
+                Err(other) => {
+                    self.incomplete_initializer = Some(other.clone());
+                    return Err(other);
+                }
             }
         }
         self.init.insert(class.to_string(), InitState::Done);
@@ -399,6 +413,18 @@ impl<'a> Machine<'a> {
 
     /// Reads a static field: the class that declares it is initialised first, and only that one (JVMS §5.5).
     pub fn get_static(&mut self, class: &str, name: &str) -> Exec<Value> {
+        self.check_initialization()?;
+        if ClassPath::big_number(class) {
+            if let Some(value) = self.statics.get(class).and_then(|s| s.get(name)) { return Ok(*value); }
+            if let Some((element, words)) = self.cp.decimal_table(class, name) {
+                let cells = words.into_iter().map(|n| if element == Type::Long { Value::Long(n) } else { Value::Int(n as i32) }).collect();
+                self.clinit_depth += 1;
+                let array = self.new_array_of(element, cells);
+                self.clinit_depth -= 1;
+                self.statics.entry(class.into()).or_default().insert(name.into(), array);
+                return Ok(array);
+            }
+        }
         if class == "java/util/Collections" && name == "EMPTY_SET" && self.cp.collections_empty_singleton("emptySet") {
             if let Some(v) = self.statics.get(class).and_then(|s| s.get(name)) { return Ok(*v); }
             let v = self.new_instance("java/util/Collections$EmptySet")?;
@@ -487,7 +513,7 @@ impl<'a> Machine<'a> {
         let mut current = Some(class.to_string());
         while let Some(c) = current {
             let mut layout = self.cp.bytecode(&c).map_err(|e| Fault::Unsupported(e.to_string()))?;
-            if layout.is_none() && matches!(class, crate::models::CONCURRENT_MAP | "java/util/Properties" | "java/util/ArrayDeque" | "java/util/ArrayDeque$DeqIterator") {
+            if layout.is_none() && (ClassPath::big_number(class) || matches!(class, crate::models::CONCURRENT_MAP | "java/util/Properties" | "java/util/ArrayDeque" | "java/util/ArrayDeque$DeqIterator")) {
                 layout = self.cp.load(&c).map_err(|e| Fault::Unsupported(e.to_string()))?
                     .filter(|l| l.origin == crate::classpath::Origin::Jdk).map(|l| l.class);
             }
@@ -660,9 +686,12 @@ impl<'a> Machine<'a> {
         if crate::bmc::runtime::property_call(owner, name, descriptor) {
             return self.system_property(name, &args, false);
         }
-        if ClassPath::surrogate_arithmetic(owner, name, descriptor) {
+        if ClassPath::surrogate_arithmetic(owner, name, descriptor) || ClassPath::big_number(owner)
+            || matches!((owner, name, descriptor), ("java/lang/Integer", "decode", "(Ljava/lang/String;)Ljava/lang/Integer;")
+                | ("java/lang/Integer", "parseInt", "(Ljava/lang/CharSequence;III)I"))
+            || (name == "toString" && self.cp.floating_formatter(owner)) {
             if let Some((class, method)) = self.cp.numeric_image_method(owner, name, descriptor) {
-                return self.invoke(&class, &method, args);
+                if method.is_static() { return self.invoke(&class, &method, args); }
             }
         }
         if let Some((class, method)) = self.model_method(owner, name, descriptor) {
@@ -702,9 +731,10 @@ impl<'a> Machine<'a> {
 
     /// Calls a method on a receiver with virtual dispatch (the receiver's class decides).
     pub fn call_virtual(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+        self.check_initialization()?;
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
         let class = self.class_of(r);
-        if let Some((cf, method)) = self.collection_receiver_method(&class, owner, name, descriptor, false) {
+        if let Some((cf, method)) = self.jdk_receiver_method(&class, owner, name, descriptor, false) {
             let mut full = vec![receiver];
             full.extend(args);
             return self.invoke(&cf, &method, full);
@@ -741,6 +771,7 @@ impl<'a> Machine<'a> {
 
     /// Runs a method's bytecode with the given arguments (the receiver first for instance methods).
     pub fn invoke(&mut self, class: &Rc<ClassFile>, method: &Method, args: Vec<Value>) -> Exec<Option<Value>> {
+        self.check_initialization()?;
         if method.is_native() {
             return Err(Fault::Unsupported(format!("{}.{} is native", class.name.replace('/', "."), method.name)));
         }
@@ -1265,8 +1296,10 @@ impl<'a> Machine<'a> {
         Ok(self.new_array_of((**element).clone(), data))
     }
 
-    fn collection_receiver_method(&self, class: &str, owner: &str, name: &str, descriptor: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
-        if class == crate::models::CONCURRENT_MAP && (!special || class == owner) {
+    fn jdk_receiver_method(&self, class: &str, owner: &str, name: &str, descriptor: &str, special: bool) -> Option<(Rc<ClassFile>, Method)> {
+        if ClassPath::big_number(class) {
+            self.cp.numeric_image_method(if special { owner } else { class }, name, descriptor).filter(|(_, m)| !m.is_static())
+        } else if class == crate::models::CONCURRENT_MAP && (!special || class == owner) {
             self.cp.concurrent_map_method(name, descriptor)
         } else if class == "java/util/Properties" {
             self.cp.properties_method(class, owner, name, descriptor, special)
@@ -1280,7 +1313,7 @@ impl<'a> Machine<'a> {
     /// `invokespecial`: constructors, private methods and `super.` calls go to the named class, not the receiver's.
     fn call_special(&mut self, receiver: Value, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
         let Some(r) = receiver.as_ref() else { return Err(self.npe()) };
-        if let Some((cf, method)) = self.collection_receiver_method(&self.class_of(r), owner, name, descriptor, true) {
+        if let Some((cf, method)) = self.jdk_receiver_method(&self.class_of(r), owner, name, descriptor, true) {
             let mut full = vec![receiver];
             full.extend(args);
             return self.invoke(&cf, &method, full);

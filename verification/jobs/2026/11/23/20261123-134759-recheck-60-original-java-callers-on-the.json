@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-134759-recheck-60-original-java-callers-on-the",
+  "title": "Recheck 60 original Java callers on the decimal checker",
+  "description": "Run both strict engines on all 60 pre-existing campaign statements, each original class graph and all JVM controls. Require all 57 previously qualified native outcomes at unchanged scope, original-JVM replay of each violation, and report all three platform-thread boundaries.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/java-semantics-gap/decimal_transfer.py"
+    ]
+  },
+  "expected": "120 fresh native or integrated JBMC responses on identical inputs, 33 native proofs and 24 replayed native violations, three unproved thread constructors.",
+  "submitted": {
+    "at": "2026-11-23T13:47:59+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "priority": 18,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Same-build public callers",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/decimal_transfer.py callers",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/decimal-transfer/callers"
+  ]
+}

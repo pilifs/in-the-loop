@@ -456,7 +456,7 @@ fn registrations_in_order_and_classes_by_name_are_the_definitions_written_out() 
     assert!(stated.assumptions.iter().any(|a| a.text.contains("whose context class loader is the class loader of the check's class path")), "{:?}", stated.assumptions);
 }
 
-/// An initializer the checker does not run (`claims.Tables`: an `IdentityHashMap` and a load factor) is a gap,
+/// An initializer the checker cannot finish (`claims.Tables`: an `IdentityHashMap` and a load factor) is a gap,
 /// and with `--observed-initializer` the state a JVM left: what the observation holds is read as the JVM has it,
 /// the result says what it rests on, and a field it holds no value of is refused by name. A class it initialized
 /// that holds a lambda (`claims.Hooked`) is bound as it is alone, whatever address the JVM put in the lambda's name.
@@ -466,7 +466,9 @@ fn an_observed_initializer_gives_the_state_a_jvm_left_and_the_result_says_so() {
     let Some(classes) = classes() else { return };
     let unobserved = run(&options(classes, "claims.M#observed", 3, "unobserved"));
     assert_eq!(unobserved.verdict, Verdict::Unverifiable, "{}", unobserved.output);
-    assert!(unobserved.output.contains("class-initializer:claims.Tables.<clinit>()V"), "{}", unobserved.output);
+    assert!(unobserved.output.contains("class-initializer:claims.Tables.<clinit>()V")
+        || (unobserved.output.contains("jdk-constructor:java.util.HashMap.<init>(IF)V") && unobserved.output.contains("at claims.Tables.<clinit>")),
+        "{}", unobserved.output);
 
     let observing = |target: &str, work: &str, class: &str| {
         let mut o = options(classes, target, 3, work);
@@ -1387,12 +1389,47 @@ fn static_value_constructors_keep_reachable_gaps_and_erroneous_state() {
     jvmcontract::tool_tier!();
     let Some(classes) = classes() else { return };
     assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.ValueConstants").status().unwrap().success());
-    for name in ["kept", "failureState"] {
+    for name in ["kept", "parses", "failureState"] {
         proved(classes, &format!("claims.ValueConstants#{name}"), 2);
     }
-    let o = run(&options(classes, "claims.ValueConstants#parses", 2, "value-constant-parse"));
+    let o = run(&options(classes, "claims.ValueConstants#parsesHex", 2, "value-constant-hex"));
     assert_eq!(o.verdict, Verdict::Unverifiable, "{}", o.output);
     assert!(o.output.contains("Double.parseDouble"), "{}", o.output);
+}
+
+#[test]
+fn decimal_text_rounds_at_its_width_and_preserves_the_unscaled_integer() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    let version = Command::new("java").arg("-version").output().unwrap();
+    let pinned = String::from_utf8_lossy(&version.stderr).contains("Temurin-21.0.13+9");
+    let mut jvm = Command::new("java");
+    jvm.arg("-cp").arg(classes).arg("claims.DecimalText");
+    if pinned { jvm.arg("check-format-identity"); }
+    assert!(jvm.status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    let mut methods = vec!["rounding", "byteRange", "compilesBlock"];
+    if pinned { methods.extend(["formatting", "coefficient"]); }
+    for name in methods {
+        let mut o = options(classes, &format!("claims.DecimalText#{name}"), 2048, name);
+        o.unwind = 128;
+        let result = run(&o);
+        assert_eq!(result.verdict, Verdict::Verified, "{name}: {}", result.output);
+        let mark = machine.begin_case();
+        assert_eq!(machine.call_static("claims/DecimalText", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)), "{name}");
+        machine.end_case(mark);
+    }
+    let mark = machine.begin_case();
+    let stopped = machine.call_static("claims/DecimalText", "initializeLater", "()I", vec![]).unwrap_err();
+    assert!(matches!(&stopped, jvmcontract::interp::Fault::Unsupported(reason) if reason.contains("Pattern.compile")));
+    machine.end_case(mark);
+    for method in ["initializeLater", "observedStage"] {
+        assert_eq!(machine.call_static("claims/DecimalText", method, "()I", vec![]), Err(stopped.clone()));
+    }
+    let mut fresh = Machine::new(&cp);
+    assert_eq!(fresh.call_static("claims/DecimalText", "observedStage", "()I", vec![]), Ok(Some(Value::Int(0))));
 }
 
 #[test]

@@ -477,29 +477,40 @@ impl Engine<'_> {
         Ok(None)
     }
 
-    /// String(char[], offset, count) owns the selected units even if the array is later mutated.
+    /// Both range constructors copy their array. In the byte form each UTF-16 unit
+    /// combines the low eight bits of the high-byte argument and of the source cell.
     pub(super) fn initialize_string_range(&mut self, path: &mut Path, object: usize, source: Option<usize>,
-                                          offset: &Bits, count: &Bits) -> Step {
+                                          offset: &Bits, count: &Bits, high: Option<&Bits>) -> Step {
         let Some(source) = source else {
-            if let Some((class, method)) = self.cp.string_range_constructor(STRING, "([CII)V") {
-                return self.enter_method(path, STRING, class, method,
-                    vec![Val::R(Some(object)), Val::R(None), Val::I(offset.clone()), Val::I(count.clone())]);
+            let descriptor = if high.is_some() { "([BIII)V" } else { "([CII)V" };
+            if let Some((class, method)) = self.cp.string_range_constructor(STRING, descriptor) {
+                let mut args = vec![Val::R(Some(object)), Val::R(None)];
+                args.extend(high.cloned().map(Val::I));
+                args.extend([Val::I(offset.clone()), Val::I(count.clone())]);
+                return self.enter_method(path, STRING, class, method, args);
             }
             let invalid = self.any(&[self.b.negative(offset), self.b.negative(count)]);
             let mut assumptions = path.cond.clone();
             assumptions.push(invalid);
             if self.solve(&assumptions)? {
-                return unsupported("String(char[], int, int) exception order needs the selected JDK constructor");
+                return unsupported("String range exception order needs the selected JDK constructor");
             }
             return self.raise(path, "java/lang/NullPointerException");
         };
         self.keeps(path, Some(object), "initializes a pre-existing String")?;
         if self.there_before(path, source) {
-            self.reads(path, || "String(char[], int, int) reads an array that existed before the call".into())?;
+            self.reads(path, || "String range constructor reads an array that existed before the call".into())?;
         }
-        let Some(chars) = path.objects[source].as_array().filter(|a| a.element == Type::Char).cloned() else {
-            return unsupported("String constructor needs a known char array");
+        let element = if high.is_some() { Type::Byte } else { Type::Char };
+        let Some(mut chars) = path.objects[source].as_array().filter(|a| a.element == element).cloned() else {
+            return unsupported("String range constructor needs a known source array");
         };
+        if let Some(high) = high {
+            for unit in &mut chars.cells {
+                unit.truncate(8);
+                unit.extend_from_slice(&high[..8]);
+            }
+        }
         // Subtraction preserves the JDK bound even if offset + count would overflow a Java int.
         let last_start = self.b.sub(&chars.length, count);
         let past_end = self.b.slt(&last_start, offset);

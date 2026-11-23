@@ -49,6 +49,8 @@ fn cmp(b: &mut Blaster, x: &Bits, y: &Bits, unordered: i32) -> Bits {
 pub(super) fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!((owner, name, descriptor),
         ("java/lang/Double", "isNaN" | "isFinite" | "isInfinite", "(D)Z")
+        | ("java/lang/Float", "parseFloat", "(Ljava/lang/String;)F")
+        | ("java/lang/Double", "parseDouble", "(Ljava/lang/String;)D")
         | ("java/lang/Float", "isNaN" | "isFinite" | "isInfinite", "(F)Z")
         | ("java/lang/Double", "doubleToRawLongBits" | "doubleToLongBits", "(D)J")
         | ("java/lang/Float", "floatToRawIntBits" | "floatToIntBits", "(F)I")
@@ -82,6 +84,20 @@ impl Engine<'_> {
     }
 
     pub(super) fn floating_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Step {
+        if let [Val::R(text)] = args {
+            let Some(text) = text else { return self.throw_class_only(path, "java/lang/NullPointerException") };
+            let value = self.constant_units(path, *text)
+                .and_then(|u| String::from_utf16(&u).ok())
+                .and_then(|s| crate::interp::value::decimal_float(&s, name == "parseDouble"));
+            let word = match value {
+                Some(Value::Float(x)) => Val::I(self.b.constant(i64::from(x.to_bits()), 32)),
+                Some(Value::Double(x)) => Val::J(self.b.constant(x.to_bits() as i64, 64)),
+                _ => return unsupported(format!("{}.{name} needs a concrete decimal floating-point literal", owner.replace('/', "."))),
+            };
+            self.push(path, word);
+            self.advance(path);
+            return Ok(None);
+        }
         let Some(Val::I(x) | Val::J(x)) = args.first() else { return unsupported("a floating-point call without its operand") };
         let x_nan = nan(&mut self.b, x);
         let result = match name {

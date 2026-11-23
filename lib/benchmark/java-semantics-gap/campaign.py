@@ -129,7 +129,7 @@ def replay_declaration(typ, name, value):
     return "\n".join(lines)
 
 
-def replay_witness(subject, claim, data, work, cp, env):
+def replay_witness(subject, claim, data, work, cp, env, assertion="result"):
     args = data.get("counterexample", {}).get("inputs")
     if args is None:
         return {"outcome": "missing inputs"}
@@ -142,6 +142,10 @@ def replay_witness(subject, claim, data, work, cp, env):
         return {"outcome": "input reconstruction unsupported"}
     guard = claim.guard or "true"
     call = f"{subject.owner}.{claim.method}({', '.join(p[1] for p in params)})"
+    if assertion == "result == 1":
+        call += " == 1"
+    elif assertion != "result":
+        raise ValueError(f"unsupported original JVM assertion: {assertion}")
     source = java_source(work/"OriginalWitness.java", "class OriginalWitness {public static void main(String[] args) throws Exception { check(); } static void check() throws Exception {\n"
                          + declared + f'\nif (!({guard})) throw new IllegalArgumentException("outside guard");\n'
                          + f'System.out.println({call} ? "held" : "refuted");' + "}}")
@@ -152,10 +156,10 @@ def replay_witness(subject, claim, data, work, cp, env):
             "sourceSha256":digest(source), "exit":code, "diagnostic":err.decode(errors="replace").strip()}
 
 
-def integrated(subject, claim, engine, work, raw, cp, env):
+def integrated(subject, claim, engine, work, raw, cp, env, assertion="result"):
     title = subject.owner + "#" + claim.method
     checker = Path(env["JVMCONTRACT"]).resolve()
-    argv = [checker,"prove","--classes",cp[0],title,"--assert","result","--engine",engine,"--gaps","strict",
+    argv = [checker,"prove","--classes",cp[0],title,"--assert",assertion,"--engine",engine,"--gaps","strict",
             "--timeout","120","--unwind",str(subject.unwind),"--max-array-length",str(subject.bound),
             "--jbmc-staging","staged","--jbmc",shutil.which("jbmc"),"--work",work/"proof","--json"]
     if claim.guard: argv += ["--assume",claim.guard]
@@ -177,7 +181,7 @@ def integrated(subject, claim, engine, work, raw, cp, env):
     record.update(verdict=classification["verdict"], disposition=classification["class"], firstUnproved=classification.get("problem",""))
     if record["verdict"] in ("verified","violation"):
         stated = row["stated"]
-        if (row["target"] != title or row["assert"] != "result" or (row.get("assume") or "") != claim.guard
+        if (row["target"] != title or row["assert"] != assertion or (row.get("assume") or "") != claim.guard
                 or stated["gap_mode"] != "strict" or row["search"]["engine"] != engine
                 or classification["assumed"] or classification["contracts"] or stated["checker"].get("fallback")):
             raise ValueError(f"{title}: mismatched statement or engine")
@@ -186,7 +190,7 @@ def integrated(subject, claim, engine, work, raw, cp, env):
                 or stated["vacuity"]["status"] == "vacuous"):
             record["disposition"] = "incomplete bound or vacuous"
         if record["verdict"] == "violation":
-            record["jvmReplay"] = replay_witness(subject,claim,row,work,cp,env)
+            record["jvmReplay"] = replay_witness(subject,claim,row,work,cp,env,assertion)
             if record["jvmReplay"]["outcome"] != "refuted":
                 record["disposition"] = "unconfirmed witness"
     return record

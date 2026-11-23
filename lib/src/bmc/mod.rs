@@ -70,6 +70,7 @@
 //! | `Math.sin/cos` and `StrictMath.sin/cos` on finite operand sets | Signed zero follows the specified special cases. For nonzero angles up to eight radians in magnitude, exact rational Taylor bounds certify adjacent binary64 endpoints. Every call covers both permitted roundings independently; the counterexample qualifier requires failure for every choice. A missing bracket leaves the claim open. |
 //! | Calendar factories after an observed UTC Gregorian startup | The JVM qualifies its default and explicit UTC calendars, cutover, era, leniency and zone rules. The checker converts complete canonical civil fields to epoch milliseconds and returns a fresh Date on each getTime. A receipt states the startup assumption. |
 //! | `invokestatic` of `BigInteger.valueOf(long)` with a JDK image | runs the selected JDK's factory and allocation bytecode, including the constructors and the magnitude array. A path reading an initialized JDK cache field stops at that field. Without the image the factory is a `jdk-static-method` gap |
+//! | Decimal text at `Float.valueOf`, `Double.valueOf` and `BigDecimal(String)` | Decimal floating-point literals round directly to the destination width. Formatting, including shortest digits and special-value string identity, runs the selected JDK formatters and their tables. BigDecimal runs the selected parser, magnitude construction and scale comparison. Five arithmetic tables in BigInteger and BigDecimal are read from their fingerprinted Temurin 21 initializers. A symbolic floating-point input string or an unsupported spelling stays open. |
 //! | `invokestatic` of any other JDK method over integers, booleans, arrays and objects ([`gaps::jdk_static_call`]) | gap: `jdk-static-method`, with no assume form |
 //! | `invokestatic` of a class the tool's models (`lib/models`) provide | modelled: the model's bytecode runs, as in the interpreter |
 //! | `java.lang.Enum` construction, accessors and ordering ([`ClassPath::checker_method`]) | The Enum model sets and reads the name and ordinal. The native checker runs the selected JDK image's `compareTo` and `getDeclaringClass` bytecode, including type checks for constants with their own class bodies. For hashCode the JDK cache reads one universally quantified int per object. A counterexample that uses a JVM-chosen value needs a scalar input for which the failing paths cover every platform choice. |
@@ -136,6 +137,7 @@ pub mod locale;
 mod loops;
 mod observed;
 mod regex;
+pub(crate) use regex::compiles_constant;
 mod reflection;
 mod thread_locals;
 pub mod runtime;
@@ -4099,6 +4101,28 @@ impl<'a> Engine<'a> {
                     return Ok(None);
                 }
                 let declaring = self.cp.resolve_field(&member.owner, &member.name, &member.descriptor).unwrap_or_else(|| member.owner.clone());
+                if class.name == declaring && matches!(declaring.as_str(), "java/math/BigInteger" | "java/math/BigDecimal")
+                    && !self.is_observed(&declaring) && matches!(member.descriptor.as_str(), "[I" | "[J") {
+                    let key = (declaring.clone(), member.name.clone());
+                    let mut table = path.statics.get(&key).cloned();
+                    if table.is_none() {
+                        if let Some((element, words)) = self.cp.decimal_table(&declaring, &member.name) {
+                            let array = self.alloc(path, &member.descriptor);
+                            let length = self.b.constant(words.len() as i64, 32);
+                            let cells = words.into_iter().map(|n| self.b.constant(n, cell_width(&element))).collect();
+                            path.objects[array].array = Some(Array { element, length, cells, refs: Vec::new() });
+                            path.objects[array].given = true;
+                            path.objects[array].before = true;
+                            table = Some(Val::R(Some(array)));
+                            path.statics.insert(key, Val::R(Some(array)));
+                        }
+                    }
+                    if let Some(value) = table {
+                        self.push(path, value);
+                        self.advance(path);
+                        return Ok(None);
+                    }
+                }
                 if (declaring.as_str(), member.name.as_str(), member.descriptor.as_str()) == ("java/lang/ref/SoftReference", "clock", "J")
                     && class.name == declaring && path.frames.last().is_some_and(|f| matches!(f.method.as_str(), "<init>" | "get")) {
                     self.reads(path, || "reads the GC soft-reference clock".into())?;
@@ -5765,7 +5789,9 @@ impl<'a> Engine<'a> {
             if special && member.owner == STRING && member.name == "<init>" {
                 match (member.descriptor.as_str(), args.as_slice()) {
                     ("([CII)V", [Val::R(source), Val::I(offset), Val::I(count)]) =>
-                        return self.initialize_string_range(path, o, *source, offset, count),
+                        return self.initialize_string_range(path, o, *source, offset, count, None),
+                    ("([BIII)V", [Val::R(source), Val::I(high), Val::I(offset), Val::I(count)]) =>
+                        return self.initialize_string_range(path, o, *source, offset, count, Some(high)),
                     ("([C)V" | "(Ljava/lang/String;)V", [Val::R(source)]) =>
                         return self.initialize_string(path, o, *source, &member.descriptor),
                     _ => {}
@@ -5802,8 +5828,21 @@ impl<'a> Engine<'a> {
             // Only the selected JDK implementation on an exact receiver whose magnitude
             // or unscaled value was installed by its constructor. A subclass keeps its dispatch.
             let object = &path.objects[o];
-            if object.class == member.owner && object.initialized_big_number() && member.name != "<init>" {
+            // BigInteger's digit parser also runs on 'this' inside its constructor,
+            // before the constructor publishes the magnitude it is computing.
+            let parsing_digits = member.owner == "java/math/BigInteger" && member.name == "parseInt" && member.descriptor == "([CII)I"
+                && path.frames.last().is_some_and(|f| f.class.name == member.owner && f.method == "<init>"
+                    && matches!(f.locals.first(), Some(Some(Val::R(Some(this)))) if *this == o));
+            if object.class == member.owner && (object.initialized_big_number() || parsing_digits) && member.name != "<init>" {
                 if let Some((cf, method)) = self.cp.numeric_image_method(&member.owner, &member.name, &member.descriptor) {
+                    if matches!(member.name.as_str(), "equals" | "compareTo" | "compareMagnitude") {
+                        if let [Val::R(Some(other))] = args.as_slice() {
+                            let arg = &path.objects[*other];
+                            if arg.unknown || arg.assumed || (self.cp.is_subtype(&arg.class, &member.owner) && !arg.initialized_big_number()) {
+                                return unsupported("big-number comparison needs the constructed argument's fields");
+                            }
+                        }
+                    }
                     let mut full = vec![Val::R(Some(o))];
                     full.extend(args);
                     return self.enter_method(path, &member.owner, cf, method, full);

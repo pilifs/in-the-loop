@@ -393,6 +393,7 @@ pub struct ClassPath {
     basic_base64: std::cell::OnceCell<bool>,
     heap_buffer_copy: std::cell::OnceCell<bool>,
     concurrent_table_layout: std::cell::OnceCell<bool>,
+    decimal_tables_image: std::cell::OnceCell<bool>,
     /// The classes whose initializer a check has the observed state of ([`crate::observed`]), set by the check: the
     /// own checker neither runs such an initializer nor meets it as a gap, and the scan does not walk it.
     pub(crate) observed_initializers: RefCell<std::collections::BTreeSet<String>>,
@@ -416,7 +417,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -526,7 +527,7 @@ impl ClassPath {
 
     /// The public constructor itself chooses which exception wins when the array is null and a bound is negative.
     pub(crate) fn string_range_constructor(&self, owner: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
-        if !matches!((owner, descriptor), ("java/lang/String", "([CII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
+        if !matches!((owner, descriptor), ("java/lang/String", "([CII)V" | "([BIII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
         let class = if let Some(boot) = &self.legacy_boot {
             let bytes = boot.read(&format!("{owner}.class")).ok()??;
             let class = ClassFile::parse(&bytes).ok()?;
@@ -1224,9 +1225,9 @@ impl ClassPath {
             | ("java/util/Objects", "toString", "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;")
             | ("java/util/Objects", "hash", "([Ljava/lang/Object;)I")
             | ("java/util/Objects", "hashCode", "(Ljava/lang/Object;)I")
-            | ("java/util/Objects", "checkFromIndexSize", "(III)I")
+            | ("java/util/Objects", "checkFromIndexSize" | "checkFromToIndex", "(III)I")
             | ("jdk/internal/util/Preconditions", "checkIndex", "(IILjava/util/function/BiFunction;)I")
-            | ("jdk/internal/util/Preconditions", "checkFromIndexSize", "(IIILjava/util/function/BiFunction;)I")
+            | ("jdk/internal/util/Preconditions", "checkFromIndexSize" | "checkFromToIndex", "(IIILjava/util/function/BiFunction;)I")
             | ("jdk/internal/util/ArraysSupport", "hashCode", "([Ljava/lang/Object;III)I")
             | ("java/util/Arrays", "equals", "([Ljava/lang/Object;[Ljava/lang/Object;)Z")
             | ("java/util/Arrays", "hashCode", "([Ljava/lang/Object;)I"))
@@ -1266,6 +1267,43 @@ impl ClassPath {
             bytes.extend(body);
         }
         digests.contains(&crate::digest::sha256_hex(&bytes).as_str())
+    }
+
+    /// The five arithmetic tables are read-only after initialization on this image. Decode
+    /// their literal array initializers from the selected class, including every cell.
+    pub(crate) fn decimal_table(&self, owner: &str, field: &str) -> Option<(crate::classfile::Type, Vec<i64>)> {
+        use crate::classfile::{ArrayKind, BootstrapArg, Insn, Type};
+        let (kind, element, descriptor) = match (owner, field) {
+            ("java/math/BigInteger", "digitsPerInt" | "intRadix") => (ArrayKind::Int, Type::Int, "[I"),
+            ("java/math/BigInteger", "bitsPerDigit") | ("java/math/BigDecimal", "LONG_TEN_POWERS_TABLE" | "THRESHOLDS_TABLE") =>
+                (ArrayKind::Long, Type::Long, "[J"),
+            _ => return None,
+        };
+        if !*self.decimal_tables_image.get_or_init(|| self.matches_jdk_classes(&["java/math/BigInteger", "java/math/BigDecimal"],
+                    &["174944a78445d7e38620917a7b3e4567b5b080f32dc10518d7550cd8ac5b4658"])) { return None; }
+        let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
+        let code = class.method("<clinit>", "()V")?.code.as_ref()?.instructions().ok()?;
+        let end = code.iter().position(|(_, op)| matches!(op, Insn::PutStatic(i) if class.pool.member(*i).is_ok_and(|m|
+            m.owner == owner && m.name == field && m.descriptor == descriptor)))?;
+        let alloc = code[..end].iter().rposition(|(_, op)| matches!(op, Insn::NewArray(k) if *k == kind))?;
+        let Insn::IConst(length) = code.get(alloc.checked_sub(1)?)?.1 else { return None };
+        let entries = &code[alloc + 1..end];
+        if entries.len() != usize::try_from(length).ok()?.checked_mul(4)? { return None; }
+        let cells = entries.chunks_exact(4).enumerate().map(|(index, ops)| {
+            let [(_, Insn::Dup), (_, Insn::IConst(i)), (_, value), (_, Insn::ArrayStore(store))] = ops else { return None };
+            if *i != index as i32 || *store != kind { return None; }
+            match value {
+                Insn::IConst(n) if kind == ArrayKind::Int => Some(i64::from(*n)),
+                Insn::LConst(n) if kind == ArrayKind::Long => Some(*n),
+                Insn::Ldc(i) => match class.pool.loadable(*i).ok()? {
+                    BootstrapArg::Int(n) if kind == ArrayKind::Int => Some(i64::from(n)),
+                    BootstrapArg::Long(n) if kind == ArrayKind::Long => Some(n),
+                    _ => None,
+                },
+                _ => None,
+            }
+        }).collect::<Option<Vec<_>>>()?;
+        Some((element, cells))
     }
 
     /// Fresh keys on one platform thread. Bind the key constructor, identity-based map, get/set/remove
@@ -1763,6 +1801,21 @@ impl ClassPath {
             | ("highSurrogate" | "lowSurrogate", "(I)C"))
     }
 
+    pub(crate) fn big_number(owner: &str) -> bool {
+        matches!(owner, "java/math/BigDecimal" | "java/math/BigInteger")
+    }
+
+    /// The JDK 21 formatters construct their result from a byte range. Other image
+    /// layouts keep the interpreter's existing rendering path.
+    pub(crate) fn floating_formatter(&self, owner: &str) -> bool {
+        let implementation = match owner {
+            "java/lang/Float" => "jdk/internal/math/FloatToDecimal",
+            "java/lang/Double" => "jdk/internal/math/DoubleToDecimal",
+            _ => return false,
+        };
+        self.state_image_class(implementation).is_some_and(|c| c.method("charsToString", "()Ljava/lang/String;").is_some())
+    }
+
     /// Numeric code executed from the selected JDK image. Factories follow their actual
     /// allocation and cache branches. The hypot implementation includes the FdLibm helpers
     /// the selected image calls. An additional helper can produce a named refusal.
@@ -1786,11 +1839,22 @@ impl ClassPath {
             | ("java/lang/Character", "codePointAt" | "codePointBefore", "(Ljava/lang/CharSequence;I)I")
             | ("java/math/BigInteger", "valueOf", "(J)Ljava/math/BigInteger;")
             | ("java/math/BigInteger", "<init>", "(J)V" | "([B)V" | "([BII)V")
+            | ("java/math/BigInteger", "<init>", "([CII)V")
+            | ("java/math/BigInteger", "parseInt", "([CII)I")
+            | ("java/math/BigInteger", "destructiveMulAdd", "([III)V")
+            | ("java/math/BigInteger", "trustedStripLeadingZeroInts", "([I)[I")
+            | ("java/math/BigInteger", "equals", "(Ljava/lang/Object;)Z")
             | ("java/math/BigInteger", "toMagArray", "(J)[I")
             | ("java/math/BigInteger", "makePositive" | "stripLeadingZeroBytes", "(I[BII)[I" | "([BII)[I")
             | ("java/math/BigInteger", "bitLengthForInt" | "getInt", "(I)I")
             | ("java/math/BigInteger", "bitLength" | "magBitLength" | "intValue" | "intValueExact" | "signInt" | "firstNonzeroIntNum" | "numberOfTrailingZeroInts", "()I")
             | ("java/math/BigDecimal", "<init>", "(Ljava/math/BigInteger;I)V")
+            | ("java/math/BigDecimal", "<init>", "(Ljava/lang/String;)V" | "([CII)V" | "([CIILjava/math/MathContext;)V")
+            | ("java/math/BigDecimal", "valueOf", "(D)Ljava/math/BigDecimal;")
+            | ("java/math/BigDecimal", "compareTo" | "compareMagnitude", "(Ljava/math/BigDecimal;)I")
+            | ("java/math/BigDecimal", "precision" | "signum", "()I")
+            | ("java/math/BigDecimal", "longMultiplyPowerTen", "(JI)J")
+            | ("java/math/BigDecimal", "longCompareMagnitude", "(JJ)I")
             | ("java/math/BigDecimal", "compactValFor", "(Ljava/math/BigInteger;)J")
             | ("java/math/BigDecimal", "toStrictBigInteger", "(Ljava/math/BigInteger;)Ljava/math/BigInteger;")
             | ("java/math/BigDecimal", "scale", "()I")
@@ -1808,6 +1872,16 @@ impl ClassPath {
             | ("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;")
             | ("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;")
             | ("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;")
+            | ("java/lang/Float", "valueOf", "(Ljava/lang/String;)Ljava/lang/Float;")
+            | ("java/lang/Double", "valueOf", "(Ljava/lang/String;)Ljava/lang/Double;")
+            | ("java/lang/Float" | "java/lang/Double", "isInfinite", "()Z")
+            | ("java/lang/Float" | "java/lang/Double", "toString", "()Ljava/lang/String;")
+            | ("java/lang/Float", "toString", "(F)Ljava/lang/String;")
+            | ("java/lang/Double", "toString", "(D)Ljava/lang/String;")
+            | ("java/lang/Math", "multiplyHigh", "(JJ)J")
+            | ("java/lang/Integer", "decode", "(Ljava/lang/String;)Ljava/lang/Integer;")
+            | ("java/lang/Integer", "parseInt", "(Ljava/lang/CharSequence;III)I")
+            | ("java/lang/Integer", "intValue", "()I")
             | ("java/lang/Byte", "<init>", "(B)V") | ("java/lang/Short", "<init>", "(S)V")
             | ("java/lang/Long", "<init>", "(J)V") | ("java/lang/Float", "<init>", "(F)V")
             | ("java/lang/Double", "<init>", "(D)V") | ("java/lang/Number", "<init>", "()V"))
@@ -1817,7 +1891,8 @@ impl ClassPath {
         let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
         let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
-        if matches!(owner, "java/lang/Math" | "java/lang/StrictMath" | "java/lang/FdLibm" | "java/lang/FdLibm$Hypot")
+        // multiplyHigh specifies the exact high word of the signed 128-bit product.
+        if name != "multiplyHigh" && matches!(owner, "java/lang/Math" | "java/lang/StrictMath" | "java/lang/FdLibm" | "java/lang/FdLibm$Hypot")
             && method.annotations(&class.pool).ok()?.iter().any(|a| matches!(a.type_name.rsplit('/').next(), Some("IntrinsicCandidate" | "HotSpotIntrinsicCandidate"))) {
             return None;
         }
@@ -1935,7 +2010,9 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return Some(class);
         }
-        if !matches!(name, "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
+        if !matches!(name, "java/math/MathContext" | "java/math/RoundingMode"
+            | "jdk/internal/math/FloatToDecimal" | "jdk/internal/math/DoubleToDecimal" | "jdk/internal/math/MathUtils"
+            | "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
             | "java/io/Writer" | "java/io/StringWriter" | "java/io/PrintWriter" | "java/lang/StringBuffer"
             | "java/lang/CharacterData" | "java/lang/CharacterDataLatin1"
             | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"

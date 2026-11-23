@@ -554,7 +554,7 @@ pub enum JdkCall {
 /// ([`unmodelled_instance_call`]), which the engine applies in place of its model where one is given.
 pub fn modelled_jdk_call(owner: &str, name: &str, descriptor: &str) -> bool {
     super::strings::models_builder(owner, name, descriptor)
-        || (owner == "java/lang/String" && name == "<init>" && matches!(descriptor, "([CII)V" | "([C)V" | "(Ljava/lang/String;)V"))
+        || (owner == "java/lang/String" && name == "<init>" && matches!(descriptor, "([BIII)V" | "([CII)V" | "([C)V" | "(Ljava/lang/String;)V"))
         || super::runtime::models_instance(owner, name, descriptor)
         || super::runtime::models_logging(owner, name, descriptor)
         || (name == "<init>" && (super::runtime::plain_constructor(owner, descriptor) || super::runtime::capacity_constructor(owner, descriptor)))
