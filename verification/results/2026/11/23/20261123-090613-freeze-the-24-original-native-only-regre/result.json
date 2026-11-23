@@ -1,0 +1,216 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-090613-freeze-the-24-original-native-only-regre",
+  "title": "Freeze the 24 original native-only regression controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10m00s, peak 7.1 GiB (estimated 12m00s, 5.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-090613-freeze-the-24-original-native-only-regre.json",
+    "sha256": "46a731d9b9b324cd53dece732ef7311c8fe6316dc8efd263ab5738cbf17905db",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-090613-freeze-the-24-original-native-only-regre",
+      "title": "Freeze the 24 original native-only regression controls",
+      "description": "Run the original 24 native-only claims from the 187-claim November benchmark. Keep every staged JBMC and strict native result, including comparator disagreements, against the independent historical observer, the full int domain and the original per-claim budget.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc"
+      ],
+      "links": {},
+      "expected": "All 24 original native controls are compared on both engines with 120-second deadlines and their replay outcomes recorded.",
+      "submitted": {
+        "at": "2026-11-23T09:06:13+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "12m",
+        "timeout": "65m"
+      },
+      "steps": [
+        {
+          "name": "Paired native-only controls",
+          "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py opening native-controls",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/java-semantics-gap/opening/native-controls.json"
+      ]
+    }
+  },
+  "sourceCommit": "58cbd49d7d513605f0319fa1a8e0966485408276",
+  "startedAt": "2026-11-23T09:15:39+00:00",
+  "finishedAt": "2026-11-23T09:28:38+00:00",
+  "wallSeconds": 779.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3306967,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 3900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 7592845312,
+    "wallSeconds": 600.8,
+    "cpuSeconds": 608.3,
+    "memoryOfEstimate": 1.41,
+    "durationOfEstimate": 0.83
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Paired native-only controls",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/historical.py opening native-controls",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3900.0,
+      "cancelled": false,
+      "wallSeconds": 600.789,
+      "cpuSeconds": 608.337,
+      "cpuThrottledSeconds": 1.55,
+      "peakMemoryBytes": 7592845312,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-paired-native-only-controls.log",
+        "lines": 49,
+        "bytes": 6226,
+        "sha256": "bd6854778f2c36483412043bbe803781ebacd8f1b2d692f5ef218f423c479bc1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "conformance/declaring/2                      jbmc   strict  staged     unverifiable unsupported               0.25 s    45.6 MB",
+        "conformance/defaults/1                       native strict             verified     correct                   0.02 s    45.6 MB",
+        "conformance/defaults/1                       jbmc   strict  staged     unverifiable unsupported               0.15 s    45.6 MB",
+        "conformance/defaults/3                       native strict             violation    correct                   0.03 s    45.6 MB",
+        "conformance/defaults/3                       jbmc   strict  staged     unverifiable unsupported               0.25 s    45.6 MB",
+        "conformance/boomTwice/1                      native strict             verified     correct                   0.02 s    45.6 MB",
+        "conformance/boomTwice/1                      jbmc   strict  staged     unverifiable unsupported               0.14 s    45.6 MB",
+        "conformance/enumBroken/1                     native strict             verified     correct                   0.02 s    45.6 MB",
+        "conformance/enumBroken/1                     jbmc   strict  staged     unverifiable unsupported               0.15 s    45.6 MB",
+        "conformance/caught/1                         native strict             verified     correct                   0.02 s    45.6 MB",
+        "conformance/caught/1                         jbmc   strict  staged     unverifiable unsupported               0.19 s    45.6 MB",
+        "conformance/caught/3                         native strict             violation    correct                   0.02 s    45.6 MB",
+        "conformance/caught/3                         jbmc   strict  staged     unverifiable unsupported               0.34 s    45.6 MB",
+        "conformance/caughtAsRuntime/1                native strict             verified     correct                   0.02 s    45.6 MB",
+        "conformance/caughtAsRuntime/1                jbmc   strict  staged     unverifiable unsupported               0.14 s    45.6 MB",
+        "conformance/caughtAsRuntime/2                native strict             violation    correct                   0.02 s    45.6 MB",
+        "conformance/caughtAsRuntime/2                jbmc   strict  staged     unverifiable unsupported               0.41 s    45.6 MB",
+        "conformance/nestedHandler/1                  native strict             verified     correct                   0.02 s    45.6 MB",
+        "conformance/nestedHandler/1                  jbmc   strict  staged     unverifiable unsupported               0.14 s    45.6 MB",
+        "conformance/divide/3                         native strict             verified     correct                   0.03 s    45.6 MB",
+        "conformance/divide/3                         jbmc   strict  staged     unverifiable unsupported             120.10 s    51.6 MB",
+        "conformance/shiftRight/1                     native strict             verified     correct                   0.03 s    45.6 MB",
+        "conformance/shiftRight/1                     jbmc   strict  staged     unverifiable unsupported               0.25 s    45.6 MB",
+        "conformance/shiftRight/3                     native strict             violation    correct                   0.02 s    45.6 MB",
+        "conformance/shiftRight/3                     jbmc   strict  staged     unverifiable unsupported               0.25 s    45.6 MB",
+        "conformance/shiftUnsigned/2                  native strict             verified     correct                   0.02 s    45.6 MB",
+        "conformance/shiftUnsigned/2                  jbmc   strict  staged     unverifiable unsupported               0.25 s    45.6 MB",
+        "conformance/shiftUnsigned/3                  native strict             violation    correct                   0.02 s    45.6 MB",
+        "conformance/shiftUnsigned/3                  jbmc   strict  staged     unverifiable unsupported               0.24 s    45.6 MB",
+        "real/bucket/fix-confined                     native strict             verified     correct                   0.03 s    45.6 MB",
+        "real/bucket/fix-confined                     jbmc   strict  staged     unverifiable unsupported             120.10 s    45.6 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.03 s    45.6 MB",
+        "held/floor-mod/jdk                           jbmc   strict  staged     unverifiable unsupported             120.13 s    45.6 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.03 s    45.6 MB",
+        "held/ceil-div                                jbmc   strict  staged     unverifiable unsupported             120.10 s    51.9 MB",
+        "held/reverse                                 native strict             verified     correct                   0.12 s    45.6 MB",
+        "held/reverse                                 jbmc   strict  staged     unverifiable unsupported              64.64 s  6852.8 MB",
+        "example/142                                  native strict             verified     correct                   9.64 s    77.7 MB",
+        "example/142                                  jbmc   strict  staged     unverifiable unsupported              34.61 s  6849.9 MB",
+        "native-controls Counter({('native', 'correct'): 24, ('jbmc', 'unsupported'): 24})"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/java-semantics-gap/opening/native-controls.json",
+      "change": "added",
+      "bytes": 139763,
+      "sha256": "cdb185dba94453390b14ecff06b12556a10c8cb21cc7000551903ca330cdaad7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T09:29:05+00:00",
+    "applied": [
+      "verification/java-semantics-gap/opening/native-controls.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f0776b5e50b36169c6d5b891fb6a3280a491f48c",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f0776b5e50b36169c6d5b891fb6a3280a491f48c/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T092838Z-4201088c6d753355",
+      "outputs": "20261123T092838Z-479651088e9d7729",
+      "diff": "20261123T092838Z-5208047cc41d8318"
+    }
+  }
+}
