@@ -7,7 +7,8 @@
       "unresolved": 16
     },
     "ordinary": {
-      "unresolved": 16
+      "unresolved": 12,
+      "established": 4
     },
     "finite": {
       "established": 14,
@@ -30,6 +31,12 @@
           "status": "passed",
           "source": "e6e2352c7ebb29b9288d354317c61a693e5251d0",
           "result": "verification/results/2026/11/22/20261122-164436-recheck-spring-binder-prefixes-from-ordi/result.json"
+        },
+        "springStartup": {
+          "id": "20261123-011836-recheck-all-ordinary-spring-claims-after",
+          "status": "passed",
+          "source": "03b71fd9e57a082938d2b568809c1b281d993e88",
+          "result": "verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json"
         }
       },
       "claims": {
@@ -83,11 +90,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/release/20261122T165231Z-f34b0181/tasks/beans-release/result.json",
+            "record": "records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/beans-release/result.json",
             "admitted": 12,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261122T165231Z-f34b0181/tasks/beans-release/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13 (java.lang.Object.hashCode() at org.springframework.util.ConcurrentReferenceHashMap.getHash:223). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/beans-release/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -104,6 +112,35 @@
               "log": "release.log",
               "logSha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/beans-release/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13 (java.lang.Object.hashCode() at org.springframework.util.ConcurrentReferenceHashMap.getHash:223). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/beans-release/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.017,
+              "peakRssBytes": 120799232,
+              "log": "release.log",
+              "logSha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "ledger-release": {
@@ -156,11 +193,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/release/20261122T165231Z-f34b0181/tasks/ledger-release/result.json",
+            "record": "records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/ledger-release/result.json",
             "admitted": 12,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261122T165231Z-f34b0181/tasks/ledger-release/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13 (java.lang.Object.hashCode() at org.springframework.util.ConcurrentReferenceHashMap.getHash:223). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/ledger-release/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -177,6 +215,35 @@
               "log": "release.log",
               "logSha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/ledger-release/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13 (java.lang.Object.hashCode() at org.springframework.util.ConcurrentReferenceHashMap.getHash:223). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/ledger-release/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.017,
+              "peakRssBytes": 120799232,
+              "log": "release.log",
+              "logSha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "beans-combined": {
@@ -231,11 +298,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/combined/20261122T165236Z-24ae8a5f/tasks/beans-combined/result.json",
+            "record": "records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/beans-combined/result.json",
             "admitted": 12,
             "checked": 1,
             "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261122T165236Z-24ae8a5f/tasks/beans-combined/result.json"
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/beans-combined/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -252,6 +320,35 @@
               "log": "combined.log",
               "logSha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/beans-combined/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/beans-combined/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.1931,
+              "peakRssBytes": 128028672,
+              "log": "combined.log",
+              "logSha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "ledger-combined": {
@@ -306,11 +403,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/combined/20261122T165236Z-24ae8a5f/tasks/ledger-combined/result.json",
+            "record": "records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/ledger-combined/result.json",
             "admitted": 12,
             "checked": 1,
             "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
-            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261122T165236Z-24ae8a5f/tasks/ledger-combined/result.json"
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/ledger-combined/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -327,6 +425,35 @@
               "log": "combined.log",
               "logSha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/ledger-combined/result.json",
+            "admitted": 12,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+            "receipt": "examples/368-spring-binding-history/records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/ledger-combined/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 4.1931,
+              "peakRssBytes": 128028672,
+              "log": "combined.log",
+              "logSha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         }
       },
@@ -546,6 +673,12 @@
           "status": "passed",
           "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
           "result": "verification/results/2026/11/22/20261122-165838-qualified-check-literal-authority-subset/result.json"
+        },
+        "springStartup": {
+          "id": "20261123-011836-recheck-all-ordinary-spring-claims-after",
+          "status": "passed",
+          "source": "03b71fd9e57a082938d2b568809c1b281d993e88",
+          "result": "verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json"
         }
       },
       "claims": {
@@ -600,12 +733,12 @@
             "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model"
           },
           "ordinary": {
-            "status": "unresolved",
-            "record": "records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/result.json",
+            "status": "established",
+            "record": "records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-names-before/result.json",
             "admitted": 32,
-            "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-names-before/result.json"
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-names-before/result.json"
           },
           "nativeSelectors": {
             "status": "open",
@@ -622,6 +755,39 @@
               "log": "before.log",
               "logSha256": "689bdadd06e160ba5c23105369a8c05791d1fb133e7d46c26dc1a8ec3f14d689"
             }
+          },
+          "startupSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-names-before/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-names-before/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 0,
+              "seconds": 8.9361,
+              "peakRssBytes": 124874752,
+              "log": "before.log",
+              "logSha256": "080d36fbfcead30b005c88afcaf485709022e5fd11b2d7ee680c8a78bba940c2"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "legacy-names-landed": {
@@ -675,12 +841,12 @@
             "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model"
           },
           "ordinary": {
-            "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/result.json",
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-names-landed/result.json",
             "admitted": 32,
-            "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-names-landed/result.json"
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-names-landed/result.json"
           },
           "nativeSelectors": {
             "status": "open",
@@ -697,6 +863,39 @@
               "log": "landed.log",
               "logSha256": "945f3f5ad6494264b2d5f93ba450700f1697b5f67eae78ec585492fbc707bb1e"
             }
+          },
+          "startupSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-names-landed/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-names-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.3675,
+              "peakRssBytes": 115060736,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "legacy-decision-before": {
@@ -750,12 +949,12 @@
             "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Set.of([Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13 (java.util.Set.of(java.lang.Object[]) at org.springframework.security.authorization.AuthorityAuthorizationManager.<init>:44). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
           },
           "ordinary": {
-            "status": "unresolved",
-            "record": "records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/result.json",
+            "status": "established",
+            "record": "records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-decision-before/result.json",
             "admitted": 32,
-            "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261122T172745Z-dcb81022/tasks/legacy-decision-before/result.json"
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-decision-before/result.json"
           },
           "nativeSelectors": {
             "status": "open",
@@ -772,6 +971,39 @@
               "log": "before.log",
               "logSha256": "689bdadd06e160ba5c23105369a8c05791d1fb133e7d46c26dc1a8ec3f14d689"
             }
+          },
+          "startupSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-decision-before/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-decision-before/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 0,
+              "seconds": 8.9361,
+              "peakRssBytes": 124874752,
+              "log": "before.log",
+              "logSha256": "080d36fbfcead30b005c88afcaf485709022e5fd11b2d7ee680c8a78bba940c2"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "legacy-decision-landed": {
@@ -825,12 +1057,12 @@
             "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Set.of([Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13 (java.util.Set.of(java.lang.Object[]) at org.springframework.security.authorization.AuthorityAuthorizationManager.<init>:44). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
           },
           "ordinary": {
-            "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/result.json",
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-decision-landed/result.json",
             "admitted": 32,
-            "checked": 1,
-            "firstBlocker": "outside the fragment: java.lang.String.split on an object the engine does not model",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/legacy-decision-landed/result.json"
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-decision-landed/result.json"
           },
           "nativeSelectors": {
             "status": "open",
@@ -847,6 +1079,39 @@
               "log": "landed.log",
               "logSha256": "945f3f5ad6494264b2d5f93ba450700f1697b5f67eae78ec585492fbc707bb1e"
             }
+          },
+          "startupSelectors": {
+            "status": "established",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-decision-landed/result.json",
+            "admitted": 32,
+            "checked": 32,
+            "firstBlocker": null,
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-decision-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.3675,
+              "peakRssBytes": 115060736,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "fluent-names-landed": {
@@ -901,11 +1166,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-names-landed/result.json",
             "admitted": 32,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-names-landed/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.PrintWriter$1.<init>()V@jdk-21.0.13 (java.io.PrintWriter$1.<init>() at java.io.PrintWriter.<clinit>:1378). With --gaps assume it assumes instead that java.io.PrintWriter$1.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-names-landed/result.json",
+            "blockedSelector": 1
           },
           "nativeSelectors": {
             "status": "open",
@@ -922,6 +1188,35 @@
               "log": "landed.log",
               "logSha256": "945f3f5ad6494264b2d5f93ba450700f1697b5f67eae78ec585492fbc707bb1e"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-names-landed/result.json",
+            "admitted": 32,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.PrintWriter$1.<init>()V@jdk-21.0.13 (java.io.PrintWriter$1.<init>() at java.io.PrintWriter.<clinit>:1378). With --gaps assume it assumes instead that java.io.PrintWriter$1.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-names-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.3675,
+              "peakRssBytes": 115060736,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "blockedSelector": 1,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "fluent-decision-landed": {
@@ -976,11 +1271,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-decision-landed/result.json",
             "admitted": 32,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.StringWriter.<init>()V@jdk-21.0.13 (java.io.StringWriter.<init>() at org.springframework.security.access.hierarchicalroles.RoleHierarchyUtils.roleHierarchyFromMap:49). With --gaps assume it assumes instead that java.io.StringWriter.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261122T172752Z-34c6f4c5/tasks/fluent-decision-landed/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.PrintWriter$1.<init>()V@jdk-21.0.13 (java.io.PrintWriter$1.<init>() at java.io.PrintWriter.<clinit>:1378). With --gaps assume it assumes instead that java.io.PrintWriter$1.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-decision-landed/result.json",
+            "blockedSelector": 1
           },
           "nativeSelectors": {
             "status": "open",
@@ -997,6 +1293,35 @@
               "log": "landed.log",
               "logSha256": "945f3f5ad6494264b2d5f93ba450700f1697b5f67eae78ec585492fbc707bb1e"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-decision-landed/result.json",
+            "admitted": 32,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.io.PrintWriter$1.<init>()V@jdk-21.0.13 (java.io.PrintWriter$1.<init>() at java.io.PrintWriter.<clinit>:1378). With --gaps assume it assumes instead that java.io.PrintWriter$1.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/fluent-decision-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 10.3675,
+              "peakRssBytes": 115060736,
+              "log": "landed.log",
+              "logSha256": "1ba07ff8edcfc916d88ba476c232c52786fe9232f99f9aeb026dc8b4973b612c"
+            },
+            "blockedSelector": 1,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         }
       },
@@ -1462,6 +1787,12 @@
           "status": "passed",
           "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
           "result": "verification/results/2026/11/22/20261122-165839-qualified-check-record-metadata-at-the-p/result.json"
+        },
+        "springStartup": {
+          "id": "20261123-011836-recheck-all-ordinary-spring-claims-after",
+          "status": "passed",
+          "source": "03b71fd9e57a082938d2b568809c1b281d993e88",
+          "result": "verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json"
         }
       },
       "claims": {
@@ -1509,11 +1840,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/parent/20261122T172912Z-13192d71/tasks/components-parent/result.json",
+            "record": "records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/components-parent/result.json",
             "admitted": 3,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/components-parent/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/components-parent/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -1530,6 +1862,35 @@
               "log": "parent.log",
               "logSha256": "bac7c86823f284daaaca853156d8076c8d8a47a48969624bc4e0c9432dbc43ea"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/components-parent/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/components-parent/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 3.5723,
+              "peakRssBytes": 115752960,
+              "log": "parent.log",
+              "logSha256": "bac7c86823f284daaaca853156d8076c8d8a47a48969624bc4e0c9432dbc43ea"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "components-landed": {
@@ -1576,11 +1937,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/components-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/components-landed/result.json",
             "admitted": 3,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/components-landed/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/components-landed/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -1597,6 +1959,35 @@
               "log": "landed.log",
               "logSha256": "7ee935f6d9646594202495f944b62b1ddeaa0b69d716cb5e3f868902b8ae9291"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/components-landed/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/components-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 3.3984,
+              "peakRssBytes": 109195264,
+              "log": "landed.log",
+              "logSha256": "7ee935f6d9646594202495f944b62b1ddeaa0b69d716cb5e3f868902b8ae9291"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "getters-parent": {
@@ -1643,11 +2034,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/parent/20261122T172912Z-13192d71/tasks/getters-parent/result.json",
+            "record": "records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/getters-parent/result.json",
             "admitted": 3,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261122T172912Z-13192d71/tasks/getters-parent/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/getters-parent/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -1664,6 +2056,35 @@
               "log": "parent.log",
               "logSha256": "bac7c86823f284daaaca853156d8076c8d8a47a48969624bc4e0c9432dbc43ea"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/getters-parent/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T014321Z-5ecc3f18/tasks/getters-parent/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 3.5723,
+              "peakRssBytes": 115752960,
+              "log": "parent.log",
+              "logSha256": "bac7c86823f284daaaca853156d8076c8d8a47a48969624bc4e0c9432dbc43ea"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "getters-landed": {
@@ -1710,11 +2131,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/getters-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/getters-landed/result.json",
             "admitted": 3,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.concurrent.locks.ReentrantLock.<init>()V@jdk-21.0.13 (java.util.concurrent.locks.ReentrantLock.<init>() at org.springframework.util.ConcurrentReferenceHashMap$Segment.<init>:638). With --gaps assume it assumes instead that java.util.concurrent.locks.ReentrantLock.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261122T172915Z-0dd1b57f/tasks/getters-landed/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/getters-landed/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -1731,6 +2153,35 @@
               "log": "landed.log",
               "logSha256": "7ee935f6d9646594202495f944b62b1ddeaa0b69d716cb5e3f868902b8ae9291"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/getters-landed/result.json",
+            "admitted": 3,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.IdentityHashMap.<init>(I)V@jdk-21.0.13 (java.util.IdentityHashMap.<init>(int) at org.springframework.util.ClassUtils.<clinit>:114). With --gaps assume it assumes instead that java.util.IdentityHashMap.<init>(int) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+            "receipt": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T014324Z-d9ca0620/tasks/getters-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 3.3984,
+              "peakRssBytes": 109195264,
+              "log": "landed.log",
+              "logSha256": "7ee935f6d9646594202495f944b62b1ddeaa0b69d716cb5e3f868902b8ae9291"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                "basis": "engine"
+              }
+            ]
           }
         }
       },
@@ -1903,6 +2354,12 @@
           "status": "passed",
           "source": "e365b4b3262e5edf8ff6bda7764c82b635d22fd7",
           "result": "verification/results/2026/11/22/20261122-165839-qualified-check-both-original-formatter/result.json"
+        },
+        "springStartup": {
+          "id": "20261123-011836-recheck-all-ordinary-spring-claims-after",
+          "status": "passed",
+          "source": "03b71fd9e57a082938d2b568809c1b281d993e88",
+          "result": "verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json"
         }
       },
       "claims": {
@@ -1954,11 +2411,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/result.json",
+            "record": "records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/annotated-parent/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.springframework.core.NamedThreadLocal.<init>:39). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/annotated-parent/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/annotated-parent/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -1975,6 +2433,35 @@
               "log": "parent.log",
               "logSha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/annotated-parent/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/annotated-parent/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 6.1412,
+              "peakRssBytes": 112836608,
+              "log": "parent.log",
+              "logSha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "annotated-landed": {
@@ -2025,11 +2512,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/annotated-landed/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.springframework.core.NamedThreadLocal.<init>:39). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/annotated-landed/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/annotated-landed/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -2046,6 +2534,35 @@
               "log": "landed.log",
               "logSha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/annotated-landed/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/annotated-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 5.7833,
+              "peakRssBytes": 122183680,
+              "log": "landed.log",
+              "logSha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "preservation-parent": {
@@ -2096,11 +2613,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/result.json",
+            "record": "records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/preservation-parent/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.springframework.core.NamedThreadLocal.<init>:39). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261122T172850Z-4e096b83/tasks/preservation-parent/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/preservation-parent/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -2117,6 +2635,35 @@
               "log": "parent.log",
               "logSha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/preservation-parent/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T014328Z-73c5e113/tasks/preservation-parent/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 6.1412,
+              "peakRssBytes": 112836608,
+              "log": "parent.log",
+              "logSha256": "2d0ed5a837064dff9916e36c57c2f6f5b75868848d5df1499bd933177ed5f720"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              }
+            ]
           }
         },
         "preservation-landed": {
@@ -2167,11 +2714,12 @@
           },
           "ordinary": {
             "status": "unresolved",
-            "record": "records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/result.json",
+            "record": "records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/preservation-landed/result.json",
             "admitted": 2,
             "checked": 1,
-            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.ThreadLocal.<init>()V@jdk-21.0.13 (java.lang.ThreadLocal.<init>() at org.springframework.core.NamedThreadLocal.<init>:39). With --gaps assume it assumes instead that java.lang.ThreadLocal.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
-            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261122T172855Z-c02f4193/tasks/preservation-landed/result.json"
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/preservation-landed/result.json",
+            "blockedSelector": 0
           },
           "nativeSelectors": {
             "status": "open",
@@ -2188,6 +2736,35 @@
               "log": "landed.log",
               "logSha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4"
             }
+          },
+          "startupSelectors": {
+            "status": "open",
+            "record": "records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/preservation-landed/result.json",
+            "admitted": 2,
+            "checked": 1,
+            "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.TimeZone.getTimeZone(Ljava/lang/String;)Ljava/util/TimeZone;@jdk-21.0.13 (java.util.TimeZone.getTimeZone(java.lang.String) at springwork.DateEdits.history:35). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "receipt": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T014334Z-a6b19374/tasks/preservation-landed/result.json",
+            "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+            "cost": {
+              "exit": 1,
+              "seconds": 5.7833,
+              "peakRssBytes": 122183680,
+              "log": "landed.log",
+              "logSha256": "c3945b8e345475479a55f8ec9acae2bec508503889afb500cd3660d7de9b44b4"
+            },
+            "blockedSelector": 0,
+            "assumptions": [
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "fresh ThreadLocal keys are used on the one executing platform thread of the check",
+                "basis": "engine"
+              }
+            ]
           }
         }
       },
@@ -2463,6 +3040,120 @@
           "guard": "code == 0",
           "verdict": "unverifiable",
           "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.Set.of([Ljava/lang/Object;)Ljava/util/Set;@jdk-21.0.13 (java.util.Set.of(java.lang.Object[]) at org.springframework.security.authorization.AuthorityAuthorizationManager.<init>:44). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+        }
+      }
+    },
+    "hierarchyEdge": {
+      "id": "20261123-014142-check-the-omitted-spring-hierarchy-edge",
+      "status": "passed",
+      "source": "8c15d73be681b30eaa7be0a79671606d5179eec8",
+      "result": "verification/results/2026/11/23/20261123-014142-check-the-omitted-spring-hierarchy-edge/result.json",
+      "sides": {
+        "before": {
+          "springSecurityCommit": "10d88cdf28449cbc4789edfe7111f2cdec9902d6",
+          "springSecurityJarSha256": "cdbc30986e169dd235ce624cfb96b746b553c94de265f57bbde233f25a1955e3",
+          "applicationRevision": "fixture:application",
+          "record": "examples/370-spring-role-hierarchy/records/edge-control/before/measurement.json",
+          "callerClass": "869e1bec07f37cec2f184cc12e85c42c271c343b243dadcf9bc4f3200d0f03a6",
+          "jvm": [
+            "ROLE_ 5",
+            "CUSTOM_PREFIX_ 5"
+          ],
+          "proofs": {
+            "role": {
+              "sha256": "01bef670bbcf093a7084a222a8c2162e02c377e0648460ba29f332a6a6632c24",
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                  "basis": "engine"
+                }
+              ]
+            },
+            "custom": {
+              "sha256": "b7c548b8fb6d8dad34b62a4973f41e16052e3208d25196682ede2631cb05cd3d",
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                  "basis": "engine"
+                }
+              ]
+            }
+          }
+        },
+        "landed": {
+          "springSecurityCommit": "ee8bc78cbcd4a0a42c7e7dc2a05b5aeb29c336ae",
+          "springSecurityJarSha256": "513d5e5971fb7dfe8d9a262e927f08debb39497fdc47548166e62272d922d9be",
+          "applicationRevision": "fixture:application",
+          "record": "examples/370-spring-role-hierarchy/records/edge-control/landed/measurement.json",
+          "callerClass": "869e1bec07f37cec2f184cc12e85c42c271c343b243dadcf9bc4f3200d0f03a6",
+          "jvm": [
+            "ROLE_ 5",
+            "CUSTOM_PREFIX_ 5"
+          ],
+          "proofs": {
+            "role": {
+              "sha256": "3d640da52bdd19b127abb2d5d03115507b946dc8cd52dc506496394fcf337f1c",
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                  "basis": "engine"
+                }
+              ]
+            },
+            "custom": {
+              "sha256": "983739d152e2060c35ef1708f3976e971288db5c894a228249e544f58f81e069",
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "java.util.logging is configured as the JDK configures it by default: no logging configuration file or class is named, and nothing sets a logger's level, so each logger's level is the root's, INFO, and nothing below INFO is logged (Logger.isLoggable is false for CONFIG, FINE, FINER, FINEST and ALL, and true for INFO, WARNING and SEVERE)",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+                  "basis": "engine"
+                }
+              ]
+            }
+          }
         }
       }
     },

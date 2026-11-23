@@ -32,6 +32,8 @@ ALL_ROWS = "20261122-164436-check-every-realizable-bounded-boxed-row"
 TRANSFER = "20261122-164436-price-binder-prefix-reuse-in-the-public"
 GATED_HISTORIES = "20261122-190127-check-every-role-gated-spring-edit-histo"
 TOLERANCE = "20261122-182432-prove-inclusive-positive-tolerance-on-bo"
+HIERARCHY_EDGE = "20261123-014142-check-the-omitted-spring-hierarchy-edge"
+SPRING_STARTUP = "20261123-011836-recheck-all-ordinary-spring-claims-after"
 MATRIX_REFERENCES = "20261122-221543-prove-reference-identity-through-both-hi"
 
 def require(ok,what):
@@ -109,7 +111,110 @@ def public(job,folder,plan,task,run):
         evidence.update(replay=rel(rp),inputs=replay["inputs"])
     return fin,evidence
 
-def case(n):
+def hierarchy_edge(job, case):
+    if not job:
+        return {"state": "pending"}
+    if "springStartup" not in case["stages"]:
+        return {"state": "pending", "needs": SPRING_STARTUP}
+    import role_edge as edge
+    result = {**job_info(job), "sides": {}}
+    graphs = read(DEST / "exact-classpaths/classes.json")["370"]
+    spec = read(edge.FOLDER / "target.json")
+    libraries = read(edge.FOLDER / spec["preparation"]["libraryCatalog"])
+    for side in ("before", "landed"):
+        graph = graphs[side]
+        key = "spring-security-14196-" + side
+        library = libraries[key]
+        upstream = case["namedUpstream"]["sides"][side]
+        hierarchy = "org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl"
+        manager = "org.springframework.security.authorization.AuthorityAuthorizationManager"
+        require(key in spec["history"]["revisions"][side]["runtimeLibraries"] and library["class"] == hierarchy
+                and library["commit"] == upstream["source"] and library["sha256"] == upstream["jarSha256"]
+                and all(graph["classes"][name]["jarSha256"] == library["sha256"] for name in (hierarchy, manager)),
+                "the hierarchy and manager must come from the original historically tested JAR")
+        root = edge.FOLDER.relative_to(ROOT) / "records/edge-control" / side
+        report = read(job.output(root / "measurement.json"))
+        caller_sha = sha(job.output(root / "HierarchyEdge.jvm-bytecode"))
+        jvm = job.output(root / "jvm.stdout").read_text().splitlines()
+        decision = case["claims"]["legacy-decision-" + side]
+        require(report["job"] == job.record["id"] and report["source"] == job.record["sourceCommit"]
+                and decision["startupSelectors"]["status"] == "established"
+                and report["libTree"] == job.record["jvmcontract"]["libTree"]
+                and report["checkerSha256"] == decision["startupSelectors"]["checkerSha256"]
+                and report["revision"] == graph["commit"] and report["jdk"] == graph["jdk"]
+                and report["classpath"] == graph["orderedJars"][1:]
+                and [jar["sha256"] for jar in report["classpath"]] == decision["opening"]["classpath"]
+                and caller_sha == report["callerClass"] and report["callerSource"] == sha(edge.SOURCE)
+                and jvm == report["jvm"] == edge.EXPECTED, "different historical hierarchy edge or JVM control")
+        bindings = [{"class": edge.CALLER, "provider": "classes", "entry": "springwork/HierarchyEdge.class",
+                     "sha256": caller_sha, "method": m, "descriptor": "()I"} for m in ("role", "custom")]
+        for name, info in graph["classes"].items():
+            jar = graph["orderedJars"][info["jarIndex"]]
+            require(jar["sha256"] == info["jarSha256"], "different loaded Spring provider")
+            bindings.append({"class": name, "provider": Path(jar["path"]).name, "entry": info["entry"],
+                             "sha256": info["classSha256"], "method": None, "descriptor": None})
+        require(bindings == report["bindings"] and set(report["proofs"]) == {"role", "custom"},
+                "different checker binding or missing edge control")
+        for method, proof in report["proofs"].items():
+            raw = job.output(root / (method + ".json"))
+            require(sha(raw) == proof["sha256"] and edge.qualify(raw.read_bytes(), method) == proof["assumptions"],
+                    "different native hierarchy decision or assumptions")
+        result["sides"][side] = {"springSecurityCommit": library["commit"], "springSecurityJarSha256": library["sha256"],
+                                 "applicationRevision": graph["commit"], "record": (root / "measurement.json").as_posix(),
+                                 "callerClass": caller_sha, "jvm": jvm, "proofs": report["proofs"]}
+    require(result["sides"]["before"]["callerClass"] == result["sides"]["landed"]["callerClass"],
+            "different caller bytecode on the two historical graphs")
+    return result
+
+
+def selector_result(folder, plan, row, task, run, job, startup=False):
+    name = task["id"]
+    claim = plan.claim
+    item = run["tasks"][name]
+    path = job.output(folder.relative_to(ROOT) / item["receipt"])
+    checked = native_selectors.validate_result(folder, plan, path)
+    require(checked["status"] == item["status"] and sha(path) == item["sha256"], "different native selector report")
+    proof = read(path)
+    require(proof["checker"]["sha256"] == run["checkerSha256"] and proof["checker"]["libTree"] == run["libTree"]
+            and proof["guard"] == claim["assume"] and proof["assertion"] == claim["assert"] and proof["bounds"] == claim["bounds"]
+            and [artifact["sha256"] for artifact in proof["classpath"]] == row["opening"]["classpath"],
+            "different selector checker, graph or scope")
+    answer = {**checked, "receipt": rel(path), "checkerSha256": run["checkerSha256"], "cost": run["batches"][task["revision"]]}
+    if startup:
+        require(proof["checker"]["commit"] == job.record["sourceCommit"] and proof["JDK"]["JAVA_RUNTIME_VERSION"] == row["opening"]["jdk"]
+                and item["firstBlocker"] == checked["firstBlocker"], "different Spring startup source, JVM or refusal")
+        assumptions = []
+        for case in proof["checked"]:
+            raw = native_selectors.case_pack.read(path.parents[2], case["raw"])
+            decoded = native_selectors.checker_output.wire.decode(raw.decode(), "prove")
+            require(decoded.ok and len(decoded.outcomes) == 1, "missing raw Spring startup verdict")
+            actual, = decoded.outcomes
+            stated = actual["stated"]
+            expected = f"{native_selectors.PACKAGE}.Calls#{native_selectors.case_name(case['selector'])}()"
+            require(stated["gap_mode"] == "strict" and stated["checker"]["engine"] == "native"
+                    and actual["target"] == case["target"] == expected and actual.get("assume") is None
+                    and actual["assert"] == claim["assert"] and stated["bounds"]["unwind"] == claim["bounds"]["unwind"]
+                    and actual["search"]["max_array_length"] == claim["bounds"]["maxArrayLength"]
+                    and case["assumptions"] == stated["assumptions"] and all(a["basis"] == "engine" for a in case["assumptions"]),
+                    "different ordinary startup claim or supplied state")
+            for assumption in case["assumptions"]:
+                if assumption not in assumptions:
+                    assumptions.append(assumption)
+            if case["status"] == "open":
+                status, reason = native_selectors.disposition(actual, case["target"], claim["bounds"], case["exit"])
+                require(status == "open" and reason == case["firstBlocker"] == checked["firstBlocker"],
+                        "first Spring blocker differs from the raw native outcome")
+                answer["blockedSelector"] = case["selector"]
+        answer["assumptions"] = assumptions
+    if checked["status"] == "refuted":
+        replay = proof["originalJVMReplay"]
+        require(replay["entry"] == claim["adapter"]["entry"] and replay["claimKey"] == row["opening"]["claimKey"],
+                "selector counterexample belongs to another public entry")
+        answer["witness"] = {"inputs": replay["inputs"], "values": replay["sides"][task["revision"]]["values"]}
+    return answer
+
+
+def case(n, startup_job=None):
     folder,=(ROOT/"examples").glob(f"{n}-*")
     from domains import GRIDS, table
     entry, grid=GRIDS[n]
@@ -118,6 +223,13 @@ def case(n):
     opening=managed(OPEN[n]);final=managed(FINAL.get(n))
     base=run_report(opening,folder,"opening");end=run_report(final,folder,"native-final" if n in (368,373) else "native-qualified")
     stages={k:job_info(j) for k,j in (("opening",opening),("nativeFinal",final)) if j}
+    if startup_job is None and n in (368, 370, 372, 374):
+        startup_job = managed(SPRING_STARTUP)
+    startup_run = run_report(startup_job, folder, "spring-startup")
+    if startup_job:
+        stages["springStartup"] = job_info(startup_job)
+        require(startup_job.record["status"] == "passed" and set(startup_run["tasks"]) ==
+                {task["id"] for task in spec["tasks"] if task["kind"] == "prove"}, "incomplete Spring startup run")
     rows={}
     for task in spec["tasks"]:
         if task["kind"]!="prove":continue
@@ -128,22 +240,17 @@ def case(n):
         if name in base.get("tasks",{}):
             row["finite"],row["opening"]=public(opening,folder,plan,task,base)
             row["ordinary"]={k:row["opening"][k] for k in ("status","receipt","firstBlocker") if k in row["opening"]}
-        if name in end.get("tasks",{}):
-            item=end["tasks"][name];path=final.output(folder.relative_to(ROOT)/item["receipt"])
-            checked=native_selectors.validate_result(folder,plan,path)
-            require(checked["status"]==item["status"] and sha(path)==item["sha256"],"different native selector report")
-            proof=read(path)
-            require(proof["checker"]["sha256"]==end["checkerSha256"] and proof["checker"]["libTree"]==end["libTree"]
-                    and proof["guard"]==claim["assume"] and proof["assertion"]==claim["assert"] and proof["bounds"]==claim["bounds"]
-                    and [item["sha256"] for item in proof["classpath"]]==row["opening"]["classpath"],"different selector checker, graph or scope")
-            row["nativeSelectors"]={**checked,"receipt":rel(path),"checkerSha256":end["checkerSha256"],"cost":end["batches"][task["revision"]]}
-            if checked["status"]=="refuted":
-                replay=proof["originalJVMReplay"]
-                require(replay["entry"]==claim["adapter"]["entry"] and replay["claimKey"]==row["opening"]["claimKey"],
-                        "selector counterexample belongs to another public entry")
-                row["nativeSelectors"]["witness"]={"inputs":replay["inputs"],"values":replay["sides"][task["revision"]]["values"]}
-            if row.get("ordinary",{}).get("status") not in ("refuted","established"):
-                row["ordinary"]={**checked,"status":"unresolved" if checked["status"]=="open" else checked["status"],"receipt":rel(path)}
+        for key, run, job in [("nativeSelectors", end, final), ("startupSelectors", startup_run, startup_job)]:
+            if name not in run.get("tasks", {}):
+                continue
+            answer = selector_result(folder, plan, row, task, run, job, startup=key == "startupSelectors")
+            row[key] = answer
+            if row.get("ordinary", {}).get("status") not in ("refuted", "established"):
+                row["ordinary"] = {k: answer[k] for k in ("status", "record", "admitted", "checked", "firstBlocker", "receipt")}
+                if "blockedSelector" in answer:
+                    row["ordinary"]["blockedSelector"] = answer["blockedSelector"]
+                if answer["status"] == "open":
+                    row["ordinary"]["status"] = "unresolved"
     result={"example":n,"folder":rel(folder),"stages":stages,"claims":rows}
     if n == 369:
         earlier = managed("20261122-164436-prove-boxed-row-values-and-mutation-isol")
@@ -413,7 +520,8 @@ def gated_histories(job):
 def recount(complete):
     out={}
     for track,numbers in [("spring",(368,370,372,374)),("data",(369,371,373,375))]:
-        cases={str(n):case(n) for n in numbers}
+        startup_job = managed(SPRING_STARTUP) if track == "spring" else None
+        cases={str(n):case(n, startup_job) for n in numbers}
         totals={}
         rows=[r for c in cases.values() for r in c["claims"].values() if r["primary"]]
         for field in ("opening","ordinary","finite"):
@@ -423,6 +531,7 @@ def recount(complete):
                      "gatedBinding":supplement("transfer",TRANSFER,"verification/spring-java-data/gated-binding")} if track=="spring"
                     else {"allRows":supplement("allRows",ALL_ROWS,"examples/369-boxed-ragged-rows/records/all-rows")})
         if track == "spring":
+            companions["hierarchyEdge"] = hierarchy_edge(managed(HIERARCHY_EDGE), cases["370"])
             companions["registrarCallbacks"]=registrar_callbacks(cases)
             histories_job = managed(GATED_HISTORIES)
             if histories_job:
@@ -475,6 +584,8 @@ def recount(complete):
             b=observed["375"]["landed"]["classes"]["org.apache.commons.lang3.math.NumberUtils"]
             require((a["jarSha256"],a["classSha256"])==(b["jarSha256"],b["classSha256"]),"B1/B4 parser artifacts differ")
         if complete:
+            if track == "spring":
+                require(all("startupSelectors" in row for row in rows), "missing ordinary Spring startup comparison")
             require(bound and bound.record["status"]=="passed" and all("nativeFinal" in c["stages"] for c in cases.values()),"outstanding native or loaded-class jobs")
             for n in numbers:
                 require(cases[str(n)]["stages"]["nativeFinal"]["status"]=="passed"

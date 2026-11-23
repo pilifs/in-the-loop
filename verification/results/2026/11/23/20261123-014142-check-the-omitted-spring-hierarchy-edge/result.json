@@ -1,0 +1,288 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-014142-check-the-omitted-spring-hierarchy-edge",
+  "title": "Check the omitted Spring hierarchy edge on both original managers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6.4s, peak 111.5 MiB (estimated 1m00s, 1.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-014142-check-the-omitted-spring-hierarchy-edge.json",
+    "sha256": "957402009fb42a393c754589e16501db20d42211212806974fa3f4d113f8d8bf",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-014142-check-the-omitted-spring-hierarchy-edge",
+      "title": "Check the omitted Spring hierarchy edge on both original managers",
+      "description": "On the Spring Security #14196 pre-feature and landed artifacts, compare four public manager calls per prefix. Starting with A, remove the B-to-D edge after checking the full hierarchy. D alone must still grant on the reduced graph, and C alone must decline on the full graph. Qualify each ordinary native proof and physical JVM replay on the original ordered classpath.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "ordinary-startup",
+        "original-jvm-replay"
+      ],
+      "links": {
+        "examples": [
+          "370"
+        ]
+      },
+      "expected": "Both JARs produce decision bits 1,0,1,0 for ROLE_ and CUSTOM_PREFIX_. Four strict native checks establish mask 5, binding the actual public caller, manager and hierarchy classes.",
+      "submitted": {
+        "at": "2026-11-23T01:41:42+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "priority": 10,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Native and JVM edge controls",
+          "run": "python3 -B lib/benchmark/spring-java-data/role_edge.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/370-spring-role-hierarchy/records/edge-control"
+      ]
+    }
+  },
+  "sourceCommit": "8c15d73be681b30eaa7be0a79671606d5179eec8",
+  "startedAt": "2026-11-23T01:48:46+00:00",
+  "finishedAt": "2026-11-23T01:52:15+00:00",
+  "wallSeconds": 209.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2937407,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 116961280,
+    "wallSeconds": 6.4,
+    "cpuSeconds": 10.9,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 193.926,
+      "cpuSeconds": 194.289,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2245033984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "88087f43b515ba2f6f4a0f2ae67c682bb4aedcd954d73e7498b33db68f419ed7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-014142-check-the-omitted-spring-hierarchy-edge/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 13s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Native and JVM edge controls",
+      "run": "python3 -B lib/benchmark/spring-java-data/role_edge.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 6.413,
+      "cpuSeconds": 10.853,
+      "cpuThrottledSeconds": 0.555,
+      "peakMemoryBytes": 116961280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-native-and-jvm-edge-controls.log",
+        "lines": 2,
+        "bytes": 72,
+        "sha256": "b8b398d2653e7de1c6c0a37f53d7b3b470f2285fa83adc0a5f72bea6101f96c1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "before | ROLE_ 5 | CUSTOM_PREFIX_ 5",
+        "landed | ROLE_ 5 | CUSTOM_PREFIX_ 5"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/before/HierarchyEdge.jvm-bytecode",
+      "change": "added",
+      "bytes": 1291,
+      "sha256": "869e1bec07f37cec2f184cc12e85c42c271c343b243dadcf9bc4f3200d0f03a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/before/custom.json",
+      "change": "added",
+      "bytes": 5669,
+      "sha256": "b7c548b8fb6d8dad34b62a4973f41e16052e3208d25196682ede2631cb05cd3d",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/before/jvm.stdout",
+      "change": "added",
+      "bytes": 25,
+      "sha256": "daff055eb3dc3105434ecf179faa3ced3a0ba7b1b9193e08eda92c172c834b49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/before/measurement.json",
+      "change": "added",
+      "bytes": 7839,
+      "sha256": "40623fc42048c9aa39c1d5c6cafc6249e325dba1fc2a3e50efa7fe5a3d594ac8",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/before/role.json",
+      "change": "added",
+      "bytes": 5663,
+      "sha256": "01bef670bbcf093a7084a222a8c2162e02c377e0648460ba29f332a6a6632c24",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/landed/HierarchyEdge.jvm-bytecode",
+      "change": "added",
+      "bytes": 1291,
+      "sha256": "869e1bec07f37cec2f184cc12e85c42c271c343b243dadcf9bc4f3200d0f03a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/landed/custom.json",
+      "change": "added",
+      "bytes": 5671,
+      "sha256": "983739d152e2060c35ef1708f3976e971288db5c894a228249e544f58f81e069",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/landed/jvm.stdout",
+      "change": "added",
+      "bytes": 25,
+      "sha256": "daff055eb3dc3105434ecf179faa3ced3a0ba7b1b9193e08eda92c172c834b49",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/landed/measurement.json",
+      "change": "added",
+      "bytes": 7839,
+      "sha256": "8c59e72d0543a42c639b8a3437a8fb52f5d6279d9cd15bb2f464baca63f97118",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/370-spring-role-hierarchy/records/edge-control/landed/role.json",
+      "change": "added",
+      "bytes": 5663,
+      "sha256": "3d640da52bdd19b127abb2d5d03115507b946dc8cd52dc506496394fcf337f1c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-23T01:52:29+00:00",
+    "applied": [
+      "examples/370-spring-role-hierarchy/records/edge-control/before/HierarchyEdge.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/edge-control/before/custom.json",
+      "examples/370-spring-role-hierarchy/records/edge-control/before/jvm.stdout",
+      "examples/370-spring-role-hierarchy/records/edge-control/before/measurement.json",
+      "examples/370-spring-role-hierarchy/records/edge-control/before/role.json",
+      "examples/370-spring-role-hierarchy/records/edge-control/landed/HierarchyEdge.jvm-bytecode",
+      "examples/370-spring-role-hierarchy/records/edge-control/landed/custom.json",
+      "examples/370-spring-role-hierarchy/records/edge-control/landed/jvm.stdout",
+      "examples/370-spring-role-hierarchy/records/edge-control/landed/measurement.json",
+      "examples/370-spring-role-hierarchy/records/edge-control/landed/role.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "24b39ae607e8b269075d5e100d56cfe4dee5f361",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/24b39ae607e8b269075d5e100d56cfe4dee5f361/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261123T015215Z-57233932d53ce074",
+      "outputs": "20261123T015215Z-59374370cb048de2",
+      "diff": "20261123T015215Z-61282093a5d0b916"
+    }
+  }
+}

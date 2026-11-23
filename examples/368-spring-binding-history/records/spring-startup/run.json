@@ -1,0 +1,49 @@
+{
+  "job": "20261123-011836-recheck-all-ordinary-spring-claims-after",
+  "source": "03b71fd9e57a082938d2b568809c1b281d993e88",
+  "checkerSha256": "a35843bbea552d85171dfe6aeaea23f447430d3c4e0b9875d641630ea2ed2ae9",
+  "libTree": "cbe265a486a475f1ccc730451f68a819d4d7ace7",
+  "targetSha256": "41278e4e89a707cc137e43f015824dc41b63c5212ab9e4ae2e9fdfe2e840b685",
+  "tasks": {
+    "beans-release": {
+      "status": "open",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13 (java.lang.Object.hashCode() at org.springframework.util.ConcurrentReferenceHashMap.getHash:223). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "receipt": "records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/beans-release/result.json",
+      "sha256": "ea6ec5b64ea7158c3c786c8346d3e189859adfddb7c9eceafb315406a4a6c7b4"
+    },
+    "ledger-release": {
+      "status": "open",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.lang.Object.hashCode()I@jdk-21.0.13 (java.lang.Object.hashCode() at org.springframework.util.ConcurrentReferenceHashMap.getHash:223). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+      "receipt": "records/native-selectors/release/20261123T014253Z-1eeab5e6/tasks/ledger-release/result.json",
+      "sha256": "1dd352568c5ccec201a3daaba7acbba7fe74edbfe934749cb0594463c34128e4"
+    },
+    "beans-combined": {
+      "status": "open",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "receipt": "records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/beans-combined/result.json",
+      "sha256": "d050f1adb8943d4d50b36ef7489a1e32ef8289aed70a37bcb30b7d35dead15a5"
+    },
+    "ledger-combined": {
+      "status": "open",
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.springframework.beans.CachedIntrospectionResults.<clinit>()V (org.springframework.beans.CachedIntrospectionResults.<clinit>() at org.springframework.beans.BeanWrapperImpl.getCachedIntrospectionResults:165). With --gaps assume it assumes instead that org.springframework.beans.CachedIntrospectionResults.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+      "receipt": "records/native-selectors/combined/20261123T014257Z-0c53b493/tasks/ledger-combined/result.json",
+      "sha256": "506c5ef20e726d453045503de62d3823c73a01676541dcfdc71024f51033e899"
+    }
+  },
+  "batches": {
+    "release": {
+      "exit": 1,
+      "seconds": 4.017,
+      "peakRssBytes": 120799232,
+      "log": "release.log",
+      "logSha256": "6b33510c7b0df1072fa45530eb5d393223f0588383205c0be79963db012943e6"
+    },
+    "combined": {
+      "exit": 1,
+      "seconds": 4.1931,
+      "peakRssBytes": 128028672,
+      "log": "combined.log",
+      "logSha256": "9ee74ace430739571caa8211d7cb7a44bdf8fe41c26d6044e6d0926147c13e4a"
+    }
+  }
+}

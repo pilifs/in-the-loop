@@ -4,7 +4,9 @@ The legacy graph runs on the pre-feature and landed artifacts. The fluent builde
 
 ## Recorded results
 
-The ordinary native checker established 0 and refuted 0 of the 6 primary obligations. The finite JVM established 6 and refuted 0. 6 ordinary native obligations remain open.
+The ordinary native checker established four of the six primary claims. Both fluent claims remain open. The finite JVM established all six.
+
+The strict native checker established all 32 configurations for each legacy claim on the pre-feature and landed JARs, giving 128 completed selector proofs. Each prefix granted 14 of 16 starting subsets. The fluent builder reached the JDK writer bootstrap and stopped at `PrintWriter$1.<init>()`. [Managed startup run](../../verification/results/2026/11/23/20261123-011836-recheck-all-ordinary-spring-claims-after/result.json)
 
 Each prefix granted 14 of the 16 authority subsets. The distinct before, feature, landed and release JARs were loaded on the JVM. The 64-history combined caller made 56 third edits and preserved the field error even on all eight declined writes. [Opening job](../../verification/results/2026/11/22/20261122-164312-spring-security-reachable-roles-and-publ/result.json) · [Selector checks](../../verification/results/2026/11/22/20261122-165838-qualified-check-literal-authority-subset/result.json) · [Scorecard](../../verification/spring-java-data/spring.json)
 
@@ -21,3 +23,5 @@ Replay a single history from the repository root with `python3 lib/benchmark/spr
 ## Removing the indirect grant
 
 Run `python3 -B lib/benchmark/spring-java-data/role_edge.py --replay` from the repository root. Each historical manager makes four decisions under each prefix. A alone grants D with the full hierarchy and declines it after removing B → D. D alone still grants on the shortened graph, and C alone declines on the full graph. The four decisions occupy bits zero through three, giving 5 for both prefixes. [Public caller](companions/HierarchyEdge.java)
+
+Both original JARs passed four native decisions per prefix in one assertion. The four strict proofs agreed with both physical JVMs. The original application, hierarchy and manager class hashes matched their public decision graphs. [Managed edge control](../../verification/results/2026/11/23/20261123-014142-check-the-omitted-spring-hierarchy-edge/result.json)
