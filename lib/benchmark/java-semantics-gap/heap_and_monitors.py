@@ -10,7 +10,7 @@ from campaign import CACHE, HERE, JDK, ROOT, command, compile_java, digest, java
 from standalone import decode
 
 
-def schedules(work):
+def schedules(work, reader_first=False):
     folder=ROOT/"examples/391-class-monitor-identity"
     source=folder/"adapter/MonitorIdentity.java"
     line, = (n for n,s in enumerate(source.read_text().splitlines(),1) if "protectedRead = shared == 5;" in s)
@@ -19,10 +19,17 @@ def schedules(work):
     observer=folder/"controls/ObserveSchedule.java"
     subprocess.run([JDK/"bin/javac","--add-modules","jdk.jdi","-d",work,observer],check=True)
     rows={}
-    for mode in ("matched","mixed","synchronizedMethod"):
-        code,out,err,secs=command([JDK/"bin/java","--add-modules","jdk.jdi","-cp",work,"ObserveSchedule",mode,cp,str(line)],javaenv(),35)
+    modes = [(m,m,[]) for m in ("matched","mixed","synchronizedMethod")]
+    if reader_first:
+        import jvm_disassembly
+        methods, _ = jvm_disassembly.methods(JDK/"bin/javap", cp/"MonitorIdentity.class")
+        code = methods[("observe", "(ZZ)Z")]["code"]
+        after, = (b.pc for a,b in zip(code,code[1:]) if a.op == "istore_3")
+        modes.append(("mixed-reader-first", "mixed", [str(after)]))
+    for key,mode,extra in modes:
+        code,out,err,secs=command([JDK/"bin/java","--add-modules","jdk.jdi","-cp",work,"ObserveSchedule",mode,cp,str(line),*extra],javaenv(),35)
         if code!=0: raise ValueError(f"JVM scheduling control {mode}: {err.decode()}")
-        rows[mode]={"observations":out.decode().splitlines(),"seconds":secs}
+        rows[key]={"observations":out.decode().splitlines(),"seconds":secs}
     return {"classes":{p.name:digest(p) for p in cp.glob("*.class")},"observerSha256":digest(observer),
             "breakpoint":{"class":"MonitorIdentity","method":"observe","line":line},"runs":rows}
 
@@ -79,11 +86,12 @@ def array_plan(work,dest):
 if __name__=="__main__":
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--jvm-only",action="store_true")
+    p.add_argument("--reader-first",action="store_true",help="also hold the mixed-lock worker until the caller saves its read")
     p.add_argument("--output",type=Path,default=ROOT/"verification/java-semantics-gap/heap-and-monitors")
     a=p.parse_args();a.output.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="semantics-schedules-") as tmp:
         w=Path(tmp); report={"job":os.environ.get("VERIFY_JOB_ID"),"source":os.environ.get("VERIFY_SOURCE_COMMIT"),
-                              "jvmSha256":digest(JDK/"bin/java"),"jvm":schedules(w)}
+                              "jvmSha256":digest(JDK/"bin/java"),"jvm":schedules(w, a.reader_first)}
         if not a.jvm_only:
             report["standalone"]=direct_threads(w,a.output); report["arrayPlan"]=array_plan(w,a.output)
         write(a.output/"measurement.json",report)

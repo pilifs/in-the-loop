@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-122845-enumerate-the-original-two-thread-class",
+  "title": "Enumerate the original two-thread class and instance monitor schedules",
+  "description": "Explore all sequentially consistent application-bytecode interleavings of the three frozen MonitorIdentity callers, one successful platform-thread start and uninterrupted join. Record both observable orders for mixed locks and the protected reads for class-matched locks. Reconstruct all four outcomes on the original JVM, and vary only the treatment of the static synchronized modifier as a comparator control.",
+  "kind": "model",
+  "capabilities": [
+    "B11"
+  ],
+  "links": {
+    "examples": [
+      "391"
+    ]
+  },
+  "expected": "Every reachable state can progress to termination, class-matched callers return true, mixed callers return both answers, and the original JVM replays each outcome. Ignoring static synchronization must admit the additional false outcome.",
+  "submitted": {
+    "at": "2026-11-23T12:28:45+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m",
+    "timeout": "8m"
+  },
+  "steps": [
+    {
+      "name": "Explore original bytecode and replay both monitor orders",
+      "run": "python3 -B lib/benchmark/java-semantics-gap/monitor_schedules.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/java-semantics-gap/monitor-schedules"
+  ]
+}
