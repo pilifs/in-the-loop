@@ -1,0 +1,192 @@
+{
+  "schema": "native-selector-proof/v1",
+  "identity": {
+    "sourceClaim": "9e965174c9108d8d",
+    "inputsKey": "058a7a7a8eec85b055ba570c11e026312b276bac287308c21e60d852dd98fe7f",
+    "revisions": [
+      "release"
+    ],
+    "expected": "established",
+    "sourceLocks": {
+      "release": "2c8158709456941041d2ef66e4cb031890c0281943872592c90317570dd849f2"
+    }
+  },
+  "task": "beans-release",
+  "revision": "release",
+  "entry": "springwork.BindingChecks#beans(I)I",
+  "guard": "code >= 0 && code < 12",
+  "parameter": "code",
+  "assertion": "result == 1",
+  "bounds": {
+    "unwind": 256,
+    "maxArrayLength": 16384
+  },
+  "envelope": [
+    0,
+    11
+  ],
+  "maxCases": 4096,
+  "admitted": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "JDK": {
+    "JAVA_VERSION": "21.0.13",
+    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+    "IMPLEMENTOR": "Eclipse Adoptium",
+    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+    "OS_ARCH": "x86_64"
+  },
+  "checker": {
+    "commit": "57f5a10b49e68501640a67ee12ec23dd6eb7b413",
+    "libTree": "22df742075993303edf834ff9cb55c19e305131d",
+    "sha256": "e1c2f8782d9703e5af3b52689f8ebf03ba00cccbe89f59d9c9c464ddc74bf31a"
+  },
+  "classpath": [
+    {
+      "path": "adapter-release.jar",
+      "sha256": "6a31c7a4e62f1c2da158ffef435c0e7992e24c53d819e8eca691f0a8f1f06dd9",
+      "role": "adapter"
+    },
+    {
+      "path": "release.jar",
+      "sha256": "cf9bca4d8d6ce7270e95e51b313d564401df467fb6a75f616ccab03a8c79c37b",
+      "role": "original"
+    },
+    {
+      "path": "libraries/spring-context.jar",
+      "sha256": "53feea6d8c61a25089d8c474c4f92ebd24f0ef7eb52ecdaf46f11e9a253fdb4e",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/spring-aop.jar",
+      "sha256": "5e6fc3da90c1943f2fce5f06ef04d586187ce0062fe186d80acd53109065205d",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/spring-beans.jar",
+      "sha256": "4e289d6c0aa3ea74633005dae06d7cc827510e5b840d68bfcebdcf0bdd363f44",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/spring-core.jar",
+      "sha256": "49531684df2304f0e611f775faba79273c77504eb7d856592d830e2389e9eb14",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/spring-jcl.jar",
+      "sha256": "8c65ec5ed648966a470e6b48b27cbebf5f1f412bd46b243e0111c5d5d96efe86",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/spring-expression.jar",
+      "sha256": "e901e26baaa0e333ce2cc4f29d910d630c1f7a6c6cb99ac7a3c411a506b5b780",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/micrometer-observation.jar",
+      "sha256": "28dd4b001c14fc13b0bc48535621214916518895924e3ce528a604205b1ff0a1",
+      "role": "dependency"
+    },
+    {
+      "path": "libraries/micrometer-commons.jar",
+      "sha256": "6bb0f56fb88f65ddb4b080e3d80165eeb1740f2227ba0b8ac386109969f7e9bf",
+      "role": "dependency"
+    }
+  ],
+  "correspondence": [
+    {
+      "revision": "release",
+      "entry": "springwork.BindingChecks#beans(I)I",
+      "adapterSha256": "6a31c7a4e62f1c2da158ffef435c0e7992e24c53d819e8eca691f0a8f1f06dd9",
+      "adapterClassSha256": "47be43c208f25a36afb121d2f95b1894a5b63b340d76d4ebeb682650fc64028e",
+      "subject": {
+        "class": "springwork.BindingHistory",
+        "method": "trace",
+        "descriptor": "(IZ)[Lspringwork/BindingHistory$Snapshot;",
+        "loadedFrom": "release.jar",
+        "classSha256": "86cd9cbf31676b16aae92668a780b5811e0b010b7e02b82da820cf85c6490b97",
+        "adapterCalls": [
+          "springwork.BindingHistory#matches([Lspringwork/BindingHistory$Snapshot;IZ)Z",
+          "springwork.BindingHistory#trace(IZ)[Lspringwork/BindingHistory$Snapshot;"
+        ],
+        "adapterCallsTarget": true
+      },
+      "mapping": "Six permutations on distinct children, followed by the same six on a shared child.",
+      "jdk": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      },
+      "cases": 12,
+      "disagreements": 0
+    }
+  ],
+  "ruleSha256": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+  "ruleFiles": {
+    "examples/tools/targets/native_selectors.py": "d0f13349d50b57bf01f4e7ddab73d64919c139e52acffcdb2caa825df5cbc471",
+    "lib/python/jvmcontract_io.py": "0e1e1e582875dd5a50ed40159f34c687352c6897d3d0d751a66fc6246ee117c8"
+  },
+  "admissionClass": "tasks/beans-release/Admission.jvm-bytecode",
+  "admissionSha256": "a1bf6f318a9640c09ed684da4ceffa82831cbdec1c6cadbb5e0179c9e0085b6c",
+  "callsClass": "calls/fb7438bbc08ef3bda2c2/Calls.jvm-bytecode",
+  "callsSha256": "a80af2f8544a485ac951c66a79c657a8e2db6bf7c823dee6499b1edbc580b750",
+  "checked": [
+    {
+      "selector": 0,
+      "status": "open",
+      "target": "verificationselectors.Calls#p0()",
+      "exit": 1,
+      "wallSeconds": 0.103,
+      "usage": {
+        "cpuSeconds": 0.0974,
+        "peakRssBytes": 81600512,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+      },
+      "rawSha256": "d1755fa2bd06a257b802883ec6e3856d16e45a554f2208158ee46d0f8a007676",
+      "wireVersion": 1,
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the application loader is the JDK's ordinary AppClassLoader with inherited Object.hashCode",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        }
+      ],
+      "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.ClassLoader.getResources(Ljava/lang/String;)Ljava/util/Enumeration;@jdk-21.0.13 (java.lang.ClassLoader.getResources(java.lang.String) at org.springframework.core.io.support.SpringFactoriesLoader.loadFactoriesResource:339). With --gaps assume it assumes instead that java.lang.ClassLoader.getResources(java.lang.String) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+      "raw": "calls/fb7438bbc08ef3bda2c2/cases/p0/native.json",
+      "reusedInBatch": false
+    }
+  ],
+  "status": "open",
+  "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.ClassLoader.getResources(Ljava/lang/String;)Ljava/util/Enumeration;@jdk-21.0.13 (java.lang.ClassLoader.getResources(java.lang.String) at org.springframework.core.io.support.SpringFactoriesLoader.loadFactoriesResource:339). With --gaps assume it assumes instead that java.lang.ClassLoader.getResources(java.lang.String) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+  "wallSeconds": 0.10339,
+  "cost": {
+    "preparationAndCorrespondenceSeconds": 3.07349,
+    "checkerWallSeconds": 0.103,
+    "originalWitnessReplaySeconds": 0.0,
+    "endToEndSeconds": 3.17688,
+    "peakNativeRssBytes": 81600512
+  }
+}
