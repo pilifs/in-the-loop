@@ -1,0 +1,273 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-072248-freeze-wildcard-reflection-and-two-relea",
+  "title": "Freeze wildcard reflection and two released Spring public paths",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 30.3s, peak 171.3 MiB (estimated 9m00s, 5.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-072248-freeze-wildcard-reflection-and-two-relea.json",
+    "sha256": "aef398c51c8df6d1d6893bd7719b8346b79225d3b39536ae5255020de96a9d94",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-072248-freeze-wildcard-reflection-and-two-relea",
+      "title": "Freeze wildcard reflection and two released Spring public paths",
+      "description": "Check the original InterfaceShape predicate, its inverse and defensive copies of nested argument and wildcard bound arrays. Run the public Spring GenericTypeResolver and ResolvableType paths on identical caller bytes across 6.1.14 and 6.2.0, including String, Integer and back to String, the method-return preservation control, and cache clearing. Record packaged stock targets and post-call controls and actual JVM replays.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvm:generic-signatures",
+        "jbmc:standalone"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/reflection"
+        ]
+      },
+      "expected": "Thirteen public observation rows with reachable ordinary JVM controls and both literal comparator statuses, including wrong or inconclusive answers.",
+      "submitted": {
+        "at": "2026-11-24T07:22:48+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "9m",
+        "timeout": "50m"
+      },
+      "steps": [
+        {
+          "name": "Original and released metadata",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py opening S01 S02-S09-old S02-S09-new",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/opening/S01",
+        "verification/beyond-jbmc/opening/S02-S09-old",
+        "verification/beyond-jbmc/opening/S02-S09-new"
+      ]
+    }
+  },
+  "sourceCommit": "82edd9e38d343e3c9add3e9666392f516ec36bbf",
+  "startedAt": "2026-11-24T07:36:43+00:00",
+  "finishedAt": "2026-11-24T07:40:21+00:00",
+  "wallSeconds": 218.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2296646,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 3000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 179580928,
+    "wallSeconds": 30.3,
+    "cpuSeconds": 33.2,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 180.43,
+      "cpuSeconds": 180.655,
+      "cpuThrottledSeconds": 0.001,
+      "peakMemoryBytes": 2315526144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "16d2e52d5ca3f229bfe289695a2f54f9bd07b3d89394ca0d0c5f6e56c8300eb0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-072248-freeze-wildcard-reflection-and-two-relea/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 00s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Original and released metadata",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py opening S01 S02-S09-old S02-S09-new",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3000.0,
+      "cancelled": false,
+      "wallSeconds": 30.288,
+      "cpuSeconds": 33.197,
+      "cpuThrottledSeconds": 0.558,
+      "peakMemoryBytes": 179580928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-original-and-released-metadata.log",
+        "lines": 16,
+        "bytes": 930,
+        "sha256": "3a55d320b9f0a2e63d55b59aece1286907da26cbb57f471b3568755484a41ccb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "S01 3 original checks passed",
+        "S01 intact unverifiable unverifiable FAILURE FAILURE",
+        "S01 inverse unverifiable unverifiable SUCCESS FAILURE",
+        "S01 defensiveCopies unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-old 5 original checks passed",
+        "S02-S09-old resolved unverifiable violation SUCCESS SUCCESS",
+        "S02-S09-old unresolved unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-old methodReturn unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-old releasedSignature unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-old afterClear unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new 5 original checks passed",
+        "S02-S09-new resolved unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new unresolved unverifiable violation SUCCESS SUCCESS",
+        "S02-S09-new methodReturn unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new releasedSignature unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new afterClear unverifiable unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/opening/S01/executions.zip",
+      "change": "added",
+      "bytes": 71195,
+      "sha256": "32a13d401fd82f9f7f67265f356efd72624e9719d23227a9e3374c414e430d2c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/S01/results.json.gz",
+      "change": "added",
+      "bytes": 2199,
+      "sha256": "e93df1a6e5c1b03b39a73c7e994d5b9c9fe6ac9fd401ec35e1ba7bfb5a27ea7f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/S02-S09-old/executions.zip",
+      "change": "added",
+      "bytes": 412308,
+      "sha256": "08dc79a00476af59407d4c09cc86ac7a71e116327e0079ae7d9517c69ff56407",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/S02-S09-old/results.json.gz",
+      "change": "added",
+      "bytes": 3459,
+      "sha256": "a82a57edee10d11dcaa390b92593e911f00067a71b6984489c5c9df01a1ed29e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/S02-S09-new/executions.zip",
+      "change": "added",
+      "bytes": 410131,
+      "sha256": "a7cb40bf1beed2e6174191541f7f5eddc3e658b190166487fab80bb9ff28f740",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/S02-S09-new/results.json.gz",
+      "change": "added",
+      "bytes": 3530,
+      "sha256": "6b40334258bb1bad95e58822c3697e32593078a24b67ff0694f652d2de708874",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T07:40:25+00:00",
+    "applied": [
+      "verification/beyond-jbmc/opening/S01/executions.zip",
+      "verification/beyond-jbmc/opening/S01/results.json.gz",
+      "verification/beyond-jbmc/opening/S02-S09-old/executions.zip",
+      "verification/beyond-jbmc/opening/S02-S09-old/results.json.gz",
+      "verification/beyond-jbmc/opening/S02-S09-new/executions.zip",
+      "verification/beyond-jbmc/opening/S02-S09-new/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5d9bbf312cbb39af444ac845da3bd828348973c5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5d9bbf312cbb39af444ac845da3bd828348973c5/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T074021Z-3346914691cc0c38",
+      "outputs": "20261124T074021Z-3729184d79b36efb",
+      "diff": "20261124T074021Z-391503d8db5abd08"
+    }
+  }
+}
