@@ -134,6 +134,7 @@ mod finite_words;
 mod floating;
 mod trig;
 pub mod gaps;
+mod byte_views;
 pub mod bytes;
 pub mod locale;
 mod loops;
@@ -665,6 +666,8 @@ enum Val {
     C(Rc<Choice>),
     /// A reference from a qualified JVM snapshot whose referent is unavailable. Only transport is executable.
     Unobserved(Rc<str>),
+    /// Only exact plain accesses observe a view. It supplies no Java object identity.
+    ByteView(byte_views::ByteView),
 }
 
 impl Val {
@@ -1092,6 +1095,7 @@ fn join_key(path: &Path, loops: bool) -> JoinKey {
 fn choose(b: &mut Blaster, g: Lit, x: &Val, y: &Val) -> Option<Val> {
     if matches!((x, y), (Val::Unobserved(a), Val::Unobserved(c)) if a == c) { return Some(x.clone()); }
     match (x, y) {
+        (Val::ByteView(a), Val::ByteView(c)) if a == c => Some(x.clone()),
         (Val::I(p), Val::I(q)) => Some(Val::I(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
         (Val::J(p), Val::J(q)) => Some(Val::J(if p == q { p.clone() } else { b.ite_bits(g, p, q) })),
         (Val::R(p), Val::R(q)) if p == q => Some(x.clone()),
@@ -1136,6 +1140,7 @@ fn substitute(path: &mut Path, choice: &Rc<Choice>, target: Option<usize>) {
 fn mergeable(a: &Val, b: &Val) -> bool {
     matches!((a, b), (Val::I(_), Val::I(_)) | (Val::J(_), Val::J(_)) | (Val::R(_) | Val::C(_), Val::R(_) | Val::C(_)))
         || matches!((a, b), (Val::Unobserved(x), Val::Unobserved(y)) if x == y)
+        || matches!((a, b), (Val::ByteView(x), Val::ByteView(y)) if x == y)
 }
 
 /// Whether two paths at the same join point have states of one shape, so that they can be merged slot by slot and
@@ -3104,7 +3109,7 @@ impl<'a> Engine<'a> {
                 }
                 let value = match self.pop(path)? {
                     Val::I(b) | Val::J(b) => b,
-                    Val::R(_) | Val::C(_) | Val::Unobserved(_) => return unsupported("arrays of references"),
+                    Val::R(_) | Val::C(_) | Val::Unobserved(_) | Val::ByteView(_) => return unsupported("arrays of references"),
                 };
                 let index = self.pop_int(path)?;
                 let o = match self.pop_array(path) {
@@ -5411,6 +5416,10 @@ impl<'a> Engine<'a> {
             }
         }
         let args = self.pop_args(path, descriptor.params.len())?;
+        if member.owner == byte_views::HANDLES && member.name == "byteArrayViewVarHandle" && member.descriptor == byte_views::FACTORY
+            && self.gap_mode == GapMode::Strict && self.contracts.is_empty() && self.cp.byte_array_view_image() {
+            return self.byte_view_factory(path, &args);
+        }
         if caller == "java/io/PrintWriter" && path.frames.last().is_some_and(|f| f.method == "<clinit>")
             && self.gap_mode == GapMode::Strict {
             if let Some(field) = self.cp.print_writer_access_field(member) {
@@ -5677,6 +5686,9 @@ impl<'a> Engine<'a> {
             let top = path.frames.last().expect("a frame");
             return unsupported(format!("a call of {}.{} in {}.{} with fewer values on the stack than it takes", member.owner.replace('/', "."), member.name, top.class.name.replace('/', "."), top.method));
         };
+        if let Val::ByteView(view) = path.frames.last().expect("a frame").stack[receiver_at] {
+            return self.byte_view_access(path, view, member, receiver_at, special);
+        }
         // A lambda's object, called by its interface's method: the method it stands for runs ([`Lambda`]).
         if let Val::R(Some(o)) = path.frames.last().expect("a frame").stack[receiver_at] {
             if let Some(lambda) = path.objects[o].lambda.clone().filter(|l| !special && l.name == member.name && l.sam_descriptor == member.descriptor) {
@@ -6581,7 +6593,7 @@ impl<'a> Engine<'a> {
         }
         let bits = |v: &Val| match v {
             Val::I(b) | Val::J(b) => Some(b.clone()),
-            Val::R(_) | Val::C(_) | Val::Unobserved(_) => None,
+            Val::R(_) | Val::C(_) | Val::Unobserved(_) | Val::ByteView(_) => None,
         };
         let a: Vec<Bits> = match args.iter().map(bits).collect::<Option<Vec<_>>>() {
             Some(a) => a,

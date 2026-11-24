@@ -12,55 +12,60 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T06:46:35.151Z",
-  "duration_seconds": 2144,
+  "ended": "2026-11-24T07:11:54.417Z",
+  "duration_seconds": 3664,
   "stats": {
     "turns": 1,
-    "api_calls": 133,
-    "tool_calls": 423,
-    "tool_errors": 9,
+    "api_calls": 230,
+    "tool_calls": 628,
+    "tool_errors": 16,
     "compactions": 0,
-    "peak_context_tokens": 286408,
+    "peak_context_tokens": 367964,
     "usage": {
-      "input_tokens": 444135,
-      "output_tokens": 62792,
-      "cache_read_input_tokens": 24624512,
+      "input_tokens": 534675,
+      "output_tokens": 105901,
+      "cache_read_input_tokens": 56232704,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 283,
-    "exec": 133,
-    "apply_patch": 7
+    "Bash": 385,
+    "exec": 229,
+    "apply_patch": 13,
+    "send_message_to_user_async": 1
   },
   "files_touched": [
     "lib/benchmark/beyond-jbmc/seal_panel.py",
     "lib/benchmark/beyond-jbmc/stock_history.py",
+    "lib/benchmark/beyond-jbmc/wire_campaign.py",
     "lib/benchmark/run.py",
-    "lib/benchmark/test_run.py"
+    "lib/benchmark/test_run.py",
+    "lib/src/bmc/byte_views.rs",
+    "lib/src/bmc/runtime.rs",
+    "lib/src/classpath.rs"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-24T06:10:50.814Z",
-      "ended": "2026-11-24T06:46:35.151Z",
+      "ended": "2026-11-24T07:11:54.417Z",
       "turns": 1,
-      "api_calls": 133,
+      "api_calls": 230,
       "usage": {
-        "input_tokens": 444135,
-        "output_tokens": 62792,
-        "cache_read_input_tokens": 24624512,
+        "input_tokens": 534675,
+        "output_tokens": 105901,
+        "cache_read_input_tokens": 56232704,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 286408
+      "peak_context_tokens": 367964
     }
   ],
   "log": {
-    "sha256": "2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7",
-    "bytes": 3142529,
-    "lines": 1115,
-    "gzip_bytes": 676753,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7.jsonl.gz"
+    "sha256": "98f7b2a99164f8cbe7167ef829224a3c9d5e9df78b5281dbd068b34e52ca90e9",
+    "bytes": 4160647,
+    "lines": 1811,
+    "gzip_bytes": 827312,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/98f7b2a99164f8cbe7167ef829224a3c9d5e9df78b5281dbd068b34e52ca90e9.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -95,6 +100,14 @@
       "summary": "Reproduce mixed Lucene wire behavior (verification pending)",
       "body": "One thin caller compiled against 8.11.0 wrote and read frames in separate unmodified JVMs. Both local results are 0x01020304, both mixed results are 0x04030201, and both sentinels and cursors held. The two-copy symbolic caller checks round trips, byte-level slice frames and variable integers. Qualify the relocated old graph against both original JVM assertion modes.\n\nThe old-only strict probe verified the all-int property. The mixed probe refused MethodHandles.byteArrayViewVarHandle in the Lucene 9 initializer. Job 20261124-064322-measure-mixed-lucene-wire-claims-on-both records all three checker profiles. The affected test groups passed.",
       "log_sha256": "2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7"
+    },
+    {
+      "change_id": "rnlkowxxyzoplukkorwrtktrkztnwnqq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify plain byte-array views on released callers (verification pending)",
+      "body": "Bind the OpenJDK 21 byte-array VarHandle factory, singleton byte order and exact plain integral access descriptors. Check the complete width before updating original array storage. Keep handle identity, non-plain access and unbound images outside the supported scope. Allow the qualified bootstrap VarHandle presence lookup that Guava uses to select the implementation.\n\nStrict probes verified both all-int Lucene 8 to 9 byte reversal and the independent Guava public FarmHash caller over every long. Public controls passed on the original JVM. The changed Rust and Python tests passed, as did 24 pairing tests after the reflective lookup change. Job 20261124-065441-qualify-released-lucene-varhandle-reads compares the full wire controls. Job 20261124-065453-freeze-vecmath-and-commons-math-multipli records the public floating-point opening before arithmetic changes.",
+      "log_sha256": "98f7b2a99164f8cbe7167ef829224a3c9d5e9df78b5281dbd068b34e52ca90e9"
     }
   ],
   "logs": {
@@ -114,6 +127,12 @@
       "bytes": 2591107,
       "lines": 908,
       "gzip_bytes": 575374,
+      "url": null
+    },
+    "98f7b2a99164f8cbe7167ef829224a3c9d5e9df78b5281dbd068b34e52ca90e9": {
+      "bytes": 4160647,
+      "lines": 1811,
+      "gzip_bytes": 827312,
       "url": null
     },
     "c42e15b78c55f1fe9428d13c663e3d6bc046593f1a9f21394a46778c4c986752": {

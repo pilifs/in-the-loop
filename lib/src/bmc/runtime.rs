@@ -1185,14 +1185,18 @@ impl Engine<'_> {
                         found = false;
                     }
                 }
-                if found && (!self.cp.is_application(&internal) || !self.cp.loads(&internal)) {
+                // Released libraries check for VarHandle before selecting their byte-array implementation.
+                // The qualified bootstrap image supplies the class under the engine's stated JDK startup.
+                let bootstrap_view = internal == super::byte_views::HANDLE && self.gap_mode == GapMode::Strict
+                    && self.cp.byte_array_view_image();
+                if found && !bootstrap_view && (!self.cp.is_application(&internal) || !self.cp.loads(&internal)) {
                     return None;
                 }
                 self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
                 if !found {
                     return Some(self.raise(path, "java/lang/ClassNotFoundException"));
                 }
-                if initializes {
+                if initializes && !bootstrap_view {
                     // The call runs again once an initializer it starts has returned, its argument where it was.
                     self.push(path, Val::R(Some(named)));
                     if let Some(step) = self.initialise(path, &internal) {

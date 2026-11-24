@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-065453-freeze-vecmath-and-commons-math-multipli",
+  "title": "Freeze vecmath and Commons Math multiplication before the numeric rule",
+  "description": "Compare unmodified public Tuple2f.scale and Vector2D.scalarMultiply calls on the same two independent symbolic binary32 or binary64 binades. Keep separate stock assertions and post-call controls, replay incorrect positivity and unrounded-product oracles on the JVM, and retain each checker invocation and result. No floating opcode has changed at this revision.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc:floating-point"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/numeric"
+    ]
+  },
+  "expected": "Four vecmath rows and one Commons Math row, each with strict native, integrated staged, stock target and stock reach. Physical numeric controls pass.",
+  "submitted": {
+    "at": "2026-11-24T06:54:53+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "5m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Wide symbolic numeric opening",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py opening N01-N02 N10",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/opening/N01-N02",
+    "verification/beyond-jbmc/opening/N10"
+  ]
+}

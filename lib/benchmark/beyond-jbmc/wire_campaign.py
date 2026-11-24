@@ -98,9 +98,44 @@ def physical(work, env, jars, cp):
     return {"calls": calls, "observations": rows}
 
 
-def measure(work, env, cp, out):
+def replay_classes(work, env):
+    src = HERE / "wire"
+    sources = []
+    for side, prefix in enumerate(("before", "current")):
+        folder = work / "replay-source" / prefix
+        folder.mkdir(parents=True)
+        file = folder / "WireAPI.java"
+        methods = []
+        for operation in ("write", "read", "writeVInt", "readVInt"):
+            writing = operation.startswith("write")
+            ret, call = ("int", "write") if writing else ("long", "read")
+            param, arg = (", int value", ", value") if writing else ("", "")
+            methods.append(f"public static {ret} {operation}(byte[] b, int off{param}) throws java.io.IOException {{ "
+                           f'try {{ return witness.OriginalWire.{call}({side}, "{operation}", b, off{arg}).{ret}Value(); }} '
+                           "catch (RuntimeException | java.io.IOException e) { throw e; } "
+                           "catch (Exception e) { throw new IllegalStateException(e); } }")
+        file.write_text(("package before;\n" if side == 0 else "") + "public class WireAPI {\n" + "\n".join(methods) + "\n}\n")
+        sources.append(file)
+    dest = work / "original-replay"
+    dest.mkdir()
+    subprocess.run([JDK/"bin/javac", "-parameters", "-g", "-proc:none", "-d", dest, *sources,
+                    src/"ReplayWire.java", src/"OriginalWire.java", src/"WireClaims.java", benchmark.RUNNER_SOURCE], env=env, check=True)
+    return dest
+
+
+def replay(dest, env, jars, caller, name, tokens):
+    result = []
+    for flag in ("-da", "-ea"):
+        cmd = [str(JDK/"bin/java"), flag, "-cp", str(dest), "ReplayWire", str(caller), *map(str, jars), name, tokens]
+        p = subprocess.run(cmd, capture_output=True, text=True, env=env, timeout=20)
+        result.append({"argv": cmd, "exit": p.returncode, "outcome": p.stdout.strip(), "stderr": p.stderr.strip()})
+    return result
+
+
+def measure(work, env, jars, cp, out):
     checker = str(Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve())
     rows = []
+    original = replay_classes(work, env)
     with zipfile.ZipFile(out / "executions.zip", "w", zipfile.ZIP_DEFLATED) as archive:
         for name, (cid, params) in CASES.items():
             row = {"case": cid, "method": name, "expected": "violation" if name == "wrongIdentity" else "verified"}
@@ -116,12 +151,20 @@ def measure(work, env, cp, out):
                 if result.ok and len(result.outcomes) == 1:
                     data = result.outcomes[0]
                     record.update({k: data[k] for k in ("verdict","problem","counterexample","stated") if k in data})
+                    if data.get("verdict") == "violation":
+                        tokens = benchmark.witness_arguments(data)
+                        if tokens is not None:
+                            record["jvmReplay"] = replay(original, env, jars, cp[1], name, tokens)
                 for stream in ("stdout","stderr"):
                     archive.writestr(f"{name}/{engine}/{stream}", entry[stream])
                 archive.writestr(f"{name}/{engine}/argv.json", encoded(cmd))
                 row[engine] = record
             row["stock"] = {entry: stock_run("WireAssertions", m, cp, params, archive, f"{name}/stock/{entry}")
                             for entry, m in (("target",name),("reach",name+"Reach"))}
+            stock = row["stock"]["target"]
+            if "arguments" in stock:
+                tokens = ";".join(benchmark.token(v, chars=False) for v in stock["arguments"])
+                stock["jvmReplay"] = replay(original, env, jars, cp[1], name, tokens)
             print(cid, name, row["native"].get("verdict"), row["jbmc"].get("verdict"), row["stock"]["target"]["status"], flush=True)
             rows.append(row)
     return {"rows": rows, "jvmcontractSha256": digest(Path(checker)), "jbmcSha256": digest(JBMC),
@@ -144,7 +187,7 @@ def main():
         for r in record["originalJvm"]["observations"]:
             print(r["writer"], r["reader"], r["frame"], r["readInt"])
         if args.phase != "physical":
-            record.update(measure(work, env, cp, out))
+            record.update(measure(work, env, jars, cp, out))
             (out / "results.json.gz").write_bytes(gzip.compress(encoded(record), mtime=0))
         else:
             (out / "receipt.json").write_bytes(encoded(record))

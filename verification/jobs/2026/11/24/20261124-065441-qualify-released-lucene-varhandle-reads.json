@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-065441-qualify-released-lucene-varhandle-reads",
+  "title": "Qualify released Lucene VarHandle reads and writes and test Guava transfer",
+  "description": "Rerun both Lucene 8.11.0 and 9.0.0 fixed-width mixed compositions, signed, cursor, alias and VInt controls on identical public callers. Check plain integral view signatures, no-partial-store bounds, and refusals at atomic and object-identity operations. Test the same capability on Guava FarmHash public hashBytes using a separately assembled eight-byte word.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvm:byte-array-view",
+    "jbmc:standalone"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/byte_views.rs"
+    ]
+  },
+  "expected": "Nine two-release observations, six independent caller and discriminator rows with all engine outputs, including refusals; the physical checks and exact run counts must pass.",
+  "submitted": {
+    "at": "2026-11-24T06:54:41+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 23,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "14m",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Lucene released pair",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_campaign.py closing --output verification/beyond-jbmc/qualified/wire",
+      "cwd": "."
+    },
+    {
+      "name": "Primitive and Guava controls",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified W02-controls W02-transfer",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/wire",
+    "verification/beyond-jbmc/qualified/W02-controls",
+    "verification/beyond-jbmc/qualified/W02-transfer"
+  ]
+}

@@ -185,6 +185,11 @@ def scalar(typ, value):
         return {"true": True, "false": False}[value["data"]]
     bits = value["binary"]
     number = int(bits, 2)
+    if typ in ("float", "double"):
+        width = 32 if typ == "float" else 64
+        if len(bits) != width:
+            raise ValueError("floating input has the wrong width")
+        return f"bits:0x{number:0{width//4}x}"
     return number - (1 << len(bits)) if typ != "char" and bits[0] == "1" else number
 
 
