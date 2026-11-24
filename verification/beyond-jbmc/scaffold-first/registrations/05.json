@@ -1,0 +1,146 @@
+{
+ "slot": "05",
+ "artifact": "libuima-cpe-java",
+ "callerJarSha256": "46e136a30ad313219739828ff74f4a90c67993fcec83ca2e6bde4bb2aec183d0",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "4dd901ebe5568fb4f6b3539f0a20b8ebf746f59c4c5a9db9452a02d81f66133e",
+ "referenceSha256": "dbb8e115879490c879bd59576004d1613fb0570ef23378c20351b9b5ed402971",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "2fcae705819eb024941fb0fcf3b5c1772de426570f1908a04c15f7295f65fcbe",
+   "sourceFiles": [
+    [
+     "aa85b873c1e170acc1f1e92acbea0298dfaf2651a165861b25f87ae9732b6ab8",
+     "3010",
+     "uimaj_2.10.2-4.dsc"
+    ],
+    [
+     "174e2e129e8dde3a0953be874453c6ff67bf722bcb31db10151e13bdec5599ad",
+     "8813808",
+     "uimaj_2.10.2.orig.tar.xz"
+    ],
+    [
+     "34d2ec4788f2e8aef4ff3eb7d1c770bbe9bfcd705997eb71a0be7c5d0fae5fed",
+     "19036",
+     "uimaj_2.10.2-4.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#addCpeCasProcessor(Lorg/apache/uima/collection/metadata/CpeCasProcessor;I)V": "70e82e5329044c5d599f513e3095d08b60cf0cd7f50b6f9eea6b2acf0cac72d1",
+    "org.apache.uima.collection.impl.metadata.cpe.CpeDescriptorFactory#produceCasProcessors()Lorg/apache/uima/collection/metadata/CpeCasProcessors;": "77b819c94f1cb1bc9474f81c8d100bff998319359cb9f0bc39116ed955af226e"
+   },
+   "orderedClasspathSha256": [
+    "7bafb97100fa402542fa58eb6486fdb5a8f534aee2468c308a67e8e2d3d177c4",
+    "2ed309107612dca7d1d9f93da566d7d9e53bdafd0df56ca1cc2850bdafaca694",
+    "8f7319fd46b1000683f7a987b3c9e6a28e91ca8c0db14c51e5de2f70386eb5ec",
+    "2a3db97e3944cfdc797a9fe663545eb7883889efcb4f620940a3db0d86c224a6"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "4f37822532853243847af49f987b8e508bee8abea84b161952da83cee1f37311",
+   "sourceFiles": [
+    [
+     "fc3fe8d40a0d5fc5133f4e9fea0e6a12a798c967099ddd6c8c2ce1ad958c76f6",
+     "8864064",
+     "uimaj_2.10.4.orig.tar.xz"
+    ],
+    [
+     "1b7dcb64d6488369db429ff49ec60484bd04c48f748daf4777a859a0bbe71ad3",
+     "17128",
+     "uimaj_2.10.4-1build1.debian.tar.xz"
+    ],
+    [
+     "22bf420467985df882eac859dc40996585b4dfdfd8f345ac20c696e473893404",
+     "2901",
+     "uimaj_2.10.4-1build1.dsc"
+    ]
+   ],
+   "declaringClasses": {
+    "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#addCpeCasProcessor(Lorg/apache/uima/collection/metadata/CpeCasProcessor;I)V": "ce7c984c6bc5212c56630deb47fb1a48b0691405b031c13b7052e210997ddee9",
+    "org.apache.uima.collection.impl.metadata.cpe.CpeDescriptorFactory#produceCasProcessors()Lorg/apache/uima/collection/metadata/CpeCasProcessors;": "40196d904c7010c1f77fa906f8579c31457be1dc5f2da2353172a3696437e07d"
+   },
+   "orderedClasspathSha256": [
+    "3d01e96bb71e8a396ab22be0d5f2ab4baeac6f3bb3b494c1e3a59b2ef9589bec",
+    "77461c3a6972f618f14c3703c9ebb4d2a65d7be9ad756085c46249c2bb59fe7c",
+    "11b1a06113ab35656cbd9c029dbd74edb5d7d54240c7fbbdf20d9ada2f2cba6d",
+    "5443977e36c84bf6af2f44285604601ec819a4e88975c91fd2e822d83c38cc4a"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#addCpeCasProcessor(Lorg/apache/uima/collection/metadata/CpeCasProcessor;I)V",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Does inserting and removing CAS processors retain the documented order and instance identities in the collection-processing descriptor?",
+    "basis": "Two insertion positions in a two-element descriptor; independent queue-size controls 1 and 2.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.apache.uima.collection.impl.metadata.cpe.CpeDescriptorFactory#produceCasProcessors()Lorg/apache/uima/collection/metadata/CpeCasProcessors;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "A configured output queue size round-trips without introducing a CAS processor.",
+    "basis": "Two insertion positions in a two-element descriptor; independent queue-size controls 1 and 2.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  1
+ ],
+ "inputs": [
+  0,
+  1
+ ],
+ "fullRegisteredDomain": true
+}

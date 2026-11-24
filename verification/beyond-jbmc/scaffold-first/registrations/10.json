@@ -1,0 +1,157 @@
+{
+ "slot": "10",
+ "artifact": "libhtmlcleaner-java",
+ "callerJarSha256": "c0270470607d9cc8354ec6d25f1e5c5c0419dfc864c5de0f4b569d21c9b770c9",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "fa878feab0b7965dc40a8a544dff9dade941e5286f284406c4a78ba55503d5f1",
+ "referenceSha256": "17519a523f618d848ea44ab62d4cd8d1fdd9a1c854434a366ad46b1f36dfdbb5",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "9d520a3692ba9690faa0c7b249607fadeddc4f1968d3f6f840b7a3bd23d98669",
+   "sourceFiles": [
+    [
+     "b74433b68bfd29c28706d04d8ca01a09ade9a97c19aaf85576ec1ea361b2aceb",
+     "2213",
+     "libhtmlcleaner-java_2.24-1.dsc"
+    ],
+    [
+     "c13449a84cbb35bfbaabf8d439544d9ebfbe2d893c505344054db51d95db69f4",
+     "205200",
+     "libhtmlcleaner-java_2.24.orig.tar.xz"
+    ],
+    [
+     "44728b4f17c77e8b3024e595397ce5c8fa4a23fe7a7e6fde14708ca6ee712967",
+     "7600",
+     "libhtmlcleaner-java_2.24-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.htmlcleaner.HtmlCleaner#clean(Ljava/lang/String;)Lorg/htmlcleaner/TagNode;": "8ae8e7a249a534b278ab1a7cd80896aa9f8d42be3776b9f3742802367f8c5b9c"
+   },
+   "orderedClasspathSha256": [
+    "fe18e37af30938e4bf7908073355042d273a60b84e6fcf6bcc5da3cb25ec977f",
+    "459a3b4eb8777f880471059956c51189dda7ae99dc01a46762cc3b30b108dfe2",
+    "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "a848412160bb86ac284cb0d06e397181167190135c6d7492766d61412a9b72f9",
+   "sourceFiles": [
+    [
+     "7fce4a8a467e46fe0b0b22ee259e269ea962c5a9c75a936fadd70621b3d08518",
+     "2239",
+     "libhtmlcleaner-java_2.29+dfsg-1.dsc"
+    ],
+    [
+     "3fb88f2975b766f5f1742a7617d02e390102a5ac017f5038eae57ed215b9623b",
+     "193524",
+     "libhtmlcleaner-java_2.29+dfsg.orig.tar.xz"
+    ],
+    [
+     "fcc466b0d4059cab9e9ae28ae600fdcd92d690a5eb4df8c4a9c8413f9f95c6ab",
+     "4892",
+     "libhtmlcleaner-java_2.29+dfsg-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.htmlcleaner.HtmlCleaner#clean(Ljava/lang/String;)Lorg/htmlcleaner/TagNode;": "8fe156f100a2ec8dfc7a4aec52108e66ba26847323d60f36fb8b42aea37e45d8"
+   },
+   "orderedClasspathSha256": [
+    "ea6dde2cb7335bef1483106d3ff4da9e2251010b60c5d0cf0223be9d1beae51e",
+    "e986a68831d3de7fae12a4e5bbb06926d29146f3f48a0b8f7d139a06858d2cfc",
+    "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.htmlcleaner.HtmlCleaner#clean(Ljava/lang/String;)Lorg/htmlcleaner/TagNode;",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Does HtmlCleaner keep an inline SVG and its circle inside the original HTML paragraph?",
+    "basis": "A valid HTML paragraph containing an inline SVG circle with radius 1 or 2.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "0"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "0"
+      }
+     }
+    ]
+   },
+   "intent": {
+    "allowedChanges": [
+     {
+      "input": 0,
+      "expectedNew": {
+       "return": "1"
+      }
+     },
+     {
+      "input": 1,
+      "expectedNew": {
+       "return": "1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.htmlcleaner.HtmlCleaner#clean(Ljava/lang/String;)Lorg/htmlcleaner/TagNode;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "An ordinary inline span remains a child of the paragraph with the same text.",
+    "basis": "A valid HTML paragraph containing an inline SVG circle with radius 1 or 2.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "0",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  1
+ ],
+ "inputs": [
+  0,
+  1
+ ],
+ "fullRegisteredDomain": true
+}

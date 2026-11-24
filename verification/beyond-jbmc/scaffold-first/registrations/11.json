@@ -1,0 +1,176 @@
+{
+ "slot": "11",
+ "artifact": "libheadius-options-java",
+ "callerJarSha256": "e6faa62f833b08cd27e5cf8202d314155a6b853ce35898a283fc6242e71577ef",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "00fdf49354b4fc4d4d2c74f57686aee494222b608ff29b1da0dd4226769e97d9",
+ "referenceSha256": "aabe09d6705d13bbe0153ac13013b600c3bd2bff07f70c9de2bbb07aa37a23bc",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "2bb5d47dd21a2971f3445d5f2b80f07b7b52ec8e5214dbbc475e67d749147316",
+   "sourceFiles": [
+    [
+     "67980adceea0c8208b8e72f6a355569a93e87c65f552751743c4ae0ff2ab06b9",
+     "2157",
+     "headius-options_1.4-2.dsc"
+    ],
+    [
+     "496589bde3037a620bad29811d548de0eca3b04cf60838fa5a42553475a92add",
+     "7010",
+     "headius-options_1.4.orig.tar.gz"
+    ],
+    [
+     "9d6701e193cac2be9747903b3d931e3af8e1d707d0b630ce99fe3996fbe20b92",
+     "3100",
+     "headius-options_1.4-2.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.headius.options.Option#reload()Ljava/lang/Object;": "55529d859ce7a5aed61b89c5a4afa3aa63d6bcaae708b8bbb8da717a56a7ab87"
+   },
+   "orderedClasspathSha256": [
+    "ff853f99c8b0a69d64305d1e5e38d7470ac586a13ebedc3ed56a4cb666ba2ee0"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "00a7eb1f6f5aeacf8f5282df83b0bb190fed81c777230b1a7347b3e158c78f36",
+   "sourceFiles": [
+    [
+     "814f40e49344a40868073298afe4575e609f8a52b6505cac2d42ba8f08aed61e",
+     "2182",
+     "headius-options_1.7-1.dsc"
+    ],
+    [
+     "28dc3981039a7db87bfbb4d10b4e88772a7224ad3be95bea069a28bea34bf459",
+     "11384",
+     "headius-options_1.7.orig.tar.gz"
+    ],
+    [
+     "12996b7989f1a13598f97122dd76da5a443e5961aaef044a9107c6af38125d1a",
+     "3248",
+     "headius-options_1.7-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.headius.options.Option#reload()Ljava/lang/Object;": "f15ed1558e3d5cf1cc1c643f5108a905584b4c200dc4fb2ff10fd62b41143109"
+   },
+   "orderedClasspathSha256": [
+    "9478835771b37dea034510820eadf9c5bdd4f9c7a88539e8e2bf8414f6e9c094"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.headius.options.Option#reload()Ljava/lang/Object;",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "How does the public BooleanOption reload an empty, true, false or absent system property?",
+    "basis": "The four original property states, restored on exit. Each JVM starts with both campaign property names unset.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "2"
+      ],
+      "expected": {
+       "return": "0"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "3"
+      ],
+      "expected": {
+       "return": "0"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.headius.options.Option#reload()Ljava/lang/Object;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "A distinct property's default remains in force throughout the history.",
+    "basis": "The four original property states, restored on exit. Each JVM starts with both campaign property names unset.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "2"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "3"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "n<2?1:0",
+  "afterExpression": "n<2?1:0",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  3
+ ],
+ "inputs": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "fullRegisteredDomain": true
+}

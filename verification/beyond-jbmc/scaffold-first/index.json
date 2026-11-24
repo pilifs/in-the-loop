@@ -1,0 +1,471 @@
+{
+ "basis": "Previously disclosed panel. Direct and loader-observed JVM runs precede all follow-up checkers.",
+ "docketSha256": "73908efcce3481243ad39447cb1f01bf11af4cb650159d4a74a8ae1052b7dfa2",
+ "firstMissingCapabilityByAutomaticReach": {
+  "selectedPathReached": {
+   "multi-step mutation and identity": 4,
+   "grammar and representation inputs": 3,
+   "typed metadata and environment": 1,
+   "whole reader or writer and its output": 4
+  },
+  "noSelectedPathReached": {
+   "typed metadata and environment": 3,
+   "grammar and representation inputs": 1
+  }
+ },
+ "projects": [
+  {
+   "slot": "01",
+   "project": "libdirgra-java",
+   "question": "Do repeated lookup, removal and re-insertion preserve the public graph's insertion order and vertex identities?",
+   "control": "A repeated lookup returns the already registered vertex without changing the graph's size.",
+   "entries": [
+    "org.jruby.dirgra.DirectedGraph#findOrCreateVertexFor",
+    "org.jruby.dirgra.DirectedGraph#removeVertexFor",
+    "org.jruby.dirgra.DirectedGraph#getInorderData"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "The graph toString and vertex/iterator accessors do not construct the remove/reinsert history or observe insertion order.",
+    "missingCallerCapability": "multi-step mutation and identity"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "gap",
+    "stock": "incorrect refutation"
+   },
+   "receiptSha256": "ab3211354e76b09944452d8fe7e178cb1e7204b8988abf2601edcf5da7b51430"
+  },
+  {
+   "slot": "02",
+   "project": "libre2j-java",
+   "question": "Does RE2/J match a quoted supplementary Unicode code point against itself?",
+   "control": "The same literal code point used as an unquoted pattern matches itself and rejects an unrelated ASCII input.",
+   "entries": [
+    "com.google.re2j.Pattern#matches",
+    "com.google.re2j.Pattern#compile",
+    "com.google.re2j.Matcher#matches"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Pattern.quote and Matcher.quoteReplacement do not match either literal through the regex engine.",
+    "missingCallerCapability": "grammar and representation inputs"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 3,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "timeout",
+    "stock": "timeout"
+   },
+   "receiptSha256": "f81944cc1900c57289ab3bedff78c79617ffdef7bb9727b105dfb919e5948bd5"
+  },
+  {
+   "slot": "03",
+   "project": "libsisu-plexus-java",
+   "question": "Does a reconstructed Plexus component annotation agree in both equality directions and hash with the declared annotation, and distinguish a different hint?",
+   "control": "The replica reports the component annotation type and the originally declared role.",
+   "entries": [
+    "org.eclipse.sisu.plexus.ComponentImpl#equals",
+    "org.eclipse.sisu.plexus.ComponentImpl#hashCode",
+    "org.eclipse.sisu.plexus.ComponentImpl#annotationType"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Container and descriptor operations do not compare a reconstructed Component with an actual runtime annotation.",
+    "missingCallerCapability": "typed metadata and environment"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "gap",
+    "stock": "other failed property"
+   },
+   "receiptSha256": "9ac4f64a389f57edde1c0f20a2e438ea054392b2f09c4e3c3608d4d7fc899470"
+  },
+  {
+   "slot": "04",
+   "project": "libbatik-java",
+   "question": "Can the released PNG transcoder render an inline SVG gradient whose first stop omits its offset?",
+   "control": "Supplying the first stop's explicit zero offset produces a valid PNG of the requested dimensions.",
+   "entries": [
+    "org.apache.batik.transcoder.image.PNGTranscoder#transcode",
+    "org.apache.batik.transcoder.SVGAbstractTranscoder#transcode"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Font/language, CSS removal and character decoding do not transcode the gradient or observe PNG output.",
+    "missingCallerCapability": "whole reader or writer and its output"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "two-copy preparation incomplete",
+    "integrated": "two-copy preparation incomplete",
+    "stock": "two-copy preparation incomplete"
+   },
+   "receiptSha256": "9ec792cd4abb236149850390420fe01861c46cd541d54a858b3d5213ac061a4a"
+  },
+  {
+   "slot": "05",
+   "project": "libuima-cpe-java",
+   "question": "Does inserting and removing CAS processors retain the documented order and instance identities in the collection-processing descriptor?",
+   "control": "A configured output queue size round-trips without introducing a CAS processor.",
+   "entries": [
+    "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#addCpeCasProcessor",
+    "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#removeCpeCasProcessor",
+    "org.apache.uima.collection.impl.metadata.cpe.CpeDescriptorFactory#produceCasProcessors"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "ProcessingUnit.consumeQueue and configuration setters do not perform descriptor insertion and removal or inspect processor identity.",
+    "missingCallerCapability": "multi-step mutation and identity"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "timeout",
+    "stock": "incorrect refutation"
+   },
+   "receiptSha256": "4dd901ebe5568fb4f6b3539f0a20b8ebf746f59c4c5a9db9452a02d81f66133e"
+  },
+  {
+   "slot": "06",
+   "project": "libparboiled-java",
+   "question": "How does the public parsing buffer map the offsets around LF, CRLF and an empty line to line and column?",
+   "control": "Extracting the second and third lines returns their contents without either line terminator.",
+   "entries": [
+    "org.parboiled.buffers.DefaultInputBuffer#getPosition",
+    "org.parboiled.buffers.DefaultInputBuffer#extractLine"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Stack, Base64, matcher-label and file helpers do not map offsets in the multiline DefaultInputBuffer.",
+    "missingCallerCapability": "grammar and representation inputs"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 13,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "timeout",
+    "stock": "incorrect refutation"
+   },
+   "receiptSha256": "b6264264ff4c0f6a6b90f83c59cd9ae7e8f547f01f8192460152b664b9367f63"
+  },
+  {
+   "slot": "07",
+   "project": "libgoogle-auto-common-java",
+   "question": "Does Auto Common recover a default annotation member and distinguish it from an explicitly supplied member of the same type?",
+   "control": "The named value accessor returns the exact String stored in each compiler annotation mirror.",
+   "entries": [
+    "com.google.auto.common.AnnotationMirrors#getAnnotationValuesWithDefaults",
+    "com.google.auto.common.AnnotationMirrors#getAnnotationValue"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": false,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "The type and processor metadata candidates do not obtain default and explicit annotation member values from javac.",
+    "missingCallerCapability": "typed metadata and environment"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "gap",
+    "stock": "other failed property"
+   },
+   "receiptSha256": "83ad6478c61467b4a85d571d92fd37a902faa8b6794fac1705b780a9e4ab3815"
+  },
+  {
+   "slot": "08",
+   "project": "libiscwt-java",
+   "question": "Does an Adobe Font Metrics glyph record preserve its decimal or hexadecimal character code and horizontal width?",
+   "control": "The same record preserves the glyph name A.",
+   "entries": [
+    "de.intarsys.cwt.font.afm.AFMChar#create",
+    "de.intarsys.cwt.font.afm.AFMChar#getCode",
+    "de.intarsys.cwt.font.afm.AFMChar#getWidth"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Font registration and TrueType fields do not parse an AFM glyph record or observe its code and width.",
+    "missingCallerCapability": "grammar and representation inputs"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 5,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "timeout",
+    "stock": "timeout"
+   },
+   "receiptSha256": "df5848eeadfb402a85fcf357205933a20785f402243bf459e39507f43a386433"
+  },
+  {
+   "slot": "09",
+   "project": "libcactoos-java",
+   "question": "Does a Cactoos sticky scalar evaluate its origin once and return the same signed value across repeated calls, including wraparound?",
+   "control": "A separately constructed sticky scalar evaluates its own origin.",
+   "entries": [
+    "org.cactoos.scalar.Sticky#value",
+    "org.cactoos.scalar.Sticky#<init>"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "The generated reader and byte-access calls do not evaluate a sticky scalar repeatedly or count origin invocations.",
+    "missingCallerCapability": "multi-step mutation and identity"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 5,
+   "priorMatchedPrimary": {
+    "native": "proved",
+    "integrated": "gap",
+    "stock": "other failed property"
+   },
+   "receiptSha256": "bdf074436abe87896dea499dabb58558988dfd287af1c03c4422a7d0f523ae0a"
+  },
+  {
+   "slot": "10",
+   "project": "libhtmlcleaner-java",
+   "question": "Does HtmlCleaner keep an inline SVG and its circle inside the original HTML paragraph?",
+   "control": "An ordinary inline span remains a child of the paragraph with the same text.",
+   "entries": [
+    "org.htmlcleaner.HtmlCleaner#clean",
+    "org.htmlcleaner.TagNode#findElementByName"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Cleaner configuration and token helpers do not clean the document or inspect the SVG's parent.",
+    "missingCallerCapability": "whole reader or writer and its output"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "timeout",
+    "stock": "timeout"
+   },
+   "receiptSha256": "fa878feab0b7965dc40a8a544dff9dade941e5286f284406c4a78ba55503d5f1"
+  },
+  {
+   "slot": "11",
+   "project": "libheadius-options-java",
+   "question": "How does the public BooleanOption reload an empty, true, false or absent system property?",
+   "control": "A distinct property's default remains in force throughout the history.",
+   "entries": [
+    "com.headius.options.Option#reload",
+    "com.headius.options.BooleanOption#reloadValue"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": false,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "The integer reloadValue candidate and formatting candidates do not construct the BooleanOption or establish the property history.",
+    "missingCallerCapability": "typed metadata and environment"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 4,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "gap",
+    "stock": "incorrect refutation"
+   },
+   "receiptSha256": "00fdf49354b4fc4d4d2c74f57686aee494222b608ff29b1da0dd4226769e97d9"
+  },
+  {
+   "slot": "12",
+   "project": "libjackson2-jr-java",
+   "question": "Does Jackson Jr serialize an enum constant with its own constant-specific class body as its JSON string name?",
+   "control": "An ordinary enum constant uses its JSON string name.",
+   "entries": [
+    "com.fasterxml.jackson.jr.ob.JSON#asString"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "The JSON-writer feature and type-binding candidates do not serialize either enum constant or observe its JSON representation.",
+    "missingCallerCapability": "whole reader or writer and its output"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "refused",
+    "integrated": "timeout",
+    "stock": "incomplete unwinding"
+   },
+   "receiptSha256": "84ca1003f0c6e59a9edd08e5874f7e9bc2e6d0d8ce0d48757de9f75e4798e40f"
+  },
+  {
+   "slot": "13",
+   "project": "libopencensus-java",
+   "question": "Does adding successive points to an OpenCensus TimeSeries preserve the predecessor and both ordered labels?",
+   "control": "An empty series has the supplied ordered labels and no start timestamp.",
+   "entries": [
+    "io.opencensus.metrics.export.TimeSeries#setPoint",
+    "io.opencensus.metrics.export.TimeSeries#getPoints"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Trace ID, Span ID, duration and clock methods do not create a TimeSeries and retain its predecessors.",
+    "missingCallerCapability": "multi-step mutation and identity"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 4,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "gap",
+    "stock": "incorrect refutation"
+   },
+   "receiptSha256": "3be51689a49d854b8ce90f777c4e35e902d0328cc6c698b88eb222adcf385892"
+  },
+  {
+   "slot": "14",
+   "project": "libauto64fto32f-java",
+   "question": "Do the default 64-to-32 Java rewrites change a double declaration and decimal literal to a float while preserving an unrelated integer declaration?",
+   "control": "The same converter keeps the input file byte-for-byte intact.",
+   "entries": [
+    "com.peterabeles.auto64fto32f.ConvertFile32From64#process",
+    "com.peterabeles.auto64fto32f.ConvertFile32From64#<init>"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": false,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Recursive conversion and customization candidates do not supply the input and output source files or inspect the transformed Java.",
+    "missingCallerCapability": "grammar and representation inputs"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "timeout",
+    "stock": "timeout"
+   },
+   "receiptSha256": "d8e8c2653ecba0ce001767c24f085f408d0db3c623a1cd5026e5e33eb7cb166e"
+  },
+  {
+   "slot": "15",
+   "project": "libannotation-indexer-java",
+   "question": "Does the annotation indexer merge both published resource prefixes and remove duplicate class names?",
+   "control": "An annotation with no matching resource returns an empty set.",
+   "entries": [
+    "org.jvnet.hudson.annotation_indexer.Index#listClassNames"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [
+     "org.jvnet.hudson.annotation_indexer.Index#listClassNames"
+    ],
+    "anyPublicReach": false,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "The operator selected Index.listClassNames but could not supply the annotation Class and two-prefix resource ClassLoader.",
+    "missingCallerCapability": "typed metadata and environment"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "gap",
+    "integrated": "gap",
+    "stock": "incorrect refutation"
+   },
+   "receiptSha256": "764c060d1d64f61dd41de1678f3f07f61b104d17b4b90ca7a75eba08c621cd57"
+  },
+  {
+   "slot": "16",
+   "project": "libdom4j-java",
+   "question": "Does dom4j's public XML writer escape literal ampersands and less-than signs once and preserve them on reparse?",
+   "control": "Ordinary text remains literal in the serialized element.",
+   "entries": [
+    "org.dom4j.io.XMLWriter#write",
+    "org.dom4j.DocumentHelper#parseText"
+   ],
+   "registeredBeforeSolving": true,
+   "automatic": {
+    "namedEntriesSelected": [],
+    "anyPublicReach": true,
+    "referenceReached": false,
+    "primaryObservationDiscovered": false,
+    "primaryDecided": false,
+    "reason": "Document and attribute removal and tree-child counts do not write and reparse the escaped element text.",
+    "missingCallerCapability": "whole reader or writer and its output"
+   },
+   "suppliedScaffoldStop": null,
+   "physicalInputsPerSide": 2,
+   "priorMatchedPrimary": {
+    "native": "two-copy preparation incomplete",
+    "integrated": "two-copy preparation incomplete",
+    "stock": "two-copy preparation incomplete"
+   },
+   "receiptSha256": "344476c499432d2ea7d6311e7ed22ae3ecda46519745d6f9df636609539f7ef4"
+  }
+ ]
+}

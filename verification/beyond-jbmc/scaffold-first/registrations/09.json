@@ -1,0 +1,192 @@
+{
+ "slot": "09",
+ "artifact": "libcactoos-java",
+ "callerJarSha256": "316c4fac75afe4da6c9a89fedcc3d47c708be699a67e1ab716974c8b1e652cec",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "bdf074436abe87896dea499dabb58558988dfd287af1c03c4422a7d0f523ae0a",
+ "referenceSha256": "5cccc2a04814547537d25e369202e28bc0abdd2219c7fe3af119969188a1d44d",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "013c62afda555db2ac0749349eb6d4417cf8d11e6bbdf0b4043e1069b3afca9b",
+   "sourceFiles": [
+    [
+     "54c57b6f747412fb9aa85a9c355e3cca2316f04e177a46065c2f229324655893",
+     "2030",
+     "cactoos_0.49-1.dsc"
+    ],
+    [
+     "f4cae8c8fc09b06f2c7dfbf0f18556db0d7c9c94e050e542f15e11b956959226",
+     "189744",
+     "cactoos_0.49.orig.tar.gz"
+    ],
+    [
+     "43b16df3eae92b4988005f0e7bb5fe0b1d71f6287642f86479131e9f9e3ff054",
+     "3840",
+     "cactoos_0.49-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.cactoos.scalar.Sticky#value()Ljava/lang/Object;": "11848fd9312c6114d8241607f0f3063666d1ee56d2b9220c2df34df8d5d124c7"
+   },
+   "orderedClasspathSha256": [
+    "564fefdb825a290a7c69bc317ea093966a34f323abcd9d85d4a4ebde4af626e6"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "915d174d79035ea1594ef860f9b7bb23c39d203cd7184b55a58744270ca2db99",
+   "sourceFiles": [
+    [
+     "eeaacf177e68b199c4e9a9a5b46a7a0d6a225db05467cf1e39cf411598a2d57a",
+     "2044",
+     "cactoos_0.54.0-1.dsc"
+    ],
+    [
+     "c2beb49c78910bbbe9a9da85f3e70564f312c34bced553e0e3f1975194d3fdc8",
+     "195150",
+     "cactoos_0.54.0.orig.tar.gz"
+    ],
+    [
+     "5b6facaedf65f4bcd6a2fcf8a9a793e6b752675d7c5f3b6b5a1121d40ca93247",
+     "3940",
+     "cactoos_0.54.0-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.cactoos.scalar.Sticky#value()Ljava/lang/Object;": "fc6e0e0686bf1a148ae2488fa116488a5157de631e73999358b2489fd7538653"
+   },
+   "orderedClasspathSha256": [
+    "7b7d02fa56329d0064051d1ed9331ab660a4a8f5cd9397e2fa75807857556a9d"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.cactoos.scalar.Sticky#value()Ljava/lang/Object;",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Does a Cactoos sticky scalar evaluate its origin once and return the same signed value across repeated calls, including wraparound?",
+    "basis": "Every Java int initial value. The result encodes origin invocation count and returned signed bits. The caller reads the same scalar three times.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "-2147483648"
+      ],
+      "expected": {
+       "return": "6442450945"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "-1"
+      ],
+      "expected": {
+       "return": "4294967296"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "4294967297"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "17"
+      ],
+      "expected": {
+       "return": "4294967314"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "2147483647"
+      ],
+      "expected": {
+       "return": "6442450944"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.cactoos.scalar.Sticky#value()Ljava/lang/Object;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "A separately constructed sticky scalar evaluates its own origin.",
+    "basis": "Every Java int initial value. The result encodes origin invocation count and returned signed bits. The caller reads the same scalar three times.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "-2147483648"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "-1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "17"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "2147483647"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "(1L<<32) | ((n+1)&0xffffffffL)",
+  "afterExpression": "(1L<<32) | ((n+1)&0xffffffffL)",
+  "controlExpression": "1"
+ },
+ "domain": null,
+ "inputs": [
+  -2147483648,
+  -1,
+  0,
+  17,
+  2147483647
+ ],
+ "fullRegisteredDomain": false
+}

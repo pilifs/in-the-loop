@@ -1,0 +1,149 @@
+{
+ "slot": "12",
+ "artifact": "libjackson2-jr-java",
+ "callerJarSha256": "940a5769a0fb4724fb1e6f77e263b16db30e28f7b2c8ca3f19d8db0529b16d8e",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "84ca1003f0c6e59a9edd08e5874f7e9bc2e6d0d8ce0d48757de9f75e4798e40f",
+ "referenceSha256": "f0c1f997750278600f9f53fc9f1b6dbe924abc24a67f6b1e38e5ed187baaf43f",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "c20470095e37cd0e3857296eac8189b92dc79064536d4630630f94c77900cc73",
+   "sourceFiles": [
+    [
+     "1e7ef7abcb56d085943d4770e86c27848f89aa4c5d0f53c49cf634a9434afed9",
+     "2348",
+     "jackson-jr_2.13.0-2.dsc"
+    ],
+    [
+     "02594e9385d2b99cf98eddace2f68e26204221de48ac0ea8a4427f2efaa916ee",
+     "99772",
+     "jackson-jr_2.13.0.orig.tar.xz"
+    ],
+    [
+     "f0b1ec3e1f2b677c137a45fbc7805d3bcc23d48ec9bf1e472b9041bbb70ec162",
+     "3232",
+     "jackson-jr_2.13.0-2.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.fasterxml.jackson.jr.ob.JSON#asString(Ljava/lang/Object;)Ljava/lang/String;": "d70bece96e965e4a8defb92ff77c80466a15cb3b5662a91ed296e89848fd7c74"
+   },
+   "orderedClasspathSha256": [
+    "329371f2c26ab6c3108fb8d70a68555693df73faa9fa973881908cfca0473e66",
+    "f11c46228e32e4c1414023d01f5bfe06a998085bc3feadd1334124f68e8adc82"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "164bd36da80ba71c9fdcccb5e48580b56b6e8b70448dc92dd4878a413456863d",
+   "sourceFiles": [
+    [
+     "c29435e5e5d9ba0822225d1a4c728278dc1ac94974426a8bcf82ac9c02a19fd2",
+     "2354",
+     "jackson-jr_2.14.0-1.dsc"
+    ],
+    [
+     "2165a7d39bdbb9469248ac5d2b15c5e87136d3159334d6d6e252ce72dd953192",
+     "102232",
+     "jackson-jr_2.14.0.orig.tar.xz"
+    ],
+    [
+     "71ce7c4685b0a25c95ad9d2815027496f361e60f2d6f6e6f6953121ac642d8db",
+     "3264",
+     "jackson-jr_2.14.0-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.fasterxml.jackson.jr.ob.JSON#asString(Ljava/lang/Object;)Ljava/lang/String;": "3a6612f028b217d31b092b2803c18f77ec8eb3b76b81fef5b91eac3197294fbf"
+   },
+   "orderedClasspathSha256": [
+    "b0093ba224fd88a046020159089a795d8224a0c63d1e7c9e4875b000682d0f1e",
+    "49ea8baf09c5bd7d2268ea22976217f42fb2dc5919f874d6bb164be24b38519c"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.fasterxml.jackson.jr.ob.JSON#asString(Ljava/lang/Object;)Ljava/lang/String;",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Does Jackson Jr serialize an enum constant with its own constant-specific class body as its JSON string name?",
+    "basis": "Both constants of one public enum. The observed outputs are the exact JSON string name or a one-field JSON object containing the enum's declaring class name. Other JSON and mapping exceptions have separate codes.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "2"
+      }
+     }
+    ]
+   },
+   "intent": {
+    "allowedChanges": [
+     {
+      "input": 1,
+      "expectedNew": {
+       "return": "1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.fasterxml.jackson.jr.ob.JSON#asString(Ljava/lang/Object;)Ljava/lang/String;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "An ordinary enum constant uses its JSON string name.",
+    "basis": "Both constants of one public enum. The observed outputs are the exact JSON string name or a one-field JSON object containing the enum's declaring class name. Other JSON and mapping exceptions have separate codes.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "n==0?1:2",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  1
+ ],
+ "inputs": [
+  0,
+  1
+ ],
+ "fullRegisteredDomain": true
+}

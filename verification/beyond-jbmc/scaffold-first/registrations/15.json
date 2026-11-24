@@ -1,0 +1,138 @@
+{
+ "slot": "15",
+ "artifact": "libannotation-indexer-java",
+ "callerJarSha256": "64e0ac7c61cfaebd968785a3b135cdeff8299d98c608b2ed7174d084cbd30c6e",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "764c060d1d64f61dd41de1678f3f07f61b104d17b4b90ca7a75eba08c621cd57",
+ "referenceSha256": "df47f7382d87be90c07784fb192cbf3d02266ac4ba0b213cd294ceeb661b817f",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "9517f758762ab06a31a2cbdc40edacca2fb039b0c5d4e8d8eed3c26de19ce346",
+   "sourceFiles": [
+    [
+     "dec179712255255060fb00d1cdafcc6ffd6592e1342a5d95f26fc04e959028b5",
+     "2176",
+     "annotation-indexer_1.17-1.dsc"
+    ],
+    [
+     "ba80468b0417c8f1f27ed879b4e0eff477dbe673a91517bbe50b8af686a7e39c",
+     "7616",
+     "annotation-indexer_1.17.orig.tar.xz"
+    ],
+    [
+     "d361e089efb556c5dff789e5449b32ed059d5c000e1594db1c24dfdd1dd5a9e2",
+     "8708",
+     "annotation-indexer_1.17-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.jvnet.hudson.annotation_indexer.Index#listClassNames(Ljava/lang/Class;Ljava/lang/ClassLoader;)Ljava/util/Set;": "e01ac03749ea9a61ca8fc9f13ad4fdbacba0a70a9975dbe195a8e973b3d223ab"
+   },
+   "orderedClasspathSha256": [
+    "17771fac3d755bf77ebc2baa99196c54b47c185d0cc8805665469dfd8868923e"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "25f323a99cfd37cabd303817fcebeb91b665eef0b98d903158315107c691780f",
+   "sourceFiles": [
+    [
+     "aaa1ba192bac1364f250404ae8dc5e5d12480418f6119549311568d23d505310",
+     "2176",
+     "annotation-indexer_1.18-1.dsc"
+    ],
+    [
+     "5b8a1e5b3d2c376a326b02bfde38de7c6068828def3271db0f2a759a688c7aa5",
+     "7612",
+     "annotation-indexer_1.18.orig.tar.xz"
+    ],
+    [
+     "33d47433b8c73f9e91679ae292078b960c5ba92f96a40ed8386cbcb3c066e74e",
+     "8708",
+     "annotation-indexer_1.18-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.jvnet.hudson.annotation_indexer.Index#listClassNames(Ljava/lang/Class;Ljava/lang/ClassLoader;)Ljava/util/Set;": "6e0069dc8021324f6c7002b41eae8ffb8d162c210f7fa878b07fb2328f40feeb"
+   },
+   "orderedClasspathSha256": [
+    "21f4a38d083c240875a6f34dd3281e2c99bdeb59e462411e3c18a6f592720848"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.jvnet.hudson.annotation_indexer.Index#listClassNames(Ljava/lang/Class;Ljava/lang/ClassLoader;)Ljava/util/Set;",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Does the annotation indexer merge both published resource prefixes and remove duplicate class names?",
+    "basis": "A fresh local classloader sees a legacy resource alone or both resource prefixes. One class name occurs in both resources.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.jvnet.hudson.annotation_indexer.Index#listClassNames(Ljava/lang/Class;Ljava/lang/ClassLoader;)Ljava/util/Set;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "An annotation with no matching resource returns an empty set.",
+    "basis": "A fresh local classloader sees a legacy resource alone or both resource prefixes. One class name occurs in both resources.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  1
+ ],
+ "inputs": [
+  0,
+  1
+ ],
+ "fullRegisteredDomain": true
+}

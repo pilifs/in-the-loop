@@ -1,0 +1,205 @@
+{
+ "slot": "08",
+ "artifact": "libiscwt-java",
+ "callerJarSha256": "dc3c839ecf3a93f819c6a905ccb972156c67eb6d145c1f1db3ae4912547e6b26",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "df5848eeadfb402a85fcf357205933a20785f402243bf459e39507f43a386433",
+ "referenceSha256": "bb449f5eb3b4f5c999a6487c393f77c3cc2c2b7ad776d1fa5d02dbc78c021c84",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "9de9e1a9a93d60eba4e764ab7eb63aed6a6f6f6bb127dc9ee2ffb153828bf163",
+   "sourceFiles": [
+    [
+     "d05ad6838e24896961e73a6d6be3c72f819935e3c4dca48fc78ffaf5250f5929",
+     "2207",
+     "libiscwt-java_5.3.20100629-4.1.dsc"
+    ],
+    [
+     "2413061261756cf3460ed031f2a1cb86f6b9fa2a6786e52721ee4fb6de3328a7",
+     "65766",
+     "libiscwt-java_5.3.20100629.orig.tar.gz"
+    ],
+    [
+     "8c4c2837494b2e343ba3c5eb33867973fd492086a8ecb2613e855b5e37f88101",
+     "4928",
+     "libiscwt-java_5.3.20100629-4.1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "de.intarsys.cwt.font.afm.AFMChar#create(Ljava/lang/String;)Lde/intarsys/cwt/font/afm/AFMChar;": "904a16516afe42f59dc86daabd12a7ee40885c9dee34a1f0792e2b68c7d9f9c0"
+   },
+   "orderedClasspathSha256": [
+    "126d61d1f6585d4d37eb1691158d60a2c7496620fb56ca4e27a2b78a265e0e13",
+    "5917bcf686755a8ee57c80f3a83e9714b81ff3491279b887278602a517893be6",
+    "b181db7bfbd817d131ebaf9293d4e8921066bcc0a74b6d718359047fbe2a5d70",
+    "550134ec4df745dc83a1d38929f7037b510e672f89b1b9b7202e49e35f56ed03",
+    "cdba7ca19934a77137bbfc7b68f54f9d48dcc354ab71839ac3e9dfe5f807a548",
+    "e93f9981f4da67a573f223ce5d8474970d2ecdaf7411303cd6de59ab9be88109"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "ff8ebe0b4dfe0b545a560541e357c479b795f584a5878fb4662290792bb64525",
+   "sourceFiles": [
+    [
+     "0c428a0f388ae00c6e80921b51e7940be7206c1f6a0ea8b3e803a4f8e7a07991",
+     "2299",
+     "libiscwt-java_5.5.20131203+dfsg-1.dsc"
+    ],
+    [
+     "8ed29a67450a5e4db6c955229a273bc1b7ced7f4e057d684478c8ed0be5236fc",
+     "39188",
+     "libiscwt-java_5.5.20131203+dfsg.orig.tar.xz"
+    ],
+    [
+     "c2e60b81e88d5b4fb91ceba6680d94e132a88d74ca0e08a8c2526193b1f3adb9",
+     "4420",
+     "libiscwt-java_5.5.20131203+dfsg-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "de.intarsys.cwt.font.afm.AFMChar#create(Ljava/lang/String;)Lde/intarsys/cwt/font/afm/AFMChar;": "f0038a2ce6cd88b05619df5ecf10c94e9ac0844055b8f2bfca38e1032ebbae30"
+   },
+   "orderedClasspathSha256": [
+    "2f7d8b22a37221ada6ff72a8ccd3661fc0ba2681e3274ca1faa9f6b9c4127452",
+    "9a0e9d4f71631f125279a6d947578fe3b5b26d7360f3063218e0c785e0bad089",
+    "f9c97f289c87becefa5209fd238a46d5bb9e490d45e8780a477c0771aa7c9f4d",
+    "9cbb2048c7560e731a10a432386035f7a5c4f0c3005141e4267c1719046e8b32",
+    "532af880a01a2d620000455411ae9b4575e9e918a3e5187b2d9909189e3ee52b",
+    "fade55f330d447dbaadbb71f9ad2a42d25437b3ad53b92c74d26f6ba2abdaf3b"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "de.intarsys.cwt.font.afm.AFMChar#create(Ljava/lang/String;)Lde/intarsys/cwt/font/afm/AFMChar;",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Does an Adobe Font Metrics glyph record preserve its decimal or hexadecimal character code and horizontal width?",
+    "basis": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "279172874240"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "279172874241"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "255"
+      ],
+      "expected": {
+       "return": "279172874495"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "512"
+      ],
+      "expected": {
+       "return": "279172874752"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1023"
+      ],
+      "expected": {
+       "return": "279172875263"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "de.intarsys.cwt.font.afm.AFMChar#create(Ljava/lang/String;)Lde/intarsys/cwt/font/afm/AFMChar;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "The same record preserves the glyph name A.",
+    "basis": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "255"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "512"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1023"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "(65L<<32) + n",
+  "afterExpression": "(65L<<32) + n",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  1023
+ ],
+ "inputs": [
+  0,
+  1,
+  255,
+  512,
+  1023
+ ],
+ "fullRegisteredDomain": false
+}

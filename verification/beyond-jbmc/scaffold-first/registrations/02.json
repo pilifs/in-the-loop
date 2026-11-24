@@ -1,0 +1,174 @@
+{
+ "slot": "02",
+ "artifact": "libre2j-java",
+ "callerJarSha256": "9b839e675130333e2eb55e1a2020279a13878531067abddb04922843327dcb32",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "f81944cc1900c57289ab3bedff78c79617ffdef7bb9727b105dfb919e5948bd5",
+ "referenceSha256": "f69a3c116356b725f046d4c25b01a166a33704647237d5237f34c6070ae3c542",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "d68ac9da80f54b85d4b4778add449aba0cd2566cb475f29af60c67e0fcf617c7",
+   "sourceFiles": [
+    [
+     "990838c6153fe31eeecab1a7517f084fdb700fc55fd4ffdbd52e5e09b87ac09c",
+     "2015",
+     "re2j_1.6+dfsg-1.dsc"
+    ],
+    [
+     "1eb690f805583e335343f6ea6e36e18c5ec893636ecedb5fe0a1da0a2cd94565",
+     "917652",
+     "re2j_1.6+dfsg.orig.tar.xz"
+    ],
+    [
+     "ae4d6bba1203b498e2f25806000cfdf233788c6b493cccd2e4e1a9cc98b75ab5",
+     "5100",
+     "re2j_1.6+dfsg-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.google.re2j.Pattern#matches(Ljava/lang/String;Ljava/lang/CharSequence;)Z": "93beb9d95cc5611043f52694f4bd8a1fcafa6a0a452b8e9db2905c1189e58abb"
+   },
+   "orderedClasspathSha256": [
+    "bbc68c720d32210173b176529e9e48063cbc2efeff9d3342e8404d2a3c2ce19d",
+    "4edad3e363be0e6dfd4a1e1b4e9d1768fa136c7b7ab0f315957c5302d97da748"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "c6379c37e2a8b3a3d007bb08836ed438646149a6ae76cdf41a31b43a8e5c7b00",
+   "sourceFiles": [
+    [
+     "2c5d39e5fe357e6cf9dbee9ad1940b8ac17dbf3d59a9c67818c9f3093e9f37a2",
+     "2016",
+     "re2j_1.7+dfsg-1.dsc"
+    ],
+    [
+     "afe90c9b8cc17ead513493b64f7527fd472ff2a0b523452cfe15e869c86f1664",
+     "1041196",
+     "re2j_1.7+dfsg.orig.tar.xz"
+    ],
+    [
+     "0c4ea9de07346982ef7d95c0a831e6a0bcfa2251c567c0b92e311083377e3124",
+     "4992",
+     "re2j_1.7+dfsg-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.google.re2j.Pattern#matches(Ljava/lang/String;Ljava/lang/CharSequence;)Z": "857ecd917385f37244995b66017703c9d8d572b1f0c6029c4024ed96aa7e0cbf"
+   },
+   "orderedClasspathSha256": [
+    "bfa343de3c11b2169b02ef984efcd47ef3467342237533a4323df4d22a183c2b",
+    "aaf586874933cdf0b786c59bdf02cdff8c6d25c25fabeca2c2c381634f1e7dff"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.google.re2j.Pattern#matches(Ljava/lang/String;Ljava/lang/CharSequence;)Z",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Does RE2/J match a quoted supplementary Unicode code point against itself?",
+    "basis": "The upstream U+1B0BD test value 110781, a second supplementary value U+1F642, and the BMP letter A.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "0"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "2"
+      ],
+      "expected": {
+       "return": "0"
+      }
+     }
+    ]
+   },
+   "intent": {
+    "allowedChanges": [
+     {
+      "input": 1,
+      "expectedNew": {
+       "return": "1"
+      }
+     },
+     {
+      "input": 2,
+      "expectedNew": {
+       "return": "1"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.google.re2j.Pattern#matches(Ljava/lang/String;Ljava/lang/CharSequence;)Z",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "The same literal code point used as an unquoted pattern matches itself and rejects an unrelated ASCII input.",
+    "basis": "The upstream U+1B0BD test value 110781, a second supplementary value U+1F642, and the BMP letter A.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "2"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "n==0 ? 1 : 0",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  2
+ ],
+ "inputs": [
+  0,
+  1,
+  2
+ ],
+ "fullRegisteredDomain": true
+}
