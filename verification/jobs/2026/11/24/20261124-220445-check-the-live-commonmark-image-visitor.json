@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-220445-check-the-live-commonmark-image-visitor",
+  "title": "Check the live CommonMark image visitor and retained syntax tree",
+  "description": "Bind the exact original image visitor, leaf Code and its destination builder. Verify the inherited empty traversal and the repaired original append. Substitute each effect and require the original HTML escaping and public readback, including an edit to the same AST.",
+  "kind": "real-world",
+  "capabilities": [
+    "checked-helpers",
+    "original-jvm-replay",
+    "application:change-plan"
+  ],
+  "links": {
+    "paths": [
+      "verification/product-behaviour/cases/J01"
+    ]
+  },
+  "expected": "Two untouched and two substituted public JVMs per input and side match the frozen original observations. A missing application or stale bytecode is explicitly refused.",
+  "submitted": {
+    "at": "2026-11-24T22:04:45+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Compare qualified original and substituted continuations",
+      "run": "python3 -B verification/product-behaviour/checked.py J01",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/product-behaviour/results/J01/checked.json.gz"
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "project": "jsoup",
+  "change": "jsoup #2423, source tags and callbacks in a cloned HTML parser",
+  "commits": {"old": "cc90f726cd721ad2c19cbd27997482a5f9b8a7ae", "new": "bcbac427ff4bca1748f8eb5125a23d4c739b75e9"},
+  "sourceRoots": ["src/main"],
+  "artifacts": ["artifacts/J02-jsoup-{side}.jar"],
+  "supportClasspaths": ["logs/J02-jsoup-fix.runtime-classpath.txt"],
+  "deployment": "Complete pinned Maven production JAR with its optional re2j runtime dependency.",
+  "entry": "org.jsoup.parser.Parser#parseInput(Ljava/lang/String;Ljava/lang/String;)Lorg/jsoup/nodes/Document;",
+  "assumptions": ["A fresh JDK 21 JVM, an HTML parser with one source tag and one callback, and two parses on the very same clone. Tag names are lowercase in the HTML namespace."],
+  "questions": [
+    {"id": "inherited-tree", "observer": "Before lookup and on two parses, observe tag presence, voidness, span parent, tag text, total document text and callback count.",
+     "basis": "The registered source tag is void. The callback makes only a newly seen fresh tag void. A late source tag is registered after the clone exists. A void element cannot own the span or text.",
+     "inputs": [
+       {"args": ["foo"], "before": "false|false/foo/onetwoafter/onetwoafter/0|false/foo/onetwoafter/onetwoafter/0", "after": "true|true/body//onetwoafter/0|true/body//onetwoafter/0"},
+       {"args": ["fresh"], "before": "false|false/fresh/onetwoafter/onetwoafter/0|false/fresh/onetwoafter/onetwoafter/0", "after": "false|true/body//onetwoafter/1|true/body//onetwoafter/1"},
+       {"args": ["late"], "before": "false|false/late/onetwoafter/onetwoafter/0|false/late/onetwoafter/onetwoafter/0", "after": "true|true/body//onetwoafter/0|true/body//onetwoafter/0"}
+     ]},
+    {"id": "ordinary-tree", "observer": "Compare the same ordered lookups and two DOMs for a built-in void tag and an ordinary unknown tag.",
+     "basis": "The HTML br is void on both builds. A new tag without a matching customizer retains its text on both.",
+     "inputs": [
+       {"args": ["br"], "before": "true|true/body//onetwoafter/0|true/body//onetwoafter/0"},
+       {"args": ["plain"], "before": "false|false/plain/onetwoafter/onetwoafter/0|false/plain/onetwoafter/onetwoafter/0"}
+     ]}
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "project": "spring-batch",
+  "jdk": "8.0.512.0+9-tem",
+  "change": "Spring Batch #495 second commit, persisted checkpoint selection and restarted reads",
+  "commits": {
+    "old": "1b35bff3ec0a681827e507562572f14550a6717f",
+    "new": "0506d3793e50a606cd9739ce896de5d80b474e8e"
+  },
+  "sourceRoots": [
+    "spring-batch-core/src/main/java/org/springframework/batch/core/repository/support/SimpleJobRepository.java"
+  ],
+  "artifacts": [
+    "artifacts/J15-spring-batch-{side}-overlay.jar"
+  ],
+  "supportClasspaths": [
+    "releases/spring-batch-jdbc-3.0.7/classpath.txt"
+  ],
+  "deployment": "Pinned SimpleJobRepository over Spring Batch 3.0.7, its original JDBC DAOs, HSQLDB 2.3.2 and default context serializer on JDK 8.",
+  "entry": "org.springframework.batch.core.repository.support.SimpleJobRepository#getLastStepExecution(Lorg/springframework/batch/core/JobInstance;Ljava/lang/String;)Lorg/springframework/batch/core/StepExecution;",
+  "assumptions": [
+    "Fresh working directory and file database per JVM. Step 1 saves offset 2 and step 2 saves offset 5. The two job executions share one job instance. The first opens the seven-line file anew for each saved context."
+  ],
+  "questions": [
+    {
+      "id": "tied-checkpoint",
+      "observer": "Report selected step ID, restored marker, saved offset and the next two actual FlatFileItemReader records, including after HSQLDB shutdown and reopen.",
+      "basis": "The parent takes the last encountered tie. The fix takes the larger ID. The original JDBC DAO orders job executions by descending ID.",
+      "inputs": [
+        {
+          "args": [
+            "reverse",
+            "tie"
+          ],
+          "before": "1/saved-2/2/row-2/row-3",
+          "after": "2/saved-5/5/row-5/row-6"
+        },
+        {
+          "args": [
+            "jdbc",
+            "tie"
+          ],
+          "before": "1/saved-2/2/row-2/row-3",
+          "after": "2/saved-5/5/row-5/row-6"
+        }
+      ],
+      "invocationVia": "org.springframework.batch.core.repository.JobRepository#getLastStepExecution(Lorg/springframework/batch/core/JobInstance;Ljava/lang/String;)Lorg/springframework/batch/core/StepExecution;"
+    },
+    {
+      "id": "other-orders-and-times",
+      "observer": "Observe the same identifiers and restarted rows for forward ties, a later first execution and an unknown step.",
+      "basis": "The larger ID is last in forward order. A later time outranks either ID. An unknown name has no saved context.",
+      "inputs": [
+        {
+          "args": [
+            "forward",
+            "tie"
+          ],
+          "before": "2/saved-5/5/row-5/row-6"
+        },
+        {
+          "args": [
+            "forward",
+            "later"
+          ],
+          "before": "1/saved-2/2/row-2/row-3"
+        },
+        {
+          "args": [
+            "reverse",
+            "later"
+          ],
+          "before": "1/saved-2/2/row-2/row-3"
+        },
+        {
+          "args": [
+            "jdbc",
+            "later"
+          ],
+          "before": "1/saved-2/2/row-2/row-3"
+        },
+        {
+          "args": [
+            "jdbc",
+            "absent"
+          ],
+          "before": "none"
+        }
+      ],
+      "invocationVia": "org.springframework.batch.core.repository.JobRepository#getLastStepExecution(Lorg/springframework/batch/core/JobInstance;Ljava/lang/String;)Lorg/springframework/batch/core/StepExecution;"
+    }
+  ]
+}

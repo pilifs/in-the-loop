@@ -1,0 +1,59 @@
+{
+  "project": "commons-compress",
+  "change": "Apache Commons Compress — Agree on whether a TAR entry is a file or a directory",
+  "commits": {
+    "old": "3d9a01ec07aa18b5ff341766378e2ea62639d4f5",
+    "new": "45023ddcc43e13804dff799ae96f2acce14ce3cd"
+  },
+  "sourceRoots": [
+    "src/main"
+  ],
+  "artifacts": [
+    "artifacts/J07-commons-compress-{side}.jar"
+  ],
+  "supportClasspaths": [
+    "logs/J07-commons-compress-fix.runtime-classpath.txt"
+  ],
+  "deployment": "Both complete production JARs and original runtime graph. The landed distribution fixture is copied from the pinned fix tree and checked by hash.",
+  "fixtures": [
+    {
+      "kind": "resource",
+      "file": "orjson.tar",
+      "setupFile": "worktrees/J07-commons-compress-fix/src/test/resources/COMPRESS-657/orjson-3.7.8.tar",
+      "sha256": "bef2af710d208eeaa53f42f47bd8ca38299f9087a586c46a916c9c742bc49cfb"
+    }
+  ],
+  "entry": "org.apache.commons.compress.archivers.tar.TarArchiveEntry#isFile()Z",
+  "assumptions": [
+    "The unmodified upstream TAR is enumerated in stream order twice. Both passes hash each name, header type, two predicates, length and payload digest."
+  ],
+  "questions": [
+    {
+      "id": "without-slash",
+      "observer": "Report file, directory and overlap counts, byte total, and an ordered digest covering every entry on both readbacks.",
+      "basis": "Python tarfile independently reads all 481 headers and payloads. The directory named orjson-3.7.8/include has type 5 and no final slash.",
+      "inputs": [
+        {
+          "args": [
+            "upstream"
+          ],
+          "before": "481/1/481/1/1438851/3814c797460e40be7416d1f104d9ae9b172b63445f73c1ddeb8afd65521007f6",
+          "after": "481/1/480/0/1438851/7ab1313b5a6bef19b8a655064830250254d74936ee0f684df9988a7667039193"
+        }
+      ]
+    },
+    {
+      "id": "trailing-slash",
+      "observer": "Read a directory named dir/ and a regular file with bytes 00 ff, checking both flags and the full payload twice.",
+      "basis": "Both the slash and the explicit directory header identify dir/ on both releases.",
+      "inputs": [
+        {
+          "args": [
+            "control"
+          ],
+          "before": "2/1/1/0/2/81f60774880e03f6ec82ff2830a386fd142501933b091f7be1e1a753348f0239"
+        }
+      ]
+    }
+  ]
+}

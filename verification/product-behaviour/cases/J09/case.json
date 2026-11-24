@@ -1,0 +1,60 @@
+{
+  "project": "sqlite-jdbc",
+  "change": "SQLite JDBC — Distinguish SQL NULL from a zero-length BLOB",
+  "commits": {
+    "old": "d36de443c9004ac1eb34f00ceb51c46eeaeafb0e",
+    "new": "44848544c11e3705ee6b208d844a067ffb535012"
+  },
+  "sourceRoots": [
+    "src/main"
+  ],
+  "artifacts": [
+    "artifacts/J09-sqlite-jdbc-{side}-rebuilt-native.jar"
+  ],
+  "deployment": "Both pinned Java trees with separately rebuilt Linux x86-64 JNI libraries over the setup's SQLite 3.9.1 amalgamation.",
+  "entry": "org.sqlite.jdbc3.JDBC3ResultSet#getBytes(I)[B",
+  "assumptions": [
+    "Fresh in-memory database on Linux x86-64. The loaded sqlite native library must hash to the resource in the selected original JAR. SQL order is explicit."
+  ],
+  "questions": [
+    {
+      "id": "empty-blob",
+      "invocationVia": "java.sql.ResultSet#getBytes(I)[B",
+      "observer": "Read the bytes and immediately call wasNull on each row of the same result set in ascending and reverse order.",
+      "basis": "Zero length is present, SQL NULL is absent, and five zero bytes keep their length and contents. Row order tests resetting wasNull.",
+      "inputs": [
+        {
+          "args": [
+            "nullable",
+            "forward"
+          ],
+          "before": "native-matched|null/true|null/false|5:0000000000/false",
+          "after": "native-matched|null/true|0:/false|5:0000000000/false"
+        },
+        {
+          "args": [
+            "nullable",
+            "reverse"
+          ],
+          "before": "native-matched|5:0000000000/false|null/false|null/true",
+          "after": "native-matched|5:0000000000/false|0:/false|null/true"
+        }
+      ]
+    },
+    {
+      "id": "null-and-nonempty",
+      "invocationVia": "java.sql.ResultSet#getBytes(I)[B",
+      "observer": "Cross SQL NULL, a two-byte literal and a five-byte BLOB.",
+      "basis": "Both endpoints must preserve nullness and every nonempty byte.",
+      "inputs": [
+        {
+          "args": [
+            "nonempty",
+            "forward"
+          ],
+          "before": "native-matched|null/true|2:7f00/false|5:0000000000/false"
+        }
+      ]
+    }
+  ]
+}

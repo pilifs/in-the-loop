@@ -1,0 +1,55 @@
+{
+  "project": "commonmark-java",
+  "change": "CommonMark Java — Keep inline code in an image’s accessible name",
+  "commits": {
+    "old": "9926b761eb2e9192d80cda46917ea2f0f0f2c7dc",
+    "new": "4ad81e449ca474d3560a1699f9882e37090906f0"
+  },
+  "sourceRoots": [
+    "commonmark/src/main"
+  ],
+  "artifacts": [
+    "artifacts/J01-commonmark-java-{side}.jar"
+  ],
+  "deployment": "Pinned source-built commonmark core, including its entity resource.",
+  "entry": "org.commonmark.renderer.html.HtmlRenderer#render(Lorg/commonmark/node/Node;)Ljava/lang/String;",
+  "assumptions": [
+    "Fresh parser and renderer, one retained syntax tree, XHTML fragment decoded with the JDK, one in-place Code literal edit."
+  ],
+  "questions": [
+    {
+      "id": "image-code",
+      "observer": "Read the image URL, decoded accessible name, escaped HTML attribute and code outside the image before and after editing the original tree.",
+      "basis": "A code node contributes its current literal to the accessible name on the fix. The HTML writer escapes ampersands exactly once.",
+      "inputs": [
+        {
+          "args": [
+            "mixed"
+          ],
+          "before": "cover.png/ bar/ bar/outside|cover.png/ bar/ bar/outside",
+          "after": "cover.png/foo bar/foo bar/outside|cover.png/edit & again bar/edit &amp; again bar/outside"
+        },
+        {
+          "args": [
+            "entities"
+          ],
+          "before": "cover.png///outside|cover.png///outside",
+          "after": "cover.png/x & y/x &amp; y/outside|cover.png/edit & again/edit &amp; again/outside"
+        }
+      ]
+    },
+    {
+      "id": "other-inline-nodes",
+      "observer": "Render text, emphasis and a link in the image label, and edit the external code on the same tree.",
+      "basis": "Inline text content contributes to this label on both releases. The edit affects only the external code.",
+      "inputs": [
+        {
+          "args": [
+            "markup"
+          ],
+          "before": "cover.png/plain bold link/plain bold link/outside|cover.png/plain bold link/plain bold link/outside & edited"
+        }
+      ]
+    }
+  ]
+}

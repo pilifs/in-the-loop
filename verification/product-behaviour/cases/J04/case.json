@@ -1,0 +1,105 @@
+{
+  "project": "ical4j",
+  "change": "ical4j — Keep a biweekly invitation on the same dates across locales",
+  "commits": {
+    "old": "70955862e728ff5c7392f5d53ed5b27461de6202",
+    "new": "1342406adcf9f0576a7e4fa60548eea73f58c5e5"
+  },
+  "sourceRoots": [
+    "src/main/java/net/fortuna/ical4j/transform/recurrence/ByDayRule.java"
+  ],
+  "artifacts": [
+    "artifacts/J04-ical4j-{side}-overlay.jar"
+  ],
+  "supportClasspaths": [
+    "releases/ical4j-4.4.0/classpath.txt"
+  ],
+  "deployment": "Pinned ByDayRule over the ical4j 4.4.0 production graph.",
+  "entry": "net.fortuna.ical4j.transform.recurrence.ByDayRule#apply(Ljava/util/List;)Ljava/util/List;",
+  "assumptions": [
+    "Set the process default locale before constructing any recurrence in a fresh JVM. Use Monday or Sunday as stated and retain the original rule and 09:00 local time."
+  ],
+  "questions": [
+    {
+      "invocationVia": "net.fortuna.ical4j.model.Recur#getDates(Ljava/time/temporal/Temporal;Ljava/time/temporal/Temporal;Ljava/time/temporal/Temporal;)Ljava/util/List;",
+      "observer": "Record the input rule, process locale and four ordered local date-times on two expansions.",
+      "basis": "Group Tuesdays and Sundays into alternate weeks starting 5 August 1997. Monday-start and Sunday-start yield different four-date sequences.",
+      "id": "locale-default",
+      "inputs": [
+        {
+          "args": [
+            "en-US",
+            "default"
+          ],
+          "before": "en-US/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU/1997-08-05T09:00,1997-08-17T09:00,1997-08-19T09:00,1997-08-31T09:00",
+          "after": "en-US/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU/1997-08-05T09:00,1997-08-10T09:00,1997-08-19T09:00,1997-08-24T09:00"
+        },
+        {
+          "args": [
+            "ar-EG",
+            "default"
+          ],
+          "before": "ar-EG/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU/1997-08-05T09:00,1997-08-17T09:00,1997-08-19T09:00,1997-08-31T09:00",
+          "after": "ar-EG/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU/1997-08-05T09:00,1997-08-10T09:00,1997-08-19T09:00,1997-08-24T09:00"
+        }
+      ]
+    },
+    {
+      "invocationVia": "net.fortuna.ical4j.model.Recur#getDates(Ljava/time/temporal/Temporal;Ljava/time/temporal/Temporal;Ljava/time/temporal/Temporal;)Ljava/util/List;",
+      "observer": "Record the input rule, process locale and four ordered local date-times on two expansions.",
+      "basis": "Group Tuesdays and Sundays into alternate weeks starting 5 August 1997. Monday-start and Sunday-start yield different four-date sequences.",
+      "id": "explicit-and-french",
+      "inputs": [
+        {
+          "args": [
+            "fr-FR",
+            "default"
+          ],
+          "before": "fr-FR/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU/1997-08-05T09:00,1997-08-10T09:00,1997-08-19T09:00,1997-08-24T09:00"
+        },
+        {
+          "args": [
+            "en-US",
+            "MO"
+          ],
+          "before": "en-US/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO/1997-08-05T09:00,1997-08-10T09:00,1997-08-19T09:00,1997-08-24T09:00"
+        },
+        {
+          "args": [
+            "en-US",
+            "SU"
+          ],
+          "before": "en-US/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU/1997-08-05T09:00,1997-08-17T09:00,1997-08-19T09:00,1997-08-31T09:00"
+        },
+        {
+          "args": [
+            "fr-FR",
+            "MO"
+          ],
+          "before": "fr-FR/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO/1997-08-05T09:00,1997-08-10T09:00,1997-08-19T09:00,1997-08-24T09:00"
+        },
+        {
+          "args": [
+            "fr-FR",
+            "SU"
+          ],
+          "before": "fr-FR/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU/1997-08-05T09:00,1997-08-17T09:00,1997-08-19T09:00,1997-08-31T09:00"
+        },
+        {
+          "args": [
+            "ar-EG",
+            "MO"
+          ],
+          "before": "ar-EG/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=MO/1997-08-05T09:00,1997-08-10T09:00,1997-08-19T09:00,1997-08-24T09:00"
+        },
+        {
+          "args": [
+            "ar-EG",
+            "SU"
+          ],
+          "before": "ar-EG/FREQ=WEEKLY;INTERVAL=2;COUNT=4;BYDAY=TU,SU;WKST=SU/1997-08-05T09:00,1997-08-17T09:00,1997-08-19T09:00,1997-08-31T09:00"
+        }
+      ]
+    }
+  ]
+}

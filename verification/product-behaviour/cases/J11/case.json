@@ -1,0 +1,67 @@
+{
+  "project": "h2database",
+  "change": "H2 — Keep original text spellings when a SQL sort spills to disk",
+  "commits": {
+    "old": "df37ff0363c0b84758017c8788e313d34646d403",
+    "new": "2b7812b20a421be7116cc75b5abf95a5718f7119"
+  },
+  "sourceRoots": [
+    "h2/src/main"
+  ],
+  "artifacts": [
+    "artifacts/J11-h2database-{side}.jar"
+  ],
+  "deployment": "Complete pinned H2 engine on the JDBC-only production path, with its embedded driver and storage engine.",
+  "entry": "org.h2.jdbc.JdbcStatement#execute(Ljava/lang/String;)Z",
+  "assumptions": [
+    "Fresh disk database, explicit memory-row limit, materialized sort and new JDBC connection. Ignore collation tie order, retain spellings and multiplicity."
+  ],
+  "questions": [
+    {
+      "id": "external-spelling",
+      "invocationVia": "java.sql.Statement#execute(Ljava/lang/String;)Z",
+      "observer": "Record the SQL DISTINCT count and the exact spelling multiset from the reopened report.",
+      "basis": "The historical spill representation coalesces equal case-insensitive strings using the first spelling. The fixed report preserves the input multiset.",
+      "inputs": [
+        {
+          "args": [
+            "spill",
+            "ordered"
+          ],
+          "before": "2/abc,abc,abc,abc,z",
+          "after": "2/ABC,Abc,abc,abc,z"
+        },
+        {
+          "args": [
+            "spill",
+            "permuted"
+          ],
+          "before": "2/Abc,Abc,Abc,Abc,z",
+          "after": "2/ABC,Abc,abc,abc,z"
+        }
+      ]
+    },
+    {
+      "id": "memory-and-collation",
+      "invocationVia": "java.sql.Statement#execute(Ljava/lang/String;)Z",
+      "observer": "Repeat the readback with the in-memory sort and the spilled case-sensitive column.",
+      "basis": "The memory path preserves all spellings. Case-sensitive comparison produces four distinct values.",
+      "inputs": [
+        {
+          "args": [
+            "memory",
+            "ordered"
+          ],
+          "before": "2/ABC,Abc,abc,abc,z"
+        },
+        {
+          "args": [
+            "spill",
+            "case-sensitive"
+          ],
+          "before": "4/ABC,Abc,abc,abc,z"
+        }
+      ]
+    }
+  ]
+}

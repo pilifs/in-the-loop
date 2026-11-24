@@ -1,0 +1,52 @@
+{
+  "project": "kryo",
+  "change": "Kryo — Round-trip the abstract Enum class token in a stream of class tokens",
+  "commits": {
+    "old": "7a433cf0036101c6693cca6b4410454e211dbd6c",
+    "new": "73540094596bef8874a48726edd0fdd014e84e45"
+  },
+  "jdk": "8.0.512.0+9-tem",
+  "sourceRoots": [
+    "src"
+  ],
+  "artifacts": [
+    "artifacts/J10-kryo-{side}.jar"
+  ],
+  "supportClasspaths": [
+    "logs/J10-kryo-fix.runtime-classpath.txt"
+  ],
+  "deployment": "Complete pinned production JAR and original Maven runtime dependencies.",
+  "entry": "com.esotericsoftware.kryo.Kryo#writeObject(Lcom/esotericsoftware/kryo/io/Output;Ljava/lang/Object;)V",
+  "assumptions": [
+    "JDK 8, default resolver, registration optional, a fresh codec at each end of one byte stream."
+  ],
+  "questions": [
+    {
+      "id": "abstract-enum-token",
+      "observer": "Record the type and index of a rejected token or the exact identities and final consumption of the whole sequence.",
+      "basis": "Class tokens denote the class object itself. The fourth token is the abstract Enum class, following a concrete enum token.",
+      "inputs": [
+        {
+          "args": [
+            "abstract"
+          ],
+          "before": "write/3/java.lang.Enum/IllegalArgumentException",
+          "after": "read/void,java.util.ArrayList,UpgradeProbe$Color,java.lang.Enum,java.lang.String/fully-consumed=true"
+        }
+      ]
+    },
+    {
+      "id": "ordinary-class-tokens",
+      "observer": "Read the four remaining identities sequentially and compare the cursor to the actual stream length.",
+      "basis": "The concrete enum token and primitive void token are separate from abstract Enum.",
+      "inputs": [
+        {
+          "args": [
+            "ordinary"
+          ],
+          "before": "read/void,java.util.ArrayList,UpgradeProbe$Color,java.lang.String/fully-consumed=true"
+        }
+      ]
+    }
+  ]
+}

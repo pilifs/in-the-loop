@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-213728-check-all-collision-subsets-on-the-two-o",
+  "title": "Check all collision subsets on the two original UnifiedMap builds",
+  "description": "For sizes zero through six and two opposite insertion orders, retain the original map view over both removeIf calls. Check all 127 subsets per order against an independent JDK map, including flags, null key and exact mappings. Preserve and perturb the full source-built implementation and API JARs.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "checked-proof-reuse"
+  ],
+  "links": {
+    "paths": [
+      "verification/product-behaviour/cases/J17"
+    ]
+  },
+  "expected": "Complete source-bound cold, warm, clean and same-path replacement plans with matching semantics and digest-checked receipts, or the first specific open dependency.",
+  "submitted": {
+    "at": "2026-11-24T21:37:28+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "20m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B verification/product-behaviour/qualify.py J17",
+      "run": "python3 -B verification/product-behaviour/qualify.py J17",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/product-behaviour/results/J17/first"
+  ]
+}

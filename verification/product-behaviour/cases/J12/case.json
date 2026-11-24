@@ -1,0 +1,75 @@
+{
+  "project": "calcite",
+  "change": "Apache Calcite — Run an ordered and an unordered aggregate in one query",
+  "commits": {
+    "old": "f2638b9f7dc878f3f109cbc59d1a6ae02d3d5696",
+    "new": "f992e6c8fbc3712c6bd70096fb6b05da448b2cab"
+  },
+  "jdk": "8.0.512.0+9-tem",
+  "sourceRoots": [
+    "core/src/main",
+    "linq4j/src/main"
+  ],
+  "artifacts": [
+    "artifacts/J12-calcite-{side}-core.jar"
+  ],
+  "supportClasspaths": [
+    "logs/J12-calcite-{side}.core.runtime-classpath.txt"
+  ],
+  "archivedClasspathEntries": {
+    "worktrees/J12-calcite-{side}/linq4j/target/calcite-linq4j-1.19.0-SNAPSHOT.jar": "artifacts/J12-calcite-{side}-linq4j.jar"
+  },
+  "deployment": "Both complete pinned Calcite core and linq4j modules from the passing upstream build job, with their original runtime classpaths.",
+  "entry": "org.apache.calcite.adapter.enumerable.EnumerableAggregate#implement(Lorg/apache/calcite/adapter/enumerable/EnumerableRelImplementor;Lorg/apache/calcite/adapter/enumerable/EnumerableRel$Prefer;)Lorg/apache/calcite/adapter/enumerable/EnumerableRel$Result;",
+  "assumptions": [
+    "One fresh JDBC connection, generated Enumerable aggregate, no external schema, grouping ties compared as unordered multisets and ordered values as sequences."
+  ],
+  "questions": [
+    {
+      "id": "mixed-aggregate",
+      "invocationVia": "java.sql.Statement#executeQuery(Ljava/lang/String;)Ljava/sql/ResultSet;",
+      "observer": "Observe both COLLECT results on one JDBC statement and confirm generated grouping code ran.",
+      "basis": "Group 10 contains two copies of 3 and group 20 has one 7. Descending order is independent of the input permutation.",
+      "inputs": [
+        {
+          "args": [
+            "mixed",
+            "original"
+          ],
+          "before": "10/[]/[3, 3, 2, 1]|20/[]/[7]",
+          "after": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
+        },
+        {
+          "args": [
+            "mixed",
+            "permuted"
+          ],
+          "before": "10/[]/[3, 3, 2, 1]|20/[]/[7]",
+          "after": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
+        }
+      ]
+    },
+    {
+      "id": "single-aggregates",
+      "invocationVia": "java.sql.Statement#executeQuery(Ljava/lang/String;)Ljava/sql/ResultSet;",
+      "observer": "Execute ordered and unordered projections alone and verify both groups.",
+      "basis": "Each original accumulator works in isolation.",
+      "inputs": [
+        {
+          "args": [
+            "unordered",
+            "permuted"
+          ],
+          "before": "10/[1, 2, 3, 3]|20/[7]"
+        },
+        {
+          "args": [
+            "ordered",
+            "original"
+          ],
+          "before": "10/[3, 3, 2, 1]|20/[7]"
+        }
+      ]
+    }
+  ]
+}

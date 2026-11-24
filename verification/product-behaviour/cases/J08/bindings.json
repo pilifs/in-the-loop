@@ -1,0 +1,934 @@
+{
+  "old": {
+    "commit": "5c360ff5d879d3567f23cea3290894712fb336d9",
+    "tree": "fdca60b7968396b96ac09362e2a90ccfc0064036",
+    "scope": "Two pinned production writer classes over Parquet 1.18.2, the Hadoop file graph and unshaded fastutil. File fixture uses local streams.",
+    "sourceRoots": [
+      "parquet-column/src/main/java/org/apache/parquet/column/values/dictionary/DictionaryValuesWriter.java",
+      "parquet-column/src/main/java/org/apache/parquet/column/values/fallback/FallbackValuesWriter.java"
+    ],
+    "sourceFiles": 2,
+    "sourceSha256": "8dddbd8a2eb70d6dfbfe0463b323a2f8d6f6551e4b3d657608f9be7169e0d477",
+    "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+    "classpath": [
+      {
+        "file": "artifacts/J08-parquet-java-parent-overlay.jar",
+        "sha256": "28b3eb17a9d72a4f678e86642f52fa2ec7cf17b42626d1deda37e7c04e9ab2ae"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-hadoop/1.18.2/parquet-hadoop-1.18.2.jar",
+        "sha256": "746b75a9b3171a6daebe9d1ee4e152fb95f9c0d63f92b5e51790e88bd13b88a1"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-column/1.18.2/parquet-column-1.18.2.jar",
+        "sha256": "e453c9725e323ca3a1165b842cae325c35fc3eed0ec37856ba15fe61290569a6"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-encoding/1.18.2/parquet-encoding-1.18.2.jar",
+        "sha256": "417f925abc073a6f732386694be59942190282e36cf89368f4666145b42cdaf1"
+      },
+      {
+        "file": "m2/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
+        "sha256": "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-format-structures/1.18.2/parquet-format-structures-1.18.2.jar",
+        "sha256": "9827bead58f8cc1ca1e4f529af042096505fa5e32cee9cab656b2d8ff0be2509"
+      },
+      {
+        "file": "m2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
+        "sha256": "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-common/1.18.2/parquet-common-1.18.2.jar",
+        "sha256": "b49a34765ffbaf8d8b66f8b6bdf9a008f3f057b691f74041d26d40fc8759d44f"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-jackson/1.18.2/parquet-jackson-1.18.2.jar",
+        "sha256": "dc20428b547c6376ae7dfa20c30a62c326b7e4ed4915ba5370ae7d7b0859408d"
+      },
+      {
+        "file": "m2/org/xerial/snappy/snappy-java/1.1.10.12/snappy-java-1.1.10.12.jar",
+        "sha256": "1c03ce77b3f2e926c25a952612e372404d80bc88c6c8052bede964804fabd732"
+      },
+      {
+        "file": "m2/io/airlift/aircompressor/2.0.3/aircompressor-2.0.3.jar",
+        "sha256": "b86bb66f610079e0bf790d62e2ff68853eb0dc4748a6d68ae28bce92b68094aa"
+      },
+      {
+        "file": "m2/commons-pool/commons-pool/1.6/commons-pool-1.6.jar",
+        "sha256": "46c42b4a38dc6b2db53a9ee5c92c63db103665d56694e2cfce2c95d51a6860cc"
+      },
+      {
+        "file": "m2/com/github/luben/zstd-jni/1.5.7-24/zstd-jni-1.5.7-24.jar",
+        "sha256": "79f5e678ce437f09d5ab55df1c6e7fc8cf6a2eb8e73052f34b143464062fcb0b"
+      },
+      {
+        "file": "m2/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+        "sha256": "336811855ee97fcd8413343dc42f4d26362502860e8a9193e4db305e3e8ef80a"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-client/3.3.0/hadoop-client-3.3.0.jar",
+        "sha256": "581b39c5215574385892a9becf14b0daf2a3d401c70d6bc29c2688c875b5e46b"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-common/3.3.0/hadoop-common-3.3.0.jar",
+        "sha256": "9c876827639d401a7af2d16a49c9fd69133dd4ff4a6f127ce557054274038967"
+      },
+      {
+        "file": "m2/org/apache/hadoop/thirdparty/hadoop-shaded-protobuf_3_7/1.0.0/hadoop-shaded-protobuf_3_7-1.0.0.jar",
+        "sha256": "08876112a7526dc088be1621bf9b0326cbac1a2a0f7a7206dd65fc41521b6ef1"
+      },
+      {
+        "file": "m2/com/google/guava/guava/27.0-jre/guava-27.0-jre.jar",
+        "sha256": "63b09db6861011e7fb2481be7790c7fd4b03f0bb884b3de2ecba8823ad19bf3f"
+      },
+      {
+        "file": "m2/com/google/guava/failureaccess/1.0/failureaccess-1.0.jar",
+        "sha256": "d084bef9cd07a8537a1753e4850a69b7e8bab1d1e22e9f3a1e4826309a7a2336"
+      },
+      {
+        "file": "m2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+      },
+      {
+        "file": "m2/org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2.jar",
+        "sha256": "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a"
+      },
+      {
+        "file": "m2/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar",
+        "sha256": "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6"
+      },
+      {
+        "file": "m2/org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17.jar",
+        "sha256": "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
+      },
+      {
+        "file": "m2/commons-cli/commons-cli/1.2/commons-cli-1.2.jar",
+        "sha256": "e7cd8951956d349b568b7ccfd4f5b2529a8c113e67c32b028f52ffda371259d9"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-math3/3.1.1/commons-math3-3.1.1.jar",
+        "sha256": "a07e39d31c46032879f0a48ae1bd0142b17dd67664c008b50216e9891f346c54"
+      },
+      {
+        "file": "m2/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6.jar",
+        "sha256": "c03f813195e7a80e3608d0ddd8da80b21696a4c92a6a2298865bf149071551c7"
+      },
+      {
+        "file": "m2/org/apache/httpcomponents/httpcore/4.4.10/httpcore-4.4.10.jar",
+        "sha256": "78ba1096561957db1b55200a159b648876430342d15d461277e62360da19f6fd"
+      },
+      {
+        "file": "m2/commons-codec/commons-codec/1.11/commons-codec-1.11.jar",
+        "sha256": "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d"
+      },
+      {
+        "file": "m2/commons-io/commons-io/2.5/commons-io-2.5.jar",
+        "sha256": "a10418348d234968600ccb1d988efcbbd08716e1d96936ccc1880e7d22513474"
+      },
+      {
+        "file": "m2/commons-net/commons-net/3.6/commons-net-3.6.jar",
+        "sha256": "d3b3866c61a47ba3bf040ab98e60c3010d027da0e7a99e1755e407dd47bc2702"
+      },
+      {
+        "file": "m2/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar",
+        "sha256": "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8"
+      },
+      {
+        "file": "m2/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar",
+        "sha256": "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-servlet/9.4.20.v20190813/jetty-servlet-9.4.20.v20190813.jar",
+        "sha256": "0c00257ea8ad3423b23894b2a99f54bedfc5e9c55baf491c86134a977c98f6ff"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-security/9.4.20.v20190813/jetty-security-9.4.20.v20190813.jar",
+        "sha256": "7f00b107465206902733e85cfed3d0174784f929ddcc72b8027ce8f225bc0c95"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-webapp/9.4.20.v20190813/jetty-webapp-9.4.20.v20190813.jar",
+        "sha256": "59d9b5f238acb14eac3bf90f755eeabd9fc16c630217d0e7e01b99a38194036c"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-xml/9.4.20.v20190813/jetty-xml-9.4.20.v20190813.jar",
+        "sha256": "f4411ad9998e4cc202c849bb9b9e93aa2aa761b89a27cc746ca025849d659fd0"
+      },
+      {
+        "file": "m2/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1.jar",
+        "sha256": "545f4e7dc678ffb4cf8bd0fd40b4a4470a409a787c0ea7d0ad2f08d56112987b"
+      },
+      {
+        "file": "m2/com/sun/jersey/jersey-servlet/1.19/jersey-servlet-1.19.jar",
+        "sha256": "e7c086c51aa6be9e260ea6574d4608e7c252648a1dec5bc15f096a8626099709"
+      },
+      {
+        "file": "m2/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3.jar",
+        "sha256": "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784"
+      },
+      {
+        "file": "m2/log4j/log4j/1.2.17/log4j-1.2.17.jar",
+        "sha256": "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9"
+      },
+      {
+        "file": "m2/commons-beanutils/commons-beanutils/1.9.4/commons-beanutils-1.9.4.jar",
+        "sha256": "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-configuration2/2.1.1/commons-configuration2-2.1.1.jar",
+        "sha256": "6471f4c4fb666960eba889b768164670097022d3084018affea555e6bf8d3d79"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-lang3/3.7/commons-lang3-3.7.jar",
+        "sha256": "6e8dc31e046508d9953c96534edf0c2e0bfe6f468966b5b842b3f87e43b6a847"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-text/1.4/commons-text-1.4.jar",
+        "sha256": "d624e443240a5fccc93edbfe758df1b69c07d7eaab6fc5e8f98f77d86ced8259"
+      },
+      {
+        "file": "m2/org/apache/avro/avro/1.7.7/avro-1.7.7.jar",
+        "sha256": "5ba0a81f4b0769122b6045b98bb9bbba5f2c69dbf736a6cc7ca4eb603c337487"
+      },
+      {
+        "file": "m2/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar",
+        "sha256": "440a9cb5ca95b215f953d3a20a6b1a10da1f09b529a9ddea5f8a4905ddab4f5a"
+      },
+      {
+        "file": "m2/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar",
+        "sha256": "74e7a07a76f2edbade29312a5a2ebccfa019128bc021ece3856d76197e9be0c2"
+      },
+      {
+        "file": "m2/com/thoughtworks/paranamer/paranamer/2.3/paranamer-2.3.jar",
+        "sha256": "e93f50ae4d0de11080677f44ab268691266fed2b3ff7bc6fd97636febae7d8fe"
+      },
+      {
+        "file": "m2/com/google/re2j/re2j/1.1/re2j-1.1.jar",
+        "sha256": "24ada84d1b5de584e3e84b06f0c7dd562cee6eafe8dea8083bd8eb123823bbe7"
+      },
+      {
+        "file": "m2/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar",
+        "sha256": "e0c1c64575c005601725e7c6a02cebf9e1285e888f756b2a1d73ffa8d725cc74"
+      },
+      {
+        "file": "m2/com/google/code/gson/gson/2.2.4/gson-2.2.4.jar",
+        "sha256": "c0328cd07ca9e363a5acd00c1cf4afe8cf554bd6d373834981ba05cebec687fb"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-auth/3.3.0/hadoop-auth-3.3.0.jar",
+        "sha256": "4eb8870c4ad71f3ce6765e7417a46537d17e172fbed0fd2993139cab4c5f2b94"
+      },
+      {
+        "file": "m2/com/nimbusds/nimbus-jose-jwt/7.9/nimbus-jose-jwt-7.9.jar",
+        "sha256": "b4f58453e180a981eb744a19b4d56afb12f10c3dd35e7531cc58ee6cbf5bf286"
+      },
+      {
+        "file": "m2/com/github/stephenc/jcip/jcip-annotations/1.0-1/jcip-annotations-1.0-1.jar",
+        "sha256": "4fccff8382aafc589962c4edb262f6aa595e34f1e11e61057d1c6a96e8fc7323"
+      },
+      {
+        "file": "m2/net/minidev/json-smart/2.3/json-smart-2.3.jar",
+        "sha256": "903f48c8aa4c3f6426440b8d32de89fa1dc23b1169abde25e4e1d068aa67708b"
+      },
+      {
+        "file": "m2/net/minidev/accessors-smart/1.2/accessors-smart-1.2.jar",
+        "sha256": "0c7c265d62fc007124dc32b91336e9c4272651d629bc5fa1a4e4e3bc758eb2e4"
+      },
+      {
+        "file": "m2/org/ow2/asm/asm/5.0.4/asm-5.0.4.jar",
+        "sha256": "896618ed8ae62702521a78bc7be42b7c491a08e6920a15f89a3ecdec31e9a220"
+      },
+      {
+        "file": "m2/org/apache/curator/curator-framework/4.2.0/curator-framework-4.2.0.jar",
+        "sha256": "a2fee0f69261bd1cd2428880395b272d5b4652311b706df9f35278558b1c0573"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-simplekdc/1.0.1/kerb-simplekdc-1.0.1.jar",
+        "sha256": "9c9976a603833c001a8a4a4e5b2ea0a6775a84e5656b0eca1fe4eb4d068ceda7"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-client/1.0.1/kerb-client-1.0.1.jar",
+        "sha256": "020fa95a809b96358ab95d43666471838372659af1cbc3f24ef73c29374e9af0"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-config/1.0.1/kerby-config-1.0.1.jar",
+        "sha256": "244520e9bd61e8cd40a475fe615fbea45ca042fc9d50780df30bc7146f77b8c9"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-common/1.0.1/kerb-common-1.0.1.jar",
+        "sha256": "f62bb275781f8092bb6252e4ed201c9f5e4ab7a3d49b650ab58c87862b0bb2de"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-crypto/1.0.1/kerb-crypto-1.0.1.jar",
+        "sha256": "af94527564908b5a8ccfdfa8e67dd61c09e062459a0110d85115c42fc8f82b41"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-util/1.0.1/kerb-util-1.0.1.jar",
+        "sha256": "9cb1a2715a35cbabc9e8f1be3287bb086100763847e2f17577b72a025f8adaab"
+      },
+      {
+        "file": "m2/org/apache/kerby/token-provider/1.0.1/token-provider-1.0.1.jar",
+        "sha256": "022c92d7438b60789bc212f53f1f33ced2656ba8bf073a1f587df51e083e368a"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-admin/1.0.1/kerb-admin-1.0.1.jar",
+        "sha256": "27b012f556b02bdf4ecd0742a7ecdd725a562e95a194e3413662fe2e781ff889"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-server/1.0.1/kerb-server-1.0.1.jar",
+        "sha256": "dff4eebc6cadaa8bdc1084fc1d4c20fda954aed74913845e79c89572768e463f"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-identity/1.0.1/kerb-identity-1.0.1.jar",
+        "sha256": "35fd995cc7a0c71f86adaf716dee34f6e4d1e473eff452a74f4430bd196e6424"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-xdr/1.0.1/kerby-xdr-1.0.1.jar",
+        "sha256": "c24e2d9fbaef40a0a61ee36c19e41db5141bfbe7a2669be0227dee86ccca6d6f"
+      },
+      {
+        "file": "m2/org/apache/curator/curator-client/4.2.0/curator-client-4.2.0.jar",
+        "sha256": "67f238d8fb27f1aa271ffdf86aac2a16e0ef0898545fe3287adc6a29a05e604d"
+      },
+      {
+        "file": "m2/org/apache/curator/curator-recipes/4.2.0/curator-recipes-4.2.0.jar",
+        "sha256": "f2c0f6cd57042d6aba7b8222df422edc59b62e25fa89c1305e59dc6cfd9e59d3"
+      },
+      {
+        "file": "m2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
+        "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
+      },
+      {
+        "file": "m2/org/apache/htrace/htrace-core4/4.1.0-incubating/htrace-core4-4.1.0-incubating.jar",
+        "sha256": "5d45b7904857c3e4ad36b3bcc57be2d2c5f308c69b5f6a58bd86aa7d48a25ef6"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-compress/1.19/commons-compress-1.19.jar",
+        "sha256": "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-core/1.0.1/kerb-core-1.0.1.jar",
+        "sha256": "4db26bc4a106603044d8883f7280abc803b055b36f5c510a3fffc41e5de4c651"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-pkix/1.0.1/kerby-pkix-1.0.1.jar",
+        "sha256": "0410bc1950b57f4792ea6b86df59a2ee87e4ad69b33a17ded438e6686894346a"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-asn1/1.0.1/kerby-asn1-1.0.1.jar",
+        "sha256": "010a3c33e5b652f11cb29a6e66826a24331e526cf58662dccb4d6695fc6ca59d"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-util/1.0.1/kerby-util-1.0.1.jar",
+        "sha256": "db7e2f329e160aaac305268ccb7287c16cf5542cffdd786a8592212df7c315aa"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/core/jackson-databind/2.10.3/jackson-databind-2.10.3.jar",
+        "sha256": "50eec40443f387be50a409186165298aaadbb6c4d4826d319720e245714600d2"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/core/jackson-core/2.10.3/jackson-core-2.10.3.jar",
+        "sha256": "fb185f7e6ecba1e2b4803788d278faa023312ca6d3109b2fa146d9e0435a9494"
+      },
+      {
+        "file": "m2/org/codehaus/woodstox/stax2-api/3.1.4/stax2-api-3.1.4.jar",
+        "sha256": "86d7c0b775a7c9b454cc6ba61d40a8eb3b99cc129f832eb9b977a3755b4b338e"
+      },
+      {
+        "file": "m2/com/fasterxml/woodstox/woodstox-core/5.0.3/woodstox-core-5.0.3.jar",
+        "sha256": "a1c04b64fbfe20ae9f2c60a3bf1633fed6688ae31935b6bd4a457a1bbb2e82d4"
+      },
+      {
+        "file": "m2/dnsjava/dnsjava/2.1.7/dnsjava-2.1.7.jar",
+        "sha256": "2c52a6fabd5af9331d73fc7787dafc32a56bd8019c49f89749c2eeef244e303c"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-hdfs-client/3.3.0/hadoop-hdfs-client-3.3.0.jar",
+        "sha256": "e042918a57b371ff8cd6eee8f956a7d61c5b7a2800c43106d7cb479109c4fe8f"
+      },
+      {
+        "file": "m2/com/squareup/okhttp/okhttp/2.7.5/okhttp-2.7.5.jar",
+        "sha256": "88ac9fd1bb51f82bcc664cc1eb9c225c90dc4389d660231b4cc737bebfe7d0aa"
+      },
+      {
+        "file": "m2/com/squareup/okio/okio/1.6.0/okio-1.6.0.jar",
+        "sha256": "114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/core/jackson-annotations/2.10.3/jackson-annotations-2.10.3.jar",
+        "sha256": "49dfdc4cfa46d165ecfed630ba164b6641d59d5fe1aa698a19c13f966d3f13cf"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-yarn-api/3.3.0/hadoop-yarn-api-3.3.0.jar",
+        "sha256": "5655a4dee9ae8ee089252f014fe162b5117888d4b206c9d6a30460aa02b5edb9"
+      },
+      {
+        "file": "m2/javax/xml/bind/jaxb-api/2.2.11/jaxb-api-2.2.11.jar",
+        "sha256": "273d82f8653b53ad9d00ce2b2febaef357e79a273560e796ff3fcfec765f8910"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-yarn-client/3.3.0/hadoop-yarn-client-3.3.0.jar",
+        "sha256": "8c61ee380a9e33787e8fdf068b7b5c6e0deb71e44d8695b496d5ebf79f3ea5bb"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/websocket/websocket-client/9.4.20.v20190813/websocket-client-9.4.20.v20190813.jar",
+        "sha256": "df5df7ea0b2d40e1011946cfa5fe27c86047f0c4e77ccc0b8c0c7f5518278bf3"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-client/9.4.20.v20190813/jetty-client-9.4.20.v20190813.jar",
+        "sha256": "31a88bfc59acb1716646d8211209f42e8b4c175be3b1dd5c3794dec8882dae50"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-http/9.4.20.v20190813/jetty-http-9.4.20.v20190813.jar",
+        "sha256": "242523f49e54f2b14f25ba129fefe182497404a81f2d579865442ee885df5996"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-util/9.4.20.v20190813/jetty-util-9.4.20.v20190813.jar",
+        "sha256": "5816ef44f73e76b8ef1c1ea848cc34c7b1f24771f3675353e2ef23eb920121d8"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-io/9.4.20.v20190813/jetty-io-9.4.20.v20190813.jar",
+        "sha256": "6dfcfd560135c3059547ef33c4a89317db2f94b9eb934ec1514d6967ea0a294b"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/websocket/websocket-common/9.4.20.v20190813/websocket-common-9.4.20.v20190813.jar",
+        "sha256": "a66eb0a5299e2f33addb0dca827cc95a0773c41a12ea70c0d52d51beabaecf65"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/websocket/websocket-api/9.4.20.v20190813/websocket-api-9.4.20.v20190813.jar",
+        "sha256": "779a29060cc17bdeeeba147efc884ebff972cfff93dad2d37b11c93f95d4f67b"
+      },
+      {
+        "file": "m2/org/jline/jline/3.9.0/jline-3.9.0.jar",
+        "sha256": "d2b986fd15d05e0b900faba776c1de9b4dc4a4fcdfeaa12a8ab8fb2b290ed527"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-mapreduce-client-core/3.3.0/hadoop-mapreduce-client-core-3.3.0.jar",
+        "sha256": "c194058842ffbcde8c97f287136a9bec8870823569a9b1447e5d7805ab0d16fd"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-yarn-common/3.3.0/hadoop-yarn-common-3.3.0.jar",
+        "sha256": "5502120dd43b49a85ab0e7e7c6c716d770a01db81b4fb6d11db9bbd4a8169f60"
+      },
+      {
+        "file": "m2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar",
+        "sha256": "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482"
+      },
+      {
+        "file": "m2/com/sun/jersey/jersey-core/1.19/jersey-core-1.19.jar",
+        "sha256": "5d1841b925fad033c836d911573457c96608cdd99c30c084f61b091aff8aa698"
+      },
+      {
+        "file": "m2/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar",
+        "sha256": "ab1534b73b5fa055808e6598a5e73b599ccda28c3159c3c0908977809422ee4a"
+      },
+      {
+        "file": "m2/com/sun/jersey/jersey-client/1.19/jersey-client-1.19.jar",
+        "sha256": "591118924e4ecad37b25d2e955ae9531f4f7752aed587f99c6ccc98e03aaae5e"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.10.3/jackson-module-jaxb-annotations-2.10.3.jar",
+        "sha256": "8099caad4ae189525ef94d337d72d3e888abefabbbacbc9f3d2f096d534f2fb5"
+      },
+      {
+        "file": "m2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+        "sha256": "69156304079bdeed9fc0ae3b39389f19b3cc4ba4443bc80508995394ead742ea"
+      },
+      {
+        "file": "m2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+        "sha256": "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.10.3/jackson-jaxrs-json-provider-2.10.3.jar",
+        "sha256": "93026591dbb332030dbe865b9c811a016e470d8ff6daaa7031556d2185e62054"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.10.3/jackson-jaxrs-base-2.10.3.jar",
+        "sha256": "3b6b74311d094990e6d8de356363988050fb2bf5389138b198b01a0ceb9a9668"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-mapreduce-client-jobclient/3.3.0/hadoop-mapreduce-client-jobclient-3.3.0.jar",
+        "sha256": "3ac84472f014ca367d98f87d460f32eb754c4849718c2c5b3a650f2f602a2179"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-mapreduce-client-common/3.3.0/hadoop-mapreduce-client-common-3.3.0.jar",
+        "sha256": "0b14834ed51fe3b4269db69b90d1ba735c839c5065806567020118c5fe43346e"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-annotations/3.3.0/hadoop-annotations-3.3.0.jar",
+        "sha256": "eb6cd862f133779a063c9bbf21b5785011c891f26ec84c8d58acf41de0c14a2d"
+      },
+      {
+        "file": "m2/it/unimi/dsi/fastutil/8.5.19/fastutil-8.5.19.jar",
+        "sha256": "c767a6bdcb7cb52fe1315ca1f4891389a75e63b2a15a6629865d7740dd3a8cf2"
+      }
+    ]
+  },
+  "new": {
+    "commit": "5e14d7cd43403a95d331be8791e8792dbf38683d",
+    "tree": "4005c46207142ab7b0c19de2711fc2114e0414e4",
+    "scope": "Two pinned production writer classes over Parquet 1.18.2, the Hadoop file graph and unshaded fastutil. File fixture uses local streams.",
+    "sourceRoots": [
+      "parquet-column/src/main/java/org/apache/parquet/column/values/dictionary/DictionaryValuesWriter.java",
+      "parquet-column/src/main/java/org/apache/parquet/column/values/fallback/FallbackValuesWriter.java"
+    ],
+    "sourceFiles": 2,
+    "sourceSha256": "33a594aacd070de31b6935210e2083486dc2ebb62c33ba8a6dc8d904a255645a",
+    "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+    "classpath": [
+      {
+        "file": "artifacts/J08-parquet-java-fix-overlay.jar",
+        "sha256": "cb7a4d77da751a8ae262afc22a6609803319065cae001f7eb2dd8ac5c0a23095"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-hadoop/1.18.2/parquet-hadoop-1.18.2.jar",
+        "sha256": "746b75a9b3171a6daebe9d1ee4e152fb95f9c0d63f92b5e51790e88bd13b88a1"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-column/1.18.2/parquet-column-1.18.2.jar",
+        "sha256": "e453c9725e323ca3a1165b842cae325c35fc3eed0ec37856ba15fe61290569a6"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-encoding/1.18.2/parquet-encoding-1.18.2.jar",
+        "sha256": "417f925abc073a6f732386694be59942190282e36cf89368f4666145b42cdaf1"
+      },
+      {
+        "file": "m2/org/locationtech/jts/jts-core/1.20.0/jts-core-1.20.0.jar",
+        "sha256": "6a783d8f9dba3d3cf7265435f134402f63c05838aa6cbcc4297ad3a5b2842baf"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-format-structures/1.18.2/parquet-format-structures-1.18.2.jar",
+        "sha256": "9827bead58f8cc1ca1e4f529af042096505fa5e32cee9cab656b2d8ff0be2509"
+      },
+      {
+        "file": "m2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar",
+        "sha256": "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-common/1.18.2/parquet-common-1.18.2.jar",
+        "sha256": "b49a34765ffbaf8d8b66f8b6bdf9a008f3f057b691f74041d26d40fc8759d44f"
+      },
+      {
+        "file": "m2/org/apache/parquet/parquet-jackson/1.18.2/parquet-jackson-1.18.2.jar",
+        "sha256": "dc20428b547c6376ae7dfa20c30a62c326b7e4ed4915ba5370ae7d7b0859408d"
+      },
+      {
+        "file": "m2/org/xerial/snappy/snappy-java/1.1.10.12/snappy-java-1.1.10.12.jar",
+        "sha256": "1c03ce77b3f2e926c25a952612e372404d80bc88c6c8052bede964804fabd732"
+      },
+      {
+        "file": "m2/io/airlift/aircompressor/2.0.3/aircompressor-2.0.3.jar",
+        "sha256": "b86bb66f610079e0bf790d62e2ff68853eb0dc4748a6d68ae28bce92b68094aa"
+      },
+      {
+        "file": "m2/commons-pool/commons-pool/1.6/commons-pool-1.6.jar",
+        "sha256": "46c42b4a38dc6b2db53a9ee5c92c63db103665d56694e2cfce2c95d51a6860cc"
+      },
+      {
+        "file": "m2/com/github/luben/zstd-jni/1.5.7-24/zstd-jni-1.5.7-24.jar",
+        "sha256": "79f5e678ce437f09d5ab55df1c6e7fc8cf6a2eb8e73052f34b143464062fcb0b"
+      },
+      {
+        "file": "m2/org/slf4j/slf4j-api/1.7.33/slf4j-api-1.7.33.jar",
+        "sha256": "336811855ee97fcd8413343dc42f4d26362502860e8a9193e4db305e3e8ef80a"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-client/3.3.0/hadoop-client-3.3.0.jar",
+        "sha256": "581b39c5215574385892a9becf14b0daf2a3d401c70d6bc29c2688c875b5e46b"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-common/3.3.0/hadoop-common-3.3.0.jar",
+        "sha256": "9c876827639d401a7af2d16a49c9fd69133dd4ff4a6f127ce557054274038967"
+      },
+      {
+        "file": "m2/org/apache/hadoop/thirdparty/hadoop-shaded-protobuf_3_7/1.0.0/hadoop-shaded-protobuf_3_7-1.0.0.jar",
+        "sha256": "08876112a7526dc088be1621bf9b0326cbac1a2a0f7a7206dd65fc41521b6ef1"
+      },
+      {
+        "file": "m2/com/google/guava/guava/27.0-jre/guava-27.0-jre.jar",
+        "sha256": "63b09db6861011e7fb2481be7790c7fd4b03f0bb884b3de2ecba8823ad19bf3f"
+      },
+      {
+        "file": "m2/com/google/guava/failureaccess/1.0/failureaccess-1.0.jar",
+        "sha256": "d084bef9cd07a8537a1753e4850a69b7e8bab1d1e22e9f3a1e4826309a7a2336"
+      },
+      {
+        "file": "m2/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar",
+        "sha256": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99"
+      },
+      {
+        "file": "m2/org/checkerframework/checker-qual/2.5.2/checker-qual-2.5.2.jar",
+        "sha256": "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a"
+      },
+      {
+        "file": "m2/com/google/j2objc/j2objc-annotations/1.1/j2objc-annotations-1.1.jar",
+        "sha256": "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6"
+      },
+      {
+        "file": "m2/org/codehaus/mojo/animal-sniffer-annotations/1.17/animal-sniffer-annotations-1.17.jar",
+        "sha256": "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53"
+      },
+      {
+        "file": "m2/commons-cli/commons-cli/1.2/commons-cli-1.2.jar",
+        "sha256": "e7cd8951956d349b568b7ccfd4f5b2529a8c113e67c32b028f52ffda371259d9"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-math3/3.1.1/commons-math3-3.1.1.jar",
+        "sha256": "a07e39d31c46032879f0a48ae1bd0142b17dd67664c008b50216e9891f346c54"
+      },
+      {
+        "file": "m2/org/apache/httpcomponents/httpclient/4.5.6/httpclient-4.5.6.jar",
+        "sha256": "c03f813195e7a80e3608d0ddd8da80b21696a4c92a6a2298865bf149071551c7"
+      },
+      {
+        "file": "m2/org/apache/httpcomponents/httpcore/4.4.10/httpcore-4.4.10.jar",
+        "sha256": "78ba1096561957db1b55200a159b648876430342d15d461277e62360da19f6fd"
+      },
+      {
+        "file": "m2/commons-codec/commons-codec/1.11/commons-codec-1.11.jar",
+        "sha256": "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d"
+      },
+      {
+        "file": "m2/commons-io/commons-io/2.5/commons-io-2.5.jar",
+        "sha256": "a10418348d234968600ccb1d988efcbbd08716e1d96936ccc1880e7d22513474"
+      },
+      {
+        "file": "m2/commons-net/commons-net/3.6/commons-net-3.6.jar",
+        "sha256": "d3b3866c61a47ba3bf040ab98e60c3010d027da0e7a99e1755e407dd47bc2702"
+      },
+      {
+        "file": "m2/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar",
+        "sha256": "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8"
+      },
+      {
+        "file": "m2/javax/activation/javax.activation-api/1.2.0/javax.activation-api-1.2.0.jar",
+        "sha256": "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-servlet/9.4.20.v20190813/jetty-servlet-9.4.20.v20190813.jar",
+        "sha256": "0c00257ea8ad3423b23894b2a99f54bedfc5e9c55baf491c86134a977c98f6ff"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-security/9.4.20.v20190813/jetty-security-9.4.20.v20190813.jar",
+        "sha256": "7f00b107465206902733e85cfed3d0174784f929ddcc72b8027ce8f225bc0c95"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-webapp/9.4.20.v20190813/jetty-webapp-9.4.20.v20190813.jar",
+        "sha256": "59d9b5f238acb14eac3bf90f755eeabd9fc16c630217d0e7e01b99a38194036c"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-xml/9.4.20.v20190813/jetty-xml-9.4.20.v20190813.jar",
+        "sha256": "f4411ad9998e4cc202c849bb9b9e93aa2aa761b89a27cc746ca025849d659fd0"
+      },
+      {
+        "file": "m2/javax/servlet/jsp/jsp-api/2.1/jsp-api-2.1.jar",
+        "sha256": "545f4e7dc678ffb4cf8bd0fd40b4a4470a409a787c0ea7d0ad2f08d56112987b"
+      },
+      {
+        "file": "m2/com/sun/jersey/jersey-servlet/1.19/jersey-servlet-1.19.jar",
+        "sha256": "e7c086c51aa6be9e260ea6574d4608e7c252648a1dec5bc15f096a8626099709"
+      },
+      {
+        "file": "m2/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3.jar",
+        "sha256": "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784"
+      },
+      {
+        "file": "m2/log4j/log4j/1.2.17/log4j-1.2.17.jar",
+        "sha256": "1d31696445697720527091754369082a6651bd49781b6005deb94e56753406f9"
+      },
+      {
+        "file": "m2/commons-beanutils/commons-beanutils/1.9.4/commons-beanutils-1.9.4.jar",
+        "sha256": "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-configuration2/2.1.1/commons-configuration2-2.1.1.jar",
+        "sha256": "6471f4c4fb666960eba889b768164670097022d3084018affea555e6bf8d3d79"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-lang3/3.7/commons-lang3-3.7.jar",
+        "sha256": "6e8dc31e046508d9953c96534edf0c2e0bfe6f468966b5b842b3f87e43b6a847"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-text/1.4/commons-text-1.4.jar",
+        "sha256": "d624e443240a5fccc93edbfe758df1b69c07d7eaab6fc5e8f98f77d86ced8259"
+      },
+      {
+        "file": "m2/org/apache/avro/avro/1.7.7/avro-1.7.7.jar",
+        "sha256": "5ba0a81f4b0769122b6045b98bb9bbba5f2c69dbf736a6cc7ca4eb603c337487"
+      },
+      {
+        "file": "m2/org/codehaus/jackson/jackson-core-asl/1.9.13/jackson-core-asl-1.9.13.jar",
+        "sha256": "440a9cb5ca95b215f953d3a20a6b1a10da1f09b529a9ddea5f8a4905ddab4f5a"
+      },
+      {
+        "file": "m2/org/codehaus/jackson/jackson-mapper-asl/1.9.13/jackson-mapper-asl-1.9.13.jar",
+        "sha256": "74e7a07a76f2edbade29312a5a2ebccfa019128bc021ece3856d76197e9be0c2"
+      },
+      {
+        "file": "m2/com/thoughtworks/paranamer/paranamer/2.3/paranamer-2.3.jar",
+        "sha256": "e93f50ae4d0de11080677f44ab268691266fed2b3ff7bc6fd97636febae7d8fe"
+      },
+      {
+        "file": "m2/com/google/re2j/re2j/1.1/re2j-1.1.jar",
+        "sha256": "24ada84d1b5de584e3e84b06f0c7dd562cee6eafe8dea8083bd8eb123823bbe7"
+      },
+      {
+        "file": "m2/com/google/protobuf/protobuf-java/2.5.0/protobuf-java-2.5.0.jar",
+        "sha256": "e0c1c64575c005601725e7c6a02cebf9e1285e888f756b2a1d73ffa8d725cc74"
+      },
+      {
+        "file": "m2/com/google/code/gson/gson/2.2.4/gson-2.2.4.jar",
+        "sha256": "c0328cd07ca9e363a5acd00c1cf4afe8cf554bd6d373834981ba05cebec687fb"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-auth/3.3.0/hadoop-auth-3.3.0.jar",
+        "sha256": "4eb8870c4ad71f3ce6765e7417a46537d17e172fbed0fd2993139cab4c5f2b94"
+      },
+      {
+        "file": "m2/com/nimbusds/nimbus-jose-jwt/7.9/nimbus-jose-jwt-7.9.jar",
+        "sha256": "b4f58453e180a981eb744a19b4d56afb12f10c3dd35e7531cc58ee6cbf5bf286"
+      },
+      {
+        "file": "m2/com/github/stephenc/jcip/jcip-annotations/1.0-1/jcip-annotations-1.0-1.jar",
+        "sha256": "4fccff8382aafc589962c4edb262f6aa595e34f1e11e61057d1c6a96e8fc7323"
+      },
+      {
+        "file": "m2/net/minidev/json-smart/2.3/json-smart-2.3.jar",
+        "sha256": "903f48c8aa4c3f6426440b8d32de89fa1dc23b1169abde25e4e1d068aa67708b"
+      },
+      {
+        "file": "m2/net/minidev/accessors-smart/1.2/accessors-smart-1.2.jar",
+        "sha256": "0c7c265d62fc007124dc32b91336e9c4272651d629bc5fa1a4e4e3bc758eb2e4"
+      },
+      {
+        "file": "m2/org/ow2/asm/asm/5.0.4/asm-5.0.4.jar",
+        "sha256": "896618ed8ae62702521a78bc7be42b7c491a08e6920a15f89a3ecdec31e9a220"
+      },
+      {
+        "file": "m2/org/apache/curator/curator-framework/4.2.0/curator-framework-4.2.0.jar",
+        "sha256": "a2fee0f69261bd1cd2428880395b272d5b4652311b706df9f35278558b1c0573"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-simplekdc/1.0.1/kerb-simplekdc-1.0.1.jar",
+        "sha256": "9c9976a603833c001a8a4a4e5b2ea0a6775a84e5656b0eca1fe4eb4d068ceda7"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-client/1.0.1/kerb-client-1.0.1.jar",
+        "sha256": "020fa95a809b96358ab95d43666471838372659af1cbc3f24ef73c29374e9af0"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-config/1.0.1/kerby-config-1.0.1.jar",
+        "sha256": "244520e9bd61e8cd40a475fe615fbea45ca042fc9d50780df30bc7146f77b8c9"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-common/1.0.1/kerb-common-1.0.1.jar",
+        "sha256": "f62bb275781f8092bb6252e4ed201c9f5e4ab7a3d49b650ab58c87862b0bb2de"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-crypto/1.0.1/kerb-crypto-1.0.1.jar",
+        "sha256": "af94527564908b5a8ccfdfa8e67dd61c09e062459a0110d85115c42fc8f82b41"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-util/1.0.1/kerb-util-1.0.1.jar",
+        "sha256": "9cb1a2715a35cbabc9e8f1be3287bb086100763847e2f17577b72a025f8adaab"
+      },
+      {
+        "file": "m2/org/apache/kerby/token-provider/1.0.1/token-provider-1.0.1.jar",
+        "sha256": "022c92d7438b60789bc212f53f1f33ced2656ba8bf073a1f587df51e083e368a"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-admin/1.0.1/kerb-admin-1.0.1.jar",
+        "sha256": "27b012f556b02bdf4ecd0742a7ecdd725a562e95a194e3413662fe2e781ff889"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-server/1.0.1/kerb-server-1.0.1.jar",
+        "sha256": "dff4eebc6cadaa8bdc1084fc1d4c20fda954aed74913845e79c89572768e463f"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-identity/1.0.1/kerb-identity-1.0.1.jar",
+        "sha256": "35fd995cc7a0c71f86adaf716dee34f6e4d1e473eff452a74f4430bd196e6424"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-xdr/1.0.1/kerby-xdr-1.0.1.jar",
+        "sha256": "c24e2d9fbaef40a0a61ee36c19e41db5141bfbe7a2669be0227dee86ccca6d6f"
+      },
+      {
+        "file": "m2/org/apache/curator/curator-client/4.2.0/curator-client-4.2.0.jar",
+        "sha256": "67f238d8fb27f1aa271ffdf86aac2a16e0ef0898545fe3287adc6a29a05e604d"
+      },
+      {
+        "file": "m2/org/apache/curator/curator-recipes/4.2.0/curator-recipes-4.2.0.jar",
+        "sha256": "f2c0f6cd57042d6aba7b8222df422edc59b62e25fa89c1305e59dc6cfd9e59d3"
+      },
+      {
+        "file": "m2/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar",
+        "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
+      },
+      {
+        "file": "m2/org/apache/htrace/htrace-core4/4.1.0-incubating/htrace-core4-4.1.0-incubating.jar",
+        "sha256": "5d45b7904857c3e4ad36b3bcc57be2d2c5f308c69b5f6a58bd86aa7d48a25ef6"
+      },
+      {
+        "file": "m2/org/apache/commons/commons-compress/1.19/commons-compress-1.19.jar",
+        "sha256": "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerb-core/1.0.1/kerb-core-1.0.1.jar",
+        "sha256": "4db26bc4a106603044d8883f7280abc803b055b36f5c510a3fffc41e5de4c651"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-pkix/1.0.1/kerby-pkix-1.0.1.jar",
+        "sha256": "0410bc1950b57f4792ea6b86df59a2ee87e4ad69b33a17ded438e6686894346a"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-asn1/1.0.1/kerby-asn1-1.0.1.jar",
+        "sha256": "010a3c33e5b652f11cb29a6e66826a24331e526cf58662dccb4d6695fc6ca59d"
+      },
+      {
+        "file": "m2/org/apache/kerby/kerby-util/1.0.1/kerby-util-1.0.1.jar",
+        "sha256": "db7e2f329e160aaac305268ccb7287c16cf5542cffdd786a8592212df7c315aa"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/core/jackson-databind/2.10.3/jackson-databind-2.10.3.jar",
+        "sha256": "50eec40443f387be50a409186165298aaadbb6c4d4826d319720e245714600d2"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/core/jackson-core/2.10.3/jackson-core-2.10.3.jar",
+        "sha256": "fb185f7e6ecba1e2b4803788d278faa023312ca6d3109b2fa146d9e0435a9494"
+      },
+      {
+        "file": "m2/org/codehaus/woodstox/stax2-api/3.1.4/stax2-api-3.1.4.jar",
+        "sha256": "86d7c0b775a7c9b454cc6ba61d40a8eb3b99cc129f832eb9b977a3755b4b338e"
+      },
+      {
+        "file": "m2/com/fasterxml/woodstox/woodstox-core/5.0.3/woodstox-core-5.0.3.jar",
+        "sha256": "a1c04b64fbfe20ae9f2c60a3bf1633fed6688ae31935b6bd4a457a1bbb2e82d4"
+      },
+      {
+        "file": "m2/dnsjava/dnsjava/2.1.7/dnsjava-2.1.7.jar",
+        "sha256": "2c52a6fabd5af9331d73fc7787dafc32a56bd8019c49f89749c2eeef244e303c"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-hdfs-client/3.3.0/hadoop-hdfs-client-3.3.0.jar",
+        "sha256": "e042918a57b371ff8cd6eee8f956a7d61c5b7a2800c43106d7cb479109c4fe8f"
+      },
+      {
+        "file": "m2/com/squareup/okhttp/okhttp/2.7.5/okhttp-2.7.5.jar",
+        "sha256": "88ac9fd1bb51f82bcc664cc1eb9c225c90dc4389d660231b4cc737bebfe7d0aa"
+      },
+      {
+        "file": "m2/com/squareup/okio/okio/1.6.0/okio-1.6.0.jar",
+        "sha256": "114bdc1f47338a68bcbc95abf2f5cdc72beeec91812f2fcd7b521c1937876266"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/core/jackson-annotations/2.10.3/jackson-annotations-2.10.3.jar",
+        "sha256": "49dfdc4cfa46d165ecfed630ba164b6641d59d5fe1aa698a19c13f966d3f13cf"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-yarn-api/3.3.0/hadoop-yarn-api-3.3.0.jar",
+        "sha256": "5655a4dee9ae8ee089252f014fe162b5117888d4b206c9d6a30460aa02b5edb9"
+      },
+      {
+        "file": "m2/javax/xml/bind/jaxb-api/2.2.11/jaxb-api-2.2.11.jar",
+        "sha256": "273d82f8653b53ad9d00ce2b2febaef357e79a273560e796ff3fcfec765f8910"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-yarn-client/3.3.0/hadoop-yarn-client-3.3.0.jar",
+        "sha256": "8c61ee380a9e33787e8fdf068b7b5c6e0deb71e44d8695b496d5ebf79f3ea5bb"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/websocket/websocket-client/9.4.20.v20190813/websocket-client-9.4.20.v20190813.jar",
+        "sha256": "df5df7ea0b2d40e1011946cfa5fe27c86047f0c4e77ccc0b8c0c7f5518278bf3"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-client/9.4.20.v20190813/jetty-client-9.4.20.v20190813.jar",
+        "sha256": "31a88bfc59acb1716646d8211209f42e8b4c175be3b1dd5c3794dec8882dae50"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-http/9.4.20.v20190813/jetty-http-9.4.20.v20190813.jar",
+        "sha256": "242523f49e54f2b14f25ba129fefe182497404a81f2d579865442ee885df5996"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-util/9.4.20.v20190813/jetty-util-9.4.20.v20190813.jar",
+        "sha256": "5816ef44f73e76b8ef1c1ea848cc34c7b1f24771f3675353e2ef23eb920121d8"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/jetty-io/9.4.20.v20190813/jetty-io-9.4.20.v20190813.jar",
+        "sha256": "6dfcfd560135c3059547ef33c4a89317db2f94b9eb934ec1514d6967ea0a294b"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/websocket/websocket-common/9.4.20.v20190813/websocket-common-9.4.20.v20190813.jar",
+        "sha256": "a66eb0a5299e2f33addb0dca827cc95a0773c41a12ea70c0d52d51beabaecf65"
+      },
+      {
+        "file": "m2/org/eclipse/jetty/websocket/websocket-api/9.4.20.v20190813/websocket-api-9.4.20.v20190813.jar",
+        "sha256": "779a29060cc17bdeeeba147efc884ebff972cfff93dad2d37b11c93f95d4f67b"
+      },
+      {
+        "file": "m2/org/jline/jline/3.9.0/jline-3.9.0.jar",
+        "sha256": "d2b986fd15d05e0b900faba776c1de9b4dc4a4fcdfeaa12a8ab8fb2b290ed527"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-mapreduce-client-core/3.3.0/hadoop-mapreduce-client-core-3.3.0.jar",
+        "sha256": "c194058842ffbcde8c97f287136a9bec8870823569a9b1447e5d7805ab0d16fd"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-yarn-common/3.3.0/hadoop-yarn-common-3.3.0.jar",
+        "sha256": "5502120dd43b49a85ab0e7e7c6c716d770a01db81b4fb6d11db9bbd4a8169f60"
+      },
+      {
+        "file": "m2/javax/servlet/javax.servlet-api/3.1.0/javax.servlet-api-3.1.0.jar",
+        "sha256": "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482"
+      },
+      {
+        "file": "m2/com/sun/jersey/jersey-core/1.19/jersey-core-1.19.jar",
+        "sha256": "5d1841b925fad033c836d911573457c96608cdd99c30c084f61b091aff8aa698"
+      },
+      {
+        "file": "m2/javax/ws/rs/jsr311-api/1.1.1/jsr311-api-1.1.1.jar",
+        "sha256": "ab1534b73b5fa055808e6598a5e73b599ccda28c3159c3c0908977809422ee4a"
+      },
+      {
+        "file": "m2/com/sun/jersey/jersey-client/1.19/jersey-client-1.19.jar",
+        "sha256": "591118924e4ecad37b25d2e955ae9531f4f7752aed587f99c6ccc98e03aaae5e"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/module/jackson-module-jaxb-annotations/2.10.3/jackson-module-jaxb-annotations-2.10.3.jar",
+        "sha256": "8099caad4ae189525ef94d337d72d3e888abefabbbacbc9f3d2f096d534f2fb5"
+      },
+      {
+        "file": "m2/jakarta/xml/bind/jakarta.xml.bind-api/2.3.2/jakarta.xml.bind-api-2.3.2.jar",
+        "sha256": "69156304079bdeed9fc0ae3b39389f19b3cc4ba4443bc80508995394ead742ea"
+      },
+      {
+        "file": "m2/jakarta/activation/jakarta.activation-api/1.2.1/jakarta.activation-api-1.2.1.jar",
+        "sha256": "8b0a0f52fa8b05c5431921a063ed866efaa41dadf2e3a7ee3e1961f2b0d9645b"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/jaxrs/jackson-jaxrs-json-provider/2.10.3/jackson-jaxrs-json-provider-2.10.3.jar",
+        "sha256": "93026591dbb332030dbe865b9c811a016e470d8ff6daaa7031556d2185e62054"
+      },
+      {
+        "file": "m2/com/fasterxml/jackson/jaxrs/jackson-jaxrs-base/2.10.3/jackson-jaxrs-base-2.10.3.jar",
+        "sha256": "3b6b74311d094990e6d8de356363988050fb2bf5389138b198b01a0ceb9a9668"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-mapreduce-client-jobclient/3.3.0/hadoop-mapreduce-client-jobclient-3.3.0.jar",
+        "sha256": "3ac84472f014ca367d98f87d460f32eb754c4849718c2c5b3a650f2f602a2179"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-mapreduce-client-common/3.3.0/hadoop-mapreduce-client-common-3.3.0.jar",
+        "sha256": "0b14834ed51fe3b4269db69b90d1ba735c839c5065806567020118c5fe43346e"
+      },
+      {
+        "file": "m2/org/apache/hadoop/hadoop-annotations/3.3.0/hadoop-annotations-3.3.0.jar",
+        "sha256": "eb6cd862f133779a063c9bbf21b5785011c891f26ec84c8d58acf41de0c14a2d"
+      },
+      {
+        "file": "m2/it/unimi/dsi/fastutil/8.5.19/fastutil-8.5.19.jar",
+        "sha256": "c767a6bdcb7cb52fe1315ca1f4891389a75e63b2a15a6629865d7740dd3a8cf2"
+      }
+    ]
+  }
+}
