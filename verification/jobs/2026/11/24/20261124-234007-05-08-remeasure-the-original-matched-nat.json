@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-234007-05-08-remeasure-the-original-matched-nat",
+  "title": "05-08 remeasure the original matched native properties",
+  "description": "Recompile the locked supplied public reference; run its unchanged predicates, inverse and physical controls on the successor native binary. The two XML cases retain the original per-release conjuncts where the frozen namespace failed. All other pairs retain the exact two-copy scope. The recorded JBMC binaries and profiles are unchanged.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/matched_successor.py"
+    ]
+  },
+  "expected": "All original primary, control and inverse rows and their JVM-qualified scope are present together with the pre-repair native disposition.",
+  "submitted": {
+    "at": "2026-11-24T23:40:07+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "bwrap",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "37m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor.py 05 06 07 08",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/matched-native/05",
+    "verification/beyond-jbmc/scaffold-first/matched-native/06",
+    "verification/beyond-jbmc/scaffold-first/matched-native/07",
+    "verification/beyond-jbmc/scaffold-first/matched-native/08"
+  ]
+}

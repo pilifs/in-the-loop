@@ -45,6 +45,7 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
        python3 examples/tools/build.py ID --task T --certify-lrat   check every SAT/UNSAT call of a strict native verdict
        python3 examples/tools/build.py --upgrade-claims --help  find original consumer call sites for a changed dependency
        python3 examples/tools/build.py --change-plan --help  plan and resume one application change across caller claims
+       python3 examples/tools/build.py --discover-resource-workflows --help  generate resource lookup callers from two ordered deployments
        python3 examples/tools/build.py --inspect-jdbc-driver --help  check URL selection on a locked original driver classpath
        python3 examples/tools/build.py --review-upgrade --help  compare finite caller observations on two original classpaths
        python3 examples/tools/build.py ID --finite-domain  exhaust the certified integer inputs to each supported task on a JVM
@@ -217,6 +218,9 @@ def stages(out):
 
 
 def main(argv):
+    if argv and argv[0] == "--discover-resource-workflows":
+        from targets import resource_workflows
+        return resource_workflows.main(argv[1:])
     if argv and argv[0] == "--change-plan":
         from targets import change_plan
         return change_plan.main(argv[1:])

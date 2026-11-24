@@ -8,7 +8,7 @@ import unittest
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import change_evidence, change_helpers, change_inventory
+from targets import change_evidence, change_helpers, change_inventory, resource_workflows
 
 
 class ChangePlanTest(unittest.TestCase):
@@ -21,6 +21,21 @@ class ChangePlanTest(unittest.TestCase):
                         "loadedUpgradeOnEachReplay": True} for i, c in enumerate(self.cases)]
         self.binding = {"classpath": ["app", "dep"], "loadedDependencyClasses": ["a.Api"], "trials": self.trials}
         self.report = {**self.scope, "sides": {s: copy.deepcopy(self.binding) for s in ("old", "new")}}
+
+    def test_resource_workflow_oracle_distinguishes_prefixes_roots_and_an_unrelated_marker(self):
+        names = ["META-INF/first/java.lang.Deprecated", "META-INF/second/java.lang.Deprecated"]
+        expect = resource_workflows.expectation
+        union = expect("annotation names", names, names, ["primary", "3", "single"])
+        self.assertEqual(union.split("=")[1], "UpgradeProbe$First,UpgradeProbe$Last,UpgradeProbe$Shared")
+        first = expect("annotation names", names[:1], names, ["primary", "3", "reverse"])
+        self.assertEqual(first.split("=")[1], "UpgradeProbe$First,UpgradeProbe$Shared")
+        untouched = expect("annotation names", names, names, ["control", "3", "forward"])
+        self.assertEqual(untouched, "META-INF/first/java.lang.Override|META-INF/second/java.lang.Override=")
+        spi = ["META-INF/services/UpgradeProbe$Marker"]
+        one = expect("service instances", spi, spi, ["primary", "1", "single"])
+        two = expect("service instances", spi, spi, ["primary", "1", "forward"])
+        self.assertIn("UpgradeProbe$Last", two)
+        self.assertNotIn("UpgradeProbe$Last", one)
 
     def test_absent_manifest_providers_bind_the_launch_and_appearance_stops_reuse(self):
         with tempfile.TemporaryDirectory() as tmp:

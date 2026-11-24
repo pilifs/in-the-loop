@@ -1,0 +1,75 @@
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.List;
+
+public final class UpgradeProbe {
+    public interface Marker {}
+    public interface Other {}
+    public static final class First implements Marker {}
+    public static final class Shared implements Marker {}
+    public static final class Last implements Marker {}
+
+    private static final String[] resources = {RESOURCE_NAMES};
+
+    private static class Lookup extends URLClassLoader {
+        final List<String> names = new ArrayList<>();
+        Lookup(URL[] urls) { super(urls, ClassLoader.getSystemClassLoader().getParent()); }
+        @Override public Enumeration<URL> getResources(String name) throws IOException {
+            names.add(name);
+            return super.getResources(name);
+        }
+    }
+
+    public static String observe(String[] args) throws Exception {
+        int mask = Integer.parseInt(args[1]);
+        boolean control = "control".equals(args[0]);
+        boolean single = "single".equals(args[2]);
+        Path root = Files.createTempDirectory(java.nio.file.Paths.get("."), "lookup-");
+        Path types = Files.createDirectory(root.resolve("types"));
+        Path left = Files.createDirectory(root.resolve("left"));
+        Path right = Files.createDirectory(root.resolve("right"));
+        // These declarations are defined by the supplied loader, as a real service API and its providers would be.
+        for (Class<?> type : new Class<?>[]{Marker.class, Other.class, First.class, Shared.class, Last.class}) {
+            String file = type.getName() + ".class";
+            try (InputStream in = UpgradeProbe.class.getResourceAsStream("/" + file)) {
+                Files.copy(in, types.resolve(file));
+            }
+        }
+        for (int i = 0; i < resources.length; i++) {
+            if ((mask & (1 << i)) == 0) continue;
+            Path file = (single || i % 2 == 0 ? left : right).resolve(resources[i]);
+            Files.createDirectories(file.getParent());
+            String first = i % 2 == 0 ? First.class.getName() : Last.class.getName();
+            Files.write(file, (first + "\n" + Shared.class.getName() + "\n").getBytes(StandardCharsets.UTF_8));
+            if (resources.length == 1 && !single) {
+                // Two roots for a single resource key discriminate first-provider-only lookup.
+                Path second = right.resolve(resources[i]);
+                Files.createDirectories(second.getParent());
+                Files.write(second, (Last.class.getName() + "\n").getBytes(StandardCharsets.UTF_8));
+            }
+        }
+        Path a = args[2].equals("reverse") ? right : left;
+        Path b = args[2].equals("reverse") ? left : right;
+        URL[] urls = single ? new URL[]{types.toUri().toURL(), left.toUri().toURL()}
+                            : new URL[]{types.toUri().toURL(), a.toUri().toURL(), b.toUri().toURL()};
+        try (Lookup loader = new Lookup(urls)) {
+            List<String> found = new ArrayList<>();
+            INVOCATION
+            if (args[0].equals("discover")) return String.join("|", loader.names);
+            Collections.sort(found);
+            return String.join("|", loader.names) + "=" + String.join(",", found);
+        } finally {
+            try (java.util.stream.Stream<Path> files = Files.walk(root)) {
+                for (Path file : files.sorted(java.util.Comparator.reverseOrder()).collect(java.util.stream.Collectors.toList())) Files.delete(file);
+            }
+        }
+    }
+}

@@ -2,6 +2,7 @@
 import argparse
 import os
 from pathlib import Path
+import subprocess
 import zipfile
 
 from calibration import input_pair
@@ -35,8 +36,6 @@ def observation_pair(pair):
 def compare(first, current, warm):
     if first["inputs"] != current["inputs"] or first["policy"] != current["policy"]:
         raise ValueError("operator scope changed")
-    if first["selected"] != current["selected"]:
-        raise ValueError("automatic selection changed; retain this as a separate experiment")
     old = {r["candidate"]["id"]: r for r in first["runs"]}
     records = []
     for result in current["runs"]:
@@ -63,6 +62,29 @@ def compare(first, current, warm):
     return records
 
 
+def locked_candidates(work, pair, checker, missing):
+    selected = work / "locked.json"
+    selected.write_bytes(encoded(missing))
+    raw, temp = work / "locked-outputs", work / "locked-scratch"
+    raw.mkdir()
+    temp.mkdir()
+    guest = "/tool/lib/benchmark/beyond-jbmc/blind/repeat_locked.py"
+    cmd = ["bwrap", "--die-with-parent", "--new-session", "--unshare-user", "--unshare-pid", "--unshare-net",
+           "--unshare-ipc", "--unshare-uts", "--clearenv", "--ro-bind", "/usr", "/usr",
+           "--symlink", "usr/bin", "/bin", "--symlink", "usr/lib", "/lib", "--symlink", "usr/lib64", "/lib64",
+           "--dev", "/dev", "--proc", "/proc", "--remount-ro", "/proc", "--tmpfs", "/tmp", "--dir", "/etc",
+           "--ro-bind", "/etc/ld.so.cache", "/etc/ld.so.cache", "--ro-bind", str(JDK), "/opt/jdk",
+           "--ro-bind", str(checker), "/opt/checker", "--ro-bind", str(pair), "/inputs",
+           "--ro-bind", str(selected), "/locked.json", "--bind", str(raw), "/output", "--bind", str(temp), "/scratch",
+           "--setenv", "PATH", "/opt/jdk/bin:/usr/bin:/bin", "--setenv", "HOME", "/scratch",
+           "--setenv", "TMPDIR", "/scratch", "--setenv", "LANG", "C.UTF-8", "--setenv", "TZ", "UTC", "--chdir", "/scratch"]
+    for file in CODE:
+        cmd += ["--ro-bind", str(ROOT / file), "/tool/" + file]
+    cmd += ["--ro-bind", str(HERE / "repeat_locked.py"), guest, "/usr/bin/python3", "-B", guest]
+    subprocess.run(cmd, check=True)
+    return read(raw / "locked-report.json")
+
+
 def run(slot, checker, policy):
     output = DEST / "remeasured" / slot
     output.mkdir(parents=True, exist_ok=True)
@@ -85,18 +107,30 @@ def run(slot, checker, policy):
         current = launch(pair, work / "namespace", checker, policy)
         raw = work / "namespace/output/first"
         warm = read(raw / "warm.json")
-        comparisons = compare(first, current, warm)
+        earlier = [r["id"] for r in first["selected"]]
+        selected = [r["id"] for r in current["selected"]]
+        missing = [r for r in first["selected"] if r["id"] not in selected]
+        supplementary = locked_candidates(work, pair, checker, missing) if missing else {"runs": [], "warm": []}
+        measured = {r["candidate"]["id"]: r for r in current["runs"] + supplementary["runs"]}
+        warm_by_name = {r["candidate"]: r for r in warm + supplementary["warm"]}
+        locked_warm = [warm_by_name[n] for n in earlier if n in warm_by_name]
+        comparisons = compare(first, {**current, "runs": [measured[n] for n in earlier]}, locked_warm)
         archive = output / "executions.zip"
         with zipfile.ZipFile(archive, "w", zipfile.ZIP_DEFLATED) as z:
             for path in sorted(raw.rglob("*")):
                 if path.is_file():
                     z.write(path, path.relative_to(raw))
+            for path in sorted((work / "locked-outputs").rglob("*")):
+                if path.is_file():
+                    z.write(path, "locked/" + str(path.relative_to(work / "locked-outputs")))
         save(output / "comparison.json.gz",
              {"slot": slot, "phase": "post-disclosure repeat of the frozen artifact-only operator",
               "firstPassSha256": sha(first_path), "originalCheckerSha256": first["toolSha256"],
               "checkerSha256": current["toolSha256"], "originalPacket": first["inputs"],
               "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"), "job": os.environ.get("VERIFY_JOB_ID"),
-              "comparisons": comparisons, "warm": warm, "archiveSha256": sha(archive)})
+              "selection": {"first": earlier, "successor": selected, "separateLockedReplay": [r["id"] for r in missing],
+                            "oldImpactExit": first["impactExit"], "newImpactExit": current["impactExit"]},
+              "comparisons": comparisons, "warm": locked_warm, "archiveSha256": sha(archive)})
         print(slot, len(comparisons), "locked candidates,", len(warm), "cold/warm comparisons", flush=True)
 
 

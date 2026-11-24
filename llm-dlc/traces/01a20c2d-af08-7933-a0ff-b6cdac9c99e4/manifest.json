@@ -12,46 +12,52 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T23:35:41.232Z",
-  "duration_seconds": 62690,
+  "ended": "2026-11-24T23:57:08.085Z",
+  "duration_seconds": 63977,
   "stats": {
     "turns": 12,
-    "api_calls": 2929,
-    "tool_calls": 7518,
-    "tool_errors": 169,
+    "api_calls": 3012,
+    "tool_calls": 7682,
+    "tool_errors": 173,
     "compactions": 10,
     "peak_context_tokens": 550355,
     "usage": {
-      "input_tokens": 3895745,
-      "output_tokens": 1622749,
-      "cache_read_input_tokens": 810066816,
+      "input_tokens": 3925527,
+      "output_tokens": 1668037,
+      "cache_read_input_tokens": 837741056,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 4327,
-    "exec": 2820,
-    "apply_patch": 284,
+    "Bash": 4392,
+    "exec": 2904,
+    "apply_patch": 299,
     "wait": 46,
     "sleep": 38,
     "send_message_to_user_async": 3
   },
   "files_touched": [
+    "examples/tools/build.py",
     "examples/tools/targets/change_evidence.py",
     "examples/tools/targets/change_inventory.py",
     "examples/tools/targets/change_plan.py",
+    "examples/tools/targets/java/ResourceObserver.java.template",
+    "examples/tools/targets/resource_workflows.py",
     "examples/tools/targets/test_change_plan.py",
     "lib/benchmark/beyond-jbmc/README.md",
     "lib/benchmark/beyond-jbmc/additional_controls.py",
     "lib/benchmark/beyond-jbmc/blind/LoaderObservations.java",
     "lib/benchmark/beyond-jbmc/blind/OriginalObserver.java.txt",
     "lib/benchmark/beyond-jbmc/blind/ReplayReference.java",
+    "lib/benchmark/beyond-jbmc/blind/assisted_worker.py",
     "lib/benchmark/beyond-jbmc/blind/auto_upgrade.py",
     "lib/benchmark/beyond-jbmc/blind/calibration.py",
     "lib/benchmark/beyond-jbmc/blind/evaluate_panel.py",
     "lib/benchmark/beyond-jbmc/blind/identity_followup.py",
     "lib/benchmark/beyond-jbmc/blind/identity_worker.py",
     "lib/benchmark/beyond-jbmc/blind/manifest_controls.py",
+    "lib/benchmark/beyond-jbmc/blind/matched_successor.py",
+    "lib/benchmark/beyond-jbmc/blind/matched_worker.py",
     "lib/benchmark/beyond-jbmc/blind/original_plans.py",
     "lib/benchmark/beyond-jbmc/blind/packets.py",
     "lib/benchmark/beyond-jbmc/blind/public-entries.json",
@@ -59,6 +65,9 @@
     "lib/benchmark/beyond-jbmc/blind/references.py",
     "lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py",
     "lib/benchmark/beyond-jbmc/blind/repeat_locked.py",
+    "lib/benchmark/beyond-jbmc/blind/resource_comparators.py",
+    "lib/benchmark/beyond-jbmc/blind/resource_transfer.py",
+    "lib/benchmark/beyond-jbmc/blind/scaffold_audit.py",
     "lib/benchmark/beyond-jbmc/blind/scaffold_first.py",
     "lib/benchmark/beyond-jbmc/blind/tokenizer_followup.py",
     "lib/benchmark/beyond-jbmc/blind_report.py",
@@ -395,24 +404,24 @@
     {
       "index": 10,
       "started": "2026-11-24T22:43:02.114Z",
-      "ended": "2026-11-24T23:35:41.232Z",
+      "ended": "2026-11-24T23:57:08.085Z",
       "turns": 2,
-      "api_calls": 180,
+      "api_calls": 263,
       "usage": {
-        "input_tokens": 206100,
-        "output_tokens": 89310,
-        "cache_read_input_tokens": 36959616,
+        "input_tokens": 235882,
+        "output_tokens": 134598,
+        "cache_read_input_tokens": 64633856,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 295031
+      "peak_context_tokens": 363841
     }
   ],
   "log": {
-    "sha256": "fdab8911950fdb1c15bd5481964c4bbb9fcd18592fde8733990250e5a3a4c6b6",
-    "bytes": 43318098,
-    "lines": 23278,
-    "gzip_bytes": 7821271,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/fdab8911950fdb1c15bd5481964c4bbb9fcd18592fde8733990250e5a3a4c6b6.jsonl.gz"
+    "sha256": "c99b6404f763e01132d529e89ab424db35711d1c7eba1235cef7abaacd836d77",
+    "bytes": 44157696,
+    "lines": 23884,
+    "gzip_bytes": 7961431,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/c99b6404f763e01132d529e89ab424db35711d1c7eba1235cef7abaacd836d77.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1153,20 +1162,20 @@
       "log_sha256": "ef4f9102eabcad84e2a0e2193d69ae42d22b0ad84a4c948f5444e81b47ecf684"
     },
     {
-      "change_id": "wktltkronqksvxqnpunstsusvyknvokt",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "fdab8911950fdb1c15bd5481964c4bbb9fcd18592fde8733990250e5a3a4c6b6"
-    },
-    {
       "change_id": "mxwvunkumqlotkxruyunsqwxystotyzn",
       "commit_id": null,
       "immutable": false,
       "summary": "Bind local manifest lookups to public proofs (verification pending)",
       "body": "Eleven of sixteen disclosed release pairs qualified both finite questions on the original application verifier. The remaining five reached the correct production methods but declared local manifest JARs that were absent. Bind those negative lookups to the selected launch and cache, defer cache writes until they are rechecked, and keep additional or reordered providers open. A signed declaration may revisit an already bound JAR or the immediate next explicit provider. Batik now qualifies all eight entries in its two-width gradient claim in a capped probe. All 49 affected test groups and the test inventory passed.\n\nRecheck cold, warm, clean and wrong expectations on the six original XML and manifest-bearing release pairs. Also insert a real resource at a formerly missing path, explicitly bind it, and restore the original graph. Jobs 20261124-232633-manifest-bound-public-entries-for-slot-0, 20261124-232649-04-manifest-bound-release-and-negative-c, 20261124-232650-08-manifest-bound-release-and-negative-c, 20261124-232650-10-manifest-bound-release-and-negative-c, 20261124-232650-13-manifest-bound-release-and-negative-c, 20261124-232650-16-manifest-bound-release-and-negative-c and 20261124-232650-appearance-manifest-bound-release-and-ne.",
       "log_sha256": "fdab8911950fdb1c15bd5481964c4bbb9fcd18592fde8733990250e5a3a4c6b6"
+    },
+    {
+      "change_id": "rnnryovslwvzwwxuknoqmrmnrwtmxyny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Discover public resource lookup workflows (verification pending)",
+      "body": "Give the generator two ordered release graphs and a JDK. It finds public methods that enumerate class-loader resources, derives the marker-specific keys from both original releases, registers line, type and duplicate expectations, and builds independent resource roots and controls. An isolated 16-packet pass found the previously unreachable annotation-index primary and a separate Batik service iterator. All 60 populated original JVM trials matched. The scoped method stops are recorded for the other fourteen projects. All 58 affected groups, compiling all four original comparator adapters, the inventory and job schema passed.\n\nSix original application plans now agree cold, warm and clean and reject the wrong primary. Together the 16 pairs establish all 32 registered finite observations at the declared sample bounds. The manifest appearance control went from 0 to 82, refused an unbound provider and refuted preservation once explicitly bound. An audit checked 72 collected file digests, 40 plans and the registered source. The successor selector and JDK are pinned. The displaced-candidate fallback was independently qualified in a neutral namespace.\n\nJobs 20261124-234006-04-qualify-generated-resource-workflows, 20261124-234007-15-qualify-generated-resource-workflows, 20261124-234007-04-old-compare-the-generated-resource-co, 20261124-234007-04-new-compare-the-generated-resource-co, 20261124-234007-15-old-compare-the-generated-resource-co and 20261124-234007-15-new-compare-the-generated-resource-co verify the generated histories and matched three-engine controls. Jobs 20261124-234007-01-04-remeasure-the-original-matched-nat, 20261124-234007-05-08-remeasure-the-original-matched-nat, 20261124-234007-09-12-remeasure-the-original-matched-nat and 20261124-234007-13-16-remeasure-the-original-matched-nat repeat the blind references with the fixed native checker. Job 20261124-232650-13-16-recover-all-original-selections-af preserves newly ranked candidates and replays each displaced original.",
+      "log_sha256": "c99b6404f763e01132d529e89ab424db35711d1c7eba1235cef7abaacd836d77"
     }
   ],
   "logs": {
@@ -1474,6 +1483,12 @@
       "bytes": 22923082,
       "lines": 12226,
       "gzip_bytes": 4131422,
+      "url": null
+    },
+    "c99b6404f763e01132d529e89ab424db35711d1c7eba1235cef7abaacd836d77": {
+      "bytes": 44157696,
+      "lines": 23884,
+      "gzip_bytes": 7961431,
       "url": null
     },
     "cae5cd96503ca6c481daffb1e8badc47df103c1ddee0c3ee89382d2309b795f8": {

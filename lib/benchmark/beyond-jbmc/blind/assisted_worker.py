@@ -7,7 +7,7 @@ from release_cases import Claim,Subject,compile_java,javaenv,jvm_controls,measur
 from history import digest
 
 
-def main():
+def main(*, native_only=False):
     work=Path.cwd()
     spec=json.loads((SRC/"reference.json").read_bytes());packet=json.loads((INPUTS/"inputs.json").read_bytes())
     old,new=[graph(k,packet) for k in ("old","new")]
@@ -43,9 +43,13 @@ def main():
         record={"jvm":controls,"rows":[],"sourceSha256":digest(src),"primaryApiSha256":digest(api/"ReferenceAPI.class"),
                 "referenceSha256":digest(SRC/"ReferencePair.java"),"classpath":packet[side],"scope":spec["domain"],
                 "checkerSha256":digest(Path(os.environ["JVMCONTRACT"]))}
-        measure_subject(side,subject,"assisted",folder,env,cp,record,OUT/side,False)
+        measure_subject(side,subject,"assisted",folder,env,cp,record,OUT/side,False,native_only=native_only)
         receipt["sides"][side]={"rows":len(record["rows"]),"original":controls}
         write(receipt)
     receipt["status"]="measured";write(receipt)
 
-if __name__=="__main__":main()
+if __name__=="__main__":
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--native-only", action="store_true")
+    main(native_only=ap.parse_args().native_only)

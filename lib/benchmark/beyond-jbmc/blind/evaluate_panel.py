@@ -84,7 +84,7 @@ def automatic(slot):
         print(slot,len(report["selected"]),"automatic candidates",flush=True)
 
 
-def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py"):
+def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py", *, native_only=False):
     # The measured libraries and checker can only see the pinned public modules, their own caller and writable scratch.
     fake_home="/guest"
     jpath=fake_home+"/.sdkman/candidates/java/21.0.13.0+9-tem"
@@ -104,6 +104,7 @@ def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py"):
         if worker not in ("matched_worker.py","assisted_worker.py","identity_worker.py"):raise ValueError("unknown matched worker")
         cmd+=["/usr/bin/python3","-B","/tool/lib/benchmark/beyond-jbmc/blind/"+worker]
         if physical:cmd.append("--physical-only")
+        if native_only:cmd.append("--native-only")
         with (out/"process.log").open("wb") as f:
             proc=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)
         return proc.returncode

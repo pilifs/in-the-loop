@@ -93,7 +93,7 @@ def run(key, phase, out, physical_only):
         measure_subject(key, subject, phase, work, env, cp, record, out, physical_only)
 
 
-def measure_subject(key, subject, phase, work, env, cp, record, out, physical_only, original_cp=None):
+def measure_subject(key, subject, phase, work, env, cp, record, out, physical_only, original_cp=None, *, native_only=False):
     classes, jars = cp[0], cp[1:]
     checker = str(Path(os.environ.get("JVMCONTRACT", ROOT/"lib/target/release/jvmcontract")).resolve())
     if original_cp is None:
@@ -117,7 +117,7 @@ def measure_subject(key, subject, phase, work, env, cp, record, out, physical_on
             params = [tuple(p.strip().split()) for p in c.parameters.split(",") if p]
             name = c.method
             row = {"method": name, "expected": "violation" if c.fails else "verified"}
-            for engine in ("native","jbmc"):
+            for engine in (("native",) if native_only else ("native", "jbmc")):
                 folder = work / (name + "-" + engine)
                 folder.mkdir()
                 cmd = [checker, "prove", subject.owner+"#"+name, "--classes", str(classes), "--classpath", classpath(jars),
@@ -132,6 +132,9 @@ def measure_subject(key, subject, phase, work, env, cp, record, out, physical_on
                 archive.writestr(name+"/"+engine+"/argv.json", encoded(cmd))
                 for stream in ("stdout","stderr"): archive.writestr(name+"/"+engine+"/"+stream, m[stream])
                 row[engine] = result
+            if native_only:
+                record["rows"].append(row)
+                continue
             stock_cp = [stock,*cp]
             target = stock_run("ReleasedAssertions", name, stock_cp, params, archive, name+"/stock/target", bound=subject.bound, unwind=subject.unwind)
             if "arguments" in target:

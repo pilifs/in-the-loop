@@ -69,7 +69,7 @@ def physical(work,old,new,seeds):
             "accepted":proc.returncode==0 and [r['n'] for r in data]==seeds and all(r.get("primary")==True and r.get("control")==True and r.get("inverse")==False for r in data)}
 
 
-def main(physical_only):
+def main(physical_only, *, native_only=False):
     spec=json.loads((SRC/"reference.json").read_bytes())
     packet=json.loads((INPUTS/"inputs.json").read_bytes())
     old,new=[graph(s,packet) for s in ("old","new")]
@@ -95,7 +95,7 @@ def main(physical_only):
         record.update(status="matched original and two-copy controls passed",twoCopy=pin)
         write(record)
         base={"jvm":raw,"rows":[],"inputPacket":packet,"scope":spec["domain"],"twoCopy":pin,"checkerSha256":digest(Path(os.environ["JVMCONTRACT"]))}
-        measure_subject("blind",subject,"blind",data,env,cp,base,OUT/"comparison",False,original_cp=original)
+        measure_subject("blind",subject,"blind",data,env,cp,base,OUT/"comparison",False,original_cp=original,native_only=native_only)
         record["status"]="measured";write(record)
     except (subprocess.SubprocessError,ValueError,OSError,RuntimeError) as e:
         record.update(status="preparation or measurement incomplete",failure=repr(e))
@@ -105,4 +105,6 @@ def main(physical_only):
 
 if __name__=="__main__":
     ap=argparse.ArgumentParser(description=__doc__);ap.add_argument("--physical-only",action="store_true")
-    main(ap.parse_args().physical_only)
+    ap.add_argument("--native-only", action="store_true")
+    args = ap.parse_args()
+    main(args.physical_only, native_only=args.native_only)
