@@ -291,7 +291,7 @@ probe calls `new PatternProcessor(pattern)`, then `getNextTime(2014-03-04T10:00Z
 | GMT-10 | the same | `2014-03-05T10:00:00Z` | `2014-03-05T10:00:00Z` |
 
 `getPrevFileTime()` after `updateTime()` equals the recorded `getNextFileTime()` in every row (in `$O/logs/G-probe-releases.txt`).
-This is the brief's statement. The same probe on the jars built at the PR revisions waits for the Log4j job.
+This is the brief's statement. The built jars give the same results (see the Log4j job below).
 
 **H, Commons Lang** (`WeekProbe`, JDK 17 and 21). The probe calls
 `FastDateFormat.getInstance("YYYY-'W'ww-u", UTC, locale).parse("2025-W01-D", pos, calendar)`, with the calendar's
@@ -364,7 +364,7 @@ The jobs were written by `$O/scripts/submit_jobs.py` and committed with this rec
 | `20261124-134447-setup-build-icu4j-core-at-both-3249-revi` | D: ICU4J `main/core` at both revisions; RBBI tests, own and transplanted | **passed**, 5/5 steps in 1m57s, peak 1.6 GiB (collected in `08e02797e4`) |
 | `20261124-134447-setup-build-log4j-core-at-both-1173-revi` | G: `log4j-core-test -am` at both revisions; `PatternProcessorTest`, own and transplanted | **failed** at step 1 after 36.5 s. `log4j-api` unpacks `log4j-api-java9:zip:2.19.1-SNAPSHOT`, and `-am` from `log4j-core-test` does not bring that module into the reactor, so Maven looked for the zip on `repository.apache.org/snapshots` and did not find it. Again the setup's mistake. Inline, `-pl log4j-api-java9,log4j-api -DskipTests package` then built in 6 s. |
 | `20261124-140027-setup-build-log4j-core-at-both-1173-revi` | G: the same with `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am`, `package` in every step | **failed** at step 1 after 22.6 s: with Maven on JDK 11, `log4j-api-test` does not compile (`StackLocatorUtilTest` imports `sun.reflect.Reflection`). Upstream CI runs Maven on JDK 8 with toolchain 11 (`.github/workflows/build.yml`). Inline, `-pl log4j-api-java9,log4j-api,log4j-api-test -DskipTests package` on JDK 8 then built. |
-| `20261124-141323-setup-build-log4j-core-at-both-1173-revi` | G: the same, Maven running on JDK 8 | pending |
+| `20261124-141323-setup-build-log4j-core-at-both-1173-revi` | G: the same, Maven running on JDK 8 | **passed**, 5/5 steps in 1m13s, peak 1.3 GiB (collected in `61cbad481871`) |
 
 **B, POI** (job `20261124-135600-setup-build-apache-poi-s-poi-module-at-b`). Gradle 9.8.1 ran `--offline` on JDK 17;
 `TestDataFormatter` gives:
@@ -410,6 +410,44 @@ process that sets kk-KZ before constructing the formatter gives `0,001` on the p
 This is the brief's statement. Log4j API prints "could not find a logging provider" on stderr, because no log4j-core is
 on the classpath; it is harmless.
 
+**G, Log4j** (job `20261124-141323-setup-build-log4j-core-at-both-1173-revi`). Maven 3.8.4 ran on JDK 8 with toolchain
+11, `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am -Dtest=PatternProcessorTest package`:
+
+| Step | Result |
+|---|---|
+| fix | 25/25 pass |
+| parent's own | 14/14 pass |
+| landed file on the parent | **9 fail**: `testGetNextTimeDailyReturnsFirstHourOfNextDayHonoringTimeZoneOption1`, `…Option2` and `…Option3`, plus six that the landed file rewrote to `java.time` (`…DstStart`, `…DstEnd`, `…DstJan`, `…DstJun`, `…InGmtIfZoneIsInvalid`, and `testGetNextTimeHourlyReturnsFirstMinuteOfHourAfterNextHourDstEnd`). The setup did not examine why the six fail. |
+| fix, offline | 25/25 pass |
+
+Jars (2.19.1-SNAPSHOT):
+- `$O/artifacts/G-logging-log4j2-parent-log4j-core.jar`: `da05ae3790513bb74285ce65a37e9b06829b82d9af2939df826a815176802b6f`
+- `$O/artifacts/G-logging-log4j2-fix-log4j-core.jar`: `c98f9f1dad7d5e81f893838971083cabe252e454c3568c11db0f47e4f3df9b60`
+- `G-logging-log4j2-{parent,fix}-log4j-api.jar`: both `c9d2f400916a5346816deff5309f725069804a810e7d0492294d931a391d7582`.
+  The build is reproducible, so the api jars are byte-identical.
+
+Class and resource digests in log4j-core:
+
+| Entry | parent | fix |
+|---|---|---|
+| `PatternProcessor.class` | `0ff2c4356701b9bb4249bbaad5bb2c1352d18cb5d6a8ecadafd86d39a35a6aa1` | `538564676d2e264f509005f722b199f0d02a248984b48b8c748188a9b6fb987e` |
+| `DatePatternConverter.class` | `0b9a9ec0f1a1afa981705c54e23fb6b35dfdc2b193c959b6595e46a86e89df01` | `3eaffab3d596a60d4f235ff6a67386cbd57b12687fee7687b05cd1da123cfeec` |
+| `Log4j2Plugins.dat` (plugin metadata) | `27f1c13e27939d5bb7a1694c49e3b99849a37b151cb80581ac381a761474d6f2` | the same |
+
+The runtime classpath is log4j-api followed by log4j-core; the core module's other dependencies are optional. The command
+(offline works after this job):
+
+```bash
+cd $O/worktrees/G-logging-log4j2-fix && JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem $O/tools/apache-maven-3.8.4/bin/mvn -B -o \
+  -s $O/maven-settings.xml -t $O/toolchains.xml $SK -Dbnd.baseline.skip -Dsurefire.failIfNoSpecifiedTests=false \
+  -pl log4j-api-java9,log4j-core-java9,log4j-core-test -am -Dtest=PatternProcessorTest package
+```
+
+**G preflight on the built jars** (`RolloverProbe`, JDK 21, `$O/logs/G-probe.txt`). The parent behaves like 2.19.0 and the
+fix like 2.20.0 in all four rows of the release table above: an explicit GMT−6 zone gives `2014-03-05T06:00:00Z` under
+both defaults on the fix, against `2014-03-04T14:00:00Z` and `2014-03-05T10:00:00Z` on the parent. An omitted zone gives
+the default's deadline on both.
+
 **D, ICU4J** (job `20261124-134447-setup-build-icu4j-core-at-both-3249-revi`). It ran Maven 3.10.0 on JDK 17 with
 `-pl main/core -am` (framework and core); `-Dtest=RBBITestExtended,RBBIMonkeyTest,RBBITestMonkey,RBBITest,RBBIAPITest,BreakIteratorTest`
 gives 61 tests.
@@ -439,7 +477,7 @@ POI's `:poi` configurations were all resolved online before its job ran: an init
 `:poi:dependencies --offline` then worked at both revisions. The ICU and Log4j jobs resolve online in their first step
 and run the rest offline.
 
-**Disk** after setup: `$O` holds 2.4 GB, mostly the 20 worktrees (POI and ICU are the large ones). `$O/m2` is 566 MB
+**Disk** after setup: `$O` holds 2.5 GB, mostly the 20 worktrees (POI and ICU are the large ones). `$O/m2` is 566 MB
 and `$O/gradle-home` 393 MB. The mirrors add about 240 MB, of which POI is 128 MB and ICU 64 MB.
 
 **Checker.** `lib/target/release/jvmcontract` at setup is up to date with the checkout (`cargo build --release --bin
@@ -465,9 +503,7 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
   - H Commons Lang: `H-commons-lang-{parent,fix}.jar`.
   - I Gson: `I-gson-{parent,fix}.jar`.
   - B POI 6.0.0-SNAPSHOT: `B-poi-{parent,fix}.jar`.
-  - G Log4j: `G-logging-log4j2-{parent,fix}-log4j-{api,core}.jar` come from job
-    `20261124-141323-setup-build-log4j-core-at-both-1173-revi` (see [Jobs](#jobs) for its state). Until then, the
-    2.19.0 and 2.20.0 release jars stand in.
+  - G Log4j 2.19.1-SNAPSHOT: `G-logging-log4j2-{parent,fix}-log4j-{api,core}.jar` (classpath: api, then core).
 - **Runtime classpaths**: `$O/logs/WT.runtime-classpath.txt`.
   - Most built jars need nothing else.
   - Collections needs commons-codec (1.19.0 for #628, 1.23.0 for #755).
@@ -499,7 +535,7 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
   - I, `MapTest`/`JsonReaderPathTest`/`JsonParserTest`: pass / pass / **7 failures**.
   - **C and F #628 pass on both sides even with the landed test**: C changed only test metadata, and #628 is a
     performance fix. For them, the probes below are the discriminators.
-  - G (`PatternProcessorTest`) is in the pending job.
+  - G, `PatternProcessorTest`: pass / pass / **9 failures**. Three are the `HonoringTimeZoneOption` tests; six are tests the landed file rewrote, not examined.
 - **The brief's preflight observations, reproduced as stated** on the built jars, identical on JDK 21.0.13:
   - **A**: NY cursor 40 → 80, with the parent `05:00Z` twice and the fix `05:00Z`/`06:00Z`. Berlin 37 → 74, with
     `00:00Z` twice versus `00:00Z`/`01:00Z`. The read at end of input throws with error index = index. The builder
@@ -514,7 +550,7 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
   - **E**: the parent gives `c3a9e4 / c3a9e4 / b8ad5a`, the fix `c3a9e4` ×3; guards untouched.
   - **F**: the parent returns `b` and removes it at 628-parent and 755-fix; it returns `d` and throws on `remove` at
     628-fix and 755-parent. A flat chain is the same at all four.
-  - **G** (release jars 2.19.0 and 2.20.0): the explicit GMT−6 zone gives 06:00Z on March 5, 2014 under both defaults
+  - **G** (release jars 2.19.0 and 2.20.0, and the built jars, which match them side for side): the explicit GMT−6 zone gives 06:00Z on March 5, 2014 under both defaults
     on 2.20.0 and two different deadlines on 2.19.0. With the zone omitted, the old deadlines stay on both.
   - **H**: lenient day 8 throws on the parent and gives `1736121600000` on the fix. Strict 0 goes from accepted to
     rejected. Strict 15 is rejected on both. 7 is the same.
@@ -553,6 +589,7 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
 - **Log4j**: run Maven 3.8.4 **on JDK 8** with `-t $O/toolchains.xml` (toolchain 11), as upstream CI does, with
   `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am` and `package`. Each setup try that did otherwise failed
   (see [Jobs](#jobs)).
+- **Log4j**: `Log4j2Plugins.dat` and the log4j-api jar are byte-identical on both sides; `PatternProcessor` and `DatePatternConverter` differ.
 - **No snapshot dependencies** from outside are used. The only SNAPSHOT versions are the projects' own modules.
 - The probes set their own state (zones, locales), and Log4j's probe runs one JVM per default zone.
 - **POI**: `DateUtil` and `LocaleUtil` are byte-identical on both sides; `DataFormatter` and `CellNumberFormatter` differ.
