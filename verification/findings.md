@@ -18,6 +18,73 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-064: a watcher stopped a run that was extending the lead over JBMC because it had not done the named fixes first
+
+- **Status**: open. The user decided the policy on 2026-11-24, and it applies from the next verdict. Whether it works is measured on the next runs, starting with `beyond-jbmc-scaffold-first`.
+- **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the queued run `beyond-jbmc-java-change-verification-cam` (Astra 6.2 at max effort, session `c3caedf3`).
+- **Found**:
+  - **The verdicts.**
+    - At cycle 2's verdict the watcher continued for two named fixes: the Batik/dom4j XML-resource isolation, and re-measuring the frozen 187-claim and blind decisions affected by the rename bug (VF-062).
+    - Cycle 3 re-measured the 187 (no disposition changed) and spent the rest on new capabilities. It ran the JDK's `StringTokenizer` bytecode, proved the ISCWT glyph contract for all 1,024 widths (478 solver answers independently checked), proved Guava's unsigned hex round trip for every 32-bit word where stock JBMC wrongly reported a failure, and raised exception replay from 6/20 to 20/20 across five JDKs.
+    - The watcher stopped the run at cycle 3's verdict because the named fixes were not done, "whatever the new wins".
+  - **The user's view:** the overall goal is to extend the lead over JBMC, and good progress could have been had there. Both are fine, named fixes and new capabilities. Extra cycles are affordable.
+- **The policy (the user, 2026-11-24)**:
+  - **Lead-extending capability work is a reason to continue.** New, JVM-backed checker capability that extends the lead over JBMC (new families decided, stock-JBMC misses shown, independent transfers) counts as progress on its own. Don't stop a run because it chose that over named fixes.
+  - **Name what's unfinished, but don't make it a condition.** At a verdict, keep naming the open fixes (record them in the run's results or a finding). They are not a condition for continuing while real capability progress is being made.
+  - **Stop for the usual reasons only:** churn (cycles with no new decision and only the blocker moving), a reached outcome, something only a person can decide, or soundness problems left unrecorded.
+  - **Extra cycles are acceptable** to get both the fixes and the capabilities.
+- **What would close it**: a run in which named fixes and new capability work both progress across continued cycles. If a run again leaves the named fixes undone across several cycles, the continue message's inability to steer it toward them is the problem to solve. That is recorded for planning, not worked around by the watcher, since the continue message is the user's.
+- **Related**: VF-062 (the rename isolation fixes left open); VF-063 (scaffolding before solving); the `single-agent-run` skill's verdict rules; `prompt=scaffold-first`.
+
+### VF-063: the product's main gap is investigation and claim scaffolding, not solving
+
+- **Status**: open. This is an important product gap. The user asked on 2026-11-24 for it to be tracked, for future runs to be directed to scaffold before solving (`prompt=scaffold-first`), and for the beyond-JBMC brief to be queued again on that prompt.
+- **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the queued run `beyond-jbmc-java-change-verification-cam` (Astra 6.2 at max effort, session `c3caedf3`, 3 cycles).
+- **Found**:
+  - **When a case is supplied, the checker is strong.**
+    - Strict native decided 179/187 historical claims (94 proofs, 85 refutations on the original JVM), against 147 for integrated staged JBMC and 144 for stock JBMC, with no decisions lost.
+    - On the disclosed cases, it proved mixed-version wire, numeric and reflection-metadata claims.
+  - **On unfamiliar upgrades, cold, it decided nothing.**
+    - On the sealed panel of 16 release pairs (16 projects, 4 strata), the automatic workflow reached a selected public operation on both releases in 12/16 and decided 0/16 of the registered primary questions. The brief's suggested target was 8/16.
+    - In one project, it nominated the registered annotation-index lookup and could not construct the class loader and resources it needs.
+    - With the reference caller supplied, native decided 1 (Cactoos' sticky scalar).
+    - The historical shadow of 32 external upgrades is still 0/32 automatic primary decisions.
+  - **So the loss is upstream of the solver.** It lies in:
+    - finding the public entry and the observation that changed;
+    - generating a caller that runs on both original releases;
+    - recovering class loaders, resources and startup state;
+    - registering a question with its expected behaviour and an unchanged control.
+- **Why it matters**: the product proves a change to Java code from a PR, a commit or a URL, with no user-written harness (`/prove-java-change`; the organic-PR briefs' "one URL from intake to a qualified verdict"). Every decision depends on this scaffolding being automatic. The queued organic-PR briefs exercise it directly, so their results are the next evidence.
+- **What would close it**:
+  - **A blocker ranking.** Rank the scaffolding blockers by how many independent projects each held up, starting with the 12 reached and 4 unreached blind pairs.
+  - **Per-case measurements.** For each case, record whether the observation was discovered, whether the caller reached both releases, whether the question was registered before solving, and where scaffolding stopped.
+  - **A cold, automatic decision rate** on a freshly drawn panel that moves well off 0/16, with zero known incorrect native decisions.
+- **Related**:
+  - **VF-054:** Avro, where the original scope was blocked at startup.
+  - **VF-062:** the before/after rename isolation, whose open Batik/dom4j item is a scaffolding problem too, at resource lookup.
+  - **The queue:** `beyond-jbmc` queued again with `prompt=scaffold-first`.
+
+### VF-062: the checker's before/after renaming was visible to the program, in both directions
+
+- **Status**: open. The class-name and proof-cache parts are fixed; the resource-lookup part and a re-measurement of the blind panel remain.
+- **Raised**: 2026-11-24 by the watcher, from the advisor's reading of the queued run `beyond-jbmc-java-change-verification-cam` (Astra 6.2 at max effort, session `c3caedf3`, 3 cycles).
+- **Found**:
+  - **A false counterexample.** On the blind panel, the native checker refuted equality on a generated Sisu Plexus caller. The old version's `toString()` carried the checker's synthetic `before.` package in its class name, although both unmodified releases return the same string for both Boolean inputs, the witness included. It counts in the frozen blind result as an incorrect native decision (`lib/benchmark/beyond-jbmc/blind_report.py`).
+  - **A false proof.** The same renaming could also hide a real difference: on a constructed control, the frozen checker proved equality although the original JVMs returned different strings for both inputs.
+  - **So the bug is two-sided.** It produced accepted results the JVM refutes in both directions, the kind of failure VF-055 is about. Any frozen native proof or refutation that involves an observed class name (`toString`, `getName`, `getSuperclass`) or reflective lookup is suspect until it is re-measured.
+  - **A stale proof cache.** A separate regression showed `Class.forName("lookup.Optional")`: equality held while neither release had the class. After the class was added to the new release only, the JVMs answered false and true, but the cache reused the earlier proof.
+- **Fixed in the run (cycle 2, `mrnrzoyr`, `yopsvwqk`, `yptnxvlp`)**:
+  - The checker preserves original names in equivalence.
+  - The proof cache's key binds the ordered class providers and their contents.
+  - The constructed control is now refuted with the strings both JVMs return, and the Plexus caller is proved unchanged.
+  - Eight post-freeze cold and warm decisions on Plexus and Commons Codec matched the JVMs.
+  - Cycle 3 re-ran all 187 historical claims on the final checker: no disposition changed (94 proved, 85 refuted, 8 open; `verification/beyond-jbmc/followup/historical-native/`, job 20261124-124601).
+- **Still open**:
+  1. **Resource lookup.** Batik and dom4j hit the same isolation problem when the renamed old definitions look up XML resources (`verification/beyond-jbmc/blind/04/assisted/report.json`, `blind/16/assisted/report.json`).
+  2. **The blind panel.** Its decisions, and the calibration's, are not yet re-measured with the fixed checker. The frozen 0/16 stands as recorded, but the per-project dispositions that involve class names or resources should be repeated.
+- **Closes when**: both open items are done, with a control that renames nothing the program can observe, and no native decision changes against the JVMs.
+- **Related**: VF-055 (an accepted result the JVM refutes); VF-063 (scaffolding, of which the resource isolation is a part); VF-064 (why the run stopped before these were done).
+
 ### VF-061: OpenAI's filter stops clustered on raw-bytecode Lean work; precautions for more Lean work
 
 - **Status**: open, as a reference for later. Read it before another brief asks a Codex agent for Lean proofs over raw JVM bytecode. Recorded at the user's request on 2026-11-24, from the advisor's analysis.
