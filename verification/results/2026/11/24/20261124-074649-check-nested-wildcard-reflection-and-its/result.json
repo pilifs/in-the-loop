@@ -1,0 +1,305 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-074649-check-nested-wildcard-reflection-and-its",
+  "title": "Check nested wildcard reflection and its Spring transfer",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 8m52s, peak 1.0 GiB (estimated 8m00s, 5.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-074649-check-nested-wildcard-reflection-and-its.json",
+    "sha256": "e774463e0dbf6299184ba574a2c7315bb52de09928b20eb73392a67a69fe8c05",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-074649-check-nested-wildcard-reflection-and-its",
+      "title": "Check nested wildcard reflection and its Spring transfer",
+      "description": "Repeat the original local predicate and its inverse plus fresh interface, argument, and bound arrays. Recheck both released Spring resolution vectors and cache histories with the same caller source compiled on the old graph. Record the separate raw getter, nested method return type and released Converter signature subclaims. Include stock post-call controls and JVM counterexample replays.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvm:generic-signatures",
+        "jbmc:standalone"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/generic_interfaces.rs"
+        ]
+      },
+      "expected": "Seventeen reflection rows and four primitive-view controls with physical checks, strict statuses and stock assertion receipts. The original framework question stays visible if only a metadata subclaim closes.",
+      "submitted": {
+        "at": "2026-11-24T07:46:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 23,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "8m",
+        "timeout": "50m"
+      },
+      "steps": [
+        {
+          "name": "Wildcard, return type and framework cases",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified S01 S02-S09-old S02-S09-new",
+          "cwd": "."
+        },
+        {
+          "name": "Qualified Short image",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified W02-controls --output verification/beyond-jbmc/short-image",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/S01",
+        "verification/beyond-jbmc/qualified/S02-S09-old",
+        "verification/beyond-jbmc/qualified/S02-S09-new",
+        "verification/beyond-jbmc/short-image/W02-controls"
+      ]
+    }
+  },
+  "sourceCommit": "a517dd6cb4b93181fe836954143e094e57fe57c8",
+  "startedAt": "2026-11-24T08:01:22+00:00",
+  "finishedAt": "2026-11-24T08:13:53+00:00",
+  "wallSeconds": 751.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2485762,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 3000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1112625152,
+    "wallSeconds": 532.3,
+    "cpuSeconds": 541.3,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 1.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Wildcard, return type and framework cases",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified S01 S02-S09-old S02-S09-new",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3000.0,
+      "cancelled": false,
+      "wallSeconds": 524.455,
+      "cpuSeconds": 531.291,
+      "cpuThrottledSeconds": 0.78,
+      "peakMemoryBytes": 1112625152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-wildcard-return-type-and-frame.log",
+        "lines": 20,
+        "bytes": 1173,
+        "sha256": "f2fdd922d9bcd41bbafd8418cb9d25819e74f1eeff76ab6e4778a140e5773744",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "S01 3 original checks passed",
+        "S01 intact verified unverifiable FAILURE FAILURE",
+        "S01 inverse violation unverifiable SUCCESS FAILURE",
+        "S01 defensiveCopies verified unverifiable SUCCESS SUCCESS",
+        "S02-S09-old 7 original checks passed",
+        "S02-S09-old resolved unverifiable violation SUCCESS SUCCESS",
+        "S02-S09-old unresolved unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-old methodReturn unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-old releasedSignature verified unverifiable SUCCESS SUCCESS",
+        "S02-S09-old afterClear unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-old publicMethod verified unverifiable FAILURE FAILURE",
+        "S02-S09-old genericReturn unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new 7 original checks passed",
+        "S02-S09-new resolved unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new unresolved unverifiable violation SUCCESS SUCCESS",
+        "S02-S09-new methodReturn unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new releasedSignature verified unverifiable SUCCESS SUCCESS",
+        "S02-S09-new afterClear unverifiable unverifiable SUCCESS SUCCESS",
+        "S02-S09-new publicMethod verified unverifiable FAILURE FAILURE",
+        "S02-S09-new genericReturn unverifiable unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Qualified Short image",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified W02-controls --output verification/beyond-jbmc/short-image",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3000.0,
+      "cancelled": false,
+      "wallSeconds": 7.815,
+      "cpuSeconds": 10.046,
+      "cpuThrottledSeconds": 0.292,
+      "peakMemoryBytes": 103907328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-qualified-short-image.log",
+        "lines": 5,
+        "bytes": 283,
+        "sha256": "f65f6bca2c794cc221bf207bca76aba5b74811e86068a53239293951f19bbb83",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "W02-controls 7 original checks passed",
+        "W02-controls signed verified unverifiable FAILURE FAILURE",
+        "W02-controls bounds verified unverifiable FAILURE FAILURE",
+        "W02-controls atomic unverifiable unverifiable FAILURE FAILURE",
+        "W02-controls opaqueIdentity unverifiable violation FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/S01/executions.zip",
+      "change": "added",
+      "bytes": 71779,
+      "sha256": "1dc473f86abb1fee838ea9c7affa51a30ff89f0620ff38fa5e3400370f01c7f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/S01/results.json.gz",
+      "change": "added",
+      "bytes": 2156,
+      "sha256": "023bda88bf20996dbdba1d6f707462ec112c236796425b062f3466901a23ec51",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/S02-S09-old/executions.zip",
+      "change": "added",
+      "bytes": 464803,
+      "sha256": "c898f3e92df934d27013276f197f240bc50696ef58f3a1ca3b43e10b8f0a9a80",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/S02-S09-old/results.json.gz",
+      "change": "added",
+      "bytes": 3869,
+      "sha256": "401f76ce4b5dfa4fa381fcd9318ea94ee5cdd8c6a517cbe805fa2ab7cd9ea6a4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/S02-S09-new/executions.zip",
+      "change": "added",
+      "bytes": 462575,
+      "sha256": "15a23ffba2814b8a5d45f5f0011c115170caaf879347a08fa6c9e68f5231070b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/S02-S09-new/results.json.gz",
+      "change": "added",
+      "bytes": 3964,
+      "sha256": "3607ec420a510a6c70a8c4450bdfde2b7ea34b56c432b3fa8ddc89e258d58609",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/short-image/W02-controls/executions.zip",
+      "change": "added",
+      "bytes": 148325,
+      "sha256": "b87ceb06110238f11c7ac1df066531a3a2090b592fbee074b42bb86ec102ee0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/short-image/W02-controls/results.json.gz",
+      "change": "added",
+      "bytes": 3051,
+      "sha256": "4b35096b3c5828511d589d8f57ab71c64f41f6f5391f2e7fa29164f7279046c6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:14:09+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/S01/executions.zip",
+      "verification/beyond-jbmc/qualified/S01/results.json.gz",
+      "verification/beyond-jbmc/qualified/S02-S09-old/executions.zip",
+      "verification/beyond-jbmc/qualified/S02-S09-old/results.json.gz",
+      "verification/beyond-jbmc/qualified/S02-S09-new/executions.zip",
+      "verification/beyond-jbmc/qualified/S02-S09-new/results.json.gz",
+      "verification/beyond-jbmc/short-image/W02-controls/executions.zip",
+      "verification/beyond-jbmc/short-image/W02-controls/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a5025dde8f75d6626f0779e97074fdd399cd0455",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a5025dde8f75d6626f0779e97074fdd399cd0455/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T081353Z-846759e1a1157c87",
+      "outputs": "20261124T081353Z-893175d7279e619c",
+      "diff": "20261124T081353Z-9112565cd5a87a6b"
+    }
+  }
+}
