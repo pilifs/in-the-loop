@@ -38,7 +38,19 @@ public final class Radix {
     public static boolean unicode() { return Integer.parseInt("\u0661", 16) == 1; }
     public static boolean wrong(boolean withSign) { return Integer.parseInt(withSign ? "-a" : "A", 16) == 10; }
 
+    public static long malformed(boolean missing, boolean wide) {
+        String text = missing ? null : "z";
+        return wide ? Long.parseLong(text, 16) : Integer.parseInt(text, 16);
+    }
+
     public static void main(String[] args) {
+        if (args.length != 0) {
+            for (boolean missing : new boolean[]{false, true}) for (boolean wide : new boolean[]{false, true}) {
+                try { throw new AssertionError(malformed(missing, wide)); }
+                catch (NumberFormatException expected) { System.out.println(expected.getMessage()); }
+            }
+            return;
+        }
         for (char c = 0; c < 128; ++c) if (!hex(c)) throw new AssertionError();
         if (!limits() || !unicode() || !wrong(false) || wrong(true)) throw new AssertionError();
     }

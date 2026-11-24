@@ -701,6 +701,12 @@ impl<'a> Machine<'a> {
     /// A static call into the JDK: the model's bytecode when the tool has a model that defines the method, else
     /// the interpreter's natives. The model is the definition both engines share, so it comes first.
     fn call_static_jdk(&mut self, owner: &str, name: &str, descriptor: &str, args: Vec<Value>) -> Exec<Option<Value>> {
+        if owner == "java/lang/NumberFormatException" && name == "forInputString" && matches!(descriptor,
+            "(Ljava/lang/String;)Ljava/lang/NumberFormatException;" | "(Ljava/lang/String;I)Ljava/lang/NumberFormatException;") {
+            if let Some((class, method)) = self.cp.bootstrap_method(owner, name, descriptor) {
+                return self.invoke(&class, &method, args);
+            }
+        }
         if self.cp.concurrent_table_read(owner, name, descriptor) {
             if let [Value::Ref(r), Value::Int(index)] = args.as_slice() {
                 if let Object::Array { element: Type::Object(class), data } = self.heap.get(*r) {

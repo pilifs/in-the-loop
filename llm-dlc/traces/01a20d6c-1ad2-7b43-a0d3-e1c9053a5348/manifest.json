@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-24T11:58:38.307Z",
-  "ended": "2026-11-24T12:23:02.576Z",
-  "duration_seconds": 1464,
+  "ended": "2026-11-24T12:32:51.883Z",
+  "duration_seconds": 2054,
   "stats": {
-    "turns": 7,
-    "api_calls": 11,
+    "turns": 8,
+    "api_calls": 13,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 93131,
+    "peak_context_tokens": 111222,
     "usage": {
-      "input_tokens": 94816,
-      "output_tokens": 1193,
-      "cache_read_input_tokens": 622208,
+      "input_tokens": 113327,
+      "output_tokens": 1333,
+      "cache_read_input_tokens": 818560,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-24T11:58:38.307Z",
-      "ended": "2026-11-24T12:23:02.576Z",
-      "turns": 7,
-      "api_calls": 11,
+      "ended": "2026-11-24T12:32:51.883Z",
+      "turns": 8,
+      "api_calls": 13,
       "usage": {
-        "input_tokens": 94816,
-        "output_tokens": 1193,
-        "cache_read_input_tokens": 622208,
+        "input_tokens": 113327,
+        "output_tokens": 1333,
+        "cache_read_input_tokens": 818560,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 93131
+      "peak_context_tokens": 111222
     }
   ],
   "log": {
-    "sha256": "c2bc58bed74947487cc62db5b494b0993b572956a5c2fec4e71f8bf2ef71d189",
-    "bytes": 746593,
-    "lines": 136,
-    "gzip_bytes": 156251,
-    "path": "llm-dlc/traces/01a20d6c-1ad2-7b43-a0d3-e1c9053a5348/logs/c2bc58bed74947487cc62db5b494b0993b572956a5c2fec4e71f8bf2ef71d189.jsonl.gz"
+    "sha256": "8afa263787c35761257bd7cb4e40479b86a62781b37337f6a288fbceaa3fc79b",
+    "bytes": 876194,
+    "lines": 159,
+    "gzip_bytes": 177195,
+    "path": "llm-dlc/traces/01a20d6c-1ad2-7b43-a0d3-e1c9053a5348/logs/8afa263787c35761257bd7cb4e40479b86a62781b37337f6a288fbceaa3fc79b.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -62,9 +62,23 @@
       "summary": "Verify tokenizer histories and fixed-radix parsing on released Java callers (verification pending)",
       "body": "Execute StringTokenizer from the selected JDK in symbolic runs and concrete replay. Model signed ASCII int and long parsing in fixed bases 2 through 36, checking overflow against the sign-specific quotient and remainder. Reject invalid radices in the interpreter before Rust attempts the conversion. The regression fixtures cover supplementary delimiters, virtual dispatch, null and changed delimiters, mixed-case digits, both signed limits and an original-JVM false sibling.\n\nThe frozen ISCWT glyph and HtmlCleaner callers both stopped at tokenizer construction. A strict diagnostic now proves the ISCWT primary across widths 0 through 1023. The affected test selection passed 59 Rust test binaries and both Python suites. Verification jobs 20261124-121422-verify-the-registered-iscwt-glyph-caller and 20261124-121430-measure-tokenizer-transfer-on-the-origin compare both original release graphs with their relocated callers on every registered input. Job 20261124-121507-certify-all-solver-answers-behind-the-is checks the glyph proof independently. Job 20261124-121207-transfer-fixed-radix-parsing-to-guava-un transfers the radix rule to Guava against both JBMC profiles.",
       "log_sha256": "c2bc58bed74947487cc62db5b494b0993b572956a5c2fec4e71f8bf2ef71d189"
+    },
+    {
+      "change_id": "lpkkrlktopyqvuozmoksuzsqzmomlkkm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay rejected numeric strings on the selected JDK",
+      "body": "A valid-radix parse of a null or malformed string can expose a release-specific NumberFormatException message. The concrete interpreter now runs the selected parser on these rejected inputs and executes its actual error factory, including the bootstrap class bytes from JDK 8. The native ASCII circuit and its admitted radix domains keep their separate symbolic scope.\n\nThe public derive command matched the physical exceptions in 6 of 20 original cases before and all 20 afterward. Each of Temurin 8, 11, 17, 21 and 25 supplied its int and long parsers on a null and a malformed hexadecimal input. The receipt binds both release binaries, all Java images, the fixture and commands. The 59 affected Rust test binaries passed. A separate frozen Guava probe records the original Long.parseLong(String,int) refusal for the released transfer experiment.",
+      "log_sha256": "8afa263787c35761257bd7cb4e40479b86a62781b37337f6a288fbceaa3fc79b"
     }
   ],
   "logs": {
+    "8afa263787c35761257bd7cb4e40479b86a62781b37337f6a288fbceaa3fc79b": {
+      "bytes": 876194,
+      "lines": 159,
+      "gzip_bytes": 177195,
+      "url": null
+    },
     "c2bc58bed74947487cc62db5b494b0993b572956a5c2fec4e71f8bf2ef71d189": {
       "bytes": 746593,
       "lines": 136,

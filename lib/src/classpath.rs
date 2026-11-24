@@ -629,6 +629,11 @@ impl ClassPath {
     /// The public constructor itself chooses which exception wins when the array is null and a bound is negative.
     pub(crate) fn string_range_constructor(&self, owner: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !matches!((owner, descriptor), ("java/lang/String", "([CII)V" | "([BIII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
+        self.bootstrap_method(owner, "<init>", descriptor)
+    }
+
+    /// The selected bootstrap class and executable body, including rt.jar on JDK 8.
+    pub(crate) fn bootstrap_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         let class = if let Some(boot) = &self.legacy_boot {
             let bytes = boot.read(&format!("{owner}.class")).ok()??;
             let class = ClassFile::parse(&bytes).ok()?;
@@ -638,7 +643,7 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
             class
         };
-        let method = class.method("<init>", descriptor)?.clone();
+        let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
         Some((class, method))
     }
