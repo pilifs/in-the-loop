@@ -1,0 +1,246 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-074201-measure-public-java-trees-and-sorting-on",
+  "title": "Measure public Java trees and sorting on four original SV-Benchmarks tasks",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 12m55s, peak 9.0 GiB (estimated 12m00s, 6.0 GiB); 8 output file(s) changed",
+  "attention": [
+    "step 1 (Public valid-assert tasks) passed, but the kernel killed 8 process(es) in it at the memory limit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-074201-measure-public-java-trees-and-sorting-on.json",
+    "sha256": "ce661959ad54ca5e0d1521e49c1bdfd12d909866ba50a1a11861d23274db75cb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-074201-measure-public-java-trees-and-sorting-on",
+      "title": "Measure public Java trees and sorting on four original SV-Benchmarks tasks",
+      "description": "Use pinned unmodified Main classes, the valid-assert property, packaged Verifier nondeterminism, both strict routes and standalone stock JBMC. Verify the official SV-COMP 26 XML and replay disclosed choice streams separately on the original JVM. Retain named assertions, reach controls and failed unwinding.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc:public-valid-assert"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/sv_public.py"
+        ]
+      },
+      "expected": "Four exact original task receipts and physical JVM witnesses, with unwinding and model limits reported.",
+      "submitted": {
+        "at": "2026-11-24T07:42:01+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 18,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "12m",
+        "timeout": "50m"
+      },
+      "steps": [
+        {
+          "name": "Public valid-assert tasks",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/sv_public.py --phase opening B09 B10 B11 B12",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/opening/svcomp/B09",
+        "verification/beyond-jbmc/opening/svcomp/B10",
+        "verification/beyond-jbmc/opening/svcomp/B11",
+        "verification/beyond-jbmc/opening/svcomp/B12"
+      ]
+    }
+  },
+  "sourceCommit": "a517dd6cb4b93181fe836954143e094e57fe57c8",
+  "startedAt": "2026-11-24T08:01:22+00:00",
+  "finishedAt": "2026-11-24T08:17:57+00:00",
+  "wallSeconds": 995.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2485762,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 3000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 9663676416,
+    "wallSeconds": 775.8,
+    "cpuSeconds": 783.0,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 1.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Public valid-assert tasks",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/sv_public.py --phase opening B09 B10 B11 B12",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3000.0,
+      "cancelled": false,
+      "wallSeconds": 775.837,
+      "cpuSeconds": 782.963,
+      "cpuThrottledSeconds": 0.358,
+      "peakMemoryBytes": 9663676416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 8,
+      "memoryHighEvents": 301,
+      "log": {
+        "path": "logs/1-public-valid-assert-tasks.log",
+        "lines": 4,
+        "bytes": 362,
+        "sha256": "f471b58019f9b559299933198471d08ac9d9bf4c42de5a28c26be276b557a2d3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "B09 algorithms/BinaryTreeSearch-FunSat01 unverifiable unverifiable missing property report",
+        "B10 algorithms/BinaryTreeSearch-FunUnsat01 unverifiable unverifiable missing property report",
+        "B11 algorithms/InsertionSort-FunSat01 unverifiable unverifiable missing property report",
+        "B12 algorithms/InsertionSort-FunUnsat01 unverifiable unverifiable missing property report"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B09/executions.zip",
+      "change": "added",
+      "bytes": 12456,
+      "sha256": "3b1ff578d5933fe639e3b4fe0206df6f0acfc8e22398337190d3e2580575da36",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B09/result.json.gz",
+      "change": "added",
+      "bytes": 2545,
+      "sha256": "550d3f781b8c83eb575a1730bdb3fda8c528327bd1877b259edec527b530cf02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B10/executions.zip",
+      "change": "added",
+      "bytes": 12510,
+      "sha256": "1ec64fc25c647b1e7ea941ebb0f0525c9970895d0679068493c1e9d474737fc0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B10/result.json.gz",
+      "change": "added",
+      "bytes": 2598,
+      "sha256": "ceab96123a56a37c84349e447d7c43745640a82526d9f2b2a92b31492ec5bb51",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B11/executions.zip",
+      "change": "added",
+      "bytes": 8706,
+      "sha256": "4d67ca4bcca03306de8996e44996d1a1e6ec3fe95b9a2048641ed73fff382593",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B11/result.json.gz",
+      "change": "added",
+      "bytes": 2573,
+      "sha256": "38ad557697f539aabb0cd7e467c859ccca050df2d6ad5c4f35f37c7573510617",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B12/executions.zip",
+      "change": "added",
+      "bytes": 8703,
+      "sha256": "4ea0408e4ce8f5b0f897022d17dcd83f8c4408818468953cceabec81b7b18e02",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/svcomp/B12/result.json.gz",
+      "change": "added",
+      "bytes": 2628,
+      "sha256": "3304ab0b20238f3bb682ad1346569070dad403b8a3d6ae48597d5b9c7845c488",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:18:04+00:00",
+    "applied": [
+      "verification/beyond-jbmc/opening/svcomp/B09/executions.zip",
+      "verification/beyond-jbmc/opening/svcomp/B09/result.json.gz",
+      "verification/beyond-jbmc/opening/svcomp/B10/executions.zip",
+      "verification/beyond-jbmc/opening/svcomp/B10/result.json.gz",
+      "verification/beyond-jbmc/opening/svcomp/B11/executions.zip",
+      "verification/beyond-jbmc/opening/svcomp/B11/result.json.gz",
+      "verification/beyond-jbmc/opening/svcomp/B12/executions.zip",
+      "verification/beyond-jbmc/opening/svcomp/B12/result.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a5025dde8f75d6626f0779e97074fdd399cd0455",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a5025dde8f75d6626f0779e97074fdd399cd0455/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T081757Z-384908f5b29ba26d",
+      "outputs": "20261124T081757Z-403817b1a0b12e43",
+      "diff": "20261124T081757Z-4186648847ba236b"
+    }
+  }
+}
