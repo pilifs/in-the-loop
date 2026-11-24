@@ -11922,226 +11922,234 @@
     },
     {
       "change_id": "uktymptmzmwvwvvyrokxrmntmkyoqtlo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d49ed585636faf5256eb3e083d068c11fa75521b",
+      "immutable": true,
       "summary": "Start the setup record for the twenty additional organic Java PRs",
       "body": "Fetched the 40 pinned upstream revisions of J01-J20 into shallow mirrors, made one worktree per revision outside the checkout, and recorded each commit's tree and parents. Every fix's first parent is the brief's parent and every PR's merge commit equals the brief's fix revision (checked with gh api). Builds, releases and landed tests follow.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "rqovmytvnyukmwxqyouwoyrtktsqtkku",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8b2c1e23f6a54067d98ae921c2de2ce373d71a89",
+      "immutable": true,
       "summary": "Queue the first upstream builds for the twenty-case setup (verification pending)",
       "body": "Four setup jobs build an upstream project at both pinned revisions of a case and run its landed test on the fix, on the parent, and transplanted onto the parent: Calcite core with CoreQuidemTest (J12, 20261124-203257-setup-build-apache-calcite-core-at-both), POI poi-ooxml with TestXSSFHyperlink (J05, 20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo), Eclipse Collections with the UnifiedMap tests of unit-tests-java8 (J17, 20261124-203508-setup-build-eclipse-collections-at-both), and Lucene core and join with the block-join tests (J14, 20261124-203513-setup-build-lucene-core-and-join-at-both). Each was too long to run inline. Their dependencies were resolved online in the setup cache first.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "urulzqpoksnvqyyylnvkvzmnqmwqqvmy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0ac7491d34e0f7b40a40dbfbff0f48e9c927742a",
+      "immutable": true,
       "summary": "Record the builds, overlays and landed tests of the twenty-case setup",
       "body": "The setup record now has, for each of J01-J20, the toolchain, the built or overlay jars with their sha256 and class digests, the release graph each overlay is compiled over (and which side of the PR that release already equals), the landed test run on the fix, on the parent and transplanted onto the parent, the setup probes of the brief's preflight observations, and the exact commands with their checked offline forms. Every landed test or probe that could run matched the brief. Four upstream builds (POI, Calcite, Eclipse Collections, Lucene) are queued jobs; five upstream builds cannot run (gone or credentialed repositories, a missing thrift binary) and the record says why. The PGP pass and the notes for the domain agent follow.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "qkrmwoottxrwmtvnvqlmlxmmmwrkrxuy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "28dcee96a8c0fc7a5fcf84b09289ea5367016ca5",
+      "immutable": true,
       "summary": "Finish the twenty-case setup record with signatures and notes for the domain agent",
       "body": "Every one of the 264 release jars the setup resolved matches Central's sha1; 256 carry a valid PGP signature checked in the setup's own keyring (19 by keys revoked after the release, among them Spring's buildmaster key, revoked in 2023 as a precaution) and 8 old ones have no signature on Central. The record ends with the Setup Agent Notes for the domain agent: where each case's built, overlay or release artifacts are, what was verified on a JVM, which release already equals which side of each PR, the substitutions and unbuildable upstreams, and what is left on purpose. Four upstream-build jobs (POI, Calcite, Eclipse Collections, Lucene) are still pending. Five false-positive findings from this session's logs (version numbers read as IP addresses, a long test name) are proposed for the allow list.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "rqnkoyuwzupuqvrklmspxpsryolpqnrn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "faa9d87a5aafc093c726047bbef254558c2c6a54",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "17c92e5aba09af1870d9c0462fb3565daab8a96d2475b6e560e199e8fa1286a3"
     },
     {
       "change_id": "tsytvytsoolszonyywmpnppsslopqqpk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1a9b954612cef12cfdb25e31fae721e5d21b85ea",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261124-203257-setup-build-apache-calcite-core-at-both: failed: 4 failed, 1 passed step(s) in 9.0s, peak 247.0 MiB (estimated 30m00s, 4.0 GiB) Collected by the watcher of the organic-pr-20-additional-cases-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "827e805706051c9c8f61053c6621e66b6b1e62829426f824b9f3833ae07a65db"
     },
     {
       "change_id": "kryklsxnqwqxnrwmzknznskrrquxwrkz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "25427f7ef8b41448ab2393f384a59c980c6ff204",
+      "immutable": true,
       "summary": "Record verification results for 3 job(s)",
       "body": "Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo: passed: 5 passed step(s) in 2m28s, peak 3.8 GiB (estimated 25m00s, 6.0 GiB) 20261124-203508-setup-build-eclipse-collections-at-both: passed: 5 passed step(s) in 2m15s, peak 1.9 GiB (estimated 40m00s, 5.0 GiB) 20261124-203513-setup-build-lucene-core-and-join-at-both: passed: 4 passed step(s) in 56.1s, peak 1.3 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the organic-pr-20-additional-cases-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "894bf70c2207fa72b7466b928faea6b282a2fb8612a2f60259a347db58cd752a"
     },
     {
       "change_id": "nplrnusztmvoquytklypsuxvywsonnxs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "29440dd8bc7a52a367a696d3b9ca01e5172959b7",
+      "immutable": true,
       "summary": "Record the watcher's decisions on organic-pr-20-additional-cases-setup",
       "body": "The watcher's verdicts on the single-agent run organic-pr-20-additional-cases-setup (llm-dlc/decisions/single-organic-pr-20-additional-cases-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "lpvzruvmnwlmkpuwumwkvxtrqwpmqmkk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "fb837cf5186c8eb2d2e272a50ab88995a65f61a2",
+      "immutable": true,
       "summary": "Record the setup jobs and resubmit the Calcite build (verification pending)",
       "body": "Three upstream-build jobs of the twenty-case setup passed. POI poi-ooxml (J05): TestXSSFHyperlink 30/30 on the fix, 26/26 on the parent, 5 failures with the fix's test on the parent. Lucene core and join (J14): the landed tests 7/7 and 4/4. Eclipse Collections (J17): 960 map tests pass in all four runs, a preservation case. Their jars and digests are in the record. The Calcite job (J12) failed at once because git-commit-id-plugin cannot read a worktree of the shallow mirror; it is resubmitted as 20261124-210513-setup-build-apache-calcite-core-at-both with the generate-git-id profile switched off on the command line (the plugin only writes build metadata), checked inline to get past the root project.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "msrxknqmyplmrvuqtuntywpkosvoonpk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0987e628ee0242ffdc2e107c3f3b684dcf0c9467",
+      "immutable": true,
       "summary": "Merge the single-agent run organic-pr-20-additional-cases-setup into the line",
       "body": "The single-agent run organic-pr-20-additional-cases-setup (session 9c1d1c59-e947-449f-97e1-6ebf7cc523bb) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "oynuuuszsvnmmttxlxvxwkzsrykpsvuv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "791803024cec8ea68c3b9ba0271c89a62707a039",
+      "immutable": true,
       "summary": "Put the setup notes of organic-pr-20-additional-cases into its brief",
       "body": "The setup run organic-pr-20-additional-cases-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md and ~/code/scripts/analysis/organic-java-pr-product-behaviour-20-additional-cases.md, for the domain agent.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "sslzwkskxxopzkszmplnmwtvytuplqon",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c408a1cbe2b9d4e50b6ee2ed2dac7273aea32084",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     },
     {
       "change_id": "yuklttpzynnlvzyynopxvrywmzupnwvq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1fc75ec82b203bdccc8ce2e3c0ec5e07524ce319",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261124-210513-setup-build-apache-calcite-core-at-both: passed: 5 passed step(s) in 6m14s, peak 2.1 GiB (estimated 30m00s, 4.0 GiB) Collected by the watcher of the organic-pr-20-additional-cases run, which keeps the queue while the run is under way.",
       "log_sha256": "c7ce7cdc1181f1b2468289d685f794a0609740933b3f3f9ae957b832963e47a8"
     },
     {
       "change_id": "pwxuqurstvmlolrrlxytplkulznpqzvm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "af766d0308ca622e1a45c7e6bd1249c15ddcb84f",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-213727-transfer-the-frozen-jsoup-plan-to-zip4j: passed: 1 passed step(s) in 53.1s, peak 155.3 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the organic-pr-20-additional-cases run, which keeps the queue while the run is under way.",
       "log_sha256": "0f185bdec941854aa4e3d4c60b290cdcbb4c21965b268ab37537c4d293f05b9d"
     },
     {
       "change_id": "ywuowopvnkmttzrlltkrzlspomqmtmpw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "515645e15dcb136e75dfe0bf8428162b3a579cbd",
+      "immutable": true,
       "summary": "Record verification results for 4 job(s)",
       "body": "Outputs applied for 4 of the 4 job(s). 20261124-212606-qualify-cloned-jsoup-tag-behavior-at-the: passed: 1 passed step(s) in 1m21s, peak 174.9 MiB (estimated 7m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-213728-check-all-collision-subsets-on-the-two-o: passed: 1 passed step(s) in 1m30s, peak 1.3 GiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-213728-recover-spring-batch-reader-offsets-from: passed: 1 passed step(s) in 2m21s, peak 250.3 MiB (estimated 8m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-213728-verify-parquet-pages-and-independently-r: passed: 1 passed step(s) in 3m49s, peak 1.4 GiB (estimated 9m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the organic-pr-20-additional-cases run, which keeps the queue while the run is under way.",
       "log_sha256": "4ca885b84a2a4e793f97a864b9fccd7522bba1d28e925d20bec10e883eb9ba7a"
     },
     {
       "change_id": "otmxvlooonwrkvtotvvmuwylrtllvxxp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "15ac95d84cb2c58568f7727a07b3ea2569bdfc6e",
+      "immutable": true,
       "summary": "Record verification results for 4 job(s)",
       "body": "Outputs applied for 4 of the 4 job(s). 20261124-214638-check-accessible-names-after-editing-the: passed: 1 passed step(s) in 1m04s, peak 150.5 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214640-classify-and-read-every-original-distrib: passed: 1 passed step(s) in 1m00s, peak 204.2 MiB (estimated 9m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214641-read-the-exact-class-token-sequence-from: passed: 1 passed step(s) in 46.7s, peak 181.6 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214642-resolve-maven-ranges-in-every-repository: passed: 1 passed step(s) in 46.2s, peak 143.7 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the organic-pr-20-additional-cases run, which keeps the queue while the run is under way.",
       "log_sha256": "011d93f108fb748ac90c41e4867fecd6ce34ce19444bf2fcbaa498af3540a895"
     },
     {
       "change_id": "qmqrkqyvvzlolmprxouymzloypopkwwt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "10ea0fb07a64bde1c45e51d1a3ce28d3cf2d5020",
+      "immutable": true,
       "summary": "Record verification results for 11 job(s)",
       "body": "Outputs applied for 11 of the 11 job(s). 20261124-214639-check-paired-chart-axes-against-independ: passed: 1 passed step(s) in 2m09s, peak 270.7 MiB (estimated 12m00s, 4.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214639-expand-the-same-biweekly-invitation-acro: passed: 1 passed step(s) in 2m15s, peak 150.0 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214639-reopen-moved-spreadsheet-hyperlinks-and: passed: 1 passed step(s) in 2m55s, peak 769.4 MiB (estimated 15m00s, 5.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214640-verify-empty-blobs-against-the-actually: passed: 1 passed step(s) in 1m17s, peak 185.6 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214641-reopen-h2-spelling-multisets-after-exter: passed: 1 passed step(s) in 2m04s, peak 621.3 MiB (estimated 15m00s, 5.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-214642-execute-mixed-sql-accumulators-on-both-p: passed: 1 passed step(s) in 3m46s, peak 800.4 MiB (estimated 18m00s, 6.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-215955-reopen-join-sorted-lucene-keys-and-test: passed: 1 passed step(s) in 2m12s, peak 319.2 MiB (estimated 7m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-215956-check-rejected-graph-updates-through-bot: passed: 1 passed step(s) in 1m26s, peak 147.0 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-215957-check-circuit-breaker-command-results-an: passed: 1 passed step(s) in 54.7s, peak 242.0 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-215957-verify-jcache-expiry-callbacks-and-indep: passed: 1 passed step(s) in 1m35s, peak 151.1 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-215958-read-emitted-signalfx-percentile-gauges: passed: 1 passed step(s) in 2m37s, peak 251.1 MiB (estimated 8m00s, 3.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the organic-pr-20-additional-cases run, which keeps the queue while the run is under way.",
       "log_sha256": "f8dbe869a53f5ef4aca38eb7fd3623c17f7ec053191832be4478b62da7ffda0a"
     },
     {
       "change_id": "kxtpzxyuuwxlymoyuoxkkykzprowrlpo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e61e20c4a6c0b1b03975830002b942ac846f9adf",
+      "immutable": true,
       "summary": "Record verification results for 3 job(s)",
       "body": "Outputs applied for 3 of the 3 job(s). 20261124-220444-consume-the-proved-jsoup-void-predicate: passed: 1 passed step(s) in 31.3s, peak 98.4 MiB (estimated 4m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-220445-check-the-live-commonmark-image-visitor: passed: 1 passed step(s) in 19.2s, peak 102.8 MiB (estimated 4m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-220445-consume-the-zip4j-entry-selection-in-the: passed: 1 passed step(s) in 19.0s, peak 101.8 MiB (estimated 4m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the organic-pr-20-additional-cases run, which keeps the queue while the run is under way.",
       "log_sha256": "0ff8181964b24f70e6242fc1f68723028b835018f696f7962e3230a386457ba8"
     },
     {
       "change_id": "vykwprwnuzpylqnqqnmrnlzokylrqytz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a80adc2531fadd483879abbc1fae30f4488ad501",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 2 of the 2 job(s). 20261124-221934-bind-the-two-release-pairs-to-the-actual: passed: 2 passed step(s) in 21.0s, peak 100.8 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-221934-use-checked-maven-comparison-returns-in: passed: 1 passed step(s) in 15.8s, peak 111.9 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the organic-pr-20-additional-cases run, which keeps the queue while the run is under way.",
       "log_sha256": "d2318472d7820383718dfb194f82bc5402a6ed3d7c3ef1c78c3a55b0c32a9997"
     },
     {
       "change_id": "wytooukmxmmsnplknvmnxstlykykqonp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "17749c9fab979dbbeec809f64feadc1648adc27d",
+      "immutable": true,
       "summary": "Record the watcher's decisions on organic-pr-20-additional-cases",
       "body": "The watcher's verdicts on the single-agent run organic-pr-20-additional-cases (llm-dlc/decisions/single-organic-pr-20-additional-cases.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "slylyqsusuvwywmxwnkluwkvsmmkslvr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4e08bdd4a570462d9c8370f5a56677dae7d33a25",
+      "immutable": true,
       "summary": "Register jsoup clone and DOM histories (verification pending)",
       "body": "Begin the twenty-product campaign with the frozen application verifier. Bind both complete jsoup 2423 source builds and their runtime companion, register source, callback, late and ordinary tags and inspect two DOMs from one clone. Ten fresh JVMs matched the predicted parent elements, text, tag flags and callback counts. Both original JAR digests matched the setup record, all four affected test groups passed, and the job schema validated.\n\nJob 20261124-212606-qualify-cloned-jsoup-tag-behavior-at-the measures cold, warm and independent clean claims, original method invocations and same-path replacement, preserving each public receipt.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "wwzkqqztsnrwsxpxvlnltlwmppqyxqvk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "dd90babf2b503c1fcbc20f1c4077080fbb181483",
+      "immutable": true,
       "summary": "Transfer archived, restarted and retained histories (verification pending)",
       "body": "On the frozen jsoup verifier register the Zip4j file and directory boundaries, Parquet page-reuse and closed two-row-group files, Spring Batch reopened HSQLDB checkpoints, and the Eclipse Collections preservation-only optimization. Thirty-four fresh JVM histories matched independent predictions. The Parquet parent reproduced the lower-level corruption but both files decoded correctly. The original Spring Batch repository resumed different actual reader offsets. Both map versions matched the JDK reference across all 127 subsets in both insertion orders. All eight affected tests and schema validation passed.\n\nJobs 20261124-213727-transfer-the-frozen-jsoup-plan-to-zip4j, 20261124-213728-verify-parquet-pages-and-independently-r, 20261124-213728-recover-spring-batch-reader-offsets-from and 20261124-213728-check-all-collision-subsets-on-the-two-o retain each initial public plan and test repeat and relevant provider replacement against clean execution.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "qsxwoknxxuykokmsptxutqonkzorlrqt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f56a45b1122a3327ad1c66d452925dc75668e145",
+      "immutable": true,
       "summary": "Register ten product change comparisons (verification pending)",
       "body": "Register independent observations for CommonMark, JFreeChart, ical4j, POI, Commons Compress, SQLite JDBC, Kryo, H2, Calcite and Maven. Seventy-eight fresh JVMs matched the declared results, including three spreadsheet reopenings, both Linux JNI images, all TAR entry and payload digests, SQL spill and case-sensitive controls, and both pinned Calcite modules. Preserve the original TAR fixture hash and the archived linq4j reactor artifact at its original classpath position. All four affected test groups and schema validation passed.\n\nVerification jobs in case order: J01 20261124-214638-check-accessible-names-after-editing-the, J03 20261124-214639-check-paired-chart-axes-against-independ, J04 20261124-214639-expand-the-same-biweekly-invitation-acro, J05 20261124-214639-reopen-moved-spreadsheet-hyperlinks-and, J07 20261124-214640-classify-and-read-every-original-distrib, J09 20261124-214640-verify-empty-blobs-against-the-actually, J10 20261124-214641-read-the-exact-class-token-sequence-from, J11 20261124-214641-reopen-h2-spelling-multisets-after-exter, J12 20261124-214642-execute-mixed-sql-accumulators-on-both-p, J13 20261124-214642-resolve-maven-ranges-in-every-repository. Each measures the first frozen application plan, exact reuse, clean reference and real dependency replacement.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "nkmklpyxwnuqsxupzpvxstxmtzoynrwk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3b726ea7a5f8906b79559940de4d965c6e0296d1",
+      "immutable": true,
       "summary": "Register search, cache and telemetry histories (verification pending)",
       "body": "Complete the twenty case registrations. On original Lucene builds retain the refuted filter prediction as its own question: the fixed comparator counts every child in the block although only matching children supply values. Record graph aliasing under both assertion profiles, expiry callbacks and size maintenance, listener counts after repeated commands, and the actual percentile labels and values received by a local SignalFx protobuf receiver. Forty-eight fresh JVM histories checked all observations. A separate cumulative timer with no SignalFx classes predicted both gauge values. The affected test tier and job schema passed.\n\nVerification jobs: J14 20261124-215955-reopen-join-sorted-lucene-keys-and-test, J16 20261124-215956-check-rejected-graph-updates-through-bot, J18 20261124-215957-verify-jcache-expiry-callbacks-and-indep, J19 20261124-215957-check-circuit-breaker-command-results-an, J20 20261124-215958-read-emitted-signalfx-percentile-gauges. Collect all original successes, refutations and open dependencies with their independent clean runs.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "mvntlnlxnxqoottxmvqszzuzksqktusm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9e8e7260ffd87f91dd33d7c525fb3929d86142c3",
+      "immutable": true,
       "summary": "Qualify all twenty public change plans (verification pending)",
       "body": "On the frozen application verifier every public observer ran on both deployments. Of 43 finite questions, 42 were established and one Lucene filter-preservation hypothesis was refuted. All 85 histories and 340 cold qualified entries agreed with physical JVM trials. Warm runs reused 65 of 86 sides. All independent clean and same-path JAR replacement results agreed. The audit reproduced all 344 public receipt references and verified the 40 collector outputs from twenty passing jobs.\n\nAdd case-specific bytecode and live frame checks for CommonMark's image visitor, jsoup's cloned tag classification and Zip4j's singleton rename map. A bounded probe on each original public path applied two, two and six checked results respectively. The six original method qualifiers, six selected tests and job schema passed. Jobs 20261124-220444-consume-the-proved-jsoup-void-predicate, 20261124-220445-consume-the-zip4j-entry-selection-in-the, 20261124-220445-check-the-live-commonmark-image-visitor check full reference and substituted repetitions and withheld or stale premises.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "uyyzrtrtwnoyqttnvmvzvxnptppltosl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9b4f5e917ccd48ec8736b32c8d3b5bcb1246e40e",
+      "immutable": true,
       "summary": "Bind checked summaries and cross-project controls (verification pending)",
       "body": "Record 128 live helper applications in the same CommonMark, jsoup and Zip4j public histories, with withheld-application and stale-code refusals. Compare 48 independent and paired chart-axis transitions, three locale profiles, untouched-sheet cache reuse, eight real Kryo streams and six one-parent Lucene readbacks. An excluded child with a real sort value still produced a null parent key on the fix. The first campaign report covers all twenty original decisions, the receipt audit verified 43 collector outputs and 344 references, and all 63 local links resolved.\n\nBind the disclosed release graphs for SQLite and Calcite and the complete parsed Maven operands. A capped Maven probe observed 55 bound events in the repaired range history. Generated Calcite code on the parent added only to its ordered field; the fix populated both. All six affected tests, independent JVM controls and schema validation passed. Jobs 20261124-221934-bind-the-two-release-pairs-to-the-actual and 20261124-221934-use-checked-maven-comparison-returns-in qualify the release pairs, generated accumulators and Maven public consumers.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "rvlkszuzmqymqpwynzpnnmywvlpxymno",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "be6a32f8a868acdc2421fb90343addde1625667e",
+      "immutable": true,
       "summary": "Complete the twenty-case product behaviour campaign",
       "body": "All twenty public observers ran on both registered deployments. Nineteen PRs reproduced a difference and Eclipse Collections preserved all collision subsets. The 43 frozen questions yielded 42 establishments and the Lucene counterexample, with 65 of 86 warm claim sides reused. The final report links each result and records the seven overlay scopes, the separate original-client comparisons and the remaining transfer limits.\n\nRecord all four actually loaded SQLite JNI library digests and the 16 Calcite Java programs captured in the queries that returned the rows. Eight substituted Maven histories consumed 296 checked comparisons during construction and selection. The original axis bytecode made 44 of 48 single-axis transitions eligible, and twelve Kryo streams distinguished complete token positions, the enum value and the constant-specific class token.\n\nAll 25 official jobs passed. Rechecked 46 collected output hashes, 344 archived receipt references, 104 original-source registration digests, the helper substitutions and controls, 40 deployment manifests and all 68 report links. The job schema passed, the shared freeze still matched, the final changed-test selector reported no additional tests, and the verification queue was empty.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     },
     {
       "change_id": "pmvpxkrswowvmnrrzqsyprqwsqkksltw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3914fdd34cc4d7d42888119bc73504661afd1b31",
+      "immutable": true,
       "summary": "Merge the single-agent run organic-pr-20-additional-cases into the line",
       "body": "The single-agent run organic-pr-20-additional-cases (session c3caedf3-7925-4cdf-aaa2-f3c5885dabb1) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
+    },
+    {
+      "change_id": "nrmownksxvvzqvqxvyynqokoxspwnymt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "bb10927ef5eca46b485ad0107ecb31e66280d490ac2d0959083f2abc02481e90"
     }
   ],
