@@ -1,0 +1,224 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-074103-check-all-native-sat-answers-for-mixed-l",
+  "title": "Check all native SAT answers for mixed Lucene and its byte frame",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 3.6s, peak 203.0 MiB (estimated 4m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [
+    "step 1 (Qualify three wire caller boundaries) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-074103-check-all-native-sat-answers-for-mixed-l.json",
+    "sha256": "77e629cb0ea6ebf44bd89475fef71d84e0e0c62f23ac0575a61b935bc0bba4cc",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-074103-check-all-native-sat-answers-for-mixed-l",
+      "title": "Check all native SAT answers for mixed Lucene and its byte frame",
+      "description": "Bind the original JARs, effective classpaths, checker binary, caller, input domain, bounds and observation before launch. For W01 old-to-new, W02 arbitrary valid slice writes, and W04 old-to-new VInt, retain the ordinary verdict and use the existing independent SAT evidence checker on every pass. Replay actual SAT models and require a checked LRAT proof for each UNSAT answer. Reject the bundle when the public observation is changed.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "native:lrat"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/wire_assurance.py"
+        ]
+      },
+      "expected": "Three completed ordinary proofs, fresh-process whole-query receipts and rejected wrong-observation controls. Distinguish solver-free passes.",
+      "submitted": {
+        "at": "2026-11-24T07:41:03+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cadical-1.9.5/build/cadical",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Qualify three wire caller boundaries",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/wire_assurance.py oldNew writeFrame varOldNew",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/assurance/wire"
+      ]
+    }
+  },
+  "sourceCommit": "a517dd6cb4b93181fe836954143e094e57fe57c8",
+  "startedAt": "2026-11-24T08:01:22+00:00",
+  "finishedAt": "2026-11-24T08:05:05+00:00",
+  "wallSeconds": 223.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2485762,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 212885504,
+    "wallSeconds": 3.6,
+    "cpuSeconds": 5.7,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualify three wire caller boundaries",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_assurance.py oldNew writeFrame varOldNew",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 3.606,
+      "cpuSeconds": 5.718,
+      "cpuThrottledSeconds": 0.556,
+      "peakMemoryBytes": 212885504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-three-wire-caller-boun.log",
+        "lines": 15,
+        "bytes": 1511,
+        "sha256": "3e79604573befea8e5e2e63a5d332dac09b4d9262aa88c0c38cda2cb39c3e16b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-074103-check-all-native-sat-answers-for-mixed-l/lib/benchmark/beyond-jbmc/wire_assurance.py\", line 69, in <module>",
+        "    for name in a.methods: certify(name,OUTPUT/\"assurance/wire\",setup,env,cp,ids,bindings)",
+        "                           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-074103-check-all-native-sat-answers-for-mixed-l/lib/benchmark/beyond-jbmc/wire_assurance.py\", line 51, in certify",
+        "    checked=lrat.complete(out,request,boundary,streams)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-074103-check-all-native-sat-answers-for-mixed-l/lib/python/jvmcontract_lrat.py\", line 313, in complete",
+        "    issue(request, boundary, streams, folder / \"evidence.zip\")",
+        "    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-074103-check-all-native-sat-answers-for-mixed-l/lib/python/jvmcontract_lrat.py\", line 205, in issue",
+        "    for event, formula in trace_events(raw, pas):",
+        "                          ~~~~~~~~~~~~^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-074103-check-all-native-sat-answers-for-mixed-l/lib/python/jvmcontract_lrat.py\", line 176, in trace_events",
+        "    raise ValueError(f\"{key}: missing original SAT assignment\")",
+        "ValueError: 1-proof/1: missing original SAT assignment"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/boundary.json",
+      "change": "added",
+      "bytes": 5947,
+      "sha256": "4d05bdf7814dc7ad944d485bf5bf05a2e2cb3a34d1a6713b9414c1385a1c847e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/evidence.zip",
+      "change": "added",
+      "bytes": 1901,
+      "sha256": "11038f72b8ec931c90cea8b0023163324cd7425b7f91f4a7f8abcab006ebd651",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/ordinary.json",
+      "change": "added",
+      "bytes": 4520,
+      "sha256": "34ea91d191f7fb90b502475b218f4884981a71c5300ce5483392c450718136cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/request.json",
+      "change": "added",
+      "bytes": 8479,
+      "sha256": "af54621d200f3a879eec562069605d0105679e0e98658744112867c0e3ca694d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:07:04+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/beyond-jbmc/assurance/wire/oldNew/boundary.json",
+      "verification/beyond-jbmc/assurance/wire/oldNew/evidence.zip",
+      "verification/beyond-jbmc/assurance/wire/oldNew/ordinary.json",
+      "verification/beyond-jbmc/assurance/wire/oldNew/request.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "a5025dde8f75d6626f0779e97074fdd399cd0455",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a5025dde8f75d6626f0779e97074fdd399cd0455/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T080505Z-1622951a785371fd",
+      "outputs": "20261124T080505Z-1881372ade1bb2df",
+      "diff": "20261124T080505Z-20968239710452ff",
+      "workdir": "20261124T080509Z-95677809af572674"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-074103-check-all-native-sat-answers-for-mixed-l"
+}
