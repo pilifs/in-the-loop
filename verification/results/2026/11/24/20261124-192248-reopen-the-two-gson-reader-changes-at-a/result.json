@@ -1,0 +1,220 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-192248-reopen-the-two-gson-reader-changes-at-a",
+  "title": "Reopen the two Gson reader changes at a stable JAR path",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m37s, peak 157.5 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-192248-reopen-the-two-gson-reader-changes-at-a.json",
+    "sha256": "b47ae0db36cf2989f603c4b4d0a9bb7c5bca4c9ad0de29fefa74bb5da89fe9f3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-192248-reopen-the-two-gson-reader-changes-at-a",
+      "title": "Reopen the two Gson reader changes at a stable JAR path",
+      "description": "Add an unselected file, then replace only the fixed Gson JAR with verified original parent bytes at the same pathname. Compare independent clean and incremental scopes, caller identities, physical outcomes and witnesses for all four preregistered questions. Require unaffected parent sides to reuse and every replaced side to execute.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T19:22:48+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "Run and audit the unrelated and same-path controls",
+          "run": "python3 -B lib/benchmark/organic-composition/gson/replacement.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/gson/replacement"
+      ]
+    }
+  },
+  "sourceCommit": "a6d1725d654d79370c2ad7101990f52bfe3cb71e",
+  "startedAt": "2026-11-24T19:36:12+00:00",
+  "finishedAt": "2026-11-24T19:46:14+00:00",
+  "wallSeconds": 602.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1308933,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 165171200,
+    "wallSeconds": 157.3,
+    "cpuSeconds": 195.1,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.52
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 209.044,
+      "cpuSeconds": 209.4,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2333720576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "bc3b575aaa7f84ff85bd29eac2fe9a9de7c80e8bbe1be95c7b5c84d5af3ffa69",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-192248-reopen-the-two-gson-reader-changes-at-a/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 28s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run and audit the unrelated and same-path controls",
+      "run": "python3 -B lib/benchmark/organic-composition/gson/replacement.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 157.29,
+      "cpuSeconds": 195.052,
+      "cpuThrottledSeconds": 24.168,
+      "peakMemoryBytes": 165171200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-and-audit-the-unrelated-an.log",
+        "lines": 6,
+        "bytes": 447,
+        "sha256": "71ce2e04e7151d2cb08f019041518ac9f1fd1fa34f07eca141b7ed22f593b859",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "4 claims in /tmp/gson-cache-controls-otfyljt8/baseline.json",
+        "4 claims in /tmp/gson-cache-controls-otfyljt8/unrelated-warm.json",
+        "4 claims in /tmp/gson-cache-controls-otfyljt8/unrelated-clean.json",
+        "4 claims in /tmp/gson-cache-controls-otfyljt8/changed-warm.json",
+        "4 claims in /tmp/gson-cache-controls-otfyljt8/changed-clean.json",
+        "Four changed-path predictions refuted after replacement. Both preserved map workflows and all independent clean checks held."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/gson/replacement/plans.zip",
+      "change": "added",
+      "bytes": 276853,
+      "sha256": "cb7962d8c3635d4ef8f42fec5f07d7831dd1e8a475f867bafbbb0986511dcc9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/gson/replacement/report.json",
+      "change": "added",
+      "bytes": 8449,
+      "sha256": "27b30b62ae7847278e201a70047168804101a21da9caa5faae9c4c54539344b2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T19:46:42+00:00",
+    "applied": [
+      "verification/organic-composition/gson/replacement/plans.zip",
+      "verification/organic-composition/gson/replacement/report.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a28ccd75268277f009e1db208b91333c6b79edb8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a28ccd75268277f009e1db208b91333c6b79edb8/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T194614Z-634327e5499a4143",
+      "outputs": "20261124T194614Z-658600aa985512f5",
+      "diff": "20261124T194614Z-6733508308b4330c"
+    }
+  }
+}

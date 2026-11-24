@@ -1,0 +1,169 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-193727-resume-checked-gson-continuations-on-bot",
+  "title": "Resume checked Gson continuations on both original reader paths",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m00s, peak 112.4 MiB (estimated 3m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-193727-resume-checked-gson-continuations-on-bot.json",
+    "sha256": "19fa2dfca8b28c64e7f992e99957f1c90cf003633959ccd298a54f3c62833b7f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-193727-resume-checked-gson-continuations-on-bot",
+      "title": "Resume checked Gson continuations on both original reader paths",
+      "description": "Use the original registered public plans, source-bound decimal proofs and independent checked trials to exercise the frozen side cache on both reader implementations. Compare complete cold, resumed and clean observations, promotions, key conversions and original failures. With both positive tree sides cached, vary just the declared consumer and require fresh live rejection on both JARs.",
+      "kind": "real-world",
+      "capabilities": [
+        "original-jvm-replay",
+        "checked-helpers",
+        "application:change-plan"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T19:37:27+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Compare reused public key derivations to clean and refuse a wrong reader",
+          "run": "python3 -B lib/benchmark/organic-composition/gson/checked_cache.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/gson/checked-cache.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "b0fdddb28672feb8a99f07f8d99880b6c8ae442b",
+  "startedAt": "2026-11-24T19:41:41+00:00",
+  "finishedAt": "2026-11-24T19:42:51+00:00",
+  "wallSeconds": 70.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1308933,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 117886976,
+    "wallSeconds": 60.6,
+    "cpuSeconds": 68.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.34
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare reused public key derivations to clean and refuse a wrong reader",
+      "run": "python3 -B lib/benchmark/organic-composition/gson/checked_cache.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 60.553,
+      "cpuSeconds": 68.278,
+      "cpuThrottledSeconds": 5.289,
+      "peakMemoryBytes": 117886976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-reused-public-key-deri.log",
+        "lines": 1,
+        "bytes": 104,
+        "sha256": "9ef5c511d6d2961c2eaf72d11b77e84dfe04ca133c6909debfb66b70bd568082",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "All four checked reader claims matched cold, warm and clean. Both wrong-reader positive sides reopened."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/gson/checked-cache.json.gz",
+      "change": "added",
+      "bytes": 6792,
+      "sha256": "7861d562b37fae0c8304e3b31bcaed887d8fdb1ce3c24d96e5472102a0e620b9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T19:46:42+00:00",
+    "applied": [
+      "verification/organic-composition/gson/checked-cache.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T194251Z-189537f223a6dfe5",
+      "outputs": "20261124T194251Z-211765a283f1d900",
+      "diff": "20261124T194251Z-230960e5c738e8da"
+    }
+  }
+}
