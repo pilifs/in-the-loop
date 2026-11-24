@@ -1,0 +1,188 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084256-compare-codec-1-13-to-1-15-over-full-sig",
+  "title": "Compare Codec 1.13 to 1.15 over full signed seeds and bounded slices",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 8m12s, peak 1.6 GiB (estimated 18m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084256-compare-codec-1-13-to-1-15-over-full-sig.json",
+    "sha256": "352a2cadb12d58bfa091de2dfe44ef9b17c787dc9327bf409108fd2aa03014ac",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084256-compare-codec-1-13-to-1-15-over-full-sig",
+      "title": "Compare Codec 1.13 to 1.15 over full signed seeds and bounded slices",
+      "description": "An equivalent two-copy caller and isolated originals test the signed seed boundary, both 128-bit words and an unaffected 32-bit public hash. The middle-to-last comparison additionally tries the old evidence on the changed wrapper and checks it against empty-cache answers.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:42:56+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "18m",
+        "timeout": "72m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/codec_pair.py 1.13 1.15",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/C01-C05-1.13-1.15"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:59:13+00:00",
+  "finishedAt": "2026-11-24T09:07:37+00:00",
+  "wallSeconds": 504.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 4320.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1080.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1762144256,
+    "wallSeconds": 493.0,
+    "cpuSeconds": 498.0,
+    "memoryOfEstimate": 0.41,
+    "durationOfEstimate": 0.46
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/codec_pair.py 1.13 1.15",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4320.0,
+      "cancelled": false,
+      "wallSeconds": 492.958,
+      "cpuSeconds": 498.02,
+      "cpuThrottledSeconds": 0.323,
+      "peakMemoryBytes": 1762144256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 186,
+        "sha256": "9ad601b15ad8a2e7b9264f2de2bd3222382ca93159739ca5cdff94b9fac40e5d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "C01-C05-1.13-1.15 8 original checks passed",
+        "C01-C05-1.13-1.15 historicalIdentity verified unverifiable timeout FAILURE",
+        "C01-C05-1.13-1.15 unchanged32 verified unverifiable timeout FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/C01-C05-1.13-1.15/executions.zip",
+      "change": "added",
+      "bytes": 40694,
+      "sha256": "d9024885bac42c1d63c7711e906845fb32bb6cc375c57b201461247f11e2dcec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C01-C05-1.13-1.15/results.json.gz",
+      "change": "added",
+      "bytes": 1448,
+      "sha256": "2a035f087f4b658a673c8cf6fcc513ed24075a9af8f04420d18d60a3efbf2951",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:08:12+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/C01-C05-1.13-1.15/executions.zip",
+      "verification/beyond-jbmc/qualified/C01-C05-1.13-1.15/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T090737Z-68574556f1c3382b",
+      "outputs": "20261124T090737Z-7176973a9cad9c47",
+      "diff": "20261124T090737Z-741314003e4aae0b"
+    }
+  }
+}
