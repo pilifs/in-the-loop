@@ -60,6 +60,34 @@ class TheQueuesRules(unittest.TestCase):
         with self.assertRaisesRegex(brief_queue.Problem, "no brief z"):
             brief_queue.placed(entries, {"name": "g"}, "after", "z")
 
+    def test_the_inbox_is_taken_in_the_order_its_briefs_were_put_there_and_the_log_names_the_session(self):
+        # 2026-11-24: by name alone, "beyond-…" added after "trusted-kernel-…" would have run before it
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp)
+            (folder / "originals").mkdir()
+            for i, name in enumerate(("trusted-kernel-brief.md", "beyond-jbmc-brief.md", "a-copy-brief.md")):
+                original = folder / "originals" / name
+                original.write_text(f"# {name}\n")
+                path = folder / name
+                if name.startswith("a-copy"):
+                    shutil.copy(original, path)
+                else:
+                    path.symlink_to(original)  # a link's own time counts, not its target's
+                os.utime(path, (1000 + i, 1000 + i), follow_symlinks=False)
+            os.utime(folder / "originals" / "trusted-kernel-brief.md", (5000, 5000))  # an edit to the original
+            self.assertEqual([p.name for p in brief_queue.inbox_briefs(folder)],
+                             ["trusted-kernel-brief.md", "beyond-jbmc-brief.md", "a-copy-brief.md"])
+        clean = {k: v for k, v in os.environ.items() if k not in ("CLAUDE_CODE_SESSION_ID", "CODEX_THREAD_ID")}
+        with mock.patch.object(brief_queue.single_run, "person_at_terminal", lambda: False):
+            with mock.patch.dict(os.environ, {**clean, "CLAUDE_CODE_SESSION_ID": "6c5c7798-made-up"}, clear=True):
+                self.assertEqual(brief_queue.who(), "Claude Code session 6c5c7798-made-up")
+            with mock.patch.dict(os.environ, {**clean, "CODEX_THREAD_ID": "thread-made-up"}, clear=True):
+                self.assertEqual(brief_queue.who(), "Codex thread thread-made-up")
+            with mock.patch.dict(os.environ, clean, clear=True):
+                self.assertEqual(brief_queue.who(), "a session")
+        with mock.patch.object(brief_queue.single_run, "person_at_terminal", lambda: True):
+            self.assertEqual(brief_queue.who(), "a person, at their terminal")
+
     def test_cleanup_clears_a_failed_jobs_folder_only_once_its_originals_are_in_the_archive(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {"HOME": tmp}):
             root, home = Path(tmp) / "checkout", Path(tmp) / ".cache/in-the-loop"

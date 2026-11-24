@@ -438,6 +438,43 @@ class Changed(unittest.TestCase):
             self.assertEqual(tc.changed_selection(root, doc, ["lib/tools/cost_tier.py", "lib/src/thing.rs"])[0], [])
             self.assertIsNone(tc.changed_selection(root, doc, ["lib/README.md", "tools/helper.py"])[0])
 
+    @cost("tool")
+    def test_a_merge_counts_what_either_side_brought_in_not_only_its_conflict_resolution(self):
+        # 2026-11-24: after merging the brief queue, --changed saw only the merge's resolution of findings.md and
+        # chose none of the tests of the code the merge brought in.
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "repo"
+            env = {**os.environ, "JJ_USER": "Made Up", "JJ_EMAIL": "made@up.invalid", "JJ_CONFIG": os.devnull}
+            jj = lambda *args: subprocess.run(["jj", "--quiet", *args], cwd=root, env=env, check=True,
+                                              capture_output=True, text=True).stdout
+            root.mkdir()
+            jj("git", "init")
+            (root / "notes.md").write_text("base\n")
+            jj("commit", "-m", "base")
+            base = jj("log", "--no-graph", "-r", "@-", "-T", "change_id").strip()
+            (root / "line.py").write_text("x = 1\n")
+            (root / "notes.md").write_text("base\nline\n")
+            jj("commit", "-m", "the line")
+            line = jj("log", "--no-graph", "-r", "@-", "-T", "change_id").strip()
+            jj("new", base)
+            (root / "side.py").write_text("y = 2\n")
+            (root / "notes.md").write_text("base\nside\n")
+            jj("commit", "-m", "the side")
+            side = jj("log", "--no-graph", "-r", "@-", "-T", "change_id").strip()
+            jj("new", line, side)
+            (root / "notes.md").write_text("base\nline\nside\n")  # the conflict, resolved
+            old = os.environ.copy()
+            os.environ.update(env)
+            try:
+                self.assertEqual(tc.changed_paths(root), ["line.py", "notes.md", "side.py"])
+                self.assertEqual(tc.changed_paths(root, since=line), ["notes.md", "side.py"])  # --from is unchanged
+                jj("new")
+                (root / "edit.py").write_text("z = 3\n")
+                self.assertEqual(tc.changed_paths(root), ["edit.py"])  # an ordinary @ is unchanged
+            finally:
+                os.environ.clear()
+                os.environ.update(old)
+
 
 class Watching(unittest.TestCase):
     """The process sampling, on made-up commands of well under a second."""

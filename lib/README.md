@@ -870,7 +870,7 @@ Every test, Rust and Python, has a cost tier, listed in [`tests/costs.json`](tes
 ```bash
 python3 lib/tools/test_costs.py run               # the default run: the unit and tool tiers and the retier-pending tests
 python3 lib/tools/test_costs.py run --tier unit   # the unit tier alone
-python3 lib/tools/test_costs.py run --changed      # the tests of what changed in @; --from REV for a line of commits
+python3 lib/tools/test_costs.py run --changed      # the tests of what changed in @ (for a merge, against any parent); --from REV for a line of commits
 ```
 
 `--changed` chooses statically, from the files alone, and errs towards running more: a Python test file runs when it changed, when a module it imports (transitively, matched by module name) changed, or when its code, or that of a module it imports directly, names a changed file in a string (its path, or its file name when that has ten characters or more; docstrings don't count, nor records every module names, such as the trace index, job results and this inventory). `cargo test` runs when `lib/` changed outside its Python tools and pages, only the binaries named when only files of `lib/tests/*.rs` changed (and `tiers` alone for `lib/tools/test_costs.py` and `cost_tier.py`, which that binary reads for its lint). A change to the inventory itself, `lib/tests/costs.json`, chooses nothing in either language: it is an indicative file that every new test adds rows to, and until 2026-11-18 a new row ran all of `cargo test`, which is what filled a stream's memory in VF-037.

@@ -9,8 +9,8 @@ between two briefs is one command.
 
   llm-dlc/loop-summaries/queue.json   the queue as it stands (gitignored: it changes too often to commit)
   llm-dlc/loops/queue.jsonl           every change to it, one JSON line each, committed with the queue's own commits
-  ~/code/scripts/analysis/queue/      the inbox (BRIEF_QUEUE_INBOX overrides it): a brief copied here is added by the
-                                      next `inbox` or `next`, in the order of the file names
+  ~/code/scripts/analysis/queue/      the inbox (BRIEF_QUEUE_INBOX overrides it): a brief copied or linked here is
+                                      added by the next `inbox` or `next`, in the order the files were put there
 
 Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
 
@@ -133,7 +133,22 @@ def read(root: Path) -> dict:
 
 
 def who() -> str:
-    return "a person, at their terminal" if single_run.person_at_terminal() else "a session"
+    """Who changed the queue, for its log: a person at a terminal, or the session whose shell ran the command, named
+    by the id its client gives it (sessions are published under those ids with their logs)."""
+    if single_run.person_at_terminal():
+        return "a person, at their terminal"
+    if os.environ.get("CLAUDE_CODE_SESSION_ID"):
+        return f"Claude Code session {os.environ['CLAUDE_CODE_SESSION_ID']}"
+    if os.environ.get("CODEX_THREAD_ID"):
+        return f"Codex thread {os.environ['CODEX_THREAD_ID']}"
+    return "a session"
+
+
+def inbox_briefs(folder: Path) -> list[Path]:
+    """The inbox's briefs in the order they were put there: by the time of the file itself (a link's own time, not
+    its target's), then by name. Until 2026-11-24 they went by name alone, and a later brief whose name sorted first
+    jumped ahead."""
+    return sorted(folder.glob("*.md"), key=lambda p: (p.lstat().st_mtime, p.name))
 
 
 def log(root: Path, action: str, name: str | None, **fields) -> None:
@@ -328,7 +343,7 @@ def take_inbox(root: Path) -> list[str]:
         return []
     known = {Path(e["source"]).expanduser().resolve() for e in read(root)["entries"] if e["state"] != "removed"}
     added = []
-    for path in sorted(folder.glob("*.md")):
+    for path in inbox_briefs(folder):
         if path.resolve() not in known:
             added.append(add(root, path)["name"])
     return added
@@ -534,7 +549,7 @@ def describe(root: Path) -> dict:
                      "setup": s["setup"]})
     folder = inbox()
     known = {Path(e["source"]).expanduser().resolve() for e in data["entries"] if e["state"] != "removed"}
-    waiting = [shown(p) for p in sorted(folder.glob("*.md"))] if folder.is_dir() else []
+    waiting = [shown(p) for p in inbox_briefs(folder)] if folder.is_dir() else []
     waiting = [w for w in waiting if Path(w).expanduser().resolve() not in known]
     return {"queue": rows, "inboxNotYetAdded": waiting, "lastSession": data.get("lastSession"),
             "defaults": {**DEFAULTS, **data["defaults"]}}

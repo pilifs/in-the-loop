@@ -223,8 +223,9 @@ keeps it in `llm-dlc/loop-summaries/queue.json`, logs every change to the commit
 and does the handover between two briefs. Any session may add, move or remove a brief; a session that takes the
 watcher's place reads `brief_queue.py status` and carries on.
 
-- **Adding.** A brief copied into the user's inbox (`~/code/scripts/analysis/queue/`) is added by the next `inbox`
-  or `next`, in the order of the file names. `brief_queue.py add BRIEF [--first | --after NAME] [KEY=VALUE ...]`
+- **Adding.** A brief copied or linked into the user's inbox (`~/code/scripts/analysis/queue/`) is added by the
+  next `inbox` or `next`, in the order the files were put there. A link to the user's original makes that original
+  the brief's source, so its setup notes go there. `brief_queue.py add BRIEF [--first | --after NAME] [KEY=VALUE ...]`
   adds any other. Each brief's copy goes into `llm-dlc/loops/` unchanged and is committed. The defaults are what
   the user asked for with each brief until now:
   - an Opus 5.5 setup phase;

@@ -707,12 +707,25 @@ SHARED = {"cost_tier.py"}  # imported by every test file: what it names says not
 
 
 def changed_paths(root, since=None):
-    """The files changed in @ (`jj diff`), or since revision SINCE."""
-    argv = ["jj", "--quiet", "diff", "--name-only"] + (["--from", since, "--to", "@"] if since else [])
-    r = subprocess.run(argv, cwd=root, capture_output=True, text=True)
-    if r.returncode:
-        raise SystemExit(f"jj diff: {r.stderr.strip()}")
-    return sorted(set(r.stdout.split()))
+    """The files changed in @ (`jj diff`), or since revision SINCE.
+
+    When @ is a merge, `jj diff` shows only what @ changed against the merged parents, its conflict resolution, and
+    the tests of what the merge brought in would be missed (2026-11-24, merging the brief queue). So a merge counts
+    every file that differs from any of its parents: what either side brought in, never less."""
+    def diff(*rev):
+        r = subprocess.run(["jj", "--quiet", "diff", "--name-only", *rev], cwd=root, capture_output=True, text=True)
+        if r.returncode:
+            raise SystemExit(f"jj diff: {r.stderr.strip()}")
+        return set(r.stdout.split())
+
+    if since:
+        return sorted(diff("--from", since, "--to", "@"))
+    r = subprocess.run(["jj", "--quiet", "log", "--no-graph", "-r", "parents(@)", "-T", 'commit_id ++ "\\n"'],
+                       cwd=root, capture_output=True, text=True)
+    parents = r.stdout.split() if r.returncode == 0 else []
+    if len(parents) > 1:
+        return sorted(set().union(*(diff("--from", p, "--to", "@") for p in parents)))
+    return sorted(diff())
 
 
 def _python_modules(root):
@@ -1264,7 +1277,8 @@ def main(argv=None):
                    help=f"Python test files at a time (default {PYTHON_JOBS}); 1 is one after another")
     r.add_argument("--no-retry", action="store_true", help="what fails is not run a second time")
     r.add_argument("--changed", action="store_true", help="only the tests of what changed in @ (jj diff): the files that "
-                   "changed, import what changed, or name a changed file; cargo test when lib/ changed")
+                   "changed, import what changed, or name a changed file; cargo test when lib/ changed. When @ is a "
+                   "merge, what differs from any of its parents, not only the conflict resolution")
     r.add_argument("--from", dest="since", metavar="REV", help="with --changed: what changed since REV, not only in @")
     r.add_argument("--path", default=str(INVENTORY))
     lt = sub.add_parser("lint", help="check that the tests' tier tags, their sources and the inventory agree")
