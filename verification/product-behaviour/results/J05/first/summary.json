@@ -1,0 +1,1084 @@
+{
+  "case": "J05",
+  "change": "Apache POI — Move a loaded hyperlink and reopen the spreadsheet",
+  "label": "first",
+  "frozenSource": "d92dea060ce873e0a64cec67c27e9dadea448efc",
+  "comparatorSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
+  "bindingsSha256": "2862aa61c952a9d91b3a0bae8d34ba8fe0614315de84de45070312d5f1b9fdcc",
+  "archiveSha256": "ae76e2a4464cc48793e6fd9476e247057c45daad99d11ee8cec0ef4deeded205",
+  "runs": {
+    "cold": {
+      "wallSeconds": 54.285,
+      "claims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "d571ad24b34b8274a1bb5b75403ee8e5483f3c1aece649696dfa443869a03d6d",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "a1e8af97ea2581a56ff94a1db1eea3cd0d9c5f4306fbb861b615be211e6241c9"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "cd38e14d53ae6c1b674d26df243cbac8542c840f6038201acd1ca043100a0cc9"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "executed",
+              "key": "5e6053dcb15b71460b31a2bb3d21d44a2b38f22102a620862ff061ad418312b8"
+            }
+          },
+          "receipt": {
+            "path": "receipts/f4f418faeec9b2491a1b1e68d898199a82a1abf1223cc1d166e53b19741cc3ec.json",
+            "sha256": "d340afb3c9a7731cfd74cda69475200ecfe05e7737790612f5b93fa8ac3c2fed"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "4a9a7c616c41c55d5fe3fa97067f52424e287491d2535cde005464c62dcebfd6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "9b09d66427e6bb12bf3d7911baba0ee957ee9a00201613db393552d818c6bf9e"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "b42463e1846a94de9f44dfac0651eac7a91a5ecb43bb9a9ce75558fda9328819"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "executed",
+              "key": "7b5d4af98dae9c326eb59aa6132a1be3ead14ea950a116daf082b93a61974bc4"
+            }
+          },
+          "receipt": {
+            "path": "receipts/f55a4ec2c6c74c2caf7777c2daacfe692d009acd147ed53ded73da2881e94318.json",
+            "sha256": "60f38fe57a7cd53fadc411f4289bf7a662c1bc360b95de2d0868952808ffd5a7"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "07850edab7d5ae2b4a0e82644ce09c685727e036b28820eaf8fcb336b04ae2c6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "4e11af6b2efd3417c3384d7b555a8cbdbc3983b6c38fab24f02049a170cc8959"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "c19e547c859a29cdaefed60b516fa0ae5f26cebec21c546c49d5efc968662aa6"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "executed",
+              "key": "c0719326ecacc75f67309d361f28f2ec403858f552aeb9e1e4c348af334303f8"
+            }
+          },
+          "receipt": {
+            "path": "receipts/865850e75bb634d73826f8e313343a2998d5452e5bb7e4d978d179756d6d7e89.json",
+            "sha256": "5890a6f8df10a874f1cf6225ccdff96da9ce438f0a132e477589d6c6bce45f55"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "1dec4fb99b31d5debbe93f721c87404a26871424d297c2f13098af2422b34411",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "838afbcd9ba10ab325d36a7c6efbf73b6b7b21848acb8e571b6742220de369fb"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "cfa52cba5d6f21fa72523903ad938c85b03cb4d2511f0946fc8a19a0e996dae6"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "executed",
+              "key": "ac8aae595e0fa4f0abe5a0327b3bdbc3fe3fa92720c3138b4de36c9b93fa0825"
+            }
+          },
+          "receipt": {
+            "path": "receipts/c1ba5e4a669251881f25843e1e44ffa3cb10e8c801a10422621a3fa484e83e2e.json",
+            "sha256": "87bb250889e65623b300b672db35a8bfdf54841bd6fb86d20bf7166908f244a7"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ]
+    },
+    "warm": {
+      "wallSeconds": 20.994,
+      "claims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "d571ad24b34b8274a1bb5b75403ee8e5483f3c1aece649696dfa443869a03d6d",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "a1e8af97ea2581a56ff94a1db1eea3cd0d9c5f4306fbb861b615be211e6241c9"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "cd38e14d53ae6c1b674d26df243cbac8542c840f6038201acd1ca043100a0cc9"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "executed",
+              "key": "5e6053dcb15b71460b31a2bb3d21d44a2b38f22102a620862ff061ad418312b8"
+            }
+          },
+          "receipt": {
+            "path": "receipts/b67a5ffcfff7b5895c15c437d083d90918da7aafd083ce9893f9d360a05566f3.json",
+            "sha256": "137abff26abd18eddc2730c128a7b6b8bed2189dd1d177cddcb32ca565790fe6"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "4a9a7c616c41c55d5fe3fa97067f52424e287491d2535cde005464c62dcebfd6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "9b09d66427e6bb12bf3d7911baba0ee957ee9a00201613db393552d818c6bf9e"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "b42463e1846a94de9f44dfac0651eac7a91a5ecb43bb9a9ce75558fda9328819"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "7b5d4af98dae9c326eb59aa6132a1be3ead14ea950a116daf082b93a61974bc4"
+            }
+          },
+          "receipt": {
+            "path": "receipts/482130eaf4d371233fbe8cd314e0d9f78a1c7c099139ecac3c8026da80b70cd2.json",
+            "sha256": "d8c42aacb32cb81d8da2b85535471271432fb017b0cf945f4c2c8ab79f967151"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "07850edab7d5ae2b4a0e82644ce09c685727e036b28820eaf8fcb336b04ae2c6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "4e11af6b2efd3417c3384d7b555a8cbdbc3983b6c38fab24f02049a170cc8959"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "c19e547c859a29cdaefed60b516fa0ae5f26cebec21c546c49d5efc968662aa6"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "c0719326ecacc75f67309d361f28f2ec403858f552aeb9e1e4c348af334303f8"
+            }
+          },
+          "receipt": {
+            "path": "receipts/367d53e7003e1f5411a0f94a26ce96ae6759fd354dbe8f95f3b3c10a662f815c.json",
+            "sha256": "de098bf6e0f2dd7084144f632950f58e27323fe00f22ec45d29d31d153d3fd65"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "1dec4fb99b31d5debbe93f721c87404a26871424d297c2f13098af2422b34411",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "838afbcd9ba10ab325d36a7c6efbf73b6b7b21848acb8e571b6742220de369fb"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "cfa52cba5d6f21fa72523903ad938c85b03cb4d2511f0946fc8a19a0e996dae6"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "ac8aae595e0fa4f0abe5a0327b3bdbc3fe3fa92720c3138b4de36c9b93fa0825"
+            }
+          },
+          "receipt": {
+            "path": "receipts/f340abd31fffe006b6600c96ef5cb1fd275a75e0fd1a9cb8ac2f5bac2c966258.json",
+            "sha256": "cb25eeb9e68ec2fdf7b9f399d77aba7908cbc66fbd57baeefa5a31a9b68e2b92"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        }
+      ]
+    },
+    "clean": {
+      "wallSeconds": 49.714,
+      "claims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "d571ad24b34b8274a1bb5b75403ee8e5483f3c1aece649696dfa443869a03d6d",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "a1e8af97ea2581a56ff94a1db1eea3cd0d9c5f4306fbb861b615be211e6241c9"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "cd38e14d53ae6c1b674d26df243cbac8542c840f6038201acd1ca043100a0cc9"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "executed",
+              "key": "5e6053dcb15b71460b31a2bb3d21d44a2b38f22102a620862ff061ad418312b8"
+            }
+          },
+          "receipt": {
+            "path": "receipts/47a4662bb6a0db52ae3c5b4de75b88cb182f1f76a6f6f089e22e94b9326f481c.json",
+            "sha256": "3357bb5d305d184d5a01c12f1d162acda810e81377121dd3145a758fe1896951"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "4a9a7c616c41c55d5fe3fa97067f52424e287491d2535cde005464c62dcebfd6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "9b09d66427e6bb12bf3d7911baba0ee957ee9a00201613db393552d818c6bf9e"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "b42463e1846a94de9f44dfac0651eac7a91a5ecb43bb9a9ce75558fda9328819"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "executed",
+              "key": "7b5d4af98dae9c326eb59aa6132a1be3ead14ea950a116daf082b93a61974bc4"
+            }
+          },
+          "receipt": {
+            "path": "receipts/eddc9e925bbee160f18db6ca2ab5f7fc472c1721dea95a2bd3b5995a3afd2e48.json",
+            "sha256": "104ae91ea6d335069d659630956b5205759c02a7cb55578afc21e24f5f14fc08"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "07850edab7d5ae2b4a0e82644ce09c685727e036b28820eaf8fcb336b04ae2c6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "4e11af6b2efd3417c3384d7b555a8cbdbc3983b6c38fab24f02049a170cc8959"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "c19e547c859a29cdaefed60b516fa0ae5f26cebec21c546c49d5efc968662aa6"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "executed",
+              "key": "c0719326ecacc75f67309d361f28f2ec403858f552aeb9e1e4c348af334303f8"
+            }
+          },
+          "receipt": {
+            "path": "receipts/2003a8809a6c8feed3d81cefb7fc420cc23e0423d87dde244050f110f463513f.json",
+            "sha256": "b5653ee1a12c528e7b61f89794063d41241a363e6f82b6f8a5998399a4d0a11a"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "1dec4fb99b31d5debbe93f721c87404a26871424d297c2f13098af2422b34411",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "838afbcd9ba10ab325d36a7c6efbf73b6b7b21848acb8e571b6742220de369fb"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "cfa52cba5d6f21fa72523903ad938c85b03cb4d2511f0946fc8a19a0e996dae6"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "executed",
+              "key": "ac8aae595e0fa4f0abe5a0327b3bdbc3fe3fa92720c3138b4de36c9b93fa0825"
+            }
+          },
+          "receipt": {
+            "path": "receipts/d81cfffaa2994ca726a814b162f2e4b11c5b2edfe6d6b0eda07e8730a39cdf64.json",
+            "sha256": "3cc19286fee2dba1a8cf9ad9be154d96d286709b272042d7f36bb395231a3eca"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ]
+    },
+    "replacement": {
+      "wallSeconds": 19.212,
+      "claims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "9fe87c3ca2bbe448b2f35e01f3d5933599b7dca3cfb564fa88441250fcb70253",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "4945b3d9aa18643ade58b001c1e3946fb97eb1254e6588fbfac414da0363b9d9"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "2dff48dffdd56365ce6e553a9e1cd8390d21b9467c8c62f81b9988ef76e35d34"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "executed",
+              "key": "aa925c21371773c527fb004430576775ca107682470287498c4a4d13b7646e53"
+            }
+          },
+          "receipt": {
+            "path": "receipts/d6b2666140b4c62a5b4a44888da37ca9b1a693aa9d16d9b78428f2ad7db67d80.json",
+            "sha256": "e4246e82921279b7a964dbafc7378d418d19675324a2114f28343aea748117c4"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "928887fe70f53d79271e16d596d4cec90484404f2bc81a23354b825422905aad",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "50854a9eb3877d20060b8c82bd9fd435ba8eedde8e32027c377d3392d87e16bd"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "a6b195240f5d37f7d0a47570e4a08cf597ee0cce4c5262fea76159042ff151f0"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "executed",
+              "key": "f57c965d23a4309632934549f4d3d90f82cf8c820958a26155b0a41122b260df"
+            }
+          },
+          "receipt": {
+            "path": "receipts/ff88adb2e257bfea071a46996ed25bab595760d1124870f938701dfbdd4712ff.json",
+            "sha256": "f5d4b46549814996b58e4c14858ee674e47b4c9b4a106bd82b36eef1ab13d5c2"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ],
+      "originalBinaryClaims": []
+    },
+    "replacement-clean": {
+      "wallSeconds": 29.667,
+      "claims": [
+        {
+          "id": "moved-loaded-object",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "09a8e769313488dd9f99d4be483febad0ce62f91fa87d6e0b23cd0f69dd8273f",
+          "executionKey": "9fe87c3ca2bbe448b2f35e01f3d5933599b7dca3cfb564fa88441250fcb70253",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "move",
+                "plain"
+              ],
+              "expected": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "old": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "new": {
+                "return": "unresolved|reopen2:IllegalStateException:A2"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "4945b3d9aa18643ade58b001c1e3946fb97eb1254e6588fbfac414da0363b9d9"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "move",
+                "section"
+              ],
+              "expected": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "old": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "new": {
+                "return": "unresolved|-/section|section|section|unresolved"
+              },
+              "intendedChange": {
+                "return": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "refuted",
+              "id": "2dff48dffdd56365ce6e553a9e1cd8390d21b9467c8c62f81b9988ef76e35d34"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "81980fed7f01df00cfe6cb1fb23549af1c38a99837c9050351819ca8190a3f87"
+            },
+            "new": {
+              "action": "executed",
+              "key": "aa925c21371773c527fb004430576775ca107682470287498c4a4d13b7646e53"
+            }
+          },
+          "receipt": {
+            "path": "receipts/b3d6e9c08671ce2148619213e840261c9e6e65661d5c3a7ba7eaefa9436ce8ec.json",
+            "sha256": "4b5c94258e396148744b04584a41130c5ffcfd1c61961139025e089f27d170e4"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "unmoved-object",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "86f11479b48a2ddd47e8f1ac87b508ff8253f0f844fb655c0d0b3d8e56c2a7a3",
+          "executionKey": "928887fe70f53d79271e16d596d4cec90484404f2bc81a23354b825422905aad",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "keep",
+                "plain"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+              },
+              "status": "established",
+              "id": "50854a9eb3877d20060b8c82bd9fd435ba8eedde8e32027c377d3392d87e16bd"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "keep",
+                "section"
+              ],
+              "expected": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "old": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "new": {
+                "return": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+              },
+              "status": "established",
+              "id": "a6b195240f5d37f7d0a47570e4a08cf597ee0cce4c5262fea76159042ff151f0"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "23287d9329af22c69bf2d3a452497332c213e3ca55dd58539bf1a71e83581639"
+            },
+            "new": {
+              "action": "executed",
+              "key": "f57c965d23a4309632934549f4d3d90f82cf8c820958a26155b0a41122b260df"
+            }
+          },
+          "receipt": {
+            "path": "receipts/7c39bf49a526b400a744960156990ba919bac0099f77e3d678990277a9ec66d4.json",
+            "sha256": "d7b62e418848d7c5eef798d5b31e75b2e5fcc369382a0117bf9bdc9abc493988"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": []
+    }
+  }
+}

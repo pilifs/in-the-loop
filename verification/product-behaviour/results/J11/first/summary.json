@@ -1,0 +1,1084 @@
+{
+  "case": "J11",
+  "change": "H2 — Keep original text spellings when a SQL sort spills to disk",
+  "label": "first",
+  "frozenSource": "d92dea060ce873e0a64cec67c27e9dadea448efc",
+  "comparatorSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
+  "bindingsSha256": "e22063fb8dc5fd0aa264ef4a2880b7fd8e59efe6a5b2fcbbe6553b80dd6bc415",
+  "archiveSha256": "9995ad31565b0b6f560e9846faa5adc863a3d5664f575a4423567cac3e0d04af",
+  "runs": {
+    "cold": {
+      "wallSeconds": 36.769,
+      "claims": [
+        {
+          "id": "external-spelling",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "faea79e7d69eda16104e765d31f80301da17fc0cd899bcb5b2fa9af4eb6ad219",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "dd533a87e1eacd96c6b3cc28c18922ea280d0b04bbffa60e7d1ea4b1d594fde1"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "b8aac1232ee7672ed53261bf35dad9c34d6f21876ac6392b05f2210af51cece8"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "c023810c25a90f9a9a49ae6d20dd18ffa11bb46cf0e6cd8da5f0f244d9eba560"
+            }
+          },
+          "receipt": {
+            "path": "receipts/de9a02dcc38f6742831d1e6e9a45d9139a6a208b8a124f211d7f2bd2b672799f.json",
+            "sha256": "ec39c550bf8e86cfd5c604db7977d6cbd38991a9f2d43c34cf02f7fdce9411dc"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "03810680f2a368b5f6066c3e444e5a5bbd4d53cc0dd120ce1afe7c9b950b32e8",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "e41dca690f18406a43512934592069f6858f279da26896e5f2a884069536932a"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "b569747ae9548cdb91503c5acee379808c3fd5cdefbb7fc0f39773dd8544381a"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "executed",
+              "key": "e80ccaad338dc4d1299dee3461efbaa8a3dbdd5a9003c8d015c68ad96449eddc"
+            }
+          },
+          "receipt": {
+            "path": "receipts/5a20352ce45fe445422f56c17f5d634a0393c5e5433ae6db92b8963f756b73c0.json",
+            "sha256": "60e1975d75acda971691f613afb23d330eadb51067fdd3c2b833bb96425bfa2b"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "external-spelling",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "819222873ff59e4ba4671f3221d311c42ce3855406c86601e988d43926fee4dc",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "2bf406c8e5d11ebfb29f475afb91d290fcc96ed65c1e5d9afbd3f568df86a0fa"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "c48a8c7a6f9951ac506748a534ff898cdeb866936d6266ca7765b52e7dea78fd"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "eca5f6e728512ca86ef42fc7e9d660cda57df41c2265b09598aa67e62cf448ee"
+            }
+          },
+          "receipt": {
+            "path": "receipts/3ced93015015389bb9c9f8c339106dac2aeb682304ab7c989b7ef1d87d135aa0.json",
+            "sha256": "b392f1fb69b4f273cf2f9f4b577c7760d18b77c0ad266c134d22bec22b9ead51"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "893870c82b44bcfd702ff89251cb8d2687f4af7e8149e23f79ca8c5d3edbc1dc",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "55337970cb9d206dcc461cc58a619fbd67f7e68f5e8457d25d10f38dedb52b46"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "25cd69dc3d8d28c0e84b650e0f066115972de459c0786beb303734a6c3706759"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "executed",
+              "key": "d9ad057cad601da1ae5df254010c7a91da917253efd4a535a8cfbad835f88e2e"
+            }
+          },
+          "receipt": {
+            "path": "receipts/93597e81807fc9efde24cdfd8210194eb9c308f408e2428d1c4eecea112862cb.json",
+            "sha256": "5e0bbc0974f53a4a8f96f880d34389b4fb0ed397e9945911c347dfa3f0e6f70d"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ]
+    },
+    "warm": {
+      "wallSeconds": 16.741,
+      "claims": [
+        {
+          "id": "external-spelling",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "faea79e7d69eda16104e765d31f80301da17fc0cd899bcb5b2fa9af4eb6ad219",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "dd533a87e1eacd96c6b3cc28c18922ea280d0b04bbffa60e7d1ea4b1d594fde1"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "b8aac1232ee7672ed53261bf35dad9c34d6f21876ac6392b05f2210af51cece8"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "c023810c25a90f9a9a49ae6d20dd18ffa11bb46cf0e6cd8da5f0f244d9eba560"
+            }
+          },
+          "receipt": {
+            "path": "receipts/e057b4ef9abf3e6cb901236cf23e5e67666fbc731343e958e8f13a85ee36194b.json",
+            "sha256": "29be65cf04d448a3c6016a621e1e05b18613e363b8933423d9b94748a6a0b4dc"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "03810680f2a368b5f6066c3e444e5a5bbd4d53cc0dd120ce1afe7c9b950b32e8",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "e41dca690f18406a43512934592069f6858f279da26896e5f2a884069536932a"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "b569747ae9548cdb91503c5acee379808c3fd5cdefbb7fc0f39773dd8544381a"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "e80ccaad338dc4d1299dee3461efbaa8a3dbdd5a9003c8d015c68ad96449eddc"
+            }
+          },
+          "receipt": {
+            "path": "receipts/da98d296b982edf930adc7f3e474046f748450ffe1f85cff199769f27ec3f186.json",
+            "sha256": "d6553933458469392a3daeef4b6682ffcdcfc861aca131928377ed051ae364e9"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "external-spelling",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "819222873ff59e4ba4671f3221d311c42ce3855406c86601e988d43926fee4dc",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "2bf406c8e5d11ebfb29f475afb91d290fcc96ed65c1e5d9afbd3f568df86a0fa"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "c48a8c7a6f9951ac506748a534ff898cdeb866936d6266ca7765b52e7dea78fd"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "eca5f6e728512ca86ef42fc7e9d660cda57df41c2265b09598aa67e62cf448ee"
+            }
+          },
+          "receipt": {
+            "path": "receipts/6e27b208688c694f0014eeecdb66504a6fc35d91f84285fa482e22357101db18.json",
+            "sha256": "a47be9d8463238dac0275b86064f15564a625df4bbb556f517451c1db16853e9"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "893870c82b44bcfd702ff89251cb8d2687f4af7e8149e23f79ca8c5d3edbc1dc",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "55337970cb9d206dcc461cc58a619fbd67f7e68f5e8457d25d10f38dedb52b46"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "25cd69dc3d8d28c0e84b650e0f066115972de459c0786beb303734a6c3706759"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "d9ad057cad601da1ae5df254010c7a91da917253efd4a535a8cfbad835f88e2e"
+            }
+          },
+          "receipt": {
+            "path": "receipts/fd8aa408f7535adaf1083761ce9f9bb7056b5c99bdaee8c19df1d9c58b8b75df.json",
+            "sha256": "3ca7bfaff8ee3de1de8b9270b7f3c9825862321a56af609483a68d9a56e962b5"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        }
+      ]
+    },
+    "clean": {
+      "wallSeconds": 33.516,
+      "claims": [
+        {
+          "id": "external-spelling",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "faea79e7d69eda16104e765d31f80301da17fc0cd899bcb5b2fa9af4eb6ad219",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "dd533a87e1eacd96c6b3cc28c18922ea280d0b04bbffa60e7d1ea4b1d594fde1"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "b8aac1232ee7672ed53261bf35dad9c34d6f21876ac6392b05f2210af51cece8"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "c023810c25a90f9a9a49ae6d20dd18ffa11bb46cf0e6cd8da5f0f244d9eba560"
+            }
+          },
+          "receipt": {
+            "path": "receipts/505a53bda69da04eecd32aaca99ef2ec9e28715ccb2a61085ac3c3d1ca87625a.json",
+            "sha256": "6e4772c97d08d6ccaa2ec2055642b4d2b3546a74f2d9e4b13ef897a12a506483"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "03810680f2a368b5f6066c3e444e5a5bbd4d53cc0dd120ce1afe7c9b950b32e8",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "e41dca690f18406a43512934592069f6858f279da26896e5f2a884069536932a"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "b569747ae9548cdb91503c5acee379808c3fd5cdefbb7fc0f39773dd8544381a"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "executed",
+              "key": "e80ccaad338dc4d1299dee3461efbaa8a3dbdd5a9003c8d015c68ad96449eddc"
+            }
+          },
+          "receipt": {
+            "path": "receipts/ad5bd840bc04bfcef9b4c13da0c6c713fa095c6c0adee57f27c3ba1f46049b02.json",
+            "sha256": "bbfaf9afd688fc5a240e6e82c3245d2fc1b9a2576bdb5f6c3cf4920e200978f1"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "external-spelling",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "819222873ff59e4ba4671f3221d311c42ce3855406c86601e988d43926fee4dc",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "2bf406c8e5d11ebfb29f475afb91d290fcc96ed65c1e5d9afbd3f568df86a0fa"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "c48a8c7a6f9951ac506748a534ff898cdeb866936d6266ca7765b52e7dea78fd"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "eca5f6e728512ca86ef42fc7e9d660cda57df41c2265b09598aa67e62cf448ee"
+            }
+          },
+          "receipt": {
+            "path": "receipts/5f97b00fa09de1130b14374b3b9ac8d5789d16790502bb7e1155b303910e914d.json",
+            "sha256": "70616d00c02c783d5eef557fb03f530315b9aedafa2b446ad01c603251f92ef8"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "893870c82b44bcfd702ff89251cb8d2687f4af7e8149e23f79ca8c5d3edbc1dc",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "55337970cb9d206dcc461cc58a619fbd67f7e68f5e8457d25d10f38dedb52b46"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "25cd69dc3d8d28c0e84b650e0f066115972de459c0786beb303734a6c3706759"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "executed",
+              "key": "d9ad057cad601da1ae5df254010c7a91da917253efd4a535a8cfbad835f88e2e"
+            }
+          },
+          "receipt": {
+            "path": "receipts/a0071a6129e1858651fe449ea3bad59f9272263f8dc225ec0f43d9f3942a8ca1.json",
+            "sha256": "1c241af693149d7f88e10f2360164948bd86c02a766e1cfa051c5ebd1cfdc642"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ]
+    },
+    "replacement": {
+      "wallSeconds": 13.936,
+      "claims": [
+        {
+          "id": "external-spelling",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "35fccfaa626905f6be31c05a262530b85a41f2e1558f5b01eec801d1bd4e31b6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "932d573f9ff5d0150ac5f6dd81ac8d6728225afecce125eae0971a5e8879299f"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "a6a3ce7e29e135a183bf7a61ee9a7bffeb398b8a20d8c5c873180b6855d9c68b"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "5d204d78792fb3a18c4086ea8d431bda20004b0a9fc2b0fe4ca5f8730d08427d"
+            }
+          },
+          "receipt": {
+            "path": "receipts/450a61ca2a606050c197e62623bb955fe42e746a5339e0a81385769f9078ff77.json",
+            "sha256": "7a024a708b31a1d64f1af70cc686b1860aa86cd1f306048fc8c956ed8aadc686"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "9505e0ca2edb041e072747103aec976ae147afbb6028c80bd7ef7c1f2f0b89c5",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "26718c2186bf05fab343a955218cdba24c9387f2ae7a3c25e2826740b1d945a9"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "7c515ae913a734c2ba3b72eaacc2210611a9d69997de158ae66ee81e1b435d67"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "executed",
+              "key": "ef3163196ffbf1b429812c677db859177901fd4457a89c2e91601824da9b2cb2"
+            }
+          },
+          "receipt": {
+            "path": "receipts/c01d3f97c45f9aa1a985bc80fc60595d083a635dc7e209fc5546912b058ad954.json",
+            "sha256": "4e5c22d18d42713a8150bdcdba0b4a064717373bac16866e04c9c8934175d83a"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ],
+      "originalBinaryClaims": []
+    },
+    "replacement-clean": {
+      "wallSeconds": 21.342,
+      "claims": [
+        {
+          "id": "external-spelling",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "8025a79080e4180de93b2602d1a1bfee659f7edf5719731415fc7d238dff1512",
+          "executionKey": "35fccfaa626905f6be31c05a262530b85a41f2e1558f5b01eec801d1bd4e31b6",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "spill",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/abc,abc,abc,abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "932d573f9ff5d0150ac5f6dd81ac8d6728225afecce125eae0971a5e8879299f"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "permuted"
+              ],
+              "expected": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "old": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "new": {
+                "return": "2/Abc,Abc,Abc,Abc,z"
+              },
+              "intendedChange": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "refuted",
+              "id": "a6a3ce7e29e135a183bf7a61ee9a7bffeb398b8a20d8c5c873180b6855d9c68b"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "bcc170ad089db3b49131d75a50f9674b59ecc9ef0bfab6e3fa89ddf5d143cdc5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "5d204d78792fb3a18c4086ea8d431bda20004b0a9fc2b0fe4ca5f8730d08427d"
+            }
+          },
+          "receipt": {
+            "path": "receipts/4e4b4dfdf4f45b5767440e62c43d03a5805b398e2e517d8008925ecb2a482835.json",
+            "sha256": "616de81b3f96760b40a7167a10037bba98865ca2fe6241401de3d7f0440dbe94"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "memory-and-collation",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "4f251ad18214a4d8f39257a83296ce1953bf39537cebc4217c7c284d15247807",
+          "executionKey": "9505e0ca2edb041e072747103aec976ae147afbb6028c80bd7ef7c1f2f0b89c5",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "memory",
+                "ordered"
+              ],
+              "expected": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "2/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "26718c2186bf05fab343a955218cdba24c9387f2ae7a3c25e2826740b1d945a9"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "spill",
+                "case-sensitive"
+              ],
+              "expected": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "old": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "new": {
+                "return": "4/ABC,Abc,abc,abc,z"
+              },
+              "status": "established",
+              "id": "7c515ae913a734c2ba3b72eaacc2210611a9d69997de158ae66ee81e1b435d67"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "da66549bd9da371ee72ea4565b66da39303c671d6fe68559a60e28c014ae7cf8"
+            },
+            "new": {
+              "action": "executed",
+              "key": "ef3163196ffbf1b429812c677db859177901fd4457a89c2e91601824da9b2cb2"
+            }
+          },
+          "receipt": {
+            "path": "receipts/7f8984382eea251d0fd4bcb670cd81d212f4f08af4d0e8c2b1bd3f3630c9735e.json",
+            "sha256": "fbe1716653377f189588c9a0abff7acab56bc64d82792e90b7c4a9ecd50e169b"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": []
+    }
+  }
+}

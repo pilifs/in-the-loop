@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-220444-consume-the-proved-jsoup-void-predicate",
+  "title": "Consume the proved jsoup void predicate in the cloned DOM",
+  "description": "Verify the original Tag.isEmpty bytecode for arbitrary live bitmasks. Bind the cloned parser, distinct tag sets, source and callback identities, inserted element and exact branch that pops it. Compare untouched and substituted public trees including same-text and no-helper controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "checked-helpers",
+    "original-jvm-replay",
+    "application:change-plan"
+  ],
+  "links": {
+    "paths": [
+      "verification/product-behaviour/cases/J02"
+    ]
+  },
+  "expected": "Two untouched and two substituted public JVMs per input and side match the frozen original observations. A missing application or stale bytecode is explicitly refused.",
+  "submitted": {
+    "at": "2026-11-24T22:04:44+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Compare qualified original and substituted continuations",
+      "run": "python3 -B verification/product-behaviour/checked.py J02",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/product-behaviour/results/J02/checked.json.gz"
+  ]
+}

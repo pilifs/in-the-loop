@@ -1,0 +1,892 @@
+{
+  "case": "J19",
+  "change": "Resilience4j — Repeat a circuit-breaker command without creating another transition",
+  "label": "first",
+  "frozenSource": "d92dea060ce873e0a64cec67c27e9dadea448efc",
+  "comparatorSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
+  "bindingsSha256": "c19937d384984d9791d6c7056fdce283888aa7510ea6fd470be937a89514ea7b",
+  "archiveSha256": "a2bf5b5cbd0d8a6d9662b77252373ff15827a49dab4cf5a4d4569b2e7abef6c1",
+  "runs": {
+    "cold": {
+      "wallSeconds": 16.451,
+      "claims": [
+        {
+          "id": "repeated-commands",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "c4858eefebac5ceaf524bf9e0ce8bdaa98e54e88dc236b061053e899a99a553b",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "474f28fa8a6e2ab0605d646078420b3c16cffc8b4df05e19e740de50e5dffe0b"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "executed",
+              "key": "dffc9fbcdaf6cb553ca65fe623a7f279a2d4d072fa0ae1d8c2dd5062d7d064cf"
+            }
+          },
+          "receipt": {
+            "path": "receipts/8f2121a2291b973da9fa840ae8b40d5cb830132f99c22486d5c4d4b7629c9923.json",
+            "sha256": "a77514a85b52ac407a9cda85b79604037c0f0fbaa293d4c9bbe153c96e470589"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "66bdf9e3b906619fc4fd6e77c038b1fd8fb5bb13c27faf22c8cd30e55f125867",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "c133631fc47f25013d6f5061b309b002598a7e9396914fa276eb2bc62123d132"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "f840bb93fd35fca158016c32b438e37ddc31e941652ca66de9071c2e6ba7560f"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "57490fdfcf2886504c934e26afee9b82b01a963b59747630f98b43f5f595d0dd"
+            }
+          },
+          "receipt": {
+            "path": "receipts/614408da307ad9a3cd0d73e6e488ac0e4949dc3e3171b6a97e8c5bf7127f3718.json",
+            "sha256": "1be973bbadb530a072dbe0b81606e6a939872f0c3d95065617cb0ffc2d6efab3"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "repeated-commands",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "c786c0abe137ad71e2befa6947b93c2261f92ff933d940948b61252d8f263c8b",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "refuted",
+              "id": "c32897b0f4b54cdcbaa761d393c497106b31f3a50982e9fefe3c5cc14cf197c0"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "executed",
+              "key": "4ffd888400646946a1a30dc6e9e9a8b56fa8ba5345cb17af79fecabb1f8d215e"
+            }
+          },
+          "receipt": {
+            "path": "receipts/a3a37af4f30fd40131ca70c5fe6d3f998910cc72dc332c7713ae954a67efa1b8.json",
+            "sha256": "6090ff101e603c130f5fe8694678a51b73096bf190aff52be3b7bb2897502805"
+          },
+          "freshQualifiedEntries": 2,
+          "reusedQualifiedEntries": 2
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "6744958e29ef1adaf5bf09573bf4a4ef51b578b71d9b26918b554043e090c86d",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "4a030258c202062a393caf6e90ecd30bf7f1665022379610a9175b580c5c8d01"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "2295ce46877ddf9a66c4cb73e5644772bd73fd039d11818bf3d53ef98894fbd3"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "ee2066aab6bdc3ae96abb82d579d873bb7cefc4e8082728e0700a246aa50bbef"
+            }
+          },
+          "receipt": {
+            "path": "receipts/d10e0d85ef89d695f2a56f25dc3c2e05fe73acf550587cb5830b1f1e415e26d7.json",
+            "sha256": "b30d2beead9cc808b6c7fac525db3ecdff88e82b95104e022b6da81d1e230553"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ]
+    },
+    "warm": {
+      "wallSeconds": 5.396,
+      "claims": [
+        {
+          "id": "repeated-commands",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "c4858eefebac5ceaf524bf9e0ce8bdaa98e54e88dc236b061053e899a99a553b",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "474f28fa8a6e2ab0605d646078420b3c16cffc8b4df05e19e740de50e5dffe0b"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "executed",
+              "key": "dffc9fbcdaf6cb553ca65fe623a7f279a2d4d072fa0ae1d8c2dd5062d7d064cf"
+            }
+          },
+          "receipt": {
+            "path": "receipts/55a0dbd8d0807c09a337a05983f4da7f0831ee3ced1358307406d68e96b7d989.json",
+            "sha256": "b58b9240fdb55039ee0acaff67b90120ba2a2ed7b19ffe6b8801119a19d35758"
+          },
+          "freshQualifiedEntries": 2,
+          "reusedQualifiedEntries": 2
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "66bdf9e3b906619fc4fd6e77c038b1fd8fb5bb13c27faf22c8cd30e55f125867",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "c133631fc47f25013d6f5061b309b002598a7e9396914fa276eb2bc62123d132"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "f840bb93fd35fca158016c32b438e37ddc31e941652ca66de9071c2e6ba7560f"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "57490fdfcf2886504c934e26afee9b82b01a963b59747630f98b43f5f595d0dd"
+            }
+          },
+          "receipt": {
+            "path": "receipts/9b0ed355955899c6d5831793c3a86bde521d9ded986ca07ec2c0d4dfbf192fe8.json",
+            "sha256": "62019c41702fa317572a3c0de3be0d0e68d3373f79fb55b0aac9e606321547bc"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "repeated-commands",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "c786c0abe137ad71e2befa6947b93c2261f92ff933d940948b61252d8f263c8b",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "refuted",
+              "id": "c32897b0f4b54cdcbaa761d393c497106b31f3a50982e9fefe3c5cc14cf197c0"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "4ffd888400646946a1a30dc6e9e9a8b56fa8ba5345cb17af79fecabb1f8d215e"
+            }
+          },
+          "receipt": {
+            "path": "receipts/3d560481c91b29beb201f8b8b9346057c5fc07da6d766b47624e37100bbf7e80.json",
+            "sha256": "24ecdb4523ffbb26f0fa68b46600f19237901032e9394f978fd7ce46f46a1da6"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 4
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "6744958e29ef1adaf5bf09573bf4a4ef51b578b71d9b26918b554043e090c86d",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "4a030258c202062a393caf6e90ecd30bf7f1665022379610a9175b580c5c8d01"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "2295ce46877ddf9a66c4cb73e5644772bd73fd039d11818bf3d53ef98894fbd3"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "exact reuse",
+              "key": "ee2066aab6bdc3ae96abb82d579d873bb7cefc4e8082728e0700a246aa50bbef"
+            }
+          },
+          "receipt": {
+            "path": "receipts/3ed4300511f57362f7ad0424bb30bad820916b3308402eff4052fac4a70fed41.json",
+            "sha256": "74eb090f5108f4f529be61feb42592ce1458e773bb4c96d56412d2cc1fc5613a"
+          },
+          "freshQualifiedEntries": 0,
+          "reusedQualifiedEntries": 8
+        }
+      ]
+    },
+    "clean": {
+      "wallSeconds": 16.24,
+      "claims": [
+        {
+          "id": "repeated-commands",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "c4858eefebac5ceaf524bf9e0ce8bdaa98e54e88dc236b061053e899a99a553b",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "474f28fa8a6e2ab0605d646078420b3c16cffc8b4df05e19e740de50e5dffe0b"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "executed",
+              "key": "dffc9fbcdaf6cb553ca65fe623a7f279a2d4d072fa0ae1d8c2dd5062d7d064cf"
+            }
+          },
+          "receipt": {
+            "path": "receipts/4974ab7b4e598cfd718dcc6d7c0c9e76486bf4beb4fcbd8f70bfb164e4d7cc7e.json",
+            "sha256": "ba6c14815fa8d9b8a8867e6464768a24229ff6c928cd06457042ceb2de454cd3"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "66bdf9e3b906619fc4fd6e77c038b1fd8fb5bb13c27faf22c8cd30e55f125867",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "c133631fc47f25013d6f5061b309b002598a7e9396914fa276eb2bc62123d132"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "f840bb93fd35fca158016c32b438e37ddc31e941652ca66de9071c2e6ba7560f"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "57490fdfcf2886504c934e26afee9b82b01a963b59747630f98b43f5f595d0dd"
+            }
+          },
+          "receipt": {
+            "path": "receipts/825a0bd1b78ccdf3a848d7beb997592e51950a1efe51b2fb86a428358efe74ae.json",
+            "sha256": "3e89d49cdb48f82962f1a8ad0fedf5122fda5c90da4d6a36b44f7ddf362bb9c8"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": [
+        {
+          "id": "repeated-commands",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "c786c0abe137ad71e2befa6947b93c2261f92ff933d940948b61252d8f263c8b",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "refuted",
+              "id": "c32897b0f4b54cdcbaa761d393c497106b31f3a50982e9fefe3c5cc14cf197c0"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "executed",
+              "key": "4ffd888400646946a1a30dc6e9e9a8b56fa8ba5345cb17af79fecabb1f8d215e"
+            }
+          },
+          "receipt": {
+            "path": "receipts/8cc0257844efca91e7d81935d614aeedf102da6033ad6cf7e42084ea3e0bf317.json",
+            "sha256": "f0a6fc4b871c361d9032d2cb52ca9c888513b561a0e50014566ccc23a636f234"
+          },
+          "freshQualifiedEntries": 2,
+          "reusedQualifiedEntries": 2
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "6744958e29ef1adaf5bf09573bf4a4ef51b578b71d9b26918b554043e090c86d",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "4a030258c202062a393caf6e90ecd30bf7f1665022379610a9175b580c5c8d01"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "2295ce46877ddf9a66c4cb73e5644772bd73fd039d11818bf3d53ef98894fbd3"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "ee2066aab6bdc3ae96abb82d579d873bb7cefc4e8082728e0700a246aa50bbef"
+            }
+          },
+          "receipt": {
+            "path": "receipts/1fbaa740b238072a61e466995d261256a3159ca40a07700f4c7fcea404c184a9.json",
+            "sha256": "a3cb0a37feccd2219955a86c21bc7c7a8356b63ef08c6014a684d4624eb6655a"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ]
+    },
+    "replacement": {
+      "wallSeconds": 6.156,
+      "claims": [
+        {
+          "id": "repeated-commands",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "b789f4888cbe9b3decb462cacfdd806c3ba519a14317c550d65f269511666ead",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "refuted",
+              "id": "8120b682731078d24ff5ef568e426135f446b42d37582fef35a746530c0ab868"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "executed",
+              "key": "51ccb0219089382dce770b0f3f6277fd4c0118dcc3847cfe9b5e7686d1e6ee29"
+            }
+          },
+          "receipt": {
+            "path": "receipts/e224fbad6bfe83990b0991c4e04a0839d1d8135dfeee8db41e5c32350d1ff575.json",
+            "sha256": "1c3b76a21104cc7169a68ceb8e294155cab6821e68fe1d2aa26dae93fe6f3b33"
+          },
+          "freshQualifiedEntries": 2,
+          "reusedQualifiedEntries": 2
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "519c384b1b111745141892003833f4f6dc6a5bdda7491ffeeae59a98f86daecd",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "f0b3c5ff606fa53a399f7abb2d2059d6c4e322f0f530e71b1c35d2bbe12942b0"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "587f2b93a2da7f515a418a572eb9f4e0351a676fcb2fd63c2dc6aeae118aa838"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "exact reuse",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "f0a96a263d1c63ec52db565f86f9ef20455c5c70be1f763d696e1a04c654a1aa"
+            }
+          },
+          "receipt": {
+            "path": "receipts/4f13bd002cfd05bd5a76ba9b15552b0e2d631fa6813223770386e5a405b7d7e2.json",
+            "sha256": "c03821595ed4715c960b36079d42c6db1c643378fbef25c174bc08491acbe743"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 4
+        }
+      ],
+      "originalBinaryClaims": []
+    },
+    "replacement-clean": {
+      "wallSeconds": 9.994,
+      "claims": [
+        {
+          "id": "repeated-commands",
+          "status": "refuted",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "e801371cb4927ca8082fb054e9afd0e5e18cd24178b23d82c532d562f77e4664",
+          "executionKey": "b789f4888cbe9b3decb462cacfdd806c3ba519a14317c550d65f269511666ead",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "repeat"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "intendedChange": {
+                "return": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "refuted",
+              "id": "8120b682731078d24ff5ef568e426135f446b42d37582fef35a746530c0ab868"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "0d0377f056b10e2691b27b86691c24ef98d5bb73a3661cf0c1ce77a570431668"
+            },
+            "new": {
+              "action": "executed",
+              "key": "51ccb0219089382dce770b0f3f6277fd4c0118dcc3847cfe9b5e7686d1e6ee29"
+            }
+          },
+          "receipt": {
+            "path": "receipts/869c922c68aa8cbe9e536072fa4f0a7167fb0edf2b9014ee6f8d00c4e7861862.json",
+            "sha256": "d1d4c49ae3d16655a238c59d4264d4391801d75bc84bbda168faedd797612a49"
+          },
+          "freshQualifiedEntries": 4,
+          "reusedQualifiedEntries": 0
+        },
+        {
+          "id": "genuine-and-invalid",
+          "status": "established",
+          "firstOpenDependency": null,
+          "reason": null,
+          "claimKey": "f6078edb0ec665d2b8966b006fac72464be61d524dcff05a0e32522c91385ad6",
+          "executionKey": "519c384b1b111745141892003833f4f6dc6a5bdda7491ffeeae59a98f86daecd",
+          "children": [
+            {
+              "input": 0,
+              "arguments": [
+                "invalid"
+              ],
+              "expected": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "old": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "new": {
+                "return": "IllegalStateTransitionException/CLOSED/0@"
+              },
+              "status": "established",
+              "id": "f0b3c5ff606fa53a399f7abb2d2059d6c4e322f0f530e71b1c35d2bbe12942b0"
+            },
+            {
+              "input": 1,
+              "arguments": [
+                "single"
+              ],
+              "expected": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "old": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "new": {
+                "return": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+              },
+              "status": "established",
+              "id": "587f2b93a2da7f515a418a572eb9f4e0351a676fcb2fd63c2dc6aeae118aa838"
+            }
+          ],
+          "execution": {
+            "old": {
+              "action": "executed",
+              "key": "b3015cc71d18618d1323f4de711f101291f66767d94c61bca28f11b2ec7943e5"
+            },
+            "new": {
+              "action": "executed",
+              "key": "f0a96a263d1c63ec52db565f86f9ef20455c5c70be1f763d696e1a04c654a1aa"
+            }
+          },
+          "receipt": {
+            "path": "receipts/af9631e63882f6adc73c231b49f5b1afdfaafbee23fa1f52f2ca46b950b4305c.json",
+            "sha256": "44a7f11b0b0ada0d3793581f93b74f358578eaf2db20ea0ec1895c59b71d5a1e"
+          },
+          "freshQualifiedEntries": 8,
+          "reusedQualifiedEntries": 0
+        }
+      ],
+      "originalBinaryClaims": []
+    }
+  }
+}
