@@ -1,0 +1,174 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-234713-check-both-ordinary-xz-entries-against-f",
+  "title": "Check both ordinary XZ entries against fresh default JVMs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.8s, peak 122.4 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-234713-check-both-ordinary-xz-entries-against-f.json",
+    "sha256": "d89f4dab2e264f0b32b006c78d971103f4b68b9bd13e12e397d684747f405e3c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-234713-check-both-ordinary-xz-entries-against-f",
+      "title": "Check both ordinary XZ entries against fresh default JVMs",
+      "description": "Run the exact original registered target, postcondition, guard, bounds and dependency graph with the strict native checker. When a literal system property stalls startup, seek a candidate under a one-character value and accept only an input that refutes the unchanged harness on a fresh JVM. Preserve successful subset proofs and unreproduced candidates as ordinary refusals.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:47:13+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Run unmodified registered claims",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/transfer/xz-ordinary-native"
+      ]
+    }
+  },
+  "sourceCommit": "9cc961c9e23f7b1a3bc138feae58f082898fd40d",
+  "startedAt": "2026-11-24T00:09:28+00:00",
+  "finishedAt": "2026-11-24T00:14:05+00:00",
+  "wallSeconds": 277.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 128356352,
+    "wallSeconds": 3.8,
+    "cpuSeconds": 6.3,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run unmodified registered claims",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 3.806,
+      "cpuSeconds": 6.319,
+      "cpuThrottledSeconds": 0.941,
+      "peakMemoryBytes": 128356352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-unmodified-registered-clai.log",
+        "lines": 2,
+        "bytes": 46,
+        "sha256": "433e62bdf85d7c6cb500cc83ebce015f86fa7d03b107f3afcd7905c6bb2718e0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "old frame unverifiable",
+        "new frame unverifiable"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/transfer/xz-ordinary-native/measurement.json",
+      "change": "added",
+      "bytes": 16649,
+      "sha256": "f886257f8c05626736414d2b41306b7d87d75d5b0a199ca127c2a7556a4048bc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T00:14:28+00:00",
+    "applied": [
+      "verification/receiver-discovery/transfer/xz-ordinary-native/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85d098e084068e8219ed6becf4a3237d79fff4f1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85d098e084068e8219ed6becf4a3237d79fff4f1/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T001405Z-911676920ca82dfc",
+      "outputs": "20261124T001405Z-94359987e6c9d33e",
+      "diff": "20261124T001405Z-963414dbd3118212"
+    }
+  }
+}

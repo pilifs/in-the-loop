@@ -1,0 +1,63 @@
+{
+  "job": "20261124-001000-receiver-groups-04-07-on-final-ordinary",
+  "source": "e957366abc4d877a390b4fa131bb4dd11df322b5",
+  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "cases": {
+    "compsuite-i-9": {
+      "overloads": {
+        "org.languagetool.dev.wikipedia.atom.MatchDatabase#add(org.languagetool.dev.wikipedia.atom.WikipediaRuleMatch)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "add is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.languagetool.dev.wikipedia.atom.MatchDatabase made by its constructor: the field conn of org.languagetool.dev.wikipedia.atom.MatchDatabase has type java.sql.Connection; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        }
+      },
+      "status": "open",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 2,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern; (java.util.regex.Pattern.compile(java.lang.String) at org.languagetool.Language.<init>:64). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "1c31b8c800cfd0e26e7efee8e415b9821d94ddbcb9eba84f7178be857d255e72"
+        },
+        "new": {
+          "jvmInputsReached": 0,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.util.regex.Pattern.compile(Ljava/lang/String;)Ljava/util/regex/Pattern; (java.util.regex.Pattern.compile(java.lang.String) at org.languagetool.Language.<init>:64). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "123963c766ecb5e27fdd5e2611ebd19041e27f778602f44238cc8977c610ec36"
+        }
+      }
+    }
+  },
+  "searchStartupWitness": true,
+  "receiptPackSha256": "ad4153772d83b48c98ad078aae0922e37bf8d7b35128c5686bcd40d3962256cb"
+}

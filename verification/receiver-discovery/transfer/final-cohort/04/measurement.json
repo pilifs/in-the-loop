@@ -1,0 +1,313 @@
+{
+  "job": "20261124-001000-receiver-groups-04-07-on-final-ordinary",
+  "source": "e957366abc4d877a390b4fa131bb4dd11df322b5",
+  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "cases": {
+    "commons-compress-767": {
+      "overloads": {
+        "org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.compress.compressors.xz.XZCompressorInputStream made by its constructor: org.apache.commons.compress.compressors.xz.XZCompressorInputStream has 3 constructors; an object made by one of several is not supported yet"
+        },
+        "org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read(byte[], int, int)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.compress.compressors.xz.XZCompressorInputStream made by its constructor: org.apache.commons.compress.compressors.xz.XZCompressorInputStream has 3 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "preserved",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": true,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.tukaani.xz.ArrayCache.<clinit>:78). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "9e7e333d4b21c4484695cd124b620c1e4c560602e88439894c780be6d716c056"
+        },
+        "new": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": true,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at org.tukaani.xz.ArrayCache.<clinit>:78). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "ec43a6183d8ce4b60d11d1568d208b90bb03861af7aea486d94e6533b50b93fd"
+        }
+      }
+    },
+    "commons-compress-822": {
+      "overloads": {
+        "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream made by its constructor: org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream has 2 constructors; an object made by one of several is not supported yet"
+        },
+        "org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream#read(byte[], int, int)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream made by its constructor: org.apache.commons.compress.compressors.lz4.FramedLZ4CompressorInputStream has 2 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "preserved",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "verified",
+          "firstOutstanding": null,
+          "counterexample": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
+            "witness": "matches(selector=0)"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "224080eddb92c2972582778a91fad5b148d99834fe3d9ef49067626bc1dd0fc0"
+        },
+        "new": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "verified",
+          "firstOutstanding": null,
+          "counterexample": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
+            "witness": "matches(selector=0)"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "090e2eb6b499f9291d1b72f1ffd2f39f548df180322a2c9f60a584524a9efbc8"
+        }
+      }
+    },
+    "commons-configuration-565": {
+      "overloads": {
+        "org.apache.commons.configuration2.JSONConfiguration#read(java.io.InputStream)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration has 2 constructors; an object made by one of several is not supported yet"
+        },
+        "org.apache.commons.configuration2.JSONConfiguration#read(java.io.Reader)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.JSONConfiguration made by its constructor: org.apache.commons.configuration2.JSONConfiguration has 2 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "preserved",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "08e2ac6d6e48af7078334e71ea6378b302a2f7be4ce71274b3ea87a5aab9921f"
+        },
+        "new": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "162094c458959f460edc525dd430168062e1610b5d3ce5fc86d0015d9c258239"
+        }
+      }
+    },
+    "commons-configuration-601": {
+      "overloads": {
+        "org.apache.commons.configuration2.YAMLConfiguration#read(java.io.InputStream)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.YAMLConfiguration made by its constructor: org.apache.commons.configuration2.YAMLConfiguration has 2 constructors; an object made by one of several is not supported yet"
+        },
+        "org.apache.commons.configuration2.YAMLConfiguration#read(java.io.InputStream, org.yaml.snakeyaml.LoaderOptions)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.YAMLConfiguration made by its constructor: org.apache.commons.configuration2.YAMLConfiguration has 2 constructors; an object made by one of several is not supported yet"
+        },
+        "org.apache.commons.configuration2.YAMLConfiguration#read(java.io.Reader)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.YAMLConfiguration made by its constructor: org.apache.commons.configuration2.YAMLConfiguration has 2 constructors; an object made by one of several is not supported yet"
+        },
+        "org.apache.commons.configuration2.YAMLConfiguration#read(java.io.Reader, org.yaml.snakeyaml.LoaderOptions)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "read is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.configuration2.YAMLConfiguration made by its constructor: org.apache.commons.configuration2.YAMLConfiguration has 2 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "preserved",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "d160a895381bc68ddf570094d22326adda2fa98d24f6bf50d342e122ca9e8b56"
+        },
+        "new": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>()V (org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() at org.apache.commons.configuration2.interpol.ConfigurationInterpolator.getDefaultPrefixLookups:406). With --gaps assume it assumes instead that org.apache.commons.configuration2.interpol.ConfigurationInterpolator$DefaultPrefixLookupsHolder.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "181e921d4328de9cd8826f26800d440b14ebaa3ebb9b410b88edd457c10563d4"
+        }
+      }
+    },
+    "cucumber-reporting-1220": {
+      "overloads": {
+        "net.masterthought.cucumber.ReportBuilder#generateReports()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "generateReports is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of net.masterthought.cucumber.ReportBuilder made by its constructor, whose the argument jsonFiles of net.masterthought.cucumber.ReportBuilder's constructor has type java.util.List; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+        }
+      },
+      "status": "preserved",
+      "inputs": 1,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 1,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 1",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "dabbd93e55296d59a7652db3b8d2e30a809315f56534cbb8ec27903c07aee5e4"
+        },
+        "new": {
+          "jvmInputsReached": 1,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 1",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "cb6907c1783b24001cdc2c039c2f5ff25d75d744249a483b5dc1881a6af64726"
+        }
+      }
+    }
+  },
+  "searchStartupWitness": true,
+  "receiptPackSha256": "9db6fab09647842054954da7ec81a7e7138880fc031c727d4aafc0857cfcbce3"
+}

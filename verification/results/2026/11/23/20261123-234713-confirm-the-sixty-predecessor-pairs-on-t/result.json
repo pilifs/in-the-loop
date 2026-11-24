@@ -1,0 +1,541 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-234713-confirm-the-sixty-predecessor-pairs-on-t",
+  "title": "Confirm the sixty predecessor pairs on the startup witness checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m22s, peak 675.5 MiB (estimated 5m00s, 4.0 GiB); 42 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-234713-confirm-the-sixty-predecessor-pairs-on-t.json",
+    "sha256": "9d901b8559f30eb6fe904069bd5ec6db95c2969ff68c95068a2b8c93c58f49d3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-234713-confirm-the-sixty-predecessor-pairs-on-t",
+      "title": "Confirm the sixty predecessor pairs on the startup witness checker",
+      "description": "Remeasure the sixty unchanged public claims on the final witness-search build, checking original JVM grids and tool profiles. Keep the default procedure for these predecessor callers and expose native-only, integrated-JBMC-only, shared, open and false-success classifications.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:47:13+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "jbmc",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Repeat the matched original Java corpus",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers --output verification/receiver-discovery/final-predecessor",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/final-predecessor"
+      ]
+    }
+  },
+  "sourceCommit": "9cc961c9e23f7b1a3bc138feae58f082898fd40d",
+  "startedAt": "2026-11-24T00:09:28+00:00",
+  "finishedAt": "2026-11-24T00:17:25+00:00",
+  "wallSeconds": 477.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 708304896,
+    "wallSeconds": 202.8,
+    "cpuSeconds": 228.8,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.68
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Repeat the matched original Java corpus",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers --output verification/receiver-discovery/final-predecessor",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 202.762,
+      "cpuSeconds": 228.759,
+      "cpuThrottledSeconds": 3.876,
+      "peakMemoryBytes": 708304896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-repeat-the-matched-original-ja.log",
+        "lines": 122,
+        "bytes": 5063,
+        "sha256": "e465f996029bb7627a8afd11a74d771144bf8dfac3dcc6d7acbc86853e29a9cd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "nibble nibble-native correct 5.074",
+        "nibble nibble-jbmc unsupported 1.138",
+        "nibble left-native correct 0.043",
+        "nibble left-jbmc correct 0.915",
+        "nibble acceptsNegative-native correct 0.038",
+        "nibble acceptsNegative-jbmc correct 1.045",
+        "enum lookup-native correct 0.038",
+        "enum lookup-jbmc unsupported 0.224",
+        "enum ordinal-native correct 0.023",
+        "enum ordinal-jbmc correct 0.145",
+        "enum alwaysZero-native correct 0.022",
+        "enum alwaysZero-jbmc correct 0.159",
+        "locals kernel-native correct 0.027",
+        "locals kernel-jbmc unsupported 0.776",
+        "locals spring-native correct 0.036",
+        "locals spring-jbmc unsupported 0.779",
+        "locals nullInitializes-native correct 0.153",
+        "locals nullInitializes-jbmc correct 0.651",
+        "monitors matched-native unsupported 0.027",
+        "monitors matched-jbmc unsupported 0.264",
+        "monitors mixed-native unsupported 0.024",
+        "monitors mixed-jbmc unsupported 0.273",
+        "monitors synchronizedMethod-native unsupported 0.023",
+        "monitors synchronizedMethod-jbmc unsupported 0.263",
+        "gson-parent compatible-native correct 8.721",
+        "gson-parent compatible-jbmc unsupported 18.854",
+        "gson-parent syntax-native correct 11.688",
+        "gson-parent syntax-jbmc unsupported 20.395",
+        "guava-parent retained-native correct 0.039",
+        "guava-parent retained-jbmc correct 1.455",
+        "guava-parent parentBehavior-native correct 0.024",
+        "guava-parent parentBehavior-jbmc unsupported 1.564",
+        "gson-fix compatible-native correct 8.219",
+        "gson-fix compatible-jbmc unsupported 18.44",
+        "gson-fix syntax-native correct 0.123",
+        "gson-fix syntax-jbmc unsupported 20.994",
+        "guava-fix retained-native correct 0.026",
+        "guava-fix retained-jbmc unsupported 1.767",
+        "guava-fix parentBehavior-native correct 0.046",
+        "guava-fix parentBehavior-jbmc correct 1.467"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/arrays/measurement.json",
+      "change": "added",
+      "bytes": 25247,
+      "sha256": "4615a31d73100d6aaa43fd69ae63e84b482a50f4c04547960c92a0f40b548ea1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/arrays/raw.tar.gz",
+      "change": "added",
+      "bytes": 6087,
+      "sha256": "1d5b94b4508bc9f719ea4bfbe3e9851bddaca55191f6a81aa147f3003db702b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/construction/measurement.json",
+      "change": "added",
+      "bytes": 18375,
+      "sha256": "96bbbaa06d8c73e7c10ef43ee84efde84b0b0b245068be8835c28bdc83389ca8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/construction/raw.tar.gz",
+      "change": "added",
+      "bytes": 5435,
+      "sha256": "587fcf80d4ef1eb1923ca4798296b5aa9293a4c2ac088fe30b93731e9c685de8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/deque/measurement.json",
+      "change": "added",
+      "bytes": 18811,
+      "sha256": "a8a57dd856d483a77da537597e1269939472343be77a465bf2a43a1642416a7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/deque/raw.tar.gz",
+      "change": "added",
+      "bytes": 6399,
+      "sha256": "be9b57dc822af1d4e0f9ab025a8603c34c28f194cdf4ec7be63749db2ff637b8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/dispatch/measurement.json",
+      "change": "added",
+      "bytes": 13399,
+      "sha256": "b0f113f5782089390ed73f08648c3a84166e2d5aa11d1e38299f8a052eeb87c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/dispatch/raw.tar.gz",
+      "change": "added",
+      "bytes": 3811,
+      "sha256": "69fa8ec2a543e07e600b7e7c8b3897b20e0df352d3f118d5e4b469fcda519ad7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/endian/measurement.json",
+      "change": "added",
+      "bytes": 24956,
+      "sha256": "1f9a5a069b34c5de6dbd6d82e65227a82a2b5a55c85dd9ba9f2dce6339b0a346",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/endian/raw.tar.gz",
+      "change": "added",
+      "bytes": 4897,
+      "sha256": "7790ef87aca3962777ef77ba5520f0ab21688b62f128e4c176b085eec6c0f638",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/enum/measurement.json",
+      "change": "added",
+      "bytes": 17514,
+      "sha256": "e86e066b2a0e284ffd686251ef3a81cc7997b66cb4bcadf9186e6f6e53ba53e0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/enum/raw.tar.gz",
+      "change": "added",
+      "bytes": 4786,
+      "sha256": "ddcf356b2f8e5f665c7b177f58868c1d12fbb28ca8412b359a3587c4c72768b3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/gson-fix/measurement.json",
+      "change": "added",
+      "bytes": 10395,
+      "sha256": "963d91100c0da258efd57104a3fc99cfc5242da5fd1736a6ca08aa536569955e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/gson-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 13314,
+      "sha256": "6f3b34953e0a5cd74237f95e96c44c4a319af3006dfc3e979cf7cb90ed5e6f2e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/gson-parent/measurement.json",
+      "change": "added",
+      "bytes": 10491,
+      "sha256": "4dba19cac0f35531b581848248f1975b34bf19067958e3a081ae117ad2ed3663",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/gson-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 13515,
+      "sha256": "8d7efee0351f6e5842c66176da3ad85340dce5921139037a75582490f22361c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/guava-fix/measurement.json",
+      "change": "added",
+      "bytes": 13864,
+      "sha256": "dbcd3f6861d5595a87c2493681e8e0bcfba84339ed858795956756e14cd02ab5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/guava-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 6154,
+      "sha256": "738095239bbf9f84a77f02155ff6c6d15e38dbeb6a1ddd293fb4c9684ef810e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/guava-parent/measurement.json",
+      "change": "added",
+      "bytes": 13879,
+      "sha256": "8b6a5054dee66ce6af12c26f2c10c642c09a9abc39fa65906717b381f9c62411",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/guava-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 5169,
+      "sha256": "fd7c94a1ecb2d19b06e4074b6d383629093284c552b5cdcfc8617d9d81cfe38b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/lists/measurement.json",
+      "change": "added",
+      "bytes": 17767,
+      "sha256": "0e7c1ae2b7fd61e42650cd4eae395a12f11ae63f89a4702b52b8b13d47f035ee",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/lists/raw.tar.gz",
+      "change": "added",
+      "bytes": 4814,
+      "sha256": "d00ace3332b6b0c96c5af69877e6cec885c3aad2f87844d1b983d08e874baf24",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/locals/measurement.json",
+      "change": "added",
+      "bytes": 17713,
+      "sha256": "77421be8e46197c2298d87552488be6b30ced8708f507ba42f5f16e3ccd68476",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/locals/raw.tar.gz",
+      "change": "added",
+      "bytes": 5854,
+      "sha256": "87d04e3fd11d727a9406d74119bce9fa0dc28aa8db28d3024927a90b077cafa7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/monitors/measurement.json",
+      "change": "added",
+      "bytes": 8858,
+      "sha256": "00ec19f5b64b4afb0c1e1914bcd94124e1fead34fdf46aec1bd8e3a3f6735d25",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/monitors/raw.tar.gz",
+      "change": "added",
+      "bytes": 4145,
+      "sha256": "137f337be774b42fce315077179dc3595cbd4e6ce680891608981661028f18fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/nibble/measurement.json",
+      "change": "added",
+      "bytes": 19630,
+      "sha256": "96b23cf2c8e9c6d1e26b38f5f3758bb953811ce80d74799a3c927263424b1825",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/nibble/raw.tar.gz",
+      "change": "added",
+      "bytes": 6306,
+      "sha256": "7ce273a6b8a46c1a280af86bca4372283aabcbcdc1b69f60ca42f6213d09f550",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/numbers/measurement.json",
+      "change": "added",
+      "bytes": 30985,
+      "sha256": "e43c52b093a146077ee270214376f4fbad84741abccee1b83ffbe5922d9a8797",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/numbers/raw.tar.gz",
+      "change": "added",
+      "bytes": 7458,
+      "sha256": "583035a30f27b2775dc3d2bd7bc20e5ea882ca85548f5953c3fb25f4c108ef5d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/prefix/measurement.json",
+      "change": "added",
+      "bytes": 21038,
+      "sha256": "3247ecc604dbaed0890f4b284ef240a36c319e1c391badd9aaa06b40a5594d6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/prefix/raw.tar.gz",
+      "change": "added",
+      "bytes": 6195,
+      "sha256": "011bd14ce7499e56d1eb10bca5fe520ac7390eaec775540a13f3724e98c4b600",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/radix/measurement.json",
+      "change": "added",
+      "bytes": 12522,
+      "sha256": "dd0c8abd9c49d98da488fc2b309e929279760cab7ede7d2a5845683d6acb1834",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/radix/raw.tar.gz",
+      "change": "added",
+      "bytes": 4577,
+      "sha256": "b80647886a85b2e7adf774bcac7f29e55d29ef2e501fabc303a678511f9dde9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/receiver/measurement.json",
+      "change": "added",
+      "bytes": 13968,
+      "sha256": "8ece776b96577e2fb5b0d0e65b4e63535acbefa1495bab50a6c2fb401f3e28b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/receiver/raw.tar.gz",
+      "change": "added",
+      "bytes": 3556,
+      "sha256": "d28e6921ea05cda4767d1535fb137070861a2e680eca5ee77163618ad879d66a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/store-iterator/measurement.json",
+      "change": "added",
+      "bytes": 8213,
+      "sha256": "5ed1cf62e63d06a66f0225e6a06a43728ee754f2e727d51ae8603d45809ffb41",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/store-iterator/raw.tar.gz",
+      "change": "added",
+      "bytes": 3128,
+      "sha256": "549f74ba2bd9c38ea5995b41ad4bedf297693d73476d5ee4563a1faac0647fd4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/stores/measurement.json",
+      "change": "added",
+      "bytes": 12874,
+      "sha256": "51308a49b006a0d251ae4820ddf340ef97252590d84357342cf2990bb0db7aff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/stores/raw.tar.gz",
+      "change": "added",
+      "bytes": 3662,
+      "sha256": "21b09c650ae7121f17b7f05a50dcdba1d93710106b1dccbe4a5dc2471cc78263",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/surrogates/measurement.json",
+      "change": "added",
+      "bytes": 12471,
+      "sha256": "66cbfb01f73fbe3030bfd62b874bc4449b47a9cde74205c2e8eaed167723fc58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/final-predecessor/callers/surrogates/raw.tar.gz",
+      "change": "added",
+      "bytes": 4261,
+      "sha256": "f0513f86e4bb07bb2eee07fd65376f65126f82f4b833819480cd3f68f6d9c35f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T00:19:42+00:00",
+    "applied": [
+      "verification/receiver-discovery/final-predecessor/callers/arrays/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/arrays/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/construction/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/construction/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/deque/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/deque/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/dispatch/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/dispatch/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/endian/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/endian/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/enum/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/enum/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/gson-fix/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/gson-fix/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/gson-parent/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/gson-parent/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/guava-fix/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/guava-fix/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/guava-parent/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/guava-parent/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/lists/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/lists/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/locals/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/locals/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/monitors/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/monitors/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/nibble/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/nibble/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/numbers/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/numbers/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/prefix/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/prefix/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/radix/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/radix/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/receiver/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/receiver/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/store-iterator/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/store-iterator/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/stores/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/stores/raw.tar.gz",
+      "verification/receiver-discovery/final-predecessor/callers/surrogates/measurement.json",
+      "verification/receiver-discovery/final-predecessor/callers/surrogates/raw.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85d098e084068e8219ed6becf4a3237d79fff4f1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85d098e084068e8219ed6becf4a3237d79fff4f1/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T001725Z-01769569ac29deb6",
+      "outputs": "20261124T001725Z-0785235db0f6d061",
+      "diff": "20261124T001725Z-110448d2f2b9a08f"
+    }
+  }
+}
