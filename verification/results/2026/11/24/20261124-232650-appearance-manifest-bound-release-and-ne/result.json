@@ -1,0 +1,197 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-232650-appearance-manifest-bound-release-and-ne",
+  "title": "appearance manifest-bound release and negative controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 21.2s, peak 221.1 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-232650-appearance-manifest-bound-release-and-ne.json",
+    "sha256": "0f75f04e8e1ceecb6c663d64f3bf639a7bb6fd8d7c5170a32825301357585237",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-232650-appearance-manifest-bound-release-and-ne",
+      "title": "appearance manifest-bound release and negative controls",
+      "description": "On original JVMs let a previously absent manifest resource appear, bind its provider explicitly, compare with a clean run and then restore the original deployment. Require the measured byte and all six cache decisions.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:change-plan"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/manifest_controls.py"
+        ]
+      },
+      "expected": "Six comparisons match the independent byte expectations and cache actions.",
+      "submitted": {
+        "at": "2026-11-24T23:26:50+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/scaffold-first/manifest-controls"
+      ]
+    }
+  },
+  "sourceCommit": "67b641140b320137f548eedef59c74fcdfc37a17",
+  "startedAt": "2026-11-24T23:37:10+00:00",
+  "finishedAt": "2026-11-24T23:40:48+00:00",
+  "wallSeconds": 218.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3182348,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 231809024,
+    "wallSeconds": 21.2,
+    "cpuSeconds": 24.6,
+    "memoryOfEstimate": 0.11,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 21.245,
+      "cpuSeconds": 24.565,
+      "cpuThrottledSeconds": 2.029,
+      "peakMemoryBytes": 231809024,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 12,
+        "bytes": 967,
+        "sha256": "4b6427b15b4f8484aa46b59d69164051e1c82ff9210262141974912d3e2c36be",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "1 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/manifest-presence-scay1680/absent.json",
+        "absent established 0 {'old': 'executed', 'new': 'executed'}",
+        "1 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/manifest-presence-scay1680/repeat.json",
+        "repeat established 0 {'old': 'exact reuse', 'new': 'exact reuse'}",
+        "1 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/manifest-presence-scay1680/appeared.json",
+        "appeared open 82 {'old': 'executed', 'new': 'executed'}",
+        "1 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/manifest-presence-scay1680/bound.json",
+        "bound refuted 82 {'old': 'exact reuse', 'new': 'executed'}",
+        "1 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/manifest-presence-scay1680/bound-clean.json",
+        "bound-clean refuted 82 {'old': 'executed', 'new': 'executed'}",
+        "1 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/manifest-presence-scay1680/restored.json",
+        "restored established 0 {'old': 'exact reuse', 'new': 'exact reuse'}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/manifest-controls/plans.zip",
+      "change": "added",
+      "bytes": 26469,
+      "sha256": "3748093bb0a74b5ae9f921d209dabab2bb8e40a65956d73db14ee8fa6184c5f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/manifest-controls/summary.json",
+      "change": "added",
+      "bytes": 3214,
+      "sha256": "d1dd2565bf901b89c45f1c8180c6f1805eabebe20d70618baeb2ba9c0d25d458",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T23:40:58+00:00",
+    "applied": [
+      "verification/beyond-jbmc/scaffold-first/manifest-controls/plans.zip",
+      "verification/beyond-jbmc/scaffold-first/manifest-controls/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b07dfe1c5d5bd48b7a2d31e2edeaad26a16f8dcb",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b07dfe1c5d5bd48b7a2d31e2edeaad26a16f8dcb/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T234048Z-854452c87030ad82",
+      "outputs": "20261124T234048Z-892354031c53ba84",
+      "diff": "20261124T234048Z-91384167542a391f"
+    }
+  }
+}
