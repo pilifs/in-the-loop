@@ -1,0 +1,225 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084158-close-the-exact-187-historical-claims-on",
+  "title": "Close the exact 187 historical claims on the frozen checker",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16m34s, peak 8.6 GiB (estimated 26m00s, 6.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084158-close-the-exact-187-historical-claims-on.json",
+    "sha256": "c4f7930ee45e0b7f4ed5d84b07c3c4571e582cb1fa589589bfc9e6556a9cb43d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084158-close-the-exact-187-historical-claims-on",
+      "title": "Close the exact 187 historical claims on the frozen checker",
+      "description": "Remeasure the archived ordered 187 with the original JDK 25, historical source files, integrated staged JBMC and strict native. Bind the actual executable to the pre-disclosure product freeze.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:41:58+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 27,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "26m",
+        "timeout": "104m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/history.py closing",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/historical"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:55:40+00:00",
+  "finishedAt": "2026-11-24T09:15:33+00:00",
+  "wallSeconds": 1193.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6240.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1560.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 9256853504,
+    "wallSeconds": 994.2,
+    "cpuSeconds": 991.4,
+    "memoryOfEstimate": 1.44,
+    "durationOfEstimate": 0.64
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/history.py closing",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6240.0,
+      "cancelled": false,
+      "wallSeconds": 994.173,
+      "cpuSeconds": 991.411,
+      "cpuThrottledSeconds": 1.913,
+      "peakMemoryBytes": 9256853504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 375,
+        "bytes": 47998,
+        "sha256": "61dd22dad2a2cccd7601b9b012fa72fea64563b00c5b0e38fbbc501c4f85bfc8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "real/oddity/broken-property                  jbmc   strict  staged     violation    correct                   0.23 s    52.3 MB",
+        "real/oddity/fixed-property                   native strict             verified     correct                   0.03 s    52.3 MB",
+        "real/oddity/fixed-property                   jbmc   strict  staged     verified     correct                   0.27 s    52.3 MB",
+        "real/oddity/fix-confined                     native strict             verified     correct                   0.04 s    52.3 MB",
+        "real/oddity/fix-confined                     jbmc   strict  staged     verified     correct                   0.29 s    52.3 MB",
+        "real/checksum/broken-property                native strict             violation    correct                   0.05 s    52.3 MB",
+        "real/checksum/broken-property                jbmc   strict  staged     violation    correct                   0.47 s    52.3 MB",
+        "real/checksum/fixed-property                 native strict             verified     correct                   0.03 s    52.3 MB",
+        "real/checksum/fixed-property                 jbmc   strict  staged     verified     correct                   0.41 s    52.3 MB",
+        "real/checksum/fix-confined                   native strict             verified     correct                   0.57 s    52.3 MB",
+        "real/checksum/fix-confined                   jbmc   strict  staged     verified     correct                  23.04 s   369.9 MB",
+        "held/saturating                              native strict             verified     correct                   0.04 s    52.3 MB",
+        "held/saturating                              jbmc   strict  staged     verified     correct                   0.32 s    52.3 MB",
+        "held/average/bits                            native strict             verified     correct                   0.03 s    52.3 MB",
+        "held/average/bits                            jbmc   strict  staged     verified     correct                   0.28 s    52.3 MB",
+        "held/average/unsigned-shift                  native strict             violation    correct                   0.03 s    52.3 MB",
+        "held/average/unsigned-shift                  jbmc   strict  staged     violation    correct                   0.20 s    52.3 MB",
+        "held/floor-mod/wide-modulus                  native strict             violation    correct                   0.67 s    52.3 MB",
+        "held/floor-mod/wide-modulus                  jbmc   strict  staged     violation    correct                  15.57 s    52.3 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.06 s    52.3 MB",
+        "held/floor-mod/jdk                           jbmc   strict  staged     unverifiable unsupported             120.13 s    52.3 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.05 s    52.3 MB",
+        "held/ceil-div                                jbmc   strict  staged     unverifiable unsupported             120.15 s    52.3 MB",
+        "held/lower-bound                             native strict             verified     correct                   0.26 s    52.3 MB",
+        "held/lower-bound                             jbmc   strict  staged     verified     correct                   6.78 s   188.1 MB",
+        "held/utf8-length                             native strict             verified     correct                   0.34 s    52.3 MB",
+        "held/utf8-length                             jbmc   strict  staged     verified     correct                   0.78 s    81.3 MB",
+        "held/reverse                                 native strict             verified     correct                   0.12 s    52.3 MB",
+        "held/reverse                                 jbmc   strict  staged     unverifiable unsupported             120.94 s  6965.4 MB",
+        "held/prefix-sums                             native strict             verified     correct                   0.03 s    52.3 MB",
+        "held/prefix-sums                             jbmc   strict  staged     verified     correct                   5.04 s   396.8 MB",
+        "held/overlap/meets                           native strict             verified     correct                   0.03 s    52.3 MB",
+        "held/overlap/meets                           jbmc   strict  staged     verified     correct                   0.40 s    52.3 MB",
+        "held/overlap/length                          native strict             violation    correct                   0.05 s    52.3 MB",
+        "held/overlap/length                          jbmc   strict  staged     violation    correct                   0.51 s    52.3 MB",
+        "example/141                                  native strict             verified     correct                   1.96 s    52.3 MB",
+        "example/141                                  jbmc   strict  staged     verified     correct                  89.04 s  2059.1 MB",
+        "example/142                                  native strict             verified     correct                   7.12 s    71.0 MB",
+        "example/142                                  jbmc   strict  staged     unverifiable unsupported              43.03 s  8247.5 MB",
+        "closing 187 {('native', 'unsupported'): 8, ('jbmc', 'unsupported'): 40, ('native', 'correct'): 179, ('jbmc', 'correct'): 147}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/historical/executions.zip",
+      "change": "added",
+      "bytes": 1563751,
+      "sha256": "2679c28635573a7fd96f3ea58afcb1433d7c728eb656d4b2e5c1f2a798cbd5cc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/historical/results.json.gz",
+      "change": "added",
+      "bytes": 47197,
+      "sha256": "0f7b639057d011ed3eb571dfe4f2ef9a8a14801da93dcbfca1eee13c0b8d8827",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:15:58+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/historical/executions.zip",
+      "verification/beyond-jbmc/closing/historical/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T091533Z-042392b88ee93818",
+      "outputs": "20261124T091533Z-0906823ef4089ee7",
+      "diff": "20261124T091533Z-115357c44371d223"
+    }
+  }
+}
