@@ -51,7 +51,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ### VF-057: the trusted-kernel investment decision still lacks its corrupted-producer control
 
-- **Status**: open. Left when trusted-kernel was handed over to the next queued brief after cycle 2.
+- **Status**: open, but the control is now measured (see the next bullet); what remains is to state it in the trusted-kernel decision record.
+- **Measured on 2026-11-24 by change-verification:** job `20261124-014943-replay-the-guava-change-plan-nodes-and-i`, step 6 (`lib/benchmark/trusted-kernel/historical_frame_control.py`), record `lib/benchmark/trusted-kernel/historical-frame-control.json`. The job injected one wrong conclusion into a private copy of the recorded historical Python/Z3 rule, with the rule digests checked against `baseline/336.json`, and ran it on the heap-writing Guava `indexOf` control:
+  - **The genuine historical producer** leaves the frame obligation "preserve the input heap" `unresolved` (sat where unsat was expected).
+  - **The faulted producer** marks it `established`: a false acceptance.
+  - **The independent checker** `refuted` the faulted result with a checked witness: on `[7]` with target 7, the method returns 0 and leaves `[0]`, and the original JVM reproduces it.
+
+  So a producer error that causes acceptance in the historical route has lost that ability at the independent checker, which is the brief's criterion. trusted-kernel-and-receiver-recovery should start from this receipt.
 - **Raised**: 2026-11-23 by the watcher, at the end of the trusted-kernel run (Astra, 2 cycles; decision single-trusted-kernel-D001; the run's second cycle ended on a stale working copy after its turn had finished, with its work committed and landed as `kpkqomum`).
 - **Found**:
   - **What the run established, all checked from original class bytes by the independent Rust checker in a fresh process:**
