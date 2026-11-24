@@ -1,0 +1,196 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-215956-check-rejected-graph-updates-through-bot",
+  "title": "Check rejected graph updates through both retained views",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m26s, peak 147.0 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-215956-check-rejected-graph-updates-through-bot.json",
+    "sha256": "5b6c5a5af37ed8f49f818bd26cbe73f5422d28ff522663b5a5d2c05fb46224c7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-215956-check-rejected-graph-updates-through-bot",
+      "title": "Check rejected graph updates through both retained views",
+      "description": "Observe termination and read both the computed view and backing graph after each attempted update. Repeat with caching and either write-through or view-only updates. Run the frozen application plan and compare cold, warm, clean and same-path production JAR replacement with qualified receipts.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J16"
+        ]
+      },
+      "expected": "Source-bound public observations, cache actions and original receipts for each question. The relevant change matches the clean result or identifies the first open dependency.",
+      "submitted": {
+        "at": "2026-11-24T21:59:56+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B verification/product-behaviour/qualify.py J16",
+          "run": "python3 -B verification/product-behaviour/qualify.py J16",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J16/first"
+      ]
+    }
+  },
+  "sourceCommit": "b682ba1c49f8e888d0c9e128df6dc07697dd1740",
+  "startedAt": "2026-11-24T22:01:53+00:00",
+  "finishedAt": "2026-11-24T22:03:36+00:00",
+  "wallSeconds": 103.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2253614,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 154099712,
+    "wallSeconds": 86.0,
+    "cpuSeconds": 93.3,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B verification/product-behaviour/qualify.py J16",
+      "run": "python3 -B verification/product-behaviour/qualify.py J16",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 86.016,
+      "cpuSeconds": 93.253,
+      "cpuThrottledSeconds": 11.451,
+      "peakMemoryBytes": 154099712,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-verification-product.log",
+        "lines": 10,
+        "bytes": 792,
+        "sha256": "e0bd4658b1c029e0a10bcffdae8197df977174c30ae25f9c9fc77ce7286db000",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/product-plan-vhpbgt4w/cold.json",
+        "J16 cold [('disabled-cache-write-through', 'established', 8), ('cached-and-local', 'established', 16)]",
+        "2 claims in /tmp/product-plan-vhpbgt4w/warm.json",
+        "J16 warm [('disabled-cache-write-through', 'established', 4), ('cached-and-local', 'established', 0)]",
+        "2 claims in /tmp/product-plan-vhpbgt4w/clean.json",
+        "J16 clean [('disabled-cache-write-through', 'established', 8), ('cached-and-local', 'established', 16)]",
+        "2 claims in /tmp/product-plan-vhpbgt4w/replacement.json",
+        "J16 replacement [('disabled-cache-write-through', 'refuted', 4), ('cached-and-local', 'established', 8)]",
+        "2 claims in /tmp/product-plan-vhpbgt4w/replacement-clean.json",
+        "J16 replacement-clean [('disabled-cache-write-through', 'refuted', 8), ('cached-and-local', 'established', 16)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J16/first/plans.zip",
+      "change": "added",
+      "bytes": 61591,
+      "sha256": "8b5e911de029dfef2c56416ad0bddc5d6d8804d9ad3d341414bdf02ca5eb9b43",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/product-behaviour/results/J16/first/summary.json",
+      "change": "added",
+      "bytes": 50284,
+      "sha256": "699554101862968094bd8be423d37e1ad090b4b8624e750abd3864c4cf371e38",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T22:04:50+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J16/first/plans.zip",
+      "verification/product-behaviour/results/J16/first/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1a5a5e54535dc5fe36b26d921d43829f62bcf4d6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5a5e54535dc5fe36b26d921d43829f62bcf4d6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T220336Z-260675db6b526ac2",
+      "outputs": "20261124T220336Z-28259095f4662be7",
+      "diff": "20261124T220336Z-3016001051bb4d93"
+    }
+  }
+}

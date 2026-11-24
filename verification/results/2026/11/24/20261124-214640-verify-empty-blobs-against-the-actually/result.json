@@ -1,0 +1,196 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-214640-verify-empty-blobs-against-the-actually",
+  "title": "Verify empty BLOBs against the actually mapped Linux driver",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m17s, peak 185.6 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-214640-verify-empty-blobs-against-the-actually.json",
+    "sha256": "c9d922a451301b4490fb64a793017813f48f82fad8fd13b2757cc288f25a0e35",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-214640-verify-empty-blobs-against-the-actually",
+      "title": "Verify empty BLOBs against the actually mapped Linux driver",
+      "description": "Read the bytes and immediately call wasNull on each row of the same result set in ascending and reverse order. Cross SQL NULL, a two-byte literal and a five-byte BLOB. Run the frozen application plan and compare cold, warm, clean and same-path production JAR replacement with qualified receipts.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J09"
+        ]
+      },
+      "expected": "Source-bound public observations, cache actions and original receipts for each question. The relevant change matches the clean result or identifies the first open dependency.",
+      "submitted": {
+        "at": "2026-11-24T21:46:40+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B verification/product-behaviour/qualify.py J09",
+          "run": "python3 -B verification/product-behaviour/qualify.py J09",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J09/first"
+      ]
+    }
+  },
+  "sourceCommit": "1b56c14837d30e8aa558fb1899b8c006e75c388d",
+  "startedAt": "2026-11-24T21:57:28+00:00",
+  "finishedAt": "2026-11-24T21:59:19+00:00",
+  "wallSeconds": 111.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2253614,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 194572288,
+    "wallSeconds": 77.8,
+    "cpuSeconds": 103.6,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B verification/product-behaviour/qualify.py J09",
+      "run": "python3 -B verification/product-behaviour/qualify.py J09",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 77.786,
+      "cpuSeconds": 103.634,
+      "cpuThrottledSeconds": 13.308,
+      "peakMemoryBytes": 194572288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-verification-product.log",
+        "lines": 10,
+        "bytes": 704,
+        "sha256": "745f93ea902cdfdce9c75baf2bd1d1fcd20c0caf3e028644eac56db2372aa897",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/product-plan-ys9tbna5/cold.json",
+        "J09 cold [('empty-blob', 'established', 8), ('null-and-nonempty', 'established', 4)]",
+        "2 claims in /tmp/product-plan-ys9tbna5/warm.json",
+        "J09 warm [('empty-blob', 'established', 4), ('null-and-nonempty', 'established', 0)]",
+        "2 claims in /tmp/product-plan-ys9tbna5/clean.json",
+        "J09 clean [('empty-blob', 'established', 8), ('null-and-nonempty', 'established', 4)]",
+        "2 claims in /tmp/product-plan-ys9tbna5/replacement.json",
+        "J09 replacement [('empty-blob', 'refuted', 4), ('null-and-nonempty', 'established', 2)]",
+        "2 claims in /tmp/product-plan-ys9tbna5/replacement-clean.json",
+        "J09 replacement-clean [('empty-blob', 'refuted', 8), ('null-and-nonempty', 'established', 4)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J09/first/plans.zip",
+      "change": "added",
+      "bytes": 182800,
+      "sha256": "b51ae31e9f67278fc4a90e4f59afabf21643f776264bfc7c478562c9806be1e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/product-behaviour/results/J09/first/summary.json",
+      "change": "added",
+      "bytes": 35441,
+      "sha256": "4c2b7bd47132ef4436a3f28eb0e06c85e63660b47deab2ae64934b9f3667df8b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T22:04:50+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J09/first/plans.zip",
+      "verification/product-behaviour/results/J09/first/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1a5a5e54535dc5fe36b26d921d43829f62bcf4d6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5a5e54535dc5fe36b26d921d43829f62bcf4d6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T215919Z-8069125157ad93ef",
+      "outputs": "20261124T215919Z-825668473bab922d",
+      "diff": "20261124T215919Z-8405269b2f4a9835"
+    }
+  }
+}

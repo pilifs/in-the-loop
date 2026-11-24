@@ -1,0 +1,1088 @@
+Binary file verification/product-behaviour/results/J12/first/plans.zip changed
+--- /dev/null
++++ b/verification/product-behaviour/results/J12/first/summary.json
+@@ -0,0 +1,1084 @@
++{
++  "case": "J12",
++  "change": "Apache Calcite — Run an ordered and an unordered aggregate in one query",
++  "label": "first",
++  "frozenSource": "d92dea060ce873e0a64cec67c27e9dadea448efc",
++  "comparatorSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
++  "bindingsSha256": "37a02ec512f68ac5692b91d9b9c58f8cd043d1c377d41deefe8cf633de486e66",
++  "archiveSha256": "a34d63b4f1773b64e23209ce1e5a956e372be72dca9ce89a8670414de6870e9b",
++  "runs": {
++    "cold": {
++      "wallSeconds": 72.768,
++      "claims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "0d3eaae950b95fd7295e311b684fd0dda614520de0665bd6d824248cbd41a0b7",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "established",
++              "id": "314135e19ddc5fbe4488b81e03932c2824c82d47e1b2edda6a69cc800da0ee7a"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "established",
++              "id": "4d6ad13e4ca66a8c686e149228591cc7da38f9527e21ac92c5892678df778977"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "executed",
++              "key": "a2737fd3891886a889337b796e11ac78c4c0a968775068b7da216b23b9add099"
++            }
++          },
++          "receipt": {
++            "path": "receipts/4ef04ba2a484081a74fc9a8635be232b6db5bbb5355fb6b82fe054d6220a4cd1.json",
++            "sha256": "d592fba021916b45eb4425b513af285603da10f872b1d823967b66eee1d3e2a6"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "a1b0d382e8f3a02cdb505869ed9dc1adae13dc15a178411b60c5b495c278fb6a",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "c1c2282a845ceb341580fa6af0d9b2f9e958c74627b9fbba724e97515ab513fe"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "5906506fb2bae964af125ed60557f1d71be402cccad1125323f03f40ce483460"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "executed",
++              "key": "b07a03f01df0f21d8398bbb7b2bcf0fb727a7ac3c55dc29cdc2143407995fb42"
++            }
++          },
++          "receipt": {
++            "path": "receipts/e901bf39a6d694537023863f74791584b78847ea49eb92ec999535916d26211e.json",
++            "sha256": "4e415dd4d76f75756d9d5cba554eb617248d48754431c6d624529f104f4ebce4"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "e8af67c227db8b02655f4e5293cf2bca138dd92909538000dea47d9514c6e9f5",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "8698ed13f993146ba2777b1f3cbd55457ed681248819a8ee4c950beac85f98b4"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "56e2400a80fc626cbeb2acc2bffab475c06d0f2cf81bf8c93c7cbc3733751f59"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "executed",
++              "key": "223598863882bfc1a0cc1c31b6241b4420b8b006a31bd7b1ed1acfe84b8e7db0"
++            }
++          },
++          "receipt": {
++            "path": "receipts/a38411a2f102d243f3e936ce0a0e232c5b5ff6beb08044211731020861dcdf68.json",
++            "sha256": "ac81eadf3f76602b931a7011e2adcff888641f833019b50647d6eff93289dabe"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "74bd68e68a330e363883cbe704ea602cecabdb9ddfd551d49ff61abc0edd2e91",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "e17ee5649ea8f8a9aae6e9aa68c95f0bc6dd919bdcd374424ce53c5c4bc2b11a"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "334591f289b4cc0342a2f24d20ed7c30b3e8de98ff0c21e6e57ba73bca5b26f2"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "executed",
++              "key": "1af2a6959da4c267b4feb08dadd2cfc880713f807d7bebf3060c5aa175c48235"
++            }
++          },
++          "receipt": {
++            "path": "receipts/c3c85d02978a94a193989e3dfee7fc1f0948c550f8938f7c3970f6790e5d1ef4.json",
++            "sha256": "6a7cd93abcc84c726179594ef63d5f6dc117cb524191cd9bd9cbfd5058f5fca0"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ]
++    },
++    "warm": {
++      "wallSeconds": 23.876,
++      "claims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "0d3eaae950b95fd7295e311b684fd0dda614520de0665bd6d824248cbd41a0b7",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "established",
++              "id": "314135e19ddc5fbe4488b81e03932c2824c82d47e1b2edda6a69cc800da0ee7a"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "established",
++              "id": "4d6ad13e4ca66a8c686e149228591cc7da38f9527e21ac92c5892678df778977"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "executed",
++              "key": "a2737fd3891886a889337b796e11ac78c4c0a968775068b7da216b23b9add099"
++            }
++          },
++          "receipt": {
++            "path": "receipts/9986763cdaf1b2c0268394bc0657a59278463696e70328e5865dd50785346849.json",
++            "sha256": "1f9010527fa17324292bfdfbad0df8983455f16edc51b757a952ec25baf9e91a"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "a1b0d382e8f3a02cdb505869ed9dc1adae13dc15a178411b60c5b495c278fb6a",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "c1c2282a845ceb341580fa6af0d9b2f9e958c74627b9fbba724e97515ab513fe"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "5906506fb2bae964af125ed60557f1d71be402cccad1125323f03f40ce483460"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "b07a03f01df0f21d8398bbb7b2bcf0fb727a7ac3c55dc29cdc2143407995fb42"
++            }
++          },
++          "receipt": {
++            "path": "receipts/7124122fc49b63ef9e2fd946068c2066a3510774d3ee72f7529d24fa5696a0a4.json",
++            "sha256": "d8c0beff6ca1eebbf134c1a0eac0daf75d5eb7fe43dd300f3515bd220d0e08cb"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "e8af67c227db8b02655f4e5293cf2bca138dd92909538000dea47d9514c6e9f5",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "8698ed13f993146ba2777b1f3cbd55457ed681248819a8ee4c950beac85f98b4"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "56e2400a80fc626cbeb2acc2bffab475c06d0f2cf81bf8c93c7cbc3733751f59"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "223598863882bfc1a0cc1c31b6241b4420b8b006a31bd7b1ed1acfe84b8e7db0"
++            }
++          },
++          "receipt": {
++            "path": "receipts/afacef2c15ec992db8d556cc3bdc5abf56e60b8df1cc60326f35adde0d64f93d.json",
++            "sha256": "171e4f9017416e74de7fdb1738ba554f244c2b40f7d450be24635c5cccbe2f50"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "74bd68e68a330e363883cbe704ea602cecabdb9ddfd551d49ff61abc0edd2e91",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "e17ee5649ea8f8a9aae6e9aa68c95f0bc6dd919bdcd374424ce53c5c4bc2b11a"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "334591f289b4cc0342a2f24d20ed7c30b3e8de98ff0c21e6e57ba73bca5b26f2"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "1af2a6959da4c267b4feb08dadd2cfc880713f807d7bebf3060c5aa175c48235"
++            }
++          },
++          "receipt": {
++            "path": "receipts/beb8887640b315964de161ae71e19d55d840cc7da1a7d9ce3191e9ae33fae93f.json",
++            "sha256": "6eb1c19d246060392aea9d6bce63994a6bc8f85e3ba3b091b76da53c4eb092ba"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        }
++      ]
++    },
++    "clean": {
++      "wallSeconds": 65.003,
++      "claims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "0d3eaae950b95fd7295e311b684fd0dda614520de0665bd6d824248cbd41a0b7",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "established",
++              "id": "314135e19ddc5fbe4488b81e03932c2824c82d47e1b2edda6a69cc800da0ee7a"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "established",
++              "id": "4d6ad13e4ca66a8c686e149228591cc7da38f9527e21ac92c5892678df778977"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "executed",
++              "key": "a2737fd3891886a889337b796e11ac78c4c0a968775068b7da216b23b9add099"
++            }
++          },
++          "receipt": {
++            "path": "receipts/14674b234580963591cc2c39985ae516374e835518983f9370eb98fa71b3df65.json",
++            "sha256": "469a11753990d2cb02967bef7fabe8f9d4359b656f73312d00a17f0b2b1c2d53"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "a1b0d382e8f3a02cdb505869ed9dc1adae13dc15a178411b60c5b495c278fb6a",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "c1c2282a845ceb341580fa6af0d9b2f9e958c74627b9fbba724e97515ab513fe"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "5906506fb2bae964af125ed60557f1d71be402cccad1125323f03f40ce483460"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "executed",
++              "key": "b07a03f01df0f21d8398bbb7b2bcf0fb727a7ac3c55dc29cdc2143407995fb42"
++            }
++          },
++          "receipt": {
++            "path": "receipts/8f143befce823b19b9dd3759bd796e54dc759ea66a98d9010b4206f07f6e9ac9.json",
++            "sha256": "687a92cfdd945c14db3740932df8b8af6b48f2b9ff14d5de06ee6553a1d69165"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "e8af67c227db8b02655f4e5293cf2bca138dd92909538000dea47d9514c6e9f5",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "8698ed13f993146ba2777b1f3cbd55457ed681248819a8ee4c950beac85f98b4"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "56e2400a80fc626cbeb2acc2bffab475c06d0f2cf81bf8c93c7cbc3733751f59"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "executed",
++              "key": "223598863882bfc1a0cc1c31b6241b4420b8b006a31bd7b1ed1acfe84b8e7db0"
++            }
++          },
++          "receipt": {
++            "path": "receipts/5127c721b566148f187bcf1b851d087291db231434526d890afc23c3b87d883b.json",
++            "sha256": "a804df7de352d1b7a7f307c5c3e2fce831ff867bc8c6543236d43b333f8e1840"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "74bd68e68a330e363883cbe704ea602cecabdb9ddfd551d49ff61abc0edd2e91",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "e17ee5649ea8f8a9aae6e9aa68c95f0bc6dd919bdcd374424ce53c5c4bc2b11a"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "334591f289b4cc0342a2f24d20ed7c30b3e8de98ff0c21e6e57ba73bca5b26f2"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "executed",
++              "key": "1af2a6959da4c267b4feb08dadd2cfc880713f807d7bebf3060c5aa175c48235"
++            }
++          },
++          "receipt": {
++            "path": "receipts/60666cc1d033699ad5d777223a96ce97a0fc339a38e94874cd80be951f5746d2.json",
++            "sha256": "a595b4ca4fe8b43937cfbfe503c5eaac022c089c47699d307c5a16ded776bde0"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ]
++    },
++    "replacement": {
++      "wallSeconds": 23.67,
++      "claims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "1fc335afd032ea099d02cb2bbbf08a29ddc06750bed08baf3444c515f2ab2fd8",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "07be21bff8e1774beed8f6146073ac722ffa19178c05b237e2ac399b47cf4a9d"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "bc10c04481b7372f0283c364280ff3e08f0da4348a8a8d67796a415f05d1cd01"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "executed",
++              "key": "cba77171503f2e8393bd67e948ddccc356efab0552d5102ef249a69d89d3d9a4"
++            }
++          },
++          "receipt": {
++            "path": "receipts/79d754412ab9e0c63d865b8f0094bb0b6fecc2c58f49a1b2615292b8779a4afd.json",
++            "sha256": "3e4cecb3cc076624d1b7899794b20d6b78c63952b62344efc71f3d032a374403"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "eced518e758b5ae798d9c761390bb2a6cf50c5fb0c9bbc6bad430f42b666cf25",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "390b60017449edab9117411ceae8efe504f2fa6c4fc775384299a473f53db8e0"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "25a8db3f9968175afb33300b90bc4a44294f73afadd7a57b657c202804432e6f"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "executed",
++              "key": "e02020ec124c4f19d6c4c8d37640e080ee16a54f88163752e123e7281506121f"
++            }
++          },
++          "receipt": {
++            "path": "receipts/f0c27c6dd50281405be31f94f81ab566068fc4fcef80363c0f56cac72ddf7420.json",
++            "sha256": "199e4f3ff81c97c0e13c30fe573c6e366a15b67e6f691653fde67d581da013c7"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ],
++      "originalBinaryClaims": []
++    },
++    "replacement-clean": {
++      "wallSeconds": 39.558,
++      "claims": [
++        {
++          "id": "mixed-aggregate",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aef243ffc7a015dc1b0edfb0fd14943aeffd79b130c1b429dd2e15a3d0a95de0",
++          "executionKey": "1fc335afd032ea099d02cb2bbbf08a29ddc06750bed08baf3444c515f2ab2fd8",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "mixed",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "07be21bff8e1774beed8f6146073ac722ffa19178c05b237e2ac399b47cf4a9d"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "mixed",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "old": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "new": {
++                "return": "10/[]/[3, 3, 2, 1]|20/[]/[7]"
++              },
++              "intendedChange": {
++                "return": "10/[1, 2, 3, 3]/[3, 3, 2, 1]|20/[7]/[7]"
++              },
++              "status": "refuted",
++              "id": "bc10c04481b7372f0283c364280ff3e08f0da4348a8a8d67796a415f05d1cd01"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "af9727643114261bf7840012ee6a9ee659ff0333b1c43b2c859b6a0f36eb4b38"
++            },
++            "new": {
++              "action": "executed",
++              "key": "cba77171503f2e8393bd67e948ddccc356efab0552d5102ef249a69d89d3d9a4"
++            }
++          },
++          "receipt": {
++            "path": "receipts/5d381424c473330ae79243cc6d45d40e166835b385677e132adb9cf48caf6077.json",
++            "sha256": "c936292c8b3d97efeba2100fb590421b062f8f71e472446dd8c98ca2191a8212"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "single-aggregates",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "654877024593f6bc2d3e103b9dcae249928a0a58ae306c32ed660a106157df99",
++          "executionKey": "eced518e758b5ae798d9c761390bb2a6cf50c5fb0c9bbc6bad430f42b666cf25",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "unordered",
++                "permuted"
++              ],
++              "expected": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "old": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "new": {
++                "return": "10/[1, 2, 3, 3]|20/[7]"
++              },
++              "status": "established",
++              "id": "390b60017449edab9117411ceae8efe504f2fa6c4fc775384299a473f53db8e0"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "ordered",
++                "original"
++              ],
++              "expected": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "old": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "new": {
++                "return": "10/[3, 3, 2, 1]|20/[7]"
++              },
++              "status": "established",
++              "id": "25a8db3f9968175afb33300b90bc4a44294f73afadd7a57b657c202804432e6f"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "d6ef79e75ace23cbf54230c3050149e2c6db3003f4f07a7ec7b553539a4e9da7"
++            },
++            "new": {
++              "action": "executed",
++              "key": "e02020ec124c4f19d6c4c8d37640e080ee16a54f88163752e123e7281506121f"
++            }
++          },
++          "receipt": {
++            "path": "receipts/de2cd9b393d5227edf6d36bae56c27edac4d389a2b50eea0c94519aadaf2fed8.json",
++            "sha256": "b33daf2ed5c53a30f60abf63b8c104d54e65382d320e0e0a4efdd54ce1922204"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": []
++    }
++  }
++}
