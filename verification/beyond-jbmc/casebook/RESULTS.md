@@ -50,7 +50,7 @@ The 68 rows are work items. Columns count qualified property results within the 
 | S07 | Actual listener matching for List<T>, T, List<String> and String, on both listener types and both releases. | 2 | 0 | 0 | 0 |  |
 | S08 | Two assembler registrations, four optional injection sites, four registration orders and bean identities on each release. | 4 | 0 | 0 | 0 |  |
 | S09 | Mutate all three reflection arrays, clear the framework cache and revisit the full public ResolvableType path. | 4 | 2 | 0 | 0 | [Receipt 1](../../../examples/368-spring-binding-history/records/beyond-jbmc-frozen/run.json) |
-| C01 | Three pairings with both 128-bit result words and all signed seeds on bounded arrays. The exact sign-boundary conjecture is separate. | 5 | 3 | 2 | 0 |  |
+| C01 | Three pairings with both 128-bit result words and all signed seeds on bounded arrays. The exact sign-boundary conjecture is separate. | 5 | 3 | 2 | 0 | [Receipt 1](../assurance/seed-sequence/receipt.json) |
 | C02 | Signed-negative tail condition for the original 32-bit and canonical x86 hashes over bounded slices. Sampled agreement does not prove collision freedom. | 1 | 0 | 0 | 0 |  |
 | C03 | One-shot versus two arbitrary chunks, repeated end, seed and input frame within the eight-byte input bound. | 1 | 0 | 0 | 0 |  |
 | C04 | Three chunks after a partial reset on Java. The independent arbitrary-partition model proves equality with complete-block traversal and reset from any prefix. | 1 | 0 | 0 | 0 | [Receipt 1](../assurance/codec-sequence/receipt.json) |
