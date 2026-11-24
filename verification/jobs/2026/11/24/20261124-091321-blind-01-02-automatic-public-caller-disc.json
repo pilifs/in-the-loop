@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-091321-blind-01-02-automatic-public-caller-disc",
+  "title": "Blind 01-02 automatic public-caller discovery from frozen artifacts",
+  "description": "Give the isolated frozen operator only the neutral release JARs. Record its first cold selection, exact public dispatch, JVM observations, original-witness replay, and warm costs. Its namespace cannot access the independent reference docket.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence",
+    "upgrade:automatic-caller"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/references.json"
+    ]
+  },
+  "expected": "A bound receipt for every registered slot, including unsupported callers and differences that fail original-JVM replay.",
+  "submitted": {
+    "at": "2026-11-24T09:13:21+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 26,
+  "requires": [
+    "jvmcontract",
+    "bwrap",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "14m",
+    "timeout": "65m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/evaluate_panel.py automatic 01 02",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/blind/01/automatic",
+    "verification/beyond-jbmc/blind/02/automatic"
+  ]
+}

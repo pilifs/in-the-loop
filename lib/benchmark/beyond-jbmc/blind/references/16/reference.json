@@ -1,0 +1,36 @@
+{
+ "question": "Does dom4j's public XML writer escape literal ampersands and less-than signs once and preserve them on reparse?",
+ "control": "Ordinary text remains literal in the serialized element.",
+ "domain": "Two one-character delimiters between ASCII letters in element text. Parsing uses only the in-memory generated XML.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "org.dom4j.io.XMLWriter#write",
+  "org.dom4j.DocumentHelper#parseText"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "dom4j-2.1.4/src/test/java/org/dom4j/XMLWriterTest.java",
+   "text": "public void testEscapeXML()"
+  },
+  {
+   "side": "after",
+   "member": "dom4j-2.1.4/src/test/java/org/dom4j/XMLWriterTest.java",
+   "text": "DocumentHelper.parseText(text)"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

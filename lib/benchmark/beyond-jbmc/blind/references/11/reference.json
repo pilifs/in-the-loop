@@ -1,0 +1,33 @@
+{
+ "question": "How does the public BooleanOption reload an empty, true, false or absent system property?",
+ "control": "A distinct property's default remains in force throughout the history.",
+ "domain": "The four original property states, restored on exit. Each JVM starts with both campaign property names unset.",
+ "bounds": [
+  0,
+  3
+ ],
+ "seeds": [
+  0,
+  1,
+  2,
+  3
+ ],
+ "entries": [
+  "com.headius.options.Option#reload",
+  "com.headius.options.BooleanOption#reloadValue"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "options-options-1.7/src/test/java/com/headius/options/BooleanOptionTest.java",
+   "text": "assertTrue(bool.reloadValue())"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "n<2?1:0",
+  "afterExpression": "n<2?1:0",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

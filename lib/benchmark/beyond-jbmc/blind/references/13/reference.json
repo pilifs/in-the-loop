@@ -1,0 +1,30 @@
+{
+ "question": "Does adding successive points to an OpenCensus TimeSeries preserve the predecessor and both ordered labels?",
+ "control": "An empty series has the supplied ordered labels and no start timestamp.",
+ "domain": "All signed int metric values. Create one empty series, then two successive immutable point histories.",
+ "bounds": null,
+ "seeds": [
+  -2147483648,
+  0,
+  7,
+  2147483647
+ ],
+ "entries": [
+  "io.opencensus.metrics.export.TimeSeries#setPoint",
+  "io.opencensus.metrics.export.TimeSeries#getPoints"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "opencensus-java-0.26.0/api/src/test/java/io/opencensus/metrics/export/TimeSeriesTest.java",
+   "text": "TimeSeries timeSeries1 = timeSeries.setPoint(POINT_1)"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

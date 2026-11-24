@@ -1,0 +1,37 @@
+{
+ "question": "Does inserting and removing CAS processors retain the documented order and instance identities in the collection-processing descriptor?",
+ "control": "A configured output queue size round-trips without introducing a CAS processor.",
+ "domain": "Two insertion positions in a two-element descriptor; independent queue-size controls 1 and 2.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#addCpeCasProcessor",
+  "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#removeCpeCasProcessor",
+  "org.apache.uima.collection.impl.metadata.cpe.CpeDescriptorFactory#produceCasProcessors"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "uimaj-2.10.4/uimaj-core/src/main/java/org/apache/uima/collection/metadata/CpeCasProcessors.java",
+   "text": "public void removeCpeCasProcessor(int aPosition)"
+  },
+  {
+   "side": "after",
+   "member": "uimaj-2.10.4/uimaj-cpe/src/main/java/org/apache/uima/collection/impl/metadata/cpe/CpeCasProcessorsImpl.java",
+   "text": "casProcessors.add(aInsertPosition, aCasProcessor)"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

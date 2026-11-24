@@ -1,0 +1,32 @@
+{
+ "question": "Does a reconstructed Plexus component annotation agree in both equality directions and hash with the declared annotation, and distinguish a different hint?",
+ "control": "The replica reports the component annotation type and the originally declared role.",
+ "domain": "Two real runtime annotations, an empty hint and a named hint.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "org.eclipse.sisu.plexus.ComponentImpl#equals",
+  "org.eclipse.sisu.plexus.ComponentImpl#hashCode",
+  "org.eclipse.sisu.plexus.ComponentImpl#annotationType"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "sisu-plexus-0.3.5/org.eclipse.sisu.plexus.tests/src/org/eclipse/sisu/plexus/ComponentAnnotationTest.java",
+   "text": "assertTrue( orig.equals( clone ) )"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

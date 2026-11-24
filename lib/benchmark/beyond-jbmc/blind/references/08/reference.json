@@ -1,0 +1,40 @@
+{
+ "question": "Does an Adobe Font Metrics glyph record preserve its decimal or hexadecimal character code and horizontal width?",
+ "control": "The same record preserves the glyph name A.",
+ "domain": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
+ "bounds": [
+  0,
+  1023
+ ],
+ "seeds": [
+  0,
+  1,
+  255,
+  512,
+  1023
+ ],
+ "entries": [
+  "de.intarsys.cwt.font.afm.AFMChar#create",
+  "de.intarsys.cwt.font.afm.AFMChar#getCode",
+  "de.intarsys.cwt.font.afm.AFMChar#getWidth"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
+   "text": "public static AFMChar create(String glyph)"
+  },
+  {
+   "side": "after",
+   "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
+   "text": "Integer.parseInt(value.substring(1, value.length() - 1),"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "(65L<<32) + n",
+  "afterExpression": "(65L<<32) + n",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-091322-blind-03-matched-public-reference-on-the",
+  "title": "Blind 03 matched public reference on the three frozen checker profiles",
+  "description": "Use the precommitted reference caller on both original release graphs, validate a matching two-copy caller, and compare strict native, integrated JBMC and packaged stock JBMC on the same values, control and deliberately false sibling. Keep all original rows and intermediate refusals.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "upgrade:relational"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/references.json"
+    ]
+  },
+  "expected": "A bound receipt for every registered slot, including unsupported callers and differences that fail original-JVM replay.",
+  "submitted": {
+    "at": "2026-11-24T09:13:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 24,
+  "requires": [
+    "jvmcontract",
+    "bwrap",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "11m",
+    "timeout": "42m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/evaluate_panel.py matched 03",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/blind/03/matched"
+  ]
+}

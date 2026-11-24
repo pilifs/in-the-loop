@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import posixpath
 import re
+import shutil
 import subprocess
 import sys
 import tarfile
@@ -24,6 +25,7 @@ BASE = AREA / "evaluation"
 PORTABLE = HERE / "draw"
 CACHE = {}
 JAVA_TOOLS = {"ant", "ant-optional", "junit", "junit4", "junit5", "testng", "maven", "groovy", "aspectj", "bsh", "ivy", "scala", "clojure"}
+MANIFEST_PACKAGES = {"el-api-3.0.jar":"libel-api-java", "rhino.jar":"librhino-java", "xalan2.jar":"libxalan2-java"}
 
 
 def unseal():
@@ -81,8 +83,8 @@ def archive_jars(deb):
                     data=tar.extractfile(m).read()
                     with zipfile.ZipFile(io.BytesIO(data)) as z:
                         manifest=z.read("META-INF/MANIFEST.MF").decode("utf-8","replace") if "META-INF/MANIFEST.MF" in z.namelist() else ""
-                        manifest=re.sub(r"\r?\n ", "",manifest)
-                        field=re.search(r"(?im)^Class-Path:\s*([^\r\n]*)",manifest.split("\n\n")[0])
+                        manifest=manifest.replace("\r\n","\n").replace("\r","\n").replace("\n ","")
+                        field=re.search(r"(?im)^Class-Path:[ \t]*([^\n]*)",manifest.split("\n\n")[0])
                         entries=field.group(1).split() if field else []
                     actual[path]=(sha(data),data,entries)
                 elif m.issym() or m.islnk():
@@ -127,6 +129,13 @@ def graph(row, side, releases, dest):
             if k in jars and jars[k][:2]!=(name,v[0]):raise ValueError("classpath package file conflict")
             jars[k]=(name,*v)
         links.update(aliases)
+        for _,_,entries in files.values():
+            for entry in entries:
+                basename=posixpath.basename(entry)
+                provider=MANIFEST_PACKAGES.get(basename)
+                if basename.startswith("fop-transcoder-allinone-"):provider="libfop-java"
+                if provider in table and provider not in packages:
+                    queue.append(provider)
         for field in ("Pre-Depends","Depends"):
             for group in pkg.get(field,"").replace("\n"," ").split(","):
                 if not group.strip():continue
@@ -161,7 +170,13 @@ def graph(row, side, releases, dest):
     add(root_file)
     for package in packages:
         for path in sorted(p for p,v in jars.items() if v[0]==package):add(path)
+    alternatives={}
+    for path in sorted(set(missing)):
+        basename=posixpath.basename(path)
+        candidates={jars[name][1] for name in jars if posixpath.basename(name)==basename}
+        if len(candidates)==1:alternatives[path]=next(iter(candidates))
     return {"suite":suite,"packages":packages,"classpath":order,"unresolvedManifestPaths":sorted(set(missing)),
+            "matchingBasenameOnOrderedClasspath":alternatives,
             "nonJavaOrUnresolvedDepends":skipped}
 
 
@@ -169,9 +184,19 @@ def prepare(doc, indexes):
     population=json.loads((AREA/"population.json").read_bytes())
     for index in indexes:
         row=doc["pairs"][index-1]; folder=BASE/f"{index:02}";folder.mkdir(parents=True,exist_ok=True)
-        result={s:graph(row,s,population["releases"],folder/"packet"/s) for s in ("old","new")}
+        import tempfile
+        temporary=Path(tempfile.mkdtemp(prefix="packet-build-",dir=folder))
+        result={s:graph(row,s,population["releases"],temporary/s) for s in ("old","new")}
         packet={s:[{k:r[k] for k in ("path","sha256")} for r in value["classpath"]] for s,value in result.items()}
-        (folder/"packet/inputs.json").write_bytes(encoded(packet))
+        (temporary/"inputs.json").write_bytes(encoded(packet))
+        current=folder/"packet"
+        if current.exists() and (current/"inputs.json").read_bytes()==encoded(packet):
+            shutil.rmtree(temporary)
+        else:
+            if current.exists():
+                prior=folder/("packet-previous-"+sha((current/"inputs.json").read_bytes()))
+                current.rename(prior)
+            temporary.rename(current)
         (folder/"graphs.json").write_bytes(encoded(result))
         print(f"{index:02}",len(packet["old"]),len(packet["new"]),"ordered jars",flush=True)
 

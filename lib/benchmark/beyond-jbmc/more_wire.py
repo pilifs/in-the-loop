@@ -52,7 +52,7 @@ def bridges(work, sources):
     return result
 
 
-def prepare_pair(work, sources, old, new, claims):
+def prepare_pair(work, sources, old, new, claims, *, ordered=False):
     env=javaenv()
     os.environ.update({k:env[k] for k in ("JAVA_HOME","PATH","JVMCONTRACT_JAR_RELEASE")})
     caller=work/"caller"
@@ -60,12 +60,16 @@ def prepare_pair(work, sources, old, new, claims):
     raw=work/"old-input"
     shutil.copytree(caller,raw)
     entry_map={}
+    shadowed=[]
     for jar in old:
         with zipfile.ZipFile(jar) as z:
             for logical,item in runtime_jar.effective_entries(z,21).items():
                 if not logical.endswith(".class") or logical=="module-info.class" or logical.startswith("META-INF/"): continue
                 f=raw/logical
-                if f.exists(): raise ValueError("ambiguous old class " + logical)
+                if f.exists():
+                    if not ordered or logical not in entry_map:raise ValueError("ambiguous old class " + logical)
+                    shadowed.append([logical,jar.name,item.filename])
+                    continue
                 f.parent.mkdir(parents=True,exist_ok=True)
                 f.write_bytes(z.read(item))
                 entry_map[logical]=[jar.name,item.filename]
@@ -81,7 +85,8 @@ def prepare_pair(work, sources, old, new, claims):
     env.update(WIRE_ORIGINAL_BEFORE=classpath([caller,*old]),WIRE_ORIGINAL_AFTER=classpath([caller,*new]))
     return cp,[original],env,{"old":{p.name:digest(p) for p in old},"new":{p.name:digest(p) for p in new},
                             "thinCallers":{p.name:digest(p) for p in caller.glob("*.class")},"symbolicClaimClasses":{p.name:digest(p) for p in classes.glob("*.class")},
-                            "oldEntryMapSha256":hashlib.sha256(encoded(entry_map)).hexdigest(),"relocatorSha256":digest(RELOCATOR),
+                            "oldEntryMapSha256":hashlib.sha256(encoded(entry_map)).hexdigest(),"shadowedOldClasses":shadowed,
+                            "relocatorSha256":digest(RELOCATOR),
                             "jdkModulesSha256":digest(JDK/"lib/modules"),"jbmcSha256":digest(JBMC),"coreModelsSha256":digest(MODELS)}
 
 
