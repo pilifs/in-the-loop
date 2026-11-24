@@ -202,3 +202,125 @@ Leave one short comparison alongside the two plans. Use a row per project for **
 [gson-pr]: https://github.com/google/gson/pull/3098
 [gson-read]: https://github.com/google/gson/blob/b3f4ca20087f9066de4c340522ff84e0558e1ad1/gson/src/main/java/com/google/gson/stream/JsonReader.java#L1400-L1435
 [predecessor]: beyond-jbmc-java-change-verification-campaign.md
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Cache folder** `~/.cache/in-the-loop/organic-composition-ff` (`$O`). Everything is outside the checkout.
+  - Worktrees: `$O/worktrees/CASE-REPO-ROLE`, one per pinned revision, all clean (no build trees).
+  - Mirrors: one shallow bare mirror per upstream under `~/.cache/in-the-loop/git-mirrors/`.
+  - Revisions with trees and parents: the [Upstream revisions](#upstream-revisions) table.
+  - PR metadata (title, body, head, merge commit): `$O/upstream/prs/REPO-N.json`.
+- **Built production jars**, both sides of every case: `$O/artifacts/`, digests in `$O/logs/artifacts.sha256` and the
+  [Built jars](#built-jars-and-landed-tests) table.
+  - A ThreeTenBP 1.3.6: `A-threetenbp-{parent,fix}.jar`.
+  - C libphonenumber: `C-libphonenumber-{parent,fix}.jar`, with the production metadata inside.
+  - D ICU4J core: `D-icu-{parent,fix}-core.jar`.
+  - E Commons IO: `E-commons-io-{parent,fix}.jar`.
+  - F Commons Collections, four endpoints: `F-commons-collections-{628,755}-{parent,fix}.jar`.
+  - H Commons Lang: `H-commons-lang-{parent,fix}.jar`.
+  - I Gson: `I-gson-{parent,fix}.jar`.
+  - B POI 6.0.0-SNAPSHOT: `B-poi-{parent,fix}.jar`.
+  - G Log4j 2.19.1-SNAPSHOT: `G-logging-log4j2-{parent,fix}-log4j-{api,core}.jar` (classpath: api, then core).
+- **Runtime classpaths**: `$O/logs/WT.runtime-classpath.txt`.
+  - Most built jars need nothing else.
+  - Collections needs commons-codec (1.19.0 for #628, 1.23.0 for #755).
+  - Gson needs error_prone_annotations 2.50.0.
+  - POI `:poi` needs the `releases/poi-6.0.0` graph minus `poi-6.0.0.jar` (the same jars, checked by sha256).
+- **Released versions the brief names**, all checked against Central with good PGP signatures:
+  - `$O/releases/{poi-6.0.0,icu4j-76.1,commons-collections4-4.6.0,log4j-2.19.0,log4j-2.20.0,gson-2.14.0}/`, each with
+    `lib/`, `sources/` and an ordered `classpath.txt`.
+- **Toolchain**:
+  - JDKs 8, 11, 17 and 21 under `~/.sdkman/candidates/java/`;
+  - Maven 3.10.0 on `PATH`;
+  - Maven 3.8.4 for Log4j in `$O/tools/`, with `$O/toolchains.xml`;
+  - Gradle 9.8.1 for POI in `$O/gradle-home`.
+  - Maven builds use `-s $O/maven-settings.xml`. Every Maven build here works with `-o`, and POI's with `--offline`.
+- **Build and test commands** per checkout, with the offline form: [Commands](#built-jars-and-landed-tests), the ICU command in
+  [Jobs](#jobs), and the job steps in `verification/jobs/2026/11/24/*setup-build*.json`, written by `$O/scripts/submit_jobs.py`.
+- **Setup probes** that reproduce each preflight: `$O/probes/{A..I}/*.java`, with their output in `$O/logs/*-probe*.txt`.
+  They are throwaway checks, not case artifacts.
+
+### What was verified on a JVM
+
+- **Landed upstream tests** (fix / parent / landed test transplanted onto the parent):
+  - A, `TestZonedDateTime`: pass / pass / **6 failures**, the overlap tests.
+  - B, `TestDataFormatter`: pass / pass / **2 failures** (`testCurrencyStringWithoutLanguageInfo`, `testFormatWithSpecialCharactersInLiteral`).
+  - D, RBBI (61 tests): pass / pass / **4 failures**, the word monkeys and `TestExtended`.
+  - E, `CharSequenceInputStreamTest`: pass / pass / **7 failures**.
+  - F #755, 4 `IteratorChain*Test` classes: pass / pass / **215 failures**.
+  - H, `FastDateParserTest`: pass / pass / **20 failures**.
+  - I, `MapTest`/`JsonReaderPathTest`/`JsonParserTest`: pass / pass / **7 failures**.
+  - **C and F #628 pass on both sides even with the landed test**: C changed only test metadata, and #628 is a
+    performance fix. For them, the probes below are the discriminators.
+  - G, `PatternProcessorTest`: pass / pass / **9 failures**. Three are the `HonoringTimeZoneOption` tests; six are tests the landed file rewrote, not examined.
+- **The brief's preflight observations, reproduced as stated** on the built jars, identical on JDK 21.0.13:
+  - **A**: NY cursor 40 → 80, with the parent `05:00Z` twice and the fix `05:00Z`/`06:00Z`. Berlin 37 → 74, with
+    `00:00Z` twice versus `00:00Z`/`01:00Z`. The read at end of input throws with error index = index. The builder
+    formatter and `ISO_ZONED_DATE_TIME` agree.
+  - **B**: US → kk-KZ → US gives `0.001 / 0,001 / 0.001` on the parent and `0.001000000тг. / 0,001000000тг. /
+    0.001000000тг.` on the fix. A fresh peer gives the same. The `0.0` control is preserved. A process that starts in
+    kk-KZ already differs.
+  - **C**: Swedish `08123456` ends `08 12 34 56` on the parent and `08-12 34 56` on the fix. Clear and replay repeat
+    the history. US is preserved. **25 of 1,326** region × type example histories change, listed in the record.
+  - **D**: en_US `xx:yy` goes from `[0,2,3,5]` to `[0,5]`; fi and sv stay at `[0,5]`; en_US_POSIX stays at `[0,2,3,5]`.
+    The reverse walk and the supplementary `𐐀:𐐨` agree.
+  - **E**: the parent gives `c3a9e4 / c3a9e4 / b8ad5a`, the fix `c3a9e4` ×3; guards untouched.
+  - **F**: the parent returns `b` and removes it at 628-parent and 755-fix; it returns `d` and throws on `remove` at
+    628-fix and 755-parent. A flat chain is the same at all four.
+  - **G** (release jars 2.19.0 and 2.20.0, and the built jars, which match them side for side): the explicit GMT−6 zone gives 06:00Z on March 5, 2014 under both defaults
+    on 2.20.0 and two different deadlines on 2.19.0. With the zone omitted, the old deadlines stay on both.
+  - **H**: lenient day 8 throws on the parent and gives `1736121600000` on the fix. Strict 0 goes from accepted to
+    rejected. Strict 15 is rejected on both. 7 is the same.
+  - **I**: the parent reports `$.` ×4 on both readers; the fix reports `$.1, $.1, $.2, $.2`. The maps are equal.
+- Every release jar's sha1 and signature, both build tools' distributions and wrapper jar, and the commit and tree of each
+  pinned revision.
+
+### What to know before starting
+
+- **The default `java` is JDK 25.0.5.** Name the JDK by its path. The jars were built as follows:
+  - ThreeTenBP and libphonenumber with JDK 8. Their class files are majors 50 and 49, targets 1.6 and 1.5.
+  - The rest with JDK 17, at release or target 8.
+  - Log4j with JDK 11 and toolchains 8 and 11.
+- **Built jar digests include build timestamps.** Bind the copies in `$O/artifacts/` (digests in the record), or the
+  class and resource digests listed there, which are stable. A rebuild gives another jar digest.
+- **The released versions do not all sit on one side:**
+  - Collections 4.6.0 and Gson 2.14.0 behave like the regressed or parent side.
+  - ICU4J 76.1 behaves like the #3249 parent, and its brkitr resources are byte-identical to the parent build's.
+  - Log4j 2.19.0 behaves like the parent and 2.20.0 like the fix.
+- **ICU**: the fix's root `word.brk` is byte-identical to the parent's `word_fi_sv.brk`
+  (`e7e505439ca75fd34cb1fc584142a5c4ee7d1e60dbd73925ced84565bcb66d9c`). The fix removes `fi.res`, `sv.res` and
+  `word_fi_sv.brk`. This bears on the brief's "where the rule bytes match across two locales" question; the full table is in the record.
+- **Log4j #1173 is two commits**: `e325de9abf771a4501bae7cd7910fcbce31f5663` → `5bde96782efab839c2d6242b9d46401fee3fa211` →
+  `7107cd655380d81dea72df930a832e598173971e`. Only the two ends have worktrees; the middle one is in the mirror.
+- **H**: the private helpers that exist only on the fix are `FastDateParser.isValidDayOfWeek(int)` and
+  `toCalendarDayOfWeek(int)`.
+- **A**: `Jdk8Methods.floorMod(long,int)`, descriptor `(JI)I`, and `TZDB.dat`
+  (`24d8db6ab7b32af2bd8df1ab1cc42b3c3058251cd4055bbee1fe51c55e2cbc77`) are byte-identical on both sides. Only
+  `DateTimeBuilder.class` differs.
+- **C**: the production metadata resources are identical on both sides; only `AsYouTypeFormatter.class` differs.
+- **POI**:
+  - Its build writes the jar to `build/dist/maven/poi/`, not `poi/build/libs/`.
+  - Gradle needs `-Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J17`.
+  - Its `:poi` configurations are cached, so `--offline` works. Other POI modules (`poi-ooxml`, where the PR's
+    `TestXSSFBugs` change lives) were **not** resolved or built.
+- **Log4j**: run Maven 3.8.4 **on JDK 8** with `-t $O/toolchains.xml` (toolchain 11), as upstream CI does, with
+  `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am` and `package`. Each setup try that did otherwise failed
+  (see [Jobs](#jobs)).
+- **Log4j**: `Log4j2Plugins.dat` and the log4j-api jar are byte-identical on both sides; `PatternProcessor` and `DatePatternConverter` differ.
+- **No snapshot dependencies** from outside are used. The only SNAPSHOT versions are the projects' own modules.
+- The probes set their own state (zones, locales), and Log4j's probe runs one JVM per default zone.
+- **POI**: `DateUtil` and `LocaleUtil` are byte-identical on both sides; `DataFormatter` and `CellNumberFormatter` differ.
+
+### What is left for the domain work on purpose
+
+- The membership and exposure check against Beyond JBMC's sealed panel, the overlap with example 310, and reading what
+  changed in `lib/` since `96d1883e`.
+- Every case artifact: `prepared.json` for each side, the `caller-workflows/v1` workflows, scopes, `UpgradeProbe`,
+  observers, fixtures, manifests and lemma declarations.
+- Registering the changed-history and preservation questions, and all claims, runs, startup recovery, summary
+  consumption and cache comparisons. No case directory or example id was created.
+- The choice of Ecuadorian inputs for C and of the extension cases after C. B's accounting-format path. Any POI module
+  beyond `:poi`.
+- The aspirational URL-only selection.
