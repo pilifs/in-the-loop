@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-124551-independently-check-a-portable-iscwt-lra",
+  "title": "Independently check a portable ISCWT LRAT bundle",
+  "description": "Recover the registered 141,171,872-byte original solver bundle by digest. Preserve its complete native transcript and SAT valuations. Trim the generated LRAT derivations with the pinned CaDiCaL distribution, omit deletion hints only for pure RUP derivations, and require the fresh independent checker to validate every answer against the original request and assumptions. Keep the checked smaller bundle and provenance for direct public replay.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "A portable bundle is produced only when all 9 original SAT assignments and 469 UNSAT certificates validate on the original request, and the substituted observation is rejected.",
+  "submitted": {
+    "at": "2026-11-24T12:45:51+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "cc"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "12m",
+    "notes": "Original generation took 68 seconds and independent checking 86 seconds. The smaller proofs use the same 478 incremental clause prefixes."
+  },
+  "steps": [
+    {
+      "name": "Trim and independently check all original glyph solver answers",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/trim_assurance.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.zip",
+    "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.json"
+  ]
+}

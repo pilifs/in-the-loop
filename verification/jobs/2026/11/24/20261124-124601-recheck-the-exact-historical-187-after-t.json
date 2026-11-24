@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-124601-recheck-the-exact-historical-187-after-t",
+  "title": "Recheck the exact historical 187 after the tokenizer and replay changes",
+  "description": "Repeat all 187 original native claims on the final checker, using the pinned JDK 25.0.5, original sources, compiled classes and independent JVM oracles. Keep every invocation and outcome and report any changed per-claim disposition against the closing frozen native column.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {},
+  "expected": "The checker covers all 187 identities and all 25 original JVM references; the report records every historical gain or loss and the byte-exact raw executions.",
+  "submitted": {
+    "at": "2026-11-24T12:46:01+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "20m",
+    "notes": "The archived median native target took 0.031 seconds. The job also compiles the original sources and repeats their 25 JVM references."
+  },
+  "steps": [
+    {
+      "name": "Repeat and compare the original native column",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/history.py followup-native",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/followup/historical-native"
+  ]
+}

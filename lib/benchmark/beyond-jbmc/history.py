@@ -144,6 +144,7 @@ def check_pin(folder):
 
 def run(phase, out):
     out.mkdir(parents=True, exist_ok=True)
+    engines = ["native"] if phase == "followup-native" else ["native", "jbmc"]
     checker = Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve()
     os.environ.update(JAVA_HOME=str(JDK), JVMCONTRACT_JAR_RELEASE="25", PATH=str(JDK / "bin") + os.pathsep + os.environ["PATH"])
     with scratch(prefix="beyond-jbmc-history-") as tmp:
@@ -151,7 +152,7 @@ def run(phase, out):
         pin, source = check_pin(build)
         ids = [r["id"] for r in pin["cases"]]
         options = argparse.Namespace(groups="1,2,3,4", cases=None, selection="beyond-jbmc/historical-187",
-                                     engines="native,jbmc", modes="strict", jbmc_staging="staged", timeout=120,
+                                     engines=",".join(engines), modes="strict", jbmc_staging="staged", timeout=120,
                                      search=200000, build=build, jvmcontract=str(checker), jbmc=str(JBMC), quiet=False)
         with zipfile.ZipFile(out / "executions.zip", "w", zipfile.ZIP_DEFLATED) as archive:
             def retain(case, engine, cmd, measured, work):
@@ -164,10 +165,10 @@ def run(phase, out):
                     if path.suffix in (".class", ".java"):
                         archive.write(path, key + "harness/" + path.name)
             result = benchmark.run(options, case_ids=ids, conformance_source=source, record_execution=retain)
-    expected = [(cid, e) for cid in ids for e in ("native", "jbmc")]
+    expected = [(cid, e) for cid in ids for e in engines]
     if [(r["case"], r["engine"]) for r in result["runs"]] != expected:
         raise ValueError("incomplete or duplicate result rows")
-    for key, value in pin["settings"].items():
+    for key, value in {**pin["settings"], "engines": engines}.items():
         if key not in ("jdk", "jbmc") and result["settings"].get(key) != value:
             raise ValueError("run drifted from profile: " + key)
     if any(not row["agrees"] for row in result["reference"].values()) or len(result["reference"]) != 25:
@@ -175,13 +176,31 @@ def run(phase, out):
     result["manifestSha256"] = digest(PIN)
     result["binaries"] = {**pin["openingBinaries"], "jvmcontract": digest(checker)}
     result["rawExecutionsSha256"] = digest(out / "executions.zip")
+    if phase == "followup-native":
+        from history_report import primary
+        closing = OUTPUT / "closing/historical/results.json.gz"
+        frozen = json.loads(gzip.decompress(closing.read_bytes()))
+        # The raw specification digest includes absolute example paths in each job export.
+        # The historical manifest binds the registered questions independently of those paths.
+        if result["manifestSha256"] != frozen["manifestSha256"] or result["cases"] != frozen["cases"]:
+            raise ValueError("different historical questions or scopes")
+        for key in ("classesSha256", "oraclesSha256"):
+            if result["settings"][key] != frozen["settings"][key]:
+                raise ValueError("historical input differs at " + key)
+        before = {r["case"]: primary(r) for r in frozen["runs"] if r["engine"] == "native"}
+        after = {r["case"]: primary(r) for r in result["runs"]}
+        if before.keys() != after.keys():
+            raise ValueError("frozen historical IDs differ")
+        result["followup"] = {"job": os.environ.get("VERIFY_JOB_ID"), "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"),
+                              "frozenReportSha256": digest(closing), "dispositions": Counter(after.values()),
+                              "changed": {k: [before[k], v] for k, v in after.items() if v != before[k]}}
     (out / "results.json.gz").write_bytes(gzip.compress(encoded(result), mtime=0))
     print(phase, len(ids), dict(Counter((r["engine"], r["class"]) for r in result["runs"])), flush=True)
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("action", choices=["pin", "check", "opening", "closing"])
+    ap.add_argument("action", choices=["pin", "check", "opening", "closing", "followup-native"])
     ap.add_argument("--output", type=Path)
     args = ap.parse_args()
     if args.action == "pin":
@@ -191,4 +210,5 @@ if __name__ == "__main__":
             pin, _ = check_pin(Path(tmp))
             print(len(pin["cases"]), "original statements;", len(pin["filesSha256"]), "original source and oracle files verified")
     else:
-        run(args.action, args.output or OUTPUT / args.action / "historical")
+        folder = OUTPUT / "followup/historical-native" if args.action == "followup-native" else OUTPUT / args.action / "historical"
+        run(args.action, args.output or folder)
