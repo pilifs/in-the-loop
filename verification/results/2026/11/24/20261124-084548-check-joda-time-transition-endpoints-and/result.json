@@ -1,0 +1,228 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084548-check-joda-time-transition-endpoints-and",
+  "title": "Check Joda-Time transition endpoints and cross-release resource reuse",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20m46s, peak 7.5 GiB (estimated 18m00s, 5.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -) passed, but the kernel killed 12 process(es) in it at the memory limit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084548-check-joda-time-transition-endpoints-and.json",
+    "sha256": "b234923346337613c1ff4a4cb70c06edb5a3710785657eba8f6bf5609e031231",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084548-check-joda-time-transition-endpoints-and",
+      "title": "Check Joda-Time transition endpoints and cross-release resource reuse",
+      "description": "The 247 shared class bytes are identical while provider data changes. Check the precise UTC 2023 interval on both releases and the preselected unaffected zone, cold, warmed with the old cache, and clean. Retain the provider map digest, exact relevant entries, complete transition scan, and matched bounded comparisons.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/zone-choice.json"
+        ]
+      },
+      "expected": "Retain all endpoint controls and cache decisions; detect any wrong proof on Mexico City by physical replay, and distinguish the identical control resource from the changed global provider map.",
+      "submitted": {
+        "at": "2026-11-24T08:45:48+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 14,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "18m",
+        "timeout": "78m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/zone_reuse.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/C06-C07"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:59:04+00:00",
+  "finishedAt": "2026-11-24T09:20:00+00:00",
+  "wallSeconds": 1256.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 4680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1080.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 8053063680,
+    "wallSeconds": 1246.3,
+    "cpuSeconds": 1253.4,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 1.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/zone_reuse.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4680.0,
+      "cancelled": false,
+      "wallSeconds": 1246.35,
+      "cpuSeconds": 1253.372,
+      "cpuThrottledSeconds": 0.333,
+      "peakMemoryBytes": 8053063680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 12,
+      "memoryHighEvents": 778,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 8,
+        "bytes": 642,
+        "sha256": "6d0926065b3d61b7efca362a7312ed0870e96e88bb49d2fb7b8eeb028e941ac7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "joda-time-2.12.0 15 original checks passed",
+        "joda-time-2.12.0 oldSchedule unverifiable unverifiable no property report no property report",
+        "joda-time-2.12.0 newSchedule unverifiable unverifiable no property report no property report",
+        "joda-time-2.12.0 unaffected unverifiable unverifiable no property report no property report",
+        "joda-time-2.12.1 15 original checks passed",
+        "joda-time-2.12.1 oldSchedule unverifiable unverifiable no property report no property report",
+        "joda-time-2.12.1 newSchedule unverifiable unverifiable no property report no property report",
+        "joda-time-2.12.1 unaffected unverifiable unverifiable no property report no property report"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.0/executions.zip",
+      "change": "added",
+      "bytes": 66691,
+      "sha256": "194518b9bc7f71f1ee6abcf013e26faf90f63c549f2c3ddfe2fb495ee55877f6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.0/results.json.gz",
+      "change": "added",
+      "bytes": 1600,
+      "sha256": "939c6395ace12204595a56806364bba441c909096deefdd65f7168941642ba04",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.1/executions.zip",
+      "change": "added",
+      "bytes": 66698,
+      "sha256": "dc1eb460cedfca99206de5350744801c207763cf82d3ea54f98ea47702677234",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.1/results.json.gz",
+      "change": "added",
+      "bytes": 1601,
+      "sha256": "de68b99b5a66bad094fd1b7a0ae60c1e658bff9b70d2fdad59ba75e33de28165",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07/reuse.json.gz",
+      "change": "added",
+      "bytes": 2727,
+      "sha256": "a7f2b30fdc42a5ccb4ede0e2d76f4047cab262a576277688fb0ae8f3accb3077",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07/reuse.zip",
+      "change": "added",
+      "bytes": 13418,
+      "sha256": "70ce15131c7eaafb24effa996d16b5198b41be7fc9b78f06b8dcc3fdeb76b75f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:20:05+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.0/executions.zip",
+      "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.0/results.json.gz",
+      "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.1/executions.zip",
+      "verification/beyond-jbmc/qualified/C06-C07/joda-time-2.12.1/results.json.gz",
+      "verification/beyond-jbmc/qualified/C06-C07/reuse.json.gz",
+      "verification/beyond-jbmc/qualified/C06-C07/reuse.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T092000Z-816263e5f7c1f99b",
+      "outputs": "20261124T092000Z-84133995bb22bf3e",
+      "diff": "20261124T092000Z-860245c0f7127f32"
+    }
+  }
+}
