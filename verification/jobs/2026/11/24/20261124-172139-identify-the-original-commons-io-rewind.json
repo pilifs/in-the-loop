@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-172139-identify-the-original-commons-io-rewind",
+  "title": "Identify the original Commons IO rewind startup frontier",
+  "description": "Check the original constructor and registered public bulk-read and rewind path on each complete Commons IO revision with strict native checking. Retain the first result, then request observation of the original Charsets initializer and capture where the retry stops.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T17:21:39+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "First strict native attempt at each original revision",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py io 'rewind()Z'",
+      "cwd": "."
+    },
+    {
+      "name": "Retry the same ordinary caller with its original charset initializer",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py io 'rewind()Z' org.apache.commons.io.Charsets",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/io/first-native.json",
+    "verification/organic-composition/io/observed-native.json"
+  ]
+}
