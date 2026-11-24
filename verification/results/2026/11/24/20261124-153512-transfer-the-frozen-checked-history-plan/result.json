@@ -1,0 +1,314 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-153512-transfer-the-frozen-checked-history-plan",
+  "title": "Transfer the frozen checked history plan to original Apache POI 1420",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 5m14s, peak 423.2 MiB (estimated 12m00s, 5.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-153512-transfer-the-frozen-checked-history-plan.json",
+    "sha256": "dcce53f3ff2d55217f825ffc37f7bd3f44f073a22cbd7e2f35b1eb9963731c9b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-153512-transfer-the-frozen-checked-history-plan",
+      "title": "Transfer the frozen checked history plan to original Apache POI 1420",
+      "description": "Run the first frozen implementation on both complete :poi builds and all six runtime dependencies. Compare one retained DataFormatter with a fresh peer across US and Kazakh locale changes, including numeric and built-in date controls. Record checked DateUtil substitutions, real startup, cold, warm, clean, unrelated and incorrect-premise configurations against independent ordinary JVM routes.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-proof-reuse",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:35:12+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "12m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen runner and production date switch",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/poi/classification.py",
+          "cwd": "."
+        },
+        {
+          "name": "Run and preserve the original POI transfer",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py poi first --controls",
+          "cwd": "."
+        },
+        {
+          "name": "Requalify observations and live helper applications",
+          "run": "python3 -B lib/benchmark/organic-composition/audit.py poi first",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/poi/first",
+        "verification/organic-composition/poi/all-int-classification.json"
+      ]
+    }
+  },
+  "sourceCommit": "21abb24a019f041f98a1364f53db081d100bccfd",
+  "startedAt": "2026-11-24T15:38:55+00:00",
+  "finishedAt": "2026-11-24T15:47:27+00:00",
+  "wallSeconds": 512.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2045688,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 2880.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 443793408,
+    "wallSeconds": 314.3,
+    "cpuSeconds": 403.3,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.44
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 186.518,
+      "cpuSeconds": 186.706,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2351841280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "94bc60967505b5b35682152771cdb9424895b2ee61b4bb8cd7920081dffce267",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-153512-transfer-the-frozen-checked-history-plan/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 06s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the frozen runner and production date switch",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/poi/classification.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.301,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 40202240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-runner-and-pr.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Run and preserve the original POI transfer",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py poi first --controls",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 313.34,
+      "cpuSeconds": 402.556,
+      "cpuThrottledSeconds": 63.474,
+      "peakMemoryBytes": 443793408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-run-and-preserve-the-original.log",
+        "lines": 8,
+        "bytes": 446,
+        "sha256": "01c406377174a78564f053fe85d955e1d5207987dba871ed9db029c20adcd67b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/planned.json",
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/cold.json",
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/warm.json",
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/clean.json",
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/unrelated-warm.json",
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/unrelated-clean.json",
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/wrong-warm.json",
+        "4 claims in /tmp/organic-matrix-m6zrwqo6/wrong-clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Requalify observations and live helper applications",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py poi first",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.488,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 136937472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-requalify-observations-and-liv.log",
+        "lines": 1,
+        "bytes": 205,
+        "sha256": "20b55818326dc3d4da1830eb7134fa5a1236a592df7926277f94c057bf9b8ee4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "poi first matched original observations, proof identities, applied values and startup witnesses: [['cold', 'warm'], ['cold', 'clean'], ['unrelated-warm', 'unrelated-clean'], ['wrong-warm', 'wrong-clean']]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/poi/first/plans.zip",
+      "change": "added",
+      "bytes": 4006957,
+      "sha256": "85b146ae43e360262302c2897e56b24f9d53131207d323b33a2bfc91536d27ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/poi/first/summary.json",
+      "change": "added",
+      "bytes": 43725,
+      "sha256": "1dcb11ef515a6d03827a96fe0332a2d7bde53b7a3b5035f40047a827490c3cc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/poi/all-int-classification.json",
+      "change": "added",
+      "bytes": 1711,
+      "sha256": "6be9c8f3cd6044798a46f2d3ccef1e9407c7be194e3c807133af92f0e1732165",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T15:47:44+00:00",
+    "applied": [
+      "verification/organic-composition/poi/first/plans.zip",
+      "verification/organic-composition/poi/first/summary.json",
+      "verification/organic-composition/poi/all-int-classification.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "92c33aeff5337dc16ac571e10ad68182dd8539cb",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92c33aeff5337dc16ac571e10ad68182dd8539cb/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T154727Z-2937323b0e7ded6c",
+      "outputs": "20261124T154727Z-3301034030c13757",
+      "diff": "20261124T154727Z-34943018e9e3ca04"
+    }
+  }
+}
