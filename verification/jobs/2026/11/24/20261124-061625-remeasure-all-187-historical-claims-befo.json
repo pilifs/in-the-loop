@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-061625-remeasure-all-187-historical-claims-befo",
+  "title": "Remeasure all 187 historical claims before the beyond-JBMC campaign",
+  "description": "Compile the original Java programs and JVM oracles on Temurin 25.0.5. Run all 187 archive IDs in original order with strict native and integrated staged JBMC 6.11.0. Preserve each command, both output streams, harnesses, physical replay and costs. Standalone stock JBMC is scored separately.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence",
+    "jbmc:staged"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/historical/manifest.json"
+    ]
+  },
+  "expected": "187 exact statements and 374 ordered results with 25 independent JVM checks. Unknowns and incorrect outcomes remain in the measured population.",
+  "submitted": {
+    "at": "2026-11-24T06:16:25+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "20m",
+    "timeout": "70m"
+  },
+  "steps": [
+    {
+      "name": "Historical full population",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/history.py opening",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/opening/historical"
+  ]
+}
