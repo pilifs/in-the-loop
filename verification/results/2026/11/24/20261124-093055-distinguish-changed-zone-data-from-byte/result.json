@@ -1,0 +1,185 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-093055-distinguish-changed-zone-data-from-byte",
+  "title": "Distinguish changed zone data from byte-identical Java bytecode",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3.0s, peak 98.5 MiB (estimated 7m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-093055-distinguish-changed-zone-data-from-byte.json",
+    "sha256": "c80da11a1bc7e29a58a98390c7273b578040223416045d4d96e4e6b6edbd2a2d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-093055-distinguish-changed-zone-data-from-byte",
+      "title": "Distinguish changed zone data from byte-identical Java bytecode",
+      "description": "Remeasure the same 2023 Joda-Time relational questions after renaming a public parameter that collided with the regression harness. Exercise equivalent source and driver year guards. Bind the exact changed July offset on both unmodified JVMs and record any contradictory shared-bytecode proof.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/extended/ZoneResourceEquality.java"
+        ]
+      },
+      "expected": "Both named zones have physical values and both equivalent argument profiles retain the literal result and diagnostics.",
+      "submitted": {
+        "at": "2026-11-24T09:30:55+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 23,
+      "requires": [
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "7m",
+        "timeout": "24m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/zone_equality.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/C06-C07-equality"
+      ]
+    }
+  },
+  "sourceCommit": "f312702115c4e25f1140da49ba51c1d7bf3339fe",
+  "startedAt": "2026-11-24T09:54:58+00:00",
+  "finishedAt": "2026-11-24T09:58:23+00:00",
+  "wallSeconds": 205.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3401695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 103333888,
+    "wallSeconds": 3.0,
+    "cpuSeconds": 4.4,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/zone_equality.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 3.01,
+      "cpuSeconds": 4.416,
+      "cpuThrottledSeconds": 0.28,
+      "peakMemoryBytes": 103333888,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 1,
+        "bytes": 129,
+        "sha256": "b487a2809fda1cd5fc8c8f97f17cc0fca44c18bddb61cb148ec90a0fdacb00e1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('mexico', 'unverifiable'), ('control', 'unverifiable'), ('boundedMexico', 'unverifiable'), ('boundedControl', 'unverifiable')]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07-equality/executions.zip",
+      "change": "added",
+      "bytes": 9966,
+      "sha256": "d5c736a45258d7a53c9f4ff8c450d2bbfd61ba8a6eb139a816e48d384b6826f0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C06-C07-equality/result.json.gz",
+      "change": "added",
+      "bytes": 2058,
+      "sha256": "4c2c54bf7dd5e9cd8918207867eb1d4b78a7a9fbe8375fa075deda2d20e6adf8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:58:53+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/C06-C07-equality/executions.zip",
+      "verification/beyond-jbmc/qualified/C06-C07-equality/result.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "94d15354ec0af1ea448d15088a43e8524624819b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/94d15354ec0af1ea448d15088a43e8524624819b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T095823Z-646075170cc90e53",
+      "outputs": "20261124T095823Z-672137116c815ed0",
+      "diff": "20261124T095823Z-6904499d2eb29d75"
+    }
+  }
+}

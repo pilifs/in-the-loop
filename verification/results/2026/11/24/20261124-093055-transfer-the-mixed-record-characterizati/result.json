@@ -1,0 +1,188 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-093055-transfer-the-mixed-record-characterizati",
+  "title": "Transfer the mixed record characterization to payload-before-header order",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.2s, peak 381.2 MiB (estimated 3m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-093055-transfer-the-mixed-record-characterizati.json",
+    "sha256": "c161e16ad24e949c86770ccb8267241fd96ca2c3a356cbfa30625ac829b1400c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-093055-transfer-the-mixed-record-characterizati",
+      "title": "Transfer the mixed record characterization to payload-before-header order",
+      "description": "The held-out public Lucene caller writes the VInt before the fixed-width header. In both mixed directions require value, reversed header, both cursor positions and both sentinel bytes. Compare exact copies and unmodified physical releases at the frozen checker.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/wire-more/PayloadFirstClaims.java"
+        ]
+      },
+      "expected": "Record complete matched results on both directions, and replay any alleged counterexample on original Lucene.",
+      "submitted": {
+        "at": "2026-11-24T09:30:55+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 23,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m",
+        "timeout": "18m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/additional_controls.py W09-reordered",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/W09-reordered"
+      ]
+    }
+  },
+  "sourceCommit": "f312702115c4e25f1140da49ba51c1d7bf3339fe",
+  "startedAt": "2026-11-24T09:54:58+00:00",
+  "finishedAt": "2026-11-24T09:58:40+00:00",
+  "wallSeconds": 222.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3401695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1080.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 399736832,
+    "wallSeconds": 20.2,
+    "cpuSeconds": 23.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.11
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/additional_controls.py W09-reordered",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 20.244,
+      "cpuSeconds": 23.507,
+      "cpuThrottledSeconds": 0.611,
+      "peakMemoryBytes": 399736832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 157,
+        "sha256": "af7c5eaa45bb2c6ea0149eb760178178f230229e875746ac18230033a7c9889b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "W09-reordered 6 original checks passed",
+        "W09-reordered oldNew verified unverifiable FAILURE FAILURE",
+        "W09-reordered newOld verified unverifiable FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/W09-reordered/executions.zip",
+      "change": "added",
+      "bytes": 240855,
+      "sha256": "05923833adda657586f9773e3ba40edb64e94a1405552ef25e7e0a9e146fdbc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W09-reordered/results.json.gz",
+      "change": "added",
+      "bytes": 2224,
+      "sha256": "4ece9c11cbcbafc58849fe82a3446ac7a5331fe81d4c33831e84eb5f649f4878",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:58:53+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/W09-reordered/executions.zip",
+      "verification/beyond-jbmc/qualified/W09-reordered/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "94d15354ec0af1ea448d15088a43e8524624819b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/94d15354ec0af1ea448d15088a43e8524624819b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T095840Z-89152903ad44d7f1",
+      "outputs": "20261124T095840Z-915963818c09defc",
+      "diff": "20261124T095840Z-933731f73b408de9"
+    }
+  }
+}

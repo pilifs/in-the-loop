@@ -1,0 +1,192 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-094436-measure-guava-and-lang-single-code-unit",
+  "title": "Measure Guava and Lang single-code-unit folds on both text representations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 26.3s, peak 6.0 GiB (estimated 5m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -) passed, but the kernel killed 2 process(es) in it at the memory limit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-094436-measure-guava-and-lang-single-code-unit.json",
+    "sha256": "bd94dc5857183ff50d4bab4809bbaac141e03b6f02f70f62c907d6755e5c3a4f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-094436-measure-guava-and-lang-single-code-unit",
+      "title": "Measure Guava and Lang single-code-unit folds on both text representations",
+      "description": "The original combined transfer reaches Lang region matching. Use the already registered two-char domain and exact oracles to measure each public method independently on real Strings and the one-unit CharSequence. Preserve stock post-call controls and original JVM counterexamples.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/extended/FoldProfiles.java"
+        ]
+      },
+      "expected": "Four matched scope measurements with the original String and explicit CharSequence visible separately.",
+      "submitted": {
+        "at": "2026-11-24T09:44:36+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N07-individual",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/N07-individual"
+      ]
+    }
+  },
+  "sourceCommit": "f312702115c4e25f1140da49ba51c1d7bf3339fe",
+  "startedAt": "2026-11-24T09:54:58+00:00",
+  "finishedAt": "2026-11-24T09:58:46+00:00",
+  "wallSeconds": 228.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3401695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 6442450944,
+    "wallSeconds": 26.3,
+    "cpuSeconds": 26.8,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N07-individual",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 26.257,
+      "cpuSeconds": 26.805,
+      "cpuThrottledSeconds": 0.267,
+      "peakMemoryBytes": 6442450944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 2,
+      "memoryHighEvents": 64,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 5,
+        "bytes": 329,
+        "sha256": "136ceb0557a5c5db5bb07dba850749d3a66255778e6d2572d4169a3592eaf891",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N07-individual 12 original checks passed",
+        "N07-individual guavaString verified unverifiable no property report no property report",
+        "N07-individual guavaSequence verified verified SUCCESS FAILURE",
+        "N07-individual langString unverifiable unverifiable SUCCESS SUCCESS",
+        "N07-individual langSequence unverifiable unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/N07-individual/executions.zip",
+      "change": "added",
+      "bytes": 45203,
+      "sha256": "90105a0ef477991b545ccf30915676ed1b2d9d2dc393572418359f889b3a1d6b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N07-individual/results.json.gz",
+      "change": "added",
+      "bytes": 2980,
+      "sha256": "12113771bb88adafa37640a365d54d52807ee3802116070a8b70027d7ce7ac3a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:58:53+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/N07-individual/executions.zip",
+      "verification/beyond-jbmc/qualified/N07-individual/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "94d15354ec0af1ea448d15088a43e8524624819b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/94d15354ec0af1ea448d15088a43e8524624819b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T095846Z-910098439f62015b",
+      "outputs": "20261124T095847Z-0092366933e51e2e",
+      "diff": "20261124T095847Z-1014473e42f88c89"
+    }
+  }
+}

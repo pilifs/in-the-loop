@@ -1,0 +1,270 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-093347-compare-generated-roots-with-explicit-al",
+  "title": "Compare generated roots with explicit aliases cycles and concrete overrides",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 12.8s, peak 164.0 MiB (estimated 12m00s, 4.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-093347-compare-generated-roots-with-explicit-al.json",
+    "sha256": "dd3599f645b1b3e5e929cb3f6c91615910356bef33f0463dd7f876e7c0757344",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-093347-compare-generated-roots-with-explicit-al",
+      "title": "Compare generated roots with explicit aliases cycles and concrete overrides",
+      "description": "Run directly supplied multidimensional arrays, two array roots, a scalar alias, a polymorphic component and a recursive node on JVM and all three checker profiles. Keep default independent trees distinct from an explicit native may-alias domain and check the named false repetition detector against a two-node cycle.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "java:heap-topology"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/extended/SuppliedRoots.java"
+        ]
+      },
+      "expected": "Retain input-domain restrictions, the original shared and cyclic JVM controls, and reader-specific refusals without credit for a narrower tree.",
+      "submitted": {
+        "at": "2026-11-24T09:33:47+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 24,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "12m",
+        "timeout": "52m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified H10-H14-supplied H02-false",
+          "cwd": "."
+        },
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/heap_alias.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/H10-H14-supplied",
+        "verification/beyond-jbmc/qualified/H02-false",
+        "verification/beyond-jbmc/qualified/H11-may-alias"
+      ]
+    }
+  },
+  "sourceCommit": "f312702115c4e25f1140da49ba51c1d7bf3339fe",
+  "startedAt": "2026-11-24T09:54:58+00:00",
+  "finishedAt": "2026-11-24T09:58:33+00:00",
+  "wallSeconds": 215.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3401695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3120.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 172015616,
+    "wallSeconds": 12.8,
+    "cpuSeconds": 15.9,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified H10-H14-supplied H02-false",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3120.0,
+      "cancelled": false,
+      "wallSeconds": 11.429,
+      "cpuSeconds": 14.007,
+      "cpuThrottledSeconds": 0.261,
+      "peakMemoryBytes": 172015616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 9,
+        "bytes": 545,
+        "sha256": "68a99ab93c5b2ab20db9b701a2cbc3e80d5523730515db73ea3a9d49782e1c8f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "H10-H14-supplied 10 original checks passed",
+        "H10-H14-supplied planes unverifiable unverifiable SUCCESS SUCCESS",
+        "H10-H14-supplied conditional unverifiable unverifiable SUCCESS FAILURE",
+        "H10-H14-supplied unconditional unverifiable unverifiable SUCCESS FAILURE",
+        "H10-H14-supplied scalar unverifiable unverifiable SUCCESS FAILURE",
+        "H10-H14-supplied dispatch unverifiable unverifiable SUCCESS FAILURE",
+        "H10-H14-supplied noSelf unverifiable unverifiable SUCCESS FAILURE",
+        "H02-false 3 original checks passed",
+        "H02-false terminates violation violation FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/heap_alias.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3120.0,
+      "cancelled": false,
+      "wallSeconds": 1.403,
+      "cpuSeconds": 1.936,
+      "cpuThrottledSeconds": 0.071,
+      "peakMemoryBytes": 88690688,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-python3-b-lib-benchmark-beyond.log",
+        "lines": 1,
+        "bytes": 130,
+        "sha256": "c16656aba8b5266e4bd9905b21da06437233f8f03549ee0c2d11b1eb652f520c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "same array: conditional held and unconditional frame refuted [('conditional', 'unverifiable'), ('unconditional', 'unverifiable')]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/H10-H14-supplied/executions.zip",
+      "change": "added",
+      "bytes": 105793,
+      "sha256": "228e8c0581d54d99f2501ebbde781f76a62e92d391bb845c5967d6475c87b94f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H10-H14-supplied/results.json.gz",
+      "change": "added",
+      "bytes": 2398,
+      "sha256": "6cd93aaa37e83f4fc766260ffee6abd0b8d4e01d3f281646c81c01d00a639c9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H02-false/executions.zip",
+      "change": "added",
+      "bytes": 23082,
+      "sha256": "7a88ed210e3539b1ce8896855c6dfd49e30da065f4ae05c6c3c6543a2460587d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H02-false/results.json.gz",
+      "change": "added",
+      "bytes": 1497,
+      "sha256": "e539fc2dd1ff25ec70fea2f1dc35bf1cfbaecf006d33573467fd0af008cf3b29",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H11-may-alias/executions.zip",
+      "change": "added",
+      "bytes": 1251,
+      "sha256": "75992830594cac10765f5654e6a32cbf4a85f87e7c4a4f468523fb1b379c4f44",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H11-may-alias/results.json",
+      "change": "added",
+      "bytes": 2366,
+      "sha256": "ccd78d0cc67d7fc5d471345d1d8c4db4c7570893af5de25750b841c79dfb5a64",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:58:53+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/H10-H14-supplied/executions.zip",
+      "verification/beyond-jbmc/qualified/H10-H14-supplied/results.json.gz",
+      "verification/beyond-jbmc/qualified/H02-false/executions.zip",
+      "verification/beyond-jbmc/qualified/H02-false/results.json.gz",
+      "verification/beyond-jbmc/qualified/H11-may-alias/executions.zip",
+      "verification/beyond-jbmc/qualified/H11-may-alias/results.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "94d15354ec0af1ea448d15088a43e8524624819b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/94d15354ec0af1ea448d15088a43e8524624819b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T095833Z-49379523be3fc911",
+      "outputs": "20261124T095833Z-518241da320ad496",
+      "diff": "20261124T095833Z-536719ca2b595ff8"
+    }
+  }
+}
