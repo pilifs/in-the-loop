@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-173333-prove-the-normal-reset-preserves-both-or",
+  "title": "Prove the normal reset preserves both original Commons IO marks",
+  "description": "Check the real string-backed CharBuffer and heap ByteBuffer on two actual process defaults with explicit and implicit encoder selection. Use the exact mark and reset bytecode, resolved NIO bridges and a conservative arbitrary re-encoding state to check the induction base and normal-reset step for any number of intervening public reads and successful resets. Require the original parent to refute the same preservation step and measure 32 consecutive concrete cycles on every process profile.",
+  "kind": "real-world",
+  "capabilities": [
+    "original-jvm-replay",
+    "inductive-position-invariant"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T17:33:33+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "z3",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Bind the frozen verifier and JDK image",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": "."
+    },
+    {
+      "name": "Cross the actual system default and constructor charset in sixteen JVMs",
+      "run": "python3 -B lib/benchmark/organic-composition/io/charset/profiles.py",
+      "cwd": "."
+    },
+    {
+      "name": "Check the source-bound mark base and normal-reset induction step",
+      "run": "python3 -B lib/benchmark/organic-composition/io/position_invariant.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/io/charset-profiles.json",
+    "verification/organic-composition/io/normal-reset-invariant.json"
+  ]
+}
