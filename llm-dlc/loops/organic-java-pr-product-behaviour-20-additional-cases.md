@@ -186,3 +186,128 @@ Carry the claim to the registry’s emitted datapoints and read the gauge labels
 | Evidence consumed | Identify the startup facts and checked helper the public claim actually used, if any. On a warm rerun, record what was reused. Perturb a relevant dependency and compare the resulting verdict and scope with a clean run. |
 
 At review, report how many of the 20 reached their public observer, how many yielded a reproduced difference or qualified preservation result, and how many remained open. Separate first frozen runs from assisted reruns. For each recurring blocker, name the cases it affected and the smallest experiment that could distinguish a reusable capability gap from project-specific setup.
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Cache folder** `~/.cache/in-the-loop/organic-pr-20` (`$O`). Everything is outside the checkout.
+  - Worktrees: `$O/worktrees/JNN-REPO-{parent,fix}`, one per pinned revision of J01–J20.
+  - Mirrors: one shallow bare mirror per upstream under `~/.cache/in-the-loop/git-mirrors/` holding the pins.
+  - Commits, trees and parents: the [Upstream revisions](#upstream-revisions) table. PR metadata: `$O/upstream/prs/`.
+- **What each case's evidence runs on.** The [Summary by case](#summary-by-case) table, then the case's own section
+  (jar names, full digests, classpaths). In short:
+  - **Source builds**, both sides: J01, J02, J03, J06 (`$O/artifacts/JNN-REPO-{parent,fix}.jar`). Also built though the
+    brief calls them overlays: J07, J10, J11, and J13 (`maven-artifact` only).
+  - **Overlays**, both sides: J04, J05, J07, J08, J10, J11, J13 (`comparator` and `named` variants), J14, J15, J16, J17,
+    J18, J19, J20, all in `$O/artifacts/JNN-REPO-{parent,fix}-overlay*.jar`. Run them as overlay jar first, then
+    `$(cat $O/releases/NAME/classpath.txt)`. Each case's section names its release folder.
+  - **Release pairs**: J09 (`$O/releases/sqlite-jdbc-{3.8.11.2,3.14.2}`) and J12 (`$O/releases/calcite-core-{1.18.0,1.19.0}`).
+  - **J09 rebuilt native libraries** at both pins: `$O/artifacts/J09-sqlite-jdbc-{parent,fix}-Linux-x86_64-libsqlitejdbc.so`
+    and jars that bundle them, `J09-sqlite-jdbc-{parent,fix}-rebuilt-native.jar`.
+  - **Extra graphs** for the brief's next claims: Parquet's file writer (`$O/releases/parquet-hadoop-1.18.2`, with
+    hadoop-client 3.3.0; classpath `$O/overlays/J08-hadoop-classpath.txt`); the Spring Batch JDBC restart
+    (`$O/releases/spring-batch-jdbc-3.0.7`, spring-jdbc 4.0.5 and hsqldb 2.3.2).
+- **Toolchain**: see [Toolchain and shared files](#toolchain-and-shared-files).
+  - JDKs 8, 11, 17, 21 and 25.
+  - Maven 3.10.0, and Maven 3.5.4 for Calcite.
+  - Verified Gradle 4.2.1, 5.3.1, 7.5.1, 8.5, 9.3.1 and 9.9.1.
+  - `$O/m2` and `$O/gradle-home` are resolved for every build that ran.
+- **Commands**, online and checked offline, are in each case's section. The job commands are in
+  `verification/jobs/2026/11/24/*setup-build*.json`.
+- **Setup probes** (throwaway, not case artifacts): `$O/probes/JNN/`, output in `$O/logs/JNN-probe*.txt`.
+
+### What was verified on a JVM
+
+- **Landed tests**: each passes on the fix and on the parent's own copy, and fails when the fix's test is transplanted
+  onto the parent.
+  - Upstream builds: J01 (1 failure), J02 (1), J04 (3), J05 (5, by job), J07 (1), J10 (1 error), J11 (`main` run fails),
+    J13 (11 failures, 1 error), and J09 with the rebuilt native library (1 error, `emptyBlob`).
+  - Over the overlays with JUnit or TestNG, not the upstream build: J08 (2), J18 (`expiry`; the test is new, so the
+    parent has no own copy), J19 (3), J20 (2).
+- **J17 is preservation**: the landed collision assertions pass everywhere. That is 960 tests per run, in the upstream
+  build (by job) and over the overlays, including the fix's tests on the parent.
+- **J14**: the fix's landed tests do not compile on the parent, because they use fix-only constructors and a fix-only
+  `wrap` overload. The upstream build (by job) and the overlay run agree: 7/7 on the fix, 4/4 on the parent's own.
+  The setup probe with the five-argument constructor is the discriminator.
+- **The brief's preflight observations reproduced as stated** by setup probes on JDK 21.0.13:
+  - J03: the second axis pans to `[-1,9]` on the parent and `[1,11]` on the fix.
+  - J05: plain URL `IllegalStateException`, and `section` only, against the full target.
+  - J06: `dogalog` against `catalog`.
+  - J07: 481 entries, 481 → 480 files, 1,438,851 payload bytes.
+  - J09: both the release pair and the rebuilt pins.
+  - J11: spellings lost only with `MAX_MEMORY_ROWS=1`.
+  - J12: empty unordered bags on 1.18.0 in the mixed query only.
+  - J13: range construction throws, and the fold has three winners.
+  - J14: ascending `[B:"20", A:"30"]` against `[A:null, B:"20"]`.
+  - J15: tie-break by order against by id.
+  - J16: both assertion profiles.
+- **Not reproduced by the setup**: the other preflight values (for example J10's byte counts 64/46, J04's
+  fresh-process locale matrix, J17's 127-subset sweep, J19's event counts, J20's datapoints). The landed tests cover
+  their discriminating part.
+- **Integrity**:
+  - Every pinned commit was fetched by SHA, and every fix's first parent is the brief's parent.
+  - Every release jar's sha1 matches Central. 256 of 264 have a valid PGP signature; the other 8 have no `.asc` on
+    Central. See [Signatures](#signatures) for expired and revoked signing keys.
+  - Every Gradle distribution and wrapper jar that ran matches services.gradle.org's sha256.
+  - The SQLite amalgamation's `sqlite3.c` SHA1 matches sqlite.org's.
+
+### What to know before starting
+
+- **The default `java` is JDK 25.0.5.** Name the JDK by its path. JDK requirements:
+  - Lucene 10.4.0 overlays need JDK 21 or later; the Lucene pins (11.0.0-SNAPSHOT) need JDK 25.
+  - The J13 overlays are class major 61, so they need JDK 17 or later.
+  - J18's test run and J19's ran on JDK 8.
+- **Release side matters for controls.** Where the release's changed source equals the fix, the bare release is not a
+  parent control: J05, J07, J08, J10, J17, J20, and J16 except for formatting. Where it equals the parent: J04, J11, J13
+  and J14. J15 (3.0.7.RELEASE predates the PR and has its own first-wins tie order), J18 and J19 are neither side.
+  Bind the overlay jar, not the release, for the side you mean.
+- **Overlays that needed more than the changed files**:
+  - J05 also compiles the unchanged trunk `ArrayFormulaRanges`.
+  - J13 `named` also compiles `DefaultArtifact` and `ArtifactUtils`: `VersionRange` calls `DefaultArtifact.empty`,
+    which is private in 3.9.12.
+  - J08 needs the unshaded `fastutil-8.5.19.jar`, because 1.18.2 shades fastutil.
+  - J04 needs `jspecify-1.0.0`, and J18 `jsr305-3.0.2`, to compile only.
+  - J18 forces `cache-api` 1.0.0 over jcache 2.6.1's declared 1.1.0.
+- **Substitutions**:
+  - J03 was built from the pinned `maven/pom-1.6.xml` (version 1.0.20), copied untracked: the root POM needs JavaFX.
+  - J09:
+    - Native built with gcc 15.2.0 and `CC="gcc -fpermissive"`.
+    - QueryTest ran with surefire 2.19.1 named explicitly.
+    - The bundled Linux library is the same blob at both pins: **bind the native library**. The Java classes are
+      identical across the pins, and with the bundled library even the fix fails `emptyBlob`.
+    - sqlite-jdbc extracts its library to `java.io.tmpdir`; point that under the cache.
+  - J12's job uses Maven 3.5.4 and `$O/scripts/maven-settings-https-central.xml`: the POM names Central over http.
+  - Test libraries:
+    - J18 uses TestNG 6.11 (6.12 is on no public repository).
+    - J20 uses junit-jupiter 5.9.0 and assertj 3.23.1 (upstream used `latest.release`).
+    - J14's overlay test framework is 10.4.0's.
+- **Upstream builds that cannot run here**:
+  - J08: `parquet-format-structures` needs a `thrift` 0.23.0 binary.
+  - J15: repo.spring.io answers 401.
+  - J18: repo.spring.io answers 405.
+  - J19: publishing-plugin dependencies such as `http-builder:0.7.2` are on no public repository.
+  - J20: the `io.spring.ge.conventions` plugin is only on repo.spring.io, which answers 401.
+
+  Their landed evidence is the overlay test run.
+- **Multi-commit and mid-PR pins**: J15's parent is the first commit of PR #495 (two commits); the brief's pair is the
+  second commit alone.
+- **Unstable inputs**: built jars carry build timestamps (bind `$O/artifacts/` or the class digests); the overlay jars
+  rebuild identically. No outside SNAPSHOT dependencies were used. J17's job installs `10.2.0-SNAPSHOT` modules into `$O/m2`.
+- **J12's exact PR pair is still a pending job**, `20261124-210513-setup-build-apache-calcite-core-at-both` (see [Jobs](#jobs));
+  until it is recorded, J12's landed `agg.iq` has not run on a JVM. The first try failed on `git-commit-id-plugin`, so the
+  Calcite build takes `-P '!generate-git-id'`. The POI, Lucene and Eclipse Collections jobs passed. Their built jars are in
+  `$O/artifacts/` (`J05-poi-*-poi-ooxml.jar`, `J14-lucene-*-{core,join}.jar`, `J17-eclipse-collections-*.jar`).
+- H2's `TestBigResult` is not JUnit: run its `main` from a scratch folder, since it writes `./data`.
+
+### What is left for the domain work on purpose
+
+- Every case artifact: callers, fixtures, observers, workflows, claims, scopes and manifests; registering preservation
+  questions; all runs, startup facts, checked helpers and warm/clean comparisons. No example folder or id was created.
+- The preflights the setup did not reproduce (listed above), and every extension the brief asks for. Examples: J01's
+  syntax-tree edit, J03's range-axis and swapped-order controls, J05's sheet clone and third reopen, J06's directory
+  rename, J08's whole-file readback, J09's Mac or exact-toolchain native builds, J15's JDBC restart, J18's
+  positive-duration callbacks.
+- Which files make up J13's "comparator, artifact-version, range and artifact sources": `comparator` and `named` are
+  the setup's two readings.
+- The order of cases after J02, J06, J08, J15 and J17.
