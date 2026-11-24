@@ -1,0 +1,111 @@
+{
+  "schema": "whole-verdict-lrat-evaluation/v1",
+  "scope": "Each SAT assignment satisfies the active clauses and assumption units. Each UNSAT answer has a checked LRAT proof. Java encoding, control flow, bounds and constant folding remain trusted.",
+  "group": "core",
+  "workloads": [
+    {
+      "key": "336/first-8-release",
+      "qualified": "established",
+      "offWallSeconds": 1.5391144549939781,
+      "onWallSeconds": 1.6561686650384218,
+      "defaultLauncherFilteredTranscript": true,
+      "ordinarySha256": "a4c3c55ab2f22e6aaad4c31cc1ba5c9ff1612b2ef0d5f9f5331e64c12cbc8e85",
+      "uncertifiedSha256": "4233687d4f9dd575c5d0d38be06a86a96436e787ae1808ac113102283e8edeb6",
+      "assurance": {
+        "status": "checked",
+        "ordinary": "established",
+        "requestSha256": "c718df8191e6a4d3402a1eb39fe79020298750e86e1c1d1b07201d0458aece13",
+        "boundarySha256": "9109e88a6b06eb300254e63d5a026e3e4df48d9cc3b87864478466e352a6aabc",
+        "checkerSha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54",
+        "unsatCoverage": "all UNSAT answers certified",
+        "satModelsChecked": 18,
+        "answers": {
+          "sat": 18,
+          "unsat": 8
+        },
+        "passes": [
+          {
+            "id": "1-proof",
+            "solverFree": false,
+            "attempts": 24,
+            "answers": {
+              "sat": 16,
+              "unsat": 8
+            }
+          },
+          {
+            "id": "2-probe",
+            "solverFree": false,
+            "attempts": 2,
+            "answers": {
+              "sat": 2
+            }
+          }
+        ],
+        "generationSeconds": 0.0650099590420723,
+        "freshCheckSeconds": 0.115551593946293,
+        "bundleBytes": 54815
+      }
+    },
+    {
+      "key": "held/prefix-sums",
+      "qualified": "established",
+      "offWallSeconds": 0.029587891069240868,
+      "onWallSeconds": 0.21569473994895816,
+      "assurance": {
+        "status": "checked",
+        "ordinary": "established",
+        "requestSha256": "dfa234a70ca2a77cc931b950e7b7f4dd36f2041e1f2fa4c782eba33ab9c8b0c1",
+        "boundarySha256": "699c2a118386f02ed8a1bd77ed66312c03579d7ff30aa82fdc205a3b35de7877",
+        "checkerSha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54",
+        "unsatCoverage": "all UNSAT answers certified",
+        "satModelsChecked": 8,
+        "answers": {
+          "unsat": 10,
+          "sat": 8
+        },
+        "passes": [
+          {
+            "id": "1-proof",
+            "solverFree": false,
+            "attempts": 18,
+            "answers": {
+              "unsat": 10,
+              "sat": 8
+            }
+          }
+        ],
+        "generationSeconds": 0.05774482898414135,
+        "freshCheckSeconds": 0.12203603994566947,
+        "bundleBytes": 55804
+      }
+    }
+  ],
+  "controls": [
+    {
+      "control": "missing-proof",
+      "status": "withheld",
+      "reason": "LRAT assurance withheld: 1-proof/2: missing LRAT proof"
+    },
+    {
+      "control": "duplicate-event",
+      "status": "withheld",
+      "reason": "LRAT assurance withheld: 1-proof/2: missing or misordered event (found 1-proof/5)"
+    },
+    {
+      "control": "swapped-assumptions-and-formulas",
+      "status": "withheld",
+      "reason": "LRAT assurance withheld: 1-proof/2: assumptionUnits differs from the native call"
+    },
+    {
+      "control": "swapped-proofs",
+      "status": "withheld",
+      "reason": "LRAT assurance withheld: 1-proof/2: cake_lpr did not verify this exact formula and its assumption units"
+    },
+    {
+      "control": "different-top-level-request",
+      "status": "withheld",
+      "reason": "LRAT assurance withheld: bundle belongs to another top-level request"
+    }
+  ]
+}

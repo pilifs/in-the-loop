@@ -1,0 +1,212 @@
+{
+  "schema": "native-sat-boundary/v1",
+  "requestSha256": "d654cd0de4e12958d1f58f6d74c7f374c3cb1d7bccd67ee3e2fd520b1b5140ad",
+  "ordinary": {
+    "status": "established",
+    "receiptSha256": "7734b7e8c1311d06895d89f27b9a42d0b775f1a37c6bdf250e2316bd878325d8",
+    "execution": "20261124T043901Z-2d90dbf3",
+    "conclusion": {
+      "claim": "0c46a01981c49c6d",
+      "attempt": "20261124T043901Z-2d90dbf3",
+      "status": "established",
+      "vacuous": false,
+      "expectation": "yes",
+      "obligations": [
+        {
+          "kind": "property",
+          "name": "property-1",
+          "statement": "result",
+          "status": "established",
+          "evidence": {
+            "harness": null,
+            "assert": "result",
+            "assume": null,
+            "verdict": "verified",
+            "domain": "a: String of ≤ 2 code units, not null",
+            "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over a: String of ≤ 2 code units, not null in 0.0 s; loops unwound 8 times with unwinding assertions",
+            "problem": null,
+            "vacuous": null,
+            "counterexample": null,
+            "statement": null,
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 0.014,
+              "properties": 1,
+              "unwind": 8,
+              "maxArrayLength": 2,
+              "stage": null,
+              "deadlineSeconds": 600.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budgetSeconds": 600.0,
+                  "seconds": 0.009,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.008,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 250,
+                    "clauses": 647
+                  }
+                }
+              ],
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solverCalls": 0,
+                "solvingSeconds": 0.0,
+                "gatesEvaluated": 0,
+                "evaluatingSeconds": 0.0,
+                "divisions": 0,
+                "divisionsBuilt": 0,
+                "multiplications": 0,
+                "multiplicationsBuilt": 0,
+                "variables": 250,
+                "clauses": 647,
+                "seconds": 0.00938781,
+                "loadingSeconds": 0.000995567,
+                "decodingSeconds": 8.3263e-05,
+                "encodingSeconds": 0.000284474,
+                "witnessSeconds": 0.0
+              },
+              "gapMode": "strict"
+            },
+            "replay": null,
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [
+                  {
+                    "name": "a",
+                    "type": "java.lang.String",
+                    "kind": "value",
+                    "null": false,
+                    "maxLength": 2
+                  }
+                ],
+                "sharedArrays": false,
+                "text": "a: String of ≤ 2 code units, not null"
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 8,
+                "maxArrayLength": null,
+                "complete": true,
+                "maxValueLength": 2
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13",
+                "values": [
+                  {
+                    "source": "jvmcontract String model 14: lib/src/bmc (Engine::string_method, on a String receiver whatever class the call names; Engine::concatenation; strings; locale; regex's split and matches; bytes' getBytes), lib/models (java.util.stream, for chars), lib/src/interp (JStr); snapshot sha256 81c91ecd5e8063ac321a932f8ce2c812b60bef0cc0cbe5a138e2f8ce8b234a01",
+                    "jdk": "25.0.5",
+                    "level": "tested",
+                    "leavesOut": [
+                      "every String method that has no record in values::OPERATIONS (the records include length, isEmpty, charAt, codePointAt, the char-array slice constructor, getChars on proven ranges, toCharArray, concat, equals, hashCode, startsWith, endsWith, the four indexOf, lastIndexOf of a character, the two substring, trim, intern of a known canonical literal, toLowerCase on ASCII with and without a Locale, split at one character, the native concrete zero-limit split, chars, getBytes of UTF-8 by the charset or one of its names and of US-ASCII by the charset, matches of a constant regular expression and toString), and any concatenation but the compiler's of Strings, chars, ints, shorts, bytes and constants: each is a named gap",
+                      "the content of a long, a floating-point number or a boolean made into a String (their formatting), which has none: asking for it ends the path with no verdict. An int, a short or a byte in the compiler's concatenation, or appended to a StringBuilder, is its decimal digits",
+                      "the content of a concatenation that could pass 256 code units (bmc::MAX_STRING_CONTENT): a named limit, never a truncated String",
+                      "intern on a runtime String whose canonical literal is unknown, and the identity of a String made at run time beyond its being a fresh object"
+                    ]
+                  }
+                ]
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gapMode": "strict",
+              "confirmation": null,
+              "vacuity": {
+                "status": "non-vacuous",
+                "basis": "harness",
+                "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+              }
+            }
+          }
+        }
+      ],
+      "label": "✓ Verified",
+      "obligationKeys": {
+        "property": "properties"
+      }
+    },
+    "jvmReplay": []
+  },
+  "generatedClasses": {
+    "work/harness/PropertyHarness.class": "43c47266c8fbe6c6a8739b5e7743f4d9287db421b3de24b40e0659fbcdfe2a5c",
+    "work/jdk/java/lang/Byte.class": "5fcd7c81556e31ed11c863c08b7a8414469bd591ef5334cc536642cdb7bb3915",
+    "work/jdk/java/lang/Integer.class": "44bc6d0e77a7f4965c2fa6bcecc9af63b841ef94eace398fcbc1f954c3835179",
+    "work/jdk/java/lang/Long.class": "cc18d51ef0f74906c2c8714849ff778f7e01a4a29539ba8817faedb989a50f29",
+    "work/jdk/java/lang/Math.class": "f01ef790ce8af52b262c5f717f0e3db201863b9deb834915787ef31ed744d170",
+    "work/jdk/java/lang/Short.class": "b7090cb2cede8931f40b998f3b9cb3a48de96fc9adc89ddd7680df80df665efa",
+    "work/jdk/java/lang/StrictMath.class": "6f089f974b0bf962d9347880f9617a08ee4eea8771e61c447e9bed67fdd0c191",
+    "work/models/java/lang/Byte$ByteCache.class": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+    "work/models/java/lang/Character.class": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+    "work/models/java/lang/Enum.class": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+    "work/models/java/lang/Integer$IntegerCache.class": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+    "work/models/java/lang/Long$LongCache.class": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+    "work/models/java/lang/Short$ShortCache.class": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+    "work/models/java/nio/charset/Charset.class": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+    "work/models/java/nio/charset/IllegalCharsetNameException.class": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+    "work/models/java/nio/charset/StandardCharsets$Standard.class": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+    "work/models/java/nio/charset/StandardCharsets.class": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+    "work/models/java/nio/charset/UnsupportedCharsetException.class": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+    "work/models/java/util/HashMap$Node.class": "c66aca00b2b1e53462fa6fdc3a2c1af902f30331d6ad899a42adf504c6068fd4",
+    "work/models/java/util/HashMap.class": "207980788541bb406059227942b40bbbf5be4af515c005b1afefdb9bd796af54",
+    "work/models/java/util/ImmutableCollections$AbstractImmutableList.class": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+    "work/models/java/util/ImmutableCollections$List12.class": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+    "work/models/java/util/ImmutableCollections$ListItr.class": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+    "work/models/java/util/ImmutableCollections$ListN.class": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+    "work/models/java/util/ImmutableCollections.class": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+    "work/models/java/util/List.class": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5"
+  },
+  "passes": [
+    {
+      "id": "1-proof",
+      "purpose": "proof",
+      "ending": "verified",
+      "calls": "",
+      "clauses": 647,
+      "nativeLog": "work/bmc.log",
+      "nativeLogSha256": "2ce07ad39c00296b5db085dc54bb12ad62923161d841313aeac3c3b7acd1ebc6",
+      "transcriptSha256": "86af5ab4e6403eb9d4111b2666c73ea4993328b9d967944f886ce79c42e6174e"
+    }
+  ]
+}

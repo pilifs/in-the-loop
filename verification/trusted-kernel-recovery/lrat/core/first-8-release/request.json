@@ -1,0 +1,287 @@
+{
+  "schema": "native-sat-request/v1",
+  "run": "20261124T043840Z-9c620582",
+  "example": "336",
+  "task": "first-8-release",
+  "kind": "prove",
+  "target": "com.google.common.primitives.Ints#indexOf([II)I",
+  "claim": {
+    "task": "first-8-release",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "com.google.common.primitives.Ints#indexOf([II)I",
+    "file": "claims/first-8.json",
+    "sha256": "980fb27afc7a8d87d1cc43302e955fcdae99ad112cb98bc11972fe62a972b8bc",
+    "property": "first-8",
+    "claimKind": "property",
+    "statement": "The result identifies the first matching cell or proves none exists.",
+    "assume": "true",
+    "assert": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+    "throws": [],
+    "nullable": [],
+    "mayAlias": [],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "assumptions": [],
+    "allowedChange": null,
+    "bounds": {
+      "unwind": 10,
+      "maxArrayLength": 8
+    },
+    "explicitBounds": {
+      "unwind": 10,
+      "maxArrayLength": 8
+    },
+    "defaultBounds": [],
+    "models": [],
+    "plan": null,
+    "contracts": null,
+    "gaps": "strict",
+    "parent": null,
+    "controls": [
+      {
+        "id": "driver",
+        "kind": "driver",
+        "path": "driver/search/SearchCases.java",
+        "sha256": "ca3f33f95280b2ad59e0dbc7e20a5d4be90d491acfa4f1b4944965d0ae041aaf"
+      },
+      {
+        "id": "finite-oracle",
+        "kind": "oracle",
+        "path": "controls/oracle.py",
+        "sha256": "115202974bd45259790b9f9795ef772fc6802ea283324b5f3abc2542b843f42c"
+      }
+    ],
+    "key": "772a32e954534704"
+  },
+  "bindings": {
+    "release": {
+      "revision": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+      "target": {
+        "class": "com.google.common.primitives.Ints",
+        "method": "indexOf",
+        "descriptor": "([II)I",
+        "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+        "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "9aa934d27b747c574646d7cc0c48d4f0d3bec26f28534d76a53cafbf005b11b9",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+          "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+          "role": "original",
+          "coordinates": "com.google.guava:guava:33.4.8-jre",
+          "origin": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar"
+        },
+        {
+          "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+          "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+          "role": "dependency",
+          "coordinates": "com.google.errorprone:error_prone_annotations:2.36.0",
+          "origin": "https://repo.maven.apache.org/maven2/com/google/errorprone/error_prone_annotations/2.36.0/error_prone_annotations-2.36.0.jar"
+        },
+        {
+          "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+          "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+          "role": "dependency",
+          "coordinates": "org.jspecify:jspecify:1.0.0",
+          "origin": "https://repo.maven.apache.org/maven2/org/jspecify/jspecify/1.0.0/jspecify-1.0.0.jar"
+        }
+      ]
+    }
+  },
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/0e38af39be296e9cd072b741fbf3a91f90f2e6e8/jvmcontract",
+    "prove",
+    "com.google.common.primitives.Ints#indexOf(int[], int)",
+    "--classes",
+    "prepare/release/lib/com.google.guava/guava-33.4.8-jre.jar",
+    "--classpath",
+    "prepare/release/lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+    "--classpath",
+    "prepare/release/lib/org.jspecify/jspecify-1.0.0.jar",
+    "--assume",
+    "true",
+    "--assert",
+    "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "10",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "bindingId": "6613edd5c67f850b12943b71e052dff350bfa45c16446fce2b48f3117d2ccc66",
+  "sourceCommit": "256aa84259ef0ffdd62a1c91cb1205d494f981de",
+  "checkerBuild": {
+    "commit": "256aa84259ef0ffdd62a1c91cb1205d494f981de",
+    "libTree": "0e38af39be296e9cd072b741fbf3a91f90f2e6e8"
+  },
+  "checker": {
+    "jvmcontract": "64034b325724d66d46c984b8090ab3691f85fb99f93bae9c6c358d26046121b0",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 10,
+      "maxArrayLength": 8
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m",
+      "JVMCONTRACT_TRANSCRIPTS": "/home/filip/code/in-the-loop/verification/.state/work/20261124-043118-certify-the-ordinary-guava-verdict-and-h/.build-py/examples-654xdf77/targets/336/first-8-release/20261124T043840Z-9c620582/verifier/solver-traces",
+      "JVMCONTRACT_LRAT_MODELS": "1",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "classpath": {
+      "release": [
+        {
+          "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
+          "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
+          "role": "original"
+        },
+        {
+          "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
+          "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
+          "role": "dependency"
+        },
+        {
+          "path": "lib/org.jspecify/jspecify-1.0.0.jar",
+          "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
+          "role": "dependency"
+        }
+      ]
+    },
+    "entryBindings": {
+      "release": {
+        "entry": "com.google.common.primitives.Ints#indexOf([II)I",
+        "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
+        "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+        "subject": "com.google.common.primitives.Ints#indexOf([II)I",
+        "subjectClassSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+      }
+    },
+    "checkedEntry": "com.google.common.primitives.Ints#indexOf([II)I",
+    "commits": {
+      "release": "f06690fa3e874f65515e8fd338a74d636e2c792f"
+    },
+    "scope": {
+      "label": "original-bytecode",
+      "meaning": "the selected method's original bytecode, as published or built from the pinned source, called directly; the adapter and driver are not on the verifier's classpath",
+      "method": "com.google.common.primitives.Ints#indexOf([II)I",
+      "revisions": {
+        "release": {
+          "commit": "f06690fa3e874f65515e8fd338a74d636e2c792f",
+          "loadedFrom": "lib/com.google.guava/guava-33.4.8-jre.jar",
+          "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
+          "origin": "https://repo.maven.apache.org/maven2/com/google/guava/guava/33.4.8-jre/guava-33.4.8-jre.jar",
+          "parameters": {
+            "names": [
+              "array",
+              "target"
+            ],
+            "recordedIn": "MethodParameters"
+          }
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "com.google.common.primitives.Ints#indexOf([II)I",
+      "checkedEntry": "com.google.common.primitives.Ints#indexOf([II)I",
+      "arguments": [
+        {
+          "field": "assume",
+          "flag": "--assume",
+          "value": "true"
+        },
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "(result == -1 && (\\forall int i; 0 <= i && i < array.length; array[i] != target)) || (result >= 0 && result < array.length && array[result] == target && (\\forall int i; 0 <= i && i < result; array[i] != target))"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "10"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    }
+  }
+}

@@ -1,0 +1,425 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-043118-certify-the-ordinary-guava-verdict-and-h",
+  "title": "Certify the ordinary Guava verdict and held prefix sums",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 4.4s, peak 131.1 MiB (estimated 3m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×2",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-043118-certify-the-ordinary-guava-verdict-and-h.json",
+    "sha256": "d3fd16b675b81d40bb377502e3a2d16453af2589b47a58c16eefa21a9f15585e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-043118-certify-the-ordinary-guava-verdict-and-h",
+      "title": "Certify the ordinary Guava verdict and held prefix sums",
+      "description": "Repeat the registered Guava first-match claim off and on, independently reconstruct the expected request from the historical claim and actual launch journal, and reconcile both proof and probe with the native logs. Check 18 SAT models and all eight Guava UNSAT proofs. Independently certify the ten UNSAT and eight SAT answers for held prefix sums. Missing, duplicated, swapped and transplanted evidence must withhold assurance. The core has a separate output and job so a later library case cannot obscure its result.",
+      "kind": "library",
+      "capabilities": [
+        "sat-certificate",
+        "jvmcontract:transcript",
+        "jvmcontract:prove",
+        "jvm:counterexample"
+      ],
+      "links": {
+        "examples": [
+          "336"
+        ]
+      },
+      "expected": "The fresh Guava observer, both workloads and five association controls have complete receipts, matching pinned source and classpaths, all actual SAT models checked, and 8 plus 10 verified UNSAT proofs.",
+      "submitted": {
+        "at": "2026-11-24T04:31:33+00:00",
+        "session": "01a20bbf-7e8f-7450-b391-6a947ed64740"
+      },
+      "requires": [
+        "jvmcontract",
+        "python3",
+        "java",
+        "javac",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cadical-1.9.5/build/cadical"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "notes": "The preceding managed run generated and checked Guava in under a second after preparation and Jackson classification in about one second. The estimate includes original Java preparation, both ordinary executions, independent checks and controls."
+      },
+      "steps": [
+        {
+          "name": "Run and account for the original native verdicts",
+          "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --group core --output verification/trusted-kernel-recovery/lrat/core",
+          "cwd": "."
+        },
+        {
+          "name": "Reconcile measurements against the retained original requests and solver boundaries",
+          "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --report --output verification/trusted-kernel-recovery/lrat/core",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/trusted-kernel-recovery/lrat/core"
+      ]
+    }
+  },
+  "sourceCommit": "256aa84259ef0ffdd62a1c91cb1205d494f981de",
+  "startedAt": "2026-11-24T04:34:43+00:00",
+  "finishedAt": "2026-11-24T04:38:43+00:00",
+  "wallSeconds": 240.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": "The preceding managed run generated and checked Guava in under a second after preparation and Jackson classification in about one second. The estimate includes original Java preparation, both ordinary executions, independent checks and controls."
+  },
+  "usage": {
+    "peakMemoryBytes": 137465856,
+    "wallSeconds": 4.4,
+    "cpuSeconds": 5.4,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 227.567,
+      "cpuSeconds": 227.833,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2331254784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d5abf448cf94ca5b8c883f0d5445b425dcaaedc233521af3c4b4eef269794247",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-043118-certify-the-ordinary-guava-verdict-and-h/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 47s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run and account for the original native verdicts",
+      "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --group core --output verification/trusted-kernel-recovery/lrat/core",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 4.212,
+      "cpuSeconds": 5.308,
+      "cpuThrottledSeconds": 0.146,
+      "peakMemoryBytes": 137465856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-and-account-for-the-origin.log",
+        "lines": 11,
+        "bytes": 892,
+        "sha256": "29282ae8db0e8e92e0c1d39c459584f1cc665befacaa0a2577a60149ca093823",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 2
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T043839Z-2117451e/result.json",
+          "groups": [
+            "336",
+            "first-8-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 5,
+          "text": "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T043840Z-9c620582/result.json",
+          "groups": [
+            "336",
+            "first-8-release",
+            "established"
+          ]
+        }
+      ],
+      "tail": [
+        "336-guava-first-array-match: running task first-8-release (target route)",
+        "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T043839Z-2117451e/result.json",
+        "",
+        "336-guava-first-array-match: running task first-8-release (target route)",
+        "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T043840Z-9c620582/result.json",
+        "LRAT assurance: checked",
+        "",
+        "| Ordinary request | Disposition | Native attempts by pass | Ordinary s | Certified s | Generation s | Fresh check s | Bundle bytes |",
+        "|---|---|---|---:|---:|---:|---:|---:|",
+        "| `336/first-8-release` | established | 1-proof 16 SAT, 8 UNSAT / 2-probe 2 SAT | 1.539 | 1.656 | 0.065 | 0.116 | 54,815 |",
+        "| `held/prefix-sums` | established | 1-proof 8 SAT, 10 UNSAT | 0.030 | 0.216 | 0.058 | 0.122 | 55,804 |"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Reconcile measurements against the retained original requests and solver boundaries",
+      "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --report --output verification/trusted-kernel-recovery/lrat/core",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.077,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16490496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-reconcile-measurements-against.log",
+        "lines": 4,
+        "bytes": 400,
+        "sha256": "76465659b0a0b230ad047d2f0997dcb4e5351e9a56d594ab9bc9017dd22b1b66",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "| Ordinary request | Disposition | Native attempts by pass | Ordinary s | Certified s | Generation s | Fresh check s | Bundle bytes |",
+        "|---|---|---|---:|---:|---:|---:|---:|",
+        "| `336/first-8-release` | established | 1-proof 16 SAT, 8 UNSAT / 2-probe 2 SAT | 1.539 | 1.656 | 0.065 | 0.116 | 54,815 |",
+        "| `held/prefix-sums` | established | 1-proof 8 SAT, 10 UNSAT | 0.030 | 0.216 | 0.058 | 0.122 | 55,804 |"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/first-8-release/assurance.json",
+      "change": "added",
+      "bytes": 848,
+      "sha256": "988982b073ca6abfa1b264d00ce72f23011a73df6c81fab25de41218754720ad",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/first-8-release/boundary.json",
+      "change": "added",
+      "bytes": 11619,
+      "sha256": "0c89fcd38d8d51d2d1b4e1ff0fe0b3a2d41a228a8a8563c7bafe59996edc034c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/first-8-release/evidence.zip",
+      "change": "added",
+      "bytes": 54815,
+      "sha256": "9edd31f59d029405ebdb797e8c1800798d5b72cf29f26f575265f63366d7a5f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/first-8-release/ordinary.json",
+      "change": "added",
+      "bytes": 18716,
+      "sha256": "a4c3c55ab2f22e6aaad4c31cc1ba5c9ff1612b2ef0d5f9f5331e64c12cbc8e85",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/first-8-release/request.json",
+      "change": "added",
+      "bytes": 10334,
+      "sha256": "d826f0d99619e76aec3032656022e3975c948f185291e03750dc05933008ae19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/first-8-release/uncertified.json",
+      "change": "added",
+      "bytes": 18714,
+      "sha256": "4233687d4f9dd575c5d0d38be06a86a96436e787ae1808ac113102283e8edeb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/independent-guava/boundary.json",
+      "change": "added",
+      "bytes": 11619,
+      "sha256": "84630c020c4f95528c51ec308f3d73ad0fb8517ab3a42f60544d055ccec13e6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/independent-guava/native-origin.tar.gz",
+      "change": "added",
+      "bytes": 77178,
+      "sha256": "16a9d4ec9313e89efcac63118fb7c79352f415454fd197b8dfcfd33467cd9ac1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/independent-guava/recheck.json",
+      "change": "added",
+      "bytes": 739,
+      "sha256": "13c79d53126b32880fe656e4e2148ceefaa983c322cba456819cbc210664c8ae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/independent-guava/request.json",
+      "change": "added",
+      "bytes": 10334,
+      "sha256": "d826f0d99619e76aec3032656022e3975c948f185291e03750dc05933008ae19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/prefix-sums/assurance.json",
+      "change": "added",
+      "bytes": 722,
+      "sha256": "f079a6f0770e1d14a292d6dd51c16df60371f8c17362366e454eecb19aa4e5ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/prefix-sums/boundary.json",
+      "change": "added",
+      "bytes": 3864,
+      "sha256": "52c38b2aa5de3c43317289a54deaeace12100f060e798e23dc44cd118be91173",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/prefix-sums/evidence.zip",
+      "change": "added",
+      "bytes": 55804,
+      "sha256": "52161941e900232d00b70176e2e2fd8edc548dcb2d2eb1a05a115ca436ecfa0d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/prefix-sums/ordinary.json",
+      "change": "added",
+      "bytes": 4646,
+      "sha256": "88ffc0a580e9033ebf4b9714b8b3f7e6a0fc2dc39455598f156b374006c679cb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/prefix-sums/request.json",
+      "change": "added",
+      "bytes": 1930,
+      "sha256": "c573e3af9cf4a7b4e555c872b2bcd513a421ffef35fb810d7d48f2ef17ae2bb3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/prefix-sums/uncertified.json",
+      "change": "added",
+      "bytes": 4644,
+      "sha256": "73ca894b788c641c17ba67474e1ca8469b100cbc41351e8a05d625f61807f190",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/core/summary.json",
+      "change": "added",
+      "bytes": 3749,
+      "sha256": "d3b655c79c579a32af8961ae1422fea82017511764d790b8b3ad8dab4eed5328",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:40:21+00:00",
+    "applied": [
+      "verification/trusted-kernel-recovery/lrat/core/first-8-release/assurance.json",
+      "verification/trusted-kernel-recovery/lrat/core/first-8-release/boundary.json",
+      "verification/trusted-kernel-recovery/lrat/core/first-8-release/evidence.zip",
+      "verification/trusted-kernel-recovery/lrat/core/first-8-release/ordinary.json",
+      "verification/trusted-kernel-recovery/lrat/core/first-8-release/request.json",
+      "verification/trusted-kernel-recovery/lrat/core/first-8-release/uncertified.json",
+      "verification/trusted-kernel-recovery/lrat/core/independent-guava/boundary.json",
+      "verification/trusted-kernel-recovery/lrat/core/independent-guava/native-origin.tar.gz",
+      "verification/trusted-kernel-recovery/lrat/core/independent-guava/recheck.json",
+      "verification/trusted-kernel-recovery/lrat/core/independent-guava/request.json",
+      "verification/trusted-kernel-recovery/lrat/core/prefix-sums/assurance.json",
+      "verification/trusted-kernel-recovery/lrat/core/prefix-sums/boundary.json",
+      "verification/trusted-kernel-recovery/lrat/core/prefix-sums/evidence.zip",
+      "verification/trusted-kernel-recovery/lrat/core/prefix-sums/ordinary.json",
+      "verification/trusted-kernel-recovery/lrat/core/prefix-sums/request.json",
+      "verification/trusted-kernel-recovery/lrat/core/prefix-sums/uncertified.json",
+      "verification/trusted-kernel-recovery/lrat/core/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "0e38af39be296e9cd072b741fbf3a91f90f2e6e8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/0e38af39be296e9cd072b741fbf3a91f90f2e6e8/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T043843Z-296276ba64779ebe",
+      "outputs": "20261124T043843Z-327213c07be5ec92",
+      "diff": "20261124T043843Z-353509c51bc01aea"
+    }
+  }
+}

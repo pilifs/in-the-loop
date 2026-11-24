@@ -1,0 +1,324 @@
+{
+  "schema": "native-sat-request/v1",
+  "run": "20261124T043849Z-c5166b94",
+  "example": "393",
+  "task": "conversion-equivalence-classified",
+  "kind": "prove",
+  "target": "ConversionEquivalence#classified",
+  "claim": {
+    "task": "conversion-equivalence-classified",
+    "kind": "prove",
+    "relation": "calibration",
+    "target": "ConversionEquivalence#classified",
+    "file": "claims/conversion-equivalence-classified.json",
+    "sha256": "cecb4ea14eb45147ee03bf4052873f997171f18f04a767a4e992aa29481a1a12",
+    "property": "classified",
+    "claimKind": "property",
+    "statement": "The two Jackson conversions differ exactly at the two parity-selected neighbors of each midpoint.",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "nullable": [],
+    "mayAlias": [],
+    "observations": [
+      "result",
+      "exception"
+    ],
+    "assumptions": [],
+    "allowedChange": null,
+    "bounds": {
+      "unwind": 10,
+      "maxArrayLength": 8
+    },
+    "explicitBounds": {
+      "unwind": 10,
+      "maxArrayLength": 8
+    },
+    "defaultBounds": [],
+    "models": [],
+    "plan": null,
+    "contracts": null,
+    "gaps": "strict",
+    "parent": null,
+    "controls": [
+      {
+        "id": "driver-numeric",
+        "kind": "driver",
+        "path": "driver/Cases.java",
+        "sha256": "f17d1b7e00425506ac00795787d03f0eacfe7cc1d05d1290e8d517bbf9f8ea9e"
+      },
+      {
+        "id": "oracle-numeric",
+        "kind": "oracle",
+        "path": "controls/original.json",
+        "sha256": "2f28ff8666924d7e74cbb26012c589a1e13d36948a2ee4812eed75a92f8dbb94"
+      }
+    ],
+    "key": "198e3195d90d0d94"
+  },
+  "bindings": {
+    "numeric": {
+      "revision": "fixture:adapter",
+      "target": {
+        "class": "ConversionEquivalence",
+        "method": "classified",
+        "descriptor": null,
+        "loadedFrom": "numeric.jar",
+        "classSha256": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442"
+      },
+      "jdk": {
+        "feature": "25",
+        "version": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+        "home": "/home/filip/.sdkman/candidates/java/25.0.5.0+8-tem",
+        "release": {
+          "JAVA_VERSION": "25.0.5",
+          "JAVA_RUNTIME_VERSION": "25.0.5+8-LTS",
+          "IMPLEMENTOR": "Eclipse Adoptium",
+          "IMPLEMENTOR_VERSION": "Temurin-25.0.5+8",
+          "OS_ARCH": "x86_64"
+        }
+      },
+      "classpath": [
+        {
+          "path": "driver.jar",
+          "sha256": "ca0efdf704ed85bac4de0ed40b7e010fb27fa67bc0f8a92d7b28a33f8a863084",
+          "role": "driver",
+          "coordinates": null,
+          "origin": "built from driver"
+        },
+        {
+          "path": "numeric.jar",
+          "sha256": "063f7cdf1f86c58f342a9b3c4871dd749f39634cdf34e75d5f8d1d76290e5dca",
+          "role": "original",
+          "coordinates": null,
+          "origin": "built from adapter by the fixture recipe"
+        },
+        {
+          "path": "libraries/jackson-databind.jar",
+          "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-databind:2.19.0",
+          "origin": "published com.fasterxml.jackson.core:jackson-databind:2.19.0 at ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a"
+        },
+        {
+          "path": "libraries/jackson-core.jar",
+          "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-core:2.19.0",
+          "origin": "published com.fasterxml.jackson.core:jackson-core:2.19.0 at da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430"
+        },
+        {
+          "path": "libraries/jackson-annotations.jar",
+          "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+          "role": "dependency",
+          "coordinates": "com.fasterxml.jackson.core:jackson-annotations:2.19.0",
+          "origin": "published com.fasterxml.jackson.core:jackson-annotations:2.19.0 at ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7"
+        },
+        {
+          "path": "libraries/commons-lang3.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency",
+          "coordinates": "org.apache.commons:commons-lang3:3.17.0",
+          "origin": "published org.apache.commons:commons-lang3:3.17.0 at 6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+        }
+      ],
+      "originalCompiler": {
+        "jdk": {
+          "feature": "21",
+          "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+          "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+          "release": {
+            "JAVA_VERSION": "21.0.13",
+            "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+            "IMPLEMENTOR": "Eclipse Adoptium",
+            "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+            "OS_ARCH": "x86_64"
+          }
+        },
+        "flags": [
+          "-g",
+          "-parameters"
+        ]
+      }
+    }
+  },
+  "argv": [
+    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/0e38af39be296e9cd072b741fbf3a91f90f2e6e8/jvmcontract",
+    "prove",
+    "ConversionEquivalence#classified",
+    "--classes",
+    "prepare/numeric/numeric.jar",
+    "--classpath",
+    "prepare/numeric/libraries/jackson-databind.jar",
+    "--classpath",
+    "prepare/numeric/libraries/jackson-core.jar",
+    "--classpath",
+    "prepare/numeric/libraries/jackson-annotations.jar",
+    "--classpath",
+    "prepare/numeric/libraries/commons-lang3.jar",
+    "--assert",
+    "result",
+    "--engine",
+    "native",
+    "--gaps",
+    "strict",
+    "--unwind",
+    "10",
+    "--max-array-length",
+    "8",
+    "--timeout",
+    "600",
+    "--work",
+    "verifier/work",
+    "--report",
+    "verifier/report",
+    "--json"
+  ],
+  "bindingId": "565466181a59d8b297bb601024c215c137b32914a910efc4022b2881813d11be",
+  "sourceCommit": "7b30848dac38e9d878c666d57f6d91607afc130c",
+  "checkerBuild": {
+    "commit": "7b30848dac38e9d878c666d57f6d91607afc130c",
+    "libTree": "0e38af39be296e9cd072b741fbf3a91f90f2e6e8"
+  },
+  "checker": {
+    "jvmcontract": "64034b325724d66d46c984b8090ab3691f85fb99f93bae9c6c358d26046121b0",
+    "jdkRelease": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "engine": "native",
+    "gaps": "strict",
+    "bounds": {
+      "unwind": 10,
+      "maxArrayLength": 8
+    },
+    "environment": {
+      "LANG": "C.UTF-8",
+      "LC_ALL": "C.UTF-8",
+      "TZ": "UTC",
+      "JAVA_HOME": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "JVMCONTRACT_JBMC_MEMORY_MB": "2560",
+      "JVMCONTRACT_JAVA_OPTS": "-Xmx1843m",
+      "JVMCONTRACT_TRANSCRIPTS": "/home/filip/code/in-the-loop/verification/.state/work/20261124-043118-check-jackson-and-utf-16-ordinary-sat-ev/.build-py/examples-pqc1jhal/targets/393/conversion-equivalence-classified/20261124T043849Z-c5166b94/verifier/solver-traces",
+      "JVMCONTRACT_LRAT_MODELS": "1",
+      "JVMCONTRACT_JAR_RELEASE": "21"
+    },
+    "classpath": {
+      "numeric": [
+        {
+          "path": "numeric.jar",
+          "sha256": "063f7cdf1f86c58f342a9b3c4871dd749f39634cdf34e75d5f8d1d76290e5dca",
+          "role": "original"
+        },
+        {
+          "path": "libraries/jackson-databind.jar",
+          "sha256": "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+          "role": "dependency"
+        },
+        {
+          "path": "libraries/jackson-core.jar",
+          "sha256": "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+          "role": "dependency"
+        },
+        {
+          "path": "libraries/jackson-annotations.jar",
+          "sha256": "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+          "role": "dependency"
+        },
+        {
+          "path": "libraries/commons-lang3.jar",
+          "sha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
+          "role": "dependency"
+        }
+      ]
+    },
+    "entryBindings": {
+      "numeric": {
+        "entry": "ConversionEquivalence#classified",
+        "classSha256": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442",
+        "loadedFrom": "numeric.jar",
+        "subject": "ConversionEquivalence#classified",
+        "subjectClassSha256": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442"
+      }
+    },
+    "checkedEntry": "ConversionEquivalence#classified",
+    "commits": {
+      "numeric": "fixture:adapter"
+    },
+    "scope": {
+      "label": "constructed-fixture",
+      "meaning": "a fixture revision: constructed control code built locally, never an upstream result",
+      "method": "ConversionEquivalence#classified",
+      "revisions": {
+        "numeric": {
+          "commit": "fixture:adapter",
+          "loadedFrom": "numeric.jar",
+          "classSha256": "a408ccd7d766221edecdee38a804657050799ed22e14b501d3dffc3386286442",
+          "origin": "built from adapter by the fixture recipe",
+          "parameters": null
+        }
+      },
+      "adapter": "not on the verifier's classpath: the verifier calls the selected original method itself; the adapter serves the concrete controls",
+      "models": [],
+      "assumptions": []
+    },
+    "recipe": {
+      "kind": "direct-method",
+      "command": "prove",
+      "subject": "ConversionEquivalence#classified",
+      "checkedEntry": "ConversionEquivalence#classified",
+      "arguments": [
+        {
+          "field": "assert",
+          "flag": "--assert",
+          "value": "result"
+        },
+        {
+          "field": "engine",
+          "flag": "--engine",
+          "value": "native"
+        },
+        {
+          "field": "gaps",
+          "flag": "--gaps",
+          "value": "strict"
+        },
+        {
+          "field": "bounds.unwind",
+          "flag": "--unwind",
+          "value": "10"
+        },
+        {
+          "field": "bounds.maxArrayLength",
+          "flag": "--max-array-length",
+          "value": "8"
+        }
+      ],
+      "checkerDefaults": {
+        "observations": {
+          "values": [
+            "result",
+            "exception"
+          ],
+          "evidence": "stated.observations"
+        },
+        "nullable": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "mayAlias": {
+          "values": [],
+          "evidence": "stated.domain"
+        },
+        "assume": {
+          "value": true,
+          "evidence": "absence of a precondition in stated.assumptions"
+        }
+      },
+      "preparation": "Bind each original class and the ordered classpath of its revision by digest."
+    }
+  }
+}
