@@ -169,6 +169,8 @@ def launch(work, classes, tracer, files, binding, name, certificate=None, refusa
     if binding["input"] == ["unmodifiable"]:
         require(origins.get(DECORATOR) == {files[0]}, "wrong loaded decorator provider")
         record["throw"] = read_table(target / "throw.tsv")
+        if certificate:
+            record["typeResolution"] = read_table(target / "type-resolution.tsv")
     return before, sites, record
 
 
@@ -249,6 +251,13 @@ def audit_endpoint(record):
             require(controls[key]["refused"] == "substituted frame differs", "missing decorated-frame refusal")
             refusals.add(key)
         require(all(t["throw"] == originals[0]["throw"] for t in [*originals, *applied]), "exception routes differ")
+        for trial in applied:
+            resolution = trial["typeResolution"]
+            require(resolution["field"] == CHAIN + "#cachedHasNextValue:Ljava/lang/Boolean;"
+                    and resolution["type"] == "java.lang.Boolean" and resolution["loader"] == "bootstrap"
+                    and resolution["action"] in ("already resolved", "Class.forName with initialization disabled in the field owner's loader")
+                    and resolution["entry"] == "same receiver, instruction and complete entry heap",
+                    "unqualified cache field type resolution")
     require(set(controls) == refusals and len({r["pid"] for r in [*originals, *applied, *controls.values()]})
             == 4 + len(refusals), "fresh JVM required for each trial")
     no_original = rejected(lambda: certify(binding, before, sites, originals[:1], writes), "two fresh originals required")

@@ -82,6 +82,33 @@ public final class IteratorEffectTrace {
         stopAt(type.methodsByName("remove", "()V").getFirst().location(), "remove");
     }
 
+    private void resolveCacheField(BreakpointEvent hit, ObjectReference truth, Map<String, String> before) throws Exception {
+        ReferenceType expected = truth.referenceType();
+        Field cache = parent.referenceType().fieldByName("cachedHasNextValue");
+        require(expected.name().equals("java.lang.Boolean") && expected.classLoader() == null
+                && cache.signature().equals("Ljava/lang/Boolean;"), "unexpected cache field type");
+        String action = "already resolved";
+        try {
+            require(cache.type().equals(expected), "different resolved cache field type");
+        } catch (ClassNotLoadedException unresolved) {
+            // JDI validates an assignment against the field owner's initiating loader. At this first
+            // hasNext the bootstrap Boolean exists, but this loader may never have resolved its name.
+            ClassType cls = (ClassType) vm.classesByName("java.lang.Class").getFirst();
+            Method forName = cls.concreteMethodByName("forName", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;");
+            ClassLoaderReference loader = cache.declaringType().classLoader();
+            require(loader != null, "missing iterator class loader");
+            Value resolved = cls.invokeMethod(hit.thread(), forName,
+                    List.of(vm.mirrorOf(expected.name()), vm.mirrorOf(false), loader), ClassType.INVOKE_SINGLE_THREADED);
+            require(expected.classObject().equals(resolved) && cache.type().equals(expected), "unresolved cache field type");
+            action = "Class.forName with initialization disabled in the field owner's loader";
+        }
+        StackFrame resumed = hit.thread().frame(0);
+        require(parent.equals(resumed.thisObject()) && resumed.location().equals(hit.location())
+                && before.equals(heap.snapshot()), "type resolution changed the original helper entry");
+        write(work.resolve("type-resolution.tsv"), Map.of("field", IteratorHeap.member(cache), "type", expected.name(),
+                "loader", "bootstrap", "action", action, "entry", "same receiver, instruction and complete entry heap"));
+    }
+
     private void start(BreakpointEvent hit, List<StackFrame> stack) throws Exception {
         StackFrame observer = stack.get(2);
         Map<String, ObjectReference> roots = new LinkedHashMap<>();
@@ -132,6 +159,7 @@ public final class IteratorEffectTrace {
 
         require(sites.equals(read(certificate.resolve("sites.tsv"))), "live call site differs");
         require(before.equals(read(certificate.resolve("before.tsv"))), "live prestate differs");
+        if (decorator != null) resolveCacheField(hit, roots.get("Boolean.TRUE"), before);
         heap.apply(read(certificate.resolve("writes.tsv")));
         Map<String, String> after = heap.snapshot();
         require(after.equals(read(certificate.resolve("after.tsv"))), "substituted frame differs");
