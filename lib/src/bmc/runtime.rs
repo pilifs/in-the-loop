@@ -467,7 +467,7 @@ impl Engine<'_> {
                 || !self.cp.system_properties_image() { return None; }
             if let Err(stop) = self.keeps(path, None, "replaces the JVM system properties") { return Some(Err(stop)); }
             path.statics.insert(table_slot, Val::R(Some(*table)));
-            self.assumed.insert("the JVM permits access to and replacement of its system properties".into());
+            self.assumed.insert("the single-threaded JVM has no active SecurityManager during system property access".into());
             self.advance(path);
             return Some(Ok(None));
         }

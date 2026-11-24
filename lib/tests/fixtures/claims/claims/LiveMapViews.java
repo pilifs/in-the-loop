@@ -128,6 +128,16 @@ public final class LiveMapViews {
         return values.isEmpty();
     }
 
+    public static boolean installedProperties() {
+        Properties parent = new Properties();
+        System.setProperties(parent);
+        Properties before = System.getProperties();
+        Properties child = new Properties(parent);
+        System.setProperties(child);
+        return before == parent && before != child && System.getProperties() == child
+                && System.getProperty("missing", "fallback") == "fallback";
+    }
+
     public static boolean synchronizedBacking() {
         try {
             Collections.synchronizedMap(null);
@@ -146,5 +156,11 @@ public final class LiveMapViews {
         if (!remove(true) || !remove(false) || !collisions() || !mixed() || !copies() || insertionOrder()
                 || !packedValue(false) || !packedValue(true) || !backedSets() || !concurrentViews() || !initialProperties() || !synchronizedBacking()
                 || losesNonEmptyProperties()) throw new AssertionError();
+        Properties original = System.getProperties();
+        try {
+            if (!installedProperties()) throw new AssertionError();
+        } finally {
+            System.setProperties(original);
+        }
     }
 }

@@ -1361,7 +1361,8 @@ impl ClassPath {
     pub(crate) fn system_properties_image(&self) -> bool {
         *self.system_properties_image.get_or_init(|| self.matches_jdk_classes(
             &["java/lang/System", "java/util/Properties"],
-            &["9febf1a065577810a10eb907d79a2ab8fde138615693bb5507337db7bd59a395"]))
+            &["9febf1a065577810a10eb907d79a2ab8fde138615693bb5507337db7bd59a395", // Temurin 21.0.13
+              "27e7d13f69f2156f51aaa168af3d88d267217c7e0a2932bece82852dfed1b51f"])) // Temurin 25.0.5
     }
 
     pub(crate) fn linked_map_image(&self) -> bool {
@@ -2050,7 +2051,7 @@ impl ClassPath {
             | "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
             | "java/io/Writer" | "java/io/StringWriter" | "java/io/PrintWriter" | "java/lang/StringBuffer"
             | "java/lang/CharacterData" | "java/lang/CharacterDataLatin1"
-            | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
+            | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream" | "java/io/DataInputStream"
             | "java/io/OutputStream" | "java/io/ByteArrayOutputStream" | "java/io/FilterOutputStream"
             | "java/io/InputStreamReader" | "sun/nio/cs/StreamDecoder" | "jdk/internal/misc/InternalLock" | "java/nio/charset/CodingErrorAction" | "java/nio/ByteOrder"
             | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"

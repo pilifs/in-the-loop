@@ -1584,6 +1584,12 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
     assert_eq!(o.verdict, Verdict::Violation, "{}", o.output);
     let o = run(&options(classes, "claims.LiveMapViews#losesNonEmptyProperties", 4, "populated-properties-copy"));
     assert_ne!(o.verdict, Verdict::Verified, "{}", o.output);
+    let mut explicit = options(classes, "claims.LiveMapViews#installedProperties", 4, "installed-properties");
+    explicit.unwind = 30;
+    let o = run(&explicit);
+    assert_eq!(o.verdict, Verdict::Verified, "{}", o.output);
+    machine.monitor = false;
+    assert_eq!(machine.call_static("claims/LiveMapViews", "installedProperties", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
 }
 
 #[test]
@@ -1606,6 +1612,8 @@ fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     }
     proved(classes, "claims.ReaderAndListeners#buffered", 4);
     assert_eq!(machine.call_static("claims/ReaderAndListeners", "buffered", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    proved(classes, "claims.ReaderAndListeners#dataInput", 16);
+    assert_eq!(machine.call_static("claims/ReaderAndListeners", "dataInput", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
     proved(classes, "claims.ReaderAndListeners#propertyChanges", 4);
     machine.monitor = false;
     proved(classes, "claims.ReaderAndListeners#nestedLock", 4);

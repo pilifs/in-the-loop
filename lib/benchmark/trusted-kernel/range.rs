@@ -1,4 +1,4 @@
-//! An any-length frame for int-array range fill, and its use through an aliased root.
+//! Any-length frames for int and long range fills and an int caller with aliased roots.
 use super::{
     bytecode::{instruction, Element, Op, Test},
     classfile::{Class, Code},
@@ -8,6 +8,9 @@ use std::cmp::Ordering::{Equal, Greater, Less};
 use std::collections::BTreeSet;
 
 mod caller;
+mod fastutil;
+#[cfg(test)]
+mod export;
 
 pub(super) const DIRECT: &str = "range-fill-frame-v1";
 pub(super) const CALLER: &str = "range-fill-caller-frame-observation-v1";
@@ -134,6 +137,7 @@ fn branch([a, b]: [Term; 2], test: Test, phase: Phase) -> Result<bool> {
 struct Cut {
     head: usize,
     slot: usize,
+    element: Element,
 }
 
 // Only the iteration may change the heap, and only by writing Value to Root[Cursor].
@@ -186,7 +190,7 @@ fn walk(
                     }
                 }
                 Op::Goto(dest) => next = dest,
-                Op::Write(Element::Int) if phase == Phase::Iteration => {
+                Op::Write(element) if phase == Phase::Iteration && element == cut.element => {
                     if state.pop::<3>()? != [Root, Cursor, Value] {
                         return Err(reject(format!(
                             "written prefix or outside frame at store {pc}"
@@ -248,15 +252,14 @@ pub(super) fn check(
     hints: &str,
     keys: &mut Obligations,
 ) -> Result<()> {
+    if req.theorem == DIRECT {
+        if let Some(dep) = callee {
+            return fastutil::check(class, dep, req, hints, keys);
+        }
+    }
     let parts: Vec<_> = hints.split_ascii_whitespace().collect();
     let ["hints", "written-prefix", "remaining", head, slot] = parts[..] else {
         return Err(reject("missing written-prefix cut"));
-    };
-    let cut = Cut {
-        head: head.parse().map_err(|_| reject("invalid range cut PC"))?,
-        slot: slot
-            .parse()
-            .map_err(|_| reject("invalid range cursor slot"))?,
     };
     let (target, fill_spec, guard_spec) = if req.theorem == DIRECT {
         (class, req.entry, req.companion)
@@ -267,12 +270,27 @@ pub(super) fn check(
             ("rangeCheck", GUARD_DESC),
         )
     };
-    if fill_spec.1 != FILL_DESC || guard_spec.1 != GUARD_DESC {
+    let (element, parameter_slots) = match fill_spec.1 {
+        FILL_DESC => (Element::Int, 4),
+        "([JIIJ)V" if req.theorem == DIRECT => (Element::Long, 5),
+        _ => return Err(unsupported("range-fill descriptors")),
+    };
+    if guard_spec.1 != GUARD_DESC {
         return Err(unsupported("range-fill descriptors"));
     }
+    let cut = Cut {
+        head: head.parse().map_err(|_| reject("invalid range cut PC"))?,
+        slot: slot
+            .parse()
+            .map_err(|_| reject("invalid range cursor slot"))?,
+        element,
+    };
     let fill = target.method(fill_spec.0, fill_spec.1, true)?;
     let guard = target.package_method(guard_spec.0, guard_spec.1)?;
-    if cut.slot < 4 || cut.slot >= fill.locals as usize || cut.head >= fill.bytes.len() {
+    if cut.slot < parameter_slots
+        || cut.slot >= fill.locals as usize
+        || cut.head >= fill.bytes.len()
+    {
         return Err(unsupported("range cut point or cursor"));
     }
     let run = |method, phase, state, keys: &mut Obligations| {

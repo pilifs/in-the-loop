@@ -5,10 +5,11 @@ import os
 from pathlib import Path
 import tempfile
 
-from callers import RESULTS, read, sha
+from callers import EXTERNAL, JDK, RESULTS, ROOT, read, sha
 from configuration import prepare
-from investigate import compiler, native, write
+from investigate import command, compiler, native, write
 from recovery import HERE, OUT, compile_to, identities, java, property_reads
+from targets.upgrade_receiver import java_string
 
 
 def summary(row):
@@ -35,9 +36,13 @@ def measure(case):
                 args = [[]]
             else:
                 cp, _ = prepare(case, side, temp, scope)
+                reference = read(ROOT / scope["registeredCallers"][case]["reference"])
+                compile_to(cp[0], cp, EXTERNAL / "scenarios" / case / "UpgradeProbe.java")
+                if (sha(cp[0] / "UpgradeProbe.class") != reference["probeClasses"]["UpgradeProbe"] or
+                        sha(cp[0] / "UpgradeCallerClaim.class") != reference["nativeCaller"]["adapterClassSha256"]):
+                    raise ValueError("different original Configuration entry")
                 prop = property_reads(checker, cp, temp)
                 # The key is derived from the selected original's ldc instructions.
-                from targets.upgrade_receiver import java_string
                 key = java_string(prop["key"])
                 owner = "InstalledCaller"
                 code = temp / (owner + ".java")
@@ -63,8 +68,6 @@ public class InstalledCaller {{
 """)
                 # Keep all unrelated bootstrap properties at their stock settings for the ordinary
                 # comparisons in recovery.py. These three explicit table replacements are controls.
-                from callers import JDK
-                from investigate import command
                 command([JDK / "bin/javac", "-proc:none", "-g", "-parameters", "-cp",
                          os.pathsep.join(map(str, cp)), "-d", cp[0], code])
                 targets = dict.fromkeys(("empty", "own", "inherited"))

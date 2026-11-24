@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-035004-check-whole-verdict-lrat-on-the-complete",
+  "title": "Check whole-verdict LRAT on the complete bound verifier",
+  "description": "Run Guava 336, both Jackson 393 claims, and UTF-16 395 on the normal example route with certification off and on. Recheck the held prefix-sums result on its pinned class files. Bind every native pass and attempt, validate the actual SAT models, check LRAT for every UNSAT in fresh processes, and withhold assurance for missing, duplicated, swapped and transplanted evidence. Measure wall time, generation, checking and retained size. The runner claimed 20261124-033703-certify-ordinary-native-verdicts-and-rep while its shared source revision was being repaired; its exported tree lacked the verifier module. This repeat pins the complete source revision.",
+  "kind": "library",
+  "capabilities": [
+    "sat-certificate",
+    "jvmcontract:transcript",
+    "jvmcontract:prove",
+    "jvm:counterexample"
+  ],
+  "links": {
+    "examples": [
+      "336",
+      "393",
+      "395"
+    ]
+  },
+  "expected": "The Guava and prefix-sums runs recheck 8 and 10 UNSAT calls, Jackson retains the classified positive and original JVM counterexample, and UTF-16 records its solver-free proof. All pass-level attempts reconcile, all negative controls withhold assurance, and both ordinary and certified receipts are retained.",
+  "submitted": {
+    "at": "2026-11-24T03:50:04+00:00",
+    "session": "01a20b98-bfb6-7981-b527-1699b229ddce"
+  },
+  "revision": "b23efef26a97a163fe3053313be928484cdaea6f",
+  "requires": [
+    "jvmcontract",
+    "python3",
+    "java",
+    "javac",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Run and challenge five complete native verdicts",
+      "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --output verification/trusted-kernel-recovery/lrat",
+      "cwd": "."
+    },
+    {
+      "name": "Reconstruct the expected Guava request and both pass ledgers independently of the issuer",
+      "run": "python3 -B - <<'PYTHON'\nfrom pathlib import Path\nimport json\nimport os\nimport subprocess\nimport sys\nimport tarfile\nsys.path.insert(0, \"lib/python\")\nimport jvmcontract_lrat as lrat\n\nread = lambda path: json.loads(path.read_text())\ntask = \"first-8-release\"\nexample, = Path(\"examples\").glob(\"336-*\")\nrequests = (example / \"receipts\" / task / \"executions\").glob(\"*/lrat-request.json\")\nsource, = (p for p in requests if read(p.parent / \"attempt.json\")[\"job\"] == os.environ[\"VERIFY_JOB_ID\"])\nrequest = read(source)\njournal = read(source.parent / \"attempt.json\")\nchecker = read(source.parent / \"checker.json\")\nresult = example / journal[\"receipt\"]\nconclusion = read(result)[\"conclusion\"]\nassert request[\"run\"] == journal[\"id\"] == conclusion[\"attempt\"]\nassert request[\"claim\"][\"key\"] == read(result)[\"claim\"][\"target\"][\"claimKey\"]\nassert request[\"checker\"][\"classpath\"] == journal[\"checker\"][\"classpath\"]\nassert conclusion[\"status\"] == \"established\" and not conclusion[\"vacuous\"]\nanchor = {\"status\": conclusion[\"status\"], \"execution\": journal[\"id\"], \"conclusion\": conclusion,\n          \"receiptSha256\": lrat.digest(result.read_bytes()), \"jvmReplay\": []}\nnative, = (Path(os.environ[\"VERIFY_WORKDIR\"]) / \".build-py\").glob(\n    f\"*/targets/336/{task}/{journal['id']}/verifier\")\nruns = [run for resultset in checker[\"outcomes\"] for run in resultset[\"search\"][\"runs\"]]\nboundary, streams = lrat.capture(request, anchor, native, native / \"solver-traces\", runs)\nroot = Path(\"verification/trusted-kernel-recovery/lrat\")\nout = root / \"independent-guava\"\nout.mkdir()\n(out / \"request.json\").write_bytes(source.read_bytes())\nlrat.save(out / \"boundary.json\", boundary)\nwith tarfile.open(out / \"native-origin.tar.gz\", \"w:gz\") as arc:\n    for p in [source, source.parent / \"attempt.json\", source.parent / \"checker.json\", result]:\n        arc.add(p, arcname=\"original/\" + p.name)\n    for p in [*streams, *native.rglob(\"bmc.log\")]:\n        arc.add(p, arcname=\"verifier/\" + p.relative_to(native).as_posix())\n# Only now read the issuer's evidence. Neither expected input was loaded from the proof bundle or its sidecars.\ncheck = subprocess.run([sys.executable, \"-B\", lrat.__file__, \"--check\", str(out / \"request.json\"),\n                        str(out / \"boundary.json\"), str(root / task / \"evidence.zip\")],\n                       capture_output=True, text=True, check=True)\nverdict = json.loads(check.stdout)\nassert verdict[\"answers\"] == {\"sat\": 18, \"unsat\": 8}\nlrat.save(out / \"recheck.json\", verdict)\nprint(\"Native journal and both actual call boundaries independently rechecked 18 SAT models and 8 LRAT proofs.\")\nPYTHON",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/trusted-kernel-recovery/lrat"
+  ]
+}

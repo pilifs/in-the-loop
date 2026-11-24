@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-035044-qualify-both-fastutil-range-fill-loops-o",
+  "title": "Qualify both fastutil range fill loops on original release classes",
+  "description": "Check both branches of fastutil 8.5.15 IntArrays.fill through its resolved cross-class bounds check, with the post-JDK checker frozen before transfer. Replay the two JVM assertion settings, the 7745 valid inputs, the written prefix and suffix obligations, and all prior Guava and range controls.",
+  "kind": "library",
+  "capabilities": [
+    "independent-java-proof",
+    "array-induction"
+  ],
+  "links": {
+    "examples": [
+      "337"
+    ]
+  },
+  "expected": "Seventy checked requirements establish the exact valid-range frame and termination. Both JVM settings match every expected cell and incomplete hints fail on their omitted edges.",
+  "submitted": {
+    "at": "2026-11-24T03:50:44+00:00",
+    "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+  },
+  "requires": [
+    "python3",
+    "rustc",
+    "setpriv",
+    "java",
+    "javac",
+    "javap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Qualify both fastutil range fill loops on original release classes",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/release_fill.py --output verification/kernel-recovery/fastutil.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/kernel-recovery/fastutil.json"
+  ]
+}

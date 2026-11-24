@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-034422-check-replacement-properties-identity-an",
+  "title": "Check replacement Properties identity and Configuration progress",
+  "description": "The native checker tracks the exact standard Properties object a caller installs and routes System accessors through that receiver, preserving defaults, old references and the cast of a setter result. Compare positive identity, inverse identity, a saved initializer value, defaults, prior non-String values and an unbound ambient table against fresh Temurin 21 executions. Then retry both Configuration upgrades with explicit empty, own and inherited tables to identify the next strict instruction.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "receiver-construction",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "expected": "The directly installed table and its inverse have opposite native decisions. All returned positives agree with the unchanged JVM. Broader and profile-specific refusals name the operation that prevents a conclusion.",
+  "submitted": {
+    "at": "2026-11-24T03:44:22+00:00",
+    "session": "01a20b98-a4a8-7b90-bf7a-097e3504fb3a"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "Check table identity and ordinary reference semantics",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py controls",
+      "cwd": "."
+    },
+    {
+      "name": "Retry the JSON caller with explicit tables",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-565",
+      "cwd": "."
+    },
+    {
+      "name": "Transfer the same three profiles to YAML",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-601",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/recovery/installed-properties"
+  ]
+}

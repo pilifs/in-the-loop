@@ -1,6 +1,6 @@
 use super::{reject, unsupported, Result};
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Test {
     Eq,
     Ne,
@@ -43,7 +43,7 @@ impl Element {
         }
     }
 }
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Op {
     Nop,
     Const(i32),
