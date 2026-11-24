@@ -1,0 +1,226 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084300-recheck-spring-example-374-on-its-origin",
+  "title": "Recheck Spring example 374 on its original historical public binder",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m38s, peak 1003.9 MiB (estimated 18m00s, 5.0 GiB); 7 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084300-recheck-spring-example-374-on-its-origin.json",
+    "sha256": "d1475e07cf5fae561aad96cb5e5e00e73647eb4387a73024f7905c394c7b2161",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084300-recheck-spring-example-374-on-its-origin",
+      "title": "Recheck Spring example 374 on its original historical public binder",
+      "description": "Reuse the exact prior history graphs, JDK, public domain, prefix observations and original fixture on the frozen checker. Keep these historical slices distinct from the released 6.x classpaths.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:43:00+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "18m",
+        "timeout": "72m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/spring-java-data/measure.py 374 --stage beyond-jbmc-frozen --seconds 120 --only annotated-parent annotated-landed preservation-parent preservation-landed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:59:33+00:00",
+  "finishedAt": "2026-11-24T09:01:19+00:00",
+  "wallSeconds": 106.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 4320.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1080.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1052651520,
+    "wallSeconds": 98.3,
+    "cpuSeconds": 123.8,
+    "memoryOfEstimate": 0.2,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/spring-java-data/measure.py 374 --stage beyond-jbmc-frozen --seconds 120 --only annotated-parent annotated-landed preservation-parent preservation-landed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4320.0,
+      "cancelled": false,
+      "wallSeconds": 98.285,
+      "cpuSeconds": 123.79,
+      "cpuThrottledSeconds": 3.773,
+      "peakMemoryBytes": 1052651520,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 1,
+        "bytes": 143,
+        "sha256": "951c55cc0a61292b50158e1eedbb5f3308c4e23f563527147d713cf694fe72b4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"annotated-parent\": \"unresolved\", \"annotated-landed\": \"unresolved\", \"preservation-parent\": \"unresolved\", \"preservation-landed\": \"unresolved\"}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/annotated-landed.log",
+      "change": "added",
+      "bytes": 255,
+      "sha256": "dea002a3bfc3bcccc6fd8254ff341ed74dfc76548f5ab9d7cc0b21cd72405923",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/annotated-parent.log",
+      "change": "added",
+      "bytes": 251,
+      "sha256": "8d5dd75d53c5204d2ad5653c9946a085bca7db571b26e85c77aa89add813591e",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/finite.log",
+      "change": "added",
+      "bytes": 182,
+      "sha256": "b2d74e6e396109b97b0217e5d0d622dadcb4490e62427edb7f8891da4557d5d7",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/preservation-landed.log",
+      "change": "added",
+      "bytes": 264,
+      "sha256": "77d01e3a0cab0965d1f342313ce407876f9e71e5e67bf07e4ba88ac17c245f5f",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/preservation-parent.log",
+      "change": "added",
+      "bytes": 264,
+      "sha256": "8f3418865e19bf9d2c51286e67730f073fc068f32ab481f5fb8f7e0be4860ab0",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/replay.log",
+      "change": "added",
+      "bytes": 201,
+      "sha256": "1243b3b46a9810f0c4cb019e9e574eccf575805b2ce1918f9d9acbc7e5e5cf31",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/run.json",
+      "change": "added",
+      "bytes": 2720,
+      "sha256": "b4ffa1dc1a7cc6513b255ab8e8f311bb2c44888e07ea5c889069f8e76c0089cf",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:05:04+00:00",
+    "applied": [
+      "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/annotated-landed.log",
+      "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/annotated-parent.log",
+      "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/finite.log",
+      "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/preservation-landed.log",
+      "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/preservation-parent.log",
+      "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/replay.log",
+      "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/run.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T090119Z-957469ccef1b5880",
+      "outputs": "20261124T090119Z-98188029346c6f08",
+      "diff": "20261124T090120Z-0011373895a7a9fd"
+    }
+  }
+}

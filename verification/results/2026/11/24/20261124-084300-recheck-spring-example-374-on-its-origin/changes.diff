@@ -1,0 +1,103 @@
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/annotated-landed.log
+@@ -0,0 +1,2 @@
++374-spring-formatter-binding: running task annotated-landed (target route)
++374-spring-formatter-binding: task annotated-landed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/annotated-landed/20261124T090022Z-c46dd82e/result.json
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/annotated-parent.log
+@@ -0,0 +1,2 @@
++374-spring-formatter-binding: running task annotated-parent (target route)
++374-spring-formatter-binding: task annotated-parent: unresolved (completed; NOT AS EXPECTED (refuted)), receipt receipts/annotated-parent/20261124T090003Z-19a76425/result.json
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/finite.log
+@@ -0,0 +1,4 @@
++374 annotated-parent refuted 2 admitted 
++374 annotated-landed established 2 admitted 
++374 preservation-parent established 2 admitted 
++374 preservation-landed established 2 admitted 
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/preservation-landed.log
+@@ -0,0 +1,2 @@
++374-spring-formatter-binding: running task preservation-landed (target route)
++374-spring-formatter-binding: task preservation-landed: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/preservation-landed/20261124T090100Z-d2804917/result.json
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/preservation-parent.log
+@@ -0,0 +1,2 @@
++374-spring-formatter-binding: running task preservation-parent (target route)
++374-spring-formatter-binding: task preservation-parent: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/preservation-parent/20261124T090041Z-b4aa7a8f/result.json
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/replay.log
+@@ -0,0 +1,2 @@
++374-spring-formatter-binding: running task replay (target route)
++374-spring-formatter-binding: task replay: none (completed; as expected), receipt receipts/replay/20261124T085942Z-2e9c1801/result.json
+--- /dev/null
++++ b/examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/run.json
+@@ -0,0 +1,68 @@
++{
++  "job": "20261124-084300-recheck-spring-example-374-on-its-origin",
++  "source": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
++  "secondsPerCheck": 120,
++  "targetSha256": "205dd7e2056609eda1f535c3ee3dfe1f99c56f898bf0c6e03730fa29d7b8333f",
++  "oracleSha256": "b4ea3488e08c5be476d8549cbb295fd33964ccb7e401ab05baad0a8df60f7977",
++  "tasks": {
++    "annotated-parent": {
++      "exit": 1,
++      "seconds": 19.6746,
++      "peakRssBytes": 288219136,
++      "log": "annotated-parent.log",
++      "logSha256": "8d5dd75d53c5204d2ad5653c9946a085bca7db571b26e85c77aa89add813591e",
++      "status": "unresolved",
++      "receipt": "receipts/annotated-parent/20261124T090003Z-19a76425/result.json",
++      "sha256": "0ab88534a7da8096d32cec2eac08543346bf90e54dc673bdeeafd2a319e29bbf"
++    },
++    "annotated-landed": {
++      "exit": 1,
++      "seconds": 18.9875,
++      "peakRssBytes": 288030720,
++      "log": "annotated-landed.log",
++      "logSha256": "dea002a3bfc3bcccc6fd8254ff341ed74dfc76548f5ab9d7cc0b21cd72405923",
++      "status": "unresolved",
++      "receipt": "receipts/annotated-landed/20261124T090022Z-c46dd82e/result.json",
++      "sha256": "e7306039faa48eb40b092939dc59d54a56dfe59d43320f465c20163f8da03c4b"
++    },
++    "preservation-parent": {
++      "exit": 1,
++      "seconds": 19.124,
++      "peakRssBytes": 288092160,
++      "log": "preservation-parent.log",
++      "logSha256": "8f3418865e19bf9d2c51286e67730f073fc068f32ab481f5fb8f7e0be4860ab0",
++      "status": "unresolved",
++      "receipt": "receipts/preservation-parent/20261124T090041Z-b4aa7a8f/result.json",
++      "sha256": "568236ef87895a978e3afe0ab8f89f294bc7d62649bb8084adeb2058dd5187f2"
++    },
++    "preservation-landed": {
++      "exit": 1,
++      "seconds": 18.8265,
++      "peakRssBytes": 287969280,
++      "log": "preservation-landed.log",
++      "logSha256": "77d01e3a0cab0965d1f342313ce407876f9e71e5e67bf07e4ba88ac17c245f5f",
++      "status": "unresolved",
++      "receipt": "receipts/preservation-landed/20261124T090100Z-d2804917/result.json",
++      "sha256": "d1965ccb3067f76d1fc96f60dc91766b7d9ee6e45df3c4bfd47cbdc7d201d1df"
++    }
++  },
++  "replays": {
++    "replay": {
++      "exit": 0,
++      "seconds": 8.3314,
++      "peakRssBytes": 120184832,
++      "log": "replay.log",
++      "logSha256": "1243b3b46a9810f0c4cb019e9e574eccf575805b2ce1918f9d9acbc7e5e5cf31"
++    }
++  },
++  "finite": {
++    "exit": 0,
++    "seconds": 12.6036,
++    "peakRssBytes": 113135616,
++    "log": "finite.log",
++    "logSha256": "b2d74e6e396109b97b0217e5d0d622dadcb4490e62427edb7f8891da4557d5d7",
++    "directory": "records/finite-proofs/20261124T085950Z-86b621e0"
++  }
++}

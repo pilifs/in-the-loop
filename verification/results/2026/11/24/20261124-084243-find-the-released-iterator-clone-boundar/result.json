@@ -1,0 +1,248 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084243-find-the-released-iterator-clone-boundar",
+  "title": "Find the released iterator clone boundary using four adjacent RoaringBitmap versions",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 30.9s, peak 158.7 MiB (estimated 24m00s, 5.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084243-find-the-released-iterator-clone-boundar.json",
+    "sha256": "44019498d51ca66824dc127c532c0ea2b0fa6f032b8c0bac740f09301165cc29",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084243-find-the-released-iterator-clone-boundar",
+      "title": "Find the released iterator clone boundary using four adjacent RoaringBitmap versions",
+      "description": "The same compiled caller advances only one clone, crosses a container boundary, checks untouched origin, exhaustion and opposing reverse histories. Both unchanged neighbors are included.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:42:43+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 11,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "24m",
+        "timeout": "96m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified H05-H06-1.6.15 H05-H06-1.6.16 H05-H06-1.6.17 H05-H06-1.6.18",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/H05-H06-1.6.15",
+        "verification/beyond-jbmc/qualified/H05-H06-1.6.16",
+        "verification/beyond-jbmc/qualified/H05-H06-1.6.17",
+        "verification/beyond-jbmc/qualified/H05-H06-1.6.18"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T09:04:03+00:00",
+  "finishedAt": "2026-11-24T09:04:42+00:00",
+  "wallSeconds": 39.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 5760.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1440.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 166420480,
+    "wallSeconds": 30.9,
+    "cpuSeconds": 36.5,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified H05-H06-1.6.15 H05-H06-1.6.16 H05-H06-1.6.17 H05-H06-1.6.18",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5760.0,
+      "cancelled": false,
+      "wallSeconds": 30.875,
+      "cpuSeconds": 36.467,
+      "cpuThrottledSeconds": 0.562,
+      "peakMemoryBytes": 166420480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 12,
+        "bytes": 646,
+        "sha256": "8285db4dcfb4f5d4d538b0af2a49a4911ba65e0a712c28af57356a7e46a63a47",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "H05-H06-1.6.15 7 original checks passed",
+        "H05-H06-1.6.15 forward violation unverifiable SUCCESS SUCCESS",
+        "H05-H06-1.6.15 reverse violation violation SUCCESS SUCCESS",
+        "H05-H06-1.6.16 7 original checks passed",
+        "H05-H06-1.6.16 forward violation unverifiable SUCCESS SUCCESS",
+        "H05-H06-1.6.16 reverse violation violation SUCCESS SUCCESS",
+        "H05-H06-1.6.17 6 original checks passed",
+        "H05-H06-1.6.17 forward verified unverifiable SUCCESS SUCCESS",
+        "H05-H06-1.6.17 reverse verified unverifiable SUCCESS SUCCESS",
+        "H05-H06-1.6.18 6 original checks passed",
+        "H05-H06-1.6.18 forward verified unverifiable SUCCESS SUCCESS",
+        "H05-H06-1.6.18 reverse verified unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.15/executions.zip",
+      "change": "added",
+      "bytes": 149678,
+      "sha256": "f2ea12709b2d6e9c82c3c815aba0b80d6bfced7a8ebead41477fe8679eb83a75",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.15/results.json.gz",
+      "change": "added",
+      "bytes": 2020,
+      "sha256": "f117cd72a2258988df16ec39a5d1288fb0b72e565e1a0984a2e477783fc67597",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.16/executions.zip",
+      "change": "added",
+      "bytes": 149683,
+      "sha256": "1b2a706d1f777f7da6fc58c09aa7c25fd794d2c3759bbbfee19a6bb72de73362",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.16/results.json.gz",
+      "change": "added",
+      "bytes": 2024,
+      "sha256": "f926466707350627b61abfa779c5743d3e90ddbfb5684cae75c3216c979b513c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.17/executions.zip",
+      "change": "added",
+      "bytes": 148928,
+      "sha256": "bed53c217b69ed42ade7cfb87205948a964952353685d1fb04198719b2e5490b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.17/results.json.gz",
+      "change": "added",
+      "bytes": 1875,
+      "sha256": "a1e9a380b044d213496609a7d35aae96ce0c40cec2ec4669ee8efbb64018bb59",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.18/executions.zip",
+      "change": "added",
+      "bytes": 148911,
+      "sha256": "fe55ad7d40608e0407c4c0ad9e188ef43dd5df1b121667fbc63dc47d799d36da",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/H05-H06-1.6.18/results.json.gz",
+      "change": "added",
+      "bytes": 1876,
+      "sha256": "1ad89421012ffe6d032d64ed6bf69a968d813876034285ea9e6a90d09aaa78fd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:05:03+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.15/executions.zip",
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.15/results.json.gz",
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.16/executions.zip",
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.16/results.json.gz",
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.17/executions.zip",
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.17/results.json.gz",
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.18/executions.zip",
+      "verification/beyond-jbmc/qualified/H05-H06-1.6.18/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T090442Z-664143d2163b726e",
+      "outputs": "20261124T090442Z-7018131bdb43a49b",
+      "diff": "20261124T090442Z-724246361a42c74b"
+    }
+  }
+}

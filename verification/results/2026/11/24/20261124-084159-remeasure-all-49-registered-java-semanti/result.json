@@ -1,0 +1,217 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084159-remeasure-all-49-registered-java-semanti",
+  "title": "Remeasure all 49 registered Java semantics controls at product freeze",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m25s, peak 2.8 GiB (estimated 26m00s, 5.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084159-remeasure-all-49-registered-java-semanti.json",
+    "sha256": "e4bdece170eaaa47cd6885288f7efc1853b6810c1fb0a1e2d77cd675c09cc4dc",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084159-remeasure-all-49-registered-java-semanti",
+      "title": "Remeasure all 49 registered Java semantics controls at product freeze",
+      "description": "Reproduce every original caller, input graph and admitted bound of the historical 49-claim control panel, including known deferred rows. Record native and integrated decisions and any lost claims.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:41:59+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 26,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "26m",
+        "timeout": "104m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/regressions.py 49",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/regressions/49.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:55:40+00:00",
+  "finishedAt": "2026-11-24T09:03:24+00:00",
+  "wallSeconds": 464.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 6240.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1560.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2982866944,
+    "wallSeconds": 265.4,
+    "cpuSeconds": 289.7,
+    "memoryOfEstimate": 0.56,
+    "durationOfEstimate": 0.17
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/regressions.py 49",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6240.0,
+      "cancelled": false,
+      "wallSeconds": 265.429,
+      "cpuSeconds": 289.741,
+      "cpuThrottledSeconds": 4.587,
+      "peakMemoryBytes": 2982866944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 99,
+        "bytes": 3548,
+        "sha256": "d8f29cf87240d37a618f708b4d8626a801dd9bd162476bbcd8e9225b04256a9e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "MadeRows#reverse jbmc unsupported",
+        "MadeRows#iterator native correct",
+        "MadeRows#iterator jbmc unsupported",
+        "MadeRows#alwaysDistinct native correct",
+        "MadeRows#alwaysDistinct jbmc correct",
+        "MatrixRows#rectangular native correct",
+        "MatrixRows#rectangular jbmc unsupported",
+        "MatrixRows#singleShape native correct",
+        "MatrixRows#singleShape jbmc unsupported",
+        "MatrixRows#shape native correct",
+        "MatrixRows#shape jbmc unsupported",
+        "MatrixRows#same native correct",
+        "MatrixRows#same jbmc correct",
+        "MatrixRows#noNull native correct",
+        "MatrixRows#noNull jbmc correct",
+        "ExactOrder#commons native correct",
+        "ExactOrder#commons jbmc unsupported",
+        "ExactOrder#onlySign native correct",
+        "ExactOrder#onlySign jbmc unsupported",
+        "ExactOrder#guava native correct",
+        "ExactOrder#guava jbmc unsupported",
+        "ExactOrder#firstOnTie native correct",
+        "ExactOrder#firstOnTie jbmc unsupported",
+        "ExactOrder#secondOnTie native correct",
+        "ExactOrder#secondOnTie jbmc unsupported",
+        "ExactOrder#direct native correct",
+        "ExactOrder#direct jbmc unsupported",
+        "ExactOrder#sameReference native correct",
+        "ExactOrder#sameReference jbmc unsupported",
+        "QueueFill#queue native correct",
+        "QueueFill#queue jbmc unsupported",
+        "QueueFill#fullMeansOccupied native correct",
+        "QueueFill#fullMeansOccupied jbmc correct",
+        "QueueFill#fill native correct",
+        "QueueFill#fill jbmc unsupported",
+        "QueueFill#staleSurvives native correct",
+        "QueueFill#staleSurvives jbmc unsupported",
+        "QueueFill#covariant native correct",
+        "QueueFill#covariant jbmc unsupported",
+        "49 Counter({('native', 'correct'): 49, ('jbmc', 'correct'): 26, ('jbmc', 'unsupported'): 23})"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/regressions/49.json.gz",
+      "change": "added",
+      "bytes": 9191,
+      "sha256": "8647dfe2ab09c2df5f5e61871f2b8723d5642d7820095a802da26ee176a57ba8",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:05:03+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/regressions/49.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T090324Z-284478e2b6f064ea",
+      "outputs": "20261124T090324Z-3125164afbf737e1",
+      "diff": "20261124T090324Z-336532807ad77c74"
+    }
+  }
+}

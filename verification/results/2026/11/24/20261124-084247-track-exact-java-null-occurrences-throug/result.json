@@ -1,0 +1,240 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084247-track-exact-java-null-occurrences-throug",
+  "title": "Track exact Java null occurrences through repair, propagation and rethrow",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 14.0s, peak 119.9 MiB (estimated 22m00s, 4.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084247-track-exact-java-null-occurrences-throug.json",
+    "sha256": "2cfd3b23c6fbb84bbbbfbbfe26106b08b07e2167fe64ea2a5688f81e2c5c54d7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084247-track-exact-java-null-occurrences-throug",
+      "title": "Track exact Java null occurrences through repair, propagation and rethrow",
+      "description": "Pin class bytes and original bytecode offsets. Compare the separate stock exception-check and propagation profiles with strict native occurrence/escape investigations, bound to all original top frames and exception identity.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:42:47+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 13,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "22m",
+        "timeout": "88m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/exception_sites.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/E-sites"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:59:07+00:00",
+  "finishedAt": "2026-11-24T08:59:31+00:00",
+  "wallSeconds": 24.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 5280.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1320.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 125726720,
+    "wallSeconds": 14.0,
+    "cpuSeconds": 16.8,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/exception_sites.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5280.0,
+      "cancelled": false,
+      "wallSeconds": 14.007,
+      "cpuSeconds": 16.767,
+      "cpuThrottledSeconds": 1.786,
+      "peakMemoryBytes": 125726720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 7,
+        "bytes": 402,
+        "sha256": "421a303d1424eed161f5731d0c8682d8d236dd4c3bb83fc39178b1f36c761828",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "ThrowSites$Reader#read 4 null occurrence reached refuted",
+        "ThrowSites$Reader#read 4 null escape reached refuted",
+        "ThrowSites$Reader#read 4 null occurrence reached refuted",
+        "ThrowSites$Reader#read 4 null escape reached refuted",
+        "ThrowSites$Reader#read 4 null occurrence reached refuted",
+        "ThrowSites$Reader#read 4 null escape reached refuted",
+        "15 original observations, 12 selected native site/policy configurations"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/original-ThrowSites$Reader#read-4-escape/result.json",
+      "change": "added",
+      "bytes": 21419,
+      "sha256": "3bb8a82ec2c8d1a2659d8197ca13efc7c54cedc1ec0a35c4851ec656e24d3549",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/original-ThrowSites$Reader#read-4-occurrence/result.json",
+      "change": "added",
+      "bytes": 21442,
+      "sha256": "d19c27b9513ffb0183334214d94cbbfe31b2feb80e55033793b506e532c15eba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/repaired-ThrowSites$Reader#read-4-escape/result.json",
+      "change": "added",
+      "bytes": 21411,
+      "sha256": "4dd39bd48d15f3f0f0c6932ab445fe02c8491cc26555c91a3f79a392fcc4a312",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/repaired-ThrowSites$Reader#read-4-occurrence/result.json",
+      "change": "added",
+      "bytes": 21439,
+      "sha256": "bc805187d38dd723e7d3a267e018b0406db5f253ba0e03e96b5a47d5556af407",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/sites.json.gz",
+      "change": "added",
+      "bytes": 1809,
+      "sha256": "dbdc0d18403bb6c6fc6c8e8779b9749832a8c85d00761c0f3388865c56b17b6d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/stock.zip",
+      "change": "added",
+      "bytes": 15954,
+      "sha256": "601e0b7e57fcd58eb009c12f3e6671243ec2270c9d52dbcf39ac997adc20b61b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/withHelper-ThrowSites$Reader#read-4-escape/result.json",
+      "change": "added",
+      "bytes": 21418,
+      "sha256": "341628b3965e867bf843398e7cc0b0625bbf5c1e9a9e5f1626efac8a5e243f67",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/E-sites/withHelper-ThrowSites$Reader#read-4-occurrence/result.json",
+      "change": "added",
+      "bytes": 21456,
+      "sha256": "1c5f334719c61b4d7e69ff426bcb3b902f6fcb175126a5f91e8aab3dbd0ad302",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:05:03+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/E-sites/original-ThrowSites$Reader#read-4-escape/result.json",
+      "verification/beyond-jbmc/qualified/E-sites/original-ThrowSites$Reader#read-4-occurrence/result.json",
+      "verification/beyond-jbmc/qualified/E-sites/repaired-ThrowSites$Reader#read-4-escape/result.json",
+      "verification/beyond-jbmc/qualified/E-sites/repaired-ThrowSites$Reader#read-4-occurrence/result.json",
+      "verification/beyond-jbmc/qualified/E-sites/sites.json.gz",
+      "verification/beyond-jbmc/qualified/E-sites/stock.zip",
+      "verification/beyond-jbmc/qualified/E-sites/withHelper-ThrowSites$Reader#read-4-escape/result.json",
+      "verification/beyond-jbmc/qualified/E-sites/withHelper-ThrowSites$Reader#read-4-occurrence/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T085931Z-203056e4c345f3bb",
+      "outputs": "20261124T085931Z-2278323ccd322b0b",
+      "diff": "20261124T085931Z-2501626f2eb487d5"
+    }
+  }
+}

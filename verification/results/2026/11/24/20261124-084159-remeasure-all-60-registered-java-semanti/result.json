@@ -1,0 +1,217 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084159-remeasure-all-60-registered-java-semanti",
+  "title": "Remeasure all 60 registered Java semantics controls at product freeze",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m12s, peak 678.9 MiB (estimated 26m00s, 5.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084159-remeasure-all-60-registered-java-semanti.json",
+    "sha256": "c3310c212c0d28abbacd01c4e24e011ced63655b6255caf8b2c28501a32db898",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084159-remeasure-all-60-registered-java-semanti",
+      "title": "Remeasure all 60 registered Java semantics controls at product freeze",
+      "description": "Reproduce every original caller, input graph and admitted bound of the historical 60-claim control panel, including known deferred rows. Record native and integrated decisions and any lost claims.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:41:59+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 26,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "26m",
+        "timeout": "104m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/regressions.py 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/regressions/60.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:55:40+00:00",
+  "finishedAt": "2026-11-24T09:02:11+00:00",
+  "wallSeconds": 391.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 6240.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1560.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 711892992,
+    "wallSeconds": 192.4,
+    "cpuSeconds": 217.0,
+    "memoryOfEstimate": 0.13,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/regressions.py 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6240.0,
+      "cancelled": false,
+      "wallSeconds": 192.411,
+      "cpuSeconds": 217.02,
+      "cpuThrottledSeconds": 2.924,
+      "peakMemoryBytes": 711892992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 123,
+        "bytes": 5213,
+        "sha256": "e17804b5376fb56f00abb1f3dfbb751bf389d5d4ac343ec0700d5468d4cd3fed",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "nibble nibble-jbmc unsupported 1.03",
+        "nibble left-native correct 0.035",
+        "nibble left-jbmc correct 0.996",
+        "nibble acceptsNegative-native correct 0.029",
+        "nibble acceptsNegative-jbmc correct 1.033",
+        "enum lookup-native correct 0.048",
+        "enum lookup-jbmc unsupported 0.221",
+        "enum ordinal-native correct 0.019",
+        "enum ordinal-jbmc correct 0.154",
+        "enum alwaysZero-native correct 0.021",
+        "enum alwaysZero-jbmc correct 0.156",
+        "locals kernel-native correct 0.02",
+        "locals kernel-jbmc unsupported 0.537",
+        "locals spring-native correct 0.032",
+        "locals spring-jbmc unsupported 0.804",
+        "locals nullInitializes-native correct 0.119",
+        "locals nullInitializes-jbmc correct 0.791",
+        "monitors matched-native unsupported 0.018",
+        "monitors matched-jbmc unsupported 0.267",
+        "monitors mixed-native unsupported 0.028",
+        "monitors mixed-jbmc unsupported 0.277",
+        "monitors synchronizedMethod-native unsupported 0.03",
+        "monitors synchronizedMethod-jbmc unsupported 0.267",
+        "gson-parent compatible-native correct 8.375",
+        "gson-parent compatible-jbmc unsupported 18.681",
+        "gson-parent syntax-native correct 11.114",
+        "gson-parent syntax-jbmc unsupported 18.48",
+        "guava-parent retained-native correct 0.034",
+        "guava-parent retained-jbmc correct 1.171",
+        "guava-parent parentBehavior-native correct 0.02",
+        "guava-parent parentBehavior-jbmc unsupported 1.567",
+        "gson-fix compatible-native correct 8.647",
+        "gson-fix compatible-jbmc unsupported 18.751",
+        "gson-fix syntax-native correct 0.113",
+        "gson-fix syntax-jbmc unsupported 18.808",
+        "guava-fix retained-native correct 0.027",
+        "guava-fix retained-jbmc unsupported 1.569",
+        "guava-fix parentBehavior-native correct 0.046",
+        "guava-fix parentBehavior-jbmc correct 1.754",
+        "60 Counter({('native', 'correct'): 57, ('jbmc', 'unsupported'): 34, ('jbmc', 'correct'): 24, ('native', 'unsupported'): 3, ('jbmc', 'false-success'): 2})"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/regressions/60.json.gz",
+      "change": "added",
+      "bytes": 13113,
+      "sha256": "aa5d63a5815fbb2fe98c916d9b8455ca673501c47b8c3e4f6e78b5c1c9716d4b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:05:03+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/regressions/60.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T090211Z-258547fb218711d6",
+      "outputs": "20261124T090211Z-285435d3a437ba22",
+      "diff": "20261124T090211Z-307273f8c8046e26"
+    }
+  }
+}

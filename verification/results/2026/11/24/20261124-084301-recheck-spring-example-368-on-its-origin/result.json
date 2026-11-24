@@ -1,0 +1,210 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084301-recheck-spring-example-368-on-its-origin",
+  "title": "Recheck Spring example 368 on its original historical public binder",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 20.3s, peak 199.9 MiB (estimated 18m00s, 5.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084301-recheck-spring-example-368-on-its-origin.json",
+    "sha256": "4637c8e3e085783546f73785dbdd901e0422028382b5bdb4e60f6371796d85ba",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084301-recheck-spring-example-368-on-its-origin",
+      "title": "Recheck Spring example 368 on its original historical public binder",
+      "description": "Reuse the exact prior history graphs, JDK, public domain, prefix observations and original fixture on the frozen checker. Keep these historical slices distinct from the released 6.x classpaths.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:43:01+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 12,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "18m",
+        "timeout": "72m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/spring-java-data/measure.py 368 --stage beyond-jbmc-frozen --seconds 120 --only beans-combined ledger-combined",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "examples/368-spring-binding-history/records/beyond-jbmc-frozen"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T09:01:22+00:00",
+  "finishedAt": "2026-11-24T09:01:51+00:00",
+  "wallSeconds": 29.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 4320.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1080.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 209620992,
+    "wallSeconds": 20.3,
+    "cpuSeconds": 31.8,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/spring-java-data/measure.py 368 --stage beyond-jbmc-frozen --seconds 120 --only beans-combined ledger-combined",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4320.0,
+      "cancelled": false,
+      "wallSeconds": 20.257,
+      "cpuSeconds": 31.762,
+      "cpuThrottledSeconds": 1.754,
+      "peakMemoryBytes": 209620992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 1,
+        "bytes": 66,
+        "sha256": "b9b04a6911bf5fb9823390b36a072b8d537731b71cfd8335b587f97eb85c34d5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"beans-combined\": \"unresolved\", \"ledger-combined\": \"unresolved\"}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "examples/368-spring-binding-history/records/beyond-jbmc-frozen/beans-combined.log",
+      "change": "added",
+      "bytes": 245,
+      "sha256": "da6abc99f46b7c9ce2b9e4c177027a8092e4c99b97d2313ff9eee9cf0c383fa3",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/beyond-jbmc-frozen/finite.log",
+      "change": "added",
+      "bytes": 89,
+      "sha256": "ad6ca49a0c82d741deb413e9a1146964c9e42754290d9799c549839595d9f8f1",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/beyond-jbmc-frozen/ledger-combined.log",
+      "change": "added",
+      "bytes": 248,
+      "sha256": "aeeafbd1522a35f4b5b5105e13cb290b1dc1f7609442648c8d072ae64ded71dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/beyond-jbmc-frozen/replay.log",
+      "change": "added",
+      "bytes": 197,
+      "sha256": "41cb47fe3e6749518654b45c2a443084bc547378f528634937711bae8a59c0e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "examples/368-spring-binding-history/records/beyond-jbmc-frozen/run.json",
+      "change": "added",
+      "bytes": 1831,
+      "sha256": "5cf7a66a6a9eee8238642bf8a28e607a10b3c10eba4675c78fe395d590adb23e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:05:04+00:00",
+    "applied": [
+      "examples/368-spring-binding-history/records/beyond-jbmc-frozen/beans-combined.log",
+      "examples/368-spring-binding-history/records/beyond-jbmc-frozen/finite.log",
+      "examples/368-spring-binding-history/records/beyond-jbmc-frozen/ledger-combined.log",
+      "examples/368-spring-binding-history/records/beyond-jbmc-frozen/replay.log",
+      "examples/368-spring-binding-history/records/beyond-jbmc-frozen/run.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T090151Z-6311997dfba98352",
+      "outputs": "20261124T090151Z-656618e73a8bfc3f",
+      "diff": "20261124T090151Z-678062651132fb8a"
+    }
+  }
+}

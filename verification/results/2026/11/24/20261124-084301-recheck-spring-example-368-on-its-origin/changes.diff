@@ -1,0 +1,71 @@
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/beyond-jbmc-frozen/beans-combined.log
+@@ -0,0 +1,2 @@
++368-spring-binding-history: running task beans-combined (target route)
++368-spring-binding-history: task beans-combined: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/beans-combined/20261124T090143Z-10d09568/result.json
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/beyond-jbmc-frozen/finite.log
+@@ -0,0 +1,2 @@
++368 beans-combined established 12 admitted 
++368 ledger-combined established 12 admitted 
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/beyond-jbmc-frozen/ledger-combined.log
+@@ -0,0 +1,2 @@
++368-spring-binding-history: running task ledger-combined (target route)
++368-spring-binding-history: task ledger-combined: unresolved (completed; NOT AS EXPECTED (established)), receipt receipts/ledger-combined/20261124T090147Z-16f63979/result.json
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/beyond-jbmc-frozen/replay.log
+@@ -0,0 +1,2 @@
++368-spring-binding-history: running task replay (target route)
++368-spring-binding-history: task replay: none (completed; as expected), receipt receipts/replay/20261124T090131Z-de95df3c/result.json
+--- /dev/null
++++ b/examples/368-spring-binding-history/records/beyond-jbmc-frozen/run.json
+@@ -0,0 +1,48 @@
++{
++  "job": "20261124-084301-recheck-spring-example-368-on-its-origin",
++  "source": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
++  "secondsPerCheck": 120,
++  "targetSha256": "41278e4e89a707cc137e43f015824dc41b63c5212ab9e4ae2e9fdfe2e840b685",
++  "oracleSha256": "9f20fc55f8742765c58ceab87a495ced8b6be93de72ab97be4b28ba6fb23f27a",
++  "tasks": {
++    "beans-combined": {
++      "exit": 1,
++      "seconds": 4.0383,
++      "peakRssBytes": 116072448,
++      "log": "beans-combined.log",
++      "logSha256": "da6abc99f46b7c9ce2b9e4c177027a8092e4c99b97d2313ff9eee9cf0c383fa3",
++      "status": "unresolved",
++      "receipt": "receipts/beans-combined/20261124T090143Z-10d09568/result.json",
++      "sha256": "8e9a53987bebf3e473bc12d38c44a56a8ad25169569632636d44bb9077ff1036"
++    },
++    "ledger-combined": {
++      "exit": 1,
++      "seconds": 4.2836,
++      "peakRssBytes": 117485568,
++      "log": "ledger-combined.log",
++      "logSha256": "aeeafbd1522a35f4b5b5105e13cb290b1dc1f7609442648c8d072ae64ded71dd",
++      "status": "unresolved",
++      "receipt": "receipts/ledger-combined/20261124T090147Z-16f63979/result.json",
++      "sha256": "0162bc6e86b62bc38418b384c45fbadba46ed146b15ddcde958b148871611f02"
++    }
++  },
++  "replays": {
++    "replay": {
++      "exit": 0,
++      "seconds": 5.7086,
++      "peakRssBytes": 128110592,
++      "log": "replay.log",
++      "logSha256": "41cb47fe3e6749518654b45c2a443084bc547378f528634937711bae8a59c0e5"
++    }
++  },
++  "finite": {
++    "exit": 0,
++    "seconds": 5.4661,
++    "peakRssBytes": 126418944,
++    "log": "finite.log",
++    "logSha256": "ad6ca49a0c82d741deb413e9a1146964c9e42754290d9799c549839595d9f8f1",
++    "directory": "records/finite-proofs/20261124T090137Z-98f4f35c"
++  }
++}

@@ -1,0 +1,232 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084237-check-separate-rounding-and-two-public-u",
+  "title": "Check separate rounding and two public Unicode text interpretations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m58s, peak 7.5 GiB (estimated 25m00s, 5.0 GiB); 6 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -) passed, but the kernel killed 4 process(es) in it at the memory limit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084237-check-separate-rounding-and-two-public-u.json",
+    "sha256": "59bb33520bf28923c257884cdcc3981b0d3769f1a761902e4f423868c41f3505",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084237-check-separate-rounding-and-two-public-u",
+      "title": "Check separate rounding and two public Unicode text interpretations",
+      "description": "Use the vecmath scaleAdd cancellation family, actual Java strings and custom CharSequences on Guava and Lang, and a Commons Lang parser versus the pinned JDK Unicode/double parsing rules. Separate physical false siblings from wide-domain decisions.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:42:37+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 11,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "25m",
+        "timeout": "100m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N03 N06 N07",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/N03",
+        "verification/beyond-jbmc/qualified/N06",
+        "verification/beyond-jbmc/qualified/N07"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T09:01:53+00:00",
+  "finishedAt": "2026-11-24T09:04:00+00:00",
+  "wallSeconds": 127.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 8053063680,
+    "wallSeconds": 118.6,
+    "cpuSeconds": 122.4,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N03 N06 N07",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 118.572,
+      "cpuSeconds": 122.405,
+      "cpuThrottledSeconds": 0.591,
+      "peakMemoryBytes": 8053063680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 4,
+      "memoryHighEvents": 140,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 11,
+        "bytes": 546,
+        "sha256": "d105658e16e325fefaeb039f34fed69e57c4b283c107ac033f9f6910f4b65217",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N03 7 original checks passed",
+        "N03 rounds verified unverifiable FAILURE FAILURE",
+        "N03 fused unverifiable violation FAILURE FAILURE",
+        "N06 10 original checks passed",
+        "N06 commons verified unverifiable SUCCESS SUCCESS",
+        "N06 partition unverifiable unverifiable SUCCESS SUCCESS",
+        "N07 10 original checks passed",
+        "N07 strings unverifiable unverifiable no property report no property report",
+        "N07 sequences unverifiable unverifiable SUCCESS SUCCESS",
+        "N07 same unverifiable unverifiable no property report no property report",
+        "N07 nulls verified unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/N03/executions.zip",
+      "change": "added",
+      "bytes": 86689,
+      "sha256": "2c43a564dc89e846a0510c64bf1cbc31e085d01160cce434ba884ef6f313fd27",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N03/results.json.gz",
+      "change": "added",
+      "bytes": 2138,
+      "sha256": "0fd0be786224063f81db2c93dfbef439f61ab074460ada47d6ddcd2c5a4033b5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N06/executions.zip",
+      "change": "added",
+      "bytes": 53914,
+      "sha256": "96c8e67f22045e9fcfc008b7e7870f379b97396df3ba1a14a2c69479e49d0260",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N06/results.json.gz",
+      "change": "added",
+      "bytes": 1878,
+      "sha256": "9d317409008d9a414ea8f2d4c0a544a7348c49786b3c881e577a93683658049e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N07/executions.zip",
+      "change": "added",
+      "bytes": 37811,
+      "sha256": "c338b64756af73aebb19d4a5f3c641a9d8793af011cc6dd52d493cf19dadff9b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N07/results.json.gz",
+      "change": "added",
+      "bytes": 2789,
+      "sha256": "eb81082ac474082d653f1cff75f8ceb256a7ac774906df39da5f73ca2ba43af2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:05:03+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/N03/executions.zip",
+      "verification/beyond-jbmc/qualified/N03/results.json.gz",
+      "verification/beyond-jbmc/qualified/N06/executions.zip",
+      "verification/beyond-jbmc/qualified/N06/results.json.gz",
+      "verification/beyond-jbmc/qualified/N07/executions.zip",
+      "verification/beyond-jbmc/qualified/N07/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T090400Z-64541538649ac124",
+      "outputs": "20261124T090400Z-677603b28e51c7de",
+      "diff": "20261124T090400Z-69556569a01e4eb6"
+    }
+  }
+}
