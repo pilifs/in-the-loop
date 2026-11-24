@@ -1160,30 +1160,8 @@ impl Engine<'_> {
                 };
                 let Some(named) = *named else { return Some(self.raise(path, "java/lang/NullPointerException")) };
                 let text = String::from_utf16(&self.constant_units(path, named)?).ok()?;
-                if text.starts_with('[') {
-                    return None;
-                }
-                // A binary name has no `/`: one that does names no class.
-                let mut internal = text.replace('.', "/");
-                let mut found = !text.contains('/') && self.cp.exists(&internal);
-                // In a pair of versions, the previous version's code finds its own classes, which the check holds
-                // as copies, and none that only the new version has; the new version's finds no copy.
-                if let Some(previous) = self.cp.previous.as_ref().or(self.previous.as_ref()) {
-                    use crate::relocate::Found;
-                    let caller = &path.frames.last().expect("a frame").class.name;
-                    if previous.original(caller).is_some() {
-                        match previous.find(&internal) {
-                            Found::Class(held) => {
-                                found = !text.contains('/') && self.cp.exists(&held);
-                                internal = held;
-                            }
-                            Found::NotCopied => return None,
-                            Found::Elsewhere => found = found && !self.cp.is_application(&internal),
-                        }
-                    } else if previous.original(&internal).is_some() {
-                        found = false;
-                    }
-                }
+                let caller = &path.frames.last().expect("a frame").class.name;
+                let (internal, found) = self.cp.named_class(caller, &text, self.cp.previous.as_deref().or(self.previous.as_deref()))?;
                 // Released libraries check for VarHandle before selecting their byte-array implementation.
                 // The qualified bootstrap image supplies the class under the engine's stated JDK startup.
                 let bootstrap_view = internal == super::byte_views::HANDLE && self.gap_mode == GapMode::Strict

@@ -166,6 +166,9 @@ fn closures_of(cp: &ClassPath, configuration: &Configuration, roots: &[Result<Ve
 }
 
 fn compare(before: &[Closure], after: &[Closure], before_roots: &[MemberRef], after_roots: &[MemberRef]) -> Verdict {
+    if closure::unbound_lookup(before) || closure::unbound_lookup(after) {
+        return Verdict::Unresolved { reason: "the runtime class path read by Class.forName could not be bound".into() };
+    }
     if closure::digest_of_version(before) == closure::digest_of_version(after) {
         return Verdict::Unchanged;
     }

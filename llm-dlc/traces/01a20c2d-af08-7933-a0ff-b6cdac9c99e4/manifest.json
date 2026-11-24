@@ -12,29 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T11:19:55.242Z",
-  "duration_seconds": 18544,
+  "ended": "2026-11-24T11:48:17.634Z",
+  "duration_seconds": 20247,
   "stats": {
     "turns": 2,
-    "api_calls": 996,
-    "tool_calls": 2615,
-    "tool_errors": 58,
+    "api_calls": 1083,
+    "tool_calls": 2793,
+    "tool_errors": 63,
     "compactions": 3,
     "peak_context_tokens": 550355,
     "usage": {
-      "input_tokens": 1630915,
-      "output_tokens": 570128,
-      "cache_read_input_tokens": 315339904,
+      "input_tokens": 1668386,
+      "output_tokens": 619350,
+      "cache_read_input_tokens": 339993984,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1540,
-    "exec": 978,
-    "apply_patch": 84,
+    "Bash": 1616,
+    "exec": 1060,
+    "apply_patch": 99,
     "sleep": 9,
-    "send_message_to_user_async": 3,
-    "wait": 1
+    "wait": 6,
+    "send_message_to_user_async": 3
   },
   "files_touched": [
     "lib/benchmark/beyond-jbmc/README.md",
@@ -86,9 +86,18 @@
     "lib/src/bmc/reflection.rs",
     "lib/src/bmc/runtime.rs",
     "lib/src/classpath.rs",
+    "lib/src/closure.rs",
+    "lib/src/digest.rs",
+    "lib/src/impact.rs",
+    "lib/src/interp/mod.rs",
+    "lib/src/interp/natives.rs",
+    "lib/src/proof_cache.rs",
     "lib/src/relocate.rs",
+    "lib/src/reuse.rs",
+    "lib/src/zip.rs",
     "lib/tests/dependencies.rs",
-    "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md"
+    "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/class-names-implementation-check.log"
   ],
   "context_windows": [
     {
@@ -136,24 +145,24 @@
     {
       "index": 3,
       "started": "2026-11-24T10:50:33.111Z",
-      "ended": "2026-11-24T11:19:55.242Z",
+      "ended": "2026-11-24T11:48:17.634Z",
       "turns": 1,
-      "api_calls": 106,
+      "api_calls": 193,
       "usage": {
-        "input_tokens": 174058,
-        "output_tokens": 58021,
-        "cache_read_input_tokens": 18339200,
+        "input_tokens": 211529,
+        "output_tokens": 107243,
+        "cache_read_input_tokens": 42993280,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 237196
+      "peak_context_tokens": 318334
     }
   ],
   "log": {
-    "sha256": "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0",
-    "bytes": 15337602,
-    "lines": 7982,
-    "gzip_bytes": 2727029,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0.jsonl.gz"
+    "sha256": "1b2900d2425aae84708c02dc580acb9104d9ed994497b27dcfa8824c0339f79f",
+    "bytes": 16240449,
+    "lines": 8647,
+    "gzip_bytes": 2882881,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/1b2900d2425aae84708c02dc580acb9104d9ed994497b27dcfa8824c0339f79f.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -284,9 +293,23 @@
       "summary": "Preserve original names in equivalence (verification pending)",
       "body": "The ordinary equivalence harness carried the synthetic package of the previous release into reflective class names. Bind class and array names and constant class lookups to the original namespace in native checking, interpreter replay, shrinking and cached witness validation. Keep program String constants intact when their bytes also name a relocated class. Refuse a collision with an actual application class.\n\nA capped probe now proves the exact Sisu Plexus Boolean caller on which the frozen run reported an incorrect difference. A constructed discriminator also exposed a false proof on the frozen checker, with both legal inputs contradicted by original JVMs. The regression exercises both directions, a genuine before package, nested arrays, cache replay and namespace collisions. The affected suites passed across 59 Rust binaries and 86 Python tests. One JBMC process test passed on its automatic retry. The original 89-job index still regenerates byte for byte.\n\nVerification pending in job 20261124-110402-verify-original-class-names-on-plexus-an. It checks cold and warm decisions on the two original Plexus graphs and the preserved name and changed superclass of the Commons Codec incremental hash class.",
       "log_sha256": "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0"
+    },
+    {
+      "change_id": "yopsvwqkwzqlkzuoluwwuooznompxtrm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind reflective lookup proofs to their inputs (verification pending)",
+      "body": "A regression reproduced stale native equality after a class appeared only in the updated release. When application code reaches Class.forName, bind the ordered providers, selected multi-release feature, observed class choices and provider contents to the closure and proof-cache key. Include resources that a dynamically selected initializer could read. Stream regular files through SHA-256 and hash the loaded JAR bytes. The interpreter resolves the one-argument application lookup on the original release and runs initialization, so the changed input now replays as false and true.\n\nVerified exact reuse for an identical graph, invalidation on replacing a resource JAR, and the refutation after the class addition on two original JVMs. Standard SHA-256 vectors and the million-byte vector under 37-byte reads passed. All 59 selected Rust test binaries passed, with one timing-sensitive encoding test passing on retry. The original 89-job ledger regenerated byte for byte.\n\nThe previous release-pair job 20261124-110402-verify-original-class-names-on-plexus-an passed all six cold and warm comparisons. The report and supplementary probes include the frozen false proof and both original JVM outcomes. Verification pending in job 20261124-113530-validate-reflective-class-lookup-across, which adds the real Codec x86 class lookup and requires exact warm reuse on all four public comparisons.",
+      "log_sha256": "1b2900d2425aae84708c02dc580acb9104d9ed994497b27dcfa8824c0339f79f"
     }
   ],
   "logs": {
+    "1b2900d2425aae84708c02dc580acb9104d9ed994497b27dcfa8824c0339f79f": {
+      "bytes": 16240449,
+      "lines": 8647,
+      "gzip_bytes": 2882881,
+      "url": null
+    },
     "2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7": {
       "bytes": 3142529,
       "lines": 1115,

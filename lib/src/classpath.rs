@@ -24,6 +24,34 @@ enum Entry {
     Jar(crate::zip::ZipArchive, PathBuf, JarVersions),
 }
 
+fn lookup_directory(path: &Path, ancestors: &mut Vec<PathBuf>) -> Result<String, Error> {
+    let resolved = path.canonicalize()?;
+    if ancestors.contains(&resolved) {
+        return Err(Error::new("cycle in a class path directory"));
+    }
+    ancestors.push(resolved);
+    let mut entries = std::fs::read_dir(path)?.collect::<Result<Vec<_>, _>>()?;
+    entries.sort_by_key(|e| e.file_name());
+    let mut contents = Vec::new();
+    for entry in entries {
+        let child = entry.path();
+        let metadata = std::fs::metadata(&child)?;
+        let (kind, digest) = if metadata.is_dir() {
+            (b'D', lookup_directory(&child, ancestors)?)
+        } else if metadata.is_file() {
+            (b'F', crate::digest::sha256_reader(std::fs::File::open(&child)?)?)
+        } else {
+            return Err(Error::new(format!("non-file class path entry {}", child.display())));
+        };
+        contents.push(kind);
+        contents.extend(entry.file_name().as_encoded_bytes());
+        contents.push(0);
+        contents.extend(digest.bytes());
+    }
+    ancestors.pop();
+    Ok(crate::digest::sha256_hex(&contents))
+}
+
 /// How a JAR's main manifest enables multi-release lookup, read as the JDK's own reader reads it
 /// (`java.util.jar.JarFile`). Measured on Temurin 17.0.21, 21.0.13 and 25.0.5 with fifteen spellings
 /// (`lib/tests/class_bindings.rs`): a JAR is multi-release there when its manifest's bytes hold `Multi-Release: true`
@@ -433,6 +461,57 @@ impl ClassPath {
 
     pub(crate) fn binary_name(&self, name: &str) -> String {
         crate::relocate::binary_name(name, self.previous.as_deref())
+    }
+
+    /// Resolve the binary name as seen by the calling release. A missing definition
+    /// is a Java outcome. An array or a definition outside the prepared copy needs the JVM.
+    pub(crate) fn named_class(&self, caller: &str, binary: &str, previous: Option<&crate::relocate::Previous>) -> Option<(String, bool)> {
+        if binary.starts_with('[') {
+            return None;
+        }
+        let mut name = binary.replace('.', "/");
+        if binary.contains('/') {
+            return Some((name, false));
+        }
+        if let Some(old) = previous {
+            if old.original(caller).is_some() {
+                match old.find(&name) {
+                    crate::relocate::Found::Class(copy) => name = copy,
+                    crate::relocate::Found::NotCopied => return None,
+                    crate::relocate::Found::Elsewhere if self.is_application(&name) => return Some((name, false)),
+                    crate::relocate::Found::Elsewhere => {}
+                }
+            } else if old.original(&name).is_some() {
+                return Some((name, false));
+            }
+        }
+        if self.refused(&name).is_some() {
+            return None;
+        }
+        let found = self.exists(&name);
+        Some((name, found))
+    }
+
+    /// Class.forName can select and initialize an application class by a computed name.
+    /// Bind its ordered providers, including resources an initializer can read.
+    pub(crate) fn lookup_digest(&self) -> Result<String, Error> {
+        if let Some(problem) = &self.observations.problem {
+            return Err(Error::new(problem.clone()));
+        }
+        let observed: BTreeMap<_, _> = self.observations.classes.iter().collect();
+        let mut providers = serde_json::to_vec(&(self.jar_release, self.observations.feature, observed))
+            .map_err(|e| Error::new(e.to_string()))?;
+        for entry in &self.entries {
+            let (path, kind, digest) = match entry {
+                Entry::Jar(jar, path, _) => (path, b'J', jar.sha256()),
+                Entry::Dir(path) => (path, b'D', lookup_directory(path, &mut Vec::new())?),
+            };
+            providers.push(kind);
+            providers.extend(path.canonicalize()?.as_os_str().as_encoded_bytes());
+            providers.push(0);
+            providers.extend(digest.bytes());
+        }
+        Ok(crate::digest::sha256_hex(&providers))
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call

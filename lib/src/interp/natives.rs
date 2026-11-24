@@ -901,6 +901,21 @@ fn string_arg(m: &mut Machine, v: Value) -> Exec<JStr> {
     m.heap.string(r).cloned().ok_or_else(|| Fault::Unsupported("expected a String".into()))
 }
 
+/// One-argument Class.forName from an application class, replayed with its release's loader.
+pub(super) fn class_for_name(m: &mut Machine, caller: &str, arg: Value) -> Exec<Option<Value>> {
+    let binary = text_of(&string_arg(m, arg)?, "Class.forName")?;
+    let (held, found) = m.cp.named_class(caller, &binary, m.cp.previous.as_deref())
+        .ok_or_else(|| Fault::Unsupported(format!("Class.forName({binary}) requires the original JVM loader")))?;
+    if !found {
+        return Err(m.throw("java/lang/ClassNotFoundException", Some(&binary)));
+    }
+    if !m.cp.is_application(&held) || !m.cp.loads(&held) {
+        return unsupported(format!("Class.forName({binary}) requires its defining JVM loader"));
+    }
+    m.ensure_initialized(&held)?;
+    Ok(Some(m.class_object(&Type::object(&held))))
+}
+
 fn immutable(m: &mut Machine) -> Fault {
     m.throw("java/lang/UnsupportedOperationException", None)
 }

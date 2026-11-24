@@ -1225,6 +1225,9 @@ impl<'a> Machine<'a> {
                     Some(value)
                 } else if crate::bmc::runtime::property_call(&member.owner, &member.name, &member.descriptor) {
                     self.system_property(&member.name, &args, matches!(code.insns.get(*i + 1), Some(Insn::Pop)))?
+                } else if member.owner == "java/lang/Class" && member.name == "forName"
+                    && member.descriptor == "(Ljava/lang/String;)Ljava/lang/Class;" && self.cp.is_application(&class.name) {
+                    natives::class_for_name(self, &class.name, args[0])?
                 } else if self.cp.is_application(&member.owner) || self.cp.state_image_class(&member.owner).is_some() || self.cp.map_image_class(&member.owner).is_some() {
                     self.call_static(&member.owner, &member.name, &member.descriptor, args)?
                 } else {

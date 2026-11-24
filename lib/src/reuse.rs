@@ -299,7 +299,8 @@ pub fn property_claim(options: &Options) -> Result<Option<CanonicalClaim>, Unsup
         }
     }
     let configuration = crate::closure::Configuration::read(&cp, &[]).map_err(|e| uncacheable(format!("its configuration could not be read: {e}")))?;
-    let closures = VersionDigests { before: "none: a property claim is about one version".into(), after: crate::closure::version_digest(&cp, &roots, &configuration) };
+    let after = crate::closure::cache_version_digest(&cp, &roots, &configuration).map_err(|e| uncacheable(e.to_string()))?;
+    let closures = VersionDigests { before: "none: a property claim is about one version".into(), after };
 
     let observations = vec![Observation::Result, Observation::Exception];
     let contract = PreservationContract { subject: options.target.clone(), inputs, required: observations.iter().map(Observation::id).collect(), approved_changes: Vec::new() };

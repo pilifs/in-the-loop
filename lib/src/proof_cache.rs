@@ -388,7 +388,7 @@ impl<'a> Regression<'a> {
         let before_roots: Vec<MemberRef> = std::iter::once(self.before_target.clone()).chain(made.before).collect();
         let digest = |cp: &ClassPath, roots: &[MemberRef]| -> Result<String, Unsupported> {
             let configuration = crate::closure::Configuration::read(cp, &[]).map_err(|e| uncacheable(format!("its configuration could not be read: {e}")))?;
-            Ok(crate::closure::version_digest(cp, roots, &configuration))
+            crate::closure::cache_version_digest(cp, roots, &configuration).map_err(|e| uncacheable(e.to_string()))
         };
         let closures = crate::reuse::preparation::span(crate::reuse::preparation::Stage::Closures, &o.target, || -> Result<VersionDigests, Unsupported> {
             Ok(VersionDigests { before: digest(self.before_cp, &before_roots)?, after: digest(self.after_cp, &after_roots)? })

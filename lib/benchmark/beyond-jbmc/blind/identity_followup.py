@@ -58,7 +58,9 @@ def plexus(work):
 def codec():
     graphs = [jars_for("commons-codec-" + version) for version in ("1.13", "1.14")]
     names = [CODEC_TYPE, "[[L" + CODEC_TYPE + ";"]
-    expected = {"name": [names, names], "hierarchy": [[CODEC_TYPE, "java.lang.Object"], [CODEC_TYPE, CODEC_TYPE + "x86"]]}
+    expected = {"name": [names, names],
+                "hierarchy": [[CODEC_TYPE, "java.lang.Object"], [CODEC_TYPE, CODEC_TYPE + "x86"]],
+                "lookup": [[CODEC_TYPE, "absent"], [CODEC_TYPE, CODEC_TYPE + "x86"]]}
     return HERE.parent / "extended/CodecNames.java", graphs, None, expected
 
 
@@ -78,6 +80,9 @@ def check(work, checker, roots, graphs, target, observed, warm):
         expected = "violation" if changed else "verified"
         if run["killed"] or run["exit"] != int(changed) or result.get("verdict") != expected:
             raise ValueError(f"{target} {temperature}: expected {expected}, got {result.get('verdict')}: {result.get('problem')}")
+        reused = (result.get("reuse") or {}).get("kind")
+        if reused != ("exact" if temperature == "warm" else None):
+            raise ValueError(f"{target} {temperature}: unexpected cache result {reused}")
         if changed:
             witness = result["counterexample"]
             value, = witness["inputs"]
@@ -133,7 +138,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--subject", choices=("plexus", "codec", "both"), default="both")
     parser.add_argument("--cold-only", action="store_true")
-    parser.add_argument("--output", type=Path, default=OUTPUT / "followup/class-names.json.gz")
+    parser.add_argument("--output", type=Path, default=OUTPUT / "followup/lookup-and-names.json.gz")
     args = parser.parse_args()
     os.environ.update(javaenv())
     checker = Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve()

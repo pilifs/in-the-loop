@@ -9,4 +9,14 @@ public final class CodecNames {
         Class<?> type = new IncrementalHash32().getClass();
         return (parent ? type.getSuperclass() : type).getName();
     }
+
+    public static String lookup(boolean x86) {
+        String name = x86 ? "org.apache.commons.codec.digest.MurmurHash3$IncrementalHash32x86"
+                          : "org.apache.commons.codec.digest.MurmurHash3$IncrementalHash32";
+        try {
+            return Class.forName(name).getName();
+        } catch (ClassNotFoundException missing) {
+            return "absent";
+        }
+    }
 }
