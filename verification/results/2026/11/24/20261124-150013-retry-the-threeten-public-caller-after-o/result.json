@@ -1,0 +1,173 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-150013-retry-the-threeten-public-caller-after-o",
+  "title": "Retry the ThreeTen public caller after observing formatter initialization",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 6.4s, peak 95.4 MiB (estimated 2m00s, 2.0 GiB)",
+  "attention": [
+    "declared output verification/organic-composition/threeten/observed-native.json was not produced",
+    "step 1 (Bind observed formatter initialization on both sides) exited 1, expected 0",
+    "step 1 (Bind observed formatter initialization on both sides) was held back 5.1s by its 1-CPU quota in 6.4s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-150013-retry-the-threeten-public-caller-after-o.json",
+    "sha256": "5b3554d3384f70133ea40526a37f58421060120f18008321479a488062f1a437",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-150013-retry-the-threeten-public-caller-after-o",
+      "title": "Retry the ThreeTen public caller after observing formatter initialization",
+      "description": "Retry both original strict public overlap predicates on the same finite Boolean domain with the genuine formatter initializer observed on the selected upstream classpath and JDK. Keep the first newly reached dependency, apart from the live provider and checked finite JVM plan.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:00:13+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Bind observed formatter initialization on both sides",
+          "run": "python3 -B lib/benchmark/organic-composition/native_open.py threeten overlap org.threeten.bp.format.DateTimeFormatter",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/threeten/observed-native.json"
+      ]
+    }
+  },
+  "sourceCommit": "a96f60b3d734e5544c1fb560f66eb8fd919478d2",
+  "startedAt": "2026-11-24T15:12:08+00:00",
+  "finishedAt": "2026-11-24T15:16:24+00:00",
+  "wallSeconds": 256.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1800624,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 100085760,
+    "wallSeconds": 6.4,
+    "cpuSeconds": 6.4,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Bind observed formatter initialization on both sides",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py threeten overlap org.threeten.bp.format.DateTimeFormatter",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.415,
+      "cpuSeconds": 6.377,
+      "cpuThrottledSeconds": 5.088,
+      "peakMemoryBytes": 100085760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-bind-observed-formatter-initia.log",
+        "lines": 7,
+        "bytes": 801,
+        "sha256": "e9eeedca20359548a15a7a09c78975ffd9d458042193d708c24c71164ba0d99f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-150013-retry-the-threeten-public-caller-after-o/lib/benchmark/organic-composition/native_open.py\", line 38, in <module>",
+        "    measure(*sys.argv[1:])",
+        "    ~~~~~~~^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-150013-retry-the-threeten-public-caller-after-o/lib/benchmark/organic-composition/native_open.py\", line 31, in measure",
+        "    raise ValueError(f\"missing native disposition on {side}: {proc.stderr[:200]}\")",
+        "ValueError: missing native disposition on old: jvmcontract: --observed-initializer org.threeten.bp.format.DateTimeFormatter: its initialization initialized org.threeten.bp.chrono.Chronology, whose field LOCALE_METHOD holds an object of java.lang.r"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T15:17:04+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "c8ceb8d14c291550427fb0a58fd06d6a81998f05",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c8ceb8d14c291550427fb0a58fd06d6a81998f05/jvmcontract",
+    "built": false
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T151624Z-599336bff314796c",
+      "outputs": "20261124T151624Z-62998199b6d72a53",
+      "workdir": "20261124T151631Z-64618087f445be6a"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-150013-retry-the-threeten-public-caller-after-o"
+}
