@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-033703-certify-ordinary-native-verdicts-and-rep",
+  "title": "Certify ordinary native verdicts and replay their SAT evidence",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 14.6 MiB (estimated 4m00s, 2.0 GiB)",
+  "attention": [
+    "declared output verification/trusted-kernel-recovery/lrat was not produced",
+    "step 1 (Run and challenge five complete native verdicts) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-033703-certify-ordinary-native-verdicts-and-rep.json",
+    "sha256": "48ce8f3542b417d57ad6e94c78dcc8b52f8d26343167789b35abd9e87df40c51",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-033703-certify-ordinary-native-verdicts-and-rep",
+      "title": "Certify ordinary native verdicts and replay their SAT evidence",
+      "description": "Run Guava 336, both Jackson 393 claims, and UTF-16 395 on the normal example route with certification off and on. Recheck the held prefix-sums result on its pinned class files. Bind every native pass and attempt, validate the actual SAT models, check LRAT for every UNSAT in fresh processes, and withhold assurance for missing, duplicated, swapped and transplanted evidence. Measure wall time, generation, checking and retained size.",
+      "kind": "library",
+      "capabilities": [
+        "sat-certificate",
+        "jvmcontract:transcript",
+        "jvmcontract:prove",
+        "jvm:counterexample"
+      ],
+      "links": {
+        "examples": [
+          "336",
+          "393",
+          "395"
+        ]
+      },
+      "expected": "The Guava and prefix-sums runs recheck 8 and 10 UNSAT calls, Jackson retains the classified positive and original JVM counterexample, and UTF-16 records its solver-free proof. All pass-level attempts reconcile, all negative controls withhold assurance, and both ordinary and certified receipts are retained.",
+      "submitted": {
+        "at": "2026-11-24T03:37:03+00:00",
+        "session": "01a20b98-bfb6-7981-b527-1699b229ddce"
+      },
+      "requires": [
+        "jvmcontract",
+        "python3",
+        "java",
+        "javac",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Run and challenge five complete native verdicts",
+          "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --output verification/trusted-kernel-recovery/lrat",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/trusted-kernel-recovery/lrat"
+      ]
+    }
+  },
+  "sourceCommit": "0bd3b57768a815b304241fae840abba78bb0cb76",
+  "startedAt": "2026-11-24T03:44:19+00:00",
+  "finishedAt": "2026-11-24T03:50:33+00:00",
+  "wallSeconds": 374.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3763382,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 15355904,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.1,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run and challenge five complete native verdicts",
+      "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --output verification/trusted-kernel-recovery/lrat",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 0.203,
+      "cpuSeconds": 0.089,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 15355904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-and-challenge-five-complet.log",
+        "lines": 4,
+        "bytes": 323,
+        "sha256": "d3b170c94260c9e475654376ec4a8abe0b1541889a9a44db5c41ad5ba690f242",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-033703-certify-ordinary-native-verdicts-and-rep/lib/benchmark/trusted-kernel/verdict_qualification.py\", line 20, in <module>",
+        "    import jvmcontract_lrat as lrat",
+        "ModuleNotFoundError: No module named 'jvmcontract_lrat'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T04:09:16+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6d4a7e033710845d455430f2eff3af7a6a21f1b1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6d4a7e033710845d455430f2eff3af7a6a21f1b1/jvmcontract",
+    "built": false
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T035033Z-7935237b03645954",
+      "outputs": "20261124T035033Z-8139003aafa84ac2",
+      "workdir": "20261124T035221Z-9162177802ef7e87"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-033703-certify-ordinary-native-verdicts-and-rep"
+}

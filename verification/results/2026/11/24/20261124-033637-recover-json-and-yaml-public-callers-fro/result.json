@@ -1,0 +1,225 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-033637-recover-json-and-yaml-public-callers-fro",
+  "title": "Recover JSON and YAML public callers from live table prestates",
+  "status": "failed",
+  "summary": "failed: 1 failed, 2 skipped step(s) in 0.6s, peak 51.9 MiB (estimated 3m00s, 2.0 GiB)",
+  "attention": [
+    "declared output verification/receiver-discovery/recovery/live-table.json was not produced",
+    "declared output verification/receiver-discovery/recovery/commons-configuration-565 was not produced",
+    "declared output verification/receiver-discovery/recovery/commons-configuration-601 was not produced",
+    "step 1 (Exercise the live properties table and initializer identity) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-033637-recover-json-and-yaml-public-callers-fro.json",
+    "sha256": "8b796e6f88c0abc99719eb4f167b14dd98bcd27d063572591b794aba14663e87",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-033637-recover-json-and-yaml-public-callers-fro",
+      "title": "Recover JSON and YAML public callers from live table prestates",
+      "description": "Bind each Configuration holder and its physical table and key lookups from the release bytes. Repeat the full registered JSON caller followed by YAML on the same checker. At every frozen selector, use fresh JVMs to distinguish the stock table, an invalid own property and the same invalid setting inherited from defaults. Verify the original selector and observer bytes, first versus repeated class initialization and two concurrent-in-lifetime configuration trees in both read orders.",
+      "kind": "real-world",
+      "capabilities": [
+        "receiver-construction",
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "expected": "Bindings and original selector expectations agree on all four sides; a predicate refutation includes a fresh JVM counterexample and a default comparison on the same input; the inherited value provides a distinct membership control.",
+      "submitted": {
+        "at": "2026-11-24T03:36:37+00:00",
+        "session": "01a20b98-a4a8-7b90-bf7a-097e3504fb3a"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "18m"
+      },
+      "steps": [
+        {
+          "name": "Exercise the live properties table and initializer identity",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/recovery.py live",
+          "cwd": "."
+        },
+        {
+          "name": "Evaluate both JSON deployments",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/recovery.py commons-configuration-565",
+          "cwd": "."
+        },
+        {
+          "name": "Evaluate both YAML deployments using the same code",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/recovery.py commons-configuration-601",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/recovery/live-table.json",
+        "verification/receiver-discovery/recovery/commons-configuration-565",
+        "verification/receiver-discovery/recovery/commons-configuration-601"
+      ]
+    }
+  },
+  "sourceCommit": "0bd3b57768a815b304241fae840abba78bb0cb76",
+  "startedAt": "2026-11-24T03:44:19+00:00",
+  "finishedAt": "2026-11-24T03:50:34+00:00",
+  "wallSeconds": 375.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3763382,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1080.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 54407168,
+    "wallSeconds": 0.6,
+    "cpuSeconds": 0.4,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Exercise the live properties table and initializer identity",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/recovery.py live",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1080.0,
+      "cancelled": false,
+      "wallSeconds": 0.613,
+      "cpuSeconds": 0.431,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 54407168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-exercise-the-live-properties-t.log",
+        "lines": 27,
+        "bytes": 2542,
+        "sha256": "2cc82f8aeba4e9a9b20e18e284608618b84962796516d4b12cae72d50a51efeb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "error: file not found: /home/filip/code/in-the-loop/verification/.state/work/20261124-033637-recover-json-and-yaml-public-callers-fro/lib/benchmark/receiver-discovery/history/LiveProperties.java",
+        "Usage: javac <options> <source files>",
+        "use --help for a list of possible options",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-033637-recover-json-and-yaml-public-callers-fro/lib/benchmark/receiver-discovery/recovery.py\", line 173, in <module>",
+        "    live_table()",
+        "    ~~~~~~~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-033637-recover-json-and-yaml-public-callers-fro/lib/benchmark/receiver-discovery/recovery.py\", line 41, in live_table",
+        "    compile_to(dest, [dest], source)",
+        "    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-033637-recover-json-and-yaml-public-callers-fro/lib/benchmark/receiver-discovery/recovery.py\", line 25, in compile_to",
+        "    command([JDK / \"bin/javac\", \"-proc:none\", \"-g\", \"-encoding\", \"UTF-8\", \"-cp\",",
+        "    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "             os.pathsep.join(map(str, cp)), \"-d\", directory, *sources])",
+        "             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-033637-recover-json-and-yaml-public-callers-fro/lib/benchmark/receiver-discovery/investigate.py\", line 35, in command",
+        "    return subprocess.check_output(list(map(str, argv)), text=True, **kwargs)",
+        "           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/subprocess.py\", line 473, in check_output",
+        "    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,",
+        "           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "               **kwargs).stdout",
+        "               ^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/subprocess.py\", line 578, in run",
+        "    raise CalledProcessError(retcode, process.args,",
+        "                             output=stdout, stderr=stderr)",
+        "subprocess.CalledProcessError: Command '['/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem/bin/javac', '-proc:none', '-g', '-encoding', 'UTF-8', '-cp', '/home/filip/.cache/in-the-loop/tmp/tmpsfd5sdl9', '-d', '/home/filip/.cache/in-the-loop/tmp/tmpsfd5sdl9', '/home/filip/code/in-the-loop/verificat"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Evaluate both JSON deployments",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/recovery.py commons-configuration-565",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 3,
+      "name": "Evaluate both YAML deployments using the same code",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/recovery.py commons-configuration-601",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T04:09:16+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "6d4a7e033710845d455430f2eff3af7a6a21f1b1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6d4a7e033710845d455430f2eff3af7a6a21f1b1/jvmcontract",
+    "built": false
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T035034Z-232405da1ee71416",
+      "outputs": "20261124T035034Z-25830915c9f25f63",
+      "workdir": "20261124T035220Z-6583780cb116789b"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-033637-recover-json-and-yaml-public-callers-fro"
+}
