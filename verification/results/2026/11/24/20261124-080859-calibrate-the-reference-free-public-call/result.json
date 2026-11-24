@@ -1,0 +1,181 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-080859-calibrate-the-reference-free-public-call",
+  "title": "Calibrate the reference-free public caller operator before blind scoring",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.0s, peak 110.9 MiB (estimated 2m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-080859-calibrate-the-reference-free-public-call.json",
+    "sha256": "b7e9222edb4c9ad18e10c0a354aa38899cff9cd18b0805ca853c4e2a87a0e19a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-080859-calibrate-the-reference-free-public-call",
+      "title": "Calibrate the reference-free public caller operator before blind scoring",
+      "description": "Use only the two disclosed broken/fixed benchmark artifacts inside the same networkless namespace intended for the blind experiment. Select public methods before solving, compile callers once, run their unmodified release paths, and use strict native equivalence. Retain cold and warm costs and independently replay a real discovered divergence. No blind pair or reference material is supplied.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "upgrade:automatic-caller"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/auto_upgrade.py"
+        ]
+      },
+      "expected": "Four invalidated public candidates selected without labels and at least one discovered, independently replayed divergence. The full automatic profile records the twelve original JVM seeds and the warm replay.",
+      "submitted": {
+        "at": "2026-11-24T08:08:59+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 24,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "bwrap"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "2m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Isolated automatic operator",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/calibration.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/calibration/artifact-only.json"
+      ]
+    }
+  },
+  "sourceCommit": "6df5a89936febe2f3d004d22f5eb36653a847fa3",
+  "startedAt": "2026-11-24T08:36:32+00:00",
+  "finishedAt": "2026-11-24T08:39:49+00:00",
+  "wallSeconds": 197.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2719281,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 116330496,
+    "wallSeconds": 10.0,
+    "cpuSeconds": 13.5,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Isolated automatic operator",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/calibration.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 10.025,
+      "cpuSeconds": 13.54,
+      "cpuThrottledSeconds": 2.745,
+      "peakMemoryBytes": 116330496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-isolated-automatic-operator.log",
+        "lines": 1,
+        "bytes": 34,
+        "sha256": "e6e88677b2bbebc3248e79c6fa13488a975bb0512b8f06f29ce8539882397fbd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "selected 4 of 5 public candidates"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/calibration/artifact-only.json",
+      "change": "added",
+      "bytes": 86354,
+      "sha256": "c1bfeb24c95164beeafd35e10f8ad1c62e9332ac95b976eb1868b03da827fa88",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:40:00+00:00",
+    "applied": [
+      "verification/beyond-jbmc/calibration/artifact-only.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T083949Z-400498c029dca9d9",
+      "outputs": "20261124T083949Z-41757944c7750f62",
+      "diff": "20261124T083949Z-43373369bdfafaec"
+    }
+  }
+}

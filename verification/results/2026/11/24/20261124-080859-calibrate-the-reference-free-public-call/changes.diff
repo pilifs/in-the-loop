@@ -1,0 +1,3667 @@
+--- /dev/null
++++ b/verification/beyond-jbmc/calibration/artifact-only.json
+@@ -0,0 +1,3664 @@
++{
++ "policy": {
++  "format": "artifact-only/v1",
++  "impactCandidates": 24,
++  "attempts": 4,
++  "perCheckerSeconds": 120,
++  "unwind": 16,
++  "arrayBound": 8,
++  "freshJvmSeeds": 12,
++  "impactSeconds": 40,
++  "operatorInputs": [
++   "ordered binary classpaths"
++  ],
++  "selection": "public common methods, literal resource links and body changes, then transitive impact and constructibility"
++ },
++ "inputs": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "c52e85ff7b3932fffdd388c78041b95f382a20d965e14163dd039685ab2f6931"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "64c544bb3515f1d3f02e6cb1a89be012e6f1e477cb63b4d2e16fd632a0a9cd6b"
++   }
++  ]
++ },
++ "toolSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++ "runs": [
++  {
++   "candidate": {
++    "id": "bench.real.Oddity#isOdd(I)Z",
++    "owner": "bench.real.Oddity",
++    "method": "isOdd",
++    "descriptor": "(I)Z",
++    "params": [
++     "int"
++    ],
++    "return": "boolean",
++    "static": true,
++    "exactDispatch": true,
++    "constructor": null,
++    "getter": null,
++    "buildable": true,
++    "codeBytesDiffer": true,
++    "classBytesDiffer": true,
++    "changedResources": [],
++    "rank": [
++     false,
++     false,
++     true,
++     false,
++     1,
++     "f9c508f4a26d1fc314ef9d2efee4e10cabfd3a358181f8b8d2085b59f8d9097a"
++    ],
++    "impact": "invalidated"
++   },
++   "physical": [
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[0]",
++       "return false",
++       "[0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old0.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[0]",
++       "return false",
++       "[0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new0.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[1]",
++       "return true",
++       "[1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old1.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[1]",
++       "return true",
++       "[1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new1.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[-1]",
++       "return false",
++       "[-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old2.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[-1]",
++       "return true",
++       "[-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new2.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[2]",
++       "return false",
++       "[2]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old3.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[2]",
++       "return false",
++       "[2]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new3.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[127]",
++       "return true",
++       "[127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old4.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[127]",
++       "return true",
++       "[127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new4.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[128]",
++       "return false",
++       "[128]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old5.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[128]",
++       "return false",
++       "[128]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new5.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[255]",
++       "return true",
++       "[255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old6.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[255]",
++       "return true",
++       "[255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new6.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[256]",
++       "return false",
++       "[256]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old7.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[256]",
++       "return false",
++       "[256]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new7.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[16383]",
++       "return true",
++       "[16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old8.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[16383]",
++       "return true",
++       "[16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new8.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[16384]",
++       "return false",
++       "[16384]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old9.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[16384]",
++       "return false",
++       "[16384]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new9.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[-2147483648]",
++       "return false",
++       "[-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old10.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[-2147483648]",
++       "return false",
++       "[-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new10.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[2147483647]",
++       "return true",
++       "[2147483647]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/old11.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[2147483647]",
++       "return true",
++       "[2147483647]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Oddity",
++       "isOdd",
++       "/scratch/artifact-only-neojncti/case0/new11.obs"
++      ]
++     }
++    ]
++   ],
++   "workflow": "generated public return/throw and parameter-array frame",
++   "source": "public final class PublicCaller {\n    public static boolean observe(int p0) throws Throwable {\n        return bench.real.Oddity.isOdd(p0);\n    }\n}\n",
++   "callerSha256": "d75c960778968d555f93f1c24cad5c49758a6a30da11ae0293b8387096966336",
++   "argv": [
++    "/opt/checker",
++    "equivalence",
++    "--before",
++    "/scratch/artifact-only-neojncti/case0/old",
++    "--after",
++    "/scratch/artifact-only-neojncti/case0/new",
++    "--before-classpath",
++    "/scratch/artifact-only-neojncti/case0/empty",
++    "--classpath",
++    "/scratch/artifact-only-neojncti/case0/empty",
++    "--target",
++    "PublicCaller#observe",
++    "--engine",
++    "native",
++    "--gaps",
++    "strict",
++    "--unwind",
++    "16",
++    "--max-array-length",
++    "8",
++    "--timeout",
++    "120",
++    "--work",
++    "/scratch/artifact-only-neojncti/case0/strict",
++    "--cache",
++    "/scratch/artifact-only-neojncti/case0/proof-cache",
++    "--json"
++   ],
++   "exit": 1,
++   "verdict": "violation",
++   "stated": {
++    "kind": "regression",
++    "domain": {
++     "parameters": [
++      {
++       "name": "p0",
++       "type": "int",
++       "kind": "primitive",
++       "null": false
++      }
++     ],
++     "shared_arrays": false,
++     "text": "p0: int"
++    },
++    "assumptions": [
++     {
++      "kind": "initialization",
++      "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++      "basis": "engine"
++     }
++    ],
++    "observations": {
++     "result": "the result, equal in both versions",
++     "exceptions": "whether it throws, and which of 17 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exceptions either version declares, java.lang.Exception, java.lang.Throwable; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++    },
++    "bounds": {
++     "unwind": 16,
++     "max_array_length": null,
++     "complete": false
++    },
++    "models": {
++     "used": true,
++     "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++     "classes": 40,
++     "jdk": "21.0.13"
++    },
++    "checker": {
++     "engine": "native",
++     "name": "jvmcontract's own checker (CaDiCaL)",
++     "solver": "CaDiCaL 1.9.5 (bundled)",
++     "fallback": null,
++     "sat": {
++      "solver": "CaDiCaL",
++      "version": "1.9.5",
++      "source": "bundled by the Rust crate cadical 0.1.16",
++      "configuration": [
++       "CaDiCaL's default options",
++       "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++       "the run's deadline through CaDiCaL's terminate callback",
++       "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++      ]
++     }
++    },
++    "gap_mode": "strict",
++    "confirmation": null
++   },
++   "problem": null,
++   "counterexample": {
++    "input": "observe(p0=-1)",
++    "before": "false",
++    "after": "true",
++    "values": [
++     "-1"
++    ],
++    "found": "observe(p0=-31075)",
++    "shrink_runs": 17,
++    "inputs": [
++     {
++      "name": "p0",
++      "type": "int",
++      "value": -1
++     }
++    ],
++    "found_inputs": [
++     {
++      "name": "p0",
++      "type": "int",
++      "value": -31075
++     }
++    ],
++    "call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "after",
++     "method": "observe",
++     "descriptor": "(I)Z",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "int",
++       "value": -1,
++       "from": "p0"
++      }
++     ]
++    },
++    "previous_call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "before",
++     "method": "observe",
++     "descriptor": "(I)Z",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "int",
++       "value": -1,
++       "from": "p0"
++      }
++     ]
++    },
++    "differs": [
++     "result"
++    ]
++   },
++   "status": "measured",
++   "witnessReplay": [
++    {
++     "exit": 0,
++     "fields": [
++      "[-1]",
++      "return false",
++      "[-1]",
++      "true",
++      "false"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/old/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Oddity",
++      "isOdd",
++      "/scratch/artifact-only-neojncti/case0/oldwitness.obs",
++      "/output/first/case0/witness.bin"
++     ]
++    },
++    {
++     "exit": 0,
++     "fields": [
++      "[-1]",
++      "return true",
++      "[-1]",
++      "true",
++      "false"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case0/caller:/inputs/new/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Oddity",
++      "isOdd",
++      "/scratch/artifact-only-neojncti/case0/newwitness.obs",
++      "/output/first/case0/witness.bin"
++     ]
++    }
++   ],
++   "originalReplayChanged": true,
++   "coldCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.12164425605442375,
++    "cpuSeconds": 0.115949,
++    "peakMiB": 52.98046875
++   },
++   "warmCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.13205778098199517,
++    "cpuSeconds": 0.107765,
++    "peakMiB": 51.5
++   }
++  },
++  {
++   "candidate": {
++    "id": "bench.real.Midpoint#midpoint(II)I",
++    "owner": "bench.real.Midpoint",
++    "method": "midpoint",
++    "descriptor": "(II)I",
++    "params": [
++     "int",
++     "int"
++    ],
++    "return": "int",
++    "static": true,
++    "exactDispatch": true,
++    "constructor": null,
++    "getter": null,
++    "buildable": true,
++    "codeBytesDiffer": true,
++    "classBytesDiffer": true,
++    "changedResources": [],
++    "rank": [
++     false,
++     false,
++     true,
++     false,
++     2,
++     "17516c1ba741d4c0e538398cbae5a4366337f912983577637e9f7096580fa9b3"
++    ],
++    "impact": "invalidated"
++   },
++   "physical": [
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[0,0]",
++       "return 0",
++       "[0,0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old0.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[0,0]",
++       "return 0",
++       "[0,0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new0.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[1,-1]",
++       "return 0",
++       "[1,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old1.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[1,-1]",
++       "return 0",
++       "[1,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new1.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[-1,127]",
++       "return 63",
++       "[-1,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old2.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[-1,127]",
++       "return 63",
++       "[-1,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new2.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[2,255]",
++       "return 128",
++       "[2,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old3.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[2,255]",
++       "return 128",
++       "[2,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new3.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[127,16383]",
++       "return 8255",
++       "[127,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old4.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[127,16383]",
++       "return 8255",
++       "[127,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new4.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[128,-2147483648]",
++       "return -1073741760",
++       "[128,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old5.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[128,-2147483648]",
++       "return 1073741888",
++       "[128,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new5.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[255,0]",
++       "return 127",
++       "[255,0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old6.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[255,0]",
++       "return 127",
++       "[255,0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new6.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[256,-1]",
++       "return 127",
++       "[256,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old7.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[256,-1]",
++       "return 127",
++       "[256,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new7.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[16383,127]",
++       "return 8255",
++       "[16383,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old8.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[16383,127]",
++       "return 8255",
++       "[16383,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new8.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[16384,255]",
++       "return 8319",
++       "[16384,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old9.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[16384,255]",
++       "return 8319",
++       "[16384,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new9.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[-2147483648,16383]",
++       "return -1073733632",
++       "[-2147483648,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old10.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[-2147483648,16383]",
++       "return 1073750015",
++       "[-2147483648,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new10.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[2147483647,-2147483648]",
++       "return 0",
++       "[2147483647,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/old11.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[2147483647,-2147483648]",
++       "return 2147483647",
++       "[2147483647,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Midpoint",
++       "midpoint",
++       "/scratch/artifact-only-neojncti/case1/new11.obs"
++      ]
++     }
++    ]
++   ],
++   "workflow": "generated public return/throw and parameter-array frame",
++   "source": "public final class PublicCaller {\n    public static int observe(int p0, int p1) throws Throwable {\n        return bench.real.Midpoint.midpoint(p0, p1);\n    }\n}\n",
++   "callerSha256": "2e40e10743a8b64cf8face0daf47602ff37a914cfe2a0e2b2bbfc9a79c6d3314",
++   "argv": [
++    "/opt/checker",
++    "equivalence",
++    "--before",
++    "/scratch/artifact-only-neojncti/case1/old",
++    "--after",
++    "/scratch/artifact-only-neojncti/case1/new",
++    "--before-classpath",
++    "/scratch/artifact-only-neojncti/case1/empty",
++    "--classpath",
++    "/scratch/artifact-only-neojncti/case1/empty",
++    "--target",
++    "PublicCaller#observe",
++    "--engine",
++    "native",
++    "--gaps",
++    "strict",
++    "--unwind",
++    "16",
++    "--max-array-length",
++    "8",
++    "--timeout",
++    "120",
++    "--work",
++    "/scratch/artifact-only-neojncti/case1/strict",
++    "--cache",
++    "/scratch/artifact-only-neojncti/case1/proof-cache",
++    "--json"
++   ],
++   "exit": 1,
++   "verdict": "violation",
++   "stated": {
++    "kind": "regression",
++    "domain": {
++     "parameters": [
++      {
++       "name": "p0",
++       "type": "int",
++       "kind": "primitive",
++       "null": false
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "kind": "primitive",
++       "null": false
++      }
++     ],
++     "shared_arrays": false,
++     "text": "p0: int × p1: int"
++    },
++    "assumptions": [
++     {
++      "kind": "initialization",
++      "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++      "basis": "engine"
++     }
++    ],
++    "observations": {
++     "result": "the result, equal in both versions",
++     "exceptions": "whether it throws, and which of 17 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exceptions either version declares, java.lang.Exception, java.lang.Throwable; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++    },
++    "bounds": {
++     "unwind": 16,
++     "max_array_length": null,
++     "complete": false
++    },
++    "models": {
++     "used": true,
++     "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++     "classes": 40,
++     "jdk": "21.0.13"
++    },
++    "checker": {
++     "engine": "native",
++     "name": "jvmcontract's own checker (CaDiCaL)",
++     "solver": "CaDiCaL 1.9.5 (bundled)",
++     "fallback": null,
++     "sat": {
++      "solver": "CaDiCaL",
++      "version": "1.9.5",
++      "source": "bundled by the Rust crate cadical 0.1.16",
++      "configuration": [
++       "CaDiCaL's default options",
++       "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++       "the run's deadline through CaDiCaL's terminate callback",
++       "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++      ]
++     }
++    },
++    "gap_mode": "strict",
++    "confirmation": null
++   },
++   "problem": null,
++   "counterexample": {
++    "input": "observe(p0=0, p1=-1)",
++    "before": "0",
++    "after": "2147483647",
++    "values": [
++     "0",
++     "-1"
++    ],
++    "found": "observe(p0=1, p1=-49151)",
++    "shrink_runs": 30,
++    "inputs": [
++     {
++      "name": "p0",
++      "type": "int",
++      "value": 0
++     },
++     {
++      "name": "p1",
++      "type": "int",
++      "value": -1
++     }
++    ],
++    "found_inputs": [
++     {
++      "name": "p0",
++      "type": "int",
++      "value": 1
++     },
++     {
++      "name": "p1",
++      "type": "int",
++      "value": -49151
++     }
++    ],
++    "call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "after",
++     "method": "observe",
++     "descriptor": "(II)I",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "int",
++       "value": 0,
++       "from": "p0"
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "value": -1,
++       "from": "p1"
++      }
++     ]
++    },
++    "previous_call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "before",
++     "method": "observe",
++     "descriptor": "(II)I",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "int",
++       "value": 0,
++       "from": "p0"
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "value": -1,
++       "from": "p1"
++      }
++     ]
++    },
++    "differs": [
++     "result"
++    ]
++   },
++   "status": "measured",
++   "witnessReplay": [
++    {
++     "exit": 0,
++     "fields": [
++      "[0,-1]",
++      "return 0",
++      "[0,-1]",
++      "true",
++      "false"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/old/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Midpoint",
++      "midpoint",
++      "/scratch/artifact-only-neojncti/case1/oldwitness.obs",
++      "/output/first/case1/witness.bin"
++     ]
++    },
++    {
++     "exit": 0,
++     "fields": [
++      "[0,-1]",
++      "return 2147483647",
++      "[0,-1]",
++      "true",
++      "false"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case1/caller:/inputs/new/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Midpoint",
++      "midpoint",
++      "/scratch/artifact-only-neojncti/case1/newwitness.obs",
++      "/output/first/case1/witness.bin"
++     ]
++    }
++   ],
++   "originalReplayChanged": true,
++   "coldCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.12164424604270607,
++    "cpuSeconds": 0.117229,
++    "peakMiB": 52.859375
++   },
++   "warmCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.09184044599533081,
++    "cpuSeconds": 0.090064,
++    "peakMiB": 53.0390625
++   }
++  },
++  {
++   "candidate": {
++    "id": "bench.real.Bucket#index(II)I",
++    "owner": "bench.real.Bucket",
++    "method": "index",
++    "descriptor": "(II)I",
++    "params": [
++     "int",
++     "int"
++    ],
++    "return": "int",
++    "static": true,
++    "exactDispatch": true,
++    "constructor": null,
++    "getter": null,
++    "buildable": true,
++    "codeBytesDiffer": true,
++    "classBytesDiffer": true,
++    "changedResources": [],
++    "rank": [
++     false,
++     false,
++     true,
++     false,
++     2,
++     "be90340e78c07ef850bed70b8f9fb0dc2bf961a28b54f7c65432926b28b5b33b"
++    ],
++    "impact": "invalidated"
++   },
++   "physical": [
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[0,0]",
++       "throw java.lang.ArithmeticException",
++       "[0,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old0.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[0,0]",
++       "throw java.lang.ArithmeticException",
++       "[0,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new0.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[1,-1]",
++       "return 0",
++       "[1,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old1.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[1,-1]",
++       "return 0",
++       "[1,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new1.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[-1,127]",
++       "return 1",
++       "[-1,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old2.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[-1,127]",
++       "return 7",
++       "[-1,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new2.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[2,255]",
++       "return 2",
++       "[2,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old3.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[2,255]",
++       "return 2",
++       "[2,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new3.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[127,16383]",
++       "return 127",
++       "[127,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old4.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[127,16383]",
++       "return 127",
++       "[127,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new4.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[128,-2147483648]",
++       "return 128",
++       "[128,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old5.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[128,-2147483648]",
++       "return 128",
++       "[128,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new5.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[255,0]",
++       "throw java.lang.ArithmeticException",
++       "[255,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old6.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[255,0]",
++       "throw java.lang.ArithmeticException",
++       "[255,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new6.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[256,-1]",
++       "return 0",
++       "[256,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old7.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[256,-1]",
++       "return 0",
++       "[256,-1]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new7.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[16383,127]",
++       "return 0",
++       "[16383,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old8.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[16383,127]",
++       "return 0",
++       "[16383,127]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new8.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[16384,255]",
++       "return 64",
++       "[16384,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old9.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[16384,255]",
++       "return 64",
++       "[16384,255]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new9.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[-2147483648,16383]",
++       "return -8",
++       "[-2147483648,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old10.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[-2147483648,16383]",
++       "return 0",
++       "[-2147483648,16383]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new10.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[2147483647,-2147483648]",
++       "return 2147483647",
++       "[2147483647,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/old11.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[2147483647,-2147483648]",
++       "return 2147483647",
++       "[2147483647,-2147483648]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Bucket",
++       "index",
++       "/scratch/artifact-only-neojncti/case2/new11.obs"
++      ]
++     }
++    ]
++   ],
++   "workflow": "generated public return/throw and parameter-array frame",
++   "source": "public final class PublicCaller {\n    public static int observe(int p0, int p1) throws Throwable {\n        return bench.real.Bucket.index(p0, p1);\n    }\n}\n",
++   "callerSha256": "550d8f4227dd52d1709446c298833d954b88fa417fd4dbc87ce5cf4df4e45085",
++   "argv": [
++    "/opt/checker",
++    "equivalence",
++    "--before",
++    "/scratch/artifact-only-neojncti/case2/old",
++    "--after",
++    "/scratch/artifact-only-neojncti/case2/new",
++    "--before-classpath",
++    "/scratch/artifact-only-neojncti/case2/empty",
++    "--classpath",
++    "/scratch/artifact-only-neojncti/case2/empty",
++    "--target",
++    "PublicCaller#observe",
++    "--engine",
++    "native",
++    "--gaps",
++    "strict",
++    "--unwind",
++    "16",
++    "--max-array-length",
++    "8",
++    "--timeout",
++    "120",
++    "--work",
++    "/scratch/artifact-only-neojncti/case2/strict",
++    "--cache",
++    "/scratch/artifact-only-neojncti/case2/proof-cache",
++    "--json"
++   ],
++   "exit": 1,
++   "verdict": "violation",
++   "stated": {
++    "kind": "regression",
++    "domain": {
++     "parameters": [
++      {
++       "name": "p0",
++       "type": "int",
++       "kind": "primitive",
++       "null": false
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "kind": "primitive",
++       "null": false
++      }
++     ],
++     "shared_arrays": false,
++     "text": "p0: int × p1: int"
++    },
++    "assumptions": [
++     {
++      "kind": "initialization",
++      "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++      "basis": "engine"
++     }
++    ],
++    "observations": {
++     "result": "the result, equal in both versions",
++     "exceptions": "whether it throws, and which of 17 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exceptions either version declares, java.lang.Exception, java.lang.Throwable; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
++    },
++    "bounds": {
++     "unwind": 16,
++     "max_array_length": null,
++     "complete": false
++    },
++    "models": {
++     "used": true,
++     "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++     "classes": 40,
++     "jdk": "21.0.13"
++    },
++    "checker": {
++     "engine": "native",
++     "name": "jvmcontract's own checker (CaDiCaL)",
++     "solver": "CaDiCaL 1.9.5 (bundled)",
++     "fallback": null,
++     "sat": {
++      "solver": "CaDiCaL",
++      "version": "1.9.5",
++      "source": "bundled by the Rust crate cadical 0.1.16",
++      "configuration": [
++       "CaDiCaL's default options",
++       "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++       "the run's deadline through CaDiCaL's terminate callback",
++       "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++      ]
++     }
++    },
++    "gap_mode": "strict",
++    "confirmation": null
++   },
++   "problem": null,
++   "counterexample": {
++    "input": "observe(p0=-1, p1=4)",
++    "before": "1",
++    "after": "3",
++    "values": [
++     "-1",
++     "4"
++    ],
++    "found": "observe(p0=-99969, p1=100000)",
++    "shrink_runs": 38,
++    "inputs": [
++     {
++      "name": "p0",
++      "type": "int",
++      "value": -1
++     },
++     {
++      "name": "p1",
++      "type": "int",
++      "value": 4
++     }
++    ],
++    "found_inputs": [
++     {
++      "name": "p0",
++      "type": "int",
++      "value": -99969
++     },
++     {
++      "name": "p1",
++      "type": "int",
++      "value": 100000
++     }
++    ],
++    "call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "after",
++     "method": "observe",
++     "descriptor": "(II)I",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "int",
++       "value": -1,
++       "from": "p0"
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "value": 4,
++       "from": "p1"
++      }
++     ]
++    },
++    "previous_call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "before",
++     "method": "observe",
++     "descriptor": "(II)I",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "int",
++       "value": -1,
++       "from": "p0"
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "value": 4,
++       "from": "p1"
++      }
++     ]
++    },
++    "differs": [
++     "result"
++    ]
++   },
++   "status": "measured",
++   "witnessReplay": [
++    {
++     "exit": 0,
++     "fields": [
++      "[-1,4]",
++      "return 1",
++      "[-1,4]",
++      "true",
++      "false"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/old/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Bucket",
++      "index",
++      "/scratch/artifact-only-neojncti/case2/oldwitness.obs",
++      "/output/first/case2/witness.bin"
++     ]
++    },
++    {
++     "exit": 0,
++     "fields": [
++      "[-1,4]",
++      "return 3",
++      "[-1,4]",
++      "true",
++      "false"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case2/caller:/inputs/new/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Bucket",
++      "index",
++      "/scratch/artifact-only-neojncti/case2/newwitness.obs",
++      "/output/first/case2/witness.bin"
++     ]
++    }
++   ],
++   "originalReplayChanged": true,
++   "coldCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.1322225199546665,
++    "cpuSeconds": 0.126501,
++    "peakMiB": 52.875
++   },
++   "warmCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.10214648908004165,
++    "cpuSeconds": 0.09196499999999999,
++    "peakMiB": 52.81640625
++   }
++  },
++  {
++   "candidate": {
++    "id": "bench.real.Checksum#sum([BII)I",
++    "owner": "bench.real.Checksum",
++    "method": "sum",
++    "descriptor": "([BII)I",
++    "params": [
++     "byte[]",
++     "int",
++     "int"
++    ],
++    "return": "int",
++    "static": true,
++    "exactDispatch": true,
++    "constructor": null,
++    "getter": null,
++    "buildable": true,
++    "codeBytesDiffer": true,
++    "classBytesDiffer": true,
++    "changedResources": [],
++    "rank": [
++     false,
++     false,
++     true,
++     false,
++     3,
++     "3d30db8d285d64c05821264b073f5bcf1d7d9d4b7e51460111f5b239836ea470"
++    ],
++    "impact": "invalidated"
++   },
++   "physical": [
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[],0,0]",
++       "return 0",
++       "[[],0,0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old0.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[],0,0]",
++       "return 0",
++       "[[],0,0]",
++       "true",
++       "false"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "0",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new0.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[1,-1],-1,2]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[1,-1],-1,2]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old1.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[1,-1],-1,2]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[1,-1],-1,2]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "1",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new1.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1,2,127],127,255]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1,2,127],127,255]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old2.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1,2,127],127,255]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1,2,127],127,255]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "2",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new2.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[2,127,-128,-1],255,16384]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[2,127,-128,-1],255,16384]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old3.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[2,127,-128,-1],255,16384]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[2,127,-128,-1],255,16384]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "3",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new3.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[127],16383,0]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[127],16383,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old4.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[127],16383,0]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[127],16383,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "4",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new4.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[-128,-1],-2147483648,2]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-128,-1],-2147483648,2]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old5.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[-128,-1],-2147483648,2]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-128,-1],-2147483648,2]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "5",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new5.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1,0,-1],0,255]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1,0,-1],0,255]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old6.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1,0,-1],0,255]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1,0,-1],0,255]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "6",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new6.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[0,-1,0,0],-1,16384]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[0,-1,0,0],-1,16384]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old7.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[0,-1,0,0],-1,16384]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[0,-1,0,0],-1,16384]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "7",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new7.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1],127,0]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1],127,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old8.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1],127,0]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1],127,0]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "8",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new8.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[0,0],255,2]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[0,0],255,2]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old9.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[0,0],255,2]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[0,0],255,2]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "9",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new9.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[0,-1,0],16383,255]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[0,-1,0],16383,255]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old10.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[0,-1,0],16383,255]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[0,-1,0],16383,255]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "10",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new10.obs"
++      ]
++     }
++    ],
++    [
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1,0,1,-1],-2147483648,16384]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1,0,1,-1],-2147483648,16384]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/old11.obs"
++      ]
++     },
++     {
++      "exit": 0,
++      "fields": [
++       "[[-1,0,1,-1],-2147483648,16384]",
++       "throw java.lang.IndexOutOfBoundsException",
++       "[[-1,0,1,-1],-2147483648,16384]",
++       "false",
++       "true"
++      ],
++      "namedEntryReached": true,
++      "argv": [
++       "/opt/jdk/bin/java",
++       "-Xmx192m",
++       "-XX:-UsePerfData",
++       "-ea",
++       "-cp",
++       "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++       "ArtifactProbe",
++       "11",
++       "bench.real.Checksum",
++       "sum",
++       "/scratch/artifact-only-neojncti/case3/new11.obs"
++      ]
++     }
++    ]
++   ],
++   "workflow": "generated public return/throw and parameter-array frame",
++   "source": "public final class PublicCaller {\n    public static int observe(byte[] p0, int p1, int p2) throws Throwable {\n        return bench.real.Checksum.sum(p0, p1, p2);\n    }\n}\n",
++   "callerSha256": "7330aa2756c52be9e398b7b2ca6a0163cb7e3bd8d8656abaf8a4ae75ab59dc50",
++   "argv": [
++    "/opt/checker",
++    "equivalence",
++    "--before",
++    "/scratch/artifact-only-neojncti/case3/old",
++    "--after",
++    "/scratch/artifact-only-neojncti/case3/new",
++    "--before-classpath",
++    "/scratch/artifact-only-neojncti/case3/empty",
++    "--classpath",
++    "/scratch/artifact-only-neojncti/case3/empty",
++    "--target",
++    "PublicCaller#observe",
++    "--engine",
++    "native",
++    "--gaps",
++    "strict",
++    "--unwind",
++    "16",
++    "--max-array-length",
++    "8",
++    "--timeout",
++    "120",
++    "--work",
++    "/scratch/artifact-only-neojncti/case3/strict",
++    "--cache",
++    "/scratch/artifact-only-neojncti/case3/proof-cache",
++    "--json"
++   ],
++   "exit": 1,
++   "verdict": "violation",
++   "stated": {
++    "kind": "regression",
++    "domain": {
++     "parameters": [
++      {
++       "name": "p0",
++       "type": "byte[]",
++       "kind": "array",
++       "null": false,
++       "max_length": 8
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "kind": "primitive",
++       "null": false
++      },
++      {
++       "name": "p2",
++       "type": "int",
++       "kind": "primitive",
++       "null": false
++      }
++     ],
++     "shared_arrays": false,
++     "text": "p0: byte[] of length ≤ 8, not null × p1: int × p2: int"
++    },
++    "assumptions": [
++     {
++      "kind": "initialization",
++      "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++      "basis": "engine"
++     }
++    ],
++    "observations": {
++     "result": "the result, equal in both versions",
++     "exceptions": "whether it throws, and which of 17 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exceptions either version declares, java.lang.Exception, java.lang.Throwable; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared",
++     "arrays": [
++      "p0"
++     ]
++    },
++    "bounds": {
++     "unwind": 16,
++     "max_array_length": 8,
++     "complete": false
++    },
++    "models": {
++     "used": true,
++     "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++     "classes": 40,
++     "jdk": "21.0.13"
++    },
++    "checker": {
++     "engine": "native",
++     "name": "jvmcontract's own checker (CaDiCaL)",
++     "solver": "CaDiCaL 1.9.5 (bundled)",
++     "fallback": null,
++     "sat": {
++      "solver": "CaDiCaL",
++      "version": "1.9.5",
++      "source": "bundled by the Rust crate cadical 0.1.16",
++      "configuration": [
++       "CaDiCaL's default options",
++       "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++       "the run's deadline through CaDiCaL's terminate callback",
++       "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++      ]
++     }
++    },
++    "gap_mode": "strict",
++    "confirmation": null
++   },
++   "problem": null,
++   "counterexample": {
++    "input": "observe(p0=[], p1=2147467264, p2=16384)",
++    "before": "0",
++    "after": "throws IndexOutOfBoundsException",
++    "values": [
++     "[]",
++     "2147467264",
++     "16384"
++    ],
++    "shrink_runs": 62,
++    "inputs": [
++     {
++      "name": "p0",
++      "type": "byte[]",
++      "value": []
++     },
++     {
++      "name": "p1",
++      "type": "int",
++      "value": 2147467264
++     },
++     {
++      "name": "p2",
++      "type": "int",
++      "value": 16384
++     }
++    ],
++    "call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "after",
++     "method": "observe",
++     "descriptor": "([BII)I",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "byte[]",
++       "value": [],
++       "from": "p0"
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "value": 2147467264,
++       "from": "p1"
++      },
++      {
++       "name": "p2",
++       "type": "int",
++       "value": 16384,
++       "from": "p2"
++      }
++     ]
++    },
++    "previous_call": {
++     "class": "PublicCaller",
++     "class_file": "PublicCaller.class",
++     "classes": "before",
++     "method": "observe",
++     "descriptor": "([BII)I",
++     "static": true,
++     "arguments": [
++      {
++       "name": "p0",
++       "type": "byte[]",
++       "value": [],
++       "from": "p0"
++      },
++      {
++       "name": "p1",
++       "type": "int",
++       "value": 2147467264,
++       "from": "p1"
++      },
++      {
++       "name": "p2",
++       "type": "int",
++       "value": 16384,
++       "from": "p2"
++      }
++     ]
++    },
++    "differs": [
++     "exception"
++    ]
++   },
++   "status": "measured",
++   "witnessReplay": [
++    {
++     "exit": 0,
++     "fields": [
++      "[[],2147467264,16384]",
++      "return 0",
++      "[[],2147467264,16384]",
++      "true",
++      "false"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/old/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Checksum",
++      "sum",
++      "/scratch/artifact-only-neojncti/case3/oldwitness.obs",
++      "/output/first/case3/witness.bin"
++     ]
++    },
++    {
++     "exit": 0,
++     "fields": [
++      "[[],2147467264,16384]",
++      "throw java.lang.IndexOutOfBoundsException",
++      "[[],2147467264,16384]",
++      "false",
++      "true"
++     ],
++     "namedEntryReached": true,
++     "argv": [
++      "/opt/jdk/bin/java",
++      "-Xmx192m",
++      "-XX:-UsePerfData",
++      "-ea",
++      "-cp",
++      "/scratch/artifact-only-neojncti/helpers:/scratch/artifact-only-neojncti/case3/caller:/inputs/new/000.jar",
++      "ArtifactProbe",
++      "0",
++      "bench.real.Checksum",
++      "sum",
++      "/scratch/artifact-only-neojncti/case3/newwitness.obs",
++      "/output/first/case3/witness.bin"
++     ]
++    }
++   ],
++   "originalReplayChanged": true,
++   "coldCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.36508385103661567,
++    "cpuSeconds": 0.335924,
++    "peakMiB": 53.0390625
++   },
++   "warmCost": {
++    "exit": 1,
++    "timedOut": false,
++    "wallSeconds": 0.10193093493580818,
++    "cpuSeconds": 0.09422199999999999,
++    "peakMiB": 53.0390625
++   }
++  }
++ ],
++ "commonCandidates": 5,
++ "changedByteCandidates": 5,
++ "impactExit": 0,
++ "selected": [
++  {
++   "id": "bench.real.Oddity#isOdd(I)Z",
++   "owner": "bench.real.Oddity",
++   "method": "isOdd",
++   "descriptor": "(I)Z",
++   "params": [
++    "int"
++   ],
++   "return": "boolean",
++   "static": true,
++   "exactDispatch": true,
++   "constructor": null,
++   "getter": null,
++   "buildable": true,
++   "codeBytesDiffer": true,
++   "classBytesDiffer": true,
++   "changedResources": [],
++   "rank": [
++    false,
++    false,
++    true,
++    false,
++    1,
++    "f9c508f4a26d1fc314ef9d2efee4e10cabfd3a358181f8b8d2085b59f8d9097a"
++   ],
++   "impact": "invalidated"
++  },
++  {
++   "id": "bench.real.Midpoint#midpoint(II)I",
++   "owner": "bench.real.Midpoint",
++   "method": "midpoint",
++   "descriptor": "(II)I",
++   "params": [
++    "int",
++    "int"
++   ],
++   "return": "int",
++   "static": true,
++   "exactDispatch": true,
++   "constructor": null,
++   "getter": null,
++   "buildable": true,
++   "codeBytesDiffer": true,
++   "classBytesDiffer": true,
++   "changedResources": [],
++   "rank": [
++    false,
++    false,
++    true,
++    false,
++    2,
++    "17516c1ba741d4c0e538398cbae5a4366337f912983577637e9f7096580fa9b3"
++   ],
++   "impact": "invalidated"
++  },
++  {
++   "id": "bench.real.Bucket#index(II)I",
++   "owner": "bench.real.Bucket",
++   "method": "index",
++   "descriptor": "(II)I",
++   "params": [
++    "int",
++    "int"
++   ],
++   "return": "int",
++   "static": true,
++   "exactDispatch": true,
++   "constructor": null,
++   "getter": null,
++   "buildable": true,
++   "codeBytesDiffer": true,
++   "classBytesDiffer": true,
++   "changedResources": [],
++   "rank": [
++    false,
++    false,
++    true,
++    false,
++    2,
++    "be90340e78c07ef850bed70b8f9fb0dc2bf961a28b54f7c65432926b28b5b33b"
++   ],
++   "impact": "invalidated"
++  },
++  {
++   "id": "bench.real.Checksum#sum([BII)I",
++   "owner": "bench.real.Checksum",
++   "method": "sum",
++   "descriptor": "([BII)I",
++   "params": [
++    "byte[]",
++    "int",
++    "int"
++   ],
++   "return": "int",
++   "static": true,
++   "exactDispatch": true,
++   "constructor": null,
++   "getter": null,
++   "buildable": true,
++   "codeBytesDiffer": true,
++   "classBytesDiffer": true,
++   "changedResources": [],
++   "rank": [
++    false,
++    false,
++    true,
++    false,
++    3,
++    "3d30db8d285d64c05821264b073f5bcf1d7d9d4b7e51460111f5b239836ea470"
++   ],
++   "impact": "invalidated"
++  }
++ ],
++ "impactCommand": [
++  "/opt/checker",
++  "impact",
++  "--before",
++  "/scratch/artifact-only-neojncti/old",
++  "--after",
++  "/scratch/artifact-only-neojncti/new",
++  "--claims",
++  "/scratch/artifact-only-neojncti/impact.json",
++  "--json"
++ ],
++ "seconds": 8.95011205598712
++}

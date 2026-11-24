@@ -1,0 +1,320 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-081513-certify-original-sat-assignments-and-uns",
+  "title": "Certify original SAT assignments and UNSAT proofs on Lucene wire callers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.8s, peak 143.4 MiB (estimated 4m00s, 4.0 GiB); 18 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-081513-certify-original-sat-assignments-and-uns.json",
+    "sha256": "b6e1b5247dedcd991615294c03c3379f2a7a92c877c8ac95d0622040e4542c79",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-081513-certify-original-sat-assignments-and-uns",
+      "title": "Certify original SAT assignments and UNSAT proofs on Lucene wire callers",
+      "description": "Bind the original JARs, effective classpaths, checker binary, caller, input domain, bounds and observation before launch. For W01 old-to-new, W02 arbitrary valid slice writes, and W04 old-to-new VInt, retain the ordinary verdict and use the existing independent SAT evidence checker on every pass. Replay actual SAT models and require a checked LRAT proof for each UNSAT answer. Reject the bundle when the public observation is changed. The earlier run correctly withheld assurance because SAT assignments were not captured. This run enables the ordinary recorder for those assignments.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "native:lrat"
+      ],
+      "links": {
+        "jobs": [
+          "20261124-074103-check-all-native-sat-answers-for-mixed-l"
+        ]
+      },
+      "expected": "Three fresh-process checked evidence bundles, each bound to its ordinary result, and three rejected wrong-observation controls.",
+      "submitted": {
+        "at": "2026-11-24T08:15:13+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cadical-1.9.5/build/cadical",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Qualify three wire caller boundaries",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/wire_assurance.py oldNew writeFrame varOldNew",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/assurance/wire"
+      ]
+    }
+  },
+  "sourceCommit": "6df5a89936febe2f3d004d22f5eb36653a847fa3",
+  "startedAt": "2026-11-24T08:36:32+00:00",
+  "finishedAt": "2026-11-24T08:39:47+00:00",
+  "wallSeconds": 195.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2719281,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 150331392,
+    "wallSeconds": 7.8,
+    "cpuSeconds": 9.9,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualify three wire caller boundaries",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_assurance.py oldNew writeFrame varOldNew",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 7.814,
+      "cpuSeconds": 9.946,
+      "cpuThrottledSeconds": 0.425,
+      "peakMemoryBytes": 150331392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-three-wire-caller-boun.log",
+        "lines": 3,
+        "bytes": 129,
+        "sha256": "de2ad2a2a15944619089734840e13b5f13f74b8d73f01b3c5e34e5fa47dc351b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "oldNew checked {'sat': 23, 'unsat': 24}",
+        "writeFrame checked {'sat': 107, 'unsat': 169}",
+        "varOldNew checked {'sat': 19, 'unsat': 20}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/assurance.json",
+      "change": "added",
+      "bytes": 725,
+      "sha256": "0775536b81fe719f82b98298cbe32d89dc7334d9e15b7163ae029fda8e01e97a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/boundary.json",
+      "change": "added",
+      "bytes": 5947,
+      "sha256": "9be9378956e5af4530d7116f3db749faa263254ac1ac58c7872a27f932d8683c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/evidence.zip",
+      "change": "added",
+      "bytes": 26693,
+      "sha256": "e771677aed6c7685bf8415bc1310f71f9c0bea7f7b4cc913634aaa41b94fa229",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/negative-control.json",
+      "change": "added",
+      "bytes": 216,
+      "sha256": "04a2a178717abf75123aaeb683648b935b82d41108aa2ecdee1af90f6f74627d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/ordinary.json",
+      "change": "added",
+      "bytes": 4523,
+      "sha256": "17424f3e714407296295c768826832cb55153de1a577aeeb1fca81fa874b79b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/oldNew/request.json",
+      "change": "added",
+      "bytes": 8479,
+      "sha256": "7457a143797e5d24c15447cbcf4d599c865f262a8a6e08b4e4a4b4b5a55ec6e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/varOldNew/assurance.json",
+      "change": "added",
+      "bytes": 724,
+      "sha256": "a23fe9cb83e7a603c7e613be9eda98cc3933760a8c453e85dbabf2a5051f1d24",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/varOldNew/boundary.json",
+      "change": "added",
+      "bytes": 5939,
+      "sha256": "287a5171647456b5e228645e8232ebaffb07d27476476100d5427132c0139009",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/varOldNew/evidence.zip",
+      "change": "added",
+      "bytes": 20625,
+      "sha256": "b9ffe17b9a4fd8df5122a690c74cf1279cbd8732a57e302abc57950db968c73e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/varOldNew/negative-control.json",
+      "change": "added",
+      "bytes": 216,
+      "sha256": "8cca48b8e49036c9378da3c1ef587af6906f7a1714e53af0fd927f5df26b886f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/varOldNew/ordinary.json",
+      "change": "added",
+      "bytes": 4527,
+      "sha256": "c9075d08e9ae15f404f4d2814252d792dcb93ebe21abb6fa9662312bab1038e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/varOldNew/request.json",
+      "change": "added",
+      "bytes": 8488,
+      "sha256": "e8b2b01f1a4b8c11fe418f95e0292745eb82407fc6ccb61fd074b06a52304078",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/writeFrame/assurance.json",
+      "change": "added",
+      "bytes": 730,
+      "sha256": "3c9a43681d67fc2d4c9b9991eedbf01734868219f70432767c1f34dbc4b5c96d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/writeFrame/boundary.json",
+      "change": "added",
+      "bytes": 6741,
+      "sha256": "3679dd40cb0850562745244646e2a45b5e88786c375f028530bbda922ece46c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/writeFrame/evidence.zip",
+      "change": "added",
+      "bytes": 2600766,
+      "sha256": "987dcefd65f13cd86a22ea1db6fd44870eafc132a288650b851f0f9ec1da5d3a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/writeFrame/negative-control.json",
+      "change": "added",
+      "bytes": 216,
+      "sha256": "b5700c6dc8640c302a501fe2993c4550074bcf7fb39f9c3013fc4e0fd10ee148",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/writeFrame/ordinary.json",
+      "change": "added",
+      "bytes": 5299,
+      "sha256": "9c83d9f26d8a9dd590794f6bd474f1fd17f4c8591a65600941614c51f33c2e58",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/wire/writeFrame/request.json",
+      "change": "added",
+      "bytes": 8643,
+      "sha256": "002d35a217ceff46e2978073090e6148f6fedbe08b6628f1d3988284df78272f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:40:00+00:00",
+    "applied": [
+      "verification/beyond-jbmc/assurance/wire/oldNew/assurance.json",
+      "verification/beyond-jbmc/assurance/wire/oldNew/boundary.json",
+      "verification/beyond-jbmc/assurance/wire/oldNew/evidence.zip",
+      "verification/beyond-jbmc/assurance/wire/oldNew/negative-control.json",
+      "verification/beyond-jbmc/assurance/wire/oldNew/ordinary.json",
+      "verification/beyond-jbmc/assurance/wire/oldNew/request.json",
+      "verification/beyond-jbmc/assurance/wire/varOldNew/assurance.json",
+      "verification/beyond-jbmc/assurance/wire/varOldNew/boundary.json",
+      "verification/beyond-jbmc/assurance/wire/varOldNew/evidence.zip",
+      "verification/beyond-jbmc/assurance/wire/varOldNew/negative-control.json",
+      "verification/beyond-jbmc/assurance/wire/varOldNew/ordinary.json",
+      "verification/beyond-jbmc/assurance/wire/varOldNew/request.json",
+      "verification/beyond-jbmc/assurance/wire/writeFrame/assurance.json",
+      "verification/beyond-jbmc/assurance/wire/writeFrame/boundary.json",
+      "verification/beyond-jbmc/assurance/wire/writeFrame/evidence.zip",
+      "verification/beyond-jbmc/assurance/wire/writeFrame/negative-control.json",
+      "verification/beyond-jbmc/assurance/wire/writeFrame/ordinary.json",
+      "verification/beyond-jbmc/assurance/wire/writeFrame/request.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T083947Z-2358699a20473787",
+      "outputs": "20261124T083947Z-26702891f0d27e9d",
+      "diff": "20261124T083947Z-2859438d628ee441"
+    }
+  }
+}
