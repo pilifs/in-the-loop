@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-093055-challenge-the-qualified-jackson-numerica",
+  "title": "Challenge the qualified Jackson numerical and grammar proofs",
+  "description": "Refute a sign-insensitive 19-digit cutoff and a mixed-version string-predicate identity with literal witnesses, including the upstream -0. example, on the frozen checker and both JBMC profiles. Replay on isolated original releases.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/text/JacksonIdentity.java"
+    ]
+  },
+  "expected": "Retain original counterexamples and separate any comparator false success or vacuous post-call check.",
+  "submitted": {
+    "at": "2026-11-24T09:30:55+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "6m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N04-controls",
+      "cwd": "."
+    },
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/additional_controls.py N11-identity",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/N04-controls",
+    "verification/beyond-jbmc/qualified/N11-identity"
+  ]
+}

@@ -84,7 +84,7 @@ def automatic(slot):
         print(slot,len(report["selected"]),"automatic candidates",flush=True)
 
 
-def matched_namespace(pair,ref,out,checker,physical):
+def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py"):
     # The measured libraries and checker can only see the pinned public modules, their own caller and writable scratch.
     fake_home="/guest"
     jpath=fake_home+"/.sdkman/candidates/java/21.0.13.0+9-tem"
@@ -101,17 +101,18 @@ def matched_namespace(pair,ref,out,checker,physical):
             "--setenv","TZ","UTC","--setenv","LANG","C.UTF-8","--chdir",fake_home+"/.cache/in-the-loop/tmp"]
         for rel in ("lib/benchmark","lib/python","lib/tools","examples/tools"):
             cmd+=["--ro-bind",str(ROOT/rel),"/tool/"+rel]
-        cmd+=["/usr/bin/python3","-B","/tool/lib/benchmark/beyond-jbmc/blind/matched_worker.py"]
+        if worker not in ("matched_worker.py","assisted_worker.py"):raise ValueError("unknown matched worker")
+        cmd+=["/usr/bin/python3","-B","/tool/lib/benchmark/beyond-jbmc/blind/"+worker]
         if physical:cmd.append("--physical-only")
         with (out/"process.log").open("wb") as f:
             proc=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)
         return proc.returncode
 
 
-def matched(slot):
+def matched(slot,assisted=False):
     checker,lock,row,pair=bindings(slot)
-    out=PUBLIC/slot/"matched";out.mkdir(parents=True,exist_ok=True)
-    code=matched_namespace(pair,REFS/slot,out,checker,False)
+    out=PUBLIC/slot/("assisted" if assisted else "matched");out.mkdir(parents=True,exist_ok=True)
+    code=matched_namespace(pair,REFS/slot,out,checker,False,"assisted_worker.py" if assisted else "matched_worker.py")
     file=out/"worker.json"
     receipt=json.loads(file.read_bytes()) if file.exists() else {"status":"worker failure","problem":"isolated caller job exited "+str(code)}
     receipt.update(slot=slot,workerExit=code,docketSha256=digest(DOCKET),packetSha256=row["packetSha256"],
@@ -121,8 +122,9 @@ def matched(slot):
 
 
 if __name__=="__main__":
-    p=argparse.ArgumentParser(description=__doc__);p.add_argument("lane",choices=("automatic","matched"));p.add_argument("slots",nargs="+")
+    p=argparse.ArgumentParser(description=__doc__);p.add_argument("lane",choices=("automatic","matched","assisted"));p.add_argument("slots",nargs="+")
     a=p.parse_args()
     for slot in a.slots:
         if slot not in [f"{n:02}" for n in range(1,17)]:p.error("unknown blind slot")
-        (automatic if a.lane=="automatic" else matched)(slot)
+        if a.lane=="automatic":automatic(slot)
+        else:matched(slot,assisted=a.lane=="assisted")

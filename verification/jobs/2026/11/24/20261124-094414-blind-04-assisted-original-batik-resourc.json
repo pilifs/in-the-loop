@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-094414-blind-04-assisted-original-batik-resourc",
+  "title": "Blind 04 assisted original Batik resource comparison",
+  "description": "The original paired JVM controls pass but relocating Batik changes XML resource discovery. Check the two already committed release expectations separately on their original classpaths. Preserve all three tool profiles and keep these results apart from the blind first pass.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/references/04/ReferencePair.java"
+    ]
+  },
+  "expected": "Bound old and new release reports including JVM controls and failures.",
+  "submitted": {
+    "at": "2026-11-24T09:44:14+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 24,
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "12m",
+    "timeout": "52m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/evaluate_panel.py assisted 04",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/blind/04/assisted"
+  ]
+}

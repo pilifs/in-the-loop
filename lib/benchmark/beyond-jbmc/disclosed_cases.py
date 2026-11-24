@@ -3,13 +3,17 @@ from subjects import Claim, Subject
 
 SPRING_OLD = "spring-6.1.14"
 SPRING_NEW = "spring-6.2.0"
-COMPANIONS = {"InterfaceClaims": ["InterfaceShape"], "ViewChecks": ["FarmFrame"]}
+COMPANIONS = {"InterfaceClaims": ["InterfaceShape"], "ViewChecks": ["FarmFrame"], "JacksonControl": ["JacksonRanges"],
+              "FoldProfiles": ["CaseFolding"]}
 COMPILE_GRAPH = {("SpringTypes", SPRING_NEW): SPRING_OLD}
 CASES = {
     "S01": ("reflection", Subject(0, "InterfaceClaims", "jdk", (
         Claim("intact"), Claim("inverse", holds=(), fails=((),)), Claim("defensiveCopies")))),
 }
 RANGE_SEEDS = (("807","false","1"), ("808","false","2"), ("808","true","0"), ("809","true","2"))
+CASES["N04-controls"]=("text",Subject(0,"JacksonControl","jackson-core-2.19.0",(
+    Claim("signBlind","int suffix",holds=(("807",),("809",)),fails=(("808",),)),
+    Claim("all19Safe",holds=(),fails=((),))),24,32))
 CASES["N04-N05"] = ("text", Subject(0, "JacksonRanges", "jackson-core-2.19.0", (
     Claim("arrayRange", "int suffix, boolean negative, int offset", holds=RANGE_SEEDS),
     Claim("stringRange", "int suffix, boolean negative", holds=tuple(s[:2] for s in RANGE_SEEDS)),

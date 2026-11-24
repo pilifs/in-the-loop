@@ -102,3 +102,15 @@ put("E01-E03","ThrowSites","jdk",[truth("coarse","int mode",one(0,1,2)),
 for v in ("6.1.14","6.2.0"):
     put("S03-"+v,"FormatterBinding","spring-"+v,[truth("registeredEnum"),
         truth("annotated","int mode",one(0,1)),truth("preservation","int mode",one(0,1))],compile_on="spring-6.1.14")
+put("H02-false","SelfOnly",LANG,[truth("terminates","int topology, int start",(("0","0"),("1","0")),(("6","0"),))])
+flat="new SuppliedRoots.Flat()"
+distinct=("new SuppliedRoots.Flat[]{"+flat+", "+flat+"}","new SuppliedRoots.Flat[]{"+flat+"}")
+put("H10-H14-supplied","SuppliedRoots",LANG,[
+    truth("planes","char[][][] data",one("new char[][][]{{{'a'}},{{'b'}}}","new char[2][][]")),
+    truth("conditional","SuppliedRoots.Flat[] a, SuppliedRoots.Flat[] b",(distinct,)),
+    truth("unconditional","SuppliedRoots.Flat[] a, SuppliedRoots.Flat[] b",(distinct,)),
+    truth("scalar","SuppliedRoots.Flat[] a, SuppliedRoots.Flat b",(("new SuppliedRoots.Flat[]{"+flat+"}",flat),)),
+    truth("dispatch","SuppliedRoots.Base[] a",one("new SuppliedRoots.Base[]{new SuppliedRoots.Base()}","new SuppliedRoots.Base[]{new SuppliedRoots.Nine()}","new SuppliedRoots.Base[]{new SuppliedRoots.Seven()}")),
+    truth("noSelf","SuppliedRoots.Node[] a",one("new SuppliedRoots.Node[]{new SuppliedRoots.Node()}"),one("SuppliedRoots.self()"))],bound=3)
+put("N07-individual","FoldProfiles","guava-lang",[truth(m,"char a, char b",cpairs) for m in
+    ("guavaString","guavaSequence","langString","langSequence")])

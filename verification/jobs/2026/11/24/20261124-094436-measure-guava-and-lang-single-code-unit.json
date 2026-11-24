@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-094436-measure-guava-and-lang-single-code-unit",
+  "title": "Measure Guava and Lang single-code-unit folds on both text representations",
+  "description": "The original combined transfer reaches Lang region matching. Use the already registered two-char domain and exact oracles to measure each public method independently on real Strings and the one-unit CharSequence. Preserve stock post-call controls and original JVM counterexamples.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/extended/FoldProfiles.java"
+    ]
+  },
+  "expected": "Four matched scope measurements with the original String and explicit CharSequence visible separately.",
+  "submitted": {
+    "at": "2026-11-24T09:44:36+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N07-individual",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/N07-individual"
+  ]
+}
