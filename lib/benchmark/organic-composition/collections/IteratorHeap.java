@@ -78,6 +78,7 @@ final class IteratorHeap {
             if (encoded.equals("null")) value = null;
             else if (encoded.startsWith("@")) value = objects.get(Integer.parseInt(encoded.substring(1)));
             else if (encoded.startsWith("I:")) value = vm.mirrorOf(Integer.parseInt(encoded.substring(2)));
+            else if (encoded.equals("Z:true") || encoded.equals("Z:false")) value = vm.mirrorOf(encoded.equals("Z:true"));
             else throw new IllegalArgumentException("unsupported effect value " + encoded);
             slot.owner().setValue(slot.field(), value);
         }

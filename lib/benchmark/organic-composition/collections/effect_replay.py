@@ -5,12 +5,13 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
 import zipfile
 
-from heap_effect import CHAIN, EntryHeap, admit, certify, check_continuation, declared_effect, digest, require
+from heap_effect import CHAIN, DECORATOR, EntryHeap, admit, certify, check_continuation, effect_for, digest, require
 
 CASE = Path(__file__).resolve().parent
 sys.path.insert(0, str(CASE.parent))
@@ -19,8 +20,9 @@ from plan_run import JDK, ROOT, OUTPUT
 sys.path.insert(0, str(ROOT / "examples/tools"))
 from targets import change_inventory, runtime_jar, upgrade_replay
 
-SCOPE = CASE / "effect-scope.json"
-REPORT = ROOT / OUTPUT / "collections/checked-heap-effect.json"
+SCOPES = {"advanced": CASE / "effect-scope.json", "unmodifiable": CASE / "unmodifiable-scope.json"}
+REPORTS = {k: ROOT / OUTPUT / "collections" / name for k, name in
+           (("advanced", "checked-heap-effect.json"), ("unmodifiable", "checked-decorator-effect.json"))}
 TRACE_SOURCES = [CASE / "IteratorEffectTrace.java", CASE / "IteratorHeap.java"]
 
 
@@ -37,6 +39,38 @@ def read_table(path):
 
 def write_table(path, table):
     path.write_text("".join(f"{k}\t{v}\n" for k, v in sorted(table.items())))
+
+
+def removal_binding(jar, chain_class, observer_path):
+    wrapper = runtime_jar.read_class(jar, DECORATOR.replace(".", "/"))
+    _, body, _ = runtime_jar._declarations(wrapper, with_code=True)[1]["remove", "()V"]
+    _, parent, _ = runtime_jar._declarations(chain_class, with_code=True)[1]["remove", "()V"]
+    def calls(data, code, name, desc, target, opcode):
+        sites = []
+        for pc, op in change_inventory.instructions(code):
+            if op != opcode:
+                continue
+            call = runtime_jar.member_at_code_index(data, name, desc, pc, code_sha256=sha(code),
+                                                    pool_sha256=sha(data[10:runtime_jar._pool(data)[1]]))
+            if call and (call["owner"], call["name"], call["descriptor"]) == (target, "remove", "()V"):
+                sites.append(pc)
+        return sites
+    dispatch = calls(chain_class, parent, "remove", "()V", "java.util.Iterator", 0xb9)
+    observer = observer_path.read_bytes()
+    sig = "([Ljava/lang/String;)Ljava/lang/String;"
+    _, observe, _ = runtime_jar._declarations(observer, with_code=True)[1]["observe", sig]
+    public_sites = calls(observer, observe, "observe", sig, CHAIN, 0xb6)
+    disassembly = subprocess.check_output([JDK / "bin/javap", "-c", "-p", observer_path], text=True)
+    part = re.search(r"^  public static java.lang.String observe\(java.lang.String\[\]\);$(.*?)(?=^  \S|^})",
+                     disassembly, re.M | re.S)
+    require(part is not None, "missing original observer disassembly")
+    handlers = re.findall(r"^\s*(\d+)\s+(\d+)\s+(\d+)\s+Class java/lang/UnsupportedOperationException\s*$",
+                          part[1], re.M)
+    catches = {str(pc): [int(target) for start, end, target in handlers if int(start) <= pc < int(end)] for pc in public_sites}
+    throws = [pc for pc, op in change_inventory.instructions(body) if op == 0xbf]
+    require(throws and dispatch and catches and all(len(v) == 1 for v in catches.values()), "unbound removal or exception handler")
+    return {"class": sha(wrapper), "code": sha(body), "pool": sha(wrapper[10:runtime_jar._pool(wrapper)[1]]),
+            "throwBCIs": throws, "parentCode": sha(parent), "dispatchBCIs": dispatch, "catchByPublicCall": catches}
 
 
 def source_binding(number, side, classes, spec):
@@ -76,15 +110,19 @@ def source_binding(number, side, classes, spec):
     data = runtime_jar.read_class(files[0], CHAIN.replace(".", "/"))
     _, code, _ = runtime_jar._declarations(data, with_code=True)[1]["updateCurrentIterator", "()V"]
     returns = [pc for pc, op in change_inventory.instructions(code) if op == 0xb1]
-    return files, data, {
+    binding = {
         "layout": spec["endpoints"][number + "-" + side], "commit": manifest["commit"], "classpath": classpath,
-        "jdk": json.loads((CASE.parent / "freeze.json").read_bytes())["jdk"], "scopeSha256": upgrade_replay.sha(SCOPE),
+        "jdk": json.loads((CASE.parent / "freeze.json").read_bytes())["jdk"],
+        "scopeSha256": upgrade_replay.sha(SCOPES[spec["arguments"][0]]),
         "observerSha256": receipt["probeSha256"], "originalReceipt": node["receipt"], "originalClaim": node["claimKey"],
         "originalPlan": str(archive.relative_to(ROOT)), "coldPlanSha256": sha(cold),
         "inputId": child["id"], "input": child["arguments"], "originalObservation": expected, "publicNextSite": where,
         "helperClassSha256": sha(data), "helperCodeSha256": sha(code), "returnBCIs": returns,
         "checkSources": {p.name: upgrade_replay.sha(p) for p in [*TRACE_SOURCES, Path(__file__), CASE / "heap_effect.py"]},
     }
+    if spec["arguments"] == ["unmodifiable"]:
+        binding["decoratorRemoval"] = removal_binding(files[0], data, classes / "UpgradeProbe.class")
+    return files, data, binding
 
 
 def verify_sites(sites, binding, spec, chain_class, observer_class):
@@ -128,6 +166,9 @@ def launch(work, classes, tracer, files, binding, name, certificate=None, refusa
     record = {"pid": pid, "completion": (target / "completion").read_text(), "before": digest(before),
               "after": digest(after), "sites": digest(sites), "next": next_call, "remove": remove, "leaf": leaf,
               "observation": upgrade_replay.typed_outcome((target / "observation.txt").read_text().splitlines())}
+    if binding["input"] == ["unmodifiable"]:
+        require(origins.get(DECORATOR) == {files[0]}, "wrong loaded decorator provider")
+        record["throw"] = read_table(target / "throw.tsv")
     return before, sites, record
 
 
@@ -150,7 +191,7 @@ def run_endpoint(work, number, side, classes, tracer, spec):
         verify_sites(sites, binding, spec, data, observer)
         resolve_call(sites, "observer", observer, original["remove"]["site"], CHAIN + "#remove()V")
         originals.append(original)
-    writes, roles = declared_effect(before, binding["layout"])
+    writes, roles = effect_for(binding, before)
     certificate = certify(binding, before, sites, originals, writes)
     tables = {"before": before, "sites": sites, "writes": writes, "after": before | writes}
     path = work / "certificate"
@@ -164,7 +205,8 @@ def run_endpoint(work, number, side, classes, tracer, spec):
         applied.append(trial)
     # Two disposable launches exercise the live guards even when the final public value could survive.
     entry = EntryHeap(before)
-    stale = before | {entry.slot(roles["mutable"], "cursor"): "I:0"}
+    cursor = entry.slot(roles["mutable"], "cursor")
+    stale = before | {cursor: "I:1" if before[cursor] == "I:0" else "I:0"}
     write_table(path / "before.tsv", stale)
     controls = {"changedCursor": launch(work, classes, tracer, files, binding, "stale", path, "live prestate differs")}
     write_table(path / "before.tsv", before)
@@ -172,6 +214,13 @@ def run_endpoint(work, number, side, classes, tracer, spec):
     del omitted[entry.slot(roles["detached"], "item")]
     write_table(path / "writes.tsv", omitted)
     controls["missingDetachedItem"] = launch(work, classes, tracer, files, binding, "missing-unlink", path, "substituted frame differs")
+    if binding["input"] == ["unmodifiable"]:
+        locked = entry.slot(roles["child"], "isLocked")
+        wrong_lock = "Z:false" if (before | writes)[locked] == "Z:true" else "Z:true"
+        for name, bad in (("wrongChildLock", {locked: wrong_lock}),
+                          ("bypassedDecorator", {entry.slot(roles["parent"], "currentIterator"): roles["delegate"]})):
+            write_table(path / "writes.tsv", writes | bad)
+            controls[name] = launch(work, classes, tracer, files, binding, name, path, "substituted frame differs")
     record = {"binding": binding, "entryHeap": before, "liveSites": sites, "writes": writes, "roles": roles,
               "certificate": certificate, "originals": originals, "substitutions": applied, "liveControls": controls}
     return record
@@ -180,7 +229,7 @@ def run_endpoint(work, number, side, classes, tracer, spec):
 def audit_endpoint(record):
     binding, before, sites = (record[k] for k in ("binding", "entryHeap", "liveSites"))
     originals, applied = record["originals"], record["substitutions"]
-    writes, roles = declared_effect(before, binding["layout"])
+    writes, roles = effect_for(binding, before)
     require(record["roles"] == roles and record["writes"] == writes, "archived effect differs")
     certificate = record["certificate"]
     admit(certificate, binding, before, sites, originals, writes)
@@ -193,20 +242,35 @@ def audit_endpoint(record):
     controls = record["liveControls"]
     require(controls["changedCursor"]["refused"] == "live prestate differs"
             and controls["missingDetachedItem"]["refused"] == "substituted frame differs", "missing live refusal")
-    require(len({r["pid"] for r in [*originals, *applied, *controls.values()]}) == 6, "fresh JVM required for each trial")
+    refusals = {"changedCursor", "missingDetachedItem"}
+    decorated = binding["input"] == ["unmodifiable"]
+    if decorated:
+        for key in ("wrongChildLock", "bypassedDecorator"):
+            require(controls[key]["refused"] == "substituted frame differs", "missing decorated-frame refusal")
+            refusals.add(key)
+        require(all(t["throw"] == originals[0]["throw"] for t in [*originals, *applied]), "exception routes differ")
+    require(set(controls) == refusals and len({r["pid"] for r in [*originals, *applied, *controls.values()]})
+            == 4 + len(refusals), "fresh JVM required for each trial")
     no_original = rejected(lambda: certify(binding, before, sites, originals[:1], writes), "two fresh originals required")
     wrong = writes | {EntryHeap(before).slot(roles["parent"], "currentIterator"):
                       roles["sibling"] if roles["selected"] == roles["child"] else roles["child"]}
     wrong_alias = rejected(lambda: certify(binding, before, sites, originals, wrong), "proposed writes differ from the declared effect")
-    return {"withheldOriginal": no_original, "wrongReceiver": wrong_alias}
+    checks = {"withheldOriginal": no_original, "wrongReceiver": wrong_alias}
+    if decorated:
+        for key, edit in (("wrongThrowReceiver", {"receiver": roles["mutable"]}), ("wrongThrowSite", {"at": "-1"})):
+            forged = originals[0] | {"throw": originals[0]["throw"] | edit}
+            checks[key] = rejected(lambda: certify(binding, before, sites, [forged, originals[1]], writes),
+                                   "throwing decorator or original exception route differs")
+    return checks
 
 
-def audit(report):
-    spec = json.loads(SCOPE.read_bytes())
+def audit(report, history="advanced"):
+    scope = SCOPES[history]
+    spec = json.loads(scope.read_bytes())
     endpoints = report["endpoints"]
     require(set(endpoints) == set(spec["endpoints"]), "missing registered deployment")
     for name, record in endpoints.items():
-        require(record["binding"]["scopeSha256"] == upgrade_replay.sha(SCOPE)
+        require(record["binding"]["input"] == spec["arguments"] and record["binding"]["scopeSha256"] == upgrade_replay.sha(scope)
                 and record["binding"]["layout"] == spec["endpoints"][name], "different registration")
         require(audit_endpoint(record) == record["admissionControls"], "missing admission refusal")
         binding = record["binding"]
@@ -231,9 +295,9 @@ def audit(report):
     return endpoints
 
 
-def run():
+def run(history):
     verify()
-    spec = json.loads(SCOPE.read_bytes())
+    spec = json.loads(SCOPES[history].read_bytes())
     endpoints = {}
     with tempfile.TemporaryDirectory(prefix="iterator-effects-") as tmp:
         work = Path(tmp)
@@ -256,15 +320,16 @@ def run():
     for left, right in (("628-old", "755-new"), ("628-new", "755-old"), ("755-old", "628-new"), ("755-new", "628-old")):
         cross[left] = {"attemptedOn": right, "refused": "certificate belongs to a different deployment or execution"}
     report = {"schema": "finite-iterator-effect/v1", "endpoints": endpoints, "crossDeployment": cross}
-    audit(report)
-    REPORT.write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
+    audit(report, history)
+    REPORTS[history].write_text(json.dumps(report, indent=2, ensure_ascii=False) + "\n")
     return report
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--history", choices=SCOPES, default="advanced")
     parser.add_argument("--audit", action="store_true", help="verify the committed finite certificates without starting JVMs")
     args = parser.parse_args()
-    checked = audit(json.loads(REPORT.read_bytes()) if args.audit else run())
+    checked = audit(json.loads(REPORTS[args.history].read_bytes()) if args.audit else run(args.history), args.history)
     for name, row in checked.items():
         print(name, row["binding"]["layout"], len(row["writes"]), "changed fields,", row["originals"][0]["leaf"]["member"])

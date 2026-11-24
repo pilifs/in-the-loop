@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-175912-check-the-unmodifiable-iterator-effect-a",
+  "title": "Check the unmodifiable iterator effect and original throw across four deployments",
+  "description": "Independently predict the full entry-heap update for the registered unmodifiable input of Commons Collections PRs 628 and 755. At each endpoint compare two ordinary JVMs with two live substitutions, bind the selected decorator and its delegate, the throwing instruction and the public catch, and refuse a bypassed decorator or incorrect child lock before public continuation. Reaudit the pre-advanced certificates to guard their original semantics.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "checked-heap-effects",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T17:59:12+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Preserve the four pre-advanced certificates",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --audit",
+      "cwd": "."
+    },
+    {
+      "name": "Qualify the decorated continuation and its live controls",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable",
+      "cwd": "."
+    },
+    {
+      "name": "Independently check the archived decorated certificates",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable --audit",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/collections/checked-decorator-effect.json"
+  ]
+}

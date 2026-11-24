@@ -11,13 +11,15 @@ import java.util.*;
 /** Check or substitute one updateCurrentIterator on the registered caller's actual objects. */
 public final class IteratorEffectTrace {
     private static final String CHAIN = "org.apache.commons.collections4.iterators.IteratorChain";
+    private static final String DECORATOR = "org.apache.commons.collections4.iterators.UnmodifiableIterator";
     private static final String OBSERVE = "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;";
     private final VirtualMachine vm;
     private final Path work;
     private final Path certificate;
     private final List<Long> returns;
     private IteratorHeap heap;
-    private ObjectReference parent, child, mutable, sibling;
+    private ObjectReference parent, child, mutable, sibling, decorator;
+    private boolean throwSeen;
     private boolean completed, nextSeen, removeSeen, leafSeen;
 
     private IteratorEffectTrace(VirtualMachine vm, Path work, Path certificate, List<Long> returns) {
@@ -94,8 +96,21 @@ public final class IteratorEffectTrace {
         child = roots.get("child");
         require(parent.equals(stack.get(0).thisObject()) && parent.equals(stack.get(1).thisObject()), "wrong parent receiver");
         mutable = ref(child, "currentIterator");
+        List<ObjectReference> boundaries = new ArrayList<>();
+        if (mutable == null) {
+            mutable = ref(ref(ref(child, "iteratorQueue"), "first"), "item");
+            decorator = ref(ref(ref(parent, "iteratorQueue"), "first"), "item");
+            require(decorator.referenceType().name().equals(DECORATOR), "unexpected unadvanced history");
+            boundaries.add(decorator);
+            ExceptionRequest exceptions = vm.eventRequestManager().createExceptionRequest(null, true, true);
+            exceptions.addClassFilter(DECORATOR);
+            exceptions.setSuspendPolicy(EventRequest.SUSPEND_ALL);
+            exceptions.enable();
+        }
         sibling = ref(ref(ref(parent, "iteratorQueue"), "last"), "item");
-        for (ObjectReference leaf : List.of(mutable, sibling)) {
+        boundaries.add(mutable);
+        boundaries.add(sibling);
+        for (ObjectReference leaf : boundaries) {
             Method remove = ((ClassType)leaf.referenceType()).concreteMethodByName("remove", "()V");
             stopAt(remove.location(), "leaf");
         }
@@ -143,13 +158,19 @@ public final class IteratorEffectTrace {
         }
         if (!completed) return;
         if (purpose.equals("leaf")) {
-            if (!removeSeen || leafSeen || (!receiver.equals(mutable) && !receiver.equals(sibling))) return;
+            if (!removeSeen || (!receiver.equals(mutable) && !receiver.equals(sibling) && !receiver.equals(decorator))) return;
             // The leaf must be removing on behalf of this very parent, called directly by the observer.
             for (int i = 1; i + 1 < stack.size(); i++) {
                 if (member(stack.get(i).location()).equals(CHAIN + "#remove()V")
                         && parent.equals(stack.get(i).thisObject()) && member(stack.get(i + 1).location()).equals(OBSERVE)) {
-                    write(work.resolve("leaf.tsv"), Map.of("receiver", heap.label(receiver),
+                    require(!leafSeen, "multiple removal boundaries");
+                    Map<String,String> fields = new TreeMap<>(Map.of("receiver", heap.label(receiver),
                             "member", member(hit.location()), "caller", member(stack.get(1).location())));
+                    if (decorator != null) {
+                        require(receiver.equals(decorator) && i == 1, "removal bypassed the selected decorator");
+                        fields.put("delegate", heap.label(field(receiver, "iterator")));
+                    }
+                    write(work.resolve("leaf.tsv"), fields);
                     leafSeen = true;
                     return;
                 }
@@ -163,11 +184,31 @@ public final class IteratorEffectTrace {
             nextSeen = true;
         } else if (purpose.equals("remove") && !removeSeen) {
             require(nextSeen, "parent remove preceded the registered next");
-            write(work.resolve("remove.tsv"), Map.of("site", Long.toString(stack.get(1).location().codeIndex()),
+            Map<String,String> fields = new TreeMap<>(Map.of("site", Long.toString(stack.get(1).location().codeIndex()),
                     "lastUsed", heap.label(field(parent, "lastUsedIterator")), "childLastUsed", heap.label(field(child, "lastUsedIterator")),
                     "mutableCursor", field(mutable, "cursor").toString(), "siblingCursor", field(sibling, "cursor").toString()));
+            if (decorator != null) fields.put("childLocked", field(child, "isLocked").toString());
+            write(work.resolve("remove.tsv"), fields);
             removeSeen = true;
         }
+    }
+
+    private void throwing(ExceptionEvent event) throws Exception {
+        require(leafSeen && !throwSeen && event.catchLocation() != null, "unexpected decorator exception");
+        List<StackFrame> stack = event.thread().frames();
+        require(decorator.equals(stack.get(0).thisObject()) && parent.equals(stack.get(1).thisObject())
+                && member(stack.get(1).location()).equals(CHAIN + "#remove()V")
+                && member(stack.get(2).location()).equals(OBSERVE), "wrong exception call chain");
+        Location location = event.location();
+        write(work.resolve("throw.tsv"), Map.ofEntries(
+                Map.entry("receiver", heap.label(stack.get(0).thisObject())), Map.entry("from", member(location)),
+                Map.entry("at", Long.toString(location.codeIndex())), Map.entry("code", digest(location.method().bytecodes())),
+                Map.entry("pool", digest(location.declaringType().constantPool())),
+                Map.entry("type", event.exception().referenceType().name()), Map.entry("caughtBy", member(event.catchLocation())),
+                Map.entry("caughtAt", Long.toString(event.catchLocation().codeIndex())),
+                Map.entry("parentCall", Long.toString(stack.get(1).location().codeIndex())),
+                Map.entry("parentCode", digest(stack.get(1).location().method().bytecodes()))));
+        throwSeen = true;
     }
 
     private void run() throws Exception {
@@ -182,6 +223,7 @@ public final class IteratorEffectTrace {
                 for (Event event : batch) {
                     if (event instanceof ClassPrepareEvent loaded) install(loaded.referenceType());
                     else if (event instanceof BreakpointEvent point) step(point);
+                    else if (event instanceof ExceptionEvent thrown) throwing(thrown);
                     else if (event instanceof VMDisconnectEvent) done = true;
                 }
                 if (!done) batch.resume();
@@ -190,6 +232,7 @@ public final class IteratorEffectTrace {
             // The VM may close the event connection immediately after VMDeath.
         }
         require(completed && nextSeen && removeSeen && leafSeen, "incomplete original public continuation");
+        require(decorator == null || throwSeen, "the registered decorator did not throw");
     }
 
     private static String quoted(String value) {
