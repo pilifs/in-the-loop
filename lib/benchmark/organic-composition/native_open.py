@@ -27,8 +27,18 @@ def measure(case, method, initializer=None):
             proc = subprocess.run(cmd, env=env, capture_output=True, text=True, timeout=150)
             results[side] = {"argv": cmd, "exit": proc.returncode, "stdout": proc.stdout, "stderr": proc.stderr,
                              "artifacts": doc["classpath"]}
-            if not proc.stdout.strip() or not json.loads(proc.stdout):
-                raise ValueError(f"missing native disposition on {side}: {proc.stderr[:200]}")
+            if proc.stdout.strip():
+                rows = json.loads(proc.stdout)
+                if len(rows) != 1 or not rows[0].get("verdict"):
+                    raise ValueError("missing original native verdict on "+side)
+                results[side]["disposition"] = {"stage": "native", "verdict": rows[0]["verdict"],
+                                                "reason": rows[0].get("problem")}
+            elif (initializer and proc.returncode and proc.stderr.startswith("jvmcontract: --observed-initializer " + initializer + ":")
+                  and ("holds an object of" in proc.stderr or "cannot observe" in proc.stderr)):
+                results[side]["disposition"] = {"stage": "startup observation", "verdict": "refused before native checking",
+                                                "reason": proc.stderr.strip()}
+            else:
+                raise ValueError(f"missing native disposition on {side}: {proc.stderr[:500]}")
     target = ROOT / OUTPUT / case / ("observed-native.json" if initializer else "first-native.json")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(results, indent=2)+"\n")

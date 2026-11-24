@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-152629-check-final-frozen-threeten-histories-an",
+  "title": "Check final frozen ThreeTen histories and complete proof cache inputs",
+  "description": "Recompute both registered claims on the shared transfer implementation, including all four proof-qualification module digests in its cache identity. Compare actual original calls, startup resources and checked return substitutions with warm and independent clean executions.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "checked-proof-reuse"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T15:26:29+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Run frozen public claim matrix",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten transfer-baseline",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/threeten/transfer-baseline"
+  ]
+}

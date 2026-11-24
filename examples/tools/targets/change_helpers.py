@@ -8,7 +8,7 @@ import re
 import subprocess
 import zipfile
 
-from targets import change_evidence, runtime_jar, runtime_jdk
+from targets import change_evidence, change_inventory, runtime_jar, runtime_jdk
 from targets.change_inventory import digest, instructions
 
 TYPES = {"I": ("int", -(2**31), 2**31-1), "J": ("long", -(2**63), 2**63-1),
@@ -102,8 +102,10 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     owner, _, _ = runtime_jar.parse_target(spec["entry"])
     data, origin = original_class(owner, files, jdk)
     contract, source, hashes = declaration(spec, data)
+    rules = {path.name: sha(path) for path in
+             (Path(__file__), Path(change_inventory.__file__), Path(runtime_jar.__file__), Path(runtime_jdk.__file__))}
     key = digest({"spec": spec, "helper": hashes, "jdk": image, "checker": sha(checker),
-                  "driver": sha(Path(__file__)), "ordered": [(str(f), sha(f)) for f in files],
+                  "qualification": rules, "ordered": [(str(f), sha(f)) for f in files],
                   "contract": contract, "consumer": source})
     stored = cache / (key+".json") if cache else None
     if stored and stored.is_file():
@@ -147,7 +149,7 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     if not proc.stdout.strip():
         raise ValueError("checked helper produced no verifier report: " + proc.stderr[-500:])
     proof = json.loads(proc.stdout)
-    record = {"key": key, "entry": spec["entry"], "provider": origin, **hashes, "rows": spec["rows"],
+    record = {"key": key, "qualification": rules, "entry": spec["entry"], "provider": origin, **hashes, "rows": spec["rows"],
               "contract": contract, "consumer": source, "argv": argv, "exit": proc.returncode,
               "proof": proof, "proofDigest": digest(proof)}
     # In an application trial the helper's JVM class is already initialized when its entry is reached.
