@@ -1,0 +1,48 @@
+{
+  "project": "maven",
+  "change": "Apache Maven — Resolve a dependency range regardless of repository order",
+  "commits": {
+    "old": "c7b164f76189be25a2c6a48ffe74ff3afc39fcc2",
+    "new": "9da38851f517281d66b1b05d25b8785dcc9e7fc9"
+  },
+  "sourceRoots": [
+    "compat/maven-artifact/src/main"
+  ],
+  "artifacts": [
+    "artifacts/J13-maven-{side}-maven-artifact.jar"
+  ],
+  "deployment": "Both complete pinned maven-artifact modules. No production runtime dependency.",
+  "entry": "org.apache.maven.artifact.versioning.VersionRange#createFromVersionSpec(Ljava/lang/String;)Lorg/apache/maven/artifact/versioning/VersionRange;",
+  "assumptions": [
+    "Start a fresh JVM with unpopulated range caches. Use actual VersionRange, DefaultArtifactVersion and ComparableVersion for all six candidate orders."
+  ],
+  "questions": [
+    {
+      "id": "cyclic-range",
+      "observer": "Record construction or its exception, selected member of the range and independent highest-version fold in all six orders.",
+      "basis": "The historical three-way cycle has three possible winners. On the fix construction succeeds and x wins every order.",
+      "inputs": [
+        {
+          "args": [
+            "qualifiers"
+          ],
+          "before": "InvalidVersionSpecificationException|-/x|-/0|-/x|-/0-alpha|-/0|-/0-alpha",
+          "after": "ok|x/x|x/x|x/x|x/x|x/x|x/x"
+        }
+      ]
+    },
+    {
+      "id": "ordinary-range",
+      "observer": "Construct a range from 1-alpha through 1-beta and select from all six positions with repeated beta.",
+      "basis": "The usual alpha-before-beta order and range selection agree.",
+      "inputs": [
+        {
+          "args": [
+            "ordinary"
+          ],
+          "before": "ok|1-beta/1-beta|1-beta/1-beta|1-beta/1-beta|1-beta/1-beta|1-beta/1-beta|1-beta/1-beta"
+        }
+      ]
+    }
+  ]
+}

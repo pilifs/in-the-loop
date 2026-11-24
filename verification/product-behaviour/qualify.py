@@ -9,7 +9,7 @@ import tempfile
 import time
 import zipfile
 
-from register import HERE, ROOT, jdk, manifests, materialize, read, upgrade_replay, write
+from register import HERE, ROOT, SETUP, jdk, manifests, materialize, read, stage_resources, upgrade_replay, write
 
 sys.path.insert(0, str(ROOT / "lib/benchmark/organic-composition"))
 import freeze
@@ -57,10 +57,16 @@ def run(case_id, label):
     with tempfile.TemporaryDirectory(prefix="product-plan-") as temp:
         work = Path(temp)
         workflows = materialize(folder, work)
+        stage_resources(case, work / "fixtures")
         write(work / "old.json", graphs["old"])
         fixed = graphs["new"]
         # Exercise the same paths before and after the relevant edit. Preserve the original classpath order.
-        for i, artifact in enumerate(fixed["classpath"][:len(case["artifacts"])]):
+        old_artifacts = {row["file"]: row for row in graphs["old"]["classpath"]}
+        fixed_artifacts = {row["file"]: row for row in fixed["classpath"]}
+        product_files = [*case["artifacts"], *case.get("archivedClasspathEntries", {}).values()]
+        replacements = [(fixed_artifacts[str(SETUP / name.format(side="fix"))],
+                         old_artifacts[str(SETUP / name.format(side="parent"))]) for name in product_files]
+        for i, (artifact, _) in enumerate(replacements):
             source = Path(artifact["file"])
             target = work / f"provider-{i}" / source.name
             target.parent.mkdir()
@@ -76,7 +82,7 @@ def run(case_id, label):
                                            ("clean", None, "clean"), ("replacement", "warm", "repeat"),
                                            ("replacement-clean", None, "replacement-clean")):
                 if mode == "replacement":
-                    for actual, parent in zip(fixed["classpath"][:len(case["artifacts"])], graphs["old"]["classpath"], strict=False):
+                    for actual, parent in replacements:
                         shutil.copyfile(parent["file"], actual["file"])
                         actual["sha256"] = parent["sha256"]
                     fixed.update(commit=graphs["old"]["commit"], sourceSha256=graphs["old"]["sourceSha256"],
@@ -91,7 +97,7 @@ def run(case_id, label):
                 if previous:
                     cmd.extend(["--previous", work / (previous + ".json")])
                 if "fixtures" in case:
-                    cmd.extend(["--fixtures", folder])
+                    cmd.extend(["--fixtures", work / "fixtures"])
                 start = time.monotonic()
                 subprocess.run(cmd, cwd=ROOT, check=True)
                 plan = read(path)

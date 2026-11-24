@@ -1,0 +1,99 @@
+{
+  "project": "jfreechart",
+  "change": "JFreeChart — Pan two chart axes when only the first is inverted",
+  "commits": {
+    "old": "4e196e9bf170ae8af9bc4760a2329b3d933acccc",
+    "new": "f68f7248a4145828dfa36fc2f76924db3c543162"
+  },
+  "sourceRoots": [
+    "src/main/java",
+    "src/main/resources"
+  ],
+  "artifacts": [
+    "artifacts/J03-jfreechart-{side}.jar"
+  ],
+  "supportClasspaths": [
+    "logs/J03-jfreechart-fix.runtime-classpath.txt"
+  ],
+  "deployment": "Pinned non-JavaFX headless profile with JCommon and packaged resources.",
+  "entry": "org.jfree.chart.plot.XYPlot#panDomainAxes(DLorg/jfree/chart/plot/PlotRenderingInfo;Ljava/awt/geom/Point2D;)V",
+  "assumptions": [
+    "Headless JDK, ranges initialized to [0,10], independent NumberAxis receivers, equal and opposite pans."
+  ],
+  "questions": [
+    {
+      "id": "domain-inverted-first",
+      "observer": "Record both paired ranges and independently panned single-axis references after each pan.",
+      "basis": "A ten-unit axis moves by one; inversion reverses its own motion. Restoring both axes hides the historical intermediate error.",
+      "inputs": [
+        {
+          "args": [
+            "domain",
+            "first"
+          ],
+          "before": "-1.0,9.0/-1.0,9.0/-1.0,9.0/1.0,11.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0",
+          "after": "-1.0,9.0/1.0,11.0/-1.0,9.0/1.0,11.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0"
+        }
+      ]
+    },
+    {
+      "id": "domain-swapped-or-normal",
+      "observer": "Observe paired and isolated axes with the inverted axis second and with neither inverted.",
+      "basis": "The second-axis sign agrees with its single-axis reference when the first axis did not mutate the common pan percentage.",
+      "inputs": [
+        {
+          "args": [
+            "domain",
+            "second"
+          ],
+          "before": "1.0,11.0/-1.0,9.0/1.0,11.0/-1.0,9.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0"
+        },
+        {
+          "args": [
+            "domain",
+            "none"
+          ],
+          "before": "1.0,11.0/1.0,11.0/1.0,11.0/1.0,11.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0"
+        }
+      ]
+    },
+    {
+      "entry": "org.jfree.chart.plot.XYPlot#panRangeAxes(DLorg/jfree/chart/plot/PlotRenderingInfo;Ljava/awt/geom/Point2D;)V",
+      "id": "range-inverted-first",
+      "observer": "Record both paired ranges and independently panned single-axis references after each pan.",
+      "basis": "A ten-unit axis moves by one; inversion reverses its own motion. Restoring both axes hides the historical intermediate error.",
+      "inputs": [
+        {
+          "args": [
+            "range",
+            "first"
+          ],
+          "before": "-1.0,9.0/-1.0,9.0/-1.0,9.0/1.0,11.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0",
+          "after": "-1.0,9.0/1.0,11.0/-1.0,9.0/1.0,11.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0"
+        }
+      ]
+    },
+    {
+      "entry": "org.jfree.chart.plot.XYPlot#panRangeAxes(DLorg/jfree/chart/plot/PlotRenderingInfo;Ljava/awt/geom/Point2D;)V",
+      "id": "range-swapped-or-normal",
+      "observer": "Observe paired and isolated axes with the inverted axis second and with neither inverted.",
+      "basis": "The second-axis sign agrees with its single-axis reference when the first axis did not mutate the common pan percentage.",
+      "inputs": [
+        {
+          "args": [
+            "range",
+            "second"
+          ],
+          "before": "1.0,11.0/-1.0,9.0/1.0,11.0/-1.0,9.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0"
+        },
+        {
+          "args": [
+            "range",
+            "none"
+          ],
+          "before": "1.0,11.0/1.0,11.0/1.0,11.0/1.0,11.0|0.0,10.0/0.0,10.0/0.0,10.0/0.0,10.0"
+        }
+      ]
+    }
+  ]
+}

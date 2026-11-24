@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -45,9 +46,19 @@ def bind(folder):
         if not sources:
             raise ValueError("empty production source selection")
         files = [SETUP / f.format(side=label) for f in case["artifacts"]]
+        replacements = {SETUP / original.format(side=label): SETUP / archived.format(side=label)
+                        for original, archived in case.get("archivedClasspathEntries", {}).items()}
+        used = set()
         for cp in case.get("supportClasspaths", []):
             listed = (SETUP / cp.format(side=label)).read_text().strip()
-            files.extend(Path(f) for f in listed.split(os.pathsep) if f)
+            for item in filter(None, listed.split(os.pathsep)):
+                path = Path(item)
+                if path in replacements:
+                    used.add(path)
+                    path = replacements[path]
+                files.append(path)
+        if used != replacements.keys():
+            raise ValueError(f"{side}: could not locate the archived reactor entry in its original classpath")
         files = list(dict.fromkeys(f.resolve(strict=True) for f in files))
         bound[side] = {
             "commit": commit, "tree": git("rev-parse", "HEAD^{tree}").decode().strip(),
@@ -84,7 +95,7 @@ def materialize(folder, work):
         if "invocationVia" in question:
             scope["invocationVia"] = question["invocationVia"]
         if "fixtures" in case:
-            scope["fixtures"] = case["fixtures"]
+            scope["fixtures"] = [{k: item[k] for k in ("file", "kind", "sha256")} for item in case["fixtures"]]
         write(work / (name + ".json"), scope)
         rows.append({"id": name, "scope": name + ".json", "probe": str(folder / "UpgradeProbe.java"),
                      "cohort": "registered", "deterministicUnderAssumptions": True,
@@ -93,6 +104,16 @@ def materialize(folder, work):
     write(workflows, {"schema": "caller-workflows/v1", "change": case["change"], "workflows": rows})
     change_plan.frozen_workflows(workflows)
     return workflows
+
+
+def stage_resources(case, destination):
+    for item in case.get("fixtures", []):
+        source = SETUP / item["setupFile"]
+        if item["kind"] != "resource" or upgrade_replay.sha(source) != item["sha256"]:
+            raise ValueError("registered upstream fixture differs: " + item["file"])
+        target = destination / item["file"]
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target)
 
 
 def physical(folder):
@@ -115,6 +136,7 @@ def physical(folder):
                     args = [base64.b64encode(s.encode("utf-16-be")).decode() for s in item["args"]]
                     trial = work / ("trial-" + str(len(observations)))
                     trial.mkdir()
+                    stage_resources(case, trial / "fixtures")
                     obs = trial / "observation"
                     env = {"PATH": str(java) + ":/usr/bin:/bin", "HOME": str(trial),
                            "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TZ": "UTC", "TMPDIR": str(trial)}

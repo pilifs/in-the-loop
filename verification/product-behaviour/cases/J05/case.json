@@ -1,0 +1,68 @@
+{
+  "project": "poi",
+  "change": "Apache POI — Move a loaded hyperlink and reopen the spreadsheet",
+  "commits": {
+    "old": "72ad1d5e111c2cd00c4842a0431eb1d9ca4b605c",
+    "new": "c94ee8ad9096bdb8cf8e5e59d8d12432e950dbf3"
+  },
+  "sourceRoots": [
+    "poi-ooxml/src/main"
+  ],
+  "artifacts": [
+    "artifacts/J05-poi-{side}-poi-ooxml.jar"
+  ],
+  "supportClasspaths": [
+    "releases/poi-ooxml-6.0.0/classpath.txt"
+  ],
+  "deployment": "Complete source-built pinned OOXML module first, followed by the setup's POI 6.0.0 support graph.",
+  "entry": "org.apache.poi.xssf.usermodel.XSSFCell#getHyperlink()Lorg/apache/poi/xssf/usermodel/XSSFHyperlink;",
+  "assumptions": [
+    "Fresh workbook with two sheets, byte-for-byte handoff between three saves and independent workbook constructors. Compare external relationship targets by URI resolved within each owning worksheet."
+  ],
+  "questions": [
+    {
+      "id": "moved-loaded-object",
+      "observer": "Move the same loaded hyperlink from A1 to A2, inspect the ZIP relationship, reopen, clone the sheet, save and reopen, and read both original and clone.",
+      "basis": "The moved object needs an external target on its new cell. The independent untouched sheet retains its own external link even when an invalid workbook cannot reopen.",
+      "inputs": [
+        {
+          "args": [
+            "move",
+            "plain"
+          ],
+          "before": "unresolved|reopen2:IllegalStateException:A2",
+          "after": "https://example.com/page|-/https://example.com/page|https://example.com/page|https://example.com/page|https://example.com/page"
+        },
+        {
+          "args": [
+            "move",
+            "section"
+          ],
+          "before": "unresolved|-/section|section|section|unresolved",
+          "after": "https://example.com/page|-/https://example.com/page#section|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+        }
+      ]
+    },
+    {
+      "id": "unmoved-object",
+      "observer": "Keep A1 and repeat serialization, cloning and third reopening. Check both sheets and each local relationship.",
+      "basis": "An intact link's external target is independent of regenerated relationship IDs. The optional location is appended to the external address.",
+      "inputs": [
+        {
+          "args": [
+            "keep",
+            "plain"
+          ],
+          "before": "https://example.com/page|https://example.com/page/-|https://example.com/page|https://example.com/page|https://example.com/page"
+        },
+        {
+          "args": [
+            "keep",
+            "section"
+          ],
+          "before": "https://example.com/page|https://example.com/page#section/-|https://example.com/page#section|https://example.com/page#section|https://example.com/page"
+        }
+      ]
+    }
+  ]
+}
