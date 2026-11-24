@@ -360,10 +360,55 @@ The jobs were written by `$O/scripts/submit_jobs.py` and committed with this rec
 | Job | Subject | Status |
 |---|---|---|
 | `20261124-134447-setup-build-apache-poi-s-poi-module-at-b` | B: `:poi:jar` at both revisions; `TestDataFormatter`, own and transplanted | **failed** at step 1 after 13.9 s. `:poi:jar` built (BUILD SUCCESSFUL), but the step looked for the jar in `poi/build/libs/`, and POI writes it to `build/dist/maven/poi/`. This was the setup script's mistake; the result was collected on another line (`7fcd18cc09e4`). |
-| `20261124-135600-setup-build-apache-poi-s-poi-module-at-b` | B: the same, jar path fixed | pending |
+| `20261124-135600-setup-build-apache-poi-s-poi-module-at-b` | B: the same, jar path fixed | **passed**, 4/4 steps in 1m00s, peak 1.5 GiB (collected in `2405aab9d751`) |
 | `20261124-134447-setup-build-icu4j-core-at-both-3249-revi` | D: ICU4J `main/core` at both revisions; RBBI tests, own and transplanted | **passed**, 5/5 steps in 1m57s, peak 1.6 GiB (collected in `08e02797e4`) |
 | `20261124-134447-setup-build-log4j-core-at-both-1173-revi` | G: `log4j-core-test -am` at both revisions; `PatternProcessorTest`, own and transplanted | **failed** at step 1 after 36.5 s. `log4j-api` unpacks `log4j-api-java9:zip:2.19.1-SNAPSHOT`, and `-am` from `log4j-core-test` does not bring that module into the reactor, so Maven looked for the zip on `repository.apache.org/snapshots` and did not find it. Again the setup's mistake. Inline, `-pl log4j-api-java9,log4j-api -DskipTests package` then built in 6 s. |
-| `20261124-140027-setup-build-log4j-core-at-both-1173-revi` | G: the same with `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am`, `package` in every step | pending |
+| `20261124-140027-setup-build-log4j-core-at-both-1173-revi` | G: the same with `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am`, `package` in every step | **failed** at step 1 after 22.6 s: with Maven on JDK 11, `log4j-api-test` does not compile (`StackLocatorUtilTest` imports `sun.reflect.Reflection`). Upstream CI runs Maven on JDK 8 with toolchain 11 (`.github/workflows/build.yml`). Inline, `-pl log4j-api-java9,log4j-api,log4j-api-test -DskipTests package` on JDK 8 then built. |
+| `20261124-141323-setup-build-log4j-core-at-both-1173-revi` | G: the same, Maven running on JDK 8 | pending |
+
+**B, POI** (job `20261124-135600-setup-build-apache-poi-s-poi-module-at-b`). Gradle 9.8.1 ran `--offline` on JDK 17;
+`TestDataFormatter` gives:
+
+| Step | Result |
+|---|---|
+| fix | 59 run, 2 skipped, 0 failures |
+| parent's own | 57 run, 2 skipped, 0 failures |
+| landed file on the parent | **2 fail**: `testCurrencyStringWithoutLanguageInfo()` and `testFormatWithSpecialCharactersInLiteral()` |
+
+Jars (`build/dist/maven/poi/poi-6.0.0-SNAPSHOT.jar`):
+- `$O/artifacts/B-poi-parent.jar`: `6e43938a40a3bafd59ba6bcc89f03a89a9f4c54520f08c3d8481d5dc1e7502a5`
+- `$O/artifacts/B-poi-fix.jar`: `3bb5a6d4840677d91125456f35afab47e2b2a904ac8dc3c730d704957852d5fa`
+
+The runtime classpath is the `releases/poi-6.0.0` graph without `poi-6.0.0.jar`. Logs: `$O/logs/B-poi-*.poi.*`. The
+offline command:
+
+```bash
+cd $O/worktrees/B-poi-fix && GRADLE_USER_HOME=$O/gradle-home JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem ./gradlew --no-daemon --offline \
+  -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem \
+  :poi:jar :poi:test --tests 'org.apache.poi.ss.usermodel.TestDataFormatter'
+```
+
+Class digests:
+
+| Class | parent | fix |
+|---|---|---|
+| `DataFormatter` | `e4982b2ac7ccc06340120f75213b02bd1fcfc2f2d140a425c4fae1c72e18e25c` | `54883f8d266126d89bbc94028fa50f86c2b648af67991a14abf59bd92181a951` |
+| `CellNumberFormatter` | `00797a9d7aeff192ab40b9b9c5804340df6a41f19cf14fc21f6d0b45dc9a3fbb` | `63776b2d54df49c081b30ea940bc5bc796e7df6e5cfe1952b09f3f0941085829` |
+| `DateUtil` | `c337b84d54b4f3f6b30936790e0f90d4dfc22af4660a8b9f5014c291b1ea4f13` | the same |
+| `LocaleUtil` | `ae941c3c1da68e92c5ac6bbc5e6cf34dc523aee8f7e33768b11331cfda903b81` | the same |
+
+`DateUtil.isInternalDateFormat(int)` has descriptor `(I)Z`.
+
+**B preflight** (`LocaleProbe`, JDK 21, the built jars over the 6.0.0 dependencies; `$O/logs/B-probe.txt`). The probe uses
+`formatRawCellContents(0.001, -1, "#,##0.000000000\"тг.\"")` on one `new DataFormatter()`, through
+`LocaleUtil.setUserLocale` US → kk-KZ → US:
+- parent: `0.001 / 0,001 / 0.001`
+- fix: `0.001000000тг. / 0,001000000тг. / 0.001000000тг.`
+
+A fresh peer at each stage gives the same output. The control `0.0` gives `0.0 / 0,0 / 0.0` on both sides. A fresh
+process that sets kk-KZ before constructing the formatter gives `0,001` on the parent and `0,001000000тг.` on the fix.
+This is the brief's statement. Log4j API prints "could not find a logging provider" on stderr, because no log4j-core is
+on the classpath; it is harmless.
 
 **D, ICU4J** (job `20261124-134447-setup-build-icu4j-core-at-both-3249-revi`). It ran Maven 3.10.0 on JDK 17 with
 `-pl main/core -am` (framework and core); `-Dtest=RBBITestExtended,RBBIMonkeyTest,RBBITestMonkey,RBBITest,RBBIAPITest,BreakIteratorTest`
@@ -419,9 +464,10 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
   - F Commons Collections, four endpoints: `F-commons-collections-{628,755}-{parent,fix}.jar`.
   - H Commons Lang: `H-commons-lang-{parent,fix}.jar`.
   - I Gson: `I-gson-{parent,fix}.jar`.
-  - B POI and G Log4j come from jobs `20261124-135600-setup-build-apache-poi-s-poi-module-at-b` and
-    `20261124-140027-setup-build-log4j-core-at-both-1173-revi`: `B-poi-{parent,fix}.jar` and
-    `G-logging-log4j2-{parent,fix}-log4j-{api,core}.jar` (see [Jobs](#jobs) for their state).
+  - B POI 6.0.0-SNAPSHOT: `B-poi-{parent,fix}.jar`.
+  - G Log4j: `G-logging-log4j2-{parent,fix}-log4j-{api,core}.jar` come from job
+    `20261124-141323-setup-build-log4j-core-at-both-1173-revi` (see [Jobs](#jobs) for its state). Until then, the
+    2.19.0 and 2.20.0 release jars stand in.
 - **Runtime classpaths**: `$O/logs/WT.runtime-classpath.txt`.
   - Most built jars need nothing else.
   - Collections needs commons-codec (1.19.0 for #628, 1.23.0 for #755).
@@ -445,6 +491,7 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
 
 - **Landed upstream tests** (fix / parent / landed test transplanted onto the parent):
   - A, `TestZonedDateTime`: pass / pass / **6 failures**, the overlap tests.
+  - B, `TestDataFormatter`: pass / pass / **2 failures** (`testCurrencyStringWithoutLanguageInfo`, `testFormatWithSpecialCharactersInLiteral`).
   - D, RBBI (61 tests): pass / pass / **4 failures**, the word monkeys and `TestExtended`.
   - E, `CharSequenceInputStreamTest`: pass / pass / **7 failures**.
   - F #755, 4 `IteratorChain*Test` classes: pass / pass / **215 failures**.
@@ -452,11 +499,14 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
   - I, `MapTest`/`JsonReaderPathTest`/`JsonParserTest`: pass / pass / **7 failures**.
   - **C and F #628 pass on both sides even with the landed test**: C changed only test metadata, and #628 is a
     performance fix. For them, the probes below are the discriminators.
-  - B (`TestDataFormatter`) and G (`PatternProcessorTest`) are in the pending jobs.
+  - G (`PatternProcessorTest`) is in the pending job.
 - **The brief's preflight observations, reproduced as stated** on the built jars, identical on JDK 21.0.13:
   - **A**: NY cursor 40 → 80, with the parent `05:00Z` twice and the fix `05:00Z`/`06:00Z`. Berlin 37 → 74, with
     `00:00Z` twice versus `00:00Z`/`01:00Z`. The read at end of input throws with error index = index. The builder
     formatter and `ISO_ZONED_DATE_TIME` agree.
+  - **B**: US → kk-KZ → US gives `0.001 / 0,001 / 0.001` on the parent and `0.001000000тг. / 0,001000000тг. /
+    0.001000000тг.` on the fix. A fresh peer gives the same. The `0.0` control is preserved. A process that starts in
+    kk-KZ already differs.
   - **C**: Swedish `08123456` ends `08 12 34 56` on the parent and `08-12 34 56` on the fix. Clear and replay repeat
     the history. US is preserved. **25 of 1,326** region × type example histories change, listed in the record.
   - **D**: en_US `xx:yy` goes from `[0,2,3,5]` to `[0,5]`; fi and sv stay at `[0,5]`; en_US_POSIX stays at `[0,2,3,5]`.
@@ -500,11 +550,12 @@ jvmcontract` had nothing to do). Its sha256 is `a03d514a66aa6931f0c7770db673f24e
   - Gradle needs `-Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J17`.
   - Its `:poi` configurations are cached, so `--offline` works. Other POI modules (`poi-ooxml`, where the PR's
     `TestXSSFBugs` change lives) were **not** resolved or built.
-- **Log4j**: build with `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am` and `package`. Naming only
-  `log4j-core-test` fails, because the api and core modules unpack the java9 modules' zips.
+- **Log4j**: run Maven 3.8.4 **on JDK 8** with `-t $O/toolchains.xml` (toolchain 11), as upstream CI does, with
+  `-pl log4j-api-java9,log4j-core-java9,log4j-core-test -am` and `package`. Each setup try that did otherwise failed
+  (see [Jobs](#jobs)).
 - **No snapshot dependencies** from outside are used. The only SNAPSHOT versions are the projects' own modules.
-- The probes set their own state (zones, locales), and Log4j's probe runs one JVM per default zone. The POI probe
-  (`$O/probes/B/LocaleProbe.java`, which also has a `fresh-kk` mode) has not run yet: it waits for the POI jars.
+- The probes set their own state (zones, locales), and Log4j's probe runs one JVM per default zone.
+- **POI**: `DateUtil` and `LocaleUtil` are byte-identical on both sides; `DataFormatter` and `CellNumberFormatter` differ.
 
 ### What is left for the domain work on purpose
 
