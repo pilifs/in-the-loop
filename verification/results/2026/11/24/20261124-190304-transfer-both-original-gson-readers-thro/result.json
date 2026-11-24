@@ -1,0 +1,349 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-190304-transfer-both-original-gson-readers-thro",
+  "title": "Transfer both original Gson readers through the frozen plan",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 1m59s, peak 159.8 MiB (estimated 5m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-190304-transfer-both-original-gson-readers-thro.json",
+    "sha256": "1670f6f823b065d636cc56d37fd6560d9116f37052426d90fbc03a2f64f45c4b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-190304-transfer-both-original-gson-readers-thro",
+      "title": "Transfer both original Gson readers through the frozen plan",
+      "description": "Compare paths, original failure diagnostics, integer keys and values across plain and success/failure/recovery maps on both original Gson 3098 deployments. Preserve the streaming and tree String-helper controls separately, match cold, warm and empty-cache public results, and record the first strict native refusal.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-helpers"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T19:03:04+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "Check the frozen runner",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+          "cwd": "."
+        },
+        {
+          "name": "Measure the strict original startup frontier",
+          "run": "python3 -B lib/benchmark/organic-composition/native_open.py gson 'readPaths()Z'",
+          "cwd": "."
+        },
+        {
+          "name": "Run public Gson plans and disjoint reader controls",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py gson first",
+          "cwd": "."
+        },
+        {
+          "name": "Compare original observations and dependencies",
+          "run": "python3 -B lib/benchmark/organic-composition/audit.py gson first",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/gson/first",
+        "verification/organic-composition/gson/first-native.json"
+      ]
+    }
+  },
+  "sourceCommit": "8058feb78c3938427efee89035bdc94520853896",
+  "startedAt": "2026-11-24T19:16:13+00:00",
+  "finishedAt": "2026-11-24T19:22:52+00:00",
+  "wallSeconds": 399.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1038263,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 167600128,
+    "wallSeconds": 119.2,
+    "cpuSeconds": 163.2,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.4
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 244.708,
+      "cpuSeconds": 245.088,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2290868224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "4a26c0ad203da7cac2da3925e769123577039698fe219016b7a97b016b372f8f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-190304-transfer-both-original-gson-readers-thro/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 04s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the frozen runner",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.272,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 38526976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-runner.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Measure the strict original startup frontier",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py gson 'readPaths()Z'",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 1.203,
+      "cpuSeconds": 2.182,
+      "cpuThrottledSeconds": 0.262,
+      "peakMemoryBytes": 78786560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-measure-the-strict-original-st.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Run public Gson plans and disjoint reader controls",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py gson first",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 117.372,
+      "cpuSeconds": 160.732,
+      "cpuThrottledSeconds": 26.605,
+      "peakMemoryBytes": 167600128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-run-public-gson-plans-and-disj.log",
+        "lines": 4,
+        "bytes": 208,
+        "sha256": "c8e1e25c98a9500045f8d84699ec15df9d4be9a773b9f8e69cb98dd5238156e6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "8 claims in /tmp/organic-matrix-az7uv9e1/planned.json",
+        "8 claims in /tmp/organic-matrix-az7uv9e1/cold.json",
+        "8 claims in /tmp/organic-matrix-az7uv9e1/warm.json",
+        "8 claims in /tmp/organic-matrix-az7uv9e1/clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Compare original observations and dependencies",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py gson first",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.06,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 16379904,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-compare-original-observations.log",
+        "lines": 1,
+        "bytes": 136,
+        "sha256": "4c46e6650aa6e06edf0955030c15f6ae84c0a067217bd5723bcb33f1b2cc4528",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gson first matched original observations, proof identities, applied values and startup witnesses: [['cold', 'warm'], ['cold', 'clean']]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/gson/first/plans.zip",
+      "change": "added",
+      "bytes": 243344,
+      "sha256": "d345d3359d57bde7d5fcb85c1adee8665c48c28760507e27835a346bfbfcd6cf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/gson/first/summary.json",
+      "change": "added",
+      "bytes": 27786,
+      "sha256": "fc83078a08c213afcf4982ac20d350facd245c3a78b194376f7a6cc0b48db2c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/gson/first-native.json",
+      "change": "added",
+      "bytes": 15952,
+      "sha256": "b8c948dbb84b00d6342cdd965316ab9d3553cadc30b17c35dea823e8afb3e22c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T19:27:10+00:00",
+    "applied": [
+      "verification/organic-composition/gson/first/plans.zip",
+      "verification/organic-composition/gson/first/summary.json",
+      "verification/organic-composition/gson/first-native.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "0ece80cb8a09db9dbf2444b47d1280042d108e43",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/0ece80cb8a09db9dbf2444b47d1280042d108e43/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T192252Z-642781bca5c24894",
+      "outputs": "20261124T192252Z-672101d1d6595aa7",
+      "diff": "20261124T192252Z-692589ab705d28f3"
+    }
+  }
+}
