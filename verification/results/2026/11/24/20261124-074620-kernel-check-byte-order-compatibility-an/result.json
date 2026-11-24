@@ -1,0 +1,181 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-074620-kernel-check-byte-order-compatibility-an",
+  "title": "Kernel-check byte-order compatibility and finite record composition",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.2s, peak 180.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-074620-kernel-check-byte-order-compatibility-an.json",
+    "sha256": "54db196d4e10ea2ce203bff1e906d3d64ddc4ea211fd05d20dc93b0fc3705c0d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-074620-kernel-check-byte-order-compatibility-an",
+      "title": "Kernel-check byte-order compatibility and finite record composition",
+      "description": "Use the installed Lean 4.36 kernel to check both endian compositions, the exact palindrome condition and a bijection with 16 independent bits. Prove finite-record composition by induction conditional on a one-record suffix law. A disposable false mixed-identity theorem must be rejected. This checks the algebra and records its assumptions separately from the Java encoder and SAT evidence.",
+      "kind": "library",
+      "capabilities": [
+        "lean:bitvector",
+        "lean:induction"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/wire/WireRecords.lean"
+        ]
+      },
+      "expected": "Five printed kernel axiom inventories, no sorry and a rejected false-identity control.",
+      "submitted": {
+        "at": "2026-11-24T07:46:20+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 21,
+      "requires": [
+        "/home/filip/.elan/toolchains/leanprover--lean4---v4.36.0/bin/lean"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m",
+        "timeout": "10m"
+      },
+      "steps": [
+        {
+          "name": "Check and challenge the wire calculus",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/wire_calculus.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/assurance/wire-calculus.json"
+      ]
+    }
+  },
+  "sourceCommit": "a517dd6cb4b93181fe836954143e094e57fe57c8",
+  "startedAt": "2026-11-24T08:01:22+00:00",
+  "finishedAt": "2026-11-24T08:01:44+00:00",
+  "wallSeconds": 22.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2485762,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 600.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 189038592,
+    "wallSeconds": 2.2,
+    "cpuSeconds": 1.3,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check and challenge the wire calculus",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_calculus.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 600.0,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 1.263,
+      "cpuThrottledSeconds": 0.432,
+      "peakMemoryBytes": 189038592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-and-challenge-the-wire-c.log",
+        "lines": 9,
+        "bytes": 481,
+        "sha256": "1162957fd719e611dd1741d80afe0a0af9e386475e8c8e08e529a4f5adbf61c0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "'WireRecords.fourCompositions' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'WireRecords.compatible' depends on axioms: [propext, Classical.choice, Quot.sound, compatible._native.bv_decide.ax_1_5]",
+        "'WireRecords.palindromeBijection' depends on axioms: [propext,",
+        " Classical.choice,",
+        " Quot.sound,",
+        " palindromeBijection._native.bv_decide.ax_1_5]",
+        "'WireRecords.wrongIdentity' depends on axioms: [propext, Quot.sound]",
+        "'WireRecords.finiteRecords' depends on axioms: [propext]",
+        " "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/assurance/wire-calculus.json",
+      "change": "added",
+      "bytes": 2151,
+      "sha256": "2807a5e6f80678e40edcd2ecb03610485fe02ee2aa5aa61b8cf17e7713855158",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:02:01+00:00",
+    "applied": [
+      "verification/beyond-jbmc/assurance/wire-calculus.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T080144Z-9893118b4f38bb1c",
+      "outputs": "20261124T080145Z-063421c56157d913",
+      "diff": "20261124T080145Z-1166414fffc9ece9"
+    }
+  }
+}
