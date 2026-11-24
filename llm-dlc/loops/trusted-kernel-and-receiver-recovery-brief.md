@@ -158,3 +158,98 @@ The core deliverables are the historical fault comparison, the long-fill transfe
 [beam]: https://repo.maven.apache.org/maven2/org/apache/beam/beam-vendor-guava-32_1_2-jre/0.1/
 [reverse]: https://github.com/apache/commons-lang/blob/29ccc7665f3bc5d84155a3092ab2209a053324e6/src/main/java/org/apache/commons/lang3/ArrayUtils.java
 [config-source]: https://github.com/apache/commons-configuration/blob/d2101a20e2b74ced47ae57dd3b6d1d90b03d409b/src/main/java/org/apache/commons/configuration2/interpol/ConfigurationInterpolator.java#L166-L172
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- `$B` = `~/.cache/in-the-loop/trusted-kernel-receiver-recovery`. JDK 21 by full path:
+  `~/.sdkman/candidates/java/21.0.13.0+9-tem/bin/` (the default `java` is 25).
+- **Pinned tools, all matching the earlier record and the evidence** ([table](#pinned-tools-still-as-recorded)):
+  - Temurin 21.0.13+9;
+  - Z3 5.3.3;
+  - CaDiCaL 1.9.5 at `~/.cache/in-the-loop/trusted-kernel/src/cadical-1.9.5/build/cadical`;
+  - `cake_lpr` at `~/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr`;
+  - Lean 4.36.0, every file;
+  - rustc 1.99.1;
+  - `lib/target/release/jvmcontract`, fresh at this head.
+- **The brief's five inventory checks pass at this head** ([results](#inventory-checks)).
+- **Trusted-kernel consumer at this head**: `$B/kernel/kernel-at-head`, sha256
+  `635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1`. This is byte-identical to the range-capable
+  checker in `evidence/cases.json`, so it is the int-capable binary to freeze.
+- **New releases**, checksum- and signature-checked, with ordered classpaths in `$B/releases/NAME/classpath.txt`:
+  - `guava-31.1-jre` (jar `a42edc9cab792e39fe39bb94f3fca655ed157ff87a8af78e1d6ba5b07c4a00ab`);
+  - `beam-vendor-guava-32_1_2-jre-0.1` (`44669a8f43cdef8ac20e02484ead0d1cf8199d47e00c7f1828b579b7dfb0f9a2`);
+  - `fastutil-8.5.15` (`cffeb6673bdf1e6e4377d684df2f55ac359cf5cf6df613e05e62deeea500936a`, = brief).
+- **Reused releases**:
+  - Guava 33.4.8-jre: `~/.cache/in-the-loop/trusted-kernel/releases/guava-33.4.8-jre/`;
+  - Commons Lang 3.17.0: `~/.cache/in-the-loop/receiver-construction/releases/commons-lang3-3.17.0/`.
+- **Class bytes** for every class the brief names, extracted, with full digests and disassembly: [Class entries](#class-entries),
+  `$B/classes/`, `$B/logs/classes.sha256`, `$B/logs/javap-*.txt`. Among them:
+  - JDK `Arrays.class`: `$B/classes/jdk-21.0.13/Arrays.class`,
+    `4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab`, 59,937 bytes;
+  - `ArrayUtils.class`: `f21e4f7f69b2d98bed01748bd5b711b47458007ee762d07f1e4c4c32147bc8cc`, = brief.
+- **Sources**:
+  - fastutil tag `8.5.15` = `355d8ebfaf2bcc4032cc1c25bec9f3fe827f8175` at `$B/src/fastutil-355d8ebf`;
+  - Guava `v31.1` = `0a17f4a429323589396c38d8ce75ca058faa6c64` at `$B/src/guava-31.1`;
+  - Guava 33.4.8, Lang 3.17.0, and the Configuration, Compress and JavaParser sides, from the earlier setups.
+- **Historical variants**, rebuilt with the unchanged `controls.compile_variant`: `$B/probes/historical/frame/artifact.bin`
+  (`7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747`) and `$B/probes/historical/miss/artifact.bin`
+  (`4cbdc3e3e7ddda3196050ee42b1606e7c6ebb8aedfab66eec0aec669c479da02`). Both equal the recorded digests.
+- **Receiver campaign**: the area and its Maven cache are whole again (64 records, 586 files, 0 missing). Keep pointing
+  `receiver_campaign.py` at the original paths. Ordered classpaths: `~/.cache/in-the-loop/receiver-construction/receivers/cp/`.
+- **§3 examples** 336, 337, 346, 393 and 395: every named task is executable, and their jars are in the target cache.
+
+### What was verified on a JVM
+
+Every count and observation the brief states for an existing artifact reproduced ([table](#what-was-replayed-on-a-jvm)):
+- JDK long fill: 245 pass, 80 changed by narrowing, 140 changed by extension, and the one-cell `4294967296L`.
+- Guava 31.1 and Beam `indexOf`: 780 int and 1,554 long calls per JAR, all first-match, heap unchanged.
+- fastutil: 7,745 checks (2,735 zero-origin, 5,010 other), `[0,2)` and `[1,1)`.
+- Shorts and Chars: 33 of 216 per type.
+- Lang `reverse`: 44,165 calls, 40,525 normal (each the clipped reversal) and 3,640 AIOOBE with the array preserved;
+  `(new int[0], 0, MIN)` throws; `MAX` skips; null returns.
+- The live properties table sequence (§5.1), step by step.
+- Historical variants: heap-writing returns 0 and leaves `[0]` from `[7]`/7, and `[0]`/0 keeps `[0]`. Wrong miss
+  returns 0 on `[]`, where the release returns −1.
+- Configuration #565 and #601 (four observations, all four sides), Compress #767 frames, XZ profiles on 1.11 and 1.12,
+  and JavaParser #4538 parent and fix, with the cleared-separator failure.
+
+### What to know before starting
+
+- **The receiver campaign's Maven cache under `agent-tmp/` had been cleaned** (2026-11-23 about 22:57) and was
+  restored by hard links from `~/.cache/in-the-loop/receiver-construction/receivers/maven-repository`. It sits in a
+  scratch folder, so a later cleanup can remove it again. Re-run the same `cp -al` if `check_area.py` reports missing
+  files.
+- **fastutil's signature postdates its key's published expiry.** It was made 2024-10-19; the expiry on
+  keyserver.ubuntu.com and pgp.mit.edu is 2022-11-08. It is cryptographically valid, and the jar matches the brief's
+  digest and Central's checksums. Beam's signing key also expired (2023-10-09), but after its signature.
+- **The Beam package is `org.apache.beam.vendor.guava.v32_1_2_jre`** (with `_jre`). Its `Ints`/`Longs` bodies are
+  byte-identical to Guava 33.4.8's; only constant-pool indices and names differ. The same holds for Guava 31.1.
+- **fastutil's `fill` is `@Deprecated`.** Its range check is two calls deep: `IntArrays.ensureFromTo([III)V` →
+  `it.unimi.dsi.fastutil.Arrays.ensureFromTo(III)V`. The second begins with an assertion guard on
+  `$assertionsDisabled`, which `<clinit>` sets from `desiredAssertionStatus()`, so it depends on `-ea`. A negative
+  `from` gives AIOOBE, `from > to` gives `IllegalArgumentException`, and `to > length` gives AIOOBE.
+- **The Configuration initializer reads `props.containsKey(...)` and then `props.getProperty(...)`** on the live
+  `System.getProperties()` (line 100, lines 167–172). On a child `Properties` with defaults, `containsKey` is false.
+- The JVM grids' value sets are this setup's choice where the brief does not list them. They reproduce the brief's
+  counts but are not its grids.
+- `cake_lpr` exits 0 when it rejects. Acceptance is the stdout line `s VERIFIED UNSAT`. `bounded_sat.py` refuses to
+  run if either SAT tool's digest changes.
+- elan's default toolchain is the channel `stable`. Name `leanprover/lean4:v4.36.0` (as `replay.py` does) rather than
+  a bare `lean`.
+- Nothing here is a snapshot dependency. The JavaParser and CSV originals are SNAPSHOT builds of exact commits,
+  pinned by digest.
+
+### What is left for the domain work on purpose
+
+- Freezing the checker binary, and its first response to the long-fill, fastutil, Shorts/Chars and reverse requests.
+  No request or certificate for them exists, and the consumer was run on none.
+- The disposable historical-producer checkout, the tautology and omitted-exit edits, and all five answers per trial.
+- Every native run of §3: 336 `first-8-release` through the ordinary entry, `held/prefix-sums`, the 393 and 395
+  tasks, the certification path, its controls and its overheads. These run the engine on claims; B9/B11 runs are jobs.
+- Managed-runner isolation of each comparison, the Lean range-branch export and its bridge, and the second-opinion
+  pilot on 336, 346 and 337.
+- §5: the Configuration JSON and YAML runs, the JavaParser and XZ transfer reruns, and the cohort recount. All of these
+  are campaign or B11 runs.
+- All claims, examples, requests, certificates, scoring and the comparative results table.
