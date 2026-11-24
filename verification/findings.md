@@ -18,6 +18,37 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-058: receiver-construction's second cycle was stopped by the filter, and its named frontiers are open
+
+- **Status**: open. The work was stopped by OpenAI's cybersecurity filter, not by a plateau and not by a decision that it was done.
+- **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the single-agent run `receiver-construction` (Astra 6.2 at max effort, session `3394e768`).
+- **Found**:
+  - **Why it is open:**
+    - At 00:49 UTC the watcher decided to continue (decision single-receiver-construction-D001), for "one more cycle" on the frontiers below.
+    - The filter refused cycle 2 at 00:54, 2.8 minutes in, with nothing committed. This is the second stop in VF-046.
+    - The watcher then handed the run over as finished after cycle 1, merged as `oqmtltol`, rather than retry in a fresh session.
+  - **What cycle 1 decided:**
+    - JavaParser: 2 of 8 (the empty-root counterexamples).
+    - Guava: 8 of 8, including the complete 137,257-string client language.
+    - Commons Lang: 6 of 6.
+    - JGraphT: its 25-graph, 150-transition audit.
+    - The three-worker schedule enumeration.
+    - Commons CSV: kept 4 of 4.
+    - Native kept 57/60 and integrated JBMC 24/60 on the preceding comparison.
+  - **The named frontiers** (from the decision and "Comparator coverage and next investigation" in `llm-dlc/loops/receiver-construction-and-property-discovery-results.md`):
+    1. **Commons Configuration #565 and #601:** both upgrades stop at `System.getProperties()`. The page names the next experiment:
+       - start at the actual `Properties` object it returns;
+       - check consistent per-key presence, value and identity through a public caller;
+       - rerun JSON and YAML at their four frozen observations, and isolate the two live trees.
+
+       The frontier's measurement is `verification/receiver-discovery/qualification/commons-configuration-565/measurement.json`.
+    2. **JavaParser:** 6 of its 8 ordinary strict-native claims are open. The page names the controls that separate a property-state witness from a proof over every process state: JavaParser's missing and arbitrary separator values, and XZ's cache-selection states.
+    3. **The historical receiver cohort:** all 34 unrestricted overloads are open. Two caller pairs were proved on both versions.
+    4. **Native scheduling:** the first remaining instruction is the worker's `Thread` constructor. That is VF-056's gap, tracked there.
+- **Needs**: a follow-up Astra run in a fresh Codex session (VF-046's rule): either this brief continued with its continue message, or a short fast-follow brief from the user. The setup is done and its caches are under `~/.cache/in-the-loop/receiver-construction`, so no new setup pass is needed unless they are cleaned.
+- **Tracked in**: this finding. Evidence: the results page above, `verification/receiver-discovery/results.json` (check with `python3 -B lib/benchmark/receiver-discovery/results.py --check`), and the decision record `llm-dlc/decisions/single-receiver-construction.jsonl`.
+- **Closes when**: each frontier is decided, or is shown to need something out of scope and recorded as such. Frontier 4 closes with VF-056.
+
 ### VF-057: the trusted-kernel investment decision still lacks its corrupted-producer control
 
 - **Status**: open. Left when trusted-kernel was handed over to the next queued brief after cycle 2.
