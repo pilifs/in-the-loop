@@ -1,0 +1,209 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-110402-verify-original-class-names-on-plexus-an",
+  "title": "Verify original class names on Plexus and Commons Codec",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.2s, peak 110.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-110402-verify-original-class-names-on-plexus-an.json",
+    "sha256": "ffec0c03794b484181a2169b0d9a6ab4b87e1074940ed1f97078ac515341bff5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-110402-verify-original-class-names-on-plexus-an",
+      "title": "Verify original class names on Plexus and Commons Codec",
+      "description": "Rebuild the exact generated Sisu Plexus caller, then compare both Boolean inputs on each original JVM. Check ordinary strict equivalence cold and warm against those observations. Transfer the same test to Commons Codec 1.13 and 1.14. The stream class keeps its name and acquires a new superclass. Require the native hierarchy witness to reproduce on the original inputs.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "All six unguarded native verdicts agree with the two original release JVMs on the complete Boolean domains, including the exact input and output strings for the Codec change.",
+      "submitted": {
+        "at": "2026-11-24T11:04:02+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m",
+        "notes": "The prior Plexus guarded comparison used 115 MiB and under one second after compilation. The default checks also build cold and warm proof caches."
+      },
+      "steps": [
+        {
+          "name": "Replay public callers and check the preserved and changed observations",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/identity_followup.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/followup/class-names.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "18a020e25a6214baed59168e030bcd99e4477b02",
+  "startedAt": "2026-11-24T11:20:35+00:00",
+  "finishedAt": "2026-11-24T11:23:42+00:00",
+  "wallSeconds": 187.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4186045,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": "The prior Plexus guarded comparison used 115 MiB and under one second after compilation. The default checks also build cold and warm proof caches."
+  },
+  "usage": {
+    "peakMemoryBytes": 115798016,
+    "wallSeconds": 2.2,
+    "cpuSeconds": 2.9,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 177.696,
+      "cpuSeconds": 177.935,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2363817984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "58e331b226afa457d116f1685549e51dc6521e08effb6dcaee3935616c462112",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-110402-verify-original-class-names-on-plexus-an/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Replay public callers and check the preserved and changed observations",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/identity_followup.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 2.881,
+      "cpuThrottledSeconds": 0.085,
+      "peakMemoryBytes": 115798016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-public-callers-and-chec.log",
+        "lines": 1,
+        "bytes": 90,
+        "sha256": "c2b6d1a9bb5d1e3cf5f2236c792fda4c2a5c597fe3ec0ff0c543e25c20e4234b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Checked the full Boolean domain on both original JVMs and strict native for plexus, codec"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/followup/class-names.json.gz",
+      "change": "added",
+      "bytes": 6934,
+      "sha256": "fbb3c66acb870b97a5ac063f40db29ff110c97bcb88565c38158d8f9bdfea2ba",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T11:23:47+00:00",
+    "applied": [
+      "verification/beyond-jbmc/followup/class-names.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "e01190197ea382c6c230d4ad165283e936f20377",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/e01190197ea382c6c230d4ad165283e936f20377/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T112342Z-78401030b7c2c56b",
+      "outputs": "20261124T112342Z-80709147a8cdb89c",
+      "diff": "20261124T112342Z-8261139b9a531d9f"
+    }
+  }
+}
