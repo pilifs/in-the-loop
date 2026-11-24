@@ -1,0 +1,385 @@
+{
+  "opening": "b8c948dbb84b00d6342cdd965316ab9d3553cadc30b17c35dea823e8afb3e22c",
+  "sides": {
+    "old": {
+      "commit": "61f2c646066e959f65cb99a826a2a759be42dbdd",
+      "ordered": [
+        {
+          "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/I-gson-parent.jar",
+          "sha256": "6f39446178fc99d6fa3e15c73a4c9b326f3f3915c1be810887b99ab11b32c9ae"
+        },
+        {
+          "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+          "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a"
+        }
+      ],
+      "attempts": [
+        {
+          "requested": [
+            "com.google.gson.FormattingStyle"
+          ],
+          "exit": 1,
+          "stage": "native",
+          "report": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "UpgradeProbe#readPaths()Z",
+            "domain": "",
+            "assume": null,
+            "assert": "result == true",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "statement": "/tmp/jvmcontract-property-1422348-1795549418641585548-0/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "UpgradeProbe#readPaths()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+                "uri": null,
+                "line": 70
+              }
+            ],
+            "output": "✗ UpgradeProbe#readPaths()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+            "work": "/tmp/jvmcontract-property-1422348-1795549418641585548-0",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 1.893229747,
+              "properties": 1,
+              "unwind": 16,
+              "max_array_length": 8,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.019550385,
+                "loading_seconds": 0.006945555,
+                "decoding_seconds": 0.000566232,
+                "encoding_seconds": 2.7584e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "the class initializer of com.google.gson.FormattingStyle was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a8ad7980b771), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13",
+                  "kind": "jdk-static-method",
+                  "call": "java.lang.Class.forName(java.lang.String)",
+                  "sites": [
+                    "com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55"
+                  ],
+                  "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 600.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 598.13,
+                  "seconds": 0.02,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.007,
+                    "lowering": 0.001,
+                    "symbolic": 0.012,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 1.91,
+                "setup": 0.002,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.02,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 1.888
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the class initializer of com.google.gson.FormattingStyle was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a8ad7980b771), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                  "basis": "engine",
+                  "id": "observed-initializer:com.google.gson.FormattingStyle:a8ad7980b771a1b3714c1cc9913d749707a97349a236f26dccccec9842c5a903:0283dac8c11ab441de140bfba4de016f02edcd296fff29d3fceb735d1cbb95fb"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result == true",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 16,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          }
+        },
+        {
+          "requested": [
+            "com.google.gson.FormattingStyle",
+            "com.google.gson.stream.JsonReader"
+          ],
+          "exit": 2,
+          "stage": "initializer",
+          "reason": "jvmcontract: --observed-initializer com.google.gson.stream.JsonReader: its initialization initialized com.google.gson.internal.JsonReaderInternalAccess and left it other than it is initialized alone (its field INSTANCE was an object of com.google.gson.stream.JsonReader$1 (com.google.gson.stream.JsonReader$1{;com.google.gson.internal.JsonReaderInternalAccess:}) after it and is null alone): it wrote another class's static state, which an observation does not carry (it holds only com.google.gson.stream.JsonReader's own fields), so the check cannot take it"
+        }
+      ]
+    },
+    "new": {
+      "commit": "b3f4ca20087f9066de4c340522ff84e0558e1ad1",
+      "ordered": [
+        {
+          "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/I-gson-fix.jar",
+          "sha256": "6dad830e7188de3bfcaf7da17664a1bf70cf845c92f7083d243fb599f2d15cf1"
+        },
+        {
+          "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/com/google/errorprone/error_prone_annotations/2.50.0/error_prone_annotations-2.50.0.jar",
+          "sha256": "4667724877f1d37a689202da191e23efa7657c62eef93ccdac406eccfe5cdd0a"
+        }
+      ],
+      "attempts": [
+        {
+          "requested": [
+            "com.google.gson.FormattingStyle"
+          ],
+          "exit": 1,
+          "stage": "native",
+          "report": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "UpgradeProbe#readPaths()Z",
+            "domain": "",
+            "assume": null,
+            "assert": "result == true",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+            "statement": "/tmp/jvmcontract-property-1427003-1795549423747704881-0/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "UpgradeProbe#readPaths()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+                "uri": null,
+                "line": 70
+              }
+            ],
+            "output": "✗ UpgradeProbe#readPaths()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13 (java.lang.Class.forName(java.lang.String) at com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
+            "work": "/tmp/jvmcontract-property-1427003-1795549423747704881-0",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 1.7616749999999999,
+              "properties": 1,
+              "unwind": 16,
+              "max_array_length": 8,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.021314986,
+                "loading_seconds": 0.008365149,
+                "decoding_seconds": 0.000630987,
+                "encoding_seconds": 3.1515e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "the class initializer of com.google.gson.FormattingStyle was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a8ad7980b771), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-static-method:java.lang.Class.forName(Ljava/lang/String;)Ljava/lang/Class;@jdk-21.0.13",
+                  "kind": "jdk-static-method",
+                  "call": "java.lang.Class.forName(java.lang.String)",
+                  "sites": [
+                    "com.google.gson.internal.sql.SqlTypesSupport.<clinit>:55"
+                  ],
+                  "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 600.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 598.263,
+                  "seconds": 0.021,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.008,
+                    "lowering": 0.001,
+                    "symbolic": 0.012,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 1.78,
+                "setup": 0.002,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.021,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 1.757
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the class initializer of com.google.gson.FormattingStyle was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a8ad7980b771), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read no system property; and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                  "basis": "engine",
+                  "id": "observed-initializer:com.google.gson.FormattingStyle:a8ad7980b771a1b3714c1cc9913d749707a97349a236f26dccccec9842c5a903:0283dac8c11ab441de140bfba4de016f02edcd296fff29d3fceb735d1cbb95fb"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result == true",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 16,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          }
+        },
+        {
+          "requested": [
+            "com.google.gson.FormattingStyle",
+            "com.google.gson.stream.JsonReader"
+          ],
+          "exit": 2,
+          "stage": "initializer",
+          "reason": "jvmcontract: --observed-initializer com.google.gson.stream.JsonReader: its initialization initialized com.google.gson.internal.JsonReaderInternalAccess and left it other than it is initialized alone (its field INSTANCE was an object of com.google.gson.stream.JsonReader$1 (com.google.gson.stream.JsonReader$1{;com.google.gson.internal.JsonReaderInternalAccess:}) after it and is null alone): it wrote another class's static state, which an observation does not carry (it holds only com.google.gson.stream.JsonReader's own fields), so the check cannot take it"
+        }
+      ]
+    }
+  }
+}

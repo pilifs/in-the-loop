@@ -1,6 +1,7 @@
 """Summarize measured job costs and the inference interval from published aggregate counters."""
 import argparse
 from datetime import datetime
+import gzip
 import hashlib
 import json
 from pathlib import Path
@@ -12,7 +13,7 @@ from plan_run import HERE, OUTPUT, ROOT
 START="27e6cca94c80ea8ac7ad83971e0efa05a3d601b9"
 
 
-def archive_receipts():
+def archive_receipts(jobs=None):
     def references(value):
         if isinstance(value, dict):
             if isinstance(value.get("path"), str) and value["path"].startswith("receipts/"):
@@ -23,7 +24,10 @@ def archive_receipts():
             for child in value:
                 yield from references(child)
 
-    rows = {}
+    if jobs is None:
+        jobs = json.loads((ROOT / OUTPUT / "jobs.json").read_bytes())
+    rows, incomplete = {}, {}
+    failed_outputs = {(o["path"], o["sha256"]): j["id"] for j in jobs if j["status"] == "failed" for o in j["outputs"]}
     for archive in sorted((ROOT / OUTPUT).rglob("plans.zip")):
         plans = references_checked = direct = 0
         digests = {}
@@ -45,11 +49,16 @@ def archive_receipts():
                         raise ValueError(f"{archive}:{name} has an unbound receipt {path}")
                     references_checked += 1
         if not plans:
-            raise ValueError("empty plan archive: " + str(archive))
+            rel = str(archive.relative_to(ROOT))
+            checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
+            if names or (rel, checksum) not in failed_outputs:
+                raise ValueError("empty plan archive without a matching failed job: " + str(archive))
+            incomplete[str(archive.relative_to(ROOT / OUTPUT))] = {"sourceJob": failed_outputs[rel, checksum], "sha256": checksum}
+            continue
         rows[str(archive.relative_to(ROOT / OUTPUT))] = {
             "plans": plans, "receiptReferences": references_checked, "directClaimReceipts": direct}
     return {"archives": len(rows), **{k: sum(r[k] for r in rows.values()) for k in
-            ("plans", "receiptReferences", "directClaimReceipts")}, "byArchive": rows}
+            ("plans", "receiptReferences", "directClaimReceipts")}, "byArchive": rows, "emptyFailedOutputs": incomplete}
 
 
 def main(end, cycles=1, cycle_start=None):
@@ -76,20 +85,27 @@ def main(end, cycles=1, cycle_start=None):
                   "20261124-172139-identify-the-original-commons-io-rewind":
                   "20261124-173601-capture-the-original-commons-io-default",
                   "20261124-175912-check-the-unmodifiable-iterator-effect-a":
-                  "20261124-181646-resolve-the-decorator-cache-field-and-re"}
+                  "20261124-181646-resolve-the-decorator-cache-field-and-re",
+                  "20261124-190726-open-log4j-rollover-claims-on-the-origin":
+                  "20261124-192229-verify-log4j-on-the-complete-registered"}
     superseded={job:success for job,success in replacements.items()
                 if job in per_job and per_job[job]["status"]=="failed" and per_job.get(success,{}).get("status")=="passed"}
     unresolved=[job for job,row in per_job.items() if row["status"]!="passed" and job not in superseded]
     profiles={}
-    for case in ("threeten","poi","phone","icu","collections-628","collections-755","url-only","io","lang"):
+    for case in ("threeten","poi","phone","icu","collections-628","collections-755","url-only","io","lang","gson","log4j"):
         folder=HERE/case
         if not (folder/"effort.json").is_file():continue
         row=json.loads((folder/"effort.json").read_bytes())
-        label="transfer-baseline" if case=="threeten" else "first"
+        label={"threeten":"transfer-baseline", "log4j":"canonical"}.get(case, "first")
         report=ROOT/OUTPUT/case/label/"summary.json"
         if report.is_file():
             runs=json.loads(report.read_bytes())["runs"]
             row["measuredPlanSeconds"]={name:{k:runs[name][k] for k in ("wallSeconds","childCpuSeconds")} for name in ("cold","warm","clean") if name in runs}
+        supplement = {"gson": "checked-cache.json.gz", "log4j": "checked-scheduling.json.gz"}.get(case)
+        if supplement and (ROOT / OUTPUT / case / supplement).is_file():
+            runs = json.loads(gzip.decompress((ROOT / OUTPUT / case / supplement).read_bytes()))["runs"]
+            row["checkedComparison"] = {"receipt": str(OUTPUT / case / supplement),
+                "measuredSeconds": {name: {k: run[k] for k in ("wallSeconds", "childCpuSeconds")} for name, run in runs.items()}}
         profiles[case]=row
     builds = [j["checkerBuild"] for j in jobs if j["checkerBuild"] is not None]
     record={"domainCyclesObserved":cycles,"setup":"Separate upstream setup run, outside the job and inference intervals below.",
@@ -106,7 +122,7 @@ def main(end, cycles=1, cycle_start=None):
                         "missingWall":sum(b["wallSeconds"] is None for b in builds),
                         "missingCpu":sum(b["cpuSeconds"] is None for b in builds),
                         "scope":"Measured pipeline preparation steps, excluded from the submitted-step CPU and wall sums above."}},
-            "archiveIntegrity":archive_receipts(), "cases":profiles,
+            "archiveIntegrity":archive_receipts(jobs), "cases":profiles,
             "caseHelpRequests":sum(p.get("requestsForCaseInput",0) for p in profiles.values())}
     if cycle_start:
         prior = json.loads(subprocess.check_output(["git", "show", cycle_start + ":" + str(OUTPUT / "jobs.json")], cwd=ROOT))
