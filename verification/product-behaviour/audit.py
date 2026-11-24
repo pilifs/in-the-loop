@@ -7,10 +7,11 @@ import io
 import json
 from pathlib import Path
 import shutil
+import subprocess
 import tempfile
 import zipfile
 
-from register import HERE, ROOT, manifests, read, upgrade_replay, write
+from register import HERE, ROOT, manifests, read, upgrade_replay
 from targets import change_evidence
 
 
@@ -23,22 +24,36 @@ def collect(collector):
     jobs = []
     outputs_root = (HERE / "results").relative_to(ROOT)
     specs = ROOT / "verification/jobs"
+    ledger = HERE/"jobs.json"
+    previous = {job["id"]:job for job in read(ledger)} if ledger.is_file() else {}
     for spec in sorted(specs.rglob("*.json")):
         doc = read(spec)
         if not any("verification/product-behaviour/" in s["run"] for s in doc.get("steps", [])):
             continue
         result_file = collector / "verification/results" / spec.parent.relative_to(specs) / doc["id"] / "result.json"
+        old = previous.pop(doc["id"], None)
+        spec_digest = hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest()
         if not result_file.is_file():
+            if old:
+                require(old["specSha256"] == spec_digest and all(upgrade_replay.sha(ROOT/r["path"]) == r["sha256"]
+                        for r in old["outputs"]), "earlier result no longer matches its inputs or outputs")
+                jobs.append(old)
             continue
         result = read(result_file)
+        result_digest = upgrade_replay.sha(result_file)
+        require(not old or old["resultSha256"] == result_digest, "an earlier collector result differs: " + doc["id"])
         require(doc == result["job"]["spec"] and doc["id"] == result["id"] and
-                hashlib.sha256(json.dumps(doc, sort_keys=True).encode()).hexdigest() == result["job"]["sha256"],
+                spec_digest == result["job"]["sha256"],
                 "different collector specification: " + doc["id"])
         outputs = []
+        cases = set()
         for item in result["outputs"]:
             rel = Path(item["path"])
             require(not rel.is_absolute() and ".." not in rel.parts and rel.is_relative_to(outputs_root)
                     and item["change"] != "deleted", "output outside the study")
+            case = rel.relative_to(outputs_root).parts[0]
+            if (HERE/"cases"/case).is_dir():
+                cases.add(case)
             path = ROOT / rel
             digest = item["sha256"]
             if path.exists():
@@ -55,10 +70,20 @@ def collect(collector):
                 require(upgrade_replay.sha(tmp) == digest, "copy changed during collection")
                 tmp.replace(path)
             outputs.append({"path":str(rel), "sha256":digest})
+        registrations = {}
+        for case in sorted(cases):
+            registrations[case] = {}
+            for name in ("case.json","bindings.json","UpgradeProbe.java","physical.json"):
+                file = HERE/"cases"/case/name
+                blob = subprocess.check_output(["git","cat-file","blob",result["sourceCommit"]+":"+str(file.relative_to(ROOT))],cwd=ROOT)
+                checksum = hashlib.sha256(blob).hexdigest()
+                require(checksum == upgrade_replay.sha(file), f"{doc['id']} ran on a different {case}/{name}")
+                registrations[case][name] = checksum
         jobs.append({"id":doc["id"], "status":result["status"], "source":result["sourceCommit"],
-                     "specSha256":result["job"]["sha256"], "resultSha256":upgrade_replay.sha(result_file),
-                     "usage":result["usage"], "outputs":outputs})
-    write(HERE / "jobs.json", jobs)
+                     "specSha256":spec_digest, "resultSha256":result_digest,
+                     "usage":result["usage"], "outputs":outputs,"registrations":registrations})
+    require(not previous, "an earlier result has lost its job specification")
+    change_evidence.write_json(ledger, jobs)
     return jobs
 
 
@@ -89,6 +114,9 @@ def audit_first(folder, summary_path):
     case = read(folder / "case.json")
     physical = read(folder / "physical.json")
     summary = read(summary_path)
+    freeze = read(ROOT/"lib/benchmark/organic-composition/freeze.json")
+    require(summary["frozenSource"] == freeze["source"] and summary["comparatorSha256"] == freeze["checkerSha256"],
+            "original experiment used a different freeze")
     require(summary["bindingsSha256"] == upgrade_replay.sha(folder / "bindings.json")
             and physical["probeSha256"] == upgrade_replay.sha(folder / "UpgradeProbe.java")
             and physical["caseSha256"] == upgrade_replay.sha(folder / "case.json"), "registration differs")
@@ -111,16 +139,24 @@ def audit_first(folder, summary_path):
                 branches.append((binary["claims"], measurement["originalBinaryClaims"]))
             for branch, (nodes, rows) in enumerate(branches):
                 for node, row in zip(nodes, rows, strict=True):
-                    require(all(node.get(k) == row[k] for k in ("claimKey","executionKey","status","children","receipt")),
+                    require(all(node.get(k) == row[k] for k in ("claimKey","executionKey","status","children","execution","receipt")),
                             "summary disagrees with archived plan")
                     receipt = node.get("receipt")
                     if not receipt:
                         require(node["status"] == "open", "decided without a public receipt")
+                        require(row["freshQualifiedEntries"] == row["reusedQualifiedEntries"] == 0, "entries claimed without receipts")
                         continue
                     blob = archive.read(receipt["path"])
                     require(hashlib.sha256(blob).hexdigest() == receipt["sha256"], "receipt digest differs")
                     seen.add(receipt["path"])
                     evidence = json.loads(blob)
+                    actions = row["execution"] or {}
+                    counts = Counter()
+                    for side, binding in evidence.get("sides", {}).items():
+                        reused = actions.get(side, {}).get("action") == "exact reuse"
+                        counts[reused] += sum(t["qualifiedMethodEntries"] for t in binding.get("trials",[]))
+                    require((counts[False], counts[True]) == (row["freshQualifiedEntries"],row["reusedQualifiedEntries"]),
+                            "wrong fresh or reused entry count")
                     checked += 1
                     if evidence.get("cases") == node["domain"]:
                         recomposed = change_evidence.compose({"entry":node["entry"],"cases":node["domain"]}, evidence, node["intent"])
@@ -187,6 +223,98 @@ def audit_checked(folder):
             "omittedApplications":len(omitted),"staleMethods":2,"sha256":upgrade_replay.sha(path)}
 
 
+def audit_release_pair(folder, path):
+    from register import SETUP
+    from release_pairs import accumulator
+    record = json.loads(gzip.decompress(path.read_bytes()))
+    require(record["registeredCaseSha256"] == upgrade_replay.sha(folder/"case.json")
+            and record["releaseGraphSha256"] == upgrade_replay.sha(folder/"releases.json")
+            and record["originalGraphSha256"] == upgrade_replay.sha(folder/"bindings.json"), "different comparison inputs")
+    physical = {(r["side"],tuple(r["args"])):r["return"] for r in read(folder/"physical.json")["observations"]}
+    histories, identities = 0, {}
+    for kind, graphs in (("release",read(folder/"releases.json")),("pr",read(folder/"bindings.json"))):
+        for side, graph in graphs.items():
+            key = kind+"-"+side
+            data = record["graphs"][key]
+            require(data["productionJar"] == graph["classpath"][0]["sha256"], "different subject jar")
+            seen = set()
+            for r in data["inputs"]:
+                args = tuple(r["args"])
+                require(physical[side,args] == r["observation"] and args not in seen, "wrong original comparison")
+                seen.add(args)
+                if folder.name == "J12":
+                    program = r["generatedAccumulator"]
+                    require(accumulator(program["java"],args[0],side) == program, "different generated field binding")
+                else:
+                    with zipfile.ZipFile(SETUP/graph["classpath"][0]["file"]) as jar:
+                        digest = hashlib.sha256(jar.read("org/sqlite/native/Linux/x86_64/libsqlitejdbc.so")).hexdigest()
+                    require(r["mappedNativeSha256"] == digest, "different original JNI image")
+                    identities[key] = digest
+            require(seen == {args for s,args in physical if s == side}, "incomplete deployment domain")
+            histories += len(seen)
+    return {"histories":histories,"generatedPrograms":histories if folder.name == "J12" else 0,
+            "nativeImages":identities,"sha256":upgrade_replay.sha(path)}
+
+
+def audit_order(path):
+    from maven_order import METHOD, SIG, member_site
+    folder = HERE/"cases/J13"
+    doc = json.loads(gzip.decompress(path.read_bytes()))
+    graphs = manifests(folder)
+    expected = {(r["side"],tuple(r["args"])):r["return"] for r in read(folder/"physical.json")["observations"]}
+    require(doc["originalPlans"] == upgrade_replay.sha(path.parent/"first/plans.zip")
+            and {r["side"] for r in doc["controls"] if "stale parsed-version shape" in r["wrongOperandShape"]} == {"old","new"},
+            "wrong Maven plan or missing stale-operand refusals")
+    counts,seen = Counter(),set()
+    for t in doc["trials"]:
+        side,args = t["side"],tuple(t["args"])
+        table = doc["proofs"][side]
+        require(len(table["returns"]) == 13 and table["jar"] == graphs[side]["classpath"][0]["sha256"]
+                and table["checkedReference"] == upgrade_replay.sha(folder/"OrderTable.java"), "different finite table")
+        originals,substitutions = t["originals"],t["substitutions"]
+        require(len(originals) == len(substitutions) == 2 and originals[0] == originals[1] == substitutions[0] == substitutions[1],
+                "original and substituted comparison histories differ")
+        seen.add((side,args))
+        for r in substitutions:
+            require(r["value"] == {"return":expected[side,args]}, "wrong observed range")
+            for e in r["events"]:
+                if e[0] == "public-match":
+                    counts["matchVersion"] += 1
+                    continue
+                target = member_site(Path(graphs[side]["classpath"][0]["file"]),e[-4:])
+                require(e[0] == "compare" and (target["owner"], target["name"], target["descriptor"]) == (METHOD,"compareTo",SIG)
+                        and table["returns"][e[2]+"/"+e[4]] == int(e[6]) and
+                        (table["shapes"][e[2]],table["shapes"][e[4]]) == (e[3],e[5]), "unbound comparator use")
+                counts[e[1]] += 1
+    require(seen == set(expected) and len(doc["trials"]) == len(seen), "missing range histories")
+    return {"substitutedHistories":2*len(seen),"events":dict(counts),"sha256":upgrade_replay.sha(path)}
+
+
+def audit_transfers(path):
+    from transfer_controls import axes, weeks
+    data = read(path)
+    for case, checksum in data["frozenSummaries"].items():
+        require(upgrade_replay.sha(HERE/"results"/case/"first/summary.json") == checksum, "different frozen transfer record")
+    require(axes() == data["axes"] and weeks() == data["defaultWeeks"], "different axis or locale transfer")
+    require(all(a["action"] == "exact reuse" for a in data["untouchedHyperlinks"]["warm"].values()), "untouched link cache missed")
+    for side in ("old","new"):
+        for kind in ("ordinary","abstract"):
+            stream = data["kryo"][side+"-"+kind]
+            require(stream["writes"] == stream["reads"] and int(stream["reads"][-1][1]) == stream["completeBytes"],
+                    "different complete Kryo prefix")
+            require(stream["completeBytes"] <= stream["streamBytes"] and bool(stream["failure"]) == (side == "old" and kind == "abstract"),
+                    "wrong abstract-token outcome")
+        kinds = data["kryo"][side+"-enum-kinds"]["outcome"]
+        require("instance=SPECIAL tokenInput=StreamPosition$Shade$1 tokenOutput=StreamPosition$Shade" in kinds,
+                "different enum instance or constant-specific class token")
+        for extra in ("absent","missing","valued"):
+            key = "30" if side == "old" or extra == "absent" else "null"
+            require(data["filteredBlock"][side+"-"+extra] == f"block={1 if extra == 'absent' else 2} selected=1 sort={key}",
+                    "different filtered-block evidence")
+    return {"axisTransitions":len(data["axes"]),"eligibleAxisTransfers":sum(r["eligible"] for r in data["axes"]),
+            "kryoFreshStreams":12,"filteredIndexReadbacks":len(data["filteredBlock"]),"sha256":upgrade_replay.sha(path)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--collect", type=Path, help="collector checkout containing the official results")
@@ -198,10 +326,15 @@ def main():
             require(upgrade_replay.sha(ROOT/output["path"]) == output["sha256"], "recorded output differs")
     records = [audit_first(HERE/"cases"/p.parents[1].name,p) for p in sorted((HERE/"results").glob("*/first/summary.json"))]
     checked = {p.parent.name:audit_checked(HERE/"cases"/p.parent.name) for p in sorted((HERE/"results").glob("*/checked.json.gz"))}
+    pairs = {p.parent.name:audit_release_pair(HERE/"cases"/p.parent.name,p) for p in sorted((HERE/"results").glob("*/release-and-pr.json.gz"))}
     result = {"jobs":dict(Counter(j["status"] for j in jobs)), "outputDigests":sum(len(j["outputs"]) for j in jobs),
-              "cases":records,"checkedContinuations":checked}
+              "cases":records,"checkedContinuations":checked,"releasePairs":pairs}
+    if (order := HERE/"results/J13/checked-order.json.gz").is_file():
+        result["mavenOrder"] = audit_order(order)
+    if (controls := HERE/"results/transfer-controls.json").is_file():
+        result["transferControls"] = audit_transfers(controls)
     if args.write:
-        write(HERE/"audit.json",result)
+        change_evidence.write_json(HERE/"audit.json",result)
     elif (HERE/"audit.json").exists():
         require(result == read(HERE/"audit.json"), "campaign index differs")
     print(len(records),"first frozen plans,",result["jobs"],result["outputDigests"],"output digests,",
