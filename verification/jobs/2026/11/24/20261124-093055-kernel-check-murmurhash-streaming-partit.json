@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-093055-kernel-check-murmurhash-streaming-partit",
+  "title": "Kernel-check MurmurHash streaming partitions and partial reset",
+  "description": "Induct over complete four-byte blocks and zero to three pending bytes in an executable bit-vector model. Compare arbitrary finite partitions with the independent block traversal, length modulo 32 bits, reset and final mixing. Bind release class bytes and disprove the old signed-tail result on ff.",
+  "kind": "library",
+  "capabilities": [
+    "assurance:induction"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/extended/StreamHash.lean"
+    ]
+  },
+  "expected": "The Lean kernel checks the partition and reset theorems and rejects the false digest.",
+  "submitted": {
+    "at": "2026-11-24T09:30:55+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 31,
+  "requires": [
+    "lean"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m",
+    "timeout": "6m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py code",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py codec",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/assurance/codec-sequence"
+  ]
+}

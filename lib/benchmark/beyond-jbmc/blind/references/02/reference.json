@@ -1,0 +1,33 @@
+{
+ "question": "Does RE2/J match a quoted supplementary Unicode code point against itself?",
+ "control": "The same literal code point used as an unquoted pattern matches itself and rejects an unrelated ASCII input.",
+ "domain": "The upstream U+1B0BD test value 110781, a second supplementary value U+1F642, and the BMP letter A.",
+ "bounds": [
+  0,
+  2
+ ],
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "entries": [
+  "com.google.re2j.Pattern#matches",
+  "com.google.re2j.Pattern#compile",
+  "com.google.re2j.Matcher#matches"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "re2j-re2j-1.7/javatests/com/google/re2j/PatternTest.java",
+   "text": "appendCodePoint(110781)"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "n==0 ? 1 : 0",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-074117-transfer-lucene-wire-observations-across",
+  "title": "Transfer Lucene wire observations across widths, records and Protobuf",
+  "description": "Check signed short and long mixed directions, UInt32 and UInt64 sizing against independent unsigned shifting, exact-sized UInt32/UInt64/ZigZag writers and readers in both directions, Lucene/Protobuf VInt interoperability and a composite record. Match relocated checker classpaths against separate original JVM class loaders and replay target failures there. Sixteen claims across W03, W05-W08, including a wrong signed API control.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc:standalone",
+    "jvm:wire-compatibility"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/more_wire.py"
+    ]
+  },
+  "expected": "Four signed-width rows, two interoperability rows, two sizing rows, six framed Protobuf rows and two composite-record rows. Require all independent original-JVM controls before classification.",
+  "submitted": {
+    "at": "2026-11-24T07:41:17+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 21,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "15m",
+    "timeout": "90m"
+  },
+  "steps": [
+    {
+      "name": "Cross-release frames",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/more_wire.py qualified W03 W05 W06 W07 W08",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/W03",
+    "verification/beyond-jbmc/qualified/W05",
+    "verification/beyond-jbmc/qualified/W06",
+    "verification/beyond-jbmc/qualified/W07",
+    "verification/beyond-jbmc/qualified/W08"
+  ]
+}

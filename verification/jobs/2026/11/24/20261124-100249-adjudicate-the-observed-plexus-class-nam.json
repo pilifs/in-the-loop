@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-100249-adjudicate-the-observed-plexus-class-nam",
+  "title": "Adjudicate the observed Plexus class-name counterexample on its full Boolean domain",
+  "description": "Recompile the exact frozen automatic caller, verify its class digest, and run both Boolean inputs on each unmodified Sisu release in a networkless JVM. Record the original default counterexample separately and try the existing guarded native two-copy profile as an assisted diagnosis.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/README.md"
+    ]
+  },
+  "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+  "submitted": {
+    "at": "2026-11-24T10:02:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 28,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "4m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/identity_replay.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/blind/03/identity-diagnostic"
+  ]
+}

@@ -1597,6 +1597,58 @@ fn live_hash_map_views_share_bucket_order_nodes_and_iterator_removal() {
 }
 
 #[test]
+fn radix_parsing_preserves_signed_limits_and_refuses_unqualified_digits() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Fault, Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.Radix").status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    assert_eq!(machine.call_static("claims/Radix", "limits", "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+    let original = Command::new("java").arg("-XX:-UsePerfData").arg("-cp").arg(classes)
+        .args(["claims.Radix", "messages"]).output().unwrap();
+    assert!(original.status.success());
+    let mut replay = Vec::new();
+    for missing in [0, 1] {
+        for wide in [0, 1] {
+            let result = machine.call_static("claims/Radix", "malformed", "(ZZ)J", vec![Value::Int(missing), Value::Int(wide)]);
+            let Err(Fault::Throw(exception)) = result else { panic!("expected NumberFormatException, got {result:?}") };
+            assert_eq!(machine.class_of(exception), "java/lang/NumberFormatException");
+            let message = machine.call_virtual(Value::Ref(exception), "java/lang/Throwable", "getMessage", "()Ljava/lang/String;", vec![]).unwrap().unwrap();
+            replay.push(machine.str_of(message).unwrap());
+        }
+    }
+    assert_eq!(replay.join("\n") + "\n", String::from_utf8(original.stdout).unwrap());
+    proved(classes, "claims.Radix#limits", 4);
+    proved(classes, "claims.Radix#hex", 4);
+    let unicode = run(&options(classes, "claims.Radix#unicode", 4, "unicode-radix"));
+    assert_eq!(unicode.verdict, Verdict::Unverifiable, "{}", unicode.output);
+    assert!(unicode.output.contains("parseInt"), "{}", unicode.output);
+    let wrong = run(&options(classes, "claims.Radix#wrong", 4, "wrong-radix-sign"));
+    assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+}
+
+#[test]
+fn tokenizers_replay_cursor_history_changed_delimiters_and_supplementary_characters() {
+    jvmcontract::tool_tier!();
+    use jvmcontract::interp::{Machine, Value};
+    let Some(classes) = classes() else { return };
+    assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.Tokens").status().unwrap().success());
+    let cp = jvmcontract::witness::classpath([classes]).unwrap();
+    let mut machine = Machine::new(&cp);
+    for flag in [0, 1] {
+        assert_eq!(machine.call_static("claims/Tokens", "history", "(Z)Z", vec![Value::Int(flag)]).unwrap(), Some(Value::Int(1)));
+    }
+    proved(classes, "claims.Tokens#history", 8);
+    for name in ["returnsDelimiters", "edgeCases"] {
+        assert_eq!(machine.call_static("claims/Tokens", name, "()Z", vec![]).unwrap(), Some(Value::Int(1)));
+        proved(classes, &format!("claims.Tokens#{name}"), 8);
+    }
+    let wrong = run(&options(classes, "claims.Tokens#wrong", 8, "incorrect-token-count"));
+    assert_eq!(wrong.verdict, Verdict::Violation, "{}", wrong.output);
+}
+
+#[test]
 fn jdk_readers_and_listener_lists_execute_their_shared_state() {
     jvmcontract::tool_tier!();
     use jvmcontract::interp::{Machine, Value};

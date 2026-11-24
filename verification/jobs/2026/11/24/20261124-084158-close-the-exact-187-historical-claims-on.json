@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084158-close-the-exact-187-historical-claims-on",
+  "title": "Close the exact 187 historical claims on the frozen checker",
+  "description": "Remeasure the archived ordered 187 with the original JDK 25, historical source files, integrated staged JBMC and strict native. Bind the actual executable to the pre-disclosure product freeze.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:41:58+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 27,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "26m",
+    "timeout": "104m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/history.py closing",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/closing/historical"
+  ]
+}

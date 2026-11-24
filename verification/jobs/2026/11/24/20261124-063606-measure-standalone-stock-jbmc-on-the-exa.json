@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-063606-measure-standalone-stock-jbmc-on-the-exa",
+  "title": "Measure standalone stock JBMC on the exact 187 historical claims",
+  "description": "Run the 187 exception-aware standalone Java targets and their 187 post-call false controls on the original pinned programs. Relocate all classes of the old side on relational claims. Capture every property and replay each reconstructed target failure on a real Temurin JVM, independently against Reference.java where available. Use stock Ubuntu 24.04 JBMC 6.11.0, its packaged core models, full array bound 8, unwind 16 and the 120-second limit.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc:standalone",
+    "jbmc:reachability",
+    "jvm:replay"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/stock_history.py"
+    ]
+  },
+  "expected": "187 rows with raw commands, assertion IDs, reach controls, costs and replay disposition. Solver refusal, incomplete unwinding or timeout is a measured outcome.",
+  "submitted": {
+    "at": "2026-11-24T06:36:06+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 21,
+  "requires": [
+    "java",
+    "javac",
+    "jbmc",
+    "patch"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "15m",
+    "timeout": "75m"
+  },
+  "steps": [
+    {
+      "name": "Historical stock targets and false controls",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/stock_history.py opening",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/opening/stock"
+  ]
+}

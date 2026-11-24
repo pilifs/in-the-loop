@@ -1,0 +1,971 @@
+{
+ "schema": "beyond-jbmc-independent-questions/v1",
+ "freezeSha256": "3e36b54f83164c4c5411e4ed8dc910d0fee0f0cff4623a911dae8c4566b66caf",
+ "sealedSha256": "fd4eb19528ccbb4fa590feb789a8bdf36199141d61bf3b2d304d2f0e3e49dacf",
+ "pairs": [
+  {
+   "slot": "01",
+   "artifact": "libdirgra-java",
+   "stratum": "history",
+   "reference": {
+    "question": "Do repeated lookup, removal and re-insertion preserve the public graph's insertion order and vertex identities?",
+    "control": "A repeated lookup returns the already registered vertex without changing the graph's size.",
+    "domain": "Two distinct public ExplicitVertexID keys; remove either the first or last then reinsert it. Both histories are included.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "org.jruby.dirgra.DirectedGraph#findOrCreateVertexFor",
+     "org.jruby.dirgra.DirectedGraph#removeVertexFor",
+     "org.jruby.dirgra.DirectedGraph#getInorderData"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "dirgra-0.4/src/org/jruby/dirgra/DirectedGraph.java",
+      "text": "@return data in the order it was added to this graph."
+     }
+    ],
+    "expected": {
+     "beforeExpression": "1",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/d/dirgra/dirgra_0.4.orig.tar.gz",
+     "archiveSha256": "9a83f2b8760ae1f24bd9b1eaeaa78eb9bf60e00d37373a23cf738bf09e55b85a",
+     "member": "dirgra-0.4/src/org/jruby/dirgra/DirectedGraph.java",
+     "sha256": "a70b1edf8a240ae99cc175198f55999ec4ab21aa668b6031e75ccf63ca97b590",
+     "side": "after",
+     "text": "@return data in the order it was added to this graph."
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "66d7630873e1005a7d3a1d89fac043020cf682d12636e91e439897fbf4f01af6",
+    "ReferenceAPI.java": "5e4919b0299f10e3889048af47e57af00bb15c0b8b10c94c3b70cc1a0a04a49c"
+   },
+   "packetSha256": "56c670b6d3ef7724beffed69839de90e9aa537d5b086b637a8ed380dbec041b8",
+   "graphSha256": "f03c21b6b05715ebf4e6e1912bfaedfd4fead0de4d3d41e1943c182739c92677",
+   "physicalSha256": "24d1df5ffecf26297ca83f0aad2045da3a284847751e30952b5394192fe1b1a6",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "20502082bb6fb21cfa1a01ebc199b39130e5c044ce348d06e8cf89228405bfad"
+  },
+  {
+   "slot": "02",
+   "artifact": "libre2j-java",
+   "stratum": "numeric-text",
+   "reference": {
+    "question": "Does RE2/J match a quoted supplementary Unicode code point against itself?",
+    "control": "The same literal code point used as an unquoted pattern matches itself and rejects an unrelated ASCII input.",
+    "domain": "The upstream U+1B0BD test value 110781, a second supplementary value U+1F642, and the BMP letter A.",
+    "bounds": [
+     0,
+     2
+    ],
+    "seeds": [
+     0,
+     1,
+     2
+    ],
+    "entries": [
+     "com.google.re2j.Pattern#matches",
+     "com.google.re2j.Pattern#compile",
+     "com.google.re2j.Matcher#matches"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "re2j-re2j-1.7/javatests/com/google/re2j/PatternTest.java",
+      "text": "appendCodePoint(110781)"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "n==0 ? 1 : 0",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/r/re2j/re2j_1.7+dfsg.orig.tar.xz",
+     "archiveSha256": "afe90c9b8cc17ead513493b64f7527fd472ff2a0b523452cfe15e869c86f1664",
+     "member": "re2j-re2j-1.7/javatests/com/google/re2j/PatternTest.java",
+     "sha256": "6f84e71ea7594c63df7b88c362309685cda7ae17104c81ad326e9480cdadca6e",
+     "side": "after",
+     "text": "appendCodePoint(110781)"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "8a111149b1e2f6a5dd7f578e542b9493b5129999c5ecda0d599bca9b7ca9d0db",
+    "ReferenceAPI.java": "2ebd2a83b89566b12d2089fff6233bcf4e2300fb854f960e49404aedb58a61b7"
+   },
+   "packetSha256": "a70a79ec540946e622786aca8476d501f56961ef37d5990cc78646eb77f474a4",
+   "graphSha256": "cee44b55d0f3e07b6618a4b850ce6714a6a2cd2b7dfbb2ea719f5c14f94fdf02",
+   "physicalSha256": "7547a7c5f941c32c1567c916bf1f43b891a527c8013c71d287a33265276ff480",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "f69a3c116356b725f046d4c25b01a166a33704647237d5237f34c6070ae3c542"
+  },
+  {
+   "slot": "03",
+   "artifact": "libsisu-plexus-java",
+   "stratum": "metadata",
+   "reference": {
+    "question": "Does a reconstructed Plexus component annotation agree in both equality directions and hash with the declared annotation, and distinguish a different hint?",
+    "control": "The replica reports the component annotation type and the originally declared role.",
+    "domain": "Two real runtime annotations, an empty hint and a named hint.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "org.eclipse.sisu.plexus.ComponentImpl#equals",
+     "org.eclipse.sisu.plexus.ComponentImpl#hashCode",
+     "org.eclipse.sisu.plexus.ComponentImpl#annotationType"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "sisu-plexus-0.3.5/org.eclipse.sisu.plexus.tests/src/org/eclipse/sisu/plexus/ComponentAnnotationTest.java",
+      "text": "assertTrue( orig.equals( clone ) )"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "1",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/s/sisu-plexus/sisu-plexus_0.3.5.orig.tar.xz",
+     "archiveSha256": "f836169003a97ae9a84b283ab0f68be64d5766d3cf3125ad07b47f613b6a315b",
+     "member": "sisu-plexus-0.3.5/org.eclipse.sisu.plexus.tests/src/org/eclipse/sisu/plexus/ComponentAnnotationTest.java",
+     "sha256": "a849ae8e0df9586d508ab96a22441db9cc6556b55efccc527c8563a6fc6378e9",
+     "side": "after",
+     "text": "assertTrue( orig.equals( clone ) )"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "66d7630873e1005a7d3a1d89fac043020cf682d12636e91e439897fbf4f01af6",
+    "ReferenceAPI.java": "86bb4e7ae8bdfd4d3b53fc9ac723bdd4a28091150c1ac02d90e180f6dc528263"
+   },
+   "packetSha256": "9a9e390a869c7525f8f436256e7220e029562c00e1559ca0d3c26ba256c14a95",
+   "graphSha256": "96a14178006fdd306de5d8bec988489637f933834dcf23e8bd98d7fc89f22fd6",
+   "physicalSha256": "07c9734ca0d145017394eacba11f9ab38719771e887f72ccfb96700e2c985371",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "dad5575a3c4cef69ebd6ba17d9f0f7cd98921c156609e70a1e97b3ff3cb9ff22"
+  },
+  {
+   "slot": "04",
+   "artifact": "libbatik-java",
+   "stratum": "wire",
+   "reference": {
+    "question": "Can the released PNG transcoder render an inline SVG gradient whose first stop omits its offset?",
+    "control": "Supplying the first stop's explicit zero offset produces a valid PNG of the requested dimensions.",
+    "domain": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "org.apache.batik.transcoder.image.PNGTranscoder#transcode",
+     "org.apache.batik.transcoder.SVGAbstractTranscoder#transcode"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "batik-1.18/batik-test-old/src/test/java/org/apache/batik/svg/SVGGradietElementBridgeOffsetAttributeTestCase.java",
+      "text": "public void testNoOffset()"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "0",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/b/batik/batik_1.18+dfsg.orig.tar.xz",
+     "archiveSha256": "07c3971adc2b2e8c5ecb3e242a19a428e6108770740f8c4ce8fecea5cd800d36",
+     "member": "batik-1.18/batik-test-old/src/test/java/org/apache/batik/svg/SVGGradietElementBridgeOffsetAttributeTestCase.java",
+     "sha256": "4d8a2ccec309f22bf54eff7152898068e2f03f15e80849158d4bdb03f72292b6",
+     "side": "after",
+     "text": "public void testNoOffset()"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "2aa1cfa0bcd245df2e78540e21d5af95e424e89eb5cab1c373279e02af267ab9",
+    "ReferenceAPI.java": "6cf3b5ef6e4226fc15f988a60bf0c5d1a7fb7265fe880be486b1ce881bca9a1c"
+   },
+   "packetSha256": "43691f03acee60b16488c6936055e0d0377823ec5b07c379bd93e94946f2a3c2",
+   "graphSha256": "49e65bc4007313d4fc6689cf4ebb3807544a7dd366caff47d6e94bb00000cbc0",
+   "physicalSha256": "983d096452a08cfdc0e9265e6c060d337ff92cf74e8a4521ea96a8bd0abb5ed2",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "03bf5b29026876e5d701033c47026e8f63c43a7aebf1dd66e1ceac706bb58e7e"
+  },
+  {
+   "slot": "05",
+   "artifact": "libuima-cpe-java",
+   "stratum": "history",
+   "reference": {
+    "question": "Does inserting and removing CAS processors retain the documented order and instance identities in the collection-processing descriptor?",
+    "control": "A configured output queue size round-trips without introducing a CAS processor.",
+    "domain": "Two insertion positions in a two-element descriptor; independent queue-size controls 1 and 2.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#addCpeCasProcessor",
+     "org.apache.uima.collection.impl.metadata.cpe.CpeCasProcessorsImpl#removeCpeCasProcessor",
+     "org.apache.uima.collection.impl.metadata.cpe.CpeDescriptorFactory#produceCasProcessors"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "uimaj-2.10.4/uimaj-core/src/main/java/org/apache/uima/collection/metadata/CpeCasProcessors.java",
+      "text": "public void removeCpeCasProcessor(int aPosition)"
+     },
+     {
+      "side": "after",
+      "member": "uimaj-2.10.4/uimaj-cpe/src/main/java/org/apache/uima/collection/impl/metadata/cpe/CpeCasProcessorsImpl.java",
+      "text": "casProcessors.add(aInsertPosition, aCasProcessor)"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "1",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/u/uimaj/uimaj_2.10.4.orig.tar.xz",
+     "archiveSha256": "fc3fe8d40a0d5fc5133f4e9fea0e6a12a798c967099ddd6c8c2ce1ad958c76f6",
+     "member": "uimaj-2.10.4/uimaj-core/src/main/java/org/apache/uima/collection/metadata/CpeCasProcessors.java",
+     "sha256": "7142f448294bfb4cdbb69955b325ee17238676ebf0f0c0d4b5257b81d612643e",
+     "side": "after",
+     "text": "public void removeCpeCasProcessor(int aPosition)"
+    },
+    {
+     "sourceArchive": "pool/universe/u/uimaj/uimaj_2.10.4.orig.tar.xz",
+     "archiveSha256": "fc3fe8d40a0d5fc5133f4e9fea0e6a12a798c967099ddd6c8c2ce1ad958c76f6",
+     "member": "uimaj-2.10.4/uimaj-cpe/src/main/java/org/apache/uima/collection/impl/metadata/cpe/CpeCasProcessorsImpl.java",
+     "sha256": "e7f682b6a5adae4056b406f1ce4d063828c1fbc81ee7590596f83574103fd464",
+     "side": "after",
+     "text": "casProcessors.add(aInsertPosition, aCasProcessor)"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "66d7630873e1005a7d3a1d89fac043020cf682d12636e91e439897fbf4f01af6",
+    "ReferenceAPI.java": "8a12704dcf292414c89de64936437edea271d4162fbcef6770a0480ccadb012a"
+   },
+   "packetSha256": "8b234f1c5aece42daf88d48ed44f8b8f9842f1e4d46c5f615009a217a3d2b02a",
+   "graphSha256": "1b8d0d98a45ab989e1220de9758d3251ed9c9dbec3f190a0ca55cf147a22f040",
+   "physicalSha256": "4f7ab94115220e67668396985c43284ebc08a7ae733e75d13c4fc86607d68616",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "dbb8e115879490c879bd59576004d1613fb0570ef23378c20351b9b5ed402971"
+  },
+  {
+   "slot": "06",
+   "artifact": "libparboiled-java",
+   "stratum": "numeric-text",
+   "reference": {
+    "question": "How does the public parsing buffer map the offsets around LF, CRLF and an empty line to line and column?",
+    "control": "Extracting the second and third lines returns their contents without either line terminator.",
+    "domain": "All thirteen offsets 0 through 12 in the upstream multiline input. Encode an observed position as 100 × line + column.",
+    "bounds": [
+     0,
+     12
+    ],
+    "seeds": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11,
+     12
+    ],
+    "entries": [
+     "org.parboiled.buffers.DefaultInputBuffer#getPosition",
+     "org.parboiled.buffers.DefaultInputBuffer#extractLine"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "parboiled-1.4.1/parboiled-core/src/test/java/org/parboiled/buffers/DefaultInputBufferTest.java",
+      "text": "assertEquals(buf.getPosition(8), new Position(2,4))"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "new int[]{101,102,103,104,105,201,202,203,204,301,401,402,403}[n]",
+     "afterExpression": "new int[]{101,102,103,104,105,201,202,203,204,301,401,402,403}[n]",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/p/parboiled/parboiled_1.4.1.orig.tar.gz",
+     "archiveSha256": "5f396cd6f51939efed94f37736440238a86291ed02bcd523aa97aa2eff8de1f2",
+     "member": "parboiled-1.4.1/parboiled-core/src/test/java/org/parboiled/buffers/DefaultInputBufferTest.java",
+     "sha256": "de0e130d4736f19acff010358279b33f9feec208e546363b2b766d166cdcc3ca",
+     "side": "after",
+     "text": "assertEquals(buf.getPosition(8), new Position(2,4))"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "ebaf46e9d5613ce6baa2d0176253a352aa03229a7a2cd56a0adbae66ff6f47b6",
+    "ReferenceAPI.java": "ade5b11bebf476ffcd51fce52eff72a52f378c488dc871a0c32bc8a1bd7bc314"
+   },
+   "packetSha256": "922fb4e99fd11355daba5c3b12e657b248bbe45bac14942457902062060b414b",
+   "graphSha256": "fc283f8d305934b752b80ea1178497e3a97e13102be7cacb051d30ccd93dd6c0",
+   "physicalSha256": "1c9a5e9fc58467a103d9ffad8d073020ebcf1240224c92bb6d61e8fa9104ab21",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "bba2d5f7112e1fc4bf0a053003448434c35c6279301600df4b57efb2f23b429e"
+  },
+  {
+   "slot": "07",
+   "artifact": "libgoogle-auto-common-java",
+   "stratum": "metadata",
+   "reference": {
+    "question": "Does Auto Common recover a default annotation member and distinguish it from an explicitly supplied member of the same type?",
+    "control": "The named value accessor returns the exact String stored in each compiler annotation mirror.",
+    "domain": "Two javac language-model inputs, one omitted and one explicit String member. The compiler runs with annotation processing disabled.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "com.google.auto.common.AnnotationMirrors#getAnnotationValuesWithDefaults",
+     "com.google.auto.common.AnnotationMirrors#getAnnotationValue"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "auto-auto-common-1.1.2/common/src/test/java/com/google/auto/common/AnnotationMirrorsTest.java",
+      "text": "AnnotationMirrors.getAnnotationValuesWithDefaults(annotationOn(StringyUnset.class))"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "n+1",
+     "afterExpression": "n+1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/g/google-auto-common-java/google-auto-common-java_1.1.2.orig.tar.xz",
+     "archiveSha256": "081c28b77d57e10927ac09116fb4361e030518a92117167532ba49813bcaeff8",
+     "member": "auto-auto-common-1.1.2/common/src/test/java/com/google/auto/common/AnnotationMirrorsTest.java",
+     "sha256": "e954b9573862602d2dac4cb1c4d1f1d174850dbc897370fe464ec211c895cce5",
+     "side": "after",
+     "text": "AnnotationMirrors.getAnnotationValuesWithDefaults(annotationOn(StringyUnset.class))"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "bd60be6a6d0a0f1929bf8ac290fa8f8c33005314385bb5137e623d5b0500896a",
+    "ReferenceAPI.java": "eb9b4c9349f52372d61f96d65fc3335bbd84e18035886159492f528cf8c87c06"
+   },
+   "packetSha256": "61364c7532d0868bb96e449b1b7e402275424b6044fb9477f2c446c3ebd92e1c",
+   "graphSha256": "293a234c2327e6dffe37087124290d0a585a043101ec065f393f15ff3582412b",
+   "physicalSha256": "0a387da5d113ff3b5f4ea4c993f00a563057489e0c99b2514dba3df36b908fb6",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "691cab6b720e6fff4e8dd6f821f01a7391f185947d588fc7b6e6dc16ac377844"
+  },
+  {
+   "slot": "08",
+   "artifact": "libiscwt-java",
+   "stratum": "wire",
+   "reference": {
+    "question": "Does an Adobe Font Metrics glyph record preserve its decimal or hexadecimal character code and horizontal width?",
+    "control": "The same record preserves the glyph name A.",
+    "domain": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
+    "bounds": [
+     0,
+     1023
+    ],
+    "seeds": [
+     0,
+     1,
+     255,
+     512,
+     1023
+    ],
+    "entries": [
+     "de.intarsys.cwt.font.afm.AFMChar#create",
+     "de.intarsys.cwt.font.afm.AFMChar#getCode",
+     "de.intarsys.cwt.font.afm.AFMChar#getWidth"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
+      "text": "public static AFMChar create(String glyph)"
+     },
+     {
+      "side": "after",
+      "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
+      "text": "Integer.parseInt(value.substring(1, value.length() - 1),"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "(65L<<32) + n",
+     "afterExpression": "(65L<<32) + n",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/libi/libiscwt-java/libiscwt-java_5.5.20131203+dfsg.orig.tar.xz",
+     "archiveSha256": "8ed29a67450a5e4db6c955229a273bc1b7ced7f4e057d684478c8ed0be5236fc",
+     "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
+     "sha256": "7b48907c1ace981d3f16b1915a1326b27dd680cfb99ffe3734be6cb490c02c8c",
+     "side": "after",
+     "text": "public static AFMChar create(String glyph)"
+    },
+    {
+     "sourceArchive": "pool/universe/libi/libiscwt-java/libiscwt-java_5.5.20131203+dfsg.orig.tar.xz",
+     "archiveSha256": "8ed29a67450a5e4db6c955229a273bc1b7ced7f4e057d684478c8ed0be5236fc",
+     "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
+     "sha256": "7b48907c1ace981d3f16b1915a1326b27dd680cfb99ffe3734be6cb490c02c8c",
+     "side": "after",
+     "text": "Integer.parseInt(value.substring(1, value.length() - 1),"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "85907efc55447e2e41a28b0eeca8dd7008cbac0e2671e3c4cbec1abbe8282183",
+    "ReferenceAPI.java": "2a6fdf245953670ce87d5013d524f2edbfc0c6a3a00d560c2a28ec50172aa9e9"
+   },
+   "packetSha256": "279946827163a8ef9177037242c4718f9d51753c6d195cc7fc65e28dadc8e483",
+   "graphSha256": "4a9a55326c810bf3a2ec28627f6ccd562ed4c2e9bc1f6f903381237b94524901",
+   "physicalSha256": "69ceeac0e32ad0d7e7c64b83f974a2b80feb9fe8d6f4ee255fc163222107c5ae",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "bb449f5eb3b4f5c999a6487c393f77c3cc2c2b7ad776d1fa5d02dbc78c021c84"
+  },
+  {
+   "slot": "09",
+   "artifact": "libcactoos-java",
+   "stratum": "history",
+   "reference": {
+    "question": "Does a Cactoos sticky scalar evaluate its origin once and return the same signed value across repeated calls, including wraparound?",
+    "control": "A separately constructed sticky scalar evaluates its own origin.",
+    "domain": "Every Java int initial value. The result encodes origin invocation count and returned signed bits. The caller reads the same scalar three times.",
+    "bounds": null,
+    "seeds": [
+     -2147483648,
+     -1,
+     0,
+     17,
+     2147483647
+    ],
+    "entries": [
+     "org.cactoos.scalar.Sticky#value",
+     "org.cactoos.scalar.Sticky#<init>"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "cactoos-0.54.0/src/test/java/org/cactoos/scalar/StickyTest.java",
+      "text": "scalar.value() + scalar.value()"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "(1L<<32) | ((n+1)&0xffffffffL)",
+     "afterExpression": "(1L<<32) | ((n+1)&0xffffffffL)",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/c/cactoos/cactoos_0.54.0.orig.tar.gz",
+     "archiveSha256": "c2beb49c78910bbbe9a9da85f3e70564f312c34bced553e0e3f1975194d3fdc8",
+     "member": "cactoos-0.54.0/src/test/java/org/cactoos/scalar/StickyTest.java",
+     "sha256": "8f72b85c3920cfcd4e247eca73ade70fe2cfd45350355d73f17a806247f127b6",
+     "side": "after",
+     "text": "scalar.value() + scalar.value()"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "94220084358bd5a90018e5e3ac8ec9135b54d8a703c9f0c7c8851e3f17e51cbb",
+    "ReferenceAPI.java": "07ffb099aeeb8750549087d232e9fd7329839783ca9ad392034cfc7af16ef29c"
+   },
+   "packetSha256": "c5db825888f86580cd86b7d9276f5cf2cdf5211d95c6b762ebeb85914239e013",
+   "graphSha256": "ae4609930f0b75d9d11027c351e37fbfc0f309ff1fcc18e9fb11eeec0468ebe9",
+   "physicalSha256": "c0e4fbcd0c61fda5b699b8f8e4fc47bfa142cd6bbfdfbc5ac02fd29988406ef9",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "5cccc2a04814547537d25e369202e28bc0abdd2219c7fe3af119969188a1d44d"
+  },
+  {
+   "slot": "10",
+   "artifact": "libhtmlcleaner-java",
+   "stratum": "numeric-text",
+   "reference": {
+    "question": "Does HtmlCleaner keep an inline SVG and its circle inside the original HTML paragraph?",
+    "control": "An ordinary inline span remains a child of the paragraph with the same text.",
+    "domain": "A valid HTML paragraph containing an inline SVG circle with radius 1 or 2.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "org.htmlcleaner.HtmlCleaner#clean",
+     "org.htmlcleaner.TagNode#findElementByName"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "src/test/java/org/htmlcleaner/SVGTest.java",
+      "text": "public void svgTreatedAsPhrasing()"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "0",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/libh/libhtmlcleaner-java/libhtmlcleaner-java_2.29+dfsg.orig.tar.xz",
+     "archiveSha256": "3fb88f2975b766f5f1742a7617d02e390102a5ac017f5038eae57ed215b9623b",
+     "member": "src/test/java/org/htmlcleaner/SVGTest.java",
+     "sha256": "c04bf7e62f482d7f62ce7ba5bc74d16a509eaac63c0484c35faba064b8a3fa96",
+     "side": "after",
+     "text": "public void svgTreatedAsPhrasing()"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "2aa1cfa0bcd245df2e78540e21d5af95e424e89eb5cab1c373279e02af267ab9",
+    "ReferenceAPI.java": "5cd9903b7458d83f5b487652c796d9d46a84d1ea26a78246e2e5cbf9096f9136"
+   },
+   "packetSha256": "ea24457d8eb63a7b347b2b5ee3effca7d84d8b73db53c3885f69b88d6104bc0e",
+   "graphSha256": "276d8e4a785fa7e9168bb5f441eb32af602d4e1cce5b1df7b30cd277ce3699a5",
+   "physicalSha256": "374c78dbd7fa898a739be5e68820756404a497dc535de9a1985ddaef3671bd07",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "17519a523f618d848ea44ab62d4cd8d1fdd9a1c854434a366ad46b1f36dfdbb5"
+  },
+  {
+   "slot": "11",
+   "artifact": "libheadius-options-java",
+   "stratum": "metadata",
+   "reference": {
+    "question": "How does the public BooleanOption reload an empty, true, false or absent system property?",
+    "control": "A distinct property's default remains in force throughout the history.",
+    "domain": "The four original property states, restored on exit. Each JVM starts with both campaign property names unset.",
+    "bounds": [
+     0,
+     3
+    ],
+    "seeds": [
+     0,
+     1,
+     2,
+     3
+    ],
+    "entries": [
+     "com.headius.options.Option#reload",
+     "com.headius.options.BooleanOption#reloadValue"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "options-options-1.7/src/test/java/com/headius/options/BooleanOptionTest.java",
+      "text": "assertTrue(bool.reloadValue())"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "n<2?1:0",
+     "afterExpression": "n<2?1:0",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/h/headius-options/headius-options_1.7.orig.tar.gz",
+     "archiveSha256": "28dc3981039a7db87bfbb4d10b4e88772a7224ad3be95bea069a28bea34bf459",
+     "member": "options-options-1.7/src/test/java/com/headius/options/BooleanOptionTest.java",
+     "sha256": "7524f24a2f8437925217d6ae107486f45e81bd8c04a7837f4d3bb4c5be71c815",
+     "side": "after",
+     "text": "assertTrue(bool.reloadValue())"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "bbc22374b806958bf05c6ae948751f19b01a93e4a861e55e41ceddf340a85b82",
+    "ReferenceAPI.java": "96d095ee8ae4ce4c6ab35cbeab4c0453dda80409638a1afe5a407149c2bbe917"
+   },
+   "packetSha256": "ad7580399c0d0aa3665b7b0c6b4f6ea44eb5d68bae25f1d6912bcd4aac6b3658",
+   "graphSha256": "cff703c701d3f969c889252c03fe9116eaf2814ae41990eb0e7e1dca7355d83b",
+   "physicalSha256": "4a2c84509f5bad5da0b1cc0d3a90bc4226b6d4c61806f8cac0097879a9634b32",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "aabe09d6705d13bbe0153ac13013b600c3bd2bff07f70c9de2bbb07aa37a23bc"
+  },
+  {
+   "slot": "12",
+   "artifact": "libjackson2-jr-java",
+   "stratum": "wire",
+   "reference": {
+    "question": "Does Jackson Jr serialize an enum constant with its own constant-specific class body as its JSON string name?",
+    "control": "An ordinary enum constant uses its JSON string name.",
+    "domain": "Both constants of one public enum. The observed outputs are the exact JSON string name or a one-field JSON object containing the enum's declaring class name. Other JSON and mapping exceptions have separate codes.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "com.fasterxml.jackson.jr.ob.JSON#asString"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "jackson-jr-jackson-jr-parent-2.14.0/jr-objects/src/main/java/com/fasterxml/jackson/jr/ob/impl/Types.java",
+      "text": "Detect whether a class is an enum or a subclass of an enum"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "n==0?1:2",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "The original JVM identified the old object as {\"declaringClass\":\"ReferenceAPI$Item\"} during independent reference construction. The two-copy caller derives the defining class name from its own copy.",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/j/jackson-jr/jackson-jr_2.14.0.orig.tar.xz",
+     "archiveSha256": "2165a7d39bdbb9469248ac5d2b15c5e87136d3159334d6d6e252ce72dd953192",
+     "member": "jackson-jr-jackson-jr-parent-2.14.0/jr-objects/src/main/java/com/fasterxml/jackson/jr/ob/impl/Types.java",
+     "sha256": "2e153cb921643437893f05b4303c512a55f71adeffc5ba71272faec805121bc1",
+     "side": "after",
+     "text": "Detect whether a class is an enum or a subclass of an enum"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "7deb4b2616c180236332d483aa3384330a8a93e8b43c4665e5aee52d76384a9c",
+    "ReferenceAPI.java": "0268ae6d7886874bd042079a68444ad95a34f53b8e55624d30026df672518b51"
+   },
+   "packetSha256": "78919dd1d1a3e43f8db05795f219f0f66d4606e264aabf991b899614af65cca1",
+   "graphSha256": "1de12944f06cea0ec3cace6d8958144ba1d7e47c0287e7e373f6b185d3a2b8c1",
+   "physicalSha256": "63c799045d1a0e523163221bcf699b3055af404d974712e240854f0fb8bea5d0",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "f0c1f997750278600f9f53fc9f1b6dbe924abc24a67f6b1e38e5ed187baaf43f"
+  },
+  {
+   "slot": "13",
+   "artifact": "libopencensus-java",
+   "stratum": "history",
+   "reference": {
+    "question": "Does adding successive points to an OpenCensus TimeSeries preserve the predecessor and both ordered labels?",
+    "control": "An empty series has the supplied ordered labels and no start timestamp.",
+    "domain": "All signed int metric values. Create one empty series, then two successive immutable point histories.",
+    "bounds": null,
+    "seeds": [
+     -2147483648,
+     0,
+     7,
+     2147483647
+    ],
+    "entries": [
+     "io.opencensus.metrics.export.TimeSeries#setPoint",
+     "io.opencensus.metrics.export.TimeSeries#getPoints"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "opencensus-java-0.26.0/api/src/test/java/io/opencensus/metrics/export/TimeSeriesTest.java",
+      "text": "TimeSeries timeSeries1 = timeSeries.setPoint(POINT_1)"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "1",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/o/opencensus-java/opencensus-java_0.26.0+ds.orig.tar.xz",
+     "archiveSha256": "ca76b4062301641cc07e56b84e247ceab9a2dbdc3273665bc1fa14cc344f06f0",
+     "member": "opencensus-java-0.26.0/api/src/test/java/io/opencensus/metrics/export/TimeSeriesTest.java",
+     "sha256": "c23cdc9ac1336b0ebbaf5e97cf8ac1ebf7e1110eb2ff2005a0d452f7732a0210",
+     "side": "after",
+     "text": "TimeSeries timeSeries1 = timeSeries.setPoint(POINT_1)"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "2ff7dd00bee1f06cd5d3c1d68e103e0d614844ab6da405b6475beaacee413ace",
+    "ReferenceAPI.java": "f1a98adc9a9ddd54bd5ef17499dc14a45dd61aa8198d66b2b7d8d68bd1507aa0"
+   },
+   "packetSha256": "d9bafd44c40b0e849cac97d91243e41e1f86112d18d6bd1551c21d4948e316c9",
+   "graphSha256": "e030444d53ef103884c25dc0bf4c0bffef911dfea08770d6384e21b533f73baa",
+   "physicalSha256": "8689327885894fa6094cd6f252fbbcff7a2bb9bdff0fe30d58c2e9ab06eadc96",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "91747aa3d24bfcf8ead45b95db25bd4fcbc07edcfb9c71c43e659c920fd35971"
+  },
+  {
+   "slot": "14",
+   "artifact": "libauto64fto32f-java",
+   "stratum": "numeric-text",
+   "reference": {
+    "question": "Do the default 64-to-32 Java rewrites change a double declaration and decimal literal to a float while preserving an unrelated integer declaration?",
+    "control": "The same converter keeps the input file byte-for-byte intact.",
+    "domain": "Two valid source snippets with different decimal literals, processed as local temporary files in the isolated JVM.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "com.peterabeles.auto64fto32f.ConvertFile32From64#process",
+     "com.peterabeles.auto64fto32f.ConvertFile32From64#<init>"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "Auto64Fto32F-2.1/src/com/peterabeles/auto64fto32f/ConvertFile32From64.java",
+      "text": "replacePattern(\"double\", \"float\")"
+     },
+     {
+      "side": "after",
+      "member": "Auto64Fto32F-2.1/src/com/peterabeles/auto64fto32f/ConvertFile32From64.java",
+      "text": "Looks for a floating point constant number"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "1",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/a/auto64fto32f/auto64fto32f_2.1+ds.orig.tar.xz",
+     "archiveSha256": "3e230842b4795369f6489285af3759c4af666c88fce974105239f86a3aab417a",
+     "member": "Auto64Fto32F-2.1/src/com/peterabeles/auto64fto32f/ConvertFile32From64.java",
+     "sha256": "1c6597242bb2442a48b107397c5254c3f57f8556e0749efe2a9d19e8af884028",
+     "side": "after",
+     "text": "replacePattern(\"double\", \"float\")"
+    },
+    {
+     "sourceArchive": "pool/universe/a/auto64fto32f/auto64fto32f_2.1+ds.orig.tar.xz",
+     "archiveSha256": "3e230842b4795369f6489285af3759c4af666c88fce974105239f86a3aab417a",
+     "member": "Auto64Fto32F-2.1/src/com/peterabeles/auto64fto32f/ConvertFile32From64.java",
+     "sha256": "1c6597242bb2442a48b107397c5254c3f57f8556e0749efe2a9d19e8af884028",
+     "side": "after",
+     "text": "Looks for a floating point constant number"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "ec354c3a8350766a0890cec02d2f6500378f88bda62d1d45d8424225ada50afa",
+    "ReferenceAPI.java": "688ec12b8642cb0981c00789e08f6aae11f6f261c1ca70da46abc973671c827d"
+   },
+   "packetSha256": "6ea56947a9e9e059a4de937b4c3c12b9a7faf8938f8045e8de5b8c70feaefca4",
+   "graphSha256": "07d646d5abaf5b8bf9d6771cd349d235c702536aa7a78f9fd36c586448430b5c",
+   "physicalSha256": "651229e65755e4cf2983c2e67f1868ed919342c92aa4add9078fd8d0c470ceb8",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "4f37b9069898354d778f07ee717e206dfda8c35a254450bb3ba34677c64f0c12"
+  },
+  {
+   "slot": "15",
+   "artifact": "libannotation-indexer-java",
+   "stratum": "metadata",
+   "reference": {
+    "question": "Does the annotation indexer merge both published resource prefixes and remove duplicate class names?",
+    "control": "An annotation with no matching resource returns an empty set.",
+    "domain": "A fresh local classloader sees a legacy resource alone or both resource prefixes. One class name occurs in both resources.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "org.jvnet.hudson.annotation_indexer.Index#listClassNames"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "jenkinsci-lib-annotation-indexer-41691a3/src/main/java/org/jvnet/hudson/annotation_indexer/Index.java",
+      "text": "Lists the names of classes annotated by the given annotation."
+     },
+     {
+      "side": "after",
+      "member": "jenkinsci-lib-annotation-indexer-41691a3/src/main/java/org/jvnet/hudson/annotation_indexer/Index.java",
+      "text": "\"META-INF/services/annotations/\""
+     }
+    ],
+    "expected": {
+     "beforeExpression": "1",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/a/annotation-indexer/annotation-indexer_1.18.orig.tar.xz",
+     "archiveSha256": "5b8a1e5b3d2c376a326b02bfde38de7c6068828def3271db0f2a759a688c7aa5",
+     "member": "jenkinsci-lib-annotation-indexer-41691a3/src/main/java/org/jvnet/hudson/annotation_indexer/Index.java",
+     "sha256": "7b4adac98089a196b6760a9cbfe739adc26c9f7382496cd61bcfa7684e7e0bd0",
+     "side": "after",
+     "text": "Lists the names of classes annotated by the given annotation."
+    },
+    {
+     "sourceArchive": "pool/universe/a/annotation-indexer/annotation-indexer_1.18.orig.tar.xz",
+     "archiveSha256": "5b8a1e5b3d2c376a326b02bfde38de7c6068828def3271db0f2a759a688c7aa5",
+     "member": "jenkinsci-lib-annotation-indexer-41691a3/src/main/java/org/jvnet/hudson/annotation_indexer/Index.java",
+     "sha256": "7b4adac98089a196b6760a9cbfe739adc26c9f7382496cd61bcfa7684e7e0bd0",
+     "side": "after",
+     "text": "\"META-INF/services/annotations/\""
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "ec354c3a8350766a0890cec02d2f6500378f88bda62d1d45d8424225ada50afa",
+    "ReferenceAPI.java": "02602e23eab245c1179823bd2ddf0edecbe43f48de1501e3af6cc17a88e6d16d"
+   },
+   "packetSha256": "a8611e419941473e661df9666f6bfab90f778c07e08b4c2ec9bb507cd4636b08",
+   "graphSha256": "a0574eed481a31a441e1ee0f57aa8afe2adb1452e2cd84618b4c984961fc5dba",
+   "physicalSha256": "b393e5778eb4aa688e63eae3adce985958c94d5651e29dedbe3569dbea1ac88b",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "df47f7382d87be90c07784fb192cbf3d02266ac4ba0b213cd294ceeb661b817f"
+  },
+  {
+   "slot": "16",
+   "artifact": "libdom4j-java",
+   "stratum": "wire",
+   "reference": {
+    "question": "Does dom4j's public XML writer escape literal ampersands and less-than signs once and preserve them on reparse?",
+    "control": "Ordinary text remains literal in the serialized element.",
+    "domain": "Two one-character delimiters between ASCII letters in element text. Parsing uses only the in-memory generated XML.",
+    "bounds": [
+     0,
+     1
+    ],
+    "seeds": [
+     0,
+     1
+    ],
+    "entries": [
+     "org.dom4j.io.XMLWriter#write",
+     "org.dom4j.DocumentHelper#parseText"
+    ],
+    "basis": [
+     {
+      "side": "after",
+      "member": "dom4j-2.1.4/src/test/java/org/dom4j/XMLWriterTest.java",
+      "text": "public void testEscapeXML()"
+     },
+     {
+      "side": "after",
+      "member": "dom4j-2.1.4/src/test/java/org/dom4j/XMLWriterTest.java",
+      "text": "DocumentHelper.parseText(text)"
+     }
+    ],
+    "expected": {
+     "beforeExpression": "1",
+     "afterExpression": "1",
+     "controlExpression": "1"
+    },
+    "scopeNotes": "",
+    "assistance": "curator-supplied public caller and expected results only in the matched lane"
+   },
+   "evidence": [
+    {
+     "sourceArchive": "pool/universe/d/dom4j/dom4j_2.1.4.orig.tar.xz",
+     "archiveSha256": "a6092f3e9d585fefcb0b3fafd52b7e8bacdfb40812420a9b4205465f901ed258",
+     "member": "dom4j-2.1.4/src/test/java/org/dom4j/XMLWriterTest.java",
+     "sha256": "20b7d3d6b692695a33e9bd0234ea601d1616453bcd53a60bded5721450791a07",
+     "side": "after",
+     "text": "public void testEscapeXML()"
+    },
+    {
+     "sourceArchive": "pool/universe/d/dom4j/dom4j_2.1.4.orig.tar.xz",
+     "archiveSha256": "a6092f3e9d585fefcb0b3fafd52b7e8bacdfb40812420a9b4205465f901ed258",
+     "member": "dom4j-2.1.4/src/test/java/org/dom4j/XMLWriterTest.java",
+     "sha256": "20b7d3d6b692695a33e9bd0234ea601d1616453bcd53a60bded5721450791a07",
+     "side": "after",
+     "text": "DocumentHelper.parseText(text)"
+    }
+   ],
+   "sources": {
+    "ReferencePair.java": "ec354c3a8350766a0890cec02d2f6500378f88bda62d1d45d8424225ada50afa",
+    "ReferenceAPI.java": "e1dc1b95e3456a5002f27548910e28c118cee8d9b036bf1851a939fbf6d80487"
+   },
+   "packetSha256": "d53931a5e1980bf8c551c6e587270ae97c21ecfb846396666e59d2744af49af0",
+   "graphSha256": "ae17579c5a3c63b4261d5c1b622d54abb242fcb4ae325df3a9b39f966d04b25e",
+   "physicalSha256": "57dace7a89d177fc10ce8940e04f4438a48a778638c57ac0d8e7a0c1abd6626c",
+   "physicalStatus": "original JVM control passed",
+   "referenceSha256": "71b675d944d8ede292957f7638b106eb03cb82eb7325d7fa6d74ac7b68b6c06c"
+  }
+ ]
+}

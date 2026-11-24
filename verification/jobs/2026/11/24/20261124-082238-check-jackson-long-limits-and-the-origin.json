@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-082238-check-jackson-long-limits-and-the-origin",
+  "title": "Check Jackson long limits and the original decimal slice contract",
+  "description": "Compile the original Jackson Core 2.19.0 public caller on Temurin 21. Measure both inLongRange overloads over all 2,000 threshold inputs, parseLong19 on every accepted slice, and a separately guarded all-19-digit claim. Retain three checker outputs, reach controls and exact JVM replays.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/text/JacksonRanges.java"
+    ]
+  },
+  "expected": "Four raw three-profile comparisons bound to the release with the finite threshold and general digit scope distinguished.",
+  "submitted": {
+    "at": "2026-11-24T08:22:38+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 19,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "6m",
+    "timeout": "34m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualif",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N04-N05",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/N04-N05"
+  ]
+}

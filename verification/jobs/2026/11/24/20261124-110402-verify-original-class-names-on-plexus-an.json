@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-110402-verify-original-class-names-on-plexus-an",
+  "title": "Verify original class names on Plexus and Commons Codec",
+  "description": "Rebuild the exact generated Sisu Plexus caller, then compare both Boolean inputs on each original JVM. Check ordinary strict equivalence cold and warm against those observations. Transfer the same test to Commons Codec 1.13 and 1.14. The stream class keeps its name and acquires a new superclass. Require the native hierarchy witness to reproduce on the original inputs.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {},
+  "expected": "All six unguarded native verdicts agree with the two original release JVMs on the complete Boolean domains, including the exact input and output strings for the Codec change.",
+  "submitted": {
+    "at": "2026-11-24T11:04:02+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "12m",
+    "notes": "The prior Plexus guarded comparison used 115 MiB and under one second after compilation. The default checks also build cold and warm proof caches."
+  },
+  "steps": [
+    {
+      "name": "Replay public callers and check the preserved and changed observations",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/identity_followup.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/followup/class-names.json.gz"
+  ]
+}

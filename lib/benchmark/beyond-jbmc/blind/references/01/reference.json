@@ -1,0 +1,32 @@
+{
+ "question": "Do repeated lookup, removal and re-insertion preserve the public graph's insertion order and vertex identities?",
+ "control": "A repeated lookup returns the already registered vertex without changing the graph's size.",
+ "domain": "Two distinct public ExplicitVertexID keys; remove either the first or last then reinsert it. Both histories are included.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "org.jruby.dirgra.DirectedGraph#findOrCreateVertexFor",
+  "org.jruby.dirgra.DirectedGraph#removeVertexFor",
+  "org.jruby.dirgra.DirectedGraph#getInorderData"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "dirgra-0.4/src/org/jruby/dirgra/DirectedGraph.java",
+   "text": "@return data in the order it was added to this graph."
+  }
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

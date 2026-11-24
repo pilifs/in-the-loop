@@ -1,0 +1,31 @@
+{
+ "question": "Can the released PNG transcoder render an inline SVG gradient whose first stop omits its offset?",
+ "control": "Supplying the first stop's explicit zero offset produces a valid PNG of the requested dimensions.",
+ "domain": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "org.apache.batik.transcoder.image.PNGTranscoder#transcode",
+  "org.apache.batik.transcoder.SVGAbstractTranscoder#transcode"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "batik-1.18/batik-test-old/src/test/java/org/apache/batik/svg/SVGGradietElementBridgeOffsetAttributeTestCase.java",
+   "text": "public void testNoOffset()"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "0",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

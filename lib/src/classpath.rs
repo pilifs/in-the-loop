@@ -24,6 +24,34 @@ enum Entry {
     Jar(crate::zip::ZipArchive, PathBuf, JarVersions),
 }
 
+fn lookup_directory(path: &Path, ancestors: &mut Vec<PathBuf>) -> Result<String, Error> {
+    let resolved = path.canonicalize()?;
+    if ancestors.contains(&resolved) {
+        return Err(Error::new("cycle in a class path directory"));
+    }
+    ancestors.push(resolved);
+    let mut entries = std::fs::read_dir(path)?.collect::<Result<Vec<_>, _>>()?;
+    entries.sort_by_key(|e| e.file_name());
+    let mut contents = Vec::new();
+    for entry in entries {
+        let child = entry.path();
+        let metadata = std::fs::metadata(&child)?;
+        let (kind, digest) = if metadata.is_dir() {
+            (b'D', lookup_directory(&child, ancestors)?)
+        } else if metadata.is_file() {
+            (b'F', crate::digest::sha256_reader(std::fs::File::open(&child)?)?)
+        } else {
+            return Err(Error::new(format!("non-file class path entry {}", child.display())));
+        };
+        contents.push(kind);
+        contents.extend(entry.file_name().as_encoded_bytes());
+        contents.push(0);
+        contents.extend(digest.bytes());
+    }
+    ancestors.pop();
+    Ok(crate::digest::sha256_hex(&contents))
+}
+
 /// How a JAR's main manifest enables multi-release lookup, read as the JDK's own reader reads it
 /// (`java.util.jar.JarFile`). Measured on Temurin 17.0.21, 21.0.13 and 25.0.5 with fifteen spellings
 /// (`lib/tests/class_bindings.rs`): a JAR is multi-release there when its manifest's bytes hold `Multi-Release: true`
@@ -364,6 +392,8 @@ pub struct Loaded {
 /// The application classes and the JDK, with lazy loading and a cache.
 pub struct ClassPath {
     entries: Vec<Entry>,
+    /// Original namespace of the previous release for observable class names and lookups.
+    pub(crate) previous: Option<std::sync::Arc<crate::relocate::Previous>>,
     jar_release: Option<u32>,
     /// What a JVM was seen to load ([`ClassObservations`]).
     observations: ClassObservations,
@@ -389,6 +419,9 @@ pub struct ClassPath {
     linked_map_image: std::cell::OnceCell<bool>,
     soft_queue_image: std::cell::OnceCell<bool>,
     generic_interface_image: std::cell::OnceCell<bool>,
+    byte_array_view_image: std::cell::OnceCell<bool>,
+    wildcard_type_image: std::cell::OnceCell<bool>,
+    method_return_image: std::cell::OnceCell<bool>,
     explicit_utc: std::cell::OnceCell<bool>,
     string_buffer_layout: std::cell::OnceCell<Option<bool>>,
     basic_base64: std::cell::OnceCell<bool>,
@@ -418,7 +451,67 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), previous: None, jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), byte_array_view_image: Default::default(), wildcard_type_image: Default::default(), method_return_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+    }
+
+    pub(crate) fn with_previous(mut self, previous: Option<std::sync::Arc<crate::relocate::Previous>>) -> Self {
+        self.previous = previous;
+        self
+    }
+
+    pub(crate) fn binary_name(&self, name: &str) -> String {
+        crate::relocate::binary_name(name, self.previous.as_deref())
+    }
+
+    /// Resolve the binary name as seen by the calling release. A missing definition
+    /// is a Java outcome. An array or a definition outside the prepared copy needs the JVM.
+    pub(crate) fn named_class(&self, caller: &str, binary: &str, previous: Option<&crate::relocate::Previous>) -> Option<(String, bool)> {
+        if binary.starts_with('[') {
+            return None;
+        }
+        let mut name = binary.replace('.', "/");
+        if binary.contains('/') {
+            return Some((name, false));
+        }
+        if let Some(old) = previous {
+            if old.original(caller).is_some() {
+                match old.find(&name) {
+                    crate::relocate::Found::Class(copy) => name = copy,
+                    crate::relocate::Found::NotCopied => return None,
+                    crate::relocate::Found::Elsewhere if self.is_application(&name) => return Some((name, false)),
+                    crate::relocate::Found::Elsewhere => {}
+                }
+            } else if old.original(&name).is_some() {
+                return Some((name, false));
+            }
+        }
+        if self.refused(&name).is_some() {
+            return None;
+        }
+        let found = self.exists(&name);
+        Some((name, found))
+    }
+
+    /// Class.forName can select and initialize an application class by a computed name.
+    /// Bind its ordered providers, including resources an initializer can read.
+    pub(crate) fn lookup_digest(&self) -> Result<String, Error> {
+        if let Some(problem) = &self.observations.problem {
+            return Err(Error::new(problem.clone()));
+        }
+        let observed: BTreeMap<_, _> = self.observations.classes.iter().collect();
+        let mut providers = serde_json::to_vec(&(self.jar_release, self.observations.feature, observed))
+            .map_err(|e| Error::new(e.to_string()))?;
+        for entry in &self.entries {
+            let (path, kind, digest) = match entry {
+                Entry::Jar(jar, path, _) => (path, b'J', jar.sha256()),
+                Entry::Dir(path) => (path, b'D', lookup_directory(path, &mut Vec::new())?),
+            };
+            providers.push(kind);
+            providers.extend(path.canonicalize()?.as_os_str().as_encoded_bytes());
+            providers.push(0);
+            providers.extend(digest.bytes());
+        }
+        Ok(crate::digest::sha256_hex(&providers))
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -427,6 +520,9 @@ impl ClassPath {
         self.models = models;
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
+        self.byte_array_view_image.take();
+        self.wildcard_type_image.take();
+        self.method_return_image.take();
         self.initializer_runs.borrow_mut().clear();
         self
     }
@@ -502,6 +598,9 @@ impl ClassPath {
         self.reflection_copies.take();
         self.thread_local_keys.take();
         self.class_table_image.take();
+        self.byte_array_view_image.take();
+        self.wildcard_type_image.take();
+        self.method_return_image.take();
         self.jar_resource_image.take();
         self.properties_reader_image.take();
         self.system_properties_image.take();
@@ -530,6 +629,11 @@ impl ClassPath {
     /// The public constructor itself chooses which exception wins when the array is null and a bound is negative.
     pub(crate) fn string_range_constructor(&self, owner: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !matches!((owner, descriptor), ("java/lang/String", "([CII)V" | "([BIII)V") | ("java/lang/StringIndexOutOfBoundsException", "(I)V")) { return None }
+        self.bootstrap_method(owner, "<init>", descriptor)
+    }
+
+    /// The selected bootstrap class and executable body, including rt.jar on JDK 8.
+    pub(crate) fn bootstrap_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         let class = if let Some(boot) = &self.legacy_boot {
             let bytes = boot.read(&format!("{owner}.class")).ok()??;
             let class = ClassFile::parse(&bytes).ok()?;
@@ -539,7 +643,7 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(owner).ok()?? else { return None };
             class
         };
-        let method = class.method("<init>", descriptor)?.clone();
+        let method = class.method(name, descriptor)?.clone();
         method.code.as_ref()?;
         Some((class, method))
     }
@@ -1337,6 +1441,43 @@ impl ClassPath {
             &["6cf0ee476e559857d5d5703d8fea3ca2a46299cfd6c6c2071fdea3001f33f348"])) // Temurin 21.0.13
     }
 
+    /// OpenJDK's byte-array view factory, order singletons, unaligned access and range checks.
+    pub(crate) fn byte_array_view_image(&self) -> bool {
+        let names = ["java/lang/invoke/MethodHandles", "java/lang/invoke/VarHandles", "java/lang/invoke/VarHandle",
+              "java/nio/ByteOrder", "jdk/internal/misc/Unsafe", "jdk/internal/util/Preconditions",
+              "java/lang/invoke/VarHandleByteArrayAsShorts", "java/lang/invoke/VarHandleByteArrayAsShorts$ArrayHandle",
+              "java/lang/invoke/VarHandleByteArrayAsChars", "java/lang/invoke/VarHandleByteArrayAsChars$ArrayHandle",
+              "java/lang/invoke/VarHandleByteArrayAsInts", "java/lang/invoke/VarHandleByteArrayAsInts$ArrayHandle",
+              "java/lang/invoke/VarHandleByteArrayAsLongs", "java/lang/invoke/VarHandleByteArrayAsLongs$ArrayHandle",
+              "java/lang/invoke/VarHandleByteArrayAsFloats", "java/lang/invoke/VarHandleByteArrayAsFloats$ArrayHandle",
+              "java/lang/invoke/VarHandleByteArrayAsDoubles", "java/lang/invoke/VarHandleByteArrayAsDoubles$ArrayHandle",
+            ];
+        *self.byte_array_view_image.get_or_init(|| names.iter().all(|name| !self.is_application(name))
+            && self.matches_jdk_classes(&names, &["c3e8ff6b32aa29978abfaefd40f227bfbe05c5060014744eed6d7fc1f6482ef9"])) // Temurin 21.0.13
+    }
+
+    /// OpenJDK's wildcard objects expose clones of their reified upper and lower bounds.
+    pub(crate) fn wildcard_type_image(&self) -> bool {
+        let names = ["java/lang/Enum", "java/lang/reflect/WildcardType", "sun/reflect/generics/reflectiveObjects/WildcardTypeImpl",
+            "sun/reflect/generics/reflectiveObjects/LazyReflectiveObjectGenerator", "sun/reflect/generics/tree/Wildcard",
+            "sun/reflect/generics/tree/BottomSignature", "sun/reflect/generics/tree/FieldTypeSignature"];
+        *self.wildcard_type_image.get_or_init(|| names.iter().all(|name| !self.is_application(name))
+            && self.matches_jdk_classes(&names, &["38a096cf9c1cc8cd19b9e65912b447d7a04e0bad4db2fec770d4045e5b793c2e"])) // Temurin 21.0.13
+    }
+
+    /// Method repositories cache their return Type on the reflective copy. Class-scoped
+    /// variables come from the declaring class's repository on this image.
+    pub(crate) fn method_return_image(&self) -> bool {
+        let names = ["java/lang/Class", "java/lang/reflect/Method", "java/lang/reflect/TypeVariable", "java/util/List",
+            "sun/reflect/generics/repository/MethodRepository", "sun/reflect/generics/repository/ConstructorRepository",
+            "sun/reflect/generics/repository/ClassRepository", "sun/reflect/generics/reflectiveObjects/TypeVariableImpl",
+            "sun/reflect/generics/scope/MethodScope", "sun/reflect/generics/scope/ClassScope",
+            "sun/reflect/generics/visitor/Reifier", "sun/reflect/generics/factory/CoreReflectionFactory",
+            "java/util/SequencedCollection", "java/util/Collection", "java/lang/Iterable"];
+        *self.method_return_image.get_or_init(|| names.iter().all(|name| !self.is_application(name))
+            && self.matches_jdk_classes(&names, &["c5392bc22b8b3208ef6b7acdc25d12af8722dc48db3c04291ae78196ae5f32bf"]))
+    }
+
     /// ClassRepository clones its interfaces array, retaining the reified Type objects on the mirror.
     pub(crate) fn generic_interface_image(&self) -> bool {
         *self.generic_interface_image.get_or_init(|| self.matches_jdk_classes(
@@ -1865,6 +2006,7 @@ impl ClassPath {
     pub(crate) fn numeric_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !Self::surrogate_arithmetic(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/Math" | "java/lang/StrictMath", "hypot", "(DD)D")
+            | ("java/lang/String", "valueOf", "(J)Ljava/lang/String;")
             | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
                "doubleValue", "()D")
             | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
@@ -1876,6 +2018,7 @@ impl ClassPath {
             | ("java/lang/Integer", "equals", "(Ljava/lang/Object;)Z")
             | ("java/lang/Integer", "hashCode", "()I" | "(I)I")
             | ("java/lang/Integer", "toString", "()Ljava/lang/String;")
+            | ("java/lang/Short", "reverseBytes", "(S)S")
             | ("java/lang/Integer", "reverseBytes", "(I)I")
             | ("java/lang/Long", "reverseBytes", "(J)J")
             | ("java/lang/Integer", "compareUnsigned" | "compare", "(II)I")
@@ -2041,7 +2184,7 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }
-        if matches!(name, "java/io/PrintWriter$1" | "java/util/Collections$UnmodifiableMap" | "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
+        if matches!(name, "java/util/StringTokenizer" | "java/io/PrintWriter$1" | "java/util/Collections$UnmodifiableMap" | "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
             | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$Node" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
             | "java/util/concurrent/ConcurrentHashMap$EntryIterator" | "java/util/concurrent/ConcurrentHashMap$BaseIterator"

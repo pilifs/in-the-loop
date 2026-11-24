@@ -4,10 +4,10 @@
 //!
 //! Class names only ever appear in a class file's constant pool, as UTF-8 entries: on their own (class entries),
 //! inside field and method descriptors (`Lnet/example/Pricing;`), and inside generic signatures
-//! (`Lnet/example/Pricing<...>;`). Rewriting those entries, and nothing else, relocates the class. Everything after
-//! the constant pool refers to entries by index and is copied unchanged.
+//! (`Lnet/example/Pricing<...>;`). A String literal can share a UTF-8 entry with one of these names. Its
+//! `CONSTANT_String` keeps the original bytes. The indices used after the constant pool stay the same.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
 
 use crate::classfile::{decode_modified_utf16, decode_modified_utf8, encode_modified_utf8, flags};
@@ -33,6 +33,9 @@ pub struct Previous {
     /// Whether a call of code both versions share may be taken as one function of both
     /// ([`crate::bmc`]'s ties); `--no-shared-callees` says not, and every callee is run as written.
     pub calls_as_one_function: bool,
+    /// The paired-property harness resets shared state between calls. Its cross-version
+    /// execution summaries rely on that protocol. Ordinary equivalence only needs the namespace.
+    pub fresh_states: bool,
 }
 
 /// A class by its name, as the previous version's code finds it.
@@ -65,6 +68,19 @@ impl Previous {
             Found::NotCopied
         }
     }
+}
+
+/// The name observable through Class.getName(), including the descriptor of an array.
+/// Only a class the checker actually copied loses a package component.
+pub(crate) fn binary_name(name: &str, previous: Option<&Previous>) -> String {
+    let element = name.trim_start_matches('[');
+    if element.len() != name.len() {
+        if let Some(class) = element.strip_prefix('L').and_then(|s| s.strip_suffix(';')) {
+            let own = previous.and_then(|p| p.original(class)).unwrap_or(class);
+            return format!("{}L{};", &name[..name.len() - element.len()], own.replace('/', "."));
+        }
+    }
+    previous.and_then(|p| p.original(name)).unwrap_or(name).replace('/', ".")
 }
 
 /// Copies every class under `input` to `output/<prefix>/...`, renamed. Returns the relocated class names.
@@ -178,6 +194,8 @@ pub fn class_file(bytes: &[u8], own: &BTreeSet<String>, prefix: &str) -> Result<
     let count_bytes = take(2)?;
     let count = u16::from_be_bytes([count_bytes[0], count_bytes[1]]);
     out.extend_from_slice(count_bytes);
+    let mut changed_utf8 = BTreeMap::new();
+    let mut strings = Vec::new();
     let mut i = 1;
     while i < count {
         let tag = take(1)?[0];
@@ -193,11 +211,15 @@ pub fn class_file(bytes: &[u8], own: &BTreeSet<String>, prefix: &str) -> Result<
                 let renamed = match String::from_utf16(&decode_modified_utf16(original)) {
                     Ok(text) => match rename(&text, own, prefix) {
                         renamed if renamed == text => original.to_vec(),
-                        renamed => encode_modified_utf8(&renamed),
+                        renamed => {
+                            changed_utf8.insert(i, original);
+                            encode_modified_utf8(&renamed)
+                        }
                     },
                     Err(_) => original.to_vec(),
                 };
-                out.extend((renamed.len() as u16).to_be_bytes());
+                let length = u16::try_from(renamed.len()).map_err(|_| Error::new("relocated class name exceeds the class file UTF-8 length limit"))?;
+                out.extend(length.to_be_bytes());
                 out.extend(renamed);
             }
             3 | 4 => out.extend_from_slice(take(4)?),
@@ -205,13 +227,40 @@ pub fn class_file(bytes: &[u8], own: &BTreeSet<String>, prefix: &str) -> Result<
                 out.extend_from_slice(take(8)?);
                 i += 1;
             }
-            7 | 8 | 16 | 19 | 20 => out.extend_from_slice(take(2)?),
+            8 => {
+                let index = take(2)?;
+                strings.push((out.len(), u16::from_be_bytes([index[0], index[1]])));
+                out.extend_from_slice(index);
+            }
+            7 | 16 | 19 | 20 => out.extend_from_slice(take(2)?),
             9 | 10 | 11 | 12 | 17 | 18 => out.extend_from_slice(take(4)?),
             15 => out.extend_from_slice(take(3)?),
             other => return Err(Error::new(format!("unknown constant pool tag {other}"))),
         }
         i += 1;
     }
+    // A CONSTANT_String and a class name or descriptor can share one UTF-8 entry.
+    // Keep every program-visible String literal byte-exact, including forward references.
+    let mut count = count;
+    let mut originals = BTreeMap::new();
+    for (offset, index) in strings {
+        if let Some(bytes) = changed_utf8.get(&index) {
+            let original = match originals.get(&index) {
+                Some(&original) => original,
+                None => {
+                    let original = count;
+                    count = count.checked_add(1).ok_or_else(|| Error::new("relocated class exceeds the constant pool limit"))?;
+                    out.push(1);
+                    out.extend((bytes.len() as u16).to_be_bytes());
+                    out.extend_from_slice(bytes);
+                    originals.insert(index, original);
+                    original
+                }
+            };
+            out[offset..offset + 2].copy_from_slice(&original.to_be_bytes());
+        }
+    }
+    out[8..10].copy_from_slice(&count.to_be_bytes());
     out.extend_from_slice(&bytes[pos..]);
     Ok(out)
 }
@@ -365,6 +414,21 @@ pub fn rename(s: &str, own: &BTreeSet<String>, prefix: &str) -> String {
 mod tests {
     use super::*;
 
+    #[test]
+    fn class_and_descriptor_literals_keep_their_bytes_when_the_same_utf8_entry_names_a_class() {
+        use crate::classfile::{writer::ClassWriter, BootstrapArg, ClassFile};
+        let mut class = ClassWriter::new("pkg/Token");
+        let name = class.pool.string("pkg/Token");
+        let descriptor = class.pool.string("[[Lpkg/Token;");
+        let array = class.pool.class("[[Lpkg/Token;");
+        let copy = class_file(&class.to_bytes(), &BTreeSet::from(["pkg/Token".into()]), "before").unwrap();
+        let parsed = ClassFile::parse(&copy).unwrap();
+        assert_eq!(parsed.name, "before/pkg/Token");
+        assert_eq!(parsed.pool.class_name(array).unwrap(), "[[Lbefore/pkg/Token;");
+        assert_eq!(parsed.pool.loadable(name).unwrap(), BootstrapArg::Str("pkg/Token".into()));
+        assert_eq!(parsed.pool.loadable(descriptor).unwrap(), BootstrapArg::Str("[[Lpkg/Token;".into()));
+    }
+
     /// A previous version with a closure of its own takes with it the closure's classes it names, in a class entry,
     /// a descriptor or a signature, and those they name in turn; a class it doesn't reach stays behind, and a name
     /// only the new version has is renamed to a class that isn't there.
@@ -480,7 +544,7 @@ mod tests {
             .filter(|&i| matches!(copied.pool.get(i), Ok(Constant::String { .. })))
             .map(|i| copied.pool.loadable(i).unwrap())
             .collect();
-        assert_eq!(strings, [BootstrapArg::Units(vec![0xDBFF]), BootstrapArg::Str("before/a/B".into())]);
+        assert_eq!(strings, [BootstrapArg::Units(vec![0xDBFF]), BootstrapArg::Str("a/B".into())]);
     }
 
     #[test]

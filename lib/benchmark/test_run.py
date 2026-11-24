@@ -311,7 +311,7 @@ class StagingTest(unittest.TestCase):
         calls = []
         fell_back = {"x": True, "y": False}
 
-        def fake(case, engine, mode, staging, classes, build, options):
+        def fake(case, engine, mode, staging, classes, build, options, record_execution=None):
             calls.append((case["id"], engine, staging))
             record = {"case": case["id"], "engine": engine, "mode": mode, "verdict": "verified", "class": "correct", "seconds": 0.1, "peakMB": 1.0}
             if engine == "auto":
@@ -323,7 +323,7 @@ class StagingTest(unittest.TestCase):
         try:
             run.run_one = fake
             run.load_cases = lambda groups, pattern=None: cases
-            run.compile_sources = lambda build: {}
+            run.compile_sources = lambda build, conformance_source=None: {}
             run.compile_examples = lambda build, cases: {}
             run.reference = lambda *a: {}
             run.check_witnesses = lambda *a: None

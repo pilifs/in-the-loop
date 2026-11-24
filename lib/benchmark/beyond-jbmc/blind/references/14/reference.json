@@ -1,0 +1,36 @@
+{
+ "question": "Do the default 64-to-32 Java rewrites change a double declaration and decimal literal to a float while preserving an unrelated integer declaration?",
+ "control": "The same converter keeps the input file byte-for-byte intact.",
+ "domain": "Two valid source snippets with different decimal literals, processed as local temporary files in the isolated JVM.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "com.peterabeles.auto64fto32f.ConvertFile32From64#process",
+  "com.peterabeles.auto64fto32f.ConvertFile32From64#<init>"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "Auto64Fto32F-2.1/src/com/peterabeles/auto64fto32f/ConvertFile32From64.java",
+   "text": "replacePattern(\"double\", \"float\")"
+  },
+  {
+   "side": "after",
+   "member": "Auto64Fto32F-2.1/src/com/peterabeles/auto64fto32f/ConvertFile32From64.java",
+   "text": "Looks for a floating point constant number"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

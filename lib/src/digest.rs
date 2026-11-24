@@ -9,47 +9,84 @@ const K: [u32; 64] = [
     0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 ];
 
+const INITIAL: [u32; 8] = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+
 /// The SHA-256 of `data`, as 64 lowercase hex digits.
 pub fn sha256_hex(data: &[u8]) -> String {
-    let mut h: [u32; 8] = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
-    let mut message = data.to_vec();
-    message.push(0x80);
-    while message.len() % 64 != 56 {
-        message.push(0);
-    }
-    message.extend_from_slice(&((data.len() as u64).wrapping_mul(8)).to_be_bytes());
-    for block in message.chunks(64) {
-        let mut w = [0u32; 64];
-        for (i, word) in block.chunks(4).enumerate() {
-            w[i] = u32::from_be_bytes([word[0], word[1], word[2], word[3]]);
+    finish(INITIAL, 0, data)
+}
+
+/// Hash an open resource with bounded memory, including on short reads.
+pub(crate) fn sha256_reader(mut reader: impl std::io::Read) -> std::io::Result<String> {
+    let mut state = INITIAL;
+    let mut buffer = [0u8; 16 * 1024];
+    let mut used = 0;
+    let mut processed = 0u64;
+    loop {
+        match reader.read(&mut buffer[used..]) {
+            Ok(0) => return Ok(finish(state, processed, &buffer[..used])),
+            Ok(n) => used += n,
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
+            Err(error) => return Err(error),
         }
-        for i in 16..64 {
-            let s0 = w[i - 15].rotate_right(7) ^ w[i - 15].rotate_right(18) ^ (w[i - 15] >> 3);
-            let s1 = w[i - 2].rotate_right(17) ^ w[i - 2].rotate_right(19) ^ (w[i - 2] >> 10);
-            w[i] = w[i - 16].wrapping_add(s0).wrapping_add(w[i - 7]).wrapping_add(s1);
-        }
-        let [mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut hh] = h;
-        for i in 0..64 {
-            let s1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
-            let ch = (e & f) ^ (!e & g);
-            let t1 = hh.wrapping_add(s1).wrapping_add(ch).wrapping_add(K[i]).wrapping_add(w[i]);
-            let s0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
-            let maj = (a & b) ^ (a & c) ^ (b & c);
-            let t2 = s0.wrapping_add(maj);
-            hh = g;
-            g = f;
-            f = e;
-            e = d.wrapping_add(t1);
-            d = c;
-            c = b;
-            b = a;
-            a = t1.wrapping_add(t2);
-        }
-        for (x, y) in h.iter_mut().zip([a, b, c, d, e, f, g, hh]) {
-            *x = x.wrapping_add(y);
+        if used == buffer.len() {
+            for block in buffer.chunks_exact(64) {
+                compress(&mut state, block);
+            }
+            processed = processed.wrapping_add(used as u64);
+            used = 0;
         }
     }
-    h.iter().map(|x| format!("{x:08x}")).collect()
+}
+
+fn finish(mut state: [u32; 8], processed: u64, remaining: &[u8]) -> String {
+    let mut blocks = remaining.chunks_exact(64);
+    for block in &mut blocks {
+        compress(&mut state, block);
+    }
+    let tail = blocks.remainder();
+    let mut padding = [0u8; 128];
+    padding[..tail.len()].copy_from_slice(tail);
+    padding[tail.len()] = 0x80;
+    let end = if tail.len() < 56 { 64 } else { 128 };
+    let bits = processed.wrapping_add(remaining.len() as u64).wrapping_mul(8);
+    padding[end - 8..end].copy_from_slice(&bits.to_be_bytes());
+    for block in padding[..end].chunks_exact(64) {
+        compress(&mut state, block);
+    }
+    state.iter().map(|x| format!("{x:08x}")).collect()
+}
+
+fn compress(h: &mut [u32; 8], block: &[u8]) {
+    let mut w = [0u32; 64];
+    for (i, word) in block.chunks(4).enumerate() {
+        w[i] = u32::from_be_bytes([word[0], word[1], word[2], word[3]]);
+    }
+    for i in 16..64 {
+        let s0 = w[i - 15].rotate_right(7) ^ w[i - 15].rotate_right(18) ^ (w[i - 15] >> 3);
+        let s1 = w[i - 2].rotate_right(17) ^ w[i - 2].rotate_right(19) ^ (w[i - 2] >> 10);
+        w[i] = w[i - 16].wrapping_add(s0).wrapping_add(w[i - 7]).wrapping_add(s1);
+    }
+    let [mut a, mut b, mut c, mut d, mut e, mut f, mut g, mut hh] = *h;
+    for i in 0..64 {
+        let s1 = e.rotate_right(6) ^ e.rotate_right(11) ^ e.rotate_right(25);
+        let ch = (e & f) ^ (!e & g);
+        let t1 = hh.wrapping_add(s1).wrapping_add(ch).wrapping_add(K[i]).wrapping_add(w[i]);
+        let s0 = a.rotate_right(2) ^ a.rotate_right(13) ^ a.rotate_right(22);
+        let maj = (a & b) ^ (a & c) ^ (b & c);
+        let t2 = s0.wrapping_add(maj);
+        hh = g;
+        g = f;
+        f = e;
+        e = d.wrapping_add(t1);
+        d = c;
+        c = b;
+        b = a;
+        a = t1.wrapping_add(t2);
+    }
+    for (x, y) in h.iter_mut().zip([a, b, c, d, e, f, g, hh]) {
+        *x = x.wrapping_add(y);
+    }
 }
 
 #[cfg(test)]
@@ -63,5 +100,16 @@ mod tests {
         assert_eq!(sha256_hex(b"abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq"), "248d6a61d20638b8e5c026930c3e6039a33ce45964ff2167f6ecedd419db06c1");
         // A message whose padding takes a block of its own.
         assert_eq!(sha256_hex(&[b'a'; 64]), "ffe054fe7ae0cb6dc65c3af9b61d5209f439851db43d0ba5997337df154668eb");
+        struct ShortReads<'a>(&'a [u8]);
+        impl std::io::Read for ShortReads<'_> {
+            fn read(&mut self, buffer: &mut [u8]) -> std::io::Result<usize> {
+                let n = buffer.len().min(37);
+                self.0.read(&mut buffer[..n])
+            }
+        }
+        let million = vec![b'a'; 1_000_000];
+        let expected = "cdc76e5c9914fb9281a1c7e284d73e67f1809a48a497200e046d39ccc7112cd0";
+        assert_eq!(sha256_hex(&million), expected);
+        assert_eq!(super::sha256_reader(ShortReads(&million)).unwrap(), expected);
     }
 }

@@ -358,7 +358,7 @@ impl Engine<'_> {
 
     fn value(&mut self, key: &mut Vec<i64>, v: Option<&Val>, numbers: &mut HashMap<usize, i64>, queue: &mut Vec<usize>) -> Option<()> {
         match v {
-            Some(Val::Unobserved(_)) => return None,
+            Some(Val::Unobserved(_) | Val::ByteView(_)) => return None,
             None => key.push(0),
             Some(Val::I(bits)) => {
                 key.push(1);
@@ -784,7 +784,7 @@ impl Engine<'_> {
                 shape.extend([5, n, string as i64, element, array.length.len() as i64]);
                 inputs.push(Input::Content { length: array.length.clone(), cells: array.cells.clone() });
             }
-            Val::C(_) | Val::Unobserved(_) => return None,
+            Val::C(_) | Val::Unobserved(_) | Val::ByteView(_) => return None,
         }
         Some(())
     }

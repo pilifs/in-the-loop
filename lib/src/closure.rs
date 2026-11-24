@@ -10,6 +10,7 @@
 //! | `dispatch pkg/O.m(D)` | the classes whose method a virtual or interface call of `m(D)` on `O` may run: for each application class that is `O` or a subtype of it, the class that declares the method it resolves to | every `invokevirtual` and `invokeinterface`, on an application owner or a JDK one (an application class can override `Object.equals` or implement `Comparable`) |
 //! | `config FILE` | the file's bytes | the application files (`application*.properties`, `application*.yml`, `application*.yaml`, at a resource root or under `config/`), for a closure that touches Spring |
 //! | `missing NAME` | nothing | a class or method the closure names that the class path doesn't have: adding it later changes the closure |
+//! | `config Class.forName runtime class path` | ordered provider paths and contents, selected multi-release feature and observed class bindings | a reachable call to Class.forName can select a class and run its initializer using a computed name |
 //!
 //! Following: from the target, every method a call may run (static and special calls by resolution, virtual and
 //! interface calls by every dispatch target, lambda bodies through `LambdaMetafactory`'s handle), and the class
@@ -193,6 +194,21 @@ pub fn version_digest(cp: &ClassPath, roots: &[MemberRef], configuration: &Confi
     digest_of_version(&closures(cp, roots, configuration))
 }
 
+const LOOKUP_INPUT: &str = "config Class.forName runtime class path";
+const UNBOUND_LOOKUP: &str = "config unreadable Class.forName runtime class path";
+
+pub(crate) fn unbound_lookup(closures: &[Closure]) -> bool {
+    closures.iter().any(|c| c.parts.contains_key(UNBOUND_LOOKUP))
+}
+
+pub(crate) fn cache_version_digest(cp: &ClassPath, roots: &[MemberRef], config: &Configuration) -> Result<String, Error> {
+    let graph = closures(cp, roots, config);
+    if unbound_lookup(&graph) {
+        return Err(Error::new("the runtime class path read by Class.forName could not be bound"));
+    }
+    Ok(digest_of_version(&graph))
+}
+
 /// [`version_digest`] of closures already computed, one per root in root order.
 pub fn digest_of_version(closures: &[Closure]) -> String {
     let mut text = String::from("version\n");
@@ -211,16 +227,28 @@ struct Walk<'a> {
     cp: &'a ClassPath,
     /// Every application class of the build, by name: dispatch targets are looked for among them.
     classes: Option<BTreeMap<String, Rc<ClassFile>>>,
+    lookup: Option<(&'static str, String)>,
 }
 
 impl<'a> Walk<'a> {
     fn new(cp: &'a ClassPath) -> Walk<'a> {
-        Walk { cp, classes: None }
+        Walk { cp, classes: None, lookup: None }
     }
 
     fn application_classes(&mut self) -> &BTreeMap<String, Rc<ClassFile>> {
         let cp = self.cp;
         self.classes.get_or_insert_with(|| cp.application_classes().unwrap_or_default())
+    }
+
+    fn bind_lookup(&mut self, parts: &mut BTreeMap<String, String>, callee: &MemberRef) {
+        if callee.owner != "java/lang/Class" || callee.name != "forName" {
+            return;
+        }
+        let (key, digest) = self.lookup.get_or_insert_with(|| match self.cp.lookup_digest() {
+            Ok(digest) => (LOOKUP_INPUT, digest),
+            Err(error) => (UNBOUND_LOOKUP, sha256_hex(error.to_string().as_bytes())),
+        });
+        parts.insert((*key).into(), digest.clone());
     }
 
     fn run(&mut self, root: &MemberRef, configuration: &Configuration) -> Closure {
@@ -289,6 +317,7 @@ impl<'a> Walk<'a> {
                     }
                     Insn::InvokeStatic(i) | Insn::InvokeSpecial(i) => {
                         let Ok(callee) = class.pool.member(i) else { continue };
+                        self.bind_lookup(&mut parts, &callee);
                         spring |= callee.owner.starts_with(SPRING);
                         if cp.is_application(&callee.owner) {
                             class_work.push_back(callee.owner.clone());
@@ -317,6 +346,7 @@ impl<'a> Walk<'a> {
                         let Some(bootstrap) = bootstraps.get(bootstrap_index as usize) else { continue };
                         for arg in &bootstrap.args {
                             if let BootstrapArg::MethodHandle(handle) = arg {
+                                self.bind_lookup(&mut parts, &handle.member);
                                 spring |= handle.member.owner.starts_with(SPRING);
                                 if cp.is_application(&handle.member.owner) {
                                     class_work.push_back(handle.member.owner.clone());

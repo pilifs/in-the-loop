@@ -109,14 +109,14 @@ def versions():
     return json.loads((HERE / "corpus.json").read_text())["versions"]
 
 
-def compile_sources(build):
+def compile_sources(build, conformance_source=None):
     """Each version's tree into build/classes/VERSION, and the conformance corpus into build/classes/conformance."""
     out = {}
     trees = dict(versions())
     for name, tree in trees.items():
         sources = sorted(str(p) for p in (HERE / tree).rglob("*.java"))
         out[name] = javac(sources, build / "classes" / name)
-    out["conformance"] = javac([str(CONFORMANCE_SOURCE)], build / "classes" / "conformance")
+    out["conformance"] = javac([str(conformance_source or CONFORMANCE_SOURCE)], build / "classes" / "conformance")
     return out
 
 
@@ -513,7 +513,7 @@ def environment(options):
     }
 
 
-def run(options, *, case_ids=None):
+def run(options, *, case_ids=None, conformance_source=None, record_execution=None):
     groups = {int(g) for g in options.groups.split(",")}
     engines = options.engines.split(",")
     modes = options.modes.split(",")
@@ -534,7 +534,7 @@ def run(options, *, case_ids=None):
     cases_by_id = {c["id"]: c for c in cases}
     build = Path(options.build).resolve()
     build.mkdir(parents=True, exist_ok=True)
-    classes = {**compile_sources(build), **compile_examples(build, cases)}
+    classes = {**compile_sources(build, conformance_source), **compile_examples(build, cases)}
     provenance = {}
     if selection:
         versions_used = {v for c in cases for v in (
@@ -565,7 +565,7 @@ def run(options, *, case_ids=None):
                     if engine == "auto" and first is not None and not first.get("fallback"):
                         # The own checker decided under the first policy, so JBMC never ran: the policy changes nothing.
                         continue
-                    record = run_one(case, engine, mode, staging, classes, build, options)
+                    record = run_one(case, engine, mode, staging, classes, build, options, record_execution)
                     first = first or record
                     runs.append(record)
                     if not options.quiet:
@@ -585,7 +585,7 @@ def run(options, *, case_ids=None):
     }
 
 
-def run_one(case, engine, mode, staging, classes, build, options):
+def run_one(case, engine, mode, staging, classes, build, options, record_execution=None):
     """One case on one engine under one gap mode (and one JBMC staging policy, for an engine that may call JBMC):
     its command run and measured, and its record."""
     work = build / "work" / case["id"].replace("/", "_") / "-".join(filter(None, (engine, mode, staging)))
@@ -594,6 +594,8 @@ def run_one(case, engine, mode, staging, classes, build, options):
     work.mkdir(parents=True)
     cmd = command(case, engine, mode, classes, work, options, staging)
     measured = measure(cmd, options.timeout * 1.5 + 60)
+    if record_execution is not None:
+        record_execution(case, engine, cmd, measured, work)
     data = outcome_of(case, measured["stdout"])
     return record_of(case, engine, mode, staging, data, measured, work)
 

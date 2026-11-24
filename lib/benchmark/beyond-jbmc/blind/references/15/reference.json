@@ -1,0 +1,35 @@
+{
+ "question": "Does the annotation indexer merge both published resource prefixes and remove duplicate class names?",
+ "control": "An annotation with no matching resource returns an empty set.",
+ "domain": "A fresh local classloader sees a legacy resource alone or both resource prefixes. One class name occurs in both resources.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "org.jvnet.hudson.annotation_indexer.Index#listClassNames"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "jenkinsci-lib-annotation-indexer-41691a3/src/main/java/org/jvnet/hudson/annotation_indexer/Index.java",
+   "text": "Lists the names of classes annotated by the given annotation."
+  },
+  {
+   "side": "after",
+   "member": "jenkinsci-lib-annotation-indexer-41691a3/src/main/java/org/jvnet/hudson/annotation_indexer/Index.java",
+   "text": "\"META-INF/services/annotations/\""
+  }
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

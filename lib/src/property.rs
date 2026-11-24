@@ -1230,13 +1230,18 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
     }
     let seconds = started.elapsed().as_secs_f64();
+    let replay_config = |cp: ClassPath| cp.with_models(options.models).with_previous(previous.clone());
+    let harness_classpath = || {
+        let entries = std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path));
+        witness::classpath(entries).map(replay_config)
+    };
     // Under `--confirm`, the own checker's proof is JBMC's to prove again, over every input in one run: the stages
     // only find a small witness sooner, and the proof is the last one's. It is a second check, by a second checker,
     // with a deadline of its own.
     let (confirmation, refuting) = if options.confirm && options.engine == crate::Engine::Auto && last.native.is_some() && last.verdict == Verdict::Verified {
         let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base.clone() };
         let contracts = crate::equivalence::ConfirmContracts { setting: &gap_setting, rewrite: entries.clone(), cp: &cp, dir: work.join("jbmc-confirm-contracts") };
-        let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
+        let harness_cp = harness_classpath()?;
         let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &entry_types, &r.arguments(&entry_types)?)) };
         let (c, refuting) = crate::equivalence::confirm(&last, &run, Some(contracts), &reproduces)?;
         (Some(c), refuting)
@@ -1289,10 +1294,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     // models, and the disagreement is for a person (or a JVM) to settle.
     if let Some(refuting) = &refuting {
         let found = refuting.arguments(&entry_types)?;
-        let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path))?.with_models(options.models);
+        let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path)).map(replay_config)?;
         let replayed = witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, &found);
         let outcome = replayed.with_leftovers(&flat, &found);
-        let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
+        let harness_cp = harness_classpath()?;
         let reproduced = witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &entry_types, &found);
         let (rendered, values) = render(&found);
         let (assuming, _) = crate::equivalence::assumed_gaps(&last);
@@ -1346,7 +1351,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         Verdict::Violation => {
             let found = last.arguments(&entry_types)?;
-            let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path))?.with_models(options.models);
+            let replay_cp = witness::classpath(replay_entries.iter().map(PathBuf::as_path)).map(replay_config)?;
             let replay_on = |arguments: &[Argument]| witness::replay_in(&replay_cp, &layout, None, &class_internal, &method_name, &method.descriptor, &descriptor, arguments);
             let (mut replayed, mut on_jvm) = match startup_replay.take() {
                 Some((call, jdk)) => (call, Some(jdk)),
@@ -1448,7 +1453,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             // JVM below, in the harness, where Java's own libraries say whether the assertion fails on it.
             let compiled = harness.assertion.is_compiled();
             let evaluable = !over_objects && !compiled && !harness.assertion.has_call() && harness.signals.iter().all(|(_, when)| !when.has_call());
-            let harness_cp = witness::classpath(std::iter::once(harness_dir.as_path()).chain(options.classes.iter().chain(&options.classpath).map(PathBuf::as_path)))?.with_models(options.models);
+            let harness_cp = harness_classpath()?;
             let in_harness = if over_objects { witness::fails_in_harness(&harness_cp, harness::PROPERTY_CLASS, &entry_types, &found) } else { None };
             let holds_on_found = match (applying(&found), replayed.returned, replayed.thrown.as_deref()) {
                 _ if over_objects => in_harness == Some(false),

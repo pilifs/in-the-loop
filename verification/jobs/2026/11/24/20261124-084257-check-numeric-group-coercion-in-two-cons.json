@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084257-check-numeric-group-coercion-in-two-cons",
+  "title": "Check numeric group coercion in two consecutive Semver4j releases",
+  "description": "Quantify a bounded grammar of decimal groups with missing groups, leading zeros and unchanged controls, compiling the same caller before the change.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:57+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 11,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "18m",
+    "timeout": "72m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified C08-5.6.0 C08-5.7.0",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/C08-5.6.0",
+    "verification/beyond-jbmc/qualified/C08-5.7.0"
+  ]
+}

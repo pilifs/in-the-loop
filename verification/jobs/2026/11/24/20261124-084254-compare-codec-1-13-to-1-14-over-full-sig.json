@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084254-compare-codec-1-13-to-1-14-over-full-sig",
+  "title": "Compare Codec 1.13 to 1.14 over full signed seeds and bounded slices",
+  "description": "An equivalent two-copy caller and isolated originals test the signed seed boundary, both 128-bit words and an unaffected 32-bit public hash. The middle-to-last comparison additionally tries the old evidence on the changed wrapper and checks it against empty-cache answers.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:54+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 12,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "18m",
+    "timeout": "72m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/codec_pair.py 1.13 1.14",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/C01-C05-1.13-1.14"
+  ]
+}

@@ -31,9 +31,10 @@
 //!   a new array of the original's class and of that length, with the original's elements up to the shorter of
 //!   the two, zero (null) after them. The new array has a cell for each of the original's and for each further
 //!   one the new length may ask for, as `newarray` counts them ([`Engine::new_array_cells`]).
-//! - `Integer.parseInt(String)` and `Long.parseLong(String)`: an optional `+` or `-` and at least one digit, the value within the signed result width, or
-//!   `NumberFormatException` (for null too). The JDK takes every Unicode decimal digit (`Character.digit`); the
-//!   model takes `0` to `9`, and a String with a unit outside ASCII is the JDK call it was (a gap).
+//! - `Integer.parseInt` and `Long.parseLong` on ASCII strings in decimal or a concrete radix. Both accept an
+//!   optional sign and at least one digit of the radix, including either case of Latin letters. A null string,
+//!   invalid radix, malformed input or overflow throws `NumberFormatException`. Non-ASCII input needs the
+//!   selected JDK's Unicode digit table and keeps the call boundary.
 //! - the digits of an int, for `StringBuilder.append(int)` ([`Engine::decimal`]): `Integer.toString`'s, a `-` and
 //!   the magnitude's decimal digits with no leading zero, `-2147483648` for the least.
 
@@ -111,7 +112,8 @@ pub fn models_static(owner: &str, name: &str, descriptor: &str) -> bool {
     matches!(
         (owner, name, descriptor),
         ("java/lang/String", "valueOf", "(C)Ljava/lang/String;") |
-        (INTEGER, "parseInt", "(Ljava/lang/String;)I") | ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") |
+        (INTEGER, "parseInt", "(Ljava/lang/String;)I" | "(Ljava/lang/String;I)I") |
+        ("java/lang/Long", "parseLong", "(Ljava/lang/String;)J" | "(Ljava/lang/String;I)J") | ("java/lang/Long", "toString", "(J)Ljava/lang/String;") |
         (DIGEST, "isEqual", "([B[B)Z") | (ARRAYS, "equals", "([B[B)Z") |
         (ARRAYS, "copyOf", "([ZI)[Z" | "([BI)[B" | "([CI)[C" | "([SI)[S" | "([II)[I" | "([JI)[J" | "([Ljava/lang/Object;I)[Ljava/lang/Object;")
     )
@@ -418,11 +420,19 @@ impl Engine<'_> {
                 self.advance(path);
                 Some(Ok(None))
             }
-            (INTEGER, "parseInt", [Val::R(text)]) | ("java/lang/Long", "parseLong", [Val::R(text)]) => {
+            (INTEGER, "parseInt", [Val::R(text), rest @ ..]) | ("java/lang/Long", "parseLong", [Val::R(text), rest @ ..]) => {
                 let Some(text) = *text else { return Some(self.raise(path, "java/lang/NumberFormatException")) };
+                let radix = match rest {
+                    [] => 10,
+                    [Val::I(r)] => match self.b.constant_value(r)? {
+                        valid @ 2..=36 => valid as u64,
+                        _ => return Some(self.raise(path, "java/lang/NumberFormatException")),
+                    },
+                    _ => return None,
+                };
                 let s = path.objects[text].content().cloned()?;
                 let wide = owner == "java/lang/Long";
-                let (value, bad, beyond_ascii) = self.parsed_decimal(&s, if wide { 64 } else { 32 });
+                let (value, bad, beyond_ascii) = self.parsed_integer(&s, if wide { 64 } else { 32 }, radix);
                 let value = if wide { Val::J(value) } else { Val::I(value) };
                 // On the side that is ASCII the call throws or returns; neither ends a path here.
                 let mut inner: Step = Ok(None);
@@ -529,11 +539,29 @@ impl Engine<'_> {
         }
     }
 
-    /// Decimal int or long: the signed value, whether it throws instead, and whether a unit
+    fn ascii_radix_digit(&mut self, cell: &Bits, radix: u64, width: usize) -> (Bits, Lit) {
+        let below = self.b.ult(cell, &self.b.constant(i64::from(b'0'), 16));
+        let last = i64::from(b'0') + radix.min(10) as i64 - 1;
+        let above = self.b.ult(&self.b.constant(last, 16), cell);
+        let numeral = self.b.and(-below, -above);
+        let value = self.b.zext(&cell[..4].to_vec(), width);
+        if radix <= 10 { return (value, numeral); }
+
+        let folded = self.b.or_bits(cell, &self.b.constant(0x20, 16));
+        let a = i64::from(b'a');
+        let below = self.b.ult(&folded, &self.b.constant(a, 16));
+        let above = self.b.ult(&self.b.constant(a + radix as i64 - 11, 16), &folded);
+        let letter = self.b.and(-below, -above);
+        let letter_value = self.b.sub(&folded, &self.b.constant(a - 10, 16));
+        let letter_value = self.b.zext(&letter_value, width);
+        (self.b.ite_bits(letter, &letter_value, &value), self.b.or(numeral, letter))
+    }
+
+    /// Signed int or long: the value, whether it throws instead, and whether a unit
     /// of `s` is outside ASCII, where the model does not say.
-    fn parsed_decimal(&mut self, s: &Array, width: usize) -> (Bits, Lit, Lit) {
+    fn parsed_integer(&mut self, s: &Array, width: usize, radix: u64) -> (Bits, Lit, Lit) {
         let unit = |engine: &mut Self, c: u8| engine.b.constant(i64::from(c), 16);
-        let (minus, plus, zero_digit, nine, ascii) = (unit(self, b'-'), unit(self, b'+'), unit(self, b'0'), unit(self, b'9'), self.b.constant(0x80, 16));
+        let (minus, plus, ascii) = (unit(self, b'-'), unit(self, b'+'), self.b.constant(0x80, 16));
         let zero = self.b.constant(0, 32);
         let empty = self.b.eq(&s.length, &zero);
         let (negative, signed) = match s.cells.first() {
@@ -551,11 +579,14 @@ impl Engine<'_> {
         };
         let mut bad = vec![empty, only_sign];
         let mut outside = Vec::new();
-        let ten = self.b.constant(10, width);
-        let max = if width == 64 { i64::MAX } else { i64::from(i32::MAX) };
-        let cutoff = self.b.constant(max / 10, width);
-        // Both signed widths end in 7 for MAX and 8 for the magnitude of MIN.
-        let last = self.b.ite_bits(negative, &self.b.constant(8, width), &self.b.constant(7, width));
+        let base = self.b.constant(radix as i64, width);
+        let min_magnitude = 1u64 << (width - 1);
+        let max = min_magnitude - 1;
+        let mut signed_limit = |positive: u64, neg: u64| {
+            self.b.ite_bits(negative, &self.b.constant(neg as i64, width), &self.b.constant(positive as i64, width))
+        };
+        let cutoff = signed_limit(max / radix, min_magnitude / radix);
+        let last = signed_limit(max % radix, min_magnitude % radix);
         let mut value = self.b.constant(0, width);
         for (i, cell) in s.cells.iter().enumerate() {
             let here = self.b.constant(i as i64, 32);
@@ -563,19 +594,16 @@ impl Engine<'_> {
             let beyond = self.b.ult(cell, &ascii);
             outside.push(self.b.and(inside, -beyond));
             let read = if i == 0 { self.b.and(inside, -signed) } else { inside };
-            let below = self.b.ult(cell, &zero_digit);
-            let above = self.b.ult(&nine, cell);
-            let digit = self.b.and(-below, -above);
-            bad.push(self.b.and(read, -digit));
+            let (digit_value, valid) = self.ascii_radix_digit(cell, radix, width);
+            bad.push(self.b.and(read, -valid));
             // Test before multiplying so even a value that wraps around more than once stays invalid.
-            let digit_value = self.b.zext(&cell[..4].to_vec(), width);
             let above = self.b.ult(&cutoff, &value);
             let at_limit = self.b.eq(&value, &cutoff);
             let last_over = self.b.ult(&last, &digit_value);
             let overflow_at_limit = self.b.and(at_limit, last_over);
             let overflow = self.b.or(above, overflow_at_limit);
             bad.push(self.b.and(read, overflow));
-            let times = self.b.mul(&value, &ten);
+            let times = self.b.mul(&value, &base);
             let next = self.b.add(&times, &digit_value);
             value = self.b.ite_bits(read, &next, &value);
         }

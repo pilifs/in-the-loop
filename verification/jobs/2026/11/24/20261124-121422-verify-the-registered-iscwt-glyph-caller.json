@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-121422-verify-the-registered-iscwt-glyph-caller",
+  "title": "Verify the registered ISCWT glyph caller on every width",
+  "description": "Repeat the locked two-copy primary, name control and inverse with strict native at the frozen bounds. In a fresh JVM for each admitted input check the exact old and new code, width and name on the original release graphs and on the relocated pair. Retain all 1,024 comparisons, cold and warm native outcomes, costs and witness replays.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Every original and relocated observation agrees and both native passes prove the primary and control and refute their registered inverse on an admitted input.",
+  "submitted": {
+    "at": "2026-11-24T12:14:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "12m",
+    "notes": "Two concurrent JVM launches, 2,048 short-lived processes. A primary probe completed in 1.3 seconds."
+  },
+  "steps": [
+    {
+      "name": "Compare all original glyph widths and both proof temperatures",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/tokenizer_followup.py 08",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/followup/tokenizer-08.json.gz"
+  ]
+}

@@ -41,6 +41,10 @@ fn u32_at(data: &[u8], at: usize) -> Result<u32, Error> {
 }
 
 impl ZipArchive {
+    pub(crate) fn sha256(&self) -> String {
+        crate::digest::sha256_hex(&self.data)
+    }
+
     pub fn open(path: &Path) -> Result<ZipArchive, Error> {
         let data = std::fs::read(path).map_err(|e| Error::new(format!("cannot read {}: {e}", path.display())))?;
         ZipArchive::from_bytes(data).map_err(|e| Error::new(format!("{}: {e}", path.display())))

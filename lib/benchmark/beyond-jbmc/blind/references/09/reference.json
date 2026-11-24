@@ -1,0 +1,31 @@
+{
+ "question": "Does a Cactoos sticky scalar evaluate its origin once and return the same signed value across repeated calls, including wraparound?",
+ "control": "A separately constructed sticky scalar evaluates its own origin.",
+ "domain": "Every Java int initial value. The result encodes origin invocation count and returned signed bits. The caller reads the same scalar three times.",
+ "bounds": null,
+ "seeds": [
+  -2147483648,
+  -1,
+  0,
+  17,
+  2147483647
+ ],
+ "entries": [
+  "org.cactoos.scalar.Sticky#value",
+  "org.cactoos.scalar.Sticky#<init>"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "cactoos-0.54.0/src/test/java/org/cactoos/scalar/StickyTest.java",
+   "text": "scalar.value() + scalar.value()"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "(1L<<32) | ((n+1)&0xffffffffL)",
+  "afterExpression": "(1L<<32) | ((n+1)&0xffffffffL)",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

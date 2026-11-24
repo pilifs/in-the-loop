@@ -1,0 +1,120 @@
+{
+  "schema": "llm-trace-manifest/v1",
+  "session_id": "01a20d6c-1ad2-7b43-a0d3-e1c9053a5348",
+  "status": "open",
+  "title": null,
+  "first_prompt": "The following is the Codex agent history added since your last approval assessment. Continue the same review conversation. Treat the transcript delta, tool call arguments, tool results, retry reason, ",
+  "client": {
+    "tool": "codex",
+    "version": "0.170.0"
+  },
+  "models": [
+    "codex-auto-review"
+  ],
+  "started": "2026-11-24T11:58:38.307Z",
+  "ended": "2026-11-24T13:05:20.646Z",
+  "duration_seconds": 4002,
+  "stats": {
+    "turns": 14,
+    "api_calls": 22,
+    "tool_calls": 0,
+    "tool_errors": 0,
+    "compactions": 0,
+    "peak_context_tokens": 152358,
+    "usage": {
+      "input_tokens": 273193,
+      "output_tokens": 2141,
+      "cache_read_input_tokens": 1920768,
+      "cache_creation_input_tokens": 0
+    }
+  },
+  "tools": {},
+  "files_touched": [],
+  "context_windows": [
+    {
+      "index": 0,
+      "started": "2026-11-24T11:58:38.307Z",
+      "ended": "2026-11-24T13:05:20.646Z",
+      "turns": 14,
+      "api_calls": 22,
+      "usage": {
+        "input_tokens": 273193,
+        "output_tokens": 2141,
+        "cache_read_input_tokens": 1920768,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 152358
+    }
+  ],
+  "log": {
+    "sha256": "5b3bee304520ce332c14cf3e073d248752c943e6171abf9f5c7fd02cc6438e61",
+    "bytes": 1266459,
+    "lines": 264,
+    "gzip_bytes": 245052,
+    "path": "llm-dlc/traces/01a20d6c-1ad2-7b43-a0d3-e1c9053a5348/logs/5b3bee304520ce332c14cf3e073d248752c943e6171abf9f5c7fd02cc6438e61.jsonl.gz"
+  },
+  "subagents": [],
+  "commits": [
+    {
+      "change_id": "sqxpxtqqoyksuoqtsxrtwqoyyzwzwnws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify tokenizer histories and fixed-radix parsing on released Java callers (verification pending)",
+      "body": "Execute StringTokenizer from the selected JDK in symbolic runs and concrete replay. Model signed ASCII int and long parsing in fixed bases 2 through 36, checking overflow against the sign-specific quotient and remainder. Reject invalid radices in the interpreter before Rust attempts the conversion. The regression fixtures cover supplementary delimiters, virtual dispatch, null and changed delimiters, mixed-case digits, both signed limits and an original-JVM false sibling.\n\nThe frozen ISCWT glyph and HtmlCleaner callers both stopped at tokenizer construction. A strict diagnostic now proves the ISCWT primary across widths 0 through 1023. The affected test selection passed 59 Rust test binaries and both Python suites. Verification jobs 20261124-121422-verify-the-registered-iscwt-glyph-caller and 20261124-121430-measure-tokenizer-transfer-on-the-origin compare both original release graphs with their relocated callers on every registered input. Job 20261124-121507-certify-all-solver-answers-behind-the-is checks the glyph proof independently. Job 20261124-121207-transfer-fixed-radix-parsing-to-guava-un transfers the radix rule to Guava against both JBMC profiles.",
+      "log_sha256": "c2bc58bed74947487cc62db5b494b0993b572956a5c2fec4e71f8bf2ef71d189"
+    },
+    {
+      "change_id": "lpkkrlktopyqvuozmoksuzsqzmomlkkm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay rejected numeric strings on the selected JDK",
+      "body": "A valid-radix parse of a null or malformed string can expose a release-specific NumberFormatException message. The concrete interpreter now runs the selected parser on these rejected inputs and executes its actual error factory, including the bootstrap class bytes from JDK 8. The native ASCII circuit and its admitted radix domains keep their separate symbolic scope.\n\nThe public derive command matched the physical exceptions in 6 of 20 original cases before and all 20 afterward. Each of Temurin 8, 11, 17, 21 and 25 supplied its int and long parsers on a null and a malformed hexadecimal input. The receipt binds both release binaries, all Java images, the fixture and commands. The 59 affected Rust test binaries passed. A separate frozen Guava probe records the original Long.parseLong(String,int) refusal for the released transfer experiment.",
+      "log_sha256": "8afa263787c35761257bd7cb4e40479b86a62781b37337f6a288fbceaa3fc79b"
+    },
+    {
+      "change_id": "wtzyuxkwpskrsqpmuqprynvrpsyouuzy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the public parser decisions and qualify their evidence (verification pending)",
+      "body": "Record the four passed pipeline jobs on the registered ISCWT glyph and HtmlCleaner SVG and the transfer to Guava. All 1,024 glyph widths and both SVG radii agree between the original and relocated JVMs. The proof of the glyph primary has 9 validated SAT assignments and 469 certified UNSAT answers. The archive verified the full original bundle remotely. Guava's all-words round trip passed native, and stock's alleged all-ones refutation failed original-JVM replay.\n\nJob 20261124-124551-independently-check-a-portable-iscwt-lra publishes a smaller self-contained certificate only after independent validation on the original solver transcript. Job 20261124-124601-recheck-the-exact-historical-187-after-t repeats the historical native column on the final checker under the original byte and scope pins. The affected selection passed 865 Rust tests and 335 Python tests. The independent checker accepted a 391-byte trimmed proof of one original query. The historical report comparison accepted the same source in another export and rejected altered class digests.",
+      "log_sha256": "73b7e5380f52f55f621e78e6a724be1ae87fc8eda6e12f80fd96e11e408ad7af"
+    },
+    {
+      "change_id": "vqslyzxntrwmuktppkxrxlkktrnuvqwl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Publish the checked glyph certificate and repeat all 187 historical native claims",
+      "body": "The portable proof bundle is 49,868,705 bytes, down from 141,171,872. An independent process checked all 469 UNSAT certificates and all nine original SAT assignments against the same request, clause prefixes, assumptions and ordinary verdict. The original archive is remotely verified. The campaign report includes the direct replay command.\n\nThe final checker repeated all 187 original historical claims on Temurin 25.0.5. Each retained its frozen disposition: 94 proofs, 85 original-JVM refutations and eight open cases. All 25 independent JVM references agreed. All six follow-up jobs passed; their 14 output digests, identical native solver transcripts, matched public observations and 98 report links were checked. The frozen evidence index reproduced byte for byte.",
+      "log_sha256": "5b3bee304520ce332c14cf3e073d248752c943e6171abf9f5c7fd02cc6438e61"
+    }
+  ],
+  "logs": {
+    "5b3bee304520ce332c14cf3e073d248752c943e6171abf9f5c7fd02cc6438e61": {
+      "bytes": 1266459,
+      "lines": 264,
+      "gzip_bytes": 245052,
+      "url": null
+    },
+    "73b7e5380f52f55f621e78e6a724be1ae87fc8eda6e12f80fd96e11e408ad7af": {
+      "bytes": 1146249,
+      "lines": 217,
+      "gzip_bytes": 229905,
+      "url": null
+    },
+    "8afa263787c35761257bd7cb4e40479b86a62781b37337f6a288fbceaa3fc79b": {
+      "bytes": 876194,
+      "lines": 159,
+      "gzip_bytes": 177195,
+      "url": null
+    },
+    "c2bc58bed74947487cc62db5b494b0993b572956a5c2fec4e71f8bf2ef71d189": {
+      "bytes": 746593,
+      "lines": 136,
+      "gzip_bytes": 156251,
+      "url": null
+    }
+  },
+  "redaction_policy": 7,
+  "generator": "llm-dlc/tools/sync.py",
+  "workspace": "~/code/in-the-loop-foundation-domain-streams"
+}

@@ -1116,6 +1116,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let before_dir = work.join("before-classes");
     let before_cp = version_classpath(&options.before, options.before_entries())?;
     let after_cp = version_classpath(&options.after, &options.classpath)?;
+    let old_classes: BTreeSet<String> = before_cp.application_class_names()?.into_iter().collect();
+    let new_classes = after_cp.application_class_names()?;
     let relocated = match &options.before_classpath {
         Some(closure) => {
             let mut libraries = ClassPath::new();
@@ -1123,8 +1125,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 libraries.add(entry)?;
             }
             // A class only the new version has is not the previous version's to find.
-            let has: BTreeSet<String> = before_cp.application_class_names()?.into_iter().collect();
-            let absent: BTreeSet<String> = after_cp.application_class_names()?.into_iter().filter(|n| !has.contains(n)).collect();
+            let absent: BTreeSet<String> = new_classes.iter().filter(|n| !old_classes.contains(*n)).cloned().collect();
             crate::relocate::with_closure(&options.before, &libraries, &absent, &before_dir, "before")?
         }
         None => crate::relocate::directory(&options.before, &before_dir, "before")?,
@@ -1143,10 +1144,24 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let names = method.parameter_names(&class.pool);
     // A check over what a property check takes and the harness does not (a String[], a nullable String), or with
     // an assumption or lemmas, is made as a property of the pair of versions ([`crate::pairing`]).
-    if !crate::pairing::asked(options, &method, &names) && !(options.observed_initializers.is_empty() && options.requested_models.is_empty()) {
+    let paired = crate::pairing::asked(options, &method, &names);
+    let versions = crate::relocate::Previous {
+        prefix: "before".into(),
+        relocated,
+        classes: old_classes,
+        shared: options.before_classpath.is_none(),
+        classpath: std::iter::once(options.before.clone()).chain(options.before_entries().iter().cloned()).collect(),
+        calls_as_one_function: options.shared_callees,
+        fresh_states: paired,
+    };
+    // Both definitions would have the same internal name in the generated program.
+    if let Some(name) = new_classes.iter().find(|n| versions.original(n).is_some()) {
+        return refuse(&mut out, line, format!("the application's {} collides with the relocated previous class of the same name", name.replace('/', ".")));
+    }
+    if !paired && !(options.observed_initializers.is_empty() && options.requested_models.is_empty()) {
         return refuse(&mut out, line, "--observed-initializer and --model are for a regression check made as a property of the pair of versions (one with --assume or --lemmas, a String[] parameter or a nullable String), which this is not".to_string());
     }
-    if crate::pairing::asked(options, &method, &names) {
+    if paired {
         let previous_class = before_cp.application(&class_internal)?;
         let previous = previous_class.as_ref().and_then(|c| crate::verifier::select_method(c, &options.target).ok().cloned());
         if !options.selected_observations.is_empty() && (!crate::pairing::array_roots::closed(&class, &method)
@@ -1157,20 +1172,11 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         if let Some(problem) = crate::pairing::refusal(options, &method, previous.as_ref(), own_checker) {
             return refuse(&mut out, line, problem);
         }
-        // The previous version as the pair's program holds it: its classes copied, its class path whole.
-        let previous = crate::relocate::Previous {
-            prefix: "before".to_string(),
-            relocated: relocated.clone(),
-            classes: before_cp.application_class_names()?.into_iter().collect(),
-            shared: options.before_classpath.is_none(),
-            classpath: std::iter::once(options.before.clone()).chain(options.before_entries().iter().cloned()).collect(),
-            calls_as_one_function: options.shared_callees,
-        };
         // An initializer to observe is observed in each version that has the class.
         let mut observed = (Vec::new(), Vec::new());
         for class in &options.observed_initializers {
             let internal = class.replace('.', "/");
-            let (now, before) = (after_cp.application(&internal)?.is_some(), previous.relocated.contains(&internal));
+            let (now, before) = (after_cp.application(&internal)?.is_some(), versions.relocated.contains(&internal));
             if !now && !before {
                 return refuse(&mut out, line, format!("--observed-initializer {class}: neither version's class path has the class (the previous version's as far as the check holds a copy of it)"));
             }
@@ -1181,7 +1187,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 observed.1.push(class.clone());
             }
         }
-        let paired = match crate::pairing::run(options, &work, &before_dir, &class, &method, &names, previous, observed)? {
+        let paired = match crate::pairing::run(options, &work, &before_dir, &class, &method, &names, versions, observed)? {
             Ok(paired) => paired,
             Err(problem) => return refuse(&mut out, line, problem),
         };
@@ -1215,6 +1221,8 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let stated = paired.target_statement.or_else(|| p.stated.clone());
         return Ok(Outcome { verdict: p.verdict, target: options.target.clone(), domain, counterexample: paired.target_witness, proof: p.proof.clone(), problem: p.problem.clone(), statement: Some(paired.statement), findings: p.findings.clone(), output: out, work, shared: Vec::new(), helpers: Vec::new(), previous: None, relation: None, vacuous: p.vacuous.clone(), search: p.search.clone(), replay, stated, advice: None, reuse: None, pair: Some(Box::new(p)) });
     }
+    let versions = std::sync::Arc::new(versions);
+    let relocated = &versions.relocated;
     // A record whose components are primitive stands in for a value of it: the receiver, a parameter or the result.
     // Any other receiver is an object made by its constructor, as a parameter is (O1 of
     // `llm-dlc/loops/application-core-objects.md`), named `this`.
@@ -1700,7 +1708,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         return refuse(&mut out, line, format!("{method_name} takes a list and returns a {}, which this check doesn't follow into its fields: whether the result is one of the list's elements is an identity it couldn't observe, so it is not compared alone", descriptor.ret.java_name()));
     }
     layout.result_equations = result_equations;
-    layout.checked = declared_checked(options, &relocated, [(&before_class, &before_method), (&class, &method)])?;
+    layout.checked = declared_checked(options, relocated, [(&before_class, &before_method), (&class, &method)])?;
     // The plan's setup sequence (O3): the same calls in both versions, on the same symbolic arguments.
     if let Some(p) = plan.filter(|p| !p.after.setup.is_empty()) {
         let calls = match (crate::construction::setup_calls(&after_cp, &p.after, &class_internal), crate::construction::setup_calls(&before_cp, &p.before, &before_class_internal)) {
@@ -1938,6 +1946,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         shared: &shared_names,
         harness: &harness_dir,
         before_classes: &before_dir,
+        versions: versions.clone(),
         shown: crate::proof_cache::Shown { domain: &domain, statement: &statement, work: &work, previous: previous_display.as_deref(), uri: uri.as_deref(), line },
     }
     .lookup(&mut out)?;
@@ -1983,6 +1992,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let mut stages = options.jbmc_staging.stages(&crate::deadline::entry_parameters(&harness.bytes, harness::METHOD)?);
     let mut fallback = None;
     let mut gap_setting = crate::bmc::gaps::GapSetting::from(options.gaps);
+    gap_setting.previous = Some(versions.clone());
     let mut entries: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
     // Under the tool's own checker, a changed helper proved equivalent is its new version in both: the previous
     // version's calls of it are redirected there ([`shared::substitute_directory`]).
@@ -2009,6 +2019,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let scanned = if options.gaps == crate::bmc::gaps::GapMode::Advised { Some(crate::advice::scan_harness(&entries, options.models, harness::CLASS, harness::METHOD)?) } else { None };
         let (setting, loaded, notes) = crate::gap_contracts::setting(options.gaps, &contract_options, scanned.as_ref().map(|(_, s)| s), &entries, options.models, &work)?;
         gap_setting = setting;
+        gap_setting.previous = Some(versions.clone());
         out.push_str(&notes);
         if options.gaps == crate::bmc::gaps::GapMode::Advised {
             let (cp, scan) = scanned.as_ref().expect("scanned under advised");
@@ -2069,6 +2080,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let prepared = crate::jbmc_contracts::prepare(&pre, &contract_options, claim.clone(), &entries, options.models, &work)?;
         out.push_str(&prepared.notes);
         gap_setting = prepared.setting;
+        gap_setting.previous = Some(versions.clone());
         if let Some(advice) = prepared.advice {
             return stop_with(&mut out, advice);
         }
@@ -2116,7 +2128,12 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         Ok(last)
     };
-    let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
+    let replay_config = |cp: ClassPath| cp.with_models(options.models).with_previous(Some(versions.clone()));
+    let harness_classpath = || {
+        let entries = [harness_dir.as_path(), options.after.as_path(), before_dir.as_path()];
+        witness::classpath(entries.into_iter().chain(options.classpath.iter().map(PathBuf::as_path))).map(replay_config)
+    };
+    let replay_cp = witness::classpath([options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path))).map(replay_config)?;
     let before_owner = format!("before/{before_class_internal}");
     // The previous version's method as relocated: its records are under before/ too.
     let before_relocated = match &previous {
@@ -2153,7 +2170,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     let iff_pairs: Vec<(String, String)> = identity_pairs.iter().filter(|(x, y)| layout.identity_relation(x, y).is_none()).cloned().collect();
     // A relation that reads the results' objects is evaluated by the harness itself, run in the interpreter.
     let relation_cp = match &harness.relation {
-        Some(r) if r.expr.reads_objects() => Some(witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models)),
+        Some(r) if r.expr.reads_objects() => Some(harness_classpath()?),
         _ => None,
     };
     let replay_on = |replay_cp: &ClassPath, arguments: &[Argument]| -> Replays {
@@ -2333,7 +2350,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let blamed = match answers {
                     Some(answers) => shared::spurious(&shared_after_cp, &subset, &answers, &work.join(format!("shared-replay-{round}")), &mut |entry| {
                         let entries = [entry, redirected.as_path(), options.after.as_path(), before_dir.as_path()];
-                        witness::classpath(entries.into_iter().chain(options.classpath.iter().map(PathBuf::as_path))).map(|c| !replay_on(&c.with_models(options.models), &found).agree).unwrap_or(true)
+                        witness::classpath(entries.into_iter().chain(options.classpath.iter().map(PathBuf::as_path))).map(|c| !replay_on(&replay_config(c), &found).agree).unwrap_or(true)
                     })?,
                     None => None,
                 };
@@ -2373,7 +2390,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         let run = JbmcRun { timeout: Duration::from_secs(options.timeout_seconds), log: work.join("jbmc-confirm.log"), ..base(&classpath, "") };
         let rewrite: Vec<PathBuf> = classpath.iter().filter(|p| **p != jdk_dir && **p != models_dir).cloned().collect();
         let contracts = ConfirmContracts { setting: &gap_setting, rewrite, cp: &contract_cp, dir: work.join("jbmc-confirm-contracts") };
-        let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
+        let harness_cp = harness_classpath()?;
         let reproduces = |r: &JbmcResult| -> Result<Option<bool>, Error> { Ok(witness::fails_in_harness(&harness_cp, harness::CLASS, &flat_types, &r.arguments(&flat_types)?)) };
         if strings.is_some() {
             let reason = "a String parameter or a String inside an object: JBMC's Strings are its own model, not the own checker's bounded one, and its witness's String isn't read, so it wouldn't check the same claim".to_string();
@@ -2421,7 +2438,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
     if let Some(refuting) = &refuting {
         let found = refuting.arguments(&flat_types)?;
         let replays = replay_both(&found);
-        let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?.with_models(options.models);
+        let harness_cp = harness_classpath()?;
         let reproduced = witness::fails_in_harness(&harness_cp, harness::CLASS, &flat_types, &found);
         let (mut rendered, values) = witness::call_in(&method_name, &layout, &found);
         if harness.before_args.is_some() {
@@ -2610,7 +2627,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let mut arguments = found.clone();
             // The interpreter is the shrinker's oracle, and it cannot run a witness only a JVM could.
             if options.shrink && on_jvm.is_none() {
-                let harness_cp = witness::classpath([harness_dir.as_path(), options.after.as_path(), before_dir.as_path()].into_iter().chain(options.classpath.iter().map(PathBuf::as_path)))?;
+                let harness_cp = harness_classpath()?;
                 // A candidate is the same failure where its replay differs in the same observations as the input
                 // found's (O2): never a witness of another difference, a narrower constructor's say.
                 let same = |candidate: &[Argument]| {

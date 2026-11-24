@@ -1,0 +1,22 @@
+// Setup probe, not part of the corpus: the corpus Verifier's API with its nondeterminism replaced by a typed
+// choice stream from -Dsv.choices (comma separated: iN = int N, s = empty String, s:TEXT = String TEXT).
+package org.sosy_lab.sv_benchmarks;
+
+public final class Verifier {
+  private static final String[] CHOICES = System.getProperty("sv.choices", "").isEmpty()
+      ? new String[0] : System.getProperty("sv.choices").split(",", -1);
+  private static int next;
+  private static String take(char type) {
+    if (next >= CHOICES.length) throw new IllegalStateException("choice stream exhausted at " + next);
+    String t = CHOICES[next++];
+    if (t.isEmpty() || t.charAt(0) != type) throw new IllegalStateException("choice " + (next - 1) + " is " + t + ", wanted " + type);
+    return t.substring(1);
+  }
+  public static void assume(boolean condition) {
+    if (!condition) { System.out.println("ASSUME-VIOLATED"); Runtime.getRuntime().halt(1); }
+  }
+  public static int nondetInt() { return Integer.parseInt(take('i')); }
+  public static String nondetString() { String s = take('s'); return s.startsWith(":") ? s.substring(1) : s; }
+  public static boolean nondetBoolean() { throw new UnsupportedOperationException(); }
+  public static <T> T nondetObject(Class<T> type, ObjectFactory<T> factory) { return factory.createObject(); }
+}

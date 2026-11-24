@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-093347-compare-generated-roots-with-explicit-al",
+  "title": "Compare generated roots with explicit aliases cycles and concrete overrides",
+  "description": "Run directly supplied multidimensional arrays, two array roots, a scalar alias, a polymorphic component and a recursive node on JVM and all three checker profiles. Keep default independent trees distinct from an explicit native may-alias domain and check the named false repetition detector against a two-node cycle.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "java:heap-topology"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/extended/SuppliedRoots.java"
+    ]
+  },
+  "expected": "Retain input-domain restrictions, the original shared and cyclic JVM controls, and reader-specific refusals without credit for a narrower tree.",
+  "submitted": {
+    "at": "2026-11-24T09:33:47+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 24,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "12m",
+    "timeout": "52m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified H10-H14-supplied H02-false",
+      "cwd": "."
+    },
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/heap_alias.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/H10-H14-supplied",
+    "verification/beyond-jbmc/qualified/H02-false",
+    "verification/beyond-jbmc/qualified/H11-may-alias"
+  ]
+}

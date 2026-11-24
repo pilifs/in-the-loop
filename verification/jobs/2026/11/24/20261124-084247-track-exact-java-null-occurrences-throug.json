@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084247-track-exact-java-null-occurrences-throug",
+  "title": "Track exact Java null occurrences through repair, propagation and rethrow",
+  "description": "Pin class bytes and original bytecode offsets. Compare the separate stock exception-check and propagation profiles with strict native occurrence/escape investigations, bound to all original top frames and exception identity.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:47+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 13,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "22m",
+    "timeout": "88m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/exception_sites.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/E-sites"
+  ]
+}

@@ -219,9 +219,15 @@ impl Parser<'_> {
 
 /// A field type, from its generic signature or its descriptor, as a tree.
 pub fn parse_type(signature: &str) -> Option<Sig> {
+    let (ty, suffix) = parse_type_prefix(signature)?;
+    suffix.is_empty().then_some(ty)
+}
+
+/// One type at the front of a signature with the remaining bytes for its caller to check.
+pub(crate) fn parse_type_prefix(signature: &str) -> Option<(Sig, &str)> {
     let mut p = Parser { s: signature.as_bytes(), pos: 0 };
-    let t = p.sig()?;
-    (p.pos == signature.len()).then_some(t)
+    let ty = p.sig()?;
+    Some((ty, &signature[p.pos..]))
 }
 
 /// The parameter types and the return type of a method signature, rendered with simple names, or `None` when the
@@ -282,6 +288,9 @@ mod tests {
         assert_eq!(parse_type("Lnet/example/Outer<TT;>.Inner<+Ljava/lang/Number;>;").unwrap().at(&[(1, 0), (3, 1), (2, 0)]).and_then(Sig::class_name), Some("java/lang/Number"));
         assert_eq!(parse_type("I"), Some(Sig::Primitive('I')));
         assert_eq!(parse_type("Ljava/lang/String;I"), None);
+        let (wildcard, suffix) = parse_type_prefix("Ljava/lang/Enum<*>;Ljava/lang/String;").unwrap();
+        assert_eq!(wildcard.at(&[(3, 0)]), Some(&Sig::Wildcard(None)));
+        assert_eq!(suffix, "Ljava/lang/String;");
     }
 
     #[test]

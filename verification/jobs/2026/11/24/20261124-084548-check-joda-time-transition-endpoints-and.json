@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084548-check-joda-time-transition-endpoints-and",
+  "title": "Check Joda-Time transition endpoints and cross-release resource reuse",
+  "description": "The 247 shared class bytes are identical while provider data changes. Check the precise UTC 2023 interval on both releases and the preselected unaffected zone, cold, warmed with the old cache, and clean. Retain the provider map digest, exact relevant entries, complete transition scan, and matched bounded comparisons.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/zone-choice.json"
+    ]
+  },
+  "expected": "Retain all endpoint controls and cache decisions; detect any wrong proof on Mexico City by physical replay, and distinguish the identical control resource from the changed global provider map.",
+  "submitted": {
+    "at": "2026-11-24T08:45:48+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 14,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "18m",
+    "timeout": "78m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/zone_reuse.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/C06-C07"
+  ]
+}

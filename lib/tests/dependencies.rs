@@ -60,6 +60,89 @@ fn regression(name: &str, before: &Path, after: &Path, target: &str) -> equivale
     equivalence::run(&options(name, before, after, target)).unwrap()
 }
 
+#[test]
+fn ordinary_equivalence_observes_original_binary_names_in_proofs_and_replayed_witnesses() {
+    jvmcontract::tool_tier!();
+    let build = |label: &str, body: &str| {
+        let source = format!("package before.library; public class Named {{ static class Token {{}} public static String observe(boolean array) {{ return {body}; }} }}");
+        compile(label, &[("before/library/Named.java", source)])
+    };
+    let original = build("reflect-name-original", "array ? Token[][].class.getName() : new Named().getClass().getName()");
+    let equal = build("reflect-name-equal", r#"array ? "[[Lbefore.library.Named$Token;" : "before.library.Named""#);
+    let changed = build("reflect-name-changed", r#"array ? "[[Lbefore.before.library.Named$Token;" : "before.before.library.Named""#);
+    let target = "before.library.Named#observe";
+    let proved = regression("reflect-name-equal-run", &original, &equal, target);
+    assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
+
+    let mut candidate = options("reflect-name-changed-run", &original, &changed, target);
+    candidate.cache = Some(tmp("reflect-name-original/cache"));
+    for warm in [false, true] {
+        let result = equivalence::run(&candidate).unwrap();
+        assert_eq!(result.verdict, Verdict::Violation, "{}", result.output);
+        assert_eq!(result.reuse.is_some(), warm, "{}", result.output);
+        assert!(result.replay.as_ref().is_some_and(|r| r.reproduced), "{}", result.output);
+        let w = result.counterexample.unwrap();
+        assert!(w.before.contains("before.library.Named") && !w.before.contains("before.before."), "{}", w.before);
+        assert!(w.after.contains("before.before.library.Named"), "{}", w.after);
+        candidate.work = Some(tmp("reflect-name-warm-run"));
+    }
+
+    let name = "before/before/library/Named";
+    let path = changed.join(format!("{name}.class"));
+    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+    std::fs::write(path, jvmcontract::classfile::writer::ClassWriter::new(name).to_bytes()).unwrap();
+    let ambiguous = regression("reflect-name-collision", &original, &changed, target);
+    assert_eq!(ambiguous.verdict, Verdict::Unverifiable, "{}", ambiguous.output);
+    assert!(ambiguous.problem.unwrap().contains("collides with the relocated previous class"));
+}
+
+#[test]
+fn a_cached_class_lookup_cannot_hide_a_newly_available_class() {
+    jvmcontract::tool_tier!();
+    let caller = r#"package lookup; public class Probe {
+        public static boolean present() {
+            try { Class.forName("lookup.Optional"); return true; }
+            catch (ClassNotFoundException missing) { return false; }
+        }
+        public static void main(String[] args) { System.out.println(present()); }
+    }"#;
+    let before = compile("dynamic-class-lookup", &[("lookup/Probe.java", caller.into())]);
+    let after = tmp("dynamic-class-lookup/after");
+    std::fs::create_dir_all(after.join("lookup")).unwrap();
+    std::fs::copy(before.join("lookup/Probe.class"), after.join("lookup/Probe.class")).unwrap();
+    let mut o = options("dynamic-class-absent", &before, &after, "lookup.Probe#present");
+    o.cache = Some(tmp("dynamic-class-lookup/cache"));
+    let jar = tmp("dynamic-class-lookup/resources.jar");
+    let bundle = |text: &str| {
+        let dir = tmp("dynamic-class-lookup");
+        std::fs::write(dir.join("provider.properties"), text).unwrap();
+        assert!(Command::new("jar").args(["--create", "--file"]).arg(&jar).arg("-C").arg(&dir)
+            .arg("provider.properties").status().unwrap().success());
+    };
+    bundle("value=1");
+    o.classpath.push(jar.clone());
+    let absent = equivalence::run(&o).unwrap();
+    assert_eq!(absent.verdict, Verdict::Verified, "{}", absent.output);
+    let unchanged = equivalence::run(&o).unwrap();
+    assert!(matches!(unchanged.reuse, Some(Reuse::Exact { .. })), "{}", unchanged.output);
+    bundle("value=2");
+    let resource_edit = equivalence::run(&o).unwrap();
+    assert_eq!(resource_edit.verdict, Verdict::Verified, "{}", resource_edit.output);
+    assert!(resource_edit.reuse.is_none(), "{}", resource_edit.output);
+    std::fs::write(after.join("lookup/Optional.class"), jvmcontract::classfile::writer::ClassWriter::new("lookup/Optional").to_bytes()).unwrap();
+    o.work = Some(tmp("dynamic-class-lookup/after-addition"));
+    let added = equivalence::run(&o).unwrap();
+    assert_eq!(added.verdict, Verdict::Violation, "{}", added.output);
+    assert!(added.reuse.is_none(), "{}", added.output);
+    let witness = added.counterexample.unwrap();
+    for (build, expected, report) in [(&before, "false", witness.before), (&after, "true", witness.after)] {
+        let replay = Command::new("java").args(["-XX:-UsePerfData", "-cp"]).arg(build).arg("lookup.Probe").output().unwrap();
+        assert!(replay.status.success());
+        assert_eq!(String::from_utf8(replay.stdout).unwrap().trim(), expected);
+        assert_eq!(report, expected);
+    }
+}
+
 fn prove(name: &str, classes: &Path, target: &str, assume: Option<&str>, assert: &str) -> property::Outcome {
     let mut options = property::Options::new(&[classes.to_path_buf()], target);
     options.engine = jvmcontract::Engine::Native;

@@ -1,0 +1,42 @@
+{
+ "question": "How does the public parsing buffer map the offsets around LF, CRLF and an empty line to line and column?",
+ "control": "Extracting the second and third lines returns their contents without either line terminator.",
+ "domain": "All thirteen offsets 0 through 12 in the upstream multiline input. Encode an observed position as 100 × line + column.",
+ "bounds": [
+  0,
+  12
+ ],
+ "seeds": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12
+ ],
+ "entries": [
+  "org.parboiled.buffers.DefaultInputBuffer#getPosition",
+  "org.parboiled.buffers.DefaultInputBuffer#extractLine"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "parboiled-1.4.1/parboiled-core/src/test/java/org/parboiled/buffers/DefaultInputBufferTest.java",
+   "text": "assertEquals(buf.getPosition(8), new Position(2,4))"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "new int[]{101,102,103,104,105,201,202,203,204,301,401,402,403}[n]",
+  "afterExpression": "new int[]{101,102,103,104,105,201,202,203,204,301,401,402,403}[n]",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

@@ -1,0 +1,31 @@
+{
+ "question": "Does Auto Common recover a default annotation member and distinguish it from an explicitly supplied member of the same type?",
+ "control": "The named value accessor returns the exact String stored in each compiler annotation mirror.",
+ "domain": "Two javac language-model inputs, one omitted and one explicit String member. The compiler runs with annotation processing disabled.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "com.google.auto.common.AnnotationMirrors#getAnnotationValuesWithDefaults",
+  "com.google.auto.common.AnnotationMirrors#getAnnotationValue"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "auto-auto-common-1.1.2/common/src/test/java/com/google/auto/common/AnnotationMirrorsTest.java",
+   "text": "AnnotationMirrors.getAnnotationValuesWithDefaults(annotationOn(StringyUnset.class))"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "n+1",
+  "afterExpression": "n+1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

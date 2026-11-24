@@ -1,0 +1,33 @@
+diff --git a/lib/tests/conformance/conformance/Conformance.java b/lib/tests/conformance/conformance/Conformance.java
+index 9ef9809f76..7f6f9e6075 100644
+--- a/lib/tests/conformance/conformance/Conformance.java
++++ b/lib/tests/conformance/conformance/Conformance.java
+@@ -491,28 +491,6 @@ public class Conformance {
+             return -1;
+         }
+     }
+-
+-    // A parameter of an interface type: a property check gives it an implementation of the accessors the method
+-    // calls (jvmcontract::given), a domain only the tool's own checker is given.
+-    public interface Source {
+-        int size();
+-
+-        String name();
+-    }
+-
+-    public static int sourceSize(Source s) { return s.size(); }
+-
+-    public static int sourceNameLength(Source s) { return s.name().length(); }
+-
+-    // A loop over what an accessor answers: comparing two runs of it takes solving, so a check given no time has
+-    // no verdict.
+-    public static int sourceTriangle(Source s) {
+-        int n = 0;
+-        for (int i = 0; i < (s.size() & 7); i++) {
+-            n += i;
+-        }
+-        return n;
+-    }
+ }
+ 
+ // A top-level enum: javac switches over it through a $SwitchMap class (Conformance$1), as it does for an enum of

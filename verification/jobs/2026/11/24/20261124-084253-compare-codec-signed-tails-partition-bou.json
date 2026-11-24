@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084253-compare-codec-signed-tails-partition-bou",
+  "title": "Compare Codec signed tails, partition boundaries and reset semantics",
+  "description": "Distinguish old tail sign extension and standard x86, one-shot versus two arbitrary chunks, repeated end and three chunks after a partial reset. Keep input frame and seed in scope.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:53+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 11,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "14m",
+    "timeout": "56m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified C02 C03-C04",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/C02",
+    "verification/beyond-jbmc/qualified/C03-C04"
+  ]
+}

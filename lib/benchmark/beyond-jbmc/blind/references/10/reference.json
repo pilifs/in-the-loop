@@ -1,0 +1,31 @@
+{
+ "question": "Does HtmlCleaner keep an inline SVG and its circle inside the original HTML paragraph?",
+ "control": "An ordinary inline span remains a child of the paragraph with the same text.",
+ "domain": "A valid HTML paragraph containing an inline SVG circle with radius 1 or 2.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "org.htmlcleaner.HtmlCleaner#clean",
+  "org.htmlcleaner.TagNode#findElementByName"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "src/test/java/org/htmlcleaner/SVGTest.java",
+   "text": "public void svgTreatedAsPhrasing()"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "0",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

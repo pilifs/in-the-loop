@@ -32,6 +32,22 @@ fn text_of(s: &JStr, what: &str) -> Exec<String> {
     s.text().ok_or_else(|| Fault::Unsupported(format!("{what} of a String with an isolated surrogate ({})", s.display())))
 }
 
+/// Class.getName takes internal names for objects and JVM descriptors for arrays.
+fn class_name(m: &Machine, ty: &Type) -> String {
+    match ty {
+        Type::Object(name) => m.cp.binary_name(name),
+        Type::Array(_) => m.cp.binary_name(&ty.descriptor()),
+        primitive => primitive.java_name(),
+    }
+}
+
+fn type_name(m: &Machine, ty: &Type) -> String {
+    match ty {
+        Type::Array(element) => format!("{}[]", type_name(m, element)),
+        other => class_name(m, other),
+    }
+}
+
 /// Whether a code point is whitespace as `Character.isWhitespace` says: a space, line or paragraph separator other
 /// than the non-breaking ones (U+00A0, U+2007, U+202F), or one of the controls U+0009–U+000D and U+001C–U+001F.
 fn java_whitespace(c: u32) -> bool {
@@ -240,18 +256,18 @@ fn native_to_string(m: &mut Machine, r: Ref) -> Exec<JStr> {
         Native::Class(t) => match &t {
             Type::Object(name) => {
                 let interface = m.cp.application(name).ok().flatten().is_some_and(|c| c.is_interface());
-                format!("{} {}", if interface { "interface" } else { "class" }, name.replace('/', "."))
+                format!("{} {}", if interface { "interface" } else { "class" }, m.cp.binary_name(name))
             }
-            other => format!("class {}", other.class_get_name()),
+            other => format!("class {}", class_name(m, other)),
         }
         .into(),
         Native::Throwable { class, message, .. } => match message.and_then(|s| m.heap.string(s).cloned()) {
             Some(msg) => {
-                let mut out = JStr::from(format!("{}: ", class.replace('/', ".")));
+                let mut out = JStr::from(format!("{}: ", m.cp.binary_name(&class)));
                 out.push(&msg);
                 out
             }
-            None => class.replace('/', ".").into(),
+            None => m.cp.binary_name(&class).into(),
         },
         Native::Optional(None) => "Optional.empty".into(),
         Native::Optional(Some(v)) => {
@@ -437,7 +453,7 @@ fn native_hash(m: &mut Machine, r: Ref) -> Exec<i32> {
             }
             h
         }
-        Native::Class(t) => string_hash(&t.class_get_name()),
+        Native::Class(t) => string_hash(&class_name(m, &t)),
         Native::Optional(None) => 0,
         Native::Optional(Some(v)) => hash_code(m, v)?,
         other => return unsupported(format!("{}.hashCode is identity-based", other.class_name().replace('/', "."))),
@@ -745,11 +761,11 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
             "toString" => {
                 let text = match throwable_message(m, r) {
                     Some(msg) => {
-                        let mut out = JStr::from(format!("{}: ", class.replace('/', ".")));
+                        let mut out = JStr::from(format!("{}: ", m.cp.binary_name(&class)));
                         out.push(&msg);
                         out
                     }
-                    None => class.replace('/', ".").into(),
+                    None => m.cp.binary_name(&class).into(),
                 };
                 Ok(Some(m.new_string(text)))
             }
@@ -883,6 +899,21 @@ fn char_sequence(m: &mut Machine, v: Value) -> Exec<JStr> {
 fn string_arg(m: &mut Machine, v: Value) -> Exec<JStr> {
     let Some(r) = v.as_ref() else { return Err(m.npe()) };
     m.heap.string(r).cloned().ok_or_else(|| Fault::Unsupported("expected a String".into()))
+}
+
+/// One-argument Class.forName from an application class, replayed with its release's loader.
+pub(super) fn class_for_name(m: &mut Machine, caller: &str, arg: Value) -> Exec<Option<Value>> {
+    let binary = text_of(&string_arg(m, arg)?, "Class.forName")?;
+    let (held, found) = m.cp.named_class(caller, &binary, m.cp.previous.as_deref())
+        .ok_or_else(|| Fault::Unsupported(format!("Class.forName({binary}) requires the original JVM loader")))?;
+    if !found {
+        return Err(m.throw("java/lang/ClassNotFoundException", Some(&binary)));
+    }
+    if !m.cp.is_application(&held) || !m.cp.loads(&held) {
+        return unsupported(format!("Class.forName({binary}) requires its defining JVM loader"));
+    }
+    m.ensure_initialized(&held)?;
+    Ok(Some(m.class_object(&Type::object(&held))))
 }
 
 fn immutable(m: &mut Machine) -> Fault {
@@ -1067,7 +1098,8 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 };
                 m.invoke(&cf, &method, vec![Value::Ref(r), args[0]])
             }
-            "getName" | "getTypeName" => Ok(Some(m.new_string(t.class_get_name()))),
+            "getTypeName" if matches!(t, Type::Array(_)) => Ok(Some(m.new_string(type_name(m, &t)))),
+            "getName" | "getTypeName" => Ok(Some(m.intern(&class_name(m, &t)))),
             "getSimpleName" => {
                 let simple = match &t {
                     Type::Object(n) => m.cp.application(n).ok().flatten().map(|c| c.simple_name()).unwrap_or_else(|| crate::classfile::simple_name_of(n)),
@@ -1075,7 +1107,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 };
                 Ok(Some(m.new_string(simple)))
             }
-            "getCanonicalName" => Ok(Some(m.new_string(t.class_get_name().replace('$', ".")))),
+            "getCanonicalName" => Ok(Some(m.new_string(type_name(m, &t).replace('$', ".")))),
             "getComponentType" => Ok(Some(match &t { Type::Array(element) => m.class_object(element), _ => Value::Null })),
             "getClassLoader" if !t.is_reference() => Ok(Some(Value::Null)),
             "isAssignableFrom" => {
@@ -2706,16 +2738,45 @@ fn java_min_f64(x: f64, y: f64) -> f64 {
 }
 
 /// `NumberFormatException` for the String `s`, quoted in its message as it is.
-fn number_format(m: &mut Machine, s: Option<&JStr>, radix: u32) -> Fault {
-    let Some(s) = s else { return m.throw("java/lang/NumberFormatException", Some("Cannot parse null string: null")) };
+fn number_format(m: &mut Machine, s: &JStr, radix: u32) -> Fault {
     let mut message = JStr::from("For input string: \"");
     message.push(s);
     message.push_str(if radix == 10 { "\"".to_string() } else { format!("\" under radix {radix}") }.as_str());
     m.throw_units("java/lang/NumberFormatException", message)
 }
 
-fn parse_integral(m: &mut Machine, v: Value, radix: u32, min: i64, max: i64) -> Exec<i64> {
-    let Some(s) = m.units_of(v) else { return Err(number_format(m, None, radix)) };
+/// Replay a rejected input through its original parser. The exception text and the identity
+/// of a literal message are observable, and the null and syntax diagnostics differ across JDKs.
+fn rejected_integral(m: &mut Machine, owner: &str, v: Value, radix: i32) -> Exec<i64> {
+    let (method, descriptor) = match owner {
+        "java/lang/Byte" => ("parseByte", "(Ljava/lang/String;I)B"),
+        "java/lang/Short" => ("parseShort", "(Ljava/lang/String;I)S"),
+        "java/lang/Long" => ("parseLong", "(Ljava/lang/String;I)J"),
+        _ => ("parseInt", "(Ljava/lang/String;I)I"),
+    };
+    if let Some((class, parser)) = m.cp.bootstrap_method(owner, method, descriptor) {
+        return match m.invoke(&class, &parser, vec![v, Value::Int(radix)])? {
+            Some(Value::Int(n)) => Ok(i64::from(n)),
+            Some(Value::Long(n)) => Ok(n),
+            _ => unsupported(format!("{owner}.{method} did not return an integer")),
+        };
+    }
+    if v == Value::Null {
+        let message = m.intern("Cannot parse null string");
+        return Err(m.throw_with("java/lang/NumberFormatException", message.as_ref()));
+    }
+    let Some(s) = m.units_of(v) else { return unsupported("a non-String passed to an integer parser") };
+    Err(number_format(m, &s, radix as u32))
+}
+
+fn parse_integral(m: &mut Machine, owner: &str, v: Value, radix: i32, min: i64, max: i64) -> Exec<i64> {
+    if v == Value::Null { return rejected_integral(m, owner, v, radix); }
+    let Some(s) = m.units_of(v) else { return unsupported("a non-String passed to an integer parser") };
+    if !(2..=36).contains(&radix) {
+        let limit = if radix < 2 { "less than Character.MIN_RADIX" } else { "greater than Character.MAX_RADIX" };
+        return Err(m.throw("java/lang/NumberFormatException", Some(&format!("radix {radix} {limit}"))));
+    }
+    let radix = radix as u32;
     // Java takes any Unicode digit (`Character.digit`), whose tables aren't modelled: a String with a code unit
     // outside ASCII is refused, not parsed as Rust's ASCII digits would parse it.
     if s.units().iter().any(|&u| u > 0x7F) {
@@ -2731,7 +2792,7 @@ fn parse_integral(m: &mut Machine, v: Value, radix: u32, min: i64, max: i64) -> 
     };
     match parsed {
         Some(v) if v >= min && v <= max => Ok(v),
-        _ => Err(number_format(m, Some(&s), radix)),
+        _ => rejected_integral(m, owner, v, radix as i32),
     }
 }
 
@@ -2745,14 +2806,14 @@ fn integral(m: &mut Machine, owner: &str, name: &str, descriptor: &str, a: &[Val
     let wrap = |v: i64| if is_long { Value::Long(v) } else { Value::Int(v as i32) };
     Ok(match name {
         "valueOf" if descriptor.starts_with("(Ljava/lang/String;") => {
-            let radix = if descriptor.contains("I)") { a[1].as_int() as u32 } else { 10 };
-            let v = parse_integral(m, a[0], radix, min, max)?;
+            let radix = if descriptor.contains("I)") { a[1].as_int() } else { 10 };
+            let v = parse_integral(m, owner, a[0], radix, min, max)?;
             box_value(m, owner, wrap(v))
         }
         "valueOf" => box_value(m, owner, a[0]),
         "parseInt" | "parseLong" | "parseShort" | "parseByte" => {
-            let radix = if descriptor.contains("I)") { a[1].as_int() as u32 } else { 10 };
-            wrap(parse_integral(m, a[0], radix, min, max)?)
+            let radix = if descriptor.contains("I)") { a[1].as_int() } else { 10 };
+            wrap(parse_integral(m, owner, a[0], radix, min, max)?)
         }
         "toString" if descriptor.ends_with("I)Ljava/lang/String;") && a.len() == 2 => {
             let radix = a[1].as_int() as u32;
@@ -2870,10 +2931,10 @@ fn floating(m: &mut Machine, owner: &str, name: &str, descriptor: &str, a: &[Val
                         _ if unsigned.starts_with("0x") || unsigned.starts_with("0X") => return unsupported("hexadecimal floating-point text"),
                         _ if unsigned.bytes().take_while(|b| b.is_ascii_digit() || *b == b'.').filter(|b| *b == b'.').count() > 1 =>
                             return Err(m.throw("java/lang/NumberFormatException", Some("multiple points"))),
-                        _ => super::value::decimal_float(&text, is_double).ok_or_else(|| number_format(m, Some(&units), 10))?,
+                        _ => super::value::decimal_float(&text, is_double).ok_or_else(|| number_format(m, &units, 10))?,
                     }
                 }
-                None => return Err(number_format(m, Some(&units), 10)),
+                None => return Err(number_format(m, &units, 10)),
             };
             if name == "valueOf" { box_value(m, owner, value) } else { value }
         }

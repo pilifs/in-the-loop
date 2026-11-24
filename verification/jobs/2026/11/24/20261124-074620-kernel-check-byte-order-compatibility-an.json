@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-074620-kernel-check-byte-order-compatibility-an",
+  "title": "Kernel-check byte-order compatibility and finite record composition",
+  "description": "Use the installed Lean 4.36 kernel to check both endian compositions, the exact palindrome condition and a bijection with 16 independent bits. Prove finite-record composition by induction conditional on a one-record suffix law. A disposable false mixed-identity theorem must be rejected. This checks the algebra and records its assumptions separately from the Java encoder and SAT evidence.",
+  "kind": "library",
+  "capabilities": [
+    "lean:bitvector",
+    "lean:induction"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/wire/WireRecords.lean"
+    ]
+  },
+  "expected": "Five printed kernel axiom inventories, no sorry and a rejected false-identity control.",
+  "submitted": {
+    "at": "2026-11-24T07:46:20+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 21,
+  "requires": [
+    "/home/filip/.elan/toolchains/leanprover--lean4---v4.36.0/bin/lean"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m",
+    "timeout": "10m"
+  },
+  "steps": [
+    {
+      "name": "Check and challenge the wire calculus",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_calculus.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/assurance/wire-calculus.json"
+  ]
+}

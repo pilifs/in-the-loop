@@ -1,0 +1,30 @@
+{
+ "question": "Does Jackson Jr serialize an enum constant with its own constant-specific class body as its JSON string name?",
+ "control": "An ordinary enum constant uses its JSON string name.",
+ "domain": "Both constants of one public enum. The observed outputs are the exact JSON string name or a one-field JSON object containing the enum's declaring class name. Other JSON and mapping exceptions have separate codes.",
+ "bounds": [
+  0,
+  1
+ ],
+ "seeds": [
+  0,
+  1
+ ],
+ "entries": [
+  "com.fasterxml.jackson.jr.ob.JSON#asString"
+ ],
+ "basis": [
+  {
+   "side": "after",
+   "member": "jackson-jr-jackson-jr-parent-2.14.0/jr-objects/src/main/java/com/fasterxml/jackson/jr/ob/impl/Types.java",
+   "text": "Detect whether a class is an enum or a subclass of an enum"
+  }
+ ],
+ "expected": {
+  "beforeExpression": "n==0?1:2",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "scopeNotes": "The original JVM identified the old object as {\"declaringClass\":\"ReferenceAPI$Item\"} during independent reference construction. The two-copy caller derives the defining class name from its own copy.",
+ "assistance": "curator-supplied public caller and expected results only in the matched lane"
+}

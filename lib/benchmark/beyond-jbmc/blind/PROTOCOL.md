@@ -1,0 +1,19 @@
+# Frozen unfamiliar-upgrade evaluation
+
+The draw is committed by the SHA-256 in `panel.sha256`. Keep all 16 pairs. Publish the selection seed, signed release indexes, membership, screening reasons, and coexistence of routine numeric adjacency and documented changes after the tool freeze. A distribution build defines each release in this evaluation. Record upstream attribution separately.
+
+## Reference and automatic question
+
+After the product freeze, select one original public caller question per pair from its upstream specification or executable tests, including at least one unchanged observation. Record the exact public entry, observation, admitted values, expected old and new behavior, independent source evidence and both ordered classpaths before opening any checker result. Preserve absence of a usable oracle or classpath in the original denominator. A secondary assisted experiment keeps its own result.
+
+Give the automatic operator only the ordered before and after binary classpaths. It runs in a networkless namespace with the JDK, checker and the declared operator source files. It cannot read the reference docket. The operator ranks common public declarations, literal links to changed resources, bytecode changes, observable results, executable public constructors or factories, and transitive impact. Its artifact-only policy selects up to four public operations across classes from at most 24 impact candidates. It commits their order to its output before attempting them. Keep the first-ranked operation and the four-attempt portfolio visible separately.
+
+Use a common thin public caller compiled against the earlier release. It returns the callee's result, observes mutation of primitive-array arguments, or follows a receiver operation with a public zero-argument observation. Attempt strict native equivalence on both definitions under isolated application classpaths. Run twelve predeclared input seeds on each original JVM and replay each reconstructible symbolic witness. The measured input and receiver domains and proof statement determine eligibility. A different caller or an incidental difference elsewhere receives no credit for the reference primary. Normal return witnesses entry for the bound static method or exact receiver. For an exceptional result, retain the original target frame when present. A factory that can return a subclass needs an exact dispatch witness before receiving original-method reach credit.
+
+The cold comparison starts with an empty per-claim cache, unwind 16, maximum symbolic array length 8, 120 checker seconds and a 150-second outer deadline. After all cold attempts finish, repeat those same invocations with the populated caches and report verdict agreement and resource use. Record solver CPU, wall time, peak resident memory and full-panel censoring. Host page cache state is uncontrolled.
+
+## Matched comparison
+
+Give strict native, integrated staged JBMC and stock JBMC 6.11.0 the same reference caller, public setup, observation and admitted domain. Keep release definitions isolated for cross-version questions. For the stock column qualify the named target assertion, a post-call false assertion and all unwinding checks. Reproduce claimed counterexamples on both original JVMs. A narrower universe, unresolved dependency, missing normal-return control or unreproduced witness retains its literal result and remains ineligible for matched credit. Use the union of qualified JBMC profiles for comparisons. A deterministic caller under a fixed launch is scoped to that configuration.
+
+Report discovery, physical reach on both versions and decision of the original primary per pair. Aggregate outcomes at the project and pair level. Report all changed and unchanged observations, open disagreements, assistance, bounds and costs. The historical 32 retain their registered caller, primary question, prior assistance and V3 checking settings.

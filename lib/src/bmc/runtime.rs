@@ -44,8 +44,8 @@
 //!   JDK has: whether the argument's class is the receiver's or below it, as `instanceof` decides it
 //!   ([`ClassPath::is_subtype`]). `NullPointerException` for a null argument. Of a primitive type's or an array's
 //!   `Class` it is the JDK call it was.
-//! - In a regression check made as a property of the pair of versions ([`crate::pairing`]) the previous version's
-//!   classes are copies under another package beside the new version's ([`crate::relocate::Previous`]). A copy's
+//! - Both regression harnesses hold copies of the previous version under another package beside the new
+//!   version's classes ([`crate::relocate::Previous`]). A copy's
 //!   `getName()` is its class's own name. A `Class.forName` called by a copy finds the copy of the class named,
 //!   and no class that only the new version's class path has (`ClassNotFoundException`); a class the previous
 //!   version's class path has and the check holds no copy of stays the JDK's call. Called by any other class,
@@ -836,8 +836,7 @@ impl Engine<'_> {
                     return None;
                 }
                 // A copy of a class of the previous version of a pair has that class's own name.
-                let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
-                let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
+                let units: Vec<u16> = crate::relocate::binary_name(&class, self.cp.previous.as_deref().or(self.previous.as_deref())).encode_utf16().collect();
                 self.literal(path, Literal::Str(units), STRING)
             }
             "getComponentType" => {
@@ -1161,38 +1160,20 @@ impl Engine<'_> {
                 };
                 let Some(named) = *named else { return Some(self.raise(path, "java/lang/NullPointerException")) };
                 let text = String::from_utf16(&self.constant_units(path, named)?).ok()?;
-                if text.starts_with('[') {
-                    return None;
-                }
-                // A binary name has no `/`: one that does names no class.
-                let mut internal = text.replace('.', "/");
-                let mut found = !text.contains('/') && self.cp.exists(&internal);
-                // In a pair of versions, the previous version's code finds its own classes, which the check holds
-                // as copies, and none that only the new version has; the new version's finds no copy.
-                if let Some(previous) = self.previous.clone() {
-                    use crate::relocate::Found;
-                    let caller = &path.frames.last().expect("a frame").class.name;
-                    if previous.original(caller).is_some() {
-                        match previous.find(&internal) {
-                            Found::Class(held) => {
-                                found = !text.contains('/') && self.cp.exists(&held);
-                                internal = held;
-                            }
-                            Found::NotCopied => return None,
-                            Found::Elsewhere => found = found && !self.cp.is_application(&internal),
-                        }
-                    } else if previous.original(&internal).is_some() {
-                        found = false;
-                    }
-                }
-                if found && (!self.cp.is_application(&internal) || !self.cp.loads(&internal)) {
+                let caller = &path.frames.last().expect("a frame").class.name;
+                let (internal, found) = self.cp.named_class(caller, &text, self.cp.previous.as_deref().or(self.previous.as_deref()))?;
+                // Released libraries check for VarHandle before selecting their byte-array implementation.
+                // The qualified bootstrap image supplies the class under the engine's stated JDK startup.
+                let bootstrap_view = internal == super::byte_views::HANDLE && self.gap_mode == GapMode::Strict
+                    && self.cp.byte_array_view_image();
+                if found && !bootstrap_view && (!self.cp.is_application(&internal) || !self.cp.loads(&internal)) {
                     return None;
                 }
                 self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
                 if !found {
                     return Some(self.raise(path, "java/lang/ClassNotFoundException"));
                 }
-                if initializes {
+                if initializes && !bootstrap_view {
                     // The call runs again once an initializer it starts has returned, its argument where it was.
                     self.push(path, Val::R(Some(named)));
                     if let Some(step) = self.initialise(path, &internal) {

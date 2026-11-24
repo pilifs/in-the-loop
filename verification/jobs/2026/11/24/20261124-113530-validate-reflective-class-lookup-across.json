@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-113530-validate-reflective-class-lookup-across",
+  "title": "Validate reflective class lookup across the released Codec pair",
+  "description": "Compare ordered original Plexus and Codec releases on the ordinary strict checker after binding reflective cache dependencies. Verify preserved names and the changed Codec superclass, then require a JVM-reproduced witness for lookup of the incremental x86 class introduced in Codec 1.14. Run every Boolean caller cold and warm and preserve the earlier six measurements.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {},
+  "expected": "Eight native verdicts agree with every original Boolean outcome, and every reported changed input reproduces with exact before and after strings.",
+  "submitted": {
+    "at": "2026-11-24T11:35:30+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "12m",
+    "notes": "The first six comparisons in job 20261124-110402-verify-original-class-names-on-plexus-an took 2.2 seconds of measured execution."
+  },
+  "steps": [
+    {
+      "name": "Replay four public comparisons on both original JVMs and native",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/identity_followup.py --output verification/beyond-jbmc/followup/lookup-and-names.json.gz",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/followup/lookup-and-names.json.gz"
+  ]
+}

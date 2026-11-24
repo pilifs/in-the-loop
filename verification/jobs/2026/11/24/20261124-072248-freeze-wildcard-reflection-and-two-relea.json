@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-072248-freeze-wildcard-reflection-and-two-relea",
+  "title": "Freeze wildcard reflection and two released Spring public paths",
+  "description": "Check the original InterfaceShape predicate, its inverse and defensive copies of nested argument and wildcard bound arrays. Run the public Spring GenericTypeResolver and ResolvableType paths on identical caller bytes across 6.1.14 and 6.2.0, including String, Integer and back to String, the method-return preservation control, and cache clearing. Record packaged stock targets and post-call controls and actual JVM replays.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvm:generic-signatures",
+    "jbmc:standalone"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/reflection"
+    ]
+  },
+  "expected": "Thirteen public observation rows with reachable ordinary JVM controls and both literal comparator statuses, including wrong or inconclusive answers.",
+  "submitted": {
+    "at": "2026-11-24T07:22:48+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "9m",
+    "timeout": "50m"
+  },
+  "steps": [
+    {
+      "name": "Original and released metadata",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py opening S01 S02-S09-old S02-S09-new",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/opening/S01",
+    "verification/beyond-jbmc/opening/S02-S09-old",
+    "verification/beyond-jbmc/opening/S02-S09-new"
+  ]
+}
