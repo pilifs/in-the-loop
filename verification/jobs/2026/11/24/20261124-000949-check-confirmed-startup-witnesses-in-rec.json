@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-000949-check-confirmed-startup-witnesses-in-rec",
+  "title": "Check confirmed startup witnesses in receiver groups 01 03 06",
+  "description": "Recheck the exact historical overloads and finite callers with the final checker. Give ordinary public callers the optional startup counterexample search and require the default JVM to reproduce every candidate before it can change a verdict. Compare against the same commits, digests, selectors, bounds and physical receiver evidence.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvmcontract:regress"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T00:09:49+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Check original callers with independently confirmed startup search",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py --search-startup-witness 01 03 06",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/transfer/final-cohort/01",
+    "verification/receiver-discovery/transfer/final-cohort/03",
+    "verification/receiver-discovery/transfer/final-cohort/06"
+  ]
+}

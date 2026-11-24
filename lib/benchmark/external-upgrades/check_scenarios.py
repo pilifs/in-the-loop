@@ -23,6 +23,7 @@ def main():
     ap.add_argument("--variant", choices=("operational",), help="run a declared additional observation for the original case")
     ap.add_argument("--output", required=True, type=Path)
     ap.add_argument("--native-caller", type=Path, help="also check each finite original caller natively and inspect its JVM receiver")
+    ap.add_argument("--search-startup-witness", action="store_true", help="seek ordinary JVM-confirmed inputs after a refused property read")
     ap.add_argument("--native-seconds", type=int, default=60)
     args = ap.parse_args()
     cases = {c["id"]: c for c in read(HERE / "corpus.json")["cases"]}
@@ -50,6 +51,8 @@ def main():
         prep = preparation_root(args.preparations, args.complete, key)
         if args.native_caller:
             cmd += ["--native-caller", str(args.native_caller.resolve()), "--native-seconds", str(args.native_seconds)]
+            if args.search_startup_witness:
+                cmd.append("--search-startup-witness")
         try:
             for side in ("old", "new"):
                 manifest = prep/key/side/"prepared.json"

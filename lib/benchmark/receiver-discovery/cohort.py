@@ -17,7 +17,7 @@ from engineering_report import checked_finite
 BASE = ROOT / "verification/domain-foundations"
 
 
-def score(key, signatures, raw, prior, host, checker_digest):
+def score(key, signatures, raw, prior, host, checker_digest, search_startup_witness=False):
     caller_path = Path("callers") / (key + ".json")
     overload_path = Path("overloads/current") / (key + ".json")
     before, caller = read(prior / caller_path), read(raw / caller_path)
@@ -25,6 +25,8 @@ def score(key, signatures, raw, prior, host, checker_digest):
     if now["id"] != key or caller["cases"] != before["cases"]:
         raise ValueError("different case or inputs: " + key)
     after = caller["nativeCaller"]
+    if bool(after.get("searchStartupWitness")) != search_startup_witness:
+        raise ValueError("unexpected native startup search setting: " + key)
     if (
         any(after[k] != before["nativeCaller"][k] for k in ("assume", "maxArrayLength", "unwind", "target"))
         or after["checkerSha256"] != checker_digest
@@ -61,11 +63,15 @@ def score(key, signatures, raw, prior, host, checker_digest):
             if trial["qualifiedMethodEntries"] != len(trial.get("receiverAtEntry", [])):
                 raise ValueError("physical receiver absent")
             entered += trial["qualifiedMethodEntries"] == 2
+        startup_searched = False
         if row.get("raw"):
             path = raw / "callers" / (key + "-receipts") / row["raw"]
             if sha(path) != row["rawSha256"]:
                 raise ValueError("changed native receipt")
             (native,) = read(path)
+            startup_searched = any(
+                a.get("purpose") == "startup witness" for a in (native.get("search") or {}).get("runs", [])
+            )
             stated = native.get("stated") or {}
             if (
                 native["verdict"] != row["verdict"]
@@ -93,6 +99,7 @@ def score(key, signatures, raw, prior, host, checker_digest):
             raise ValueError("decision lacks native receipt")
         measured["sides"][side] = {
             "jvmInputsReached": entered,
+            "startupSearchRan": startup_searched,
             **{
                 k: row.get(k)
                 for k in (
@@ -108,7 +115,7 @@ def score(key, signatures, raw, prior, host, checker_digest):
     return measured
 
 
-def measure(group):
+def measure(group, search_startup_witness=False):
     frozen = read(RESULTS / "scope.json")
     pilot = read(BASE / "results.json")["receivers"]["cases"]
     all_methods = frozen["originalOverloads"]
@@ -119,13 +126,14 @@ def measure(group):
     if not selected:
         raise ValueError("empty group")
     checker = Path(os.environ["JVMCONTRACT"]).resolve()
-    output = RESULTS / "transfer/cohort" / group
+    output = RESULTS / "transfer" / ("final-cohort" if search_startup_witness else "cohort") / group
     output.mkdir(parents=True, exist_ok=True)
     data = {
         "job": os.environ["VERIFY_JOB_ID"],
         "source": os.environ["VERIFY_SOURCE_COMMIT"],
         "checkerSha256": sha(checker),
         "cases": {},
+        "searchStartupWitness": search_startup_witness,
     }
     with tempfile.TemporaryDirectory() as d:
         raw = Path(d) / "results"
@@ -162,6 +170,7 @@ def measure(group):
                 sys.executable,
                 "-B",
                 EXTERNAL / "check_scenarios.py",
+                *(["--search-startup-witness"] if search_startup_witness else []),
                 "--native-caller",
                 checker,
                 "--preparations",
@@ -174,7 +183,7 @@ def measure(group):
         )
         prior = BASE / "receiver-verified" / group
         data["cases"] = {
-            key: score(key, signatures, raw, prior, corpus[key], data["checkerSha256"])
+            key: score(key, signatures, raw, prior, corpus[key], data["checkerSha256"], search_startup_witness)
             for key, signatures in selected.items()
         }
         with tarfile.open(output / "receipts.tar.gz", "w:gz") as archive:
@@ -187,5 +196,8 @@ def measure(group):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("group")
-    measure(parser.parse_args().group)
+    parser.add_argument("--search-startup-witness", action="store_true")
+    parser.add_argument("groups", nargs="+", choices=[f"{i:02}" for i in range(1, 8)])
+    args = parser.parse_args()
+    for group in args.groups:
+        measure(group, args.search_startup_witness)

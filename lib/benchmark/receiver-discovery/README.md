@@ -1,5 +1,7 @@
 # Receiver construction and physical observations
 
+Build the checkout’s executable with `cargo build --offline --release --manifest-path lib/Cargo.toml --bin jvmcontract`. The managed experiment uses the pinned artifacts and JDK recorded in the campaign brief. The examples below use a cache directory for temporary files.
+
 `jvmcontract construct TYPE --classes DIR --observer CLASS#METHOD --output DIR` enumerates compatible public constructors and static factories on the supplied classpath. Each generated static entry accepts the producer's primitive arguments, calls the original producer once and passes the returned object to the observer. The observer can also receive a matching prefix of the producer's arguments. Its public calls define the subsequent history. The JSON names every included producer and each omitted candidate. A proof applies to one such history.
 
 `jvmcontract sites CLASS#METHOD --classes DIR` lists candidate checks in the bound original method. Each row identifies the byte offset, opcode, exception handlers and check kind. Inspect the inventory again after recompilation.
@@ -7,6 +9,8 @@
 To investigate the caught divide in example 398, compile its original sources with Temurin 21.0.13, then run the following from the repository root.
 
 ```bash
+export TMPDIR="${TMPDIR:-$HOME/.cache/in-the-loop/tmp}"
+mkdir -p "$TMPDIR"
 JAVA21_HOME="$HOME/.sdkman/candidates/java/21.0.13.0+9-tem"
 R=lib/benchmark/receiver-discovery
 C="$TMPDIR/safety-original"
@@ -30,6 +34,8 @@ The separately recorded fresh-process experiments call `System.setProperty` or `
 To select the branch reached by an automatically constructed stock, use the generated entry printed by the checker.
 
 ```bash
+export TMPDIR="${TMPDIR:-$HOME/.cache/in-the-loop/tmp}"
+mkdir -p "$TMPDIR"
 R=lib/benchmark/receiver-discovery
 J="$HOME/.sdkman/candidates/java/21.0.13.0+9-tem"
 B=lib/target/release/jvmcontract
