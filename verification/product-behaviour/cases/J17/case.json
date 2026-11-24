@@ -1,0 +1,42 @@
+{
+  "project": "eclipse-collections",
+  "change": "Eclipse Collections #786, preservation under colliding-key removal",
+  "commits": {
+    "old": "9084111e068612ebf817a3fa6fe80d9623df4c29",
+    "new": "7ce7a19722e5471a71a2799737c3c2a0ed5510ff"
+  },
+  "sourceRoots": [
+    "eclipse-collections/src/main",
+    "eclipse-collections-api/src/main"
+  ],
+  "artifacts": [
+    "artifacts/J17-eclipse-collections-{side}-eclipse-collections.jar",
+    "artifacts/J17-eclipse-collections-{side}-eclipse-collections-api.jar"
+  ],
+  "deployment": "Both original upstream source-built implementation and API JARs, implementation first.",
+  "entry": "org.eclipse.collections.impl.map.mutable.UnifiedMap#removeIf(Lorg/eclipse/collections/api/block/predicate/Predicate2;)Z",
+  "assumptions": [
+    "Distinct immutable keys have one hash code. A retained key-set view and null-key sentinel are observed after each call. No iteration-order requirement."
+  ],
+  "questions": [
+    {
+      "id": "all-collision-subsets",
+      "observer": "Check both returned flags, remaining mappings, retained key view, size and untouched null key after each of two removals.",
+      "basis": "An independent JDK HashMap removes the selected keys. For each insertion order the 127 subsets have 120 nonempty removals, 321 retained non-null mappings across trials and 127 retained nulls.",
+      "inputs": [
+        {
+          "args": [
+            "forward"
+          ],
+          "before": "127/120/0/321/127"
+        },
+        {
+          "args": [
+            "reverse"
+          ],
+          "before": "127/120/0/321/127"
+        }
+      ]
+    }
+  ]
+}

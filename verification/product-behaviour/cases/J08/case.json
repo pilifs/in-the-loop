@@ -1,0 +1,83 @@
+{
+  "project": "parquet-java",
+  "change": "Parquet #3638, page writer reuse and persisted row groups",
+  "commits": {
+    "old": "5c360ff5d879d3567f23cea3290894712fb336d9",
+    "new": "5e14d7cd43403a95d331be8791e8792dbf38683d"
+  },
+  "sourceRoots": [
+    "parquet-column/src/main/java/org/apache/parquet/column/values/dictionary/DictionaryValuesWriter.java",
+    "parquet-column/src/main/java/org/apache/parquet/column/values/fallback/FallbackValuesWriter.java"
+  ],
+  "artifacts": [
+    "artifacts/J08-parquet-java-{side}-overlay.jar"
+  ],
+  "supportClasspaths": [
+    "overlays/J08-hadoop-classpath.txt"
+  ],
+  "deployment": "Two pinned production writer classes over Parquet 1.18.2, the Hadoop file graph and unshaded fastutil. File fixture uses local streams.",
+  "entry": "org.apache.parquet.column.values.fallback.FallbackValuesWriter#getBytes()Lorg/apache/parquet/bytes/BytesInput;",
+  "assumptions": [
+    "Fresh local file per JVM, uncompressed required UTF-8 binary column, exactly 1000 rows per group, V1 pages, dictionary threshold 10000 bytes."
+  ],
+  "questions": [
+    {
+      "id": "reuse-after-fallback",
+      "observer": "Decode all 1000 second-group values after reusing the same writer. Record first/second encoding, dictionary contents, first and last decoded values and match count.",
+      "basis": "The first group contains a0 through a999 and the second repeats c0 through c9. A stale plain prefix is distinguishable from the expected second group.",
+      "inputs": [
+        {
+          "args": [
+            "page",
+            "distinct"
+          ],
+          "before": "PLAIN/PLAIN/none/a0/a999/0",
+          "after": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
+        }
+      ]
+    },
+    {
+      "id": "fresh-and-below",
+      "observer": "Decode a fresh writer and a reused writer after a group below the fallback threshold.",
+      "basis": "The fresh writer has no preceding state. The low-cardinality first group is dictionary friendly on both releases.",
+      "inputs": [
+        {
+          "args": [
+            "page",
+            "fresh"
+          ],
+          "before": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
+        },
+        {
+          "args": [
+            "page",
+            "repeated"
+          ],
+          "before": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
+        }
+      ]
+    },
+    {
+      "id": "reopened-file",
+      "invocationVia": "org.apache.parquet.hadoop.ParquetWriter#write(Ljava/lang/Object;)V",
+      "observer": "Write two 1000-row groups, close, reopen with independent page and record readers, check the row boundaries, dictionary contents, encodings and every decoded string.",
+      "basis": "The public file writer creates a new column store after flushing a row group. The first group may fall back but that writer is not reused for the second.",
+      "inputs": [
+        {
+          "args": [
+            "file",
+            "distinct"
+          ],
+          "before": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
+        },
+        {
+          "args": [
+            "file",
+            "repeated"
+          ],
+          "before": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "project": "zip4j",
+  "change": "Zip4j #541, reopen names and payloads after file and directory renames",
+  "commits": {
+    "old": "f2e4a5a4f762dab1593f97f34c2b45d599a286cf",
+    "new": "6d1678bdf03e6eafadebef9a860e74488485fe65"
+  },
+  "sourceRoots": [
+    "src/main"
+  ],
+  "artifacts": [
+    "artifacts/J06-zip4j-{side}.jar"
+  ],
+  "deployment": "Both complete pinned source builds with no runtime dependencies.",
+  "entry": "net.lingala.zip4j.ZipFile#renameFile(Ljava/lang/String;Ljava/lang/String;)V",
+  "assumptions": [
+    "Fresh relative archive per JVM, unique ASCII names, fixed timestamps and distinct two-byte payloads. Both renames use the public API, and fresh JDK readers compare every name, directory flag and byte."
+  ],
+  "questions": [
+    {
+      "id": "file-neighbor",
+      "observer": "Read names and bytes through the JDK after each of two successive file renames.",
+      "basis": "An exact file key has one destination. The historical prefix rule also transforms the name of its neighbor. The sequence preserves each entry's original two-byte payload.",
+      "inputs": [
+        {
+          "args": [
+            "neighbor"
+          ],
+          "before": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323",
+          "after": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
+        }
+      ]
+    },
+    {
+      "id": "directory-and-isolated",
+      "observer": "Check the entire JDK enumeration twice after a directory rename and an isolated exact file rename.",
+      "basis": "A trailing slash separates the directory from catalog. Renaming the longest file changes only its own name. Payloads and the directory flag persist.",
+      "inputs": [
+        {
+          "args": [
+            "directory"
+          ],
+          "before": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
+        },
+        {
+          "args": [
+            "isolated"
+          ],
+          "before": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
+        }
+      ]
+    }
+  ]
+}
