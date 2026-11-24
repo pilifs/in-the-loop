@@ -1,0 +1,218 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-033453-audit-historical-induction-queries-again",
+  "title": "Audit historical induction queries against both original Guava controls",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 1.7s, peak 119.0 MiB (estimated 1m00s, 1.0 GiB)",
+  "attention": [
+    "declared output verification/kernel-recovery/historical.json was not produced",
+    "step 2 (Check the frozen controls and compare the submitted queries) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-033453-audit-historical-induction-queries-again.json",
+    "sha256": "7a559f1526e6964e53b0433c3fbcd779f054f7061cd200ddf5bc26c609c2f5d0",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-033453-audit-historical-induction-queries-again",
+      "title": "Audit historical induction queries against both original Guava controls",
+      "description": "Replay the unmodified historical producer, Z3 and isolated Rust checker on the pinned release and the two registered faulty Java classes. Recover the exact frame experiment already archived, compare the missing return-query inventory with the pristine inventory, and check five fresh original JVM observations including equal stores and the empty release array.",
+      "kind": "library",
+      "capabilities": [
+        "array-induction",
+        "independent-java-proof"
+      ],
+      "links": {
+        "examples": [
+          "336"
+        ]
+      },
+      "expected": "The release is established. The two incorrect classes have checked original-entry witnesses and the comparison identifies the first missing or changed obligation.",
+      "submitted": {
+        "at": "2026-11-24T03:34:53+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "javap",
+        "python3",
+        "rustc",
+        "z3",
+        "setpriv"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Compare the original release through the normal adapter",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 336 --array-induction first-any-length --compare",
+          "cwd": "."
+        },
+        {
+          "name": "Check the frozen controls and compare the submitted queries",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_audit.py --output verification/kernel-recovery/historical.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/kernel-recovery/historical.json"
+      ]
+    }
+  },
+  "sourceCommit": "0bd3b57768a815b304241fae840abba78bb0cb76",
+  "startedAt": "2026-11-24T03:44:19+00:00",
+  "finishedAt": "2026-11-24T03:46:13+00:00",
+  "wallSeconds": 114.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3763382,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 124796928,
+    "wallSeconds": 1.7,
+    "cpuSeconds": 2.3,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare the original release through the normal adapter",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 336 --array-induction first-any-length --compare",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 1.506,
+      "cpuSeconds": 2.18,
+      "cpuThrottledSeconds": 0.031,
+      "peakMemoryBytes": 124796928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-the-original-release-t.log",
+        "lines": 3,
+        "bytes": 487,
+        "sha256": "363cc188c9b1ead0eb0c5552914902973995dfe0b09fe2d75179582ccf0af947",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpuphy6w3x/first-any-length/4396f8e89adf63fa0f2a",
+        "first-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/first-any-length/58996c50200b0046ffaa: the same result",
+        "first-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the frozen controls and compare the submitted queries",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_audit.py --output verification/kernel-recovery/historical.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.204,
+      "cpuSeconds": 0.084,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 14016512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-frozen-controls-and.log",
+        "lines": 6,
+        "bytes": 579,
+        "sha256": "1d0b75fad6eca80c5eaacd3783c5bb1768f7bf2f2e0c61e6ae59c35f87a3c0a1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-033453-audit-historical-induction-queries-again/lib/benchmark/trusted-kernel/historical_audit.py\", line 15, in <module>",
+        "    from decision_evidence import require",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-033453-audit-historical-induction-queries-again/lib/benchmark/trusted-kernel/decision_evidence.py\", line 12, in <module>",
+        "    from frozen_range import historical_files, historical_manifest",
+        "ModuleNotFoundError: No module named 'frozen_range'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T03:49:08+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T034613Z-45343920a40a23c0",
+      "outputs": "20261124T034613Z-4734392af162fd6a",
+      "workdir": "20261124T034847Z-15498536f1a3a4eb"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-033453-audit-historical-induction-queries-again"
+}
