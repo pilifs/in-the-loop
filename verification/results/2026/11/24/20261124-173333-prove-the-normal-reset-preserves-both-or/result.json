@@ -1,0 +1,269 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-173333-prove-the-normal-reset-preserves-both-or",
+  "title": "Prove the normal reset preserves both original Commons IO marks",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 4.2s, peak 74.7 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-173333-prove-the-normal-reset-preserves-both-or.json",
+    "sha256": "09dcd4ccf9cb3d766ec390199966c8ac3db57a3d97942088ebc8eeecc2d4ba0b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-173333-prove-the-normal-reset-preserves-both-or",
+      "title": "Prove the normal reset preserves both original Commons IO marks",
+      "description": "Check the real string-backed CharBuffer and heap ByteBuffer on two actual process defaults with explicit and implicit encoder selection. Use the exact mark and reset bytecode, resolved NIO bridges and a conservative arbitrary re-encoding state to check the induction base and normal-reset step for any number of intervening public reads and successful resets. Require the original parent to refute the same preservation step and measure 32 consecutive concrete cycles on every process profile.",
+      "kind": "real-world",
+      "capabilities": [
+        "original-jvm-replay",
+        "inductive-position-invariant"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T17:33:33+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "z3",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Bind the frozen verifier and JDK image",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+          "cwd": "."
+        },
+        {
+          "name": "Cross the actual system default and constructor charset in sixteen JVMs",
+          "run": "python3 -B lib/benchmark/organic-composition/io/charset/profiles.py",
+          "cwd": "."
+        },
+        {
+          "name": "Check the source-bound mark base and normal-reset induction step",
+          "run": "python3 -B lib/benchmark/organic-composition/io/position_invariant.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/io/charset-profiles.json",
+        "verification/organic-composition/io/normal-reset-invariant.json"
+      ]
+    }
+  },
+  "sourceCommit": "ab7cd2ff4d14bee2d380ea5c2900bc1289b3a9bd",
+  "startedAt": "2026-11-24T17:43:00+00:00",
+  "finishedAt": "2026-11-24T17:46:45+00:00",
+  "wallSeconds": 225.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4101576,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 78336000,
+    "wallSeconds": 4.2,
+    "cpuSeconds": 6.1,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.07
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Bind the frozen verifier and JDK image",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.403,
+      "cpuSeconds": 0.343,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 32280576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-bind-the-frozen-verifier-and-j.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Cross the actual system default and constructor charset in sixteen JVMs",
+      "run": "python3 -B lib/benchmark/organic-composition/io/charset/profiles.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 3.409,
+      "cpuSeconds": 5.518,
+      "cpuThrottledSeconds": 0.233,
+      "peakMemoryBytes": 78336000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-cross-the-actual-system-defaul.log",
+        "lines": 5,
+        "bytes": 294,
+        "sha256": "2a6730bd6e35d5511f5f176e23c6454055d69cd838c6dbd362797c842ed6620a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: Some input files use or override a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "8 profiles, two fresh JVMs each, 32 consecutive read/reset cycles per JVM"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check the source-bound mark base and normal-reset induction step",
+      "run": "python3 -B lib/benchmark/organic-composition/io/position_invariant.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.197,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 38346752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-the-source-bound-mark-ba.log",
+        "lines": 1,
+        "bytes": 90,
+        "sha256": "5766b46d4c52aeac2a2cbc7d0d1fc75f3523bb71eee44bffe85168defa82154f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Both mark bases proved. Fixed normal-reset step proved. Parent normal-reset step refuted."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/io/charset-profiles.json",
+      "change": "added",
+      "bytes": 10016,
+      "sha256": "2bb07f545402c65bb1d7635d7bcca12b022388ce59c077aec91ee114d8c46c30",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/io/normal-reset-invariant.json",
+      "change": "added",
+      "bytes": 9781,
+      "sha256": "77700a048bd99b311526e9ae88a88c0d14d036d1b76b360df514a775b7885cbb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T17:47:14+00:00",
+    "applied": [
+      "verification/organic-composition/io/charset-profiles.json",
+      "verification/organic-composition/io/normal-reset-invariant.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "40771ad169bff8f170811a2347001a8ff5a7b66e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/40771ad169bff8f170811a2347001a8ff5a7b66e/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T174645Z-017250ad059907e7",
+      "outputs": "20261124T174645Z-043714fd2b6940d4",
+      "diff": "20261124T174645Z-067977a10b93d347"
+    }
+  }
+}

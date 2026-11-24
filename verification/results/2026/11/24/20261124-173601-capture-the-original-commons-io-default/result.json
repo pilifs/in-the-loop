@@ -1,0 +1,211 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-173601-capture-the-original-commons-io-default",
+  "title": "Capture the original Commons IO default-charset refusal",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.5s, peak 104.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-173601-capture-the-original-commons-io-default.json",
+    "sha256": "8258e3388242cd8b08a7581c2bfe05602c6607b6ddffad7f9f1ad180d23f2bf5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-173601-capture-the-original-commons-io-default",
+      "title": "Capture the original Commons IO default-charset refusal",
+      "description": "The first strict native job kept the public initialization frontier. Its observation recorder expected a JSON verdict, but Commons IO reads Charset.defaultCharset before native execution begins. Re-run that same original constructor, preserving the exact pre-verifier stderr on both original JARs under ordinary and controlled process settings. The public UTF-8 histories use separate real-JVM evidence.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T17:36:01+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Capture both original initializer refusals under both process profiles",
+          "run": "python3 -B lib/benchmark/organic-composition/io/startup.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/io/observed-frontier.json"
+      ]
+    }
+  },
+  "sourceCommit": "ab7cd2ff4d14bee2d380ea5c2900bc1289b3a9bd",
+  "startedAt": "2026-11-24T17:43:00+00:00",
+  "finishedAt": "2026-11-24T17:46:48+00:00",
+  "wallSeconds": 228.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4101576,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 109330432,
+    "wallSeconds": 7.5,
+    "cpuSeconds": 13.5,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 211.47,
+      "cpuSeconds": 211.755,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2337800192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "29e7b053cae0b3cc6e6d30945a6610dcff6e14cce548ec609ad26d245ad25858",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-173601-capture-the-original-commons-io-default/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 31s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Capture both original initializer refusals under both process profiles",
+      "run": "python3 -B lib/benchmark/organic-composition/io/startup.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 7.458,
+      "cpuSeconds": 13.505,
+      "cpuThrottledSeconds": 1.919,
+      "peakMemoryBytes": 109330432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-capture-both-original-initiali.log",
+        "lines": 5,
+        "bytes": 620,
+        "sha256": "3a362180cfc783ee295e1fc60aefaf21d06d5af47c6049cf1fc95af7025c6e6d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261124-173601-capture-the-original-commons-io-default/lib/benchmark/organic-composition/io/UpgradeProbe.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261124-173601-capture-the-original-commons-io-default/lib/benchmark/organic-composition/io/UpgradeProbe.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "Both original charset initializers refused the default-charset dependency in both process profiles."
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/io/observed-frontier.json",
+      "change": "added",
+      "bytes": 2133,
+      "sha256": "2a05ded38aa2abdbe32ef1df6d541d2c2bb0550000f46f57f36802885701b5b0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T17:47:14+00:00",
+    "applied": [
+      "verification/organic-composition/io/observed-frontier.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "40771ad169bff8f170811a2347001a8ff5a7b66e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/40771ad169bff8f170811a2347001a8ff5a7b66e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T174648Z-202602cc36ebf4b9",
+      "outputs": "20261124T174648Z-225141406b22df10",
+      "diff": "20261124T174648Z-2413910491ed4e7c"
+    }
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "scope": "A fresh exact stream with the profiled JDK buffers and an active mark, one thread, and intervening read() or read(byte[],int,int) calls. Every reset in the induction returns normally. Re-encoding positions are unconstrained before the original success guard.",
+  "nioMethodBodies": {
+    "java/nio/Buffer.position()I": {
+      "classSha256": "d7322d19c85764fd0dcaee3dfcad5c023a22033e052fe4d7c2fd14063c22c7e1",
+      "codeSha256": "f71c0e37ea3da5d4fd1a485105c71cfe89cdd2a717078a1b00ea19e11626bf1b"
+    },
+    "java/nio/ByteBuffer.mark()Ljava/nio/Buffer;": {
+      "classSha256": "876f71f46ba81f25e3f9b40bcfe1e8ae87bfe820d2f353ff5fd3a0e4328905dd",
+      "codeSha256": "f2ab98e6f6ecc6019f1f3836592839def2743e9df70a48e23a5715e631dc477e"
+    },
+    "java/nio/ByteBuffer.mark()Ljava/nio/ByteBuffer;": {
+      "classSha256": "876f71f46ba81f25e3f9b40bcfe1e8ae87bfe820d2f353ff5fd3a0e4328905dd",
+      "codeSha256": "e4d6f66e4144e6ebc713aa5bba5aa41b9c24027394a08357e215fb2fbe058cb5"
+    },
+    "java/nio/ByteBuffer.position(I)Ljava/nio/Buffer;": {
+      "classSha256": "876f71f46ba81f25e3f9b40bcfe1e8ae87bfe820d2f353ff5fd3a0e4328905dd",
+      "codeSha256": "8a79f23bbd169bc4e6b5d30a6c5c34905e85b3e90c5fdec05619ff09750d3755"
+    },
+    "java/nio/ByteBuffer.position(I)Ljava/nio/ByteBuffer;": {
+      "classSha256": "876f71f46ba81f25e3f9b40bcfe1e8ae87bfe820d2f353ff5fd3a0e4328905dd",
+      "codeSha256": "94ca3cfe909ea84c24641d3242664e6541556292007cd25ad921820c347bb963"
+    },
+    "java/nio/CharBuffer.mark()Ljava/nio/Buffer;": {
+      "classSha256": "82fe00cee79cbe8b4de59165e9fed7803a2aab9cec1be27f8a1849a1d694b33e",
+      "codeSha256": "b747c8ca72c934d6dfc0137868d85b43ab51460b7242fb84fa1380f3ba2f94ff"
+    },
+    "java/nio/CharBuffer.mark()Ljava/nio/CharBuffer;": {
+      "classSha256": "82fe00cee79cbe8b4de59165e9fed7803a2aab9cec1be27f8a1849a1d694b33e",
+      "codeSha256": "b27170d89b502bacd5adae21697b86003982413f8a3bfe3b95125cf818186186"
+    },
+    "java/nio/Buffer.mark()Ljava/nio/Buffer;": {
+      "classSha256": "d7322d19c85764fd0dcaee3dfcad5c023a22033e052fe4d7c2fd14063c22c7e1",
+      "codeSha256": "14ef4e331982f3666b7d8ab7a8fa04481c5af81a63d7cbc53d9e281fff71a257"
+    },
+    "java/nio/Buffer.position(I)Ljava/nio/Buffer;": {
+      "classSha256": "d7322d19c85764fd0dcaee3dfcad5c023a22033e052fe4d7c2fd14063c22c7e1",
+      "codeSha256": "3909ee4627007e33f4ed322eb9104ba09984a9e6172bc21f534c09fe83f1894d"
+    }
+  },
+  "jdk": {
+    "release": {
+      "JAVA_VERSION": "21.0.13",
+      "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+      "IMPLEMENTOR": "Eclipse Adoptium",
+      "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+      "OS_ARCH": "x86_64"
+    },
+    "image": "a38d365286891db1cf95f1ce9f84a0967700f987339a3adceaab1b56788573d5"
+  },
+  "z3": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
+  "sides": {
+    "old": {
+      "jar": "24718c09f6e0f7990a968e144be96042a20b97510b4dc611e1c97c3c3189e341",
+      "normalResetSuffix": [
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBuf:Ljava/nio/CharBuffer;",
+        "invokevirtual java/nio/CharBuffer.position:()I",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBufMark:I",
+        "if_icmpeq 148",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBuf:Ljava/nio/ByteBuffer;",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBufMark:I",
+        "invokevirtual java/nio/ByteBuffer.position:(I)Ljava/nio/Buffer;",
+        "pop",
+        "aload_0",
+        "iconst_m1",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.cBufMark:I",
+        "aload_0",
+        "iconst_m1",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.bBufMark:I",
+        "return"
+      ],
+      "mark": [
+        "aload_0",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBuf:Ljava/nio/CharBuffer;",
+        "invokevirtual java/nio/CharBuffer.position:()I",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.cBufMark:I",
+        "aload_0",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBuf:Ljava/nio/ByteBuffer;",
+        "invokevirtual java/nio/ByteBuffer.position:()I",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.bBufMark:I",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBuf:Ljava/nio/CharBuffer;",
+        "invokevirtual java/nio/CharBuffer.mark:()Ljava/nio/Buffer;",
+        "pop",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBuf:Ljava/nio/ByteBuffer;",
+        "invokevirtual java/nio/ByteBuffer.mark:()Ljava/nio/Buffer;",
+        "pop",
+        "return"
+      ],
+      "resetCodeSha256": "39e952eed9ceb900010482a82cbb760fe546028bfa01c34052dd1bb71d62b0ba",
+      "normalPositionExpressions": {
+        "cBuf": "chars",
+        "bBuf": "bytes",
+        "cBufMark": "(- 1)",
+        "bBufMark": "(- 1)",
+        "chars": "liveC",
+        "bytes": "savedB"
+      },
+      "markBase": {
+        "query": "(set-logic QF_LIA)\n(declare-const savedC Int)\n(assert (and (<= 0 savedC) (<= savedC 2147483647)))\n(declare-const savedB Int)\n(assert (and (<= 0 savedB) (<= savedB 2147483647)))\n(declare-const liveC Int)\n(assert (and (<= 0 liveC) (<= liveC 2147483647)))\n(declare-const liveB Int)\n(assert (and (<= 0 liveB) (<= liveB 2147483647)))\n(assert (not (and (= liveC liveC) (= liveB liveB) (= liveC liveC) (= liveB liveB))))\n(check-sat)\n",
+        "counterexample": "unsat"
+      },
+      "normalResetStep": {
+        "query": "(set-logic QF_LIA)\n(declare-const savedC Int)\n(assert (and (<= 0 savedC) (<= savedC 2147483647)))\n(declare-const savedB Int)\n(assert (and (<= 0 savedB) (<= savedB 2147483647)))\n(declare-const liveC Int)\n(assert (and (<= 0 liveC) (<= liveC 2147483647)))\n(declare-const liveB Int)\n(assert (and (<= 0 liveB) (<= liveB 2147483647)))\n(assert (= liveC savedC))\n(assert (not (and (= liveC savedC) (= savedB savedB) (= (- 1) savedC) (= (- 1) savedB))))\n(check-sat)\n",
+        "counterexample": "sat"
+      }
+    },
+    "new": {
+      "jar": "48fc79897f329de108aa4452288c86be27f76c7146e33c38bfc345b5d7885dcc",
+      "normalResetSuffix": [
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBuf:Ljava/nio/CharBuffer;",
+        "invokevirtual java/nio/CharBuffer.position:()I",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBufMark:I",
+        "if_icmpeq 148",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBuf:Ljava/nio/ByteBuffer;",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBufMark:I",
+        "invokevirtual java/nio/ByteBuffer.position:(I)Ljava/nio/Buffer;",
+        "pop",
+        "aload_0",
+        "iconst_m1",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.cBufMark:I",
+        "aload_0",
+        "iconst_m1",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.bBufMark:I",
+        "aload_0",
+        "iconst_0",
+        "invokevirtual org/apache/commons/io/input/CharSequenceInputStream.mark:(I)V",
+        "return"
+      ],
+      "mark": [
+        "aload_0",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBuf:Ljava/nio/CharBuffer;",
+        "invokevirtual java/nio/CharBuffer.position:()I",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.cBufMark:I",
+        "aload_0",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBuf:Ljava/nio/ByteBuffer;",
+        "invokevirtual java/nio/ByteBuffer.position:()I",
+        "putfield org/apache/commons/io/input/CharSequenceInputStream.bBufMark:I",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.cBuf:Ljava/nio/CharBuffer;",
+        "invokevirtual java/nio/CharBuffer.mark:()Ljava/nio/Buffer;",
+        "pop",
+        "aload_0",
+        "getfield org/apache/commons/io/input/CharSequenceInputStream.bBuf:Ljava/nio/ByteBuffer;",
+        "invokevirtual java/nio/ByteBuffer.mark:()Ljava/nio/Buffer;",
+        "pop",
+        "return"
+      ],
+      "resetCodeSha256": "c006a018f485f5416bf6de38ab5565e922464e6c04bfe55341d691725e92449c",
+      "normalPositionExpressions": {
+        "cBuf": "chars",
+        "bBuf": "bytes",
+        "cBufMark": "liveC",
+        "bBufMark": "savedB",
+        "chars": "liveC",
+        "bytes": "savedB"
+      },
+      "markBase": {
+        "query": "(set-logic QF_LIA)\n(declare-const savedC Int)\n(assert (and (<= 0 savedC) (<= savedC 2147483647)))\n(declare-const savedB Int)\n(assert (and (<= 0 savedB) (<= savedB 2147483647)))\n(declare-const liveC Int)\n(assert (and (<= 0 liveC) (<= liveC 2147483647)))\n(declare-const liveB Int)\n(assert (and (<= 0 liveB) (<= liveB 2147483647)))\n(assert (not (and (= liveC liveC) (= liveB liveB) (= liveC liveC) (= liveB liveB))))\n(check-sat)\n",
+        "counterexample": "unsat"
+      },
+      "normalResetStep": {
+        "query": "(set-logic QF_LIA)\n(declare-const savedC Int)\n(assert (and (<= 0 savedC) (<= savedC 2147483647)))\n(declare-const savedB Int)\n(assert (and (<= 0 savedB) (<= savedB 2147483647)))\n(declare-const liveC Int)\n(assert (and (<= 0 liveC) (<= liveC 2147483647)))\n(declare-const liveB Int)\n(assert (and (<= 0 liveB) (<= liveB 2147483647)))\n(assert (= liveC savedC))\n(assert (not (and (= liveC savedC) (= savedB savedB) (= liveC savedC) (= savedB savedB))))\n(check-sat)\n",
+        "counterexample": "unsat"
+      }
+    }
+  }
+}
