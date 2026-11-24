@@ -1,0 +1,1578 @@
+--- /dev/null
++++ b/verification/receiver-discovery/transfer/javaparser-ordinary-native/measurement.json
+@@ -0,0 +1,1575 @@
++{
++  "job": "20261123-234713-judge-all-eight-ordinary-javaparser-clai",
++  "source": "9cc961c9e23f7b1a3bc138feae58f082898fd40d",
++  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
++  "sides": {
++    "parent": {
++      "postorder": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "violation",
++          "target": "organic.TreeOrder#postorder",
++          "domain": "code: int",
++          "assume": "code >= 0 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": {
++            "input": "postorder(code=0)",
++            "outcome": "0",
++            "values": [
++              "0"
++            ],
++            "shrink_runs": 0,
++            "inputs": [
++              {
++                "name": "code",
++                "type": "int",
++                "value": 0
++              }
++            ],
++            "call": {
++              "class": "organic.TreeOrder",
++              "class_file": "organic/TreeOrder.class",
++              "classes": "after",
++              "method": "postorder",
++              "descriptor": "(I)I",
++              "static": true,
++              "arguments": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "value": 0,
++                  "from": "code"
++                }
++              ]
++            }
++          },
++          "proof": "found by jvmcontract's own checker (CaDiCaL) in 20.8 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-postorder/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "property-violated",
++              "message": "Property of organic.TreeOrder#postorder violated: `result == 1` where code >= 0 && code < 2:\n  postorder(code=0)\n    outcome: 0",
++              "uri": null,
++              "line": 33
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The unchanged property harness failed on a fresh JDK 21.0.13 with ordinary startup.\n\u2717 Property of organic.TreeOrder#postorder violated: `result == 1` where code >= 0 && code < 2:\n  postorder(code=0)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 20.8 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-postorder",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 20.818346402,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": "[0:20]",
++            "native": {
++              "paths": 1485,
++              "merges": 999,
++              "solver_calls": 6117,
++              "solving_seconds": 16.08870941,
++              "gates_evaluated": 2756527,
++              "evaluating_seconds": 0.061087647,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 179221,
++              "clauses": 572371,
++              "seconds": 20.661282409000002,
++              "loading_seconds": 0.003930099,
++              "decoding_seconds": 0.001011022,
++              "encoding_seconds": 0.347908349,
++              "witness_seconds": 0.005785601,
++              "assumed": [
++                "system properties use the standard JVM Properties table and the running JVM permits this property access"
++              ]
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.009,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.002,
++                  "lowering": 0.0,
++                  "symbolic": 0.006,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 153,
++                  "clauses": 391
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.987,
++                "seconds": 20.661,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.004,
++                  "lowering": 0.001,
++                  "symbolic": 4.214,
++                  "encoding": 0.348,
++                  "solving": 16.089,
++                  "trace": 0.006,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 179221,
++                  "clauses": 572371
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 20.831,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 20.67,
++              "replay": 0.0,
++              "jvm": 0.114,
++              "other": 0.046
++            }
++          },
++          "replay": {
++            "by": "jvm",
++            "reproduced": true
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 0 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              },
++              {
++                "kind": "library",
++                "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        },
++        "ordinaryDefaultJvm": [
++          "class 955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++          "returned 0"
++        ]
++      },
++      "terminal": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "violation",
++          "target": "organic.TreeOrder#terminal",
++          "domain": "code: int",
++          "assume": "code >= 0 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": {
++            "input": "terminal(code=0)",
++            "outcome": "0",
++            "values": [
++              "0"
++            ],
++            "shrink_runs": 0,
++            "inputs": [
++              {
++                "name": "code",
++                "type": "int",
++                "value": 0
++              }
++            ],
++            "call": {
++              "class": "organic.TreeOrder",
++              "class_file": "organic/TreeOrder.class",
++              "classes": "after",
++              "method": "terminal",
++              "descriptor": "(I)I",
++              "static": true,
++              "arguments": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "value": 0,
++                  "from": "code"
++                }
++              ]
++            }
++          },
++          "proof": "found by jvmcontract's own checker (CaDiCaL) in 19.3 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int",
++          "problem": null,
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-terminal/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "property-violated",
++              "message": "Property of organic.TreeOrder#terminal violated: `result == 1` where code >= 0 && code < 2:\n  terminal(code=0)\n    outcome: 0",
++              "uri": null,
++              "line": 37
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The unchanged property harness failed on a fresh JDK 21.0.13 with ordinary startup.\n\u2717 Property of organic.TreeOrder#terminal violated: `result == 1` where code >= 0 && code < 2:\n  terminal(code=0)\n    outcome: 0\n  (found by jvmcontract's own checker (CaDiCaL) in 19.3 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain code: int)\n\nThe input above is a concrete witness: run the method on it. If the property is meant to hold on fewer inputs, narrow it with --assume; the assumption is what a reviewer approves. If the method throws there by design, declare it with --throws.\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-terminal",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 19.279202281,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": "[0:20]",
++            "native": {
++              "paths": 1485,
++              "merges": 999,
++              "solver_calls": 6117,
++              "solving_seconds": 15.204495933,
++              "gates_evaluated": 2756527,
++              "evaluating_seconds": 0.068033297,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 179221,
++              "clauses": 572371,
++              "seconds": 19.112609174,
++              "loading_seconds": 0.004494711,
++              "decoding_seconds": 0.000936577,
++              "encoding_seconds": 0.312621374,
++              "witness_seconds": 0.007205627,
++              "assumed": [
++                "system properties use the standard JVM Properties table and the running JVM permits this property access"
++              ]
++            },
++            "gap_mode": "strict",
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.01,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.003,
++                  "lowering": 0.0,
++                  "symbolic": 0.006,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 153,
++                  "clauses": 391
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.988,
++                "seconds": 19.113,
++                "ended": "violation",
++                "ending": "counterexample",
++                "phases": {
++                  "loading": 0.004,
++                  "lowering": 0.001,
++                  "symbolic": 3.583,
++                  "encoding": 0.313,
++                  "solving": 15.204,
++                  "trace": 0.007,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 179221,
++                  "clauses": 572371
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 19.293,
++              "setup": 0.002,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 19.123,
++              "replay": 0.0,
++              "jvm": 0.114,
++              "other": 0.054
++            }
++          },
++          "replay": {
++            "by": "jvm",
++            "reproduced": true
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 0 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              },
++              {
++                "kind": "library",
++                "text": "system properties use the standard JVM Properties table and the running JVM permits this property access",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        },
++        "ordinaryDefaultJvm": [
++          "class 955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++          "returned 0"
++        ]
++      },
++      "nonempty": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "unverifiable",
++          "target": "organic.TreeOrder#postorder",
++          "domain": "code: int",
++          "assume": "code >= 1 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-nonempty/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "organic.TreeOrder#postorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++              "uri": null,
++              "line": 33
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The restricted native run reported Verified.\n\u2717 organic.TreeOrder#postorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-nonempty",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 57.375420797,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": null,
++            "native": {
++              "paths": 3,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 4.2219e-05,
++              "gates_evaluated": 183,
++              "evaluating_seconds": 5.019e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 245,
++              "clauses": 698,
++              "seconds": 0.009095214,
++              "loading_seconds": 0.002682417,
++              "decoding_seconds": 0.000124724,
++              "encoding_seconds": 0.00010126,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
++                "kind": "jdk-static-method",
++                "call": "java.lang.System.getProperty(java.lang.String)",
++                "sites": [
++                  "com.github.javaparser.utils.LineSeparator.<clinit>:50"
++                ],
++                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++                "treatment": "refused"
++              }
++            ],
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.009,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.003,
++                  "lowering": 0.0,
++                  "symbolic": 0.006,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 245,
++                  "clauses": 698
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.989,
++                "seconds": 57.254,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.005,
++                  "lowering": 0.001,
++                  "symbolic": 5.768,
++                  "encoding": 0.742,
++                  "solving": 50.738,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 427190,
++                  "clauses": 1351700
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 57.385,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 57.263,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.121
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 1 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        }
++      },
++      "preorder": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "unverifiable",
++          "target": "organic.TreeOrder#preorder",
++          "domain": "code: int",
++          "assume": "code >= 0 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-preorder/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "organic.TreeOrder#preorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++              "uri": null,
++              "line": 34
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The restricted native run reported Verified.\n\u2717 organic.TreeOrder#preorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp69a2c_gt/native-preorder",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 20.522579063,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": null,
++            "native": {
++              "paths": 4,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 3.7992e-05,
++              "gates_evaluated": 122,
++              "evaluating_seconds": 5.971e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 153,
++              "clauses": 391,
++              "seconds": 0.011930906,
++              "loading_seconds": 0.003499934,
++              "decoding_seconds": 0.000174426,
++              "encoding_seconds": 9.8365e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
++                "kind": "jdk-static-method",
++                "call": "java.lang.System.getProperty(java.lang.String)",
++                "sites": [
++                  "com.github.javaparser.utils.LineSeparator.<clinit>:50"
++                ],
++                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++                "treatment": "refused"
++              }
++            ],
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.012,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.003,
++                  "lowering": 0.0,
++                  "symbolic": 0.008,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 153,
++                  "clauses": 391
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.986,
++                "seconds": 20.485,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.005,
++                  "lowering": 0.001,
++                  "symbolic": 3.625,
++                  "encoding": 0.278,
++                  "solving": 16.575,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 179153,
++                  "clauses": 572136
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 20.537,
++              "setup": 0.002,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 20.497,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.038
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 0 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        }
++      }
++    },
++    "fix": {
++      "postorder": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "unverifiable",
++          "target": "organic.TreeOrder#postorder",
++          "domain": "code: int",
++          "assume": "code >= 0 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-postorder/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "organic.TreeOrder#postorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++              "uri": null,
++              "line": 33
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The restricted native run reported Verified.\n\u2717 organic.TreeOrder#postorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-postorder",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 18.984705219,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": null,
++            "native": {
++              "paths": 4,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 2.3315e-05,
++              "gates_evaluated": 122,
++              "evaluating_seconds": 4.278e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 153,
++              "clauses": 391,
++              "seconds": 0.008094744,
++              "loading_seconds": 0.002292995,
++              "decoding_seconds": 0.000102654,
++              "encoding_seconds": 5.9422e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
++                "kind": "jdk-static-method",
++                "call": "java.lang.System.getProperty(java.lang.String)",
++                "sites": [
++                  "com.github.javaparser.utils.LineSeparator.<clinit>:50"
++                ],
++                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++                "treatment": "refused"
++              }
++            ],
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.008,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.002,
++                  "lowering": 0.0,
++                  "symbolic": 0.006,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 153,
++                  "clauses": 391
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.99,
++                "seconds": 18.951,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.004,
++                  "lowering": 0.001,
++                  "symbolic": 3.631,
++                  "encoding": 0.279,
++                  "solving": 15.036,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 180669,
++                  "clauses": 576998
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 18.995,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 18.959,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.034
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 0 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        }
++      },
++      "terminal": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "unverifiable",
++          "target": "organic.TreeOrder#terminal",
++          "domain": "code: int",
++          "assume": "code >= 0 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-terminal/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "organic.TreeOrder#terminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++              "uri": null,
++              "line": 37
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The restricted native run reported Verified.\n\u2717 organic.TreeOrder#terminal cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-terminal",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 18.317095842,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": null,
++            "native": {
++              "paths": 4,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 2.2662e-05,
++              "gates_evaluated": 122,
++              "evaluating_seconds": 4.548e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 153,
++              "clauses": 391,
++              "seconds": 0.018530623,
++              "loading_seconds": 0.006891715,
++              "decoding_seconds": 0.000127579,
++              "encoding_seconds": 9.1985e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
++                "kind": "jdk-static-method",
++                "call": "java.lang.System.getProperty(java.lang.String)",
++                "sites": [
++                  "com.github.javaparser.utils.LineSeparator.<clinit>:50"
++                ],
++                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++                "treatment": "refused"
++              }
++            ],
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.019,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.007,
++                  "lowering": 0.0,
++                  "symbolic": 0.011,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 153,
++                  "clauses": 391
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.977,
++                "seconds": 18.274,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.004,
++                  "lowering": 0.001,
++                  "symbolic": 3.185,
++                  "encoding": 0.327,
++                  "solving": 14.757,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 180722,
++                  "clauses": 577192
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 18.329,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 18.293,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.034
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 0 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        }
++      },
++      "nonempty": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "unverifiable",
++          "target": "organic.TreeOrder#postorder",
++          "domain": "code: int",
++          "assume": "code >= 1 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-nonempty/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "organic.TreeOrder#postorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++              "uri": null,
++              "line": 33
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The restricted native run reported Verified.\n\u2717 organic.TreeOrder#postorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-nonempty",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 52.28311346,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": null,
++            "native": {
++              "paths": 3,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 3.9214e-05,
++              "gates_evaluated": 183,
++              "evaluating_seconds": 5.079e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 245,
++              "clauses": 698,
++              "seconds": 0.008574124,
++              "loading_seconds": 0.00245255,
++              "decoding_seconds": 0.000131016,
++              "encoding_seconds": 9.8566e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
++                "kind": "jdk-static-method",
++                "call": "java.lang.System.getProperty(java.lang.String)",
++                "sites": [
++                  "com.github.javaparser.utils.LineSeparator.<clinit>:50"
++                ],
++                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++                "treatment": "refused"
++              }
++            ],
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.009,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.002,
++                  "lowering": 0.0,
++                  "symbolic": 0.006,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 245,
++                  "clauses": 698
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.989,
++                "seconds": 52.173,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.004,
++                  "lowering": 0.001,
++                  "symbolic": 5.135,
++                  "encoding": 0.759,
++                  "solving": 46.275,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 427190,
++                  "clauses": 1351700
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 52.294,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 52.182,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.111
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 1 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        }
++      },
++      "preorder": {
++        "entryClassSha256": "955e97ffc3bc98404de51d509e0ef1af078c775116ed0b0b28693d6897a3dd5f",
++        "native": {
++          "wire_version": 1,
++          "verdict": "unverifiable",
++          "target": "organic.TreeOrder#preorder",
++          "domain": "code: int",
++          "assume": "code >= 0 && code < 2",
++          "assert": "result == 1",
++          "throws": [],
++          "throws_checked": [],
++          "counterexample": null,
++          "proof": null,
++          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "statement": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-preorder/harness/PropertyHarness.java",
++          "findings": [
++            {
++              "rule_id": "unverifiable",
++              "message": "organic.TreeOrder#preorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++              "uri": null,
++              "line": 34
++            }
++          ],
++          "output": "Native startup witness search used U+005F for \"line.separator\" to propose an input. The restricted native run reported Verified.\n\u2717 organic.TreeOrder#preorder cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at com.github.javaparser.utils.LineSeparator.<clinit>:50). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\n",
++          "work": "/home/filip/.cache/in-the-loop/tmp/tmp0jptukip/native-preorder",
++          "search": {
++            "engine": "native",
++            "checker": "jvmcontract's own checker (CaDiCaL)",
++            "seconds": 16.894299056,
++            "properties": 1,
++            "unwind": 96,
++            "max_array_length": 64,
++            "stage": null,
++            "native": {
++              "paths": 4,
++              "merges": 0,
++              "solver_calls": 3,
++              "solving_seconds": 2.131e-05,
++              "gates_evaluated": 122,
++              "evaluating_seconds": 4.368e-06,
++              "divisions": 0,
++              "divisions_built": 0,
++              "multiplications": 0,
++              "multiplications_built": 0,
++              "variables": 153,
++              "clauses": 391,
++              "seconds": 0.009089721,
++              "loading_seconds": 0.002459956,
++              "decoding_seconds": 0.0001051,
++              "encoding_seconds": 5.6907e-05,
++              "witness_seconds": 0.0
++            },
++            "gap_mode": "strict",
++            "gaps": [
++              {
++                "id": "jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13",
++                "kind": "jdk-static-method",
++                "call": "java.lang.System.getProperty(java.lang.String)",
++                "sites": [
++                  "com.github.javaparser.utils.LineSeparator.<clinit>:50"
++                ],
++                "approximation": "has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)",
++                "treatment": "refused"
++              }
++            ],
++            "deadline_seconds": 60.0,
++            "runs": [
++              {
++                "checker": "native",
++                "purpose": "proof",
++                "stage": null,
++                "budget_seconds": 60.0,
++                "seconds": 0.009,
++                "ended": "no-verdict",
++                "ending": "no-verdict",
++                "phases": {
++                  "loading": 0.002,
++                  "lowering": 0.0,
++                  "symbolic": 0.006,
++                  "encoding": 0.0,
++                  "solving": 0.0,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 153,
++                  "clauses": 391
++                }
++              },
++              {
++                "checker": "native",
++                "purpose": "startup witness",
++                "stage": null,
++                "budget_seconds": 59.989,
++                "seconds": 16.867,
++                "ended": "verified",
++                "ending": "verified",
++                "phases": {
++                  "loading": 0.004,
++                  "lowering": 0.001,
++                  "symbolic": 3.273,
++                  "encoding": 0.251,
++                  "solving": 13.337,
++                  "trace": 0.0,
++                  "other": 0.0
++                },
++                "formula": {
++                  "variables": 179153,
++                  "clauses": 572136
++                }
++              }
++            ],
++            "phases": {
++              "seconds": 16.904,
++              "setup": 0.001,
++              "harness": 0.0,
++              "gaps": 0.0,
++              "contracts": 0.0,
++              "runs": 16.876,
++              "replay": 0.0,
++              "jvm": 0.0,
++              "other": 0.027
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [
++                {
++                  "name": "code",
++                  "type": "int",
++                  "kind": "primitive",
++                  "null": false
++                }
++              ],
++              "shared_arrays": false,
++              "text": "code: int"
++            },
++            "assumptions": [
++              {
++                "kind": "precondition",
++                "text": "code >= 0 && code < 2",
++                "basis": "stated"
++              },
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result == 1",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 96,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          }
++        }
++      }
++    }
++  }
++}

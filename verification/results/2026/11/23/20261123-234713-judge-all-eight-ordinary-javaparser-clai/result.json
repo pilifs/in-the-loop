@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-234713-judge-all-eight-ordinary-javaparser-clai",
+  "title": "Judge all eight ordinary JavaParser claims with confirmed startup search",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m50s, peak 379.5 MiB (estimated 6m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-234713-judge-all-eight-ordinary-javaparser-clai.json",
+    "sha256": "7c71024f7903ab805ea5f0012fde1c175abd78528a2ac9033152dd9c69f15441",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-234713-judge-all-eight-ordinary-javaparser-clai",
+      "title": "Judge all eight ordinary JavaParser claims with confirmed startup search",
+      "description": "Run the exact original registered target, postcondition, guard, bounds and dependency graph with the strict native checker. When a literal system property stalls startup, seek a candidate under a one-character value and accept only an input that refutes the unchanged harness on a fresh JVM. Preserve successful subset proofs and unreproduced candidates as ordinary refusals.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:47:13+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "6m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Run unmodified registered claims",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py javaparser",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/transfer/javaparser-ordinary-native"
+      ]
+    }
+  },
+  "sourceCommit": "9cc961c9e23f7b1a3bc138feae58f082898fd40d",
+  "startedAt": "2026-11-24T00:09:28+00:00",
+  "finishedAt": "2026-11-24T00:17:52+00:00",
+  "wallSeconds": 504.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 397918208,
+    "wallSeconds": 230.6,
+    "cpuSeconds": 234.7,
+    "memoryOfEstimate": 0.12,
+    "durationOfEstimate": 0.64
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run unmodified registered claims",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py javaparser",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 230.634,
+      "cpuSeconds": 234.715,
+      "cpuThrottledSeconds": 1.136,
+      "peakMemoryBytes": 397918208,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-unmodified-registered-clai.log",
+        "lines": 8,
+        "bytes": 216,
+        "sha256": "1fd791923dc34a7f70cdc86027f89fe447b6a7cf34dc9e8cade6a5ed730e645b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent postorder violation",
+        "parent terminal violation",
+        "parent nonempty unverifiable",
+        "parent preorder unverifiable",
+        "fix postorder unverifiable",
+        "fix terminal unverifiable",
+        "fix nonempty unverifiable",
+        "fix preorder unverifiable"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/transfer/javaparser-ordinary-native/measurement.json",
+      "change": "added",
+      "bytes": 66656,
+      "sha256": "dc3c31601fe24cccaa837791e7fd4297e8088ab2a6ffefee19bccdd17b042641",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T00:19:42+00:00",
+    "applied": [
+      "verification/receiver-discovery/transfer/javaparser-ordinary-native/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85d098e084068e8219ed6becf4a3237d79fff4f1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85d098e084068e8219ed6becf4a3237d79fff4f1/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T001752Z-740248618556a36c",
+      "outputs": "20261124T001752Z-762827002bc28eb7",
+      "diff": "20261124T001752Z-784260e5ea0bc53c"
+    }
+  }
+}

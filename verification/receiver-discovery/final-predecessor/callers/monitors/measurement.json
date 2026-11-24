@@ -1,0 +1,152 @@
+{
+  "subject": "monitors",
+  "phase": "callers",
+  "source": "9cc961c9e23f7b1a3bc138feae58f082898fd40d",
+  "job": "20261123-234713-confirm-the-sixty-predecessor-pairs-on-t",
+  "adapterSha256": "df041fba436a8ffeb7df59a0961ba53ba383b8b3af47c049cb872a2067a89076",
+  "classes": {
+    "MonitorIdentity$1.class": "10d18593a4cc6e0703f2841bec8838a662b0921329908e035589aa655bafcdd5",
+    "MonitorIdentity$Worker.class": "50c56bcda12eeeb85a8e6982f14e28caddbb2a79be0c663314624c33f571186e",
+    "MonitorIdentity.class": "6bfcc992c1d5bd773a7eebe861460b0c871cf62a6b78974c59b0a3e4d9534096"
+  },
+  "classpath": [
+    "adapter"
+  ],
+  "jdk": [
+    "IMPLEMENTOR=\"Eclipse Adoptium\"",
+    "IMPLEMENTOR_VERSION=\"Temurin-21.0.13+9\"",
+    "JAVA_RUNTIME_VERSION=\"21.0.13+9-LTS\"",
+    "JAVA_VERSION=\"21.0.13\"",
+    "JAVA_VERSION_DATE=\"2026-10-20\"",
+    "LIBC=\"gnu\"",
+    "MODULES=\"java.base java.compiler java.datatransfer java.xml java.prefs java.desktop java.instrument java.logging java.management java.security.sasl java.naming java.rmi java.management.rmi java.net.http java.scripting java.security.jgss java.transaction.xa java.sql java.sql.rowset java.xml.crypto java.se java.smartcardio jdk.accessibility jdk.internal.jvmstat jdk.attach jdk.charsets jdk.internal.opt jdk.zipfs jdk.compiler jdk.crypto.ec jdk.crypto.cryptoki jdk.dynalink jdk.internal.ed jdk.editpad jdk.hotspot.agent jdk.httpserver jdk.incubator.vector jdk.internal.le jdk.internal.vm.ci jdk.internal.vm.compiler jdk.internal.vm.compiler.management jdk.jartool jdk.javadoc jdk.jcmd jdk.management jdk.management.agent jdk.jconsole jdk.jdeps jdk.jdwp.agent jdk.jdi jdk.jfr jdk.jlink jdk.jpackage jdk.jshell jdk.jsobject jdk.jstatd jdk.localedata jdk.management.jfr jdk.naming.dns jdk.naming.rmi jdk.net jdk.nio.mapmode jdk.random jdk.sctp jdk.security.auth jdk.security.jgss jdk.unsupported jdk.unsupported.desktop jdk.xml.dom\"",
+    "OS_ARCH=\"x86_64\"",
+    "OS_NAME=\"Linux\"",
+    "SOURCE=\".:git:2ab10ca20c19\"",
+    "BUILD_SOURCE=\"git:1cf43d7a3e77886bfea7d550a902e151a87d724d\"",
+    "BUILD_SOURCE_REPO=\"https://github.com/adoptium/temurin-build.git\"",
+    "SOURCE_REPO=\"https://github.com/adoptium/jdk21u.git\"",
+    "FULL_VERSION=\"21.0.13+9-LTS\"",
+    "SEMANTIC_VERSION=\"21.0.13+9\"",
+    "BUILD_INFO=\"OS: Linux Version: 6.8.0-1070-azure\"",
+    "JVM_VARIANT=\"Hotspot\"",
+    "JVM_VERSION=\"21.0.13+9-LTS\"",
+    "IMAGE_TYPE=\"JDK\""
+  ],
+  "jvmSha256": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+  "modulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "scope": {
+    "example": 391,
+    "owner": "MonitorIdentity",
+    "graph": "jdk",
+    "claims": [
+      {
+        "method": "matched",
+        "parameters": "",
+        "guard": "",
+        "holds": [
+          []
+        ],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "mixed",
+        "parameters": "",
+        "guard": "",
+        "holds": [],
+        "fails": [],
+        "nullable": ""
+      },
+      {
+        "method": "synchronizedMethod",
+        "parameters": "",
+        "guard": "",
+        "holds": [
+          []
+        ],
+        "fails": [],
+        "nullable": ""
+      }
+    ],
+    "bound": 8,
+    "unwind": 16
+  },
+  "claimsSha256": {
+    "matched": "3ac6c3ac1822c55e95217f9c03ec1ad7dde6d579f1de063ad886532e349b7135",
+    "mixed": "03d24625370eed187ad5a2217510fa895fdca4d72cc28ccabcb9159b4fd5336f",
+    "synchronizedMethod": "cb32e2b1b50348400edfa194fd4e0e44762250f8deedb4d268f2a2efeaab0ba2"
+  },
+  "originalJvm": {
+    "checks": 3,
+    "sourceSha256": "82a709e0002afc94853e1b7e7523678e266dae4b99100a977c406e446613c41d",
+    "stdout": "3 original checks passed"
+  },
+  "runs": [
+    {
+      "method": "matched",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.027,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption"
+    },
+    {
+      "method": "matched",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.264,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample matched() is no reproduction in the interpreter, which cannot run the method on it (unsupported: MonitorIdentity$Worker extends the JDK class java.lang.Thread, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13, missing-body:MonitorIdentity$Worker.join()V, missing-body:MonitorIdentity$Worker.start()V, monitor:MonitorIdentity.observe(ZZ)Z): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "mixed",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.024,
+      "expected": "violation",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption"
+    },
+    {
+      "method": "mixed",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.273,
+      "expected": "violation",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample mixed() is no reproduction in the interpreter, which cannot run the method on it (unsupported: MonitorIdentity$Worker extends the JDK class java.lang.Thread, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13, missing-body:MonitorIdentity$Worker.join()V, missing-body:MonitorIdentity$Worker.start()V, monitor:MonitorIdentity.observe(ZZ)Z): a stub returns any value of its type, which may be one the JDK's call never returns"
+    },
+    {
+      "method": "synchronizedMethod",
+      "engine": "native",
+      "exit": 1,
+      "seconds": 0.023,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3). With --gaps assume it assumes instead that java.lang.Thread.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption"
+    },
+    {
+      "method": "synchronizedMethod",
+      "engine": "jbmc",
+      "exit": 1,
+      "seconds": 0.263,
+      "expected": "verified",
+      "verdict": "unverifiable",
+      "disposition": "unsupported",
+      "firstUnproved": "JBMC's counterexample synchronizedMethod() is no reproduction in the interpreter, which cannot run the method on it (unsupported: MonitorIdentity$Worker extends the JDK class java.lang.Thread, which the interpreter does not model); on a JVM (JDK 21.0.13), the method returns true there and the property holds on it, so it is no counterexample. The path to it probably goes through what JBMC approximates (jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13, missing-body:MonitorIdentity$Worker.join()V, missing-body:MonitorIdentity$Worker.start()V, monitor:MonitorIdentity.observe(ZZ)Z): a stub returns any value of its type, which may be one the JDK's call never returns"
+    }
+  ],
+  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "libTree": "85d098e084068e8219ed6becf4a3237d79fff4f1",
+  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
+  "packagedModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df",
+  "rawSha256": "137f337be774b42fce315077179dc3595cbd4e6ce680891608981661028f18fa"
+}
