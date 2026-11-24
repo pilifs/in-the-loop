@@ -1,0 +1,29 @@
+Traceback (most recent call last):
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py", line 333, in <module>
+    checked = audit(json.loads(REPORTS[args.history].read_bytes()) if args.audit else run(args.history), args.history)
+                                                                                      ~~~^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py", line 316, in run
+    record = run_endpoint(work / name, number, side, classes, tracer, spec)
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py", line 204, in run_endpoint
+    _, _, trial = launch(work, classes, tracer, files, binding, "apply-" + str(repetition), path)
+                  ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py", line 160, in launch
+    require(result.returncode == 0, name + ": " + result.stderr[-1600:])
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/heap_effect.py", line 11, in require
+    raise ValueError(reason)
+ValueError: apply-1: Exception in thread "main" com.sun.jdi.ClassNotLoadedException: Class java.lang.Boolean not loaded
+	at jdk.jdi/com.sun.tools.jdi.ClassLoaderReferenceImpl.findType(ClassLoaderReferenceImpl.java:121)
+	at jdk.jdi/com.sun.tools.jdi.ReferenceTypeImpl.findType(ReferenceTypeImpl.java:1175)
+	at jdk.jdi/com.sun.tools.jdi.FieldImpl.findType(FieldImpl.java:74)
+	at jdk.jdi/com.sun.tools.jdi.FieldImpl.type(FieldImpl.java:69)
+	at jdk.jdi/com.sun.tools.jdi.ObjectReferenceImpl.validateAssignment(ObjectReferenceImpl.java:603)
+	at jdk.jdi/com.sun.tools.jdi.ObjectReferenceImpl.prepareForAssignmentTo(ObjectReferenceImpl.java:575)
+	at jdk.jdi/com.sun.tools.jdi.ValueImpl.prepareForAssignment(ValueImpl.java:49)
+	at jdk.jdi/com.sun.tools.jdi.ObjectReferenceImpl.setValue(ObjectReferenceImpl.java:272)
+	at IteratorHeap.apply(IteratorHeap.java:83)
+	at IteratorEffectTrace.start(IteratorEffectTrace.java:135)
+	at IteratorEffectTrace.step(IteratorEffectTrace.java:151)
+	at IteratorEffectTrace.run(IteratorEffectTrace.java:225)
+	at IteratorEffectTrace.main(IteratorEffectTrace.java:262)
+

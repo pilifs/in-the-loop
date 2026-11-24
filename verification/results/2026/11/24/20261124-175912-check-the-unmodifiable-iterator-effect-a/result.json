@@ -1,0 +1,287 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-175912-check-the-unmodifiable-iterator-effect-a",
+  "title": "Check the unmodifiable iterator effect and original throw across four deployments",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed, 1 skipped step(s) in 6.0s, peak 88.8 MiB (estimated 2m00s, 1.0 GiB)",
+  "attention": [
+    "declared output verification/organic-composition/collections/checked-decorator-effect.json was not produced",
+    "step 2 (Qualify the decorated continuation and its live controls) exited 1, expected 0",
+    "step 2 (Qualify the decorated continuation and its live controls) was held back 6.0s by its 1-CPU quota in 5.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-175912-check-the-unmodifiable-iterator-effect-a.json",
+    "sha256": "9533b6e8794722ea06495ebb3434913d5a71898fe4da2f53b99d386638ae2ccf",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-175912-check-the-unmodifiable-iterator-effect-a",
+      "title": "Check the unmodifiable iterator effect and original throw across four deployments",
+      "description": "Independently predict the full entry-heap update for the registered unmodifiable input of Commons Collections PRs 628 and 755. At each endpoint compare two ordinary JVMs with two live substitutions, bind the selected decorator and its delegate, the throwing instruction and the public catch, and refuse a bypassed decorator or incorrect child lock before public continuation. Reaudit the pre-advanced certificates to guard their original semantics.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-heap-effects",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T17:59:12+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Preserve the four pre-advanced certificates",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --audit",
+          "cwd": "."
+        },
+        {
+          "name": "Qualify the decorated continuation and its live controls",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable",
+          "cwd": "."
+        },
+        {
+          "name": "Independently check the archived decorated certificates",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable --audit",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/collections/checked-decorator-effect.json"
+      ]
+    }
+  },
+  "sourceCommit": "78d31605ac343f1d663e2b10ab0d6842037e1eb0",
+  "startedAt": "2026-11-24T18:10:32+00:00",
+  "finishedAt": "2026-11-24T18:14:45+00:00",
+  "wallSeconds": 253.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 232329,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 93089792,
+    "wallSeconds": 6.0,
+    "cpuSeconds": 5.4,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 239.431,
+      "cpuSeconds": 239.193,
+      "cpuThrottledSeconds": 0.582,
+      "peakMemoryBytes": 3242602496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "106b651c2762cb90efeb61d2b83f906329594b52034b7745abd45cc70784f999",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 59s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Preserve the four pre-advanced certificates",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --audit",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.175,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 33865728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-preserve-the-four-pre-advanced.log",
+        "lines": 4,
+        "bytes": 292,
+        "sha256": "278903509571239341dc0df827608440a99e78d4092be286e17efb2504d890a8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "628-old retained child 9 changed fields, java.util.ArrayList$Itr#remove()V",
+        "628-new flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-old flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-new retained child 9 changed fields, java.util.ArrayList$Itr#remove()V"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Qualify the decorated continuation and its live controls",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 5.816,
+      "cpuSeconds": 5.195,
+      "cpuThrottledSeconds": 6.048,
+      "peakMemoryBytes": 93089792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-qualify-the-decorated-continua.log",
+        "lines": 29,
+        "bytes": 2818,
+        "sha256": "cc4f224d8506b90801f8c63de2489eb8ac9952be9fd264dc11f87dcfd1b86b7d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py\", line 333, in <module>",
+        "    checked = audit(json.loads(REPORTS[args.history].read_bytes()) if args.audit else run(args.history), args.history)",
+        "                                                                                      ~~~^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py\", line 316, in run",
+        "    record = run_endpoint(work / name, number, side, classes, tracer, spec)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py\", line 204, in run_endpoint",
+        "    _, _, trial = launch(work, classes, tracer, files, binding, \"apply-\" + str(repetition), path)",
+        "                  ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/effect_replay.py\", line 160, in launch",
+        "    require(result.returncode == 0, name + \": \" + result.stderr[-1600:])",
+        "    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a/lib/benchmark/organic-composition/collections/heap_effect.py\", line 11, in require",
+        "    raise ValueError(reason)",
+        "ValueError: apply-1: Exception in thread \"main\" com.sun.jdi.ClassNotLoadedException: Class java.lang.Boolean not loaded",
+        "\tat jdk.jdi/com.sun.tools.jdi.ClassLoaderReferenceImpl.findType(ClassLoaderReferenceImpl.java:121)",
+        "\tat jdk.jdi/com.sun.tools.jdi.ReferenceTypeImpl.findType(ReferenceTypeImpl.java:1175)",
+        "\tat jdk.jdi/com.sun.tools.jdi.FieldImpl.findType(FieldImpl.java:74)",
+        "\tat jdk.jdi/com.sun.tools.jdi.FieldImpl.type(FieldImpl.java:69)",
+        "\tat jdk.jdi/com.sun.tools.jdi.ObjectReferenceImpl.validateAssignment(ObjectReferenceImpl.java:603)",
+        "\tat jdk.jdi/com.sun.tools.jdi.ObjectReferenceImpl.prepareForAssignmentTo(ObjectReferenceImpl.java:575)",
+        "\tat jdk.jdi/com.sun.tools.jdi.ValueImpl.prepareForAssignment(ValueImpl.java:49)",
+        "\tat jdk.jdi/com.sun.tools.jdi.ObjectReferenceImpl.setValue(ObjectReferenceImpl.java:272)",
+        "\tat IteratorHeap.apply(IteratorHeap.java:83)",
+        "\tat IteratorEffectTrace.start(IteratorEffectTrace.java:135)",
+        "\tat IteratorEffectTrace.step(IteratorEffectTrace.java:151)",
+        "\tat IteratorEffectTrace.run(IteratorEffectTrace.java:225)",
+        "\tat IteratorEffectTrace.main(IteratorEffectTrace.java:262)",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Independently check the archived decorated certificates",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable --audit",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T18:15:08+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "450d1d9536349afec43cd293620d5cb3c12bad6a",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/450d1d9536349afec43cd293620d5cb3c12bad6a/jvmcontract",
+    "built": true
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T181445Z-5374941522659b37",
+      "outputs": "20261124T181445Z-55361322fd884a50",
+      "workdir": "20261124T181449Z-024909f45796909a"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-175912-check-the-unmodifiable-iterator-effect-a"
+}
