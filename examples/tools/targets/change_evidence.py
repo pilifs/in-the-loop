@@ -26,6 +26,8 @@ def outcome(trial, entry, client):
     invocations = trial.get("entryInvocations", [])
     if (trial.get("qualifiedMethodEntries") != 2 or len(observations) != 2
             or observations[0] != observations[1] or len(invocations) != 2
+            or any(not isinstance(inv, dict) or type(inv.get("observerCodeIndex")) is not int
+                   or "#" not in str(inv.get("dispatchedTo", "")) for inv in invocations)
             or not trial.get("loadedUpgradeOnEachReplay") or trial.get("beforeEntry")):
         return None
     value = observations[0]
@@ -42,26 +44,28 @@ def outcome(trial, entry, client):
 class SideCache:
     """Only deterministic, qualified, positive sides can bypass new original-entry replays."""
 
-    def __init__(self, directory, basis):
+    def __init__(self, directory, basis, images):
         self.directory = directory
         self.basis = basis
+        self.images = images
         self.actions = {}
 
-    def key(self, files, binding, report):
-        return digest({"context": self.basis, "files": list(map(str, files)),
+    def key(self, side, files, binding, report):
+        return digest({"context": self.basis, "jdk": self.images[side], "files": list(map(str, files)),
                        "binding": {k: v for k, v in binding.items() if k not in ("commit", "trials", "loadedDependencyClasses")},
                        "observerClasses": report["probeClasses"], "call": report["observerInvocation"]})
 
     @staticmethod
     def valid(payload, domain, entry, client):
         trials = payload["trials"]
-        if len(trials) != len(domain) or not payload["loadedDependencyClasses"]:
+        if (len(trials) != len(domain) or not payload["loadedDependencyClasses"]
+                or set(payload["loadedPerInput"]) != {str(i) for i in range(len(domain))}):
             return False
         return all(t["input"] == i and outcome(t, entry, client) == case["expected"]
                    and "return" in case["expected"] for i, (case, t) in enumerate(zip(domain, trials)))
 
     def lookup(self, side, files, binding, report):
-        key = self.key(files, binding, report)
+        key = self.key(side, files, binding, report)
         self.actions[side] = {"action": "executed", "key": key}
         path = self.directory / (key + ".json")
         if path.is_file():
@@ -85,7 +89,7 @@ class SideCache:
                        {"key": key, "evidenceSha256": digest(payload), "evidence": payload})
 
 
-def compose(spec, report):
+def compose(spec, report, intent="preserve"):
     """The finite parent requires every registered input. One admitted original witness suffices."""
     cases = spec["cases"]
     if (not cases or len({tuple(c["args"]) for c in cases}) != len(cases)
@@ -101,6 +105,7 @@ def compose(spec, report):
         if len(indexed[side]) != len(rows):
             raise ValueError("duplicate trial in finite coverage")
     children = []
+    changes = {c["input"]: c["expectedNew"] for c in intent["allowedChanges"]} if isinstance(intent, dict) else {}
     for i, case in enumerate(cases):
         values, startup = {}, {}
         for side in ("old", "new"):
@@ -110,15 +115,17 @@ def compose(spec, report):
             if trial.get("beforeEntry"):
                 startup[side] = trial["beforeEntry"]
         old, new = values["old"], values["new"]
-        if old is None or new is None or old != case["expected"]:
+        target = changes.get(i, case["expected"])
+        if old is None or new is None or old != case["expected"] or intent == "undecided":
             status = "open"
         else:
-            status = "established" if old == new else "refuted"
+            status = "established" if target == new else "refuted"
         children.append({"input": i, "arguments": case["args"], "expected": case["expected"], **values,
+                         **({"intendedChange": target} if i in changes else {}),
                          "status": status, **({"beforeEntry": startup} if startup else {})})
     witness = next((c for c in children if c["status"] == "refuted"), None)
     missing = [c["input"] for c in children if c["status"] == "open"]
-    return {"rule": "preservation on the union of all enumerated singleton inputs",
+    return {"rule": "check both intended observations on the union of all enumerated singleton inputs",
             "status": "refuted" if witness else "open" if missing else "established",
             "inputs": len(cases), "covered": len(cases) - len(missing), "children": children,
             "firstOpenDependency": missing[0] if missing else None,

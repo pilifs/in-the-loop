@@ -1,0 +1,57 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-020146-retry-java-semantics-callers-before-rece",
+  "title": "Retry Java semantics callers before receiver and check-site controls",
+  "description": "Execute the 60 original-scope statements in the 15 semantic families on the same class graphs with both strict engines. Then retry real receiver construction and generated check-site reachability and failure at the original entries. Store this evaluation separately from the frozen predecessor.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "receiver:construction",
+    "property:discovery"
+  ],
+  "links": {},
+  "expected": "All prior correct decisions agree on the original Java graphs, and each receiver or site returns its independently checked scope.",
+  "submitted": {
+    "at": "2026-11-24T02:01:46+00:00",
+    "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "7m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Retry all 60 original Java statements at fixed scope",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers --output verification/change-verification/semantics",
+      "cwd": "."
+    },
+    {
+      "name": "Retry stock receiver construction",
+      "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py stock --output verification/change-verification/receiver/stock",
+      "cwd": "."
+    },
+    {
+      "name": "Check physical-site reachability and failure independently",
+      "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py sites --output verification/change-verification/receiver/sites",
+      "cwd": "."
+    },
+    {
+      "name": "Check changed CSV observations through the original receiver",
+      "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py csv --output verification/change-verification/receiver/csv",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/change-verification/semantics",
+    "verification/change-verification/receiver"
+  ]
+}

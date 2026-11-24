@@ -1,0 +1,84 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-014943-replay-the-guava-change-plan-nodes-and-i",
+  "title": "Replay the Guava change-plan nodes and isolated frame fault",
+  "description": "Recompute the original 336 and 346 array-induction baselines on Temurin 21. Replay the frozen 32-bit and transferred 64-bit semantic consumers, both scalar routes and each packed Guava and prefix-sums LRAT certificate. On the pinned heap-writing control, regenerate one faulty historical frame obligation, compare fresh honest and faulted records and require the independent public-entry witness. The generated result records the exact assertion and comparison fields that changed.",
+  "kind": "library",
+  "capabilities": [
+    "array-induction",
+    "independent-java-proof",
+    "sat-certificate"
+  ],
+  "links": {
+    "examples": [
+      "336",
+      "346"
+    ],
+    "paths": [
+      "lib/benchmark/trusted-kernel/change-nodes.json"
+    ]
+  },
+  "expected": "The original array contracts compare at established, the frozen checker gives its original 346 refusal and the transferred checker accepts both, all four scalar cases replay and all 18 observed UNSAT queries recheck. A changed historical frame answer is detected against the honest baseline and contradicted by the independent witness.",
+  "submitted": {
+    "at": "2026-11-24T01:49:43+00:00",
+    "session": "01a20b2d-a95c-7ed2-b095-7806cdb53e77"
+  },
+  "requires": [
+    "python3",
+    "javap",
+    "java",
+    "javac",
+    "rustc",
+    "lean",
+    "setpriv",
+    "z3",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "1m",
+    "notes": "The earlier two-CPU replay measured about 1.6 GiB for Lean. Rust and the original array-induction runs each finished in seconds."
+  },
+  "steps": [
+    {
+      "name": "Check the frozen 10-node projection",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/change_nodes.py --check",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the Guava int baseline",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 336 --array-induction first-any-length --compare",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the Guava long baseline",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 346 --array-induction first-any-length --compare",
+      "cwd": "."
+    },
+    {
+      "name": "Rebuild and check saved Rust and Lean evidence",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/recheck_saved.py --check",
+      "cwd": "."
+    },
+    {
+      "name": "Check all saved LRAT queries and negative controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --check",
+      "cwd": "."
+    },
+    {
+      "name": "Record the fixed historical producer fault",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_frame_control.py --record lib/benchmark/trusted-kernel/historical-frame-control.json",
+      "cwd": "."
+    },
+    {
+      "name": "Repeat the historical and independent checks from fresh inputs",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_frame_control.py --check lib/benchmark/trusted-kernel/historical-frame-control.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "lib/benchmark/trusted-kernel/historical-frame-control.json"
+  ]
+}

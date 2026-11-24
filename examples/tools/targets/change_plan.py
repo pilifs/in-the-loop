@@ -41,13 +41,26 @@ def frozen_workflows(path):
         spec = json.loads(specfile.read_text())
         if not spec["cases"] or len({tuple(c["args"]) for c in spec["cases"]}) != len(spec["cases"]):
             raise ValueError(f"{name} must declare a nonempty domain of distinct inputs")
+        intent = row["intent"]
+        if intent not in ("preserve", "undecided"):
+            if not isinstance(intent, dict) or set(intent) != {"allowedChanges"} or not isinstance(intent["allowedChanges"], list):
+                raise ValueError(f"{name}: expected preserve, undecided, or explicit allowedChanges")
+            seen = set()
+            for change in intent["allowedChanges"]:
+                i, expected = change["input"], change["expectedNew"]
+                if (type(i) is not int or not 0 <= i < len(spec["cases"]) or i in seen
+                        or not isinstance(expected, dict) or set(expected) not in ({"return"}, {"throws"})):
+                    raise ValueError(f"{name}: ambiguous allowed change or input outside the domain")
+                seen.add(i)
         workflows[name] = (row, specfile, probe, spec)
     return doc, workflows
 
 
 def runner_identity():
     # Includes the evidence parser and bytecode readers as well as the Java adapters.
-    files = [*sorted(HERE.glob("*.py")), upgrade_replay.LAUNCHER, upgrade_replay.TRACER, upgrade_replay.LOOKUP]
+    modules = ("change_plan", "change_inventory", "change_evidence", "upgrade_replay", "upgrade_claims",
+               "upgrade_linkage", "upgrade_jdbc", "runtime_jar", "class_binding", "runtime_jdk")
+    files = [*(HERE / (name + ".py") for name in modules), upgrade_replay.LAUNCHER, upgrade_replay.TRACER, upgrade_replay.LOOKUP]
     return digest({"files": {p.name: upgrade_replay.sha(p) for p in files},
                    "python": sys.version, "host": list(platform.uname())})
 
@@ -55,12 +68,14 @@ def runner_identity():
 def compare(args):
     started = time.monotonic()
     doc, workflows = frozen_workflows(args.workflows)
-    jdk = args.jdk.resolve()
-    image = change_inventory.jdk_binding(jdk)
+    jdks = {"old": args.jdk.resolve(), "new": (args.after_jdk or args.jdk).resolve()}
+    images = {p: change_inventory.jdk_binding(p) for p in set(jdks.values())}
     paths, launches, snapshots = {}, {}, {}
     environment = {"locale": "C.UTF-8", "timezone": "UTC", "home": "fresh trial",
                    "inputs": doc.get("environment", [])}
     for side, manifest, test in (("old", args.before, args.before_test), ("new", args.after, args.after_test)):
+        jdk = jdks[side]
+        image = images[jdk]
         paths[side], production = change_inventory.resolve(manifest, jdk, image, environment, kind="production")
         launches[side] = {"production": production}
         if test:
@@ -69,16 +84,19 @@ def compare(args):
     declared = {spec["entry"] for _, _, _, spec in workflows.values()}
     inventory = change_inventory.inventory(snapshots["old"], snapshots["new"], declared)
     checker = args.checker.resolve()
-    inventory["applicationEntries"] = change_inventory.framework_inventory(checker, paths, jdk)
+    inventory["applicationEntries"] = change_inventory.framework_inventory(checker, paths, jdks)
     asked = []
     for entry in sorted(declared):
         owner, method, descriptor = runtime_jar.parse_target(entry)
         if not descriptor:
             raise ValueError(f"missing exact method descriptor for {entry}")
         asked.append({"class": owner, "method": method, "descriptor": descriptor})
-    env = {**os.environ, "JAVA_HOME": str(jdk), "JVMCONTRACT_JAR_RELEASE": runtime_jdk.identity(jdk)["feature"]}
-    bound, _ = class_binding.ask(checker, env, Path.cwd(), {
-        side: {"classpath": list(map(str, files)), "classes": asked} for side, files in paths.items()})
+    bound = {}
+    for jdk in images:
+        env = {**os.environ, "JAVA_HOME": str(jdk), "JVMCONTRACT_JAR_RELEASE": runtime_jdk.identity(jdk)["feature"]}
+        group, _ = class_binding.ask(checker, env, Path.cwd(), {
+            side: {"classpath": list(map(str, files)), "classes": asked} for side, files in paths.items() if jdks[side] == jdk})
+        bound.update(group)
     problems = {}
     for side, bindings in bound.items():
         for entry, selected in zip(sorted(declared), bindings["bindings"], strict=True):
@@ -86,9 +104,14 @@ def compare(args):
             original = snapshots[side][0].get(runtime_jar.internal(owner))
             if issue := class_binding.disagreement(owner, selected, paths[side][0], original):
                 problems.setdefault(entry, []).append(issue)
+            elif not selected["method"]["declared"]:
+                problems.setdefault(entry, []).append(f"{side} client does not declare this descriptor")
+            elif len(class_binding.candidates(paths[side][0], runtime_jar.internal(owner))) != 1:
+                problems.setdefault(entry, []).append(f"{side} original caller requires a measured multi-release JVM class binding")
         launches[side]["classes"] = bindings["bindings"]
 
     old, new = (launches[k]["production"] for k in ("old", "new"))
+    operands = (args.old_dependency or old["classpath"][0]["sha256"], args.new_dependency or new["classpath"][0]["sha256"])
     runner = runner_identity()
     plan = {"schema": SCHEMA, "change": doc["change"], "launches": launches, "inventory": inventory,
             "tools": {"comparator": upgrade_replay.sha(checker), "jvmRunner": runner},
@@ -104,9 +127,9 @@ def compare(args):
         assumptions = row.get("assumptions", [])
         claim_key = digest({"scope": spec, "intent": row["intent"], "assumptions": assumptions})
         basis = {"sourceClaim": claim_key, "runner": runner, "comparator": plan["tools"]["comparator"],
-                 "probe": upgrade_replay.sha(probe), "jdk": image, "environment": environment,
+                 "probe": upgrade_replay.sha(probe), "environment": environment,
                  "seconds": args.seconds, "kind": "production"}
-        execution_key = digest([basis, old["key"], new["key"], args.old_dependency, args.new_dependency])
+        execution_key = digest([basis, old["key"], new["key"], *operands])
         node = {"id": name, "claimKey": claim_key, "executionKey": execution_key, "entry": spec["entry"],
                 "statement": spec["observer"], "domain": spec["cases"], "scope": spec["basis"],
                 "cohort": row["cohort"], "intent": row["intent"], "assumptions": assumptions,
@@ -117,18 +140,24 @@ def compare(args):
             continue
         if not args.run:
             continue
-        use_cache = (args.cache is not None and row.get("deterministicUnderAssumptions") is True
-                     and assumptions and not any(inventory["implicitClasspaths"].values()))
-        cache = change_evidence.SideCache(args.cache, basis) if use_cache else None
+        closed = row.get("deterministicUnderAssumptions") is True and assumptions and not any(inventory["implicitClasspaths"].values())
+        use_cache = args.cache is not None and closed
+        cache = change_evidence.SideCache(args.cache, basis, {s: images[j] for s, j in jdks.items()}) if use_cache else None
         evidence = {}
         try:
-            upgrade_replay.evaluate(scope, args.before, args.after, probe, jdk,
-                                    (args.old_dependency, args.new_dependency), args.seconds,
-                                    fixtures=args.fixtures, progress=evidence, side_cache=cache)
+            upgrade_replay.evaluate(scope, args.before, args.after, probe, jdks["old"], operands, args.seconds,
+                                    fixtures=args.fixtures, progress=evidence, side_cache=cache,
+                                    after_jdk=jdks["new"], application_change=True)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             evidence.update(status="open", reason=str(error))
         if evidence.get("cases") == spec["cases"]:
-            node.update(change_evidence.compose(spec, evidence))
+            node.update(change_evidence.compose(spec, evidence, row["intent"]))
+            for c in node["children"]:
+                c["id"] = digest([claim_key, execution_key, c["input"]])
+            node["dependsOn"] = [{"id": c["id"], "reason": "original entry on both sides of this admitted input"}
+                                 for c in node["children"]]
+            if node["status"] == "established" and not closed:
+                node.update(status="open", firstOpenDependency="bind all runtime inputs and justify deterministic observations")
         if node["status"] == "open" and evidence.get("reason"):
             node["reason"] = evidence["reason"]
         for key in ("stoppedAt", "beforeEntryComparison", "linkage", "reason"):
@@ -181,13 +210,13 @@ def main(argv=None):
     sub = parser.add_subparsers(dest="command", required=True)
     example = sub.add_parser("example", help="project the target runner's frozen claims, routes and dependencies")
     example.add_argument("number", type=int)
-    upgrade = sub.add_parser("upgrade", help="compare prepared JVM applications with their ordered classpaths")
+    upgrade = sub.add_parser("upgrade", aliases=["application"], help="compare prepared JVM applications with their ordered classpaths")
     for name in ("before", "after", "jdk", "workflows"):
         upgrade.add_argument("--" + name, type=Path, required=True)
-    for name in ("before-test", "after-test", "fixtures", "cache", "previous"):
+    for name in ("before-test", "after-test", "after-jdk", "fixtures", "cache", "previous"):
         upgrade.add_argument("--" + name, type=Path)
     for name in ("old-dependency", "new-dependency"):
-        upgrade.add_argument("--" + name, required=True)
+        upgrade.add_argument("--" + name, help="tracked runtime artifact digest (default: the client JAR)")
     upgrade.add_argument("--checker", type=Path, default=ROOT / "lib/target/release/jvmcontract")
     upgrade.add_argument("--seconds", type=int, default=60, help="per-workflow replay budget")
     upgrade.add_argument("--run", action="store_true", help="execute the finite obligations on the original JVM")

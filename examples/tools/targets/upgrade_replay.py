@@ -245,8 +245,11 @@ def run_observation(run_dir, launch, subject_cp, sites, main, encoded, trace_exc
 
 def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None,
              inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None, search_startup_witness=False,
-             side_cache=None):
+             side_cache=None, after_jdk=None, application_change=False):
     jdk, probe = jdk.resolve(), probe.resolve()
+    after_jdk = after_jdk.resolve() if after_jdk else jdk
+    if after_jdk != jdk and native_caller:
+        raise ValueError("native receiver inspection currently requires a shared subject JDK")
     if side_cache is not None and (inspect_receiver or native_caller):
         raise ValueError("native and receiver inspections need fresh JVM observations")
     spec = json.loads(specfile.read_text())
@@ -272,12 +275,12 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                 (binding.get("declaredDependencyScope") != operand_scope or
                  not re.fullmatch("[0-9a-f]{64}", binding.get("modulePomSha256") or ""))):
             raise ValueError(f"{side} preparation does not establish the declared {operand_scope} dependency environment")
-    if prepared["old"][2]["sourceSha256"] != prepared["new"][2]["sourceSha256"]:
+    if not application_change and prepared["old"][2]["sourceSha256"] != prepared["new"][2]["sourceSha256"]:
         raise ValueError("the selected caller source differs between dependency revisions")
     for _, _, binding in prepared.values():
         if ("frameworkFixtures" in binding) != spec.get("withTestFixtures", False):
             raise ValueError("the caller scope and preparation disagree about original test fixtures")
-    if dependencies[0] == dependencies[1]:
+    if not application_change and dependencies[0] == dependencies[1]:
         raise ValueError("the dependency digests identify the same bytes")
     report = {} if progress is None else progress
     identity = runtime_jdk.identity(jdk)
@@ -359,10 +362,6 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         report["originalInvocation"] = caller
         report["invocationVia"] = via or None
         report["probeClasses"]={helper_class(f):sha(f) for f in compiled}
-        launch = [str(jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*tools]),
-                  "UpgradeTrace", caller, str(jdk)]
-        if inspect_receiver or native_caller:
-            launch.insert(1, "-Dupgrade.trace.receivers=true")
         if native_caller:
             native_start = time.monotonic()
             try:
@@ -375,6 +374,16 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         first_early = None
         old_loaded = {}
         for side,(files,dependency,side_record) in prepared.items():
+            subject_jdk = jdk if side == "old" else after_jdk
+            subject_feature = int(runtime_jdk.identity(subject_jdk)["feature"])
+            if after_jdk != jdk:
+                side_record["jdk"] = runtime_jdk.identity(subject_jdk)["release"]
+            subject_tools = [subject_jdk/"lib/tools.jar"] if (subject_jdk/"lib/tools.jar").is_file() else []
+            launch = [str(subject_jdk/"bin/java"), "-Xmx96m", "-Djava.io.tmpdir="+t, "-cp", cp([output,*subject_tools]),
+                      "UpgradeTrace", caller, str(subject_jdk)]
+            if inspect_receiver or native_caller:
+                launch.insert(1, "-Dupgrade.trace.receivers=true")
+            trial_env = {**env, "PATH": str(subject_jdk/"bin")+":/usr/bin:/bin"}
             if any(runtime_jar.read_class(jar,name) is not None for jar in files for name in report["probeClasses"]):
                 raise ValueError("observer classes shadow an input artifact")
             if side_cache is not None:
@@ -398,7 +407,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                 enc=["-" if x is None else base64.b64encode(x.encode("utf-16-be","surrogatepass")).decode() for x in case["args"]]
                 def run(directory, trace_exception):
                     return run_observation(directory, launch, subject_cp, site_argument, main, enc, trace_exception,
-                                           env, resources, start+timeout, working_directory)
+                                           trial_env, resources, start+timeout, working_directory)
 
                 for trial in range(2):
                     run_dir = temp / f"{side}-{index}-{trial}"
@@ -435,7 +444,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                         loaded_each_time = loaded_each_time and bool(classes)
                         evidence = throw_evidence(marks, loaded, files, side_record["classpath"],
                                                   dependency, observation_text.splitlines())
-                        upgrade_linkage.observed_member(evidence, loaded, files, side_record, int(identity["feature"]))
+                        upgrade_linkage.observed_member(evidence, loaded, files, side_record, subject_feature)
                         early.append({**outcome, **evidence})
                         trial_record["beforeEntry"] = early
                         if first_early is None:
@@ -490,10 +499,11 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             report["reason"] = (f"{first_early['side']} input {first_early['input']}: the original caller method was never entered. "
                                 + first_early.get("exception", ""))
             report["beforeEntryComparison"] = compare_before_entry(report["sides"], domain)
-            upgrade_linkage.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
-                                     temp, env, start+timeout)
-            upgrade_jdbc.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
-                                  temp, env, start+timeout)
+            if jdk == after_jdk:
+                upgrade_linkage.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
+                                         temp, env, start+timeout)
+                upgrade_jdbc.diagnose(report, prepared, old_loaded, int(identity["feature"]), jdk, output,
+                                      temp, env, start+timeout)
             report["elapsedSeconds"] = round(time.monotonic()-start, 3)
             return report
         report.pop("stoppedAt", None)

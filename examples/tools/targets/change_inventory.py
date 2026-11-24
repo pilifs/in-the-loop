@@ -142,10 +142,11 @@ def inventory(old, new, declared):
                 why.add("consumer reaches a runtime dependency")
         if len(sides) == 1:
             why.add("added or removed declaration")
+        discovered = bool(why)
         if entry in declared:
             why.add("declared workflow")
         if why:
-            roots.append({"entry": entry, "basis": sorted(why), "sides": sides,
+            roots.append({"entry": entry, "basis": sorted(why), "independentlyDiscovered": discovered, "sides": sides,
                           "disposition": "planned" if entry in declared else "open",
                           "reason": "finite caller observation supplied" if entry in declared
                           else "receiver, domain and intended observation have not been supplied"})
@@ -153,13 +154,14 @@ def inventory(old, new, declared):
             "unknownEdges": "Virtual dispatch, initialization, reflection, resources and calls through dependencies can reach other code. Exact reuse binds the whole declared launch.",
             "changedClasses": sorted(changed), "changedResources": resources,
             "implicitClasspaths": {"old": old[3], "new": new[3]}, "candidates": roots,
-            "discoveryMisses": sorted(declared - {r["entry"] for r in roots})}
+            "discoveryMisses": sorted(declared - {r["entry"] for r in roots if r["independentlyDiscovered"]})}
 
 
-def framework_inventory(checker, paths, jdk):
+def framework_inventory(checker, paths, jdks):
     """Use the application's existing comparator on each client's own ordered deployment."""
-    env = {**os.environ, "JAVA_HOME": str(jdk), "JVMCONTRACT_JAR_RELEASE": runtime_jdk.identity(jdk)["feature"]}
     def observations(side, *args):
+        jdk = jdks[side]
+        env = {**os.environ, "JAVA_HOME": str(jdk), "JVMCONTRACT_JAR_RELEASE": runtime_jdk.identity(jdk)["feature"]}
         files = paths[side]
         argv = [checker, "observations", "--json", files[0]]
         for dependency in files[1:]:

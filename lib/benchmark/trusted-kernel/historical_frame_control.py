@@ -8,7 +8,8 @@ import shutil
 import sys
 import tempfile
 
-from controls import JDK
+from certificate import issue
+from controls import JDK, cells_arg
 from decision_evidence import require
 from frame_witness import EV, FRAME, guava_record, read
 from prepare import HERE, digest
@@ -29,7 +30,8 @@ def copied_rule(work):
     path = work / "jvm_array_induction.py"
     genuine = path.read_text()
     frame = 'self.vc("preserve the input heap", end.path, term("=", end.heap, "initial"))'
-    fault = 'self.vc("preserve the input heap", end.path, "true" if end.heap == "(store heap cursor #x00000000)" else term("=", end.heap, "initial"))'
+    conclusion = 'term("=", end.heap, "initial")'
+    fault = frame.replace(conclusion, '"true" if end.heap == "(store heap cursor #x00000000)" else ' + conclusion)
     require(genuine.count(frame) == 1, "historical frame rule changed")
     path.write_text(genuine.replace(frame, fault))
     spec = importlib.util.spec_from_file_location("guava_frame_control_rule", path)
@@ -82,7 +84,8 @@ def run(work):
     require(len(changes) == 1, "the control must change exactly one solver assertion")
     old, new = changes[0]
     require(old.replace("(= (store heap cursor #x00000000) initial)", "true") == new, "another premise changed")
-    changed = [(i, g, f) for i, (g, f) in enumerate(zip(base["obligations"], faulty["obligations"], strict=True)) if g != f]
+    answers = zip(base["obligations"], faulty["obligations"], strict=True)
+    changed = [(i, g, f) for i, (g, f) in enumerate(answers) if g != f]
     require(len(changed) == 1, "other obligation answers changed")
     index, genuine_obligation, faulty_obligation = changed[0]
     require(
@@ -94,9 +97,13 @@ def run(work):
     require(adapter.differences(result(faulty_rule, artifact, work), faulty) == ([], []), "faulty replay changed")
     checker = guava_snapshot(work / "independent")
     request = bundle / "external.request"
-    certificate = bundle / "evidence.cert"
     require(digest(request.read_bytes()) == frozen["requestSha256"], "request changed")
-    require(digest(certificate.read_bytes()) == frozen["certificateSha256"], "semantic certificate changed")
+    # With the faulty result established, issue every semantic obligation for the same bound request.
+    # The fresh consumer reconstructs the obligations from the class bytes in a separate process.
+    witness = frozen["originalJvm"]
+    certificate = work / "evidence.cert"
+    certificate.write_text(issue(request, artifact, (str(witness["target"]), cells_arg(witness["input"]))))
+    require(digest(certificate.read_bytes()) == frozen["certificateSha256"], "fresh semantic certificate differs")
     checked = fresh_rust(checker, request, certificate, artifact, [bundle / "support.bin"])
     require(
         checked["exit"] == 2 and checked["stdout"] == frozen["outcome"] and "frame changed" in checked["stdout"],
