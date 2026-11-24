@@ -1,0 +1,26 @@
+{
+  "entry": "com.google.i18n.phonenumbers.AsYouTypeFormatter#inputDigit(C)Ljava/lang/String;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Every visible prefix, remembered position, post-clear position and second pass on the same formatter.",
+  "basis": "Setup observations for the disclosed SE, EC and US examples; count the fourth digit in each displayed prefix independently for the remembered cursor.",
+  "cases": [
+    {
+      "args": [
+        "US",
+        "6502530000"
+      ],
+      "expected": {
+        "return": "6@0/65@0/650@0/650-2@5/650-25@5/650-253@5/650-2530@5/(650) 253-00@7/(650) 253-000@7/(650) 253-0000@7|clear@0|6@0/65@0/650@0/650-2@5/650-25@5/650-253@5/650-2530@5/(650) 253-00@7/(650) 253-000@7/(650) 253-0000@7"
+      }
+    },
+    {
+      "args": [
+        "EC",
+        "0991234567"
+      ],
+      "expected": {
+        "return": "0@0/09@0/099@0/099 1@5/099 12@5/099 123@5/099 123 4@5/099 123 45@5/099 123 456@5/099 123 4567@5|clear@0|0@0/09@0/099@0/099 1@5/099 12@5/099 123@5/099 123 4@5/099 123 45@5/099 123 456@5/099 123 4567@5"
+      }
+    }
+  ]
+}
