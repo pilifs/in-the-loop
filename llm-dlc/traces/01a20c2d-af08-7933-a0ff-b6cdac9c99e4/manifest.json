@@ -12,25 +12,25 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T06:40:01.041Z",
-  "duration_seconds": 1750,
+  "ended": "2026-11-24T06:46:35.151Z",
+  "duration_seconds": 2144,
   "stats": {
     "turns": 1,
-    "api_calls": 108,
-    "tool_calls": 349,
-    "tool_errors": 7,
+    "api_calls": 133,
+    "tool_calls": 423,
+    "tool_errors": 9,
     "compactions": 0,
-    "peak_context_tokens": 241908,
+    "peak_context_tokens": 286408,
     "usage": {
-      "input_tokens": 407040,
-      "output_tokens": 53251,
-      "cache_read_input_tokens": 18022656,
+      "input_tokens": 444135,
+      "output_tokens": 62792,
+      "cache_read_input_tokens": 24624512,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 234,
-    "exec": 108,
+    "Bash": 283,
+    "exec": 133,
     "apply_patch": 7
   },
   "files_touched": [
@@ -43,24 +43,24 @@
     {
       "index": 0,
       "started": "2026-11-24T06:10:50.814Z",
-      "ended": "2026-11-24T06:40:01.041Z",
+      "ended": "2026-11-24T06:46:35.151Z",
       "turns": 1,
-      "api_calls": 108,
+      "api_calls": 133,
       "usage": {
-        "input_tokens": 407040,
-        "output_tokens": 53251,
-        "cache_read_input_tokens": 18022656,
+        "input_tokens": 444135,
+        "output_tokens": 62792,
+        "cache_read_input_tokens": 24624512,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 241908
+      "peak_context_tokens": 286408
     }
   ],
   "log": {
-    "sha256": "7f98fa8256fb85b3d92503dab626a3c518dcde62b652498d697280ba5bd50da8",
-    "bytes": 2591107,
-    "lines": 908,
-    "gzip_bytes": 575374,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/7f98fa8256fb85b3d92503dab626a3c518dcde62b652498d697280ba5bd50da8.jsonl.gz"
+    "sha256": "2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7",
+    "bytes": 3142529,
+    "lines": 1115,
+    "gzip_bytes": 676753,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -87,9 +87,23 @@
       "summary": "Measure independent stock Java assertions (verification pending)",
       "body": "Generate standalone assertions for all 187 pinned programs, including separate old class definitions, bounded nonnull arrays, exceptional returns and mutable frames. Each target has a false control after normal return. Record literal JBMC property reports, costs and traces, and replay reconstructed inputs on the historical JDK. Job 20261124-063606-measure-standalone-stock-jbmc-on-the-exa measures the opening stock column.\n\nCompiled all 374 Java entrypoints and replayed the seven original known witnesses for the real and held-out programs. The repository-selected tests passed.",
       "log_sha256": "7f98fa8256fb85b3d92503dab626a3c518dcde62b652498d697280ba5bd50da8"
+    },
+    {
+      "change_id": "olrkxlksyqrmmrqzwpvwnozyksztwtkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Reproduce mixed Lucene wire behavior (verification pending)",
+      "body": "One thin caller compiled against 8.11.0 wrote and read frames in separate unmodified JVMs. Both local results are 0x01020304, both mixed results are 0x04030201, and both sentinels and cursors held. The two-copy symbolic caller checks round trips, byte-level slice frames and variable integers. Qualify the relocated old graph against both original JVM assertion modes.\n\nThe old-only strict probe verified the all-int property. The mixed probe refused MethodHandles.byteArrayViewVarHandle in the Lucene 9 initializer. Job 20261124-064322-measure-mixed-lucene-wire-claims-on-both records all three checker profiles. The affected test groups passed.",
+      "log_sha256": "2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7"
     }
   ],
   "logs": {
+    "2af36391ad22b4b74d2864059debdfeb3351e2ade3d6cce43d9204da799078e7": {
+      "bytes": 3142529,
+      "lines": 1115,
+      "gzip_bytes": 676753,
+      "url": null
+    },
     "4a9613a91f08b31805b7f97d1695035cec13c1d4168b5c1bb7f4569fad27382b": {
       "bytes": 1987990,
       "lines": 619,

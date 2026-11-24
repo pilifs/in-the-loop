@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-064322-measure-mixed-lucene-wire-claims-on-both",
+  "title": "Measure mixed Lucene wire claims on both strict engines and stock JBMC",
+  "description": "Ask the before-change verifier about both original round trips, both mixed byte-order characterizations, a false identity claim, the Lucene 9 slice read and write frame, and both directions of VInt preservation. Compile the caller once, bind old and new definitions independently, reproduce the four observations in separate unmodified JVMs and run post-call false controls in standalone JBMC.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc:standalone",
+    "jvm:wire-compatibility"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/wire_campaign.py"
+    ]
+  },
+  "expected": "Four separate-process cells, nine symbolic claim rows with literal results and nine stock reach controls. Preserve every refusal and unreproduced counterexample.",
+  "submitted": {
+    "at": "2026-11-24T06:43:22+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "10m",
+    "timeout": "45m"
+  },
+  "steps": [
+    {
+      "name": "Two-copy Lucene claims",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_campaign.py opening",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/opening/wire"
+  ]
+}

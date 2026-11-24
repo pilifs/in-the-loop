@@ -12,19 +12,19 @@
     "codex-auto-review"
   ],
   "started": "2026-11-24T06:16:13.320Z",
-  "ended": "2026-11-24T06:40:00.372Z",
-  "duration_seconds": 1427,
+  "ended": "2026-11-24T06:46:34.480Z",
+  "duration_seconds": 1821,
   "stats": {
-    "turns": 8,
-    "api_calls": 11,
+    "turns": 11,
+    "api_calls": 15,
     "tool_calls": 0,
     "tool_errors": 0,
     "compactions": 0,
-    "peak_context_tokens": 81083,
+    "peak_context_tokens": 105779,
     "usage": {
-      "input_tokens": 77034,
-      "output_tokens": 1309,
-      "cache_read_input_tokens": 476160,
+      "input_tokens": 102443,
+      "output_tokens": 1637,
+      "cache_read_input_tokens": 833536,
       "cache_creation_input_tokens": 0
     }
   },
@@ -34,24 +34,24 @@
     {
       "index": 0,
       "started": "2026-11-24T06:16:13.320Z",
-      "ended": "2026-11-24T06:40:00.372Z",
-      "turns": 8,
-      "api_calls": 11,
+      "ended": "2026-11-24T06:46:34.480Z",
+      "turns": 11,
+      "api_calls": 15,
       "usage": {
-        "input_tokens": 77034,
-        "output_tokens": 1309,
-        "cache_read_input_tokens": 476160,
+        "input_tokens": 102443,
+        "output_tokens": 1637,
+        "cache_read_input_tokens": 833536,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 81083
+      "peak_context_tokens": 105779
     }
   ],
   "log": {
-    "sha256": "560cc421784ddaccf0e8424ceb320fa59cd83c16dbc48b3d6277c0ae89777121",
-    "bytes": 671945,
-    "lines": 136,
-    "gzip_bytes": 133888,
-    "path": "llm-dlc/traces/01a20c2d-af27-7ac3-a159-e8ed09a26f91/logs/560cc421784ddaccf0e8424ceb320fa59cd83c16dbc48b3d6277c0ae89777121.jsonl.gz"
+    "sha256": "353d3cee7825a97efc552bb7d96ba1c0187424c7dfdbd93075df6d5d198bf938",
+    "bytes": 900637,
+    "lines": 183,
+    "gzip_bytes": 188449,
+    "path": "llm-dlc/traces/01a20c2d-af27-7ac3-a159-e8ed09a26f91/logs/353d3cee7825a97efc552bb7d96ba1c0187424c7dfdbd93075df6d5d198bf938.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -78,9 +78,23 @@
       "summary": "Measure independent stock Java assertions (verification pending)",
       "body": "Generate standalone assertions for all 187 pinned programs, including separate old class definitions, bounded nonnull arrays, exceptional returns and mutable frames. Each target has a false control after normal return. Record literal JBMC property reports, costs and traces, and replay reconstructed inputs on the historical JDK. Job 20261124-063606-measure-standalone-stock-jbmc-on-the-exa measures the opening stock column.\n\nCompiled all 374 Java entrypoints and replayed the seven original known witnesses for the real and held-out programs. The repository-selected tests passed.",
       "log_sha256": "560cc421784ddaccf0e8424ceb320fa59cd83c16dbc48b3d6277c0ae89777121"
+    },
+    {
+      "change_id": "olrkxlksyqrmmrqzwpvwnozyksztwtkn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Reproduce mixed Lucene wire behavior (verification pending)",
+      "body": "One thin caller compiled against 8.11.0 wrote and read frames in separate unmodified JVMs. Both local results are 0x01020304, both mixed results are 0x04030201, and both sentinels and cursors held. The two-copy symbolic caller checks round trips, byte-level slice frames and variable integers. Qualify the relocated old graph against both original JVM assertion modes.\n\nThe old-only strict probe verified the all-int property. The mixed probe refused MethodHandles.byteArrayViewVarHandle in the Lucene 9 initializer. Job 20261124-064322-measure-mixed-lucene-wire-claims-on-both records all three checker profiles. The affected test groups passed.",
+      "log_sha256": "353d3cee7825a97efc552bb7d96ba1c0187424c7dfdbd93075df6d5d198bf938"
     }
   ],
   "logs": {
+    "353d3cee7825a97efc552bb7d96ba1c0187424c7dfdbd93075df6d5d198bf938": {
+      "bytes": 900637,
+      "lines": 183,
+      "gzip_bytes": 188449,
+      "url": null
+    },
     "36ee50b3bdc4b9777c2362daf68667087649e9088315e0ef22ad9cba93b58327": {
       "bytes": 553074,
       "lines": 113,
