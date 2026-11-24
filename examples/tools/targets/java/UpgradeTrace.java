@@ -169,6 +169,90 @@ public final class UpgradeTrace {
         return null;
     }
 
+    /** Substitute only a proved integral result, at the entry of that exact loaded static method. */
+    private static final class CheckedReplay {
+        final String helper, consumer, startup, startupWithin, code, pool;
+        final Map<String, Long> table = new LinkedHashMap<>();
+
+        CheckedReplay(String path) throws IOException {
+            List<String> lines = Files.readAllLines(Paths.get(path), StandardCharsets.UTF_8);
+            helper = lines.get(0); code = lines.get(1); pool = lines.get(2);
+            consumer = lines.get(3); startup = lines.get(4); startupWithin = lines.get(5);
+            for (String row : lines.subList(6, lines.size())) {
+                String[] pair = row.split("\t", -1);
+                table.put(pair[0], Long.parseLong(pair[1]));
+            }
+        }
+
+        static String entry(Location loc) {
+            return loc.declaringType().name() + "#" + loc.method().name() + loc.method().signature();
+        }
+
+        void bind(VirtualMachine vm, ReferenceType type) {
+            for (String target : Arrays.asList(helper, startup)) {
+                int hash = target.indexOf('#'), paren = target.indexOf('(', hash);
+                if (type.name().equals(target.substring(0, hash))) {
+                    breakpoint(vm, type, target.substring(hash + 1, paren), target.substring(paren),
+                               target.equals(helper) ? "checked" : "startup");
+                }
+            }
+        }
+
+        void apply(BreakpointEvent hit, boolean premise, String observer) throws Exception {
+            List<StackFrame> frames = hit.thread().frames();
+            boolean observed = false, startupScope = false;
+            for (StackFrame f : frames) {
+                String name = entry(f.location());
+                if (name.equals(observer + "#observe([Ljava/lang/String;)Ljava/lang/String;")) observed = true;
+                if (name.equals(startupWithin)) startupScope = true;
+            }
+            if (!observed) return;
+            List<Value> values = frames.get(0).getArgumentValues();
+            if (premise) {
+                if (!startupScope) return;
+                String value = "entered";
+                List<Value> resourceValues = new ArrayList<>(values);
+                ObjectReference receiver = frames.get(0).thisObject();
+                if (receiver != null && receiver.referenceType().name().equals("java.net.URL")) resourceValues.add(receiver);
+                for (Value arg : resourceValues) {
+                    if (arg instanceof com.sun.jdi.StringReference)
+                        value = ((com.sun.jdi.StringReference)arg).value();
+                    if (arg instanceof ObjectReference && arg.type().name().equals("java.net.URL")) {
+                        ObjectReference url = (ObjectReference)arg;
+                        Value file = url.getValue(url.referenceType().fieldByName("file"));
+                        if (file instanceof com.sun.jdi.StringReference) value = ((com.sun.jdi.StringReference)file).value();
+                    }
+                }
+                System.err.println("UPGRADE-STARTUP " + encoded(value));
+                return;
+            }
+            if (frames.size() < 2 || !entry(frames.get(1).location()).equals(consumer)) return;
+            Location loc = hit.location();
+            if (!loc.method().isStatic() || loc.method().isSynchronized() || loc.codeIndex() != 0
+                    || !digest(loc.method().bytecodes()).equals(code) || !digest(loc.declaringType().constantPool()).equals(pool)
+                    || hit.virtualMachine().classesByName(loc.declaringType().name()).size() != 1)
+                throw new IllegalStateException("loaded helper differs from the proved static body");
+            List<String> args = new ArrayList<>();
+            for (Value v : values) args.add(Long.toString(((com.sun.jdi.PrimitiveValue)v).longValue()));
+            String key = String.join(",", args);
+            if (!table.containsKey(key)) return;
+            long result = table.get(key);
+            VirtualMachine vm = hit.virtualMachine();
+            Value returned;
+            switch (helper.charAt(helper.length() - 1)) {
+                case 'Z': returned = vm.mirrorOf(result != 0); break;
+                case 'C': returned = vm.mirrorOf((char)result); break;
+                case 'I': returned = vm.mirrorOf((int)result); break;
+                case 'J': returned = vm.mirrorOf(result); break;
+                default: throw new IllegalStateException("unsupported result type");
+            }
+            long bci = frames.get(1).location().codeIndex();
+            hit.thread().forceEarlyReturn(returned);
+            System.err.println("UPGRADE-SUBSTITUTED " + encoded("{\"caller\":\"" + consumer
+                + "\",\"bci\":" + bci + ",\"args\":[" + key + "],\"result\":" + result + "}"));
+        }
+    }
+
     private static String invocation(BreakpointEvent hit, String observer, Set<Long> sites) throws Exception {
         String dispatched = null;
         for (StackFrame frame : hit.thread().frames()) {
@@ -184,6 +268,8 @@ public final class UpgradeTrace {
     }
 
     public static void main(String[] args) throws Exception {
+        String substitution = System.getProperty("upgrade.checked.table");
+        CheckedReplay checked = substitution == null ? null : new CheckedReplay(substitution);
         String entry = args[0];
         int hash = entry.indexOf('#'), paren = entry.indexOf('(', hash);
         String owner = entry.substring(0, hash);
@@ -216,17 +302,26 @@ public final class UpgradeTrace {
         try {
             Set<String> watched = new LinkedHashSet<>(exceptions);
             watched.add(owner);
+            if (checked != null) {
+                watched.add(checked.helper.split("#")[0]);
+                watched.add(checked.startup.split("#")[0]);
+            }
             if (!exceptions.isEmpty()) watched.add("UpgradeObservation");
             for (String name : watched) {
                 watch(vm, name);
                 for (ReferenceType type : vm.classesByName(name))
-                    if (type.isPrepared()) install(vm, type, owner, method, descriptor, exceptions);
+                    if (type.isPrepared()) {
+                        install(vm, type, owner, method, descriptor, exceptions);
+                        if (checked != null) checked.bind(vm, type);
+                    }
             }
             while (!finished) {
                 EventSet events = vm.eventQueue().remove();
                 for (Event event : events) {
                     if (event instanceof ClassPrepareEvent) {
-                        install(vm, ((ClassPrepareEvent) event).referenceType(), owner, method, descriptor, exceptions);
+                        ReferenceType type = ((ClassPrepareEvent) event).referenceType();
+                        install(vm, type, owner, method, descriptor, exceptions);
+                        if (checked != null) checked.bind(vm, type);
                     } else if (event instanceof ExceptionEvent) {
                         ExceptionEvent raised = (ExceptionEvent) event;
                         if (!raised.exception().referenceType().equals(raised.request().getProperty("exactException"))) continue;
@@ -249,7 +344,9 @@ public final class UpgradeTrace {
                     } else if (event instanceof BreakpointEvent) {
                         BreakpointEvent point = (BreakpointEvent) event;
                         String purpose = (String) point.request().getProperty("purpose");
-                        if (purpose.equals("constructor")) {
+                        if (purpose.equals("checked") || purpose.equals("startup")) {
+                            checked.apply(point, purpose.equals("startup"), observer);
+                        } else if (purpose.equals("constructor")) {
                             if (entryInvocation != null) continue;
                             StackFrame frame = point.thread().frame(0);
                             ObjectReference object = frame.thisObject();

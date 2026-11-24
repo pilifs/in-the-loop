@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-145949-kernel-check-every-signed-epoch-remainde",
+  "title": "Kernel-check every signed epoch remainder against both ThreeTen JARs",
+  "description": "Bind the exact pure floorMod(long,int) instructions on both production builds. Check with Lean that for any signed epoch and divisor 86400 both machine conversions fit and the original method returns the Euclidean remainder.",
+  "kind": "library",
+  "capabilities": [
+    "lean-kernel",
+    "original-java-bytecode"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T14:59:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "lean"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Verify kernel proof and classfile correspondence",
+      "run": "python3 -B lib/benchmark/organic-composition/assurance.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/threeten/all-long-remainder.json"
+  ]
+}

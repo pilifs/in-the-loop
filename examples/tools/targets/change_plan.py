@@ -69,13 +69,16 @@ def frozen_workflows(path):
                         or not isinstance(expected, dict) or set(expected) not in ({"return"}, {"throws"})):
                     raise ValueError(f"{name}: ambiguous allowed change or input outside the domain")
                 seen.add(i)
+        if "checkedHelper" in row:
+            row = dict(row)
+            row["checkedHelper"] = json.loads((path.parent / row["checkedHelper"]).read_bytes())
         workflows[name] = (row, specfile, probe, spec)
     return doc, workflows
 
 
 def runner_identity():
     # Includes the evidence parser and bytecode readers as well as the Java adapters.
-    modules = ("change_plan", "change_inventory", "change_evidence", "upgrade_replay", "upgrade_claims",
+    modules = ("change_plan", "change_inventory", "change_evidence", "change_helpers", "upgrade_replay", "upgrade_claims",
                "upgrade_linkage", "upgrade_jdbc", "runtime_jar", "class_binding", "runtime_jdk")
     files = [*(HERE / (name + ".py") for name in modules), upgrade_replay.LAUNCHER, upgrade_replay.TRACER, upgrade_replay.LOOKUP]
     return digest({"files": {p.name: upgrade_replay.sha(p) for p in files},
@@ -150,11 +153,16 @@ def compare(args, *, original_binary=True):
         basis = {"sourceClaim": claim_key, "runner": runner, "comparator": plan["tools"]["comparator"],
                  "probe": upgrade_replay.sha(probe), "environment": environment,
                  "seconds": args.seconds, "kind": "production"}
+        helper = row.get("checkedHelper")
+        if helper is not None:
+            basis["checkedHelper"] = digest(helper)
         execution_key = digest([basis, old["key"], new["key"], *operands])
         node = {"id": name, "claimKey": claim_key, "executionKey": execution_key, "entry": spec["entry"],
                 "statement": spec["observer"], "domain": spec["cases"], "scope": spec["basis"],
                 "cohort": row["cohort"], "intent": row["intent"], "assumptions": assumptions,
                 "status": "open", "firstOpenDependency": "original caller executions"}
+        if helper is not None:
+            node["derivation"] = "finite public history with a checked, pure helper substituted on both deployments"
         plan["claims"].append(node)
         if spec["entry"] in problems:
             node["firstOpenDependency"] = problems[spec["entry"]]
@@ -174,7 +182,8 @@ def compare(args, *, original_binary=True):
         try:
             upgrade_replay.evaluate(scope, args.before, args.after, probe, jdks["old"], operands, args.seconds,
                                     fixtures=args.fixtures, progress=evidence, side_cache=cache,
-                                    after_jdk=jdks["new"], application_change=True)
+                                    after_jdk=jdks["new"], application_change=True,
+                                    checked_helper=(row["checkedHelper"], checker, images, args.cache) if "checkedHelper" in row else None)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             evidence.update(status="open", reason=str(error))
         if evidence.get("cases") == spec["cases"]:
@@ -185,6 +194,11 @@ def compare(args, *, original_binary=True):
                                  for c in node["children"]]
             if node["status"] == "established" and not closed:
                 node.update(status="open", firstOpenDependency="bind all runtime inputs and justify deterministic observations")
+        if "checkedHelper" in row:
+            node["helperProofs"] = {side: {k: proof[k] for k in ("key", "entry", "action", "proofDigest")}
+                                    for side, proof in evidence.get("helperProofs", {}).items()}
+            if node["status"] == "open" and evidence.get("reason"):
+                node["firstOpenDependency"] = evidence["reason"]
         for key in ("stoppedAt", "beforeEntryComparison", "linkage", "reason"):
             if key in evidence:
                 node[key] = evidence[key]

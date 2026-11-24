@@ -9,7 +9,7 @@ import tempfile
 from plan_run import HERE, JDK, ROOT, OUTPUT
 
 
-def measure(case, method):
+def measure(case, method, initializer=None):
     folder = HERE / case
     results = {}
     env = {**os.environ, "JAVA_HOME": str(JDK), "PATH": str(JDK/"bin")+os.pathsep+os.environ["PATH"]}
@@ -22,12 +22,14 @@ def measure(case, method):
                             "-cp", cp, "-d", temp, folder/"UpgradeProbe.java"], check=True)
             cmd = [str(checker),"prove","--classes",temp,"UpgradeProbe#"+method,"--classpath",cp,"--engine","native",
                    "--assert","result == true","--unwind","16","--json"]
+            if initializer:
+                cmd.extend(["--observed-initializer", initializer])
             proc = subprocess.run(cmd, env=env, capture_output=True, text=True, timeout=150)
             results[side] = {"argv": cmd, "exit": proc.returncode, "stdout": proc.stdout, "stderr": proc.stderr,
                              "artifacts": doc["classpath"]}
             if not proc.stdout.strip() or not json.loads(proc.stdout):
                 raise ValueError(f"missing native disposition on {side}: {proc.stderr[:200]}")
-    target = ROOT / OUTPUT / case / "first-native.json"
+    target = ROOT / OUTPUT / case / ("observed-native.json" if initializer else "first-native.json")
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(json.dumps(results, indent=2)+"\n")
 

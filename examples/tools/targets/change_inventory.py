@@ -4,11 +4,12 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import struct
 import subprocess
 import tempfile
 import zipfile
 
-from targets import runtime_jar, runtime_jdk, upgrade_claims, upgrade_replay
+from targets import runtime_jar, runtime_jdk, upgrade_replay
 
 
 def digest(value):
@@ -74,6 +75,61 @@ def entries(path, feature):
                     yield name, jar.read(info)
 
 
+def instructions(body):
+    """Yield instruction boundaries, including aligned switch tables and widened locals."""
+    pc = 0
+    while pc < len(body):
+        op = body[pc]
+        if op in (0xaa, 0xab):
+            base = (pc + 4) & ~3
+            if op == 0xaa:
+                low, high = struct.unpack_from(">ii", body, base+4)
+                if high < low:
+                    raise ValueError("invalid tableswitch")
+                end = base + 12 + 4*(high-low+1)
+            else:
+                count, = struct.unpack_from(">i", body, base+4)
+                if count < 0:
+                    raise ValueError("invalid lookupswitch")
+                end = base + 8 + 8*count
+        elif op == 0xc4:
+            end = pc + (6 if body[pc+1] == 0x84 else 4)
+        else:
+            end = pc + INSTRUCTION_BYTES[op]
+        if end > len(body):
+            raise ValueError("truncated instruction in application inventory")
+        yield pc, op
+        pc = end
+
+
+def invocation_inventory(data):
+    """Read resolved calls from instruction boundaries in the selected class file."""
+    pool, declarations, _ = runtime_jar._declarations(data, with_code=True)
+    for (method, descriptor), (flags, body, _) in declarations.items():
+        if method.startswith("<") or flags & (0x0040 | 0x1000):
+            continue
+        calls = set()
+        for pc, op in instructions(body or b""):
+            if 0xb6 <= op <= 0xb9:
+                index = int.from_bytes(body[pc+1:pc+3], "big")
+                tag, ref = pool[index]
+                if tag not in (10, 11):
+                    raise ValueError("invalid method reference in application inventory")
+                calls.add(runtime_jar._member_ref(pool, ref))
+        yield method, descriptor, flags, sorted(calls)
+
+
+# JVM instructions with inline operands. Switch and wide are variable length.
+INSTRUCTION_BYTES = [1] * 256
+for width, opcodes in (
+        (2, (0x10, 0x12, *range(0x15, 0x1a), *range(0x36, 0x3b), 0xa9, 0xbc)),
+        (3, (0x11, 0x13, 0x14, 0x84, *range(0x99, 0xa9), *range(0xb2, 0xb9),
+             0xbb, 0xbd, 0xc0, 0xc1, 0xc6, 0xc7)),
+        (4, (0xc5,)), (5, (0xb9, 0xba, 0xc8, 0xc9))):
+    for opcode in opcodes:
+        INSTRUCTION_BYTES[opcode] = width
+
+
 def deployment(files, jdk):
     feature = int(runtime_jdk.identity(jdk)["feature"])
     classes, resources, methods = {}, {}, {}
@@ -96,15 +152,9 @@ def deployment(files, jdk):
             classes.setdefault(owner, sha)
             if position:
                 continue
-            listing = upgrade_claims.disassemble(jdk, files, owner, 30)
-            calls = upgrade_claims.calls_in_methods(listing, owner)
-            for method, descriptor in runtime_jar.methods(data):
-                flags = runtime_jar.method_flags(data, method, descriptor)
-                if method.startswith("<") or flags & (0x0040 | 0x1000):
-                    continue
-                member = (owner, method, descriptor)
-                methods[member] = {"calls": sorted(set(calls.get((method, descriptor), []))),
-                                   "public": bool(flags & (0x0001 | 0x0004)), "classSha256": sha}
+            for method, descriptor, flags, calls in invocation_inventory(data):
+                methods[owner, method, descriptor] = {
+                    "calls": calls, "public": bool(flags & (0x0001 | 0x0004)), "classSha256": sha}
     return classes, resources, methods, implicit
 
 

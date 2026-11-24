@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-145949-consume-checked-remainders-in-the-origin",
+  "title": "Consume checked remainders in the original ThreeTen public histories",
+  "description": "Use both upstream ThreeTen builds and the existing application plan. Compare cold, warm, clean, unrelated, incorrect-helper and damaged-TZDB configurations. Require a checked result forced at the original conversion site and the selected provider's live resource in both independent trials.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "checked-proof-reuse",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T14:59:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "Evaluate original application and cache controls",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten qualified --controls",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/threeten/qualified"
+  ]
+}
