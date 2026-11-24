@@ -1,6 +1,7 @@
 """Compare released public callers, retaining exact checker output and JVM replays."""
 import argparse
 import gzip
+import json
 import os
 from pathlib import Path
 import zipfile
@@ -10,23 +11,16 @@ from stock_history import classpath, stock_run
 from campaign import JDK, compile_java, javaenv, jvm_controls, replay_witness
 from subjects import Claim, Subject
 from wire_campaign import CACHE
+from disclosed_cases import CASES, COMPANIONS, COMPILE_GRAPH
 
 VEC = "vecmath-1.5.2"
 MATH = "commons-math3-3.6.1"
 GUAVA = "guava-33.4.8-jre"
-JARS = {
-    VEC: {VEC+".jar": "3558e81ca74c60dc01baca7ef05f48594bbaed43af45d4f1b9196e479734e675"},
-    MATH: {MATH+".jar": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"},
-    GUAVA: {GUAVA+".jar": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed",
-            "failureaccess-1.0.3.jar": "cbfc3906b19b8f55dd7cfd6dfe0aa4532e834250d7f080bd8d211a3e246b59cb",
-            "listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar": "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
-            "jspecify-1.0.0.jar": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab",
-            "error_prone_annotations-2.36.0.jar": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5",
-            "j2objc-annotations-3.0.0.jar": "88241573467ddca44ffd4d74aa04c2bbfd11bf7c17e0c342c94c9de7a70a7c64"},
-}
+GRAPHS = json.loads((HERE / "released-graphs.json").read_bytes())
 TIE = ("0x1p-75f","0x1p-75f")
 NORMAL = ("1.5f", "2.5f")
 SUBJECTS = {
+    **CASES,
     "N01-N02": ("numeric", Subject(0, "Product", VEC, (
         Claim("range", "float x, float y", holds=(NORMAL, ("0x1.fffffep0f","0x1.fffffep1f"))),
         Claim("underflow", "float x, float y", holds=(TIE, ("0x1.4p-75f","0x1.8p-75f"))),
@@ -47,9 +41,11 @@ SUBJECTS = {
 
 
 def jars_for(graph):
+    if graph == "jdk":
+        return []
     paths = (CACHE / graph / "classpath.txt").read_text().strip().split(os.pathsep)
     jars = [Path(p) for p in paths]
-    if {p.name: digest(p) for p in jars} != JARS[graph] or [p.name for p in jars] != list(JARS[graph]):
+    if [{"file": p.name, "sha256": digest(p)} for p in jars] != GRAPHS[graph]:
         raise ValueError("published classpath or order differs from pin: " + graph)
     return jars
 
@@ -67,10 +63,11 @@ def run(key, phase, out, physical_only):
         classes = work / "claims"
         # The controls also call the Guava public transfer.
         sources = [HERE / directory / (subject.owner+".java")]
-        if subject.owner == "ViewChecks": sources.append(HERE / directory / "FarmFrame.java")
-        compile_java(sources, classes, jars, env)
+        sources += [HERE / directory / (name + ".java") for name in COMPANIONS.get(subject.owner, [])]
+        compiler_jars = jars_for(COMPILE_GRAPH.get((subject.owner,subject.graph),subject.graph))
+        compile_java(sources, classes, compiler_jars, env)
         cp = [classes, *jars]
-        record = {"subject": subject.owner, "classpath": [str(p) for p in jars], "jarsSha256": JARS[subject.graph],
+        record = {"subject": subject.owner, "classpath": [str(p) for p in jars], "jarsSha256": {p.name: digest(p) for p in jars}, "compileClasspath": list(map(str, compiler_jars)),
                   "subjectSha256": digest(classes/(subject.owner+".class")), "jdkModulesSha256": digest(JDK/"lib/modules"),
                   "jvmcontractSha256": digest(Path(checker)), "jbmcSha256": digest(JBMC), "coreModelsSha256": digest(MODELS),
                   "jvm": jvm_controls(subject, work, cp, env), "rows": [], "phase": phase,
