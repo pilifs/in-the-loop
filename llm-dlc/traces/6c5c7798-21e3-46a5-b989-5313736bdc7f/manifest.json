@@ -11951,6 +11951,54 @@
       "summary": "Record the watcher's decisions on organic-pr-20-additional-cases-setup",
       "body": "The watcher's verdicts on the single-agent run organic-pr-20-additional-cases-setup (llm-dlc/decisions/single-organic-pr-20-additional-cases-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
+    },
+    {
+      "change_id": "uktymptmzmwvwvvyrokxrmntmkyoqtlo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Start the setup record for the twenty additional organic Java PRs",
+      "body": "Fetched the 40 pinned upstream revisions of J01-J20 into shallow mirrors, made one worktree per revision outside the checkout, and recorded each commit's tree and parents. Every fix's first parent is the brief's parent and every PR's merge commit equals the brief's fix revision (checked with gh api). Builds, releases and landed tests follow.",
+      "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
+    },
+    {
+      "change_id": "rqovmytvnyukmwxqyouwoyrtktsqtkku",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the first upstream builds for the twenty-case setup (verification pending)",
+      "body": "Four setup jobs build an upstream project at both pinned revisions of a case and run its landed test on the fix, on the parent, and transplanted onto the parent: Calcite core with CoreQuidemTest (J12, 20261124-203257-setup-build-apache-calcite-core-at-both), POI poi-ooxml with TestXSSFHyperlink (J05, 20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo), Eclipse Collections with the UnifiedMap tests of unit-tests-java8 (J17, 20261124-203508-setup-build-eclipse-collections-at-both), and Lucene core and join with the block-join tests (J14, 20261124-203513-setup-build-lucene-core-and-join-at-both). Each was too long to run inline. Their dependencies were resolved online in the setup cache first.",
+      "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
+    },
+    {
+      "change_id": "urulzqpoksnvqyyylnvkvzmnqmwqqvmy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the builds, overlays and landed tests of the twenty-case setup",
+      "body": "The setup record now has, for each of J01-J20, the toolchain, the built or overlay jars with their sha256 and class digests, the release graph each overlay is compiled over (and which side of the PR that release already equals), the landed test run on the fix, on the parent and transplanted onto the parent, the setup probes of the brief's preflight observations, and the exact commands with their checked offline forms. Every landed test or probe that could run matched the brief. Four upstream builds (POI, Calcite, Eclipse Collections, Lucene) are queued jobs; five upstream builds cannot run (gone or credentialed repositories, a missing thrift binary) and the record says why. The PGP pass and the notes for the domain agent follow.",
+      "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
+    },
+    {
+      "change_id": "qkrmwoottxrwmtvnvqlmlxmmmwrkrxuy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Finish the twenty-case setup record with signatures and notes for the domain agent",
+      "body": "Every one of the 264 release jars the setup resolved matches Central's sha1; 256 carry a valid PGP signature checked in the setup's own keyring (19 by keys revoked after the release, among them Spring's buildmaster key, revoked in 2023 as a precaution) and 8 old ones have no signature on Central. The record ends with the Setup Agent Notes for the domain agent: where each case's built, overlay or release artifacts are, what was verified on a JVM, which release already equals which side of each PR, the substitutions and unbuildable upstreams, and what is left on purpose. Four upstream-build jobs (POI, Calcite, Eclipse Collections, Lucene) are still pending. Five false-positive findings from this session's logs (version numbers read as IP addresses, a long test name) are proposed for the allow list.",
+      "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
+    },
+    {
+      "change_id": "lpvzruvmnwlmkpuwumwkvxtrqwpmqmkk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup jobs and resubmit the Calcite build (verification pending)",
+      "body": "Three upstream-build jobs of the twenty-case setup passed. POI poi-ooxml (J05): TestXSSFHyperlink 30/30 on the fix, 26/26 on the parent, 5 failures with the fix's test on the parent. Lucene core and join (J14): the landed tests 7/7 and 4/4. Eclipse Collections (J17): 960 map tests pass in all four runs, a preservation case. Their jars and digests are in the record. The Calcite job (J12) failed at once because git-commit-id-plugin cannot read a worktree of the shallow mirror; it is resubmitted as 20261124-210513-setup-build-apache-calcite-core-at-both with the generate-git-id profile switched off on the command line (the plugin only writes build metadata), checked inline to get past the root project.",
+      "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
+    },
+    {
+      "change_id": "msrxknqmyplmrvuqtuntywpkosvoonpk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run organic-pr-20-additional-cases-setup into the line",
+      "body": "The single-agent run organic-pr-20-additional-cases-setup (session 9c1d1c59-e947-449f-97e1-6ebf7cc523bb) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "073371795833040e0c143fe71bffdaac52cf5fc3e066a848a47d946bd6050dc9"
     }
   ],
   "logs": {

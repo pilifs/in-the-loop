@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-203513-setup-build-lucene-core-and-join-at-both",
+  "title": "Setup: build Lucene core and join at both #15727 revisions and run the landed block-join tests",
+  "description": "Setup for case J14 of llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/organic-pr-20/worktrees (J14-lucene-fix = 167503f6, J14-lucene-parent = 182ee9c4; Lucene 11.0.0-SNAPSHOT, minJava 25), runs the upstream ./gradlew (wrapper jar and Gradle 9.3.1 checked against services.gradle.org by the setup session) on JDK 25.0.5 with the cache's GRADLE_USER_HOME: builds lucene-core and lucene-join jars and runs TestBlockJoinSorting and TestBlockJoinSelector with tests.seed=DEADBEEF, first on the fix online, then on the parent (its own copies) offline, then the fix again offline. No transplant: the landed tests call constructors and a wrap overload that only the fix has, so they do not compile on the parent (shown by the setup's overlay run). Jars to .../artifacts with sha256, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md",
+      "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md"
+    ]
+  },
+  "expected": "every step exits 0: both sides' own block-join tests pass, the fix's offline rerun passes, jars are copied",
+  "submitted": {
+    "at": "2026-11-24T20:35:13+00:00",
+    "session": "9c1d1c59-e947-449f-97e1-6ebf7cc523bb",
+    "by": "setup agent (Claude Opus 5.5), fork C"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "6G",
+    "duration": "20m"
+  },
+  "steps": [
+    {
+      "name": "J14-lucene-fix: lucene:core and lucene:join jars, landed TestBlockJoinSorting/TestBlockJoinSelector (online)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-fix; echo worktree=J14-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4  :lucene:core:jar :lucene:join:jar :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-fix.online.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-fix-core.jar; J=$(ls lucene/join/build/libs/lucene-join-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-fix-join.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-fix-join.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "J14-lucene-parent: jars and its own TestBlockJoinSorting/TestBlockJoinSelector (offline)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-parent; echo worktree=J14-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4 --offline :lucene:core:jar :lucene:join:jar :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-parent.offline.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-parent-core.jar; J=$(ls lucene/join/build/libs/lucene-join-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-parent-join.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-parent-join.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "J14-lucene-fix: the landed tests again (offline)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-fix; echo worktree=J14-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4 --offline :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/J14-lucene-fix clean -fdxq; git -C $W/J14-lucene-fix status --short; git -C $W/J14-lucene-parent clean -fdxq; git -C $W/J14-lucene-parent status --short; du -sh $W/J14-*",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
