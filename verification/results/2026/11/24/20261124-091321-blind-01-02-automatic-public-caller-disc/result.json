@@ -1,0 +1,206 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-091321-blind-01-02-automatic-public-caller-disc",
+  "title": "Blind 01-02 automatic public-caller discovery from frozen artifacts",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 22.3s, peak 137.9 MiB (estimated 14m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-091321-blind-01-02-automatic-public-caller-disc.json",
+    "sha256": "f99d5978c5cb474ed73428ad32e6f8b40121676a4fcac1457f747da5b2114f73",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-091321-blind-01-02-automatic-public-caller-disc",
+      "title": "Blind 01-02 automatic public-caller discovery from frozen artifacts",
+      "description": "Give the isolated frozen operator only the neutral release JARs. Record its first cold selection, exact public dispatch, JVM observations, original-witness replay, and warm costs. Its namespace cannot access the independent reference docket.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence",
+        "upgrade:automatic-caller"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/references.json"
+        ]
+      },
+      "expected": "A bound receipt for every registered slot, including unsupported callers and differences that fail original-JVM replay.",
+      "submitted": {
+        "at": "2026-11-24T09:13:21+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 26,
+      "requires": [
+        "jvmcontract",
+        "bwrap",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "14m",
+        "timeout": "65m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/evaluate_panel.py automatic 01 02",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/blind/01/automatic",
+        "verification/beyond-jbmc/blind/02/automatic"
+      ]
+    }
+  },
+  "sourceCommit": "de0ec8bb1531619dd9ac391c6a4d7be8f35720e7",
+  "startedAt": "2026-11-24T09:28:54+00:00",
+  "finishedAt": "2026-11-24T09:33:07+00:00",
+  "wallSeconds": 253.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3900.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 840.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 144584704,
+    "wallSeconds": 22.3,
+    "cpuSeconds": 26.8,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/evaluate_panel.py automatic 01 02",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3900.0,
+      "cancelled": false,
+      "wallSeconds": 22.277,
+      "cpuSeconds": 26.758,
+      "cpuThrottledSeconds": 2.11,
+      "peakMemoryBytes": 144584704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 2,
+        "bytes": 52,
+        "sha256": "d64d0ec35623d63bd9d8dcba634c980b3c4b7d130819401ba2401c836e99461b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "01 4 automatic candidates",
+        "02 4 automatic candidates"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/blind/01/automatic/executions.zip",
+      "change": "added",
+      "bytes": 22437,
+      "sha256": "2ec6f8a3492134ddebab937f3e80a35bee9add243669d76920087bb4170e9f0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/blind/01/automatic/report.json.gz",
+      "change": "added",
+      "bytes": 3547,
+      "sha256": "2072809ffd73b2622ad68132cc9baeaf4e222c3a9be18fbe3b657476cd29d59a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/blind/02/automatic/executions.zip",
+      "change": "added",
+      "bytes": 81337,
+      "sha256": "40766b95145952cafcbc6842c30b0a56307bc32ade22ff39803afadf979e5818",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/blind/02/automatic/report.json.gz",
+      "change": "added",
+      "bytes": 6847,
+      "sha256": "89a5ece24c7b7d29569ef1f109325123782295c142252f1b0f9034d5b8c67ad5",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:37:43+00:00",
+    "applied": [
+      "verification/beyond-jbmc/blind/01/automatic/executions.zip",
+      "verification/beyond-jbmc/blind/01/automatic/report.json.gz",
+      "verification/beyond-jbmc/blind/02/automatic/executions.zip",
+      "verification/beyond-jbmc/blind/02/automatic/report.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c989e107ba42aae92b64e01a96d3cc0eabab7ba9",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c989e107ba42aae92b64e01a96d3cc0eabab7ba9/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T093307Z-234785b84ca1e3fd",
+      "outputs": "20261124T093307Z-266700608bf77c3a",
+      "diff": "20261124T093307Z-308186c5ff1999d0"
+    }
+  }
+}
