@@ -1,0 +1,190 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-082238-check-jackson-long-limits-and-the-origin",
+  "title": "Check Jackson long limits and the original decimal slice contract",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m19s, peak 247.4 MiB (estimated 6m00s, 5.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-082238-check-jackson-long-limits-and-the-origin.json",
+    "sha256": "67328a816400e5087d1b99d897d55bf7a2606dd1a2504db65c3bd71c9f29234f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-082238-check-jackson-long-limits-and-the-origin",
+      "title": "Check Jackson long limits and the original decimal slice contract",
+      "description": "Compile the original Jackson Core 2.19.0 public caller on Temurin 21. Measure both inLongRange overloads over all 2,000 threshold inputs, parseLong19 on every accepted slice, and a separately guarded all-19-digit claim. Retain three checker outputs, reach controls and exact JVM replays.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/text/JacksonRanges.java"
+        ]
+      },
+      "expected": "Four raw three-profile comparisons bound to the release with the finite threshold and general digit scope distinguished.",
+      "submitted": {
+        "at": "2026-11-24T08:22:38+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 19,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "6m",
+        "timeout": "34m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualif",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N04-N05",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/N04-N05"
+      ]
+    }
+  },
+  "sourceCommit": "6df5a89936febe2f3d004d22f5eb36653a847fa3",
+  "startedAt": "2026-11-24T08:36:32+00:00",
+  "finishedAt": "2026-11-24T08:41:58+00:00",
+  "wallSeconds": 326.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2719281,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 2040.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 259371008,
+    "wallSeconds": 139.2,
+    "cpuSeconds": 140.4,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualif",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N04-N05",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2040.0,
+      "cancelled": false,
+      "wallSeconds": 139.184,
+      "cpuSeconds": 140.407,
+      "cpuThrottledSeconds": 0.062,
+      "peakMemoryBytes": 259371008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 5,
+        "bytes": 264,
+        "sha256": "10f6f700611a26a0c272da7b0925e9dfc90fb4b463a011d589b85a4d91a4c1b8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N04-N05 15 original checks passed",
+        "N04-N05 arrayRange verified unverifiable SUCCESS SUCCESS",
+        "N04-N05 stringRange verified unverifiable SUCCESS SUCCESS",
+        "N04-N05 accepted verified unverifiable SUCCESS SUCCESS",
+        "N04-N05 allDigits unverifiable unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/N04-N05/executions.zip",
+      "change": "added",
+      "bytes": 63108,
+      "sha256": "e6ff4b4674d15f5e28e23f472295502dba310ac3f5afb8f7cba7ad27822ec5bf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N04-N05/results.json.gz",
+      "change": "added",
+      "bytes": 2261,
+      "sha256": "687908183ea30b7c073966020d7c11ea2b61f4b39645a0b1e2c0fb7a9455cde1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:46:10+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/N04-N05/executions.zip",
+      "verification/beyond-jbmc/qualified/N04-N05/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T084158Z-567168419c91eecf",
+      "outputs": "20261124T084158Z-591578dd95a8ebf6",
+      "diff": "20261124T084158Z-61174482ca13f3e4"
+    }
+  }
+}
