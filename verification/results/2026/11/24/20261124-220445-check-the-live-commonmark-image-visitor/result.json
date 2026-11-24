@@ -1,0 +1,173 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-220445-check-the-live-commonmark-image-visitor",
+  "title": "Check the live CommonMark image visitor and retained syntax tree",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.2s, peak 102.8 MiB (estimated 4m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-220445-check-the-live-commonmark-image-visitor.json",
+    "sha256": "cc42e1afdaf4a9b6c4be1eeab524f3d5b47b409f663b92758e70b2c019bd5e2a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-220445-check-the-live-commonmark-image-visitor",
+      "title": "Check the live CommonMark image visitor and retained syntax tree",
+      "description": "Bind the exact original image visitor, leaf Code and its destination builder. Verify the inherited empty traversal and the repaired original append. Substitute each effect and require the original HTML escaping and public readback, including an edit to the same AST.",
+      "kind": "real-world",
+      "capabilities": [
+        "checked-helpers",
+        "original-jvm-replay",
+        "application:change-plan"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J01"
+        ]
+      },
+      "expected": "Two untouched and two substituted public JVMs per input and side match the frozen original observations. A missing application or stale bytecode is explicitly refused.",
+      "submitted": {
+        "at": "2026-11-24T22:04:45+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Compare qualified original and substituted continuations",
+          "run": "python3 -B verification/product-behaviour/checked.py J01",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J01/checked.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "dcb8bc8418ca66b6f15db286aa6201aac7153ac5",
+  "startedAt": "2026-11-24T22:17:53+00:00",
+  "finishedAt": "2026-11-24T22:18:23+00:00",
+  "wallSeconds": 30.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2432149,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 107757568,
+    "wallSeconds": 19.2,
+    "cpuSeconds": 21.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Compare qualified original and substituted continuations",
+      "run": "python3 -B verification/product-behaviour/checked.py J01",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 19.234,
+      "cpuSeconds": 21.033,
+      "cpuThrottledSeconds": 3.106,
+      "peakMemoryBytes": 107757568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-qualified-original-and.log",
+        "lines": 1,
+        "bytes": 66,
+        "sha256": "4e15ed0f00cf38b739fe72750500076be732ad5a699dce3e2949f47811391c2e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "J01 6 input/deployment pairs, 16 actual substitutions, 6 refusals"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J01/checked.json.gz",
+      "change": "added",
+      "bytes": 2175,
+      "sha256": "13a0095f07698c5e754d46ec202cc949372eac9fe65c014341960925fa7ce739",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T22:18:41+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J01/checked.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T221823Z-6735865a6b33afb6",
+      "outputs": "20261124T221823Z-701433a3720cc6a2",
+      "diff": "20261124T221823Z-7227538fc4157f57"
+    }
+  }
+}
