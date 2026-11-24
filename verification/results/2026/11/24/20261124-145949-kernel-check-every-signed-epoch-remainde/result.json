@@ -1,0 +1,164 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-145949-kernel-check-every-signed-epoch-remainde",
+  "title": "Kernel-check every signed epoch remainder against both ThreeTen JARs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.4s, peak 99.6 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-145949-kernel-check-every-signed-epoch-remainde.json",
+    "sha256": "bc652b917de2349d2b2f3a6b7e68e7ea7d2fe4b3cda925f6f7404e437f2251ca",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-145949-kernel-check-every-signed-epoch-remainde",
+      "title": "Kernel-check every signed epoch remainder against both ThreeTen JARs",
+      "description": "Bind the exact pure floorMod(long,int) instructions on both production builds. Check with Lean that for any signed epoch and divisor 86400 both machine conversions fit and the original method returns the Euclidean remainder.",
+      "kind": "library",
+      "capabilities": [
+        "lean-kernel",
+        "original-java-bytecode"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T14:59:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "lean"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Verify kernel proof and classfile correspondence",
+          "run": "python3 -B lib/benchmark/organic-composition/assurance.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/threeten/all-long-remainder.json"
+      ]
+    }
+  },
+  "sourceCommit": "a96f60b3d734e5544c1fb560f66eb8fd919478d2",
+  "startedAt": "2026-11-24T15:12:08+00:00",
+  "finishedAt": "2026-11-24T15:12:22+00:00",
+  "wallSeconds": 14.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1800624,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104484864,
+    "wallSeconds": 1.4,
+    "cpuSeconds": 1.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Verify kernel proof and classfile correspondence",
+      "run": "python3 -B lib/benchmark/organic-composition/assurance.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 1.405,
+      "cpuSeconds": 0.953,
+      "cpuThrottledSeconds": 0.036,
+      "peakMemoryBytes": 104484864,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-verify-kernel-proof-and-classf.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/threeten/all-long-remainder.json",
+      "change": "added",
+      "bytes": 1268,
+      "sha256": "419e59c7b518c06f8bb37fa16ef68703fb799314b9de0adf17444a19110a6552",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T15:12:46+00:00",
+    "applied": [
+      "verification/organic-composition/threeten/all-long-remainder.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T151222Z-1408760dfc600c46",
+      "outputs": "20261124T151222Z-1615263e7b26a34c",
+      "diff": "20261124T151222Z-1792651f64215fae"
+    }
+  }
+}
