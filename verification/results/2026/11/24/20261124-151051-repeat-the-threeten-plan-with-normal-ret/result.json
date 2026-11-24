@@ -1,0 +1,226 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-151051-repeat-the-threeten-plan-with-normal-ret",
+  "title": "Repeat the ThreeTen plan with normal returns required at every helper input",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m36s, peak 201.1 MiB (estimated 5m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-151051-repeat-the-threeten-plan-with-normal-ret.json",
+    "sha256": "85275f8ae0deb4dfbbbaaa75ab36bb3fb078a51e7d516d12dab9d9afadf26933",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-151051-repeat-the-threeten-plan-with-normal-ret",
+      "title": "Repeat the ThreeTen plan with normal returns required at every helper input",
+      "description": "Apply the final primitive-frame qualification: only exact normal returns from closed integral bytecode can replace a live method body. Repeat the original overlap and preservation histories, signed-epoch table, dirty-premise controls and independent clean runs before the transfer.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-proof-reuse",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:10:51+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "Qualify full ThreeTen application matrix",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten frozen --controls",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/threeten/frozen"
+      ]
+    }
+  },
+  "sourceCommit": "07f073d32ba28d679d789f8040e111256858d370",
+  "startedAt": "2026-11-24T15:26:01+00:00",
+  "finishedAt": "2026-11-24T15:33:57+00:00",
+  "wallSeconds": 476.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2045688,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 210857984,
+    "wallSeconds": 216.7,
+    "cpuSeconds": 287.8,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.72
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 251.831,
+      "cpuSeconds": 252.234,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2342715392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d7bb159686e02c99fc6b942aa2382a4366f7e83a38d4e6be3c360733ae3bf483",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-151051-repeat-the-threeten-plan-with-normal-ret/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 11s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Qualify full ThreeTen application matrix",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten frozen --controls",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 216.696,
+      "cpuSeconds": 287.847,
+      "cpuThrottledSeconds": 29.764,
+      "peakMemoryBytes": 210857984,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-full-threeten-applicat.log",
+        "lines": 11,
+        "bytes": 629,
+        "sha256": "ce106875543afd7221218319d9400e59535d5eb1dfed153e2cd9ed09759b643f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/organic-matrix-shd7joku/planned.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/cold.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/warm.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/clean.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/unrelated-warm.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/unrelated-clean.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/wrong-warm.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/wrong-clean.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/resource-before.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/resource-warm.json",
+        "2 claims in /tmp/organic-matrix-shd7joku/resource-clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/threeten/frozen/plans.zip",
+      "change": "added",
+      "bytes": 1090651,
+      "sha256": "09f0e34e50adc8521611e6702035c19d9f2c7fb7b03264c869bccbaade99a930",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/threeten/frozen/summary.json",
+      "change": "added",
+      "bytes": 37584,
+      "sha256": "de0d999d65de46a94fa22e5f9085fcdcb48e9935e15c0ee3411cce754f8840cc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T15:34:21+00:00",
+    "applied": [
+      "verification/organic-composition/threeten/frozen/plans.zip",
+      "verification/organic-composition/threeten/frozen/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7256cfafdaaf3a15f252780bf0f9b8214acca0a2",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7256cfafdaaf3a15f252780bf0f9b8214acca0a2/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T153357Z-853884a0e6183a93",
+      "outputs": "20261124T153357Z-88466179ded9c84a",
+      "diff": "20261124T153357Z-9031792032dfa686"
+    }
+  }
+}
