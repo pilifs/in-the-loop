@@ -28,8 +28,8 @@ def check():
     if len(pairs) != 16:
         raise ValueError("blind population size mismatch")
     def names(pair):
-        return {pair["project"].lower(), *(pair[key].lower().removeprefix("lib").removesuffix("-java")
-                                          for key in ("source", "artifact"))}
+        packages = {pair[key].lower().removesuffix("-java") for key in ("source", "artifact")}
+        return {pair["project"].lower(), *packages, *(p.removeprefix("lib") for p in packages)}
     return {"commitment": checksum, "population": len(pairs), "projectOverlap": {
         pr: any(names(row) & ({'github.com/' + pr.split('#')[0].lower()} | set(aliases))
                 for row in pairs) for pr, aliases in PROJECTS.items()},

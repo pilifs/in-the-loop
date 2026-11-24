@@ -54,6 +54,8 @@ class ChangePlanTest(unittest.TestCase):
         self.assertTrue(change_helpers.local_integral_body(table))
         self.assertFalse(change_helpers.local_integral_body(bytes.fromhex("b20001ac")))
         self.assertFalse(change_helpers.local_integral_body(bytes.fromhex("b80001ac")))
+        self.assertTrue(change_helpers.local_integral_body(bytes.fromhex("1201ac"), {1: (3, 42)}))
+        self.assertFalse(change_helpers.local_integral_body(bytes.fromhex("1201ac"), {1: (17, 42)}))
         with self.assertRaises(ValueError):
             list(change_inventory.instructions(bytes.fromhex("11ff")))
 

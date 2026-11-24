@@ -75,7 +75,7 @@ def declaration(spec, data):
                                [("classSha256", data), ("codeSha256", code), ("poolSha256", cp)]}
 
 
-def local_integral_body(code):
+def local_integral_body(code, pool=None):
     """Only primitive constants, locals, arithmetic, conversion, comparison and control flow.
     No heap, calls, monitors, allocation, dynamic constants, or external reads can participate.
     Normal termination on every enumerated tuple is checked separately by a real JVM.
@@ -85,7 +85,16 @@ def local_integral_body(code):
                0x88, 0x91, 0x92, 0x93, 0x94, *range(0x99, 0xa8), 0xaa, 0xab, 0xac, 0xad, 0xc8}
     for op in range(0x60, 0x78, 4):
         allowed.update((op, op+1))
-    return all(op in allowed for _, op in instructions(code))
+    for offset, op in instructions(code):
+        if op in (0x12, 0x13, 0x14):
+            width = 1 if op == 0x12 else 2
+            index = int.from_bytes(code[offset+1:offset+1+width], "big")
+            # A dynamic constant can initialize classes even if its declared type is integral.
+            if pool is None or pool.get(index, (None,))[0] != (5 if op == 0x14 else 3):
+                return False
+        elif op not in allowed:
+            return False
+    return True
 
 
 def prove(spec, files, jdk, image, checker, directory, cache):
@@ -107,7 +116,8 @@ def prove(spec, files, jdk, image, checker, directory, cache):
                     and all(record[k] == v for k, v in hashes.items())
                     and digest(record["proof"]) == record["proofDigest"]
                     and digest(record["finiteCertificate"]) == record["finiteDigest"]
-                    and (accepted(record["proof"]) or record["finiteCertificate"])):
+                    and record["finiteCertificate"] and record["finiteCertificate"]["domain"] == spec["rows"]
+                    and record["finiteCertificate"]["body"] == hashes):
                 return {**record, "action": "exact reuse"}
         except (KeyError, TypeError, ValueError):
             pass
@@ -143,9 +153,10 @@ def prove(spec, files, jdk, image, checker, directory, cache):
     # In an application trial the helper's JVM class is already initialized when its entry is reached.
     # Establish a second closed finite proof on that premise only for methods with no external operations.
     _, member, desc = runtime_jar.parse_target(spec["entry"])
-    _, code, handlers = runtime_jar._declarations(data, with_code=True)[1][member, desc]
+    pool, declarations, _ = runtime_jar._declarations(data, with_code=True)
+    _, code, handlers = declarations[member, desc]
     finite = None
-    if handlers == 0 and local_integral_body(code):
+    if handlers == 0 and local_integral_body(code, pool):
         ref = subprocess.run([jdk/"bin/java", "-verbose:class", "-cp", str(directory)+os.pathsep+cp,
                               "CheckFinite", str(len(spec["rows"]))], env=env, capture_output=True, text=True, timeout=35)
         from targets.upgrade_replay import class_origins
@@ -157,10 +168,9 @@ def prove(spec, files, jdk, image, checker, directory, cache):
                       "normalReturns": len(spec["rows"]), "consumerClassSha256": sha(directory/"CheckedHelperUse.class")}
     record.update(finiteCertificate=finite, finiteDigest=digest(finite))
     native = proc.returncode == 0 and accepted(proof)
-    if not native:
-        refused = len(proof) == 1 and proof[0].get("verdict") == "unverifiable"
-        if not (refused and finite):
-            return {**record, "action": "refused"}
+    refused = len(proof) == 1 and proof[0].get("verdict") == "unverifiable"
+    if not finite or not (native or refused):
+        return {**record, "action": "refused"}
     record["basis"] = "strict native lemma" if native else "closed integral bytecode and exhaustive JVM evaluation"
     if stored:
         change_evidence.write_json(stored, {"evidence": record, "sha256": digest(record)})
