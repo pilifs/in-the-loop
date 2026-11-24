@@ -295,6 +295,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     - The flag is not consistently sticky. On 2026-11-19 a continued session was refused at once. Tonight the session continued for 81 minutes and finished a cycle, then was refused 3 minutes into the next one.
   - **Rate:** two stops in about 15 hours of Astra work on 2026-11-23, all on briefs prepared by an Opus setup pass. On 2026-11-22, three stops came in 36 minutes when Astra fetched its own sources. That supports the setup pass as a mitigation, but it does not remove the risk.
   - **What the watcher did:** restarted once in the same session. After the second stop it handed the brief over as finished after cycle 1 (merged as `oqmtltol`) rather than retry in a fresh session. The fallback order for later runs is: restart once in the same session, then use a fresh session.
+  - **The rule since 2026-11-24 (the user, through the advisor):** after a filter stop, the next brief's Astra run starts in a fresh Codex session rather than continuing the flagged one. A session that has been flagged once seems more likely to be flagged again: tonight's was refused twice in 80 minutes. Change-verification is the first run under this rule.
 - **Needs**: a choice by the user, one or more of:
   - Apply for Daybreak access for the OpenAI organization. That is an account matter, and the user's alone.
   - Send CVE-centred work (reproducing or controlling for a historical vulnerability's behaviour) to Claude Code
