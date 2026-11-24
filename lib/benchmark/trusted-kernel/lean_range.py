@@ -84,7 +84,7 @@ def lemma(key, value, name):
     phase, x, y, op = key
     return (f"theorem {name} : sound .{phase} .{x} .{y} .{op} {value} := by\n"
             "  unfold sound\n  intro lo i hi n bounds\n"
-            "  simp [admitted] at bounds\n  simp [compare, term] <;> omega\n")
+            "  simp [admitted] at bounds\n  simp [RangeRule.compare, RangeRule.term] <;> omega\n")
 
 
 def backedge(desc, body, name):

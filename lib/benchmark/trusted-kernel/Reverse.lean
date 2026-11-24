@@ -56,17 +56,45 @@ def safe (n i j : Int) : Prop :=
 
 instance (n i j : Int) : Decidable (safe n i j) := by unfold safe; infer_instance
 
-def run : Nat → Int → Int → Int → Heap α → Option (Heap α)
+inductive Operand (α : Type)
+  | array
+  | index (k : Int)
+  | cell (v : α)
+
+-- Execute the straight-line instructions from PCs 27 through 44. Local 3 is the
+-- low cursor, 4 the high cursor and 5 the saved cell. The caller checks their bounds.
+def executeStores (i j : Int) : List Nat → List (Operand α) → Option α → Heap α → Option (Heap α)
+  | [], [], _, h => some h
+  | 42 :: b, s, t, h => executeStores i j b (.array :: s) t h
+  | 21 :: 4 :: b, s, t, h => executeStores i j b (.index j :: s) t h
+  | 21 :: 3 :: b, s, t, h => executeStores i j b (.index i :: s) t h
+  | 29 :: b, s, t, h => executeStores i j b (.index i :: s) t h
+  | 46 :: b, .index k :: .array :: s, t, h => executeStores i j b (.cell (h k) :: s) t h
+  | 54 :: 5 :: b, .cell v :: s, _, h => executeStores i j b s (some v) h
+  | 21 :: 5 :: b, s, some t, h => executeStores i j b (.cell t :: s) (some t) h
+  | 79 :: b, .cell v :: .index k :: .array :: s, t, h =>
+      executeStores i j b s t (fun x => if x = k then v else h x)
+  | _, _, _, _ => none
+
+def releaseStores : List Nat := [42,21,4,46,54,5,42,21,4,42,29,46,79,42,29,21,5,79]
+
+theorem releaseSwap (h : Heap α) (i j : Int) :
+    executeStores i j releaseStores [] none h = some (swap h i j) := by rfl
+
+def run (stores : List Nat) : Nat → Int → Int → Int → Heap α → Option (Heap α)
   | 0, _, i, j, h => if i < j then none else some h
   | fuel + 1, n, i, j, h =>
       if i < j then
-        if safe n i j then run fuel n (i + 1) (j - 1) (swap h i j) else none
+        if safe n i j then do
+          let after ← executeStores i j stores [] none h
+          run stores fuel n (i + 1) (j - 1) after
+        else none
       else some h
 
 theorem boundedLoop (fuel : Nat) (old : Heap α) (lo hi n : Int)
     (bounds : 0 ≤ lo ∧ lo ≤ hi ∧ hi ≤ n ∧ n ≤ 2147483647) :
     ∀ i j h, invariant old h lo hi i j → j - i ≤ (fuel : Int) →
-      ∃ out, run fuel n i j h = some out ∧ ∀ k, out k = frame old lo hi k := by
+      ∃ out, run releaseStores fuel n i j h = some out ∧ ∀ k, out k = frame old lo hi k := by
   induction fuel with
   | zero =>
     intro i j h inv enough
@@ -80,20 +108,25 @@ theorem boundedLoop (fuel : Nat) (old : Heap α) (lo hi n : Int)
         unfold safe
         omega
       obtain ⟨out, evaluation, post⟩ := ih (i + 1) (j - 1) (swap h i j) (advance old h lo hi i j inv lt) (by omega)
-      exact ⟨out, by simpa [run, lt, ok] using evaluation, post⟩
+      exact ⟨out, by simpa [run, lt, ok, releaseSwap] using evaluation, post⟩
     · exact ⟨h, by simp [run, lt], finished old h lo hi i j inv (by omega)⟩
 
 -- The original int method has two calls, at PCs 7 and 14. The classfile
 -- reader resolves their pool operands independently to the two bound Math bodies.
+def releaseCode : List Nat :=
+  [42,199,0,4,177,27,3,184,2,50,62,42,190,28,184,3,2,4,100,54,4,21,4,29,164,0,30] ++
+  releaseStores ++ [132,4,255,132,3,1,167,255,226,177]
+
 def decodeRelease (code maxBody minBody : List Nat) : Bool :=
-  code == [42,199,0,4,177,27,3,184,2,50,62,42,190,28,184,3,2,4,100,54,4,21,4,29,164,0,30,
-           42,21,4,46,54,5,42,21,4,42,29,46,79,42,29,21,5,79,132,4,255,132,3,1,167,255,226,177] &&
+  code == releaseCode &&
   maxBody == [26,27,161,0,7,26,167,0,4,27,172] && minBody == [26,27,163,0,7,26,167,0,4,27,172]
 
 def decJava (x : Int) : Int := if x = -2147483648 then 2147483647 else x - 1
 
 def execute (code maxBody minBody : List Nat) (old : Heap α) (lo hi n : Int) : Option (Heap α) :=
-  if decodeRelease code maxBody minBody then run n.toNat n (max lo 0) (decJava (min n hi)) old else none
+  if decodeRelease code maxBody minBody then
+    run ((code.drop 27).take 18) n.toNat n (max lo 0) (decJava (min n hi)) old
+  else none
 
 theorem reverseValid (code maxBody minBody : List Nat) (bound : decodeRelease code maxBody minBody = true)
     (old : Heap α) (lo hi n : Int) (bounds : 0 ≤ lo ∧ lo ≤ hi ∧ hi ≤ n ∧ n ≤ 2147483647) :
@@ -105,7 +138,11 @@ theorem reverseValid (code maxBody minBody : List Nat) (bound : decodeRelease co
   have low : max lo 0 = lo := Int.max_eq_left (by omega)
   have high : min n hi = hi := Int.min_eq_right (by omega)
   have normal : hi ≠ -2147483648 := by omega
-  simpa [execute, bound, low, high, decJava, normal] using
+  have body : (code.drop 27).take 18 = releaseStores := by
+    by_cases same : code = releaseCode
+    · rw [same]; rfl
+    · simp [decodeRelease, same] at bound
+  simpa [execute, bound, body, low, high, decJava, normal] using
     (boundedLoop n.toNat old lo hi n bounds lo (hi - 1) old init (by omega))
 
 end ArrayReverse
