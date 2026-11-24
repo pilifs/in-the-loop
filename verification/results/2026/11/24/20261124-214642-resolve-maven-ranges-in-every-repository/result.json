@@ -1,0 +1,196 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-214642-resolve-maven-ranges-in-every-repository",
+  "title": "Resolve Maven ranges in every repository enumeration order",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 46.2s, peak 143.7 MiB (estimated 6m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-214642-resolve-maven-ranges-in-every-repository.json",
+    "sha256": "fccfc4c653c073c8ecad96c7e5faea36111f208e7f4ee959d621e3f7db1d5029",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-214642-resolve-maven-ranges-in-every-repository",
+      "title": "Resolve Maven ranges in every repository enumeration order",
+      "description": "Record construction or its exception, selected member of the range and independent highest-version fold in all six orders. Construct a range from 1-alpha through 1-beta and select from all six positions with repeated beta. Run the frozen application plan and compare cold, warm, clean and same-path production JAR replacement with qualified receipts.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J13"
+        ]
+      },
+      "expected": "Source-bound public observations, cache actions and original receipts for each question. The relevant change matches the clean result or identifies the first open dependency.",
+      "submitted": {
+        "at": "2026-11-24T21:46:42+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "6m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B verification/product-behaviour/qualify.py J13",
+          "run": "python3 -B verification/product-behaviour/qualify.py J13",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J13/first"
+      ]
+    }
+  },
+  "sourceCommit": "1b56c14837d30e8aa558fb1899b8c006e75c388d",
+  "startedAt": "2026-11-24T21:57:28+00:00",
+  "finishedAt": "2026-11-24T21:58:47+00:00",
+  "wallSeconds": 79.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2253614,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1440.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 150667264,
+    "wallSeconds": 46.2,
+    "cpuSeconds": 60.9,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B verification/product-behaviour/qualify.py J13",
+      "run": "python3 -B verification/product-behaviour/qualify.py J13",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1440.0,
+      "cancelled": false,
+      "wallSeconds": 46.163,
+      "cpuSeconds": 60.928,
+      "cpuThrottledSeconds": 8.003,
+      "peakMemoryBytes": 150667264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-verification-product.log",
+        "lines": 10,
+        "bytes": 699,
+        "sha256": "851dd45ae295db9a6a46babb46a605571850595140cab21a38adc8283522bcc8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/product-plan-sobphvg2/cold.json",
+        "J13 cold [('cyclic-range', 'established', 4), ('ordinary-range', 'established', 4)]",
+        "2 claims in /tmp/product-plan-sobphvg2/warm.json",
+        "J13 warm [('cyclic-range', 'established', 2), ('ordinary-range', 'established', 0)]",
+        "2 claims in /tmp/product-plan-sobphvg2/clean.json",
+        "J13 clean [('cyclic-range', 'established', 4), ('ordinary-range', 'established', 4)]",
+        "2 claims in /tmp/product-plan-sobphvg2/replacement.json",
+        "J13 replacement [('cyclic-range', 'refuted', 2), ('ordinary-range', 'established', 2)]",
+        "2 claims in /tmp/product-plan-sobphvg2/replacement-clean.json",
+        "J13 replacement-clean [('cyclic-range', 'refuted', 4), ('ordinary-range', 'established', 4)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J13/first/plans.zip",
+      "change": "added",
+      "bytes": 95546,
+      "sha256": "c2e94b7f81c2d2b1521d7db71c1ea7050634420b138eab5098ee0fed327c99ec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/product-behaviour/results/J13/first/summary.json",
+      "change": "added",
+      "bytes": 29571,
+      "sha256": "4c242c2e28693823a3bf552e250a8570b2cc3cb054ce4320d2a84c1d461f0e28",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T21:59:19+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J13/first/plans.zip",
+      "verification/product-behaviour/results/J13/first/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1a5a5e54535dc5fe36b26d921d43829f62bcf4d6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5a5e54535dc5fe36b26d921d43829f62bcf4d6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T215847Z-938398d61b82341b",
+      "outputs": "20261124T215847Z-9686365f6634b914",
+      "diff": "20261124T215847Z-991914500c3778e9"
+    }
+  }
+}

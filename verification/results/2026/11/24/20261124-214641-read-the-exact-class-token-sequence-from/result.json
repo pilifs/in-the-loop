@@ -1,0 +1,196 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-214641-read-the-exact-class-token-sequence-from",
+  "title": "Read the exact class token sequence from the Kryo stream",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 46.7s, peak 181.6 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-214641-read-the-exact-class-token-sequence-from.json",
+    "sha256": "1b7e7a15dc261417e93515d5e423b6ebbb8837650dac9be8c76e4586ff1c1570",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-214641-read-the-exact-class-token-sequence-from",
+      "title": "Read the exact class token sequence from the Kryo stream",
+      "description": "Record the type and index of a rejected token or the exact identities and final consumption of the whole sequence. Read the four remaining identities sequentially and compare the cursor to the actual stream length. Run the frozen application plan and compare cold, warm, clean and same-path production JAR replacement with qualified receipts.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J10"
+        ]
+      },
+      "expected": "Source-bound public observations, cache actions and original receipts for each question. The relevant change matches the clean result or identifies the first open dependency.",
+      "submitted": {
+        "at": "2026-11-24T21:46:41+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B verification/product-behaviour/qualify.py J10",
+          "run": "python3 -B verification/product-behaviour/qualify.py J10",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J10/first"
+      ]
+    }
+  },
+  "sourceCommit": "1b56c14837d30e8aa558fb1899b8c006e75c388d",
+  "startedAt": "2026-11-24T21:57:28+00:00",
+  "finishedAt": "2026-11-24T21:58:48+00:00",
+  "wallSeconds": 80.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2253614,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 190406656,
+    "wallSeconds": 46.7,
+    "cpuSeconds": 58.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.16
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B verification/product-behaviour/qualify.py J10",
+      "run": "python3 -B verification/product-behaviour/qualify.py J10",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 46.709,
+      "cpuSeconds": 58.48,
+      "cpuThrottledSeconds": 7.102,
+      "peakMemoryBytes": 190406656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-verification-product.log",
+        "lines": 10,
+        "bytes": 769,
+        "sha256": "b2f21ecc59a67ba53f2d6645776bbdd7fb2357423e3a96ed701df350db815d31",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/product-plan-4vl2m4n3/cold.json",
+        "J10 cold [('abstract-enum-token', 'established', 4), ('ordinary-class-tokens', 'established', 4)]",
+        "2 claims in /tmp/product-plan-4vl2m4n3/warm.json",
+        "J10 warm [('abstract-enum-token', 'established', 2), ('ordinary-class-tokens', 'established', 0)]",
+        "2 claims in /tmp/product-plan-4vl2m4n3/clean.json",
+        "J10 clean [('abstract-enum-token', 'established', 4), ('ordinary-class-tokens', 'established', 4)]",
+        "2 claims in /tmp/product-plan-4vl2m4n3/replacement.json",
+        "J10 replacement [('abstract-enum-token', 'refuted', 2), ('ordinary-class-tokens', 'established', 2)]",
+        "2 claims in /tmp/product-plan-4vl2m4n3/replacement-clean.json",
+        "J10 replacement-clean [('abstract-enum-token', 'refuted', 4), ('ordinary-class-tokens', 'established', 4)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J10/first/plans.zip",
+      "change": "added",
+      "bytes": 251561,
+      "sha256": "24b67df22b498bbde0cdd65b134b98780eec82e20af41b79ed8e086e1158f5ea",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/product-behaviour/results/J10/first/summary.json",
+      "change": "added",
+      "bytes": 29934,
+      "sha256": "de2502abf4a0155fb9ecfcbaa2f6c557291011b85706dc14a107a50ed6864394",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T21:59:19+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J10/first/plans.zip",
+      "verification/product-behaviour/results/J10/first/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1a5a5e54535dc5fe36b26d921d43829f62bcf4d6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5a5e54535dc5fe36b26d921d43829f62bcf4d6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T215848Z-7430996bfd0e61bb",
+      "outputs": "20261124T215848Z-7722751ef354b959",
+      "diff": "20261124T215848Z-793238159c4f5620"
+    }
+  }
+}
