@@ -1,0 +1,184 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-235550-qualify-the-full-guava-parser-and-client",
+  "title": "Qualify the full Guava parser and client through the mandated Long cache",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 19.0s, peak 130.2 MiB (estimated 5m00s, 4.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-235550-qualify-the-full-guava-parser-and-client.json",
+    "sha256": "a0c677fe07bfb85d15d540b2dd63bd18753960bcb2cac2d1961d61536de1516b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-235550-qualify-the-full-guava-parser-and-client",
+      "title": "Qualify the full Guava parser and client through the mandated Long cache",
+      "description": "Repeat the original direct UTF-16 parser and six-unit client domains through the real cache branch of Long.valueOf. Bind the digit-table fill at physical offset 8, check null and boxed returns independently, and replay the exact UTF-16 inputs for every refuted mutant.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:55:50+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "Check original Guava properties at the final cache boundary",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex native --stage mandatory-cache",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/mandatory-cache/hex/native"
+      ]
+    }
+  },
+  "sourceCommit": "9cc961c9e23f7b1a3bc138feae58f082898fd40d",
+  "startedAt": "2026-11-24T00:09:28+00:00",
+  "finishedAt": "2026-11-24T00:14:21+00:00",
+  "wallSeconds": 293.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 136491008,
+    "wallSeconds": 19.0,
+    "cpuSeconds": 21.2,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check original Guava properties at the final cache boundary",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex native --stage mandatory-cache",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 19.046,
+      "cpuSeconds": 21.25,
+      "cpuThrottledSeconds": 0.941,
+      "peakMemoryBytes": 136491008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-guava-propertie.log",
+        "lines": 12,
+        "bytes": 476,
+        "sha256": "4510fc99e396af9a456980deb2af26e1617e5bb5a57f3e233b16e244f273c893",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "hex nullReturns verified ",
+        "hex boxedValue verified ",
+        "hex rejectsMinimum violation ",
+        "hex directReached violation ",
+        "hex composition verified ",
+        "hex earlyKey violation ",
+        "hex dropSign violation ",
+        "hex nullShape verified "
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/mandatory-cache/hex/native/measurement.json",
+      "change": "added",
+      "bytes": 67911,
+      "sha256": "cb49965d69d0709c27ee23b00d636896245a90d389a6fca90c1fe546aa96d37c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T00:14:28+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/mandatory-cache/hex/native/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85d098e084068e8219ed6becf4a3237d79fff4f1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85d098e084068e8219ed6becf4a3237d79fff4f1/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T001421Z-13836105edef657e",
+      "outputs": "20261124T001421Z-15801426f40a8efe",
+      "diff": "20261124T001421Z-178023048bb1c44f"
+    }
+  }
+}

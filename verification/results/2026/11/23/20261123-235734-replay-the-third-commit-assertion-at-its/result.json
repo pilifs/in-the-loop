@@ -1,0 +1,214 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261123-235734-replay-the-third-commit-assertion-at-its",
+  "title": "Replay the third-commit assertion at its original JVM instruction",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 16.2s, peak 103.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/23/20261123-235734-replay-the-third-commit-assertion-at-its.json",
+    "sha256": "79cd26595329668a9191ec0c45e5d185bc077e28c6b77fbb4bebd07d6bedd8a9",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261123-235734-replay-the-third-commit-assertion-at-its",
+      "title": "Replay the third-commit assertion at its original JVM instruction",
+      "description": "Discover monitor schedules without a reference trace, independently check the census, then bind the original athrow in each compiled Board. Replay the ordinary failing split history and both forced terminal histories under a debugger on unmodified JVM bytes, recording the handler and actual mask.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-23T23:57:34+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m"
+      },
+      "steps": [
+        {
+          "name": "Select and replay the original third commit",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/schedule_site.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/deeper/selected/schedule"
+      ]
+    }
+  },
+  "sourceCommit": "9cc961c9e23f7b1a3bc138feae58f082898fd40d",
+  "startedAt": "2026-11-24T00:09:28+00:00",
+  "finishedAt": "2026-11-24T00:14:18+00:00",
+  "wallSeconds": 290.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 108097536,
+    "wallSeconds": 16.2,
+    "cpuSeconds": 24.3,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.14
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 256.998,
+      "cpuSeconds": 257.252,
+      "cpuThrottledSeconds": 0.001,
+      "peakMemoryBytes": 2312257536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "129c777dd832436281055cd4576e737ef02f58ee27f8f318b51cbce4b7e38093",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261123-235734-replay-the-third-commit-assertion-at-its/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 16s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Select and replay the original third commit",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/schedule_site.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 16.232,
+      "cpuSeconds": 24.295,
+      "cpuThrottledSeconds": 2.633,
+      "peakMemoryBytes": 108097536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-select-and-replay-the-original.log",
+        "lines": 8,
+        "bytes": 536,
+        "sha256": "daf549e62df293ba3d2b7d407c23537c9b9e72182d4a98eeccf846de5ce183e7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/deeper/selected/schedule/measurement.json",
+      "change": "added",
+      "bytes": 4755,
+      "sha256": "4c9fa516da953c4f4f74591d94564d70372847586fe0e068b026fab62e67c09b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T00:14:28+00:00",
+    "applied": [
+      "verification/receiver-discovery/deeper/selected/schedule/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85d098e084068e8219ed6becf4a3237d79fff4f1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85d098e084068e8219ed6becf4a3237d79fff4f1/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T001418Z-3349256c19d28746",
+      "outputs": "20261124T001418Z-3581995e5ee71289",
+      "diff": "20261124T001418Z-385234d813cd446e"
+    }
+  }
+}
