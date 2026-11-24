@@ -1,0 +1,177 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-124551-independently-check-a-portable-iscwt-lra",
+  "title": "Independently check a portable ISCWT LRAT bundle",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m27s, peak 431.8 MiB (estimated 3m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-124551-independently-check-a-portable-iscwt-lra.json",
+    "sha256": "9243856df88a1f7db43b4fa61d6a2bf2921e968204edcf003ac743b8ad630b1f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-124551-independently-check-a-portable-iscwt-lra",
+      "title": "Independently check a portable ISCWT LRAT bundle",
+      "description": "Recover the registered 141,171,872-byte original solver bundle by digest. Preserve its complete native transcript and SAT valuations. Trim the generated LRAT derivations with the pinned CaDiCaL distribution, omit deletion hints only for pure RUP derivations, and require the fresh independent checker to validate every answer against the original request and assumptions. Keep the checked smaller bundle and provenance for direct public replay.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "A portable bundle is produced only when all 9 original SAT assignments and 469 UNSAT certificates validate on the original request, and the substituted observation is rejected.",
+      "submitted": {
+        "at": "2026-11-24T12:45:51+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "cc"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "12m",
+        "notes": "Original generation took 68 seconds and independent checking 86 seconds. The smaller proofs use the same 478 incremental clause prefixes."
+      },
+      "steps": [
+        {
+          "name": "Trim and independently check all original glyph solver answers",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/trim_assurance.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.zip",
+        "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.json"
+      ]
+    }
+  },
+  "sourceCommit": "8cfd4c933401a675e53fe859e853232bfe53c9e3",
+  "startedAt": "2026-11-24T12:59:02+00:00",
+  "finishedAt": "2026-11-24T13:00:38+00:00",
+  "wallSeconds": 96.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 748422,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": "Original generation took 68 seconds and independent checking 86 seconds. The smaller proofs use the same 478 incremental clause prefixes."
+  },
+  "usage": {
+    "peakMemoryBytes": 452726784,
+    "wallSeconds": 87.8,
+    "cpuSeconds": 86.1,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.49
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Trim and independently check all original glyph solver answers",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/trim_assurance.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 87.819,
+      "cpuSeconds": 86.137,
+      "cpuThrottledSeconds": 0.096,
+      "peakMemoryBytes": 452726784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-trim-and-independently-check-a.log",
+        "lines": 1,
+        "bytes": 58,
+        "sha256": "9bed7127a140890fe60f6b9f6b41ff148670968fdc1f398d52a39d9f65e3d82e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "141,171,872 to 49,868,705 bytes; {'sat': 9, 'unsat': 469}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.zip",
+      "change": "added",
+      "bytes": 49868705,
+      "sha256": "9a11377028a90f7e659f590e66bc84a722501a248cb4fa6751891c8321a629e6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.json",
+      "change": "added",
+      "bytes": 2951,
+      "sha256": "871733c3f37a69b3d865a85b8b7760c20cfee78bfc5625a9185d38f8cfe324f9",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T13:00:42+00:00",
+    "applied": [
+      "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.zip",
+      "verification/beyond-jbmc/followup/iscwt-assurance/trimmed.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T130038Z-832390dd936ff2ea",
+      "outputs": "20261124T130038Z-938122815bf369f7",
+      "diff": "20261124T130038Z-9521994fc6345c6c"
+    }
+  }
+}
