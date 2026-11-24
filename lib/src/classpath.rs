@@ -2179,7 +2179,7 @@ impl ClassPath {
             let Loaded { class, origin: Origin::Jdk } = self.load(name).ok()?? else { return None };
             return class.method("<clinit>", "()V").is_none().then_some(class);
         }
-        if matches!(name, "java/io/PrintWriter$1" | "java/util/Collections$UnmodifiableMap" | "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
+        if matches!(name, "java/util/StringTokenizer" | "java/io/PrintWriter$1" | "java/util/Collections$UnmodifiableMap" | "java/util/AbstractQueue" | "java/util/concurrent/ConcurrentLinkedQueue$Node"
             | "java/util/Collections$SetFromMap" | "java/util/concurrent/ConcurrentHashMap$Node" | "java/util/concurrent/ConcurrentHashMap$KeySetView"
             | "java/util/concurrent/ConcurrentHashMap$CollectionView" | "java/util/concurrent/ConcurrentHashMap$EntrySetView"
             | "java/util/concurrent/ConcurrentHashMap$EntryIterator" | "java/util/concurrent/ConcurrentHashMap$BaseIterator"

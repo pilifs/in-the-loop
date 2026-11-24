@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-121207-transfer-fixed-radix-parsing-to-guava-un",
+  "title": "Transfer fixed-radix parsing to Guava unsigned words",
+  "description": "Check the released Guava 33.4.8-jre UnsignedInts parser for every 32-bit word in upper- and lowercase hexadecimal and both unsigned range failures. Require original-JVM replay for the deliberately false sign theorem, retain staged and stock JBMC on matching callers, and measure their post-call reach controls.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Record all three native and comparator verdicts, timings, assertion identifiers and replay checks on the original Guava JARs.",
+  "submitted": {
+    "at": "2026-11-24T12:12:07+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "16m",
+    "notes": "Three predicates and their stock reach controls use the campaign's 120-second per-checker budget; the native parser has a fixed eight-digit input."
+  },
+  "steps": [
+    {
+      "name": "Check the released Guava parser on all three engines",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified Guava-radix --output verification/beyond-jbmc/followup",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/followup/Guava-radix"
+  ]
+}

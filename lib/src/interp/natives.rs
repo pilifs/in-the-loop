@@ -2746,8 +2746,13 @@ fn number_format(m: &mut Machine, s: Option<&JStr>, radix: u32) -> Fault {
     m.throw_units("java/lang/NumberFormatException", message)
 }
 
-fn parse_integral(m: &mut Machine, v: Value, radix: u32, min: i64, max: i64) -> Exec<i64> {
-    let Some(s) = m.units_of(v) else { return Err(number_format(m, None, radix)) };
+fn parse_integral(m: &mut Machine, v: Value, radix: i32, min: i64, max: i64) -> Exec<i64> {
+    let Some(s) = m.units_of(v) else { return Err(number_format(m, None, radix as u32)) };
+    if !(2..=36).contains(&radix) {
+        let limit = if radix < 2 { "less than Character.MIN_RADIX" } else { "greater than Character.MAX_RADIX" };
+        return Err(m.throw("java/lang/NumberFormatException", Some(&format!("radix {radix} {limit}"))));
+    }
+    let radix = radix as u32;
     // Java takes any Unicode digit (`Character.digit`), whose tables aren't modelled: a String with a code unit
     // outside ASCII is refused, not parsed as Rust's ASCII digits would parse it.
     if s.units().iter().any(|&u| u > 0x7F) {
@@ -2777,13 +2782,13 @@ fn integral(m: &mut Machine, owner: &str, name: &str, descriptor: &str, a: &[Val
     let wrap = |v: i64| if is_long { Value::Long(v) } else { Value::Int(v as i32) };
     Ok(match name {
         "valueOf" if descriptor.starts_with("(Ljava/lang/String;") => {
-            let radix = if descriptor.contains("I)") { a[1].as_int() as u32 } else { 10 };
+            let radix = if descriptor.contains("I)") { a[1].as_int() } else { 10 };
             let v = parse_integral(m, a[0], radix, min, max)?;
             box_value(m, owner, wrap(v))
         }
         "valueOf" => box_value(m, owner, a[0]),
         "parseInt" | "parseLong" | "parseShort" | "parseByte" => {
-            let radix = if descriptor.contains("I)") { a[1].as_int() as u32 } else { 10 };
+            let radix = if descriptor.contains("I)") { a[1].as_int() } else { 10 };
             wrap(parse_integral(m, a[0], radix, min, max)?)
         }
         "toString" if descriptor.ends_with("I)Ljava/lang/String;") && a.len() == 2 => {

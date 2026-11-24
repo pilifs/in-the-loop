@@ -12,33 +12,34 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T11:53:32.622Z",
-  "duration_seconds": 20562,
+  "ended": "2026-11-24T12:26:28.028Z",
+  "duration_seconds": 22537,
   "stats": {
-    "turns": 2,
-    "api_calls": 1103,
-    "tool_calls": 2832,
-    "tool_errors": 63,
-    "compactions": 3,
+    "turns": 3,
+    "api_calls": 1235,
+    "tool_calls": 3356,
+    "tool_errors": 80,
+    "compactions": 4,
     "peak_context_tokens": 550355,
     "usage": {
-      "input_tokens": 1671603,
-      "output_tokens": 625178,
-      "cache_read_input_tokens": 346753024,
+      "input_tokens": 1876626,
+      "output_tokens": 682698,
+      "cache_read_input_tokens": 371121024,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1633,
-    "exec": 1078,
-    "apply_patch": 100,
+    "Bash": 2010,
+    "exec": 1207,
+    "apply_patch": 117,
     "sleep": 11,
-    "wait": 7,
+    "wait": 8,
     "send_message_to_user_async": 3
   },
   "files_touched": [
     "lib/benchmark/beyond-jbmc/README.md",
     "lib/benchmark/beyond-jbmc/additional_controls.py",
+    "lib/benchmark/beyond-jbmc/blind/ReplayReference.java",
     "lib/benchmark/beyond-jbmc/blind/auto_upgrade.py",
     "lib/benchmark/beyond-jbmc/blind/calibration.py",
     "lib/benchmark/beyond-jbmc/blind/evaluate_panel.py",
@@ -47,6 +48,7 @@
     "lib/benchmark/beyond-jbmc/blind/packets.py",
     "lib/benchmark/beyond-jbmc/blind/reference_jvm.py",
     "lib/benchmark/beyond-jbmc/blind/references.py",
+    "lib/benchmark/beyond-jbmc/blind/tokenizer_followup.py",
     "lib/benchmark/beyond-jbmc/blind_report.py",
     "lib/benchmark/beyond-jbmc/casebook_pairs.py",
     "lib/benchmark/beyond-jbmc/casebook_report.py",
@@ -59,6 +61,7 @@
     "lib/benchmark/beyond-jbmc/extended/CachedCodec.java",
     "lib/benchmark/beyond-jbmc/extended/CodecNames.java",
     "lib/benchmark/beyond-jbmc/extended/FormatterBinding.java",
+    "lib/benchmark/beyond-jbmc/extended/GuavaRadix.java",
     "lib/benchmark/beyond-jbmc/extended/Seed128.lean",
     "lib/benchmark/beyond-jbmc/extended/ThrowSites.java",
     "lib/benchmark/beyond-jbmc/extended_subjects.py",
@@ -82,6 +85,7 @@
     "lib/benchmark/run.py",
     "lib/benchmark/test_run.py",
     "lib/src/bmc/byte_views.rs",
+    "lib/src/bmc/bytes.rs",
     "lib/src/bmc/generic_interfaces.rs",
     "lib/src/bmc/reflection.rs",
     "lib/src/bmc/runtime.rs",
@@ -95,7 +99,10 @@
     "lib/src/relocate.rs",
     "lib/src/reuse.rs",
     "lib/src/zip.rs",
+    "lib/tests/claims.rs",
     "lib/tests/dependencies.rs",
+    "lib/tests/fixtures/claims/claims/Radix.java",
+    "lib/tests/fixtures/claims/claims/Tokens.java",
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/class-names-implementation-check.log"
   ],
@@ -145,24 +152,38 @@
     {
       "index": 3,
       "started": "2026-11-24T10:50:33.111Z",
-      "ended": "2026-11-24T11:53:32.622Z",
+      "ended": "2026-11-24T11:58:37.431Z",
       "turns": 1,
-      "api_calls": 213,
+      "api_calls": 218,
       "usage": {
-        "input_tokens": 214746,
-        "output_tokens": 113071,
-        "cache_read_input_tokens": 49752320,
+        "input_tokens": 215571,
+        "output_tokens": 116248,
+        "cache_read_input_tokens": 51386496,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 325780
+      "peak_context_tokens": 328162
+    },
+    {
+      "index": 4,
+      "started": "2026-11-24T11:58:37.439Z",
+      "ended": "2026-11-24T12:26:28.028Z",
+      "turns": 1,
+      "api_calls": 127,
+      "usage": {
+        "input_tokens": 204198,
+        "output_tokens": 54343,
+        "cache_read_input_tokens": 22733824,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 262233
     }
   ],
   "log": {
-    "sha256": "04ed16b33abc4cbaf3f7f3082768eab3e2a1c19ba14bdbfa19f7c8f2d063334a",
-    "bytes": 16362178,
-    "lines": 8795,
-    "gzip_bytes": 2898880,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/04ed16b33abc4cbaf3f7f3082768eab3e2a1c19ba14bdbfa19f7c8f2d063334a.jsonl.gz"
+    "sha256": "1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e",
+    "bytes": 19056256,
+    "lines": 10000,
+    "gzip_bytes": 3437368,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -309,6 +330,14 @@
       "summary": "Record all eight released class-name and lookup decisions",
       "body": "Job 20261124-113530-validate-reflective-class-lookup-across passed on c53d6d2d839e. Both Codec releases resolved the historical incremental hash class. Only 1.14 resolved its x86 replacement. Strict native reported the exact absent/present witness seen on the original JVMs. The complete four-caller repeat matched all eight cold and warm decisions, including exact cache hits for every warm run.\n\nVerified the job specification, source revision, collected output SHA-256, Boolean domains and every displayed witness against original JVM strings. The report has 83 resolving local links. The original 89-job evidence index reproduced byte for byte, with all six population denominators intact. The repository selected no additional tests for the report and collector output.",
       "log_sha256": "04ed16b33abc4cbaf3f7f3082768eab3e2a1c19ba14bdbfa19f7c8f2d063334a"
+    },
+    {
+      "change_id": "sqxpxtqqoyksuoqtsxrtwqoyyzwzwnws",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Verify tokenizer histories and fixed-radix parsing on released Java callers (verification pending)",
+      "body": "Execute StringTokenizer from the selected JDK in symbolic runs and concrete replay. Model signed ASCII int and long parsing in fixed bases 2 through 36, checking overflow against the sign-specific quotient and remainder. Reject invalid radices in the interpreter before Rust attempts the conversion. The regression fixtures cover supplementary delimiters, virtual dispatch, null and changed delimiters, mixed-case digits, both signed limits and an original-JVM false sibling.\n\nThe frozen ISCWT glyph and HtmlCleaner callers both stopped at tokenizer construction. A strict diagnostic now proves the ISCWT primary across widths 0 through 1023. The affected test selection passed 59 Rust test binaries and both Python suites. Verification jobs 20261124-121422-verify-the-registered-iscwt-glyph-caller and 20261124-121430-measure-tokenizer-transfer-on-the-origin compare both original release graphs with their relocated callers on every registered input. Job 20261124-121507-certify-all-solver-answers-behind-the-is checks the glyph proof independently. Job 20261124-121207-transfer-fixed-radix-parsing-to-guava-un transfers the radix rule to Guava against both JBMC profiles.",
+      "log_sha256": "1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e"
     }
   ],
   "logs": {
@@ -316,6 +345,12 @@
       "bytes": 16362178,
       "lines": 8795,
       "gzip_bytes": 2898880,
+      "url": null
+    },
+    "1794fc909be9a30ed3c12ff1283fb6dcc54b5ac1295040cc104d69569d26569e": {
+      "bytes": 19056256,
+      "lines": 10000,
+      "gzip_bytes": 3437368,
       "url": null
     },
     "1b2900d2425aae84708c02dc580acb9104d9ed994497b27dcfa8824c0339f79f": {

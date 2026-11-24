@@ -18,19 +18,18 @@ def content(path):
     return lrat.identity({p.relative_to(path).as_posix(): digest(p) for p in sorted(path.rglob("*.class"))})
 
 
-def certify(name,folder,setup,env,cp,identities,bindings):
-    out=folder/name
+def certify(target, case, domain, out, work, env, cp, identities):
     out.mkdir(parents=True,exist_ok=True)
-    work=setup/("evidence-"+name)
     work.mkdir()
+    bindings=[{"path":str(s),"content":content(s)} for s in cp]
     solver_dir=work/"solver-traces"
     solver_dir.mkdir()
     checker=Path(os.environ["JVMCONTRACT"]).resolve()
-    cmd=[str(checker),"prove","WireClaims#"+name,"--classes",str(cp[0]),"--classpath",classpath(cp[1:]),
+    cmd=[str(checker),"prove",target,"--classes",str(cp[0]),"--classpath",classpath(cp[1:]),
          "--engine","native","--gaps","strict","--assert","result","--unwind","16","--max-array-length","8",
          "--timeout","120","--work",str(work),"--json"]
-    request={"schema":"native-sat-request/v1","run":str(uuid.uuid4()),"case":CASES[name][0],"target":cmd[2],"argv":cmd,
-             "claim":{"observation":"boolean result; no exception","domain":CASES[name][1],"unwind":16,"arrayBound":8},
+    request={"schema":"native-sat-request/v1","run":str(uuid.uuid4()),"case":case,"target":target,"argv":cmd,
+             "claim":{"observation":"boolean result; no exception","domain":domain,"unwind":16,"arrayBound":8},
              "beforeLaunch":identities,"bindings":bindings,"checkerSha256":digest(checker),
              "sourceCommit":os.environ.get("VERIFY_SOURCE_COMMIT"),"job":os.environ.get("VERIFY_JOB_ID")}
     lrat.save(out/"request.json",request)
@@ -39,11 +38,11 @@ def certify(name,folder,setup,env,cp,identities,bindings):
     (out/"ordinary.json").write_bytes(result.stdout)
     decoded=jvmcontract_io.decode(result.stdout.decode(),"prove")
     if result.returncode!=0 or not decoded.ok or len(decoded.outcomes)!=1:
-        raise ValueError(name+" did not produce a completed ordinary proof")
+        raise ValueError(target+" did not produce a completed ordinary proof")
     row=decoded.outcomes[0]
     stated=row["stated"]
     if row["target"] != request["target"] or row["verdict"]!="verified" or stated["vacuity"]["status"]!="non-vacuous":
-        raise ValueError(name+" did not establish the bound non-vacuous request")
+        raise ValueError(target+" did not establish the bound non-vacuous request")
     if [content(p) for p in cp] != [v["content"] for v in bindings] or digest(checker)!=request["checkerSha256"]:
         raise ValueError("program or checker changed after request")
     anchor={"status":"established","execution":request["run"],"receiptSha256":digest(out/"ordinary.json"),
@@ -56,7 +55,7 @@ def certify(name,folder,setup,env,cp,identities,bindings):
     else: raise ValueError("bundle accepted against another public observation")
     lrat.save(out/"negative-control.json",{"wrongObservationRejected":True,"originalRequest":lrat.identity(request),
                                          "alteredRequest":lrat.identity(other)})
-    print(name,checked["status"],checked["answers"],flush=True)
+    print(target,checked["status"],checked["answers"],flush=True)
 
 
 if __name__=="__main__":
@@ -66,5 +65,5 @@ if __name__=="__main__":
     with scratch(prefix="wire-assurance-") as tmp:
         setup=Path(tmp);env,jars,cp,ids=prepare(setup)
         ids["originalJvm"]=physical(setup,env,jars,cp)
-        bindings=[{"path":str(s),"content":content(s)} for s in cp]
-        for name in a.methods: certify(name,OUTPUT/"assurance/wire",setup,env,cp,ids,bindings)
+        for name in a.methods:
+            certify("WireClaims#"+name,*CASES[name],OUTPUT/"assurance/wire"/name,setup/("evidence-"+name),env,cp,ids)

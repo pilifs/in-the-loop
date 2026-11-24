@@ -35,6 +35,11 @@ SUBJECTS = {
     "W02-transfer": ("wire-transfer", Subject(0, "FarmFrame", GUAVA, (
         Claim("littleEndian", "long word", holds=(("0L",),("-1L",),("0x123456789abcdef0L",))),
         Claim("flipped", "long word", holds=(("0L",),), fails=(("0x123456789abcdef0L",),)),))),
+    "Guava-radix": ("extended", Subject(0, "GuavaRadix", GUAVA, (
+        Claim("word", "int word, boolean upper", holds=(("0", "false"), ("0xabcdef01", "true"), ("-1", "false"))),
+        Claim("outside", "boolean negative", holds=(("false",), ("true",))),
+        Claim("nonnegative", "int word, boolean upper", holds=(("0", "true"),), fails=(("-1", "false"),)),
+    ), bound=8, unwind=16)),
     "W02-controls": ("wire-transfer", Subject(0, "ViewChecks", GUAVA, (
         Claim("signed", "short value", holds=(("(short)-1",),("(short)0x1234",))),
         Claim("bounds", "int offset, long value", holds=(("0","1L"),("1","2L"),("Integer.MAX_VALUE","3L"))),

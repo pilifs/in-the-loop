@@ -1,0 +1,39 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-121507-certify-all-solver-answers-behind-the-is",
+  "title": "Certify all solver answers behind the ISCWT glyph proof",
+  "description": "Repeat the non-vacuous strict proof of the frozen public glyph reference at the original bounds on its pinned pair. Bind its exact request, original JARs, generated class graphs and ordinary verdict. Validate all original SAT assignments and every UNSAT certificate in a fresh independent process, then challenge the bundle with an altered observation.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "The ordinary primary verifies, every recorded SAT/UNSAT answer checks against the exact original formula and an altered public claim is rejected.",
+  "submitted": {
+    "at": "2026-11-24T12:15:07+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "8m",
+    "timeout": "30m",
+    "notes": "The full glyph proof used 478 incremental solver calls and 156,392 clauses in the diagnostic. Standalone proof generation and checking revisit each prefix."
+  },
+  "steps": [
+    {
+      "name": "Independently validate the original glyph proof and reject a different observation",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/tokenizer_followup.py 08 --certify",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/followup/iscwt-assurance"
+  ]
+}
