@@ -29,6 +29,40 @@ def core_version():
     return digest(json.dumps(core, sort_keys=True, separators=(",", ":")).encode())
 
 
+def historical_frame_fault(case):
+    """Retain the result of the fixed historical trial alongside the original comparison rows."""
+    path = HERE / "historical-frame-control.json"
+    job = "20261124-014943-replay-the-guava-change-plan-nodes-and-i"
+    root = HERE.parents[2]
+    receipt = read(root / "verification/results/2026/11/24" / job / "result.json")
+    output, = (o for o in receipt["outputs"] if o["path"] == path.relative_to(root).as_posix())
+    require(receipt["status"] == "passed" and output["sha256"] == digest(path.read_bytes()), job)
+    r = read(path)
+    original = guava_record()
+    independent = r["independent"]
+    genuine, trial = r["genuine"], r["faulty"]
+    require(r["classSha256"] == original["classSha256"] and r["requestSha256"] == original["requestSha256"]
+            and genuine["formulaSha256"] == original["unchangedProducer"]["formulaSha256"]
+            and r["solver"]["sha256"] == Z3 and genuine["frame"]["obtained"] == "sat"
+            and trial["frame"] == {**genuine["frame"], "obtained": "unsat"}
+            and independent["checkerSha256"] == original["checkerVersion"]
+            and independent["certificateSha256"] == original["certificateSha256"]
+            and independent["witness"] == original["outcome"]
+            and independent["originalJvm"] == original["originalJvm"], "historical frame comparison")
+    require(r["replay"]["againstGenuineProof"] == ["status", "obligations", "certificateSha256"]
+            and r["replay"]["againstRegeneratedFaultyProof"] == [], "historical frame receipt comparison")
+    for route, version, expected, actual, reason in [
+        ("Historical Python/Z3 with frame fault", r["producerSource"]["faulty"], "established",
+         trial["disposition"], {"interpretation": "false acceptance", "solver": trial["frame"],
+                                "smtSha256": trial["formulaSha256"], "comparison": r["replay"]}),
+        ("Rust on historical frame control", independent["checkerSha256"], "refuted",
+         independent["disposition"], {"witness": independent["witness"], "jvm": independent["originalJvm"],
+                                      "certificateSha256": independent["certificateSha256"]}),
+    ]:
+        case(route, r["classSha256"], r["requestSha256"], "historical-producer-frame", version,
+             expected, actual, reason, "../historical-frame-control.json")
+
+
 def job_ledger():
     identifiers = (
         "20261123-191504-reproduce-both-guava-any-length-producer",
@@ -428,6 +462,7 @@ def report():
                 {"obligation": name, "scope": idx, "historicalStatus": r["historicalStatus"]},
                 rel,
             )
+    historical_frame_fault(case)
     keys = {
         (
             r["route"],

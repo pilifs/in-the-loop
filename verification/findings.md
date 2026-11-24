@@ -78,9 +78,9 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Tracked in**: this finding. Evidence: the results page above, `verification/receiver-discovery/results.json` (check with `python3 -B lib/benchmark/receiver-discovery/results.py --check`), and the decision record `llm-dlc/decisions/single-receiver-construction.jsonl`.
 - **Closes when**: each frontier is decided, or is shown to need something out of scope and recorded as such. Frontier 4 closes with VF-056.
 
-### VF-057: the trusted-kernel investment decision still lacks its corrupted-producer control
+### VF-057: historical induction can accept a false heap frame
 
-- **Status**: open, but the control is now measured (see the next bullet); what remains is to state it in the trusted-kernel decision record.
+- **Status**: decided. Advance the opt-in independent check for the qualified first-match family. The historical producer's choice of the frame formula has lost the power to establish that theorem at the independent entry. The Rust bytecode semantics, initialized-class execution model and caller's artifact and theorem binding remain trusted.
 - **Measured on 2026-11-24 by change-verification:** job `20261124-014943-replay-the-guava-change-plan-nodes-and-i`, step 6 (`lib/benchmark/trusted-kernel/historical_frame_control.py`), record `lib/benchmark/trusted-kernel/historical-frame-control.json`. The job injected one wrong conclusion into a private copy of the recorded historical Python/Z3 rule, with the rule digests checked against `baseline/336.json`, and ran it on the heap-writing Guava `indexOf` control:
   - **The genuine historical producer** leaves the frame obligation "preserve the input heap" `unresolved` (sat where unsat was expected).
   - **The faulted producer** marks it `established`: a false acceptance.
@@ -101,8 +101,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     - Both genuine historical solver failures reproduced at their witnessed inputs.
   - **The gap.** The brief makes "advance the semantic checker" conditional on, among other things, "the team can identify a producer error that has lost the ability to cause acceptance". Fault injection was run only on the experimental issuer. How the historical producer and its replay respond to a deliberately corrupted producer was never measured, and the run's own report names it as the one open experiment.
   - **The run's recommendation:** advance the semantic checker, measuring reuse next on the JDK `long[]` overload of `Arrays.fill`. Because of the gap, that recommendation rests on the issuer's fault injection, not on the historical producer.
-- **Needs**: the corrupted-producer control. Inject a fault into the historical producer, for example a wrong loop invariant, a dropped obligation or a flipped bound, and show that the independent checker refuses the resulting certificate where the producer's own replay would accept it. Record this in `lib/benchmark/trusted-kernel/evidence/cases.json`. Only then is the investment decision complete as the brief defines it.
-- **Tracked in**: this finding. Evidence: `lib/benchmark/trusted-kernel/README.md` (decision, assumptions, replay commands), `lib/benchmark/trusted-kernel/evidence/cases.json` (111-case table), `llm-dlc/loops/in-the-loop-trusted-kernel-experiment-brief.md`.
+- **Decision evidence**: the case table now includes the historical false acceptance and the independent refutation as two routes for the same external request. Z3 correctly answered the submitted formula. A retained pristine receipt detected drift in the status, obligations and formula digest. Regeneration under the same producer repeated the erroneous result. The independent detector was the frame rule at helper store PC 25, corroborated by a physical JVM. [Managed comparison](../lib/benchmark/trusted-kernel/historical-frame-control.json) · [Case table](../lib/benchmark/trusted-kernel/evidence/cases.json)
+- **Tracked in**: this finding and the [kernel decision and replay commands](../lib/benchmark/trusted-kernel/README.md).
 - **Closes when**: the control has run, and the decision record says whether a producer error has lost the ability to cause acceptance.
 
 ### VF-056: three ordinary monitor claims stop at the platform `Thread` constructor, left by jbmc-java-semantics-gap
