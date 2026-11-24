@@ -244,7 +244,11 @@ def run_observation(run_dir, launch, subject_cp, sites, main, encoded, trace_exc
 
 
 def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None,
-             inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None, search_startup_witness=False):
+             inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None, search_startup_witness=False,
+             side_cache=None):
+    jdk, probe = jdk.resolve(), probe.resolve()
+    if side_cache is not None and (inspect_receiver or native_caller):
+        raise ValueError("native and receiver inspections need fresh JVM observations")
     spec = json.loads(specfile.read_text())
     working_directory = spec.get("workingDirectory", ".")
     if working_directory not in (".", "fixtures"):
@@ -373,6 +377,14 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
         for side,(files,dependency,side_record) in prepared.items():
             if any(runtime_jar.read_class(jar,name) is not None for jar in files for name in report["probeClasses"]):
                 raise ValueError("observer classes shadow an input artifact")
+            if side_cache is not None:
+                hit = side_cache.lookup(side, files, side_record, report)
+                if hit is not None:
+                    side_record.update(trials=hit["trials"], loadedDependencyClasses=hit["loadedDependencyClasses"])
+                    if side == "old":
+                        old_loaded = {int(i): set(names) for i, names in hit["loadedPerInput"].items()}
+                    continue
+            loaded_per_input = {}
             records=[]
             side_record["trials"] = records
             operand_classes=set()
@@ -456,11 +468,10 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     trials.append(observation)
                     operand_classes.update(classes)
                     loaded_each_time = loaded_each_time and bool(classes)
-                    if side == "old":
-                        if trial == 0:
-                            old_loaded[index] = set(classes)
-                        elif index in old_loaded:
-                            old_loaded[index].intersection_update(classes)
+                    if trial == 0:
+                        loaded_per_input[index] = set(classes)
+                    elif index in loaded_per_input:
+                        loaded_per_input[index].intersection_update(classes)
                 trial_record["loadedUpgradeOnEachReplay"] = loaded_each_time
                 if early:
                     trial_record["repeatableBeforeEntry"] = len(early) == 2 and early[0] == early[1]
@@ -470,6 +481,10 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             if not operand_classes and all("beforeEntry" not in row for row in records):
                 raise ValueError(f"{side} did not load any class from the upgraded artifact")
             side_record.update(trials=records,loadedDependencyClasses=sorted(operand_classes))
+            if side == "old":
+                old_loaded = loaded_per_input
+            if side_cache is not None:
+                side_cache.remember(side, side_record, report, loaded_per_input)
         if first_early is not None:
             report["stoppedAt"] = first_early
             report["reason"] = (f"{first_early['side']} input {first_early['input']}: the original caller method was never entered. "

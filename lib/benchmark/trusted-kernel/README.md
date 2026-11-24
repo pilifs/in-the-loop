@@ -76,6 +76,8 @@ The next reuse measurement is the JDK `long[]` range-fill overload. Its disassem
 
 ## Replay
 
+The change planner can read two public-method results and eight individually certified Guava solver queries. Each node binds its frozen claim, artifacts, evidence, independent checker and assumptions. The query nodes retain their exact clause prefix and assumption units. Run `python3 -B lib/benchmark/trusted-kernel/change_nodes.py --check` to verify the projection against the experiment's frozen case table. [Change-plan evidence](change-nodes.json)
+
 From the repository root on the pinned Linux toolchain:
 
 ```bash
