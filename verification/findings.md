@@ -18,6 +18,35 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-065: real-world bugs the runs found in other projects, to confirm and report
+
+- **Status**: open: a register. The user asked on 2026-11-24 for every real-world bug a run finds in another project, a defect in released or merged upstream code shown by a replayed JVM witness, to be kept here until it is followed up. An entry is done when it has been confirmed and either reported upstream by the user or dismissed with a reason. The finding closes when every entry is done. Runs and watchers add new entries here, not elsewhere.
+- **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the queued run `organic-pr-20-additional-cases` (Astra 6.2 at max effort, session `c3caedf3`).
+- **Nothing outward-facing from an agent**: an agent prepares a report and its reproduction. The user files it, or decides not to.
+
+#### Entries
+
+**1. Apache Lucene, [PR #15727](https://github.com/apache/lucene/pull/15727) (case J14): with a child filter, the fixed `ToParentBlockJoinSortField` treats filtered-out children as missing.** Open: confirm, then report.
+- **What the PR changed, and the run confirmed.** Parents are sorted by their children's values. When some children have no value, the fixed version gives the parent a missing sort key: ascending `[B:"20", A:"30"]` became `[A:null, B:"20"]`. Descending order and an all-present block held. This is the PR's intended change.
+- **The defect.** With a child filter that selects only the children with values, a filtered-out child still makes the parent's key missing.
+  - The run's own preservation claim, that filtering out the missing child keeps A at 30, is refuted on the fix by a public-API JVM witness: A/null.
+  - A follow-up held the sole selected child at 30. The fix returned 30 with no excluded child, and null with an excluded child, *even when that excluded child had a real value (05)*. The parent revision returned 30 in all three.
+  - Per the run, the fixed comparator infers "a child is missing" from the whole parent block's child count, not from the children the filter selected.
+- **Evidence**: `verification/product-behaviour/cases/J14/case.json`, `verification/product-behaviour/results/J14/` (original prediction and witness), and the J14 row and the Lucene paragraph of `llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-results.md`.
+- **To confirm before reporting**:
+  1. **Reproduce on a full upstream build.** The run used a source overlay: the PR's three changed join classes over a common Lucene 10.4.0 distribution, one of the seven overlay cases whose effect is unmeasured. Reproduce on a real Lucene build or release that includes #15727, through the same public calls (index two blocks, reopen, search with the five-argument constructor and a child filter).
+  2. **Check the intent.** Read the PR discussion and the javadoc of `ToParentBlockJoinSortField` for whether "missing" was meant to count all children or only those the filter selects.
+  3. **Check whether it's already known.** Look at Lucene's issue tracker and later commits on that class.
+- **Report**: a minimal public-API reproduction (two parent blocks, the filter, the expected and observed sort keys), for the user to file.
+
+#### Candidates to sort
+
+- **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:
+  - 26 of stock JBMC's 100 reported target failures did not reproduce on the original JVM;
+  - on Guava 33.4.8-jre, stock JBMC reported `ffffffff` as a hexadecimal round-trip failure that the released JAR does not show.
+
+  These are defects in a real-world tool, not in the library. Sort them into [`llm-dlc/loops/jbmc-upstream.md`](../llm-dlc/loops/jbmc-upstream.md) (the drafted, unapproved brief for JBMC's upstream defects), or dismiss them as harness or profile artefacts, then remove them from this list. Evidence is in `llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md`.
+
 ### VF-064: a watcher stopped a run that was extending the lead over JBMC because it had not done the named fixes first
 
 - **Status**: open. The user decided the policy on 2026-11-24, and it applies from the next verdict. Whether it works is measured on the next runs, starting with `beyond-jbmc-scaffold-first`.
