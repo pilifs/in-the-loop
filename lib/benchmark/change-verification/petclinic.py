@@ -42,7 +42,7 @@ class Page(HTMLParser):
         self.words.extend(text.split())
 
 
-def http(port, path, form=None):
+def request(port, path, form=None):
     conn = http.client.HTTPConnection("127.0.0.1", port, timeout=10)
     try:
         data = urlencode(form) if form else None
@@ -63,7 +63,7 @@ def owner_list(port):
         if len(seen) >= 20:
             raise ValueError("owner listing exceeded the declared small database")
         seen.add(path)
-        status, _, page = http(port, path)
+        status, _, page = request(port, path)
         if status != 200:
             raise ValueError(f"owner listing returned HTTP {status}")
         names.extend(page.words)
@@ -74,22 +74,22 @@ def owner_list(port):
 
 
 def workflows(port, registration):
-    status, _, page = http(port, "/owners/new")
+    status, _, page = request(port, "/owners/new")
     result = {"startup": {"status": status, "form": {"firstName", "telephone"} <= page.fields}}
     invalid, valid = (registration["independentExamples"][k] for k in ("invalid", "valid"))
     before = owner_list(port)
-    status, _, page = http(port, "/owners/new", invalid)
+    status, _, page = request(port, "/owners/new", invalid)
     after = owner_list(port)
     result["reject-owner"] = {"status": status, "redisplayed": {"lastName", "telephone"} <= page.fields,
                               "errorsShown": any(w in " ".join(page.words).lower() for w in ("empty", "blank", "digits", "numeric", "match")),
                               "unchangedListing": before == after and invalid["firstName"] not in after}
-    status, location, _ = http(port, "/owners/new", valid)
+    status, location, _ = request(port, "/owners/new", valid)
     saved = bool(re.fullmatch(r"/owners/\d+", location))
     result["create-and-read-owner"] = {"redirect": status in (302, 303) and saved, "details": False, "search": False}
     if saved:
-        detail, _, page = http(port, location)
+        detail, _, page = request(port, location)
         result["create-and-read-owner"]["details"] = detail == 200 and all(valid[k] in page.words for k in ("firstName", "lastName", "telephone"))
-        status, found, _ = http(port, "/owners?" + urlencode({"lastName": valid["lastName"]}))
+        status, found, _ = request(port, "/owners?" + urlencode({"lastName": valid["lastName"]}))
         result["create-and-read-owner"]["search"] = status in (302, 303) and found == location
     return result
 
