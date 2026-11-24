@@ -1,0 +1,187 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-121207-transfer-fixed-radix-parsing-to-guava-un",
+  "title": "Transfer fixed-radix parsing to Guava unsigned words",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 28.1s, peak 312.8 MiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-121207-transfer-fixed-radix-parsing-to-guava-un.json",
+    "sha256": "39fbdd552d64b7835300159d36963e92018f7bbdff03a59e66368cc875ae88cf",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-121207-transfer-fixed-radix-parsing-to-guava-un",
+      "title": "Transfer fixed-radix parsing to Guava unsigned words",
+      "description": "Check the released Guava 33.4.8-jre UnsignedInts parser for every 32-bit word in upper- and lowercase hexadecimal and both unsigned range failures. Require original-JVM replay for the deliberately false sign theorem, retain staged and stock JBMC on matching callers, and measure their post-call reach controls.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "Record all three native and comparator verdicts, timings, assertion identifiers and replay checks on the original Guava JARs.",
+      "submitted": {
+        "at": "2026-11-24T12:12:07+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "16m",
+        "notes": "Three predicates and their stock reach controls use the campaign's 120-second per-checker budget; the native parser has a fixed eight-digit input."
+      },
+      "steps": [
+        {
+          "name": "Check the released Guava parser on all three engines",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified Guava-radix --output verification/beyond-jbmc/followup",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/followup/Guava-radix"
+      ]
+    }
+  },
+  "sourceCommit": "f4d13542a03f073c1705e145edce78fc8352d8f3",
+  "startedAt": "2026-11-24T12:27:24+00:00",
+  "finishedAt": "2026-11-24T12:31:57+00:00",
+  "wallSeconds": 273.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 430092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": "Three predicates and their stock reach controls use the campaign's 120-second per-checker budget; the native parser has a fixed eight-digit input."
+  },
+  "usage": {
+    "peakMemoryBytes": 328007680,
+    "wallSeconds": 28.1,
+    "cpuSeconds": 30.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the released Guava parser on all three engines",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified Guava-radix --output verification/beyond-jbmc/followup",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 28.052,
+      "cpuSeconds": 29.968,
+      "cpuThrottledSeconds": 0.345,
+      "peakMemoryBytes": 328007680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-released-guava-parse.log",
+        "lines": 4,
+        "bytes": 213,
+        "sha256": "35ec6d1901fbc11282a8f277db7a75a856f2fd2677bd86ebe99865ed44a4ee60",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Guava-radix 7 original checks passed",
+        "Guava-radix word verified unverifiable FAILURE FAILURE",
+        "Guava-radix outside verified unverifiable SUCCESS FAILURE",
+        "Guava-radix nonnegative violation unverifiable FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/followup/Guava-radix/executions.zip",
+      "change": "added",
+      "bytes": 199686,
+      "sha256": "dfa7f9f7417eef0b49f8fa94c88a940597d22b71302a5efc05ae76c4fcbdef26",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/followup/Guava-radix/results.json.gz",
+      "change": "added",
+      "bytes": 2454,
+      "sha256": "6347de05671eb34cf32a8978a9269c1295554eb0a3003be305a64fbee8f85c3c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T12:32:13+00:00",
+    "applied": [
+      "verification/beyond-jbmc/followup/Guava-radix/executions.zip",
+      "verification/beyond-jbmc/followup/Guava-radix/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f646f02d347db2f5646f89426a207ab81485488d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f646f02d347db2f5646f89426a207ab81485488d/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T123157Z-9969741e0e247c26",
+      "outputs": "20261124T123158Z-02226149ca4a8c30",
+      "diff": "20261124T123158Z-039772414bb8dbb2"
+    }
+  }
+}

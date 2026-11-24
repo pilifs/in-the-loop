@@ -1,0 +1,213 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-121430-measure-tokenizer-transfer-on-the-origin",
+  "title": "Measure tokenizer transfer on the original HtmlCleaner SVG caller",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 34.7s, peak 92.0 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-121430-measure-tokenizer-transfer-on-the-origin.json",
+    "sha256": "9290b0dd42bdeab7ede529493c3bd1d45785152d77caa71de13469b03303418f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-121430-measure-tokenizer-transfer-on-the-origin",
+      "title": "Measure tokenizer transfer on the original HtmlCleaner SVG caller",
+      "description": "Run both registered circle radii through the unmodified releases and the frozen two-copy graph. Repeat the primary, ordinary span control and inverse at the original unwind 16 and retain the next instruction at 256 on a separately labelled primary.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "Both JVMs reproduce the inline SVG change and preserve the control. Every run reports its literal verdict after the tokenizer.",
+      "submitted": {
+        "at": "2026-11-24T12:14:30+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m",
+        "timeout": "8m",
+        "notes": "The two primary diagnostic runs reached the map rehash and concurrent-count operations in seconds."
+      },
+      "steps": [
+        {
+          "name": "Check the two XML inputs, six native runs and the extended diagnostic",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/tokenizer_followup.py 10",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/followup/tokenizer-10.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "f4d13542a03f073c1705e145edce78fc8352d8f3",
+  "startedAt": "2026-11-24T12:27:24+00:00",
+  "finishedAt": "2026-11-24T12:32:04+00:00",
+  "wallSeconds": 280.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 430092,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": "The two primary diagnostic runs reached the map rehash and concurrent-count operations in seconds."
+  },
+  "usage": {
+    "peakMemoryBytes": 96428032,
+    "wallSeconds": 34.7,
+    "cpuSeconds": 37.0,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.58
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 233.184,
+      "cpuSeconds": 233.593,
+      "cpuThrottledSeconds": 0.002,
+      "peakMemoryBytes": 2285285376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "3cfd5525e5580f88ae40248662ff8972ac7a8e94417c2864b52885e52f624cb7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-121430-measure-tokenizer-transfer-on-the-origin/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 53s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the two XML inputs, six native runs and the extended diagnostic",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/tokenizer_followup.py 10",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 34.672,
+      "cpuSeconds": 36.977,
+      "cpuThrottledSeconds": 0.686,
+      "peakMemoryBytes": 96428032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-two-xml-inputs-six-n.log",
+        "lines": 5,
+        "bytes": 202,
+        "sha256": "780a4d122083129e4523181b3152f37c5a489550a4e7720fac8a6f209dbb1872",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Slot 10: 2 inputs on both release profiles",
+        "primary ['unverifiable', 'unverifiable']",
+        "control ['unverifiable', 'unverifiable']",
+        "inverse ['unverifiable', 'unverifiable']",
+        "primary-unwind-256 ['unverifiable']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/followup/tokenizer-10.json.gz",
+      "change": "added",
+      "bytes": 5648,
+      "sha256": "45de763bf25734bda1879a842a4c7afa5bbf4daad14899d6596c2bead0064157",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T12:32:13+00:00",
+    "applied": [
+      "verification/beyond-jbmc/followup/tokenizer-10.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "f646f02d347db2f5646f89426a207ab81485488d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f646f02d347db2f5646f89426a207ab81485488d/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T123204Z-603583c118363a46",
+      "outputs": "20261124T123204Z-623302c1ab25a246",
+      "diff": "20261124T123204Z-637917f5f34d0255"
+    }
+  }
+}
