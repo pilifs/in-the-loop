@@ -1,0 +1,261 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-190726-open-log4j-rollover-claims-on-the-origin",
+  "title": "Open Log4j rollover claims on the original API-first graph",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed, 2 skipped step(s) in 0.8s, peak 47.9 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "declared output verification/organic-composition/log4j/first-native.json was not produced",
+    "step 2 (Preserve the canonical API-first plans) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-190726-open-log4j-rollover-claims-on-the-origin.json",
+    "sha256": "c760fc4d3ab6c76b1ea4f6bb5c55180ed2272272a3b3987e02e9340d5bf1bbb1",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-190726-open-log4j-rollover-claims-on-the-origin",
+      "title": "Open Log4j rollover claims on the original API-first graph",
+      "description": "Preserve the first frozen outcome for the original PatternProcessor and the Math.max control on the pinned API then core runtime. Eight preregistered histories distinguish explicit and default timezones, three consecutive schedules and the receiver state retained by updateTime. Compare the first, resumed and clean deployment bindings and retain the strict native opening.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T19:07:26+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Check the freeze",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+          "cwd": "."
+        },
+        {
+          "name": "Preserve the canonical API-first plans",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py log4j first",
+          "cwd": "."
+        },
+        {
+          "name": "Recheck the original plan bindings",
+          "run": "python3 -B lib/benchmark/organic-composition/audit.py log4j first",
+          "cwd": "."
+        },
+        {
+          "name": "Record the first native frontier",
+          "run": "python3 -B lib/benchmark/organic-composition/native_open.py log4j 'schedule()Z'",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/log4j/first",
+        "verification/organic-composition/log4j/first-native.json"
+      ]
+    }
+  },
+  "sourceCommit": "8058feb78c3938427efee89035bdc94520853896",
+  "startedAt": "2026-11-24T19:16:13+00:00",
+  "finishedAt": "2026-11-24T19:20:54+00:00",
+  "wallSeconds": 281.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1038263,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 50180096,
+    "wallSeconds": 0.8,
+    "cpuSeconds": 0.5,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the freeze",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.404,
+      "cpuSeconds": 0.278,
+      "cpuThrottledSeconds": 0.012,
+      "peakMemoryBytes": 33603584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-freeze.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Preserve the canonical API-first plans",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py log4j first",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.401,
+      "cpuSeconds": 0.253,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 50180096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-preserve-the-canonical-api-fir.log",
+        "lines": 15,
+        "bytes": 2440,
+        "sha256": "e0f33fc54563eabedff41cb84835c211f10ca76bbec1fc7c937a0d4487481688",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "change plan: [Errno 2] No such file or directory: '/home/filip/code/in-the-loop/verification/.state/work/20261124-190726-open-log4j-rollover-claims-on-the-origin/lib/benchmark/organic-composition/log4j/checked-workflows.json'",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-190726-open-log4j-rollover-claims-on-the-origin/lib/benchmark/organic-composition/matrix.py\", line 147, in <module>",
+        "    run(args.case,args.label,args.controls)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-190726-open-log4j-rollover-claims-on-the-origin/lib/benchmark/organic-composition/matrix.py\", line 83, in run",
+        "    measure(\"planned\",specs,None,execute=False)",
+        "    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-190726-open-log4j-rollover-claims-on-the-origin/lib/benchmark/organic-composition/matrix.py\", line 49, in measure",
+        "    subprocess.run(cmd, cwd=ROOT, check=True)",
+        "    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/subprocess.py\", line 578, in run",
+        "    raise CalledProcessError(retcode, process.args,",
+        "                             output=stdout, stderr=stderr)",
+        "subprocess.CalledProcessError: Command '['/usr/bin/python3', PosixPath('/home/filip/code/in-the-loop/verification/.state/work/20261124-190726-open-log4j-rollover-claims-on-the-origin/examples/tools/build.py'), '--change-plan', 'application', '--before', PosixPath('/home/filip/code/in-the-loop/verifi"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Recheck the original plan bindings",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py log4j first",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 4,
+      "name": "Record the first native frontier",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py log4j 'schedule()Z'",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/log4j/first/plans.zip",
+      "change": "added",
+      "bytes": 22,
+      "sha256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T19:21:30+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/organic-composition/log4j/first/plans.zip"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "0ece80cb8a09db9dbf2444b47d1280042d108e43",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/0ece80cb8a09db9dbf2444b47d1280042d108e43/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T192054Z-243616929feea9e7",
+      "outputs": "20261124T192054Z-269079e241330c50",
+      "diff": "20261124T192054Z-2898132ea517bb70",
+      "workdir": "20261124T192117Z-660333edfe9f3d36"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-190726-open-log4j-rollover-claims-on-the-origin"
+}
