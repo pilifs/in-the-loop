@@ -1,0 +1,36 @@
+{
+ "prover": "Lean (version 4.36.0, x86_64-unknown-linux-gnu, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
+ "proverSha256": "db7f559d05795e7af52e42bc966c90240a39dcb9712161c54c97afa546e20c00",
+ "model": "extended/StreamHash.lean",
+ "modelSha256": "4f743a3a26626bb9a14fb512be488103bba07e0d54c360e6b223218634fa0936",
+ "claims": [
+  "fold_blocks",
+  "all_partitions",
+  "arbitrary_stream",
+  "reset_stream",
+  "empty_negative_byte"
+ ],
+ "kernelOutput": "'StreamHash.fold_blocks' depends on axioms: [propext, Quot.sound]\n'StreamHash.all_partitions' depends on axioms: [propext, Quot.sound]\n'StreamHash.arbitrary_stream' depends on axioms: [propext, Quot.sound]\n'StreamHash.reset_stream' depends on axioms: [propext, Quot.sound]\n'StreamHash.empty_negative_byte' depends on axioms: [propext, Quot.sound]\n",
+ "compiledBooleanCertificateReductions": [],
+ "originalClasses": [
+  {
+   "artifact": "commons-codec-1.15.jar",
+   "sha256": "b3e9f6d63a790109bf0d056611fbed1cf69055826defeb9894a71369d246ed63",
+   "members": {
+    "org/apache/commons/codec/digest/MurmurHash3": "0178269ac4dbbb80fffd0e92caa5dd1d07d3dab8b3f9459414c6b1d326730a70",
+    "org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32x86": "e25d3855703ee496ff7e2d1a26399bdccc2854a2ff6542085611ca5553ff37dc"
+   }
+  }
+ ],
+ "callersSha256": {
+  "extended/Incremental.java": "f030f14c701d8063611ae880146a20f2eed674661cb7950acd31693b55f7aaed"
+ },
+ "job": "20261124-100249-repeat-murmurhash-partition-induction-ov",
+ "argv": [
+  "/home/filip/.elan/toolchains/leanprover--lean4---v4.36.0/bin/lean",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-100249-repeat-murmurhash-partition-induction-ov/lib/benchmark/beyond-jbmc/extended/StreamHash.lean"
+ ],
+ "negative": "example : StreamHash.oneShot [0xff] 0 = 0x79a8e694 := by decide",
+ "rejection": "'StreamHash.fold_blocks' depends on axioms: [propext, Quot.sound]\n'StreamHash.all_partitions' depends on axioms: [propext, Quot.sound]\n'StreamHash.arbitrary_stream' depends on axioms: [propext, Quot.sound]\n'StreamHash.reset_stream' depends on axioms: [propext, Quot.sound]\n'StreamHash.empty_negative_byte' depends on axioms: [propext, Quot.sound]\n/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/campaign-sequence-3jk4jsih/FalseStreamHash.lean:99:57: error: Tactic `decide` proved that the proposition\n  StreamHash.oneShot [255] 0 = 2041112212\nis false\n",
+ "scope": "Executable algebra over fixed-width bit vectors and finite byte lists. Original Java correspondence is measured separately on the released caller and its bounds."
+}

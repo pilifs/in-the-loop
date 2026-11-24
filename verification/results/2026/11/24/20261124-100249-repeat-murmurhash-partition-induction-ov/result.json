@@ -1,0 +1,180 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-100249-repeat-murmurhash-partition-induction-ov",
+  "title": "Repeat MurmurHash partition induction over the actual block recursion",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.2s, peak 101.0 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-100249-repeat-murmurhash-partition-induction-ov.json",
+    "sha256": "ee4e585c46c936c433080881fd14b6a2ef93de46220fd269fd41065d9b56599e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-100249-repeat-murmurhash-partition-induction-ov",
+      "title": "Repeat MurmurHash partition induction over the actual block recursion",
+      "description": "Bind the induction to the four-byte block traversal and keep numeric mixing opaque to structural recursion. Confirm arbitrary finite partitions, reset, the modular count, repeatable finalization and the wrong signed-tail sibling.",
+      "kind": "library",
+      "capabilities": [
+        "assurance:induction"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/README.md"
+        ]
+      },
+      "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+      "submitted": {
+        "at": "2026-11-24T10:02:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 31,
+      "requires": [
+        "lean"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m",
+        "timeout": "6m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py code",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py codec",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/assurance/codec-sequence"
+      ]
+    }
+  },
+  "sourceCommit": "2bff5d7bba98e71c3c914bee71a0ee938c096ecd",
+  "startedAt": "2026-11-24T10:16:44+00:00",
+  "finishedAt": "2026-11-24T10:17:03+00:00",
+  "wallSeconds": 19.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3567885,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 360.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 105934848,
+    "wallSeconds": 1.2,
+    "cpuSeconds": 1.1,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py code",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py codec",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 360.0,
+      "cancelled": false,
+      "wallSeconds": 1.204,
+      "cpuSeconds": 1.09,
+      "cpuThrottledSeconds": 0.413,
+      "peakMemoryBytes": 105934848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 1,
+        "bytes": 56,
+        "sha256": "0c5ee88ae0bb05d5fe4da984b35bbf400f5b795bad55162523454f8eae194757",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "codec 5 theorems checked and incorrect control rejected"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/assurance/codec-sequence/kernel.log",
+      "change": "added",
+      "bytes": 347,
+      "sha256": "bd7256ddbb2b4ea6a53b3e3bb75898d7e95290176ebb294af43aac1243289b94",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/codec-sequence/receipt.json",
+      "change": "added",
+      "bytes": 2575,
+      "sha256": "5c5246215b03d2d22c7464a75be27ca46e1540b6044f03a18973e4500f655b1b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T10:17:15+00:00",
+    "applied": [
+      "verification/beyond-jbmc/assurance/codec-sequence/kernel.log",
+      "verification/beyond-jbmc/assurance/codec-sequence/receipt.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T101703Z-9557146657953911",
+      "outputs": "20261124T101703Z-9825184f07c5f359",
+      "diff": "20261124T101704Z-002414ced51fdebd"
+    }
+  }
+}

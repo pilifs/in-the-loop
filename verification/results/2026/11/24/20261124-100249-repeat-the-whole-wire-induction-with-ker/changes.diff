@@ -1,0 +1,66 @@
+--- /dev/null
++++ b/verification/beyond-jbmc/assurance/wire-sequence/kernel.log
+@@ -0,0 +1,7 @@
++'FrameInduction.full_word' depends on axioms: [propext, Quot.sound]
++'FrameInduction.parse_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]
++'FrameInduction.word_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]
++'FrameInduction.record_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]
++'FrameInduction.entire_sequence' depends on axioms: [propext, Classical.choice, Quot.sound]
++'FrameInduction.record_progress' depends on axioms: [propext, Quot.sound]
++'FrameInduction.prefix_capacity' depends on axioms: [propext, Classical.choice, Quot.sound]
+--- /dev/null
++++ b/verification/beyond-jbmc/assurance/wire-sequence/receipt.json
+@@ -0,0 +1,53 @@
++{
++ "prover": "Lean (version 4.36.0, x86_64-unknown-linux-gnu, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
++ "proverSha256": "db7f559d05795e7af52e42bc966c90240a39dcb9712161c54c97afa546e20c00",
++ "model": "wire/FrameInduction.lean",
++ "modelSha256": "885fd2f1c3af9ce588ec46d5f23a27e22c3b81e945c5aa4cf4084f928d74913f",
++ "claims": [
++  "full_word",
++  "parse_suffix",
++  "word_suffix",
++  "record_suffix",
++  "entire_sequence",
++  "record_progress",
++  "prefix_capacity"
++ ],
++ "kernelOutput": "'FrameInduction.full_word' depends on axioms: [propext, Quot.sound]\n'FrameInduction.parse_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.word_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.record_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.entire_sequence' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.record_progress' depends on axioms: [propext, Quot.sound]\n'FrameInduction.prefix_capacity' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
++ "compiledBooleanCertificateReductions": [],
++ "originalClasses": [
++  {
++   "artifact": "lucene-core-8.11.0.jar",
++   "sha256": "5069436519426486f74a84a77763895ec9ace807929dc931ab36760893cb8267",
++   "members": {
++    "org/apache/lucene/store/DataInput": "b49d9f9e3188e5377e18fa4d131f031c1b54da6bd4e9a9d145318caf20eb3963",
++    "org/apache/lucene/store/DataOutput": "21c1589146bea5516fb7a9f26e3a755d73b2235fd8e05b88dc74ea47c84a10d6",
++    "org/apache/lucene/store/ByteArrayDataInput": "182cfde9fa11d3063762e3bd2a1095e442d1e26ef02a27b459ed8747a3193664",
++    "org/apache/lucene/store/ByteArrayDataOutput": "345aee36fd0e36a98191dff65ed3ca2552390821605e51e153be6d918801e7e8"
++   }
++  },
++  {
++   "artifact": "lucene-core-9.0.0.jar",
++   "sha256": "f03aa0afc676ac80d111189c235974e6f4c628182e511aeb7e58b01db577c91a",
++   "members": {
++    "org/apache/lucene/store/DataInput": "2adec6a1ddf27fd0767ed04285bbb486b19b4ee3c35cbd959992ae377a7e3bdf",
++    "org/apache/lucene/store/DataOutput": "88a969509ecd78db682ff609684cbde2ceeaca327d3c695b3965016311b51785",
++    "org/apache/lucene/store/ByteArrayDataInput": "ecc4294b2c044e52adb577607855dad3ef3c0f2bff75f8e38f270be85de94943",
++    "org/apache/lucene/store/ByteArrayDataOutput": "5bb17be51a09c9fc604120e8f210dddf803150ebdf28a7de7a6fcae37f034b9f"
++   }
++  }
++ ],
++ "callersSha256": {
++  "wire/WireAPI.java": "e0ac13008f420ea248f5336a1e5969a253f14d192d0be6fdc51137bb7cfb2b23",
++  "wire-more/WireMore.java": "f9c65a36efbd98ff0ffbe6be16e99a33285c2a430d59516665f59b69e1132bdc",
++  "wire-more/PayloadFirst.java": "1442d6e465bce87f4434c70e5fb9c49ef744d0edb3cb0f3f63381eb1f6066ed8",
++  "wire-more/PayloadFirstClaims.java": "d851e6081ed7a264ec683548c711da14bcc16e223bb7eb29343a917f676d6780"
++ },
++ "job": "20261124-100249-repeat-the-whole-wire-induction-with-ker",
++ "argv": [
++  "/home/filip/.elan/toolchains/leanprover--lean4---v4.36.0/bin/lean",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-100249-repeat-the-whole-wire-induction-with-ker/lib/benchmark/beyond-jbmc/wire/FrameInduction.lean"
++ ],
++ "negative": "example : FrameInduction.reverseWord (0x01020304 : FrameInduction.Word) = 0x01020304 := by decide",
++ "rejection": "'FrameInduction.full_word' depends on axioms: [propext, Quot.sound]\n'FrameInduction.parse_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.word_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.record_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.entire_sequence' depends on axioms: [propext, Classical.choice, Quot.sound]\n'FrameInduction.record_progress' depends on axioms: [propext, Quot.sound]\n'FrameInduction.prefix_capacity' depends on axioms: [propext, Classical.choice, Quot.sound]\n/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/campaign-sequence-5m3233d7/FalseFrameInduction.lean:176:91: error: Tactic `decide` proved that the proposition\n  FrameInduction.reverseWord 16909060 = 16909060\nis false\n",
++ "scope": "Executable algebra over fixed-width bit vectors and finite byte lists. Original Java correspondence is measured separately on the released caller and its bounds."
++}
