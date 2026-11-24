@@ -1,0 +1,63 @@
+{
+  "job": "20261124-000949-check-confirmed-startup-witnesses-in-rec",
+  "source": "e957366abc4d877a390b4fa131bb4dd11df322b5",
+  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "cases": {
+    "commons-vfs-55c96cfd": {
+      "overloads": {
+        "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+        }
+      },
+      "status": "preserved",
+      "inputs": 3,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 3,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at org.apache.commons.vfs2.provider.ftp.UpgradeProbe.observe:17). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "60d9a51f2515f3c31f8096a58be4389f312c2172fe5ecde0cad87d580bcc87d2"
+        },
+        "new": {
+          "jvmInputsReached": 3,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at org.apache.commons.vfs2.provider.ftp.UpgradeProbe.observe:17). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "8ba0c14ee5891dd68ff25145350ee04c396772b5b3e8ade4e77d894716785f3a"
+        }
+      }
+    }
+  },
+  "searchStartupWitness": true,
+  "receiptPackSha256": "bdb975a5a92d0d8dca42845e6ec9052237abe30955926680853bf87ed176ebbc"
+}

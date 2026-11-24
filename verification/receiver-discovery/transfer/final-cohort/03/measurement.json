@@ -1,0 +1,179 @@
+{
+  "job": "20261124-000949-check-confirmed-startup-witnesses-in-rec",
+  "source": "e957366abc4d877a390b4fa131bb4dd11df322b5",
+  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "cases": {
+    "ea-async-27": {
+      "overloads": {
+        "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        },
+        "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        }
+      },
+      "status": "preserved",
+      "inputs": 8,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 8,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.WeakHashMap.<init>()V (java.util.WeakHashMap.<init>() at com.ea.async.instrumentation.Transformer.<clinit>:136). With --gaps assume it assumes instead that java.util.WeakHashMap.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 8",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "0ec702563c87649ab66e29da87e43b090b1d5aa5bfcf1e9b26a96475978948b3"
+        },
+        "new": {
+          "jvmInputsReached": 8,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.WeakHashMap.<init>()V (java.util.WeakHashMap.<init>() at com.ea.async.instrumentation.Transformer.<clinit>:136). With --gaps assume it assumes instead that java.util.WeakHashMap.<init>() constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 8",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "070128a2635741c57eba51239c4a898a377fa9af96ce5b7a7965d5a7341b3e37"
+        }
+      }
+    },
+    "incremental-analysis-28": {
+      "overloads": {
+        "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.nio.file.Path, java.util.Set)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+        },
+        "com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(java.util.stream.Stream)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "search is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher made by its constructor, whose the argument outputDir of com.worksap.tools.spotbugs.maven.incremental.ClassSearcher's constructor has type java.nio.file.Path; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+        }
+      },
+      "status": "preserved",
+      "inputs": 5,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 5,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at com.worksap.tools.spotbugs.maven.incremental.UpgradeProbe.observe:9). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 5",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "59fa151fb594a25d35e9f598c51490edc295ae3b01721ba90ba99cd43d1b1c87"
+        },
+        "new": {
+          "jvmInputsReached": 5,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.nio.file.Paths.get(Ljava/lang/String;[Ljava/lang/String;)Ljava/nio/file/Path;@jdk-21.0.13 (java.nio.file.Paths.get(java.lang.String, java.lang.String[]) at com.worksap.tools.spotbugs.maven.incremental.UpgradeProbe.observe:9). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 5",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "81e0ee1db94cd4c46bc6b16135044659f9878d331073dc11184c032789b49036"
+        }
+      }
+    },
+    "whatjdk-12": {
+      "overloads": {
+        "com.iodesystems.whatjdk.ClassEntryExtractor#next()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "preserved",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.zip.ZipOutputStream.<init>(Ljava/io/OutputStream;)V@jdk-21.0.13 (java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) at com.iodesystems.whatjdk.UpgradeProbe.observe:11). With --gaps assume it assumes instead that java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "08afdf8995440389681b6772c017cd83341a40b89beec288a850aad069c4a038"
+        },
+        "new": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.zip.ZipOutputStream.<init>(Ljava/io/OutputStream;)V@jdk-21.0.13 (java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) at com.iodesystems.whatjdk.UpgradeProbe.observe:11). With --gaps assume it assumes instead that java.util.zip.ZipOutputStream.<init>(java.io.OutputStream) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "e10efa460b3eeb88ad5d3af0fd2b0d096c039cc0958ee4416cc051a0e305a21d"
+        }
+      }
+    }
+  },
+  "searchStartupWitness": true,
+  "receiptPackSha256": "fc213a6ef768b9a382f58c09ba5b626b1a15cb52ca2ab71f6ce15c024408fd8a"
+}

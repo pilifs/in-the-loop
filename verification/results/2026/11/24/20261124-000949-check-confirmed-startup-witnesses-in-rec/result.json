@@ -1,0 +1,273 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-000949-check-confirmed-startup-witnesses-in-rec",
+  "title": "Check confirmed startup witnesses in receiver groups 01 03 06",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m29s, peak 375.7 MiB (estimated 3m00s, 2.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-000949-check-confirmed-startup-witnesses-in-rec.json",
+    "sha256": "14b3d21b89308274c17d44097fca530bf2b50247e8fb6cc614d54f4e6c461736",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-000949-check-confirmed-startup-witnesses-in-rec",
+      "title": "Check confirmed startup witnesses in receiver groups 01 03 06",
+      "description": "Recheck the exact historical overloads and finite callers with the final checker. Give ordinary public callers the optional startup counterexample search and require the default JVM to reproduce every candidate before it can change a verdict. Compare against the same commits, digests, selectors, bounds and physical receiver evidence.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:regress"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T00:09:49+00:00",
+        "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "3m",
+        "timeout": "40m"
+      },
+      "steps": [
+        {
+          "name": "Check original callers with independently confirmed startup search",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py --search-startup-witness 01 03 06",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/transfer/final-cohort/01",
+        "verification/receiver-discovery/transfer/final-cohort/03",
+        "verification/receiver-discovery/transfer/final-cohort/06"
+      ]
+    }
+  },
+  "sourceCommit": "e957366abc4d877a390b4fa131bb4dd11df322b5",
+  "startedAt": "2026-11-24T00:17:22+00:00",
+  "finishedAt": "2026-11-24T00:22:34+00:00",
+  "wallSeconds": 312.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 387397,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 2400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 393928704,
+    "wallSeconds": 89.0,
+    "cpuSeconds": 96.5,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 0.49
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 211.756,
+      "cpuSeconds": 212.035,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2286063616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "d3fd8d4508df03437c14ea24fc050a866824c203708b41c26f9fac1e51ffe27c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-000949-check-confirmed-startup-witnesses-in-rec/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 31s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check original callers with independently confirmed startup search",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/cohort.py --search-startup-witness 01 03 06",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2400.0,
+      "cancelled": false,
+      "wallSeconds": 89.001,
+      "cpuSeconds": 96.499,
+      "cpuThrottledSeconds": 12.922,
+      "peakMemoryBytes": 393928704,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-callers-with-in.log",
+        "lines": 24,
+        "bytes": 4852,
+        "sha256": "fe0017eca5fd15c5a223a50e24ac1c554224bd0cbdd5704da6fd6ba729d2c8d2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-1 current open convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponse",
+        "compsuite-i-70 current open getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lan",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-81 current open parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet",
+        "preserved retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
+        "compsuite-i-1 preserved",
+        "open new input 0: the original caller method was never entered. com.ctrip.framework.apollo.exceptions.ApolloConfigException: Unable to load instance for type com.ctrip.framework.apollo.spi.ConfigRegistry! at com.ctrip.framework.apollo.build.ApolloInjector.getInstance(ApolloInjector.java:38) caused b",
+        "compsuite-i-4 open",
+        "open new input 0: the original caller method was never entered. java.lang.IncompatibleClassChangeError: Found class org.apache.poi.util.POILogger, but interface was expected at org.apache.poi.openxml4j.opc.PackageRelationshipCollection.parseRelationshipsPart(PackageRelationshipCollection.java:303)",
+        "compsuite-i-70 open",
+        "changed org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;",
+        "compsuite-i-81 changed",
+        "ea-async-27 current open review the recorded exact overloads",
+        "whatjdk-12 current open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of",
+        "incremental-analysis-28 current open review the recorded exact overloads",
+        "preserved com.ea.async.instrumentation.Transformer#transform(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B",
+        "ea-async-27 preserved",
+        "preserved com.worksap.tools.spotbugs.maven.incremental.ClassSearcher#search(Ljava/util/stream/Stream;)Ljava/util/stream/Stream;",
+        "incremental-analysis-28 preserved",
+        "preserved com.iodesystems.whatjdk.ClassEntryExtractor#next()Lcom/iodesystems/whatjdk/ClassEntry;",
+        "whatjdk-12 preserved",
+        "commons-vfs-55c96cfd current open doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.pro",
+        "preserved org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()Lorg/apache/commons/vfs2/FileType;",
+        "commons-vfs-55c96cfd preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/transfer/final-cohort/01/measurement.json",
+      "change": "added",
+      "bytes": 12576,
+      "sha256": "82c0222baa9c1f5c1f9192c19f4438c9566ed9a3abbc88282b270bc02b9f1122",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/transfer/final-cohort/01/receipts.tar.gz",
+      "change": "added",
+      "bytes": 35491,
+      "sha256": "89a7c165d6e542dfaf5f19aff5cb72d199e76a54c3f4e6a6b8f11fdc77988876",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/transfer/final-cohort/03/measurement.json",
+      "change": "added",
+      "bytes": 11481,
+      "sha256": "bd3de94e4041b56206f58c03155877deabcf7ac784a87a632a7f29021946c950",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/transfer/final-cohort/03/receipts.tar.gz",
+      "change": "added",
+      "bytes": 25233,
+      "sha256": "fc213a6ef768b9a382f58c09ba5b626b1a15cb52ca2ab71f6ce15c024408fd8a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/transfer/final-cohort/06/measurement.json",
+      "change": "added",
+      "bytes": 3574,
+      "sha256": "89d74b3249738c6454e8b54c925af7a624a4ac8be8ff9b2cf082393e1c45c0fd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/transfer/final-cohort/06/receipts.tar.gz",
+      "change": "added",
+      "bytes": 8599,
+      "sha256": "bdb975a5a92d0d8dca42845e6ec9052237abe30955926680853bf87ed176ebbc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T00:22:51+00:00",
+    "applied": [
+      "verification/receiver-discovery/transfer/final-cohort/01/measurement.json",
+      "verification/receiver-discovery/transfer/final-cohort/01/receipts.tar.gz",
+      "verification/receiver-discovery/transfer/final-cohort/03/measurement.json",
+      "verification/receiver-discovery/transfer/final-cohort/03/receipts.tar.gz",
+      "verification/receiver-discovery/transfer/final-cohort/06/measurement.json",
+      "verification/receiver-discovery/transfer/final-cohort/06/receipts.tar.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a2fbcf9631d422f7cbf953ce971c62271e8f3e0e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a2fbcf9631d422f7cbf953ce971c62271e8f3e0e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T002234Z-824440aded9355c6",
+      "outputs": "20261124T002234Z-84806396fe0a2e94",
+      "diff": "20261124T002234Z-866756c1d4f89236"
+    }
+  }
+}
