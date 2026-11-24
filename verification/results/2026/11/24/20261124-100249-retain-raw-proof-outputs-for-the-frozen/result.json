@@ -1,0 +1,225 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-100249-retain-raw-proof-outputs-for-the-frozen",
+  "title": "Retain raw proof outputs for the frozen 60-claim control panel",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5m42s, peak 1.2 GiB (estimated 22m00s, 5.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-100249-retain-raw-proof-outputs-for-the-frozen.json",
+    "sha256": "1c56e5e23a140de82a85e0f6b0bfbe673178ed021366235cea25a397276fe710",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-100249-retain-raw-proof-outputs-for-the-frozen",
+      "title": "Retain raw proof outputs for the frozen 60-claim control panel",
+      "description": "Reproduce all 60 original Java semantics controls on the stored checker. Capture complete raw proof and witness output from the existing two-profile producer and include the separate installed stock harness records, binding archive files and the engine digest.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/README.md"
+        ]
+      },
+      "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+      "submitted": {
+        "at": "2026-11-24T10:02:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 25,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "22m",
+        "timeout": "110m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/control_archive.py 60",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/control-evidence/60"
+      ]
+    }
+  },
+  "sourceCommit": "2bff5d7bba98e71c3c914bee71a0ee938c096ecd",
+  "startedAt": "2026-11-24T10:16:44+00:00",
+  "finishedAt": "2026-11-24T10:26:05+00:00",
+  "wallSeconds": 561.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3567885,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 6600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1320.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1305784320,
+    "wallSeconds": 342.9,
+    "cpuSeconds": 415.9,
+    "memoryOfEstimate": 0.24,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/control_archive.py 60",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6600.0,
+      "cancelled": false,
+      "wallSeconds": 342.91,
+      "cpuSeconds": 415.94,
+      "cpuThrottledSeconds": 7.428,
+      "peakMemoryBytes": 1305784320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 185,
+        "bytes": 7991,
+        "sha256": "f596002ed72b3bddb4c2e60da8e206ef29bc1d65f5d9d30c3f36dfe0de445aae",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "dispatch packaged dispatch FAILURE FAILURE",
+        "dispatch packaged firstDeclared SUCCESS FAILURE",
+        "endian packaged reverseInt SUCCESS FAILURE",
+        "endian packaged reverseLong SUCCESS FAILURE",
+        "endian packaged rotateInt FAILURE FAILURE",
+        "endian packaged rotateLong FAILURE FAILURE",
+        "surrogates packaged translate SUCCESS FAILURE",
+        "surrogates packaged removeEvery FAILURE FAILURE",
+        "deque packaged history FAILURE FAILURE",
+        "deque packaged stillReturns FAILURE FAILURE",
+        "deque packaged singleton SUCCESS FAILURE",
+        "deque packaged filtered FAILURE FAILURE",
+        "Note: /home/filip/code/in-the-loop/verification/.state/work/20261124-100249-retain-raw-proof-outputs-for-the-frozen/examples/386-commons-lang-constructor-dispatch/adapter/ConstructorPhase.java uses or overrides a deprecated API.",
+        "Note: Recompile with -Xlint:deprecation for details.",
+        "construction packaged history SUCCESS FAILURE",
+        "construction packaged emptySkips FAILURE FAILURE",
+        "construction packaged alreadyInitialized FAILURE FAILURE",
+        "radix packaged hex SUCCESS FAILURE",
+        "radix packaged lowFirst FAILURE FAILURE",
+        "nibble packaged nibble FAILURE FAILURE",
+        "nibble packaged left FAILURE FAILURE",
+        "nibble packaged acceptsNegative FAILURE FAILURE",
+        "enum packaged lookup FAILURE FAILURE",
+        "enum packaged ordinal SUCCESS FAILURE",
+        "enum packaged alwaysZero FAILURE FAILURE",
+        "locals packaged kernel FAILURE FAILURE",
+        "locals packaged spring FAILURE FAILURE",
+        "locals packaged nullInitializes FAILURE FAILURE",
+        "monitors packaged matched FAILURE FAILURE",
+        "monitors packaged mixed FAILURE FAILURE",
+        "monitors packaged synchronizedMethod FAILURE FAILURE",
+        "gson-parent packaged compatible FAILURE FAILURE",
+        "gson-parent packaged syntax FAILURE FAILURE",
+        "guava-parent packaged retained FAILURE FAILURE",
+        "guava-parent packaged parentBehavior FAILURE FAILURE",
+        "gson-fix packaged compatible FAILURE FAILURE",
+        "gson-fix packaged syntax FAILURE FAILURE",
+        "guava-fix packaged retained FAILURE FAILURE",
+        "guava-fix packaged parentBehavior FAILURE FAILURE",
+        "60 183 original evidence files retained"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/control-evidence/60/executions.zip",
+      "change": "added",
+      "bytes": 4079390,
+      "sha256": "fe1ce2ca5429e2e4966f1785058f3cf31c08e89f28bfb5d4a73bf6b497798b57",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/control-evidence/60/index.json.gz",
+      "change": "added",
+      "bytes": 22427,
+      "sha256": "53ed96692827c856f3810224cc70418bfcb756d404e244a26844bc556753d63e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T10:26:25+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/control-evidence/60/executions.zip",
+      "verification/beyond-jbmc/closing/control-evidence/60/index.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T102605Z-395422ae9016d59f",
+      "outputs": "20261124T102605Z-4328421708a2a207",
+      "diff": "20261124T102605Z-450484f8cf2b09ab"
+    }
+  }
+}
