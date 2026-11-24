@@ -1,8 +1,8 @@
 # Setup for twenty more organic Java PRs (product behaviour)
 
 Mechanical setup for [`organic-java-pr-product-behaviour-20-additional-cases.md`](organic-java-pr-product-behaviour-20-additional-cases.md),
-done on 2026-11-24 by a setup session (Claude Opus 5.5) before the domain work starts. **In progress**: this record is
-committed as it grows.
+done on 2026-11-24 by a setup session (Claude Opus 5.5) and four forks of it, before the domain work starts. Four
+upstream builds were queued as verification jobs; their results are added under [Jobs](#jobs) when they have run.
 
 The session writes no claims, examples, sidecars, adapters, observers or checker code, and allocates no example ids. It
 runs neither the project verifier nor JBMC. Everything fetched or built is outside the checkout.
@@ -1480,3 +1480,185 @@ and the fix again, offline; then removes the build trees.
 | `20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo` | J05: POI `:poi-ooxml:jar`, `TestXSSFHyperlink` (Gradle 9.9.1, JDK 17) | pending |
 | `20261124-203508-setup-build-eclipse-collections-at-both` | J17: `-pl unit-tests-java8 -am install`, the ten `MutableMapIterableTestCase` classes (JDK 8) | pending |
 | `20261124-203513-setup-build-lucene-core-and-join-at-both` | J14: `:lucene:core:jar :lucene:join:jar`, `TestBlockJoinSorting` and `TestBlockJoinSelector` (Gradle 9.3.1, JDK 25); no transplant step (the fix's tests do not compile on the parent) | pending |
+
+## Signatures
+
+Every distinct jar under `$O/releases/*/lib/` (264 jars) was located in `$O/m2`, its `.sha1` compared and its Central `.asc` verified
+in this work's own keyring `$O/gnupg`, with keys from keyserver.ubuntu.com (two, Spring's and xerial's, only from pgp.mit.edu)
+(`$O/scripts/sig_check.sh`, one row per jar in `$O/logs/release-signatures.tsv`). The keyring's agent was stopped.
+
+- **sha1**: all 264 match.
+- **200 GOODSIG**; **37 EXPKEYSIG** (a valid signature by a key that has expired since, e.g. Jackson's, SnakeYAML's, TestNG's).
+- **19 REVKEYSIG**: a valid signature by a key revoked after the release. 15 are Spring Buildmaster `E2ACB037933CDEAAB7BF77D49A2C7A98E457C53D`
+  (Spring 4.0.5, Spring Batch 3.0.7, Micrometer 1.10.0), revoked 2023-01-26 as a precaution after the LastPass breach, its revocation says;
+  2 are Taro L. Saito `88CD390855DF292E2172DA9742575E0CCD6BA16A` (both sqlite-jdbc releases), revoked 2021-04-19; 4 are Rafael Winterhalter
+  `F42B96B8648B5C4A1C43A62FBB2914C1FA0811C3` (byte-buddy 1.7.4 and 1.9.7, test libraries), revoked 2019-11-08.
+- **8 without an `.asc` on Central**: `aopalliance-1.0.jar`, `javax.inject-1.jar`, `jettison-1.2.jar`, `jsp-api-2.1.jar`, `jsr305-1.3.9.jar`, `jsr311-api-1.1.1.jar`, `xmlpull-1.1.3.1.jar`, `xpp3_min-1.1.4c.jar` (old artifacts; sha1 only).
+- No BADSIG.
+
+The brief's named releases (main jars):
+
+| Jar | sha256 | Signature | Signer (fingerprint) |
+|---|---|---|---|
+| `kryo-4.0.2.jar` | `8cd8bcb6920b165ff21b82f7a44f2c7e87dcb24560e52b9dc7d085fba9cfcce5` | GOODSIG | Martin Grotzke `6A27B2F30F3DB8BF86D519F7EC5BCE97B4DEFA96` |
+| `jgrapht-core-1.5.1.jar` | `a4d810cb63e0a77a753d147094fea9dd42e82cfc57aa289f9f85229f26043bb4` | GOODSIG | Joris Kinable `CFCFCC5AB00281118162F7EB0586E496D329C038` |
+| `poi-ooxml-6.0.0.jar` | `759d97d608ef03b8aa701f56fef0cf9c67fac49f7fa0de4be43c01ca97542c9c` | GOODSIG | PJ Fanning `6BA4DA8B1C88A49428A29C3D0C69C1EF41181E13` |
+| `poi-6.0.0.jar` | `4977f1ae04e1c77e42c81dd94cca008e0d81ff8d0daa8b85e2a0740c3c1da3cc` | GOODSIG | PJ Fanning `6BA4DA8B1C88A49428A29C3D0C69C1EF41181E13` |
+| `poi-ooxml-lite-6.0.0.jar` | `d722039d325de73562ec79758253e6a659750a53d2e8e998bb3da54c0ad157fc` | GOODSIG | PJ Fanning `6BA4DA8B1C88A49428A29C3D0C69C1EF41181E13` |
+| `commons-compress-1.26.0.jar` | `051aceb8bbcc62d0f5b2b8ac72c53767f9c59bfbd050151e65bef6f51c8ed9c9` | GOODSIG | Gary David Gregory (Code signing key) `2DB4F1EF0FA761ECC4EA935C86FDC7E2A11262CB` |
+| `h2-2.5.252.jar` | `90b11dc413da82070ef15fc943282c1408e6ffd34fa68998335fea8603b5ff20` | GOODSIG | Thomas Mueller Graf `D09CCACA34B6BCB1A98068DD739D53C0A4CF0287` |
+| `maven-artifact-3.9.12.jar` | `4361cecd7e863c0992a6c901202afbb6db2a06b4f9a5e4b22481d4d39bcf137c` | GOODSIG | Slawomir Jaranowski `84789D24DF77A32433CE1F079EB80E92EB2135B1` |
+| `eclipse-collections-10.2.0.jar` | `5c2a53c4442c54bb278564922772c531437f65151802f9a2efa312fb43adccc6` | GOODSIG | Eclipse Collections Project `D9905D77178BAC979B03C462E46D9A6A3624B8E3` |
+| `eclipse-collections-api-10.2.0.jar` | `18e623235a8e8871e6e489bf55a25d9d448ceb740b854dd4c8c3a925a1dff125` | GOODSIG | Eclipse Collections Project `D9905D77178BAC979B03C462E46D9A6A3624B8E3` |
+| `ical4j-4.4.0.jar` | `f4cac5c4a16d8c0f2228ad0e3221b90d069ae0efea73402b51888468e86405f9` | GOODSIG | Ben Fortuna `44C9BD32E7CB72F36F49DD0716968D251E760606` |
+| `lucene-core-10.4.0.jar` | `8f894d211a8123938ccb9ff6827d136747e0eb6b1782ada6ac9086aa911b52e2` | GOODSIG | Benjamin Whitefield Trent (CODE SIGNING KEY) `E1E371D044F2BA2975FF85A899F1E44F529DDE03` |
+| `lucene-join-10.4.0.jar` | `6fdb7e7388d6f3ec015f8159a179b367dbc7e505a6b46ecc4bf5d4a44a6f624b` | GOODSIG | Benjamin Whitefield Trent (CODE SIGNING KEY) `E1E371D044F2BA2975FF85A899F1E44F529DDE03` |
+| `jcache-2.6.1.jar` | `a08b844ccab7547bcdae7f18a7175c81edbbcc070d852dfd0b1615f1104a8884` | GOODSIG | Ben Manes `0D8F8561AA7A5DD20BAE27043C0A8F4744F37328` |
+| `caffeine-2.6.1.jar` | `e45e7995bd0f9924e105691127d9b092f37ef314fab8364a2302a4dfb416d1ca` | GOODSIG | Ben Manes `0D8F8561AA7A5DD20BAE27043C0A8F4744F37328` |
+| `cache-api-1.0.0.jar` | `d2836213144722e2eb1d7461f6e2ea3349d6fbbf9cd5f345c7133bc29bd39ca1` | EXPKEYSIG | Gregory Robert Luck (New One) `62EEBEC47E75DDA9F7422C3CD5E520459CB3AA49` |
+| `resilience4j-circuitbreaker-1.3.1.jar` | `13ec2a66fe0ebc6f5391c7e80d0d9591b737668cb18113db14f048e71ce770cd` | GOODSIG | Bintray (by JFrog) `8756C4F765C9AC3CB6B85D62379CE192D401AB61` |
+| `resilience4j-core-1.3.1.jar` | `ed0e473adaf6c46368e82b0e3d7729713ef4eddf282e7e18e5d58b35c00e43d4` | GOODSIG | Bintray (by JFrog) `8756C4F765C9AC3CB6B85D62379CE192D401AB61` |
+| `micrometer-registry-signalfx-1.10.0.jar` | `c6e4ad7cd6b118d4aebba733205357ff6c9ce7a8bbb7ab02465b27dff310bac0` | REVKEYSIG | Spring Buildmaster `E2ACB037933CDEAAB7BF77D49A2C7A98E457C53D` |
+| `micrometer-core-1.10.0.jar` | `ece52bd972f554ffa023df61d4571728e719135573f594d69810d0b6886e82ce` | REVKEYSIG | Spring Buildmaster `E2ACB037933CDEAAB7BF77D49A2C7A98E457C53D` |
+| `parquet-column-1.18.2.jar` | `e453c9725e323ca3a1165b842cae325c35fc3eed0ec37856ba15fe61290569a6` | GOODSIG | Apache Parquet Automated Release Signing `DD1E0FA356E5268BE450B2AAA528E51BCE01BCFE` |
+| `parquet-hadoop-1.18.2.jar` | `746b75a9b3171a6daebe9d1ee4e152fb95f9c0d63f92b5e51790e88bd13b88a1` | GOODSIG | Apache Parquet Automated Release Signing `DD1E0FA356E5268BE450B2AAA528E51BCE01BCFE` |
+| `sqlite-jdbc-3.8.11.2.jar` | `f30968b896af52baaeda4a901f6ef2629319168fa304e9747c7cfabef6c476ec` | REVKEYSIG | Taro L. Saito `88CD390855DF292E2172DA9742575E0CCD6BA16A` |
+| `sqlite-jdbc-3.14.2.jar` | `89db1d0ed530b639b3e4825e663ff6ee674ad4ba0c1e6bb87106c854e616a08d` | REVKEYSIG | Taro L. Saito `88CD390855DF292E2172DA9742575E0CCD6BA16A` |
+| `calcite-core-1.18.0.jar` | `6429929601f2bcbff79edb465cb2b09495ddaf079f6e077f0b0a888c950c2ee2` | GOODSIG | Julian Hyde (CODE SIGNING KEY) `DD314F5E17737D76A554DCE8DDB6E9812AD3FAE3` |
+| `calcite-core-1.19.0.jar` | `c766dc3905946154bb6be75fc2b3480b9bdef36dc2bfba8868c3af51685438f0` | GOODSIG | Kevin Risden (CODE SIGNING KEY) `CE42A05E427E995B67DE73D1040FAE3292C5F73F` |
+| `calcite-linq4j-1.18.0.jar` | `58471aedc88574aa7f18baf05b1d6f280e74a9b48c93410d6d00c6c0ce2191e4` | GOODSIG | Julian Hyde (CODE SIGNING KEY) `DD314F5E17737D76A554DCE8DDB6E9812AD3FAE3` |
+| `calcite-linq4j-1.19.0.jar` | `83d7e7c75da0e1e34ad80d6a34c9e150bd852ab892ee1565e9a3258b82799ba3` | GOODSIG | Kevin Risden (CODE SIGNING KEY) `CE42A05E427E995B67DE73D1040FAE3292C5F73F` |
+| `spring-batch-core-3.0.7.RELEASE.jar` | `c77e58e893e007d9512e547431127c0c7555bc5c84f93cf1d76c34254dc0ad6a` | REVKEYSIG | Spring Buildmaster `E2ACB037933CDEAAB7BF77D49A2C7A98E457C53D` |
+| `spring-batch-infrastructure-3.0.7.RELEASE.jar` | `105e03783b17deef048735e0c15c132331ae94ffe3b7f97ce6c87c4899ba23e2` | REVKEYSIG | Spring Buildmaster `E2ACB037933CDEAAB7BF77D49A2C7A98E457C53D` |
+
+Maven 3.5.4 (`$O/dl/maven-3.5.4/apache-maven-3.5.4-bin.zip.asc`): EXPKEYSIG, a valid signature by Stephen Connolly `042B29E928995B9DB963C636C7CA19B7B620D787`, whose key has since expired.
+
+## Disk
+
+After setup `$O` holds 5.4 GB: the 40 worktrees 1.6 GB (POI 245 MB each, Lucene 149 MB), `$O/gradle-home` 1.3 GB,
+`$O/m2` 870 MB, `$O/tools` 598 MB (unpacked Gradle and Maven), `$O/dl` 663 MB (the checked distribution zips),
+`$O/releases` 453 MB, `$O/artifacts` 62 MB. The mirrors under `$M` add about 150 MB for these upstreams. Every worktree
+is clean except where a job's last step will clean it. The queued jobs build in the worktrees and remove their trees
+at the end.
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- **Cache folder** `~/.cache/in-the-loop/organic-pr-20` (`$O`). Everything is outside the checkout.
+  - Worktrees: `$O/worktrees/JNN-REPO-{parent,fix}`, one per pinned revision of J01–J20.
+  - Mirrors: one shallow bare mirror per upstream under `~/.cache/in-the-loop/git-mirrors/` holding the pins.
+  - Commits, trees and parents: the [Upstream revisions](#upstream-revisions) table. PR metadata: `$O/upstream/prs/`.
+- **What each case's evidence runs on.** The [Summary by case](#summary-by-case) table, then the case's own section
+  (jar names, full digests, classpaths). In short:
+  - **Source builds**, both sides: J01, J02, J03, J06 (`$O/artifacts/JNN-REPO-{parent,fix}.jar`). Also built though the
+    brief calls them overlays: J07, J10, J11, and J13 (`maven-artifact` only).
+  - **Overlays**, both sides: J04, J05, J07, J08, J10, J11, J13 (`comparator` and `named` variants), J14, J15, J16, J17,
+    J18, J19, J20, all in `$O/artifacts/JNN-REPO-{parent,fix}-overlay*.jar`. Run them as overlay jar first, then
+    `$(cat $O/releases/NAME/classpath.txt)`. Each case's section names its release folder.
+  - **Release pairs**: J09 (`$O/releases/sqlite-jdbc-{3.8.11.2,3.14.2}`) and J12 (`$O/releases/calcite-core-{1.18.0,1.19.0}`).
+  - **J09 rebuilt native libraries** at both pins: `$O/artifacts/J09-sqlite-jdbc-{parent,fix}-Linux-x86_64-libsqlitejdbc.so`
+    and jars that bundle them, `J09-sqlite-jdbc-{parent,fix}-rebuilt-native.jar`.
+  - **Extra graphs** for the brief's next claims: Parquet's file writer (`$O/releases/parquet-hadoop-1.18.2`, with
+    hadoop-client 3.3.0; classpath `$O/overlays/J08-hadoop-classpath.txt`); the Spring Batch JDBC restart
+    (`$O/releases/spring-batch-jdbc-3.0.7`, spring-jdbc 4.0.5 and hsqldb 2.3.2).
+- **Toolchain**: see [Toolchain and shared files](#toolchain-and-shared-files).
+  - JDKs 8, 11, 17, 21 and 25.
+  - Maven 3.10.0, and Maven 3.5.4 for Calcite.
+  - Verified Gradle 4.2.1, 5.3.1, 7.5.1, 8.5, 9.3.1 and 9.9.1.
+  - `$O/m2` and `$O/gradle-home` are resolved for every build that ran.
+- **Commands**, online and checked offline, are in each case's section. The job commands are in
+  `verification/jobs/2026/11/24/*setup-build*.json`.
+- **Setup probes** (throwaway, not case artifacts): `$O/probes/JNN/`, output in `$O/logs/JNN-probe*.txt`.
+
+### What was verified on a JVM
+
+- **Landed tests**: each passes on the fix and on the parent's own copy, and fails when the fix's test is transplanted
+  onto the parent.
+  - Upstream builds: J01 (1 failure), J02 (1), J04 (3), J07 (1), J10 (1 error), J11 (`main` run fails),
+    J13 (11 failures, 1 error), and J09 with the rebuilt native library (1 error, `emptyBlob`).
+  - Over the overlays with JUnit or TestNG, not the upstream build: J08 (2), J18 (`expiry`; the test is new, so the
+    parent has no own copy), J19 (3), J20 (2).
+- **J17 is preservation**: the landed collision assertions pass everywhere. That is 960 tests per run over the overlays,
+  including the fix's tests on the parent overlay.
+- **J14**: the fix's landed tests do not compile on the parent, because they use fix-only constructors and a fix-only
+  `wrap` overload. The setup probe with the five-argument constructor is the discriminator.
+- **The brief's preflight observations reproduced as stated** by setup probes on JDK 21.0.13:
+  - J03: the second axis pans to `[-1,9]` on the parent and `[1,11]` on the fix.
+  - J05: plain URL `IllegalStateException`, and `section` only, against the full target.
+  - J06: `dogalog` against `catalog`.
+  - J07: 481 entries, 481 → 480 files, 1,438,851 payload bytes.
+  - J09: both the release pair and the rebuilt pins.
+  - J11: spellings lost only with `MAX_MEMORY_ROWS=1`.
+  - J12: empty unordered bags on 1.18.0 in the mixed query only.
+  - J13: range construction throws, and the fold has three winners.
+  - J14: ascending `[B:"20", A:"30"]` against `[A:null, B:"20"]`.
+  - J15: tie-break by order against by id.
+  - J16: both assertion profiles.
+- **Not reproduced by the setup**: the other preflight values (for example J10's byte counts 64/46, J04's
+  fresh-process locale matrix, J17's 127-subset sweep, J19's event counts, J20's datapoints). The landed tests cover
+  their discriminating part.
+- **Integrity**:
+  - Every pinned commit was fetched by SHA, and every fix's first parent is the brief's parent.
+  - Every release jar's sha1 matches Central. 256 of 264 have a valid PGP signature; the other 8 have no `.asc` on
+    Central. See [Signatures](#signatures) for expired and revoked signing keys.
+  - Every Gradle distribution and wrapper jar that ran matches services.gradle.org's sha256.
+  - The SQLite amalgamation's `sqlite3.c` SHA1 matches sqlite.org's.
+
+### What to know before starting
+
+- **The default `java` is JDK 25.0.5.** Name the JDK by its path. JDK requirements:
+  - Lucene 10.4.0 overlays need JDK 21 or later; the Lucene pins (11.0.0-SNAPSHOT) need JDK 25.
+  - The J13 overlays are class major 61, so they need JDK 17 or later.
+  - J18's test run and J19's ran on JDK 8.
+- **Release side matters for controls.** Where the release's changed source equals the fix, the bare release is not a
+  parent control: J05, J07, J08, J10, J17, J20, and J16 except for formatting. Where it equals the parent: J04, J11, J13
+  and J14. J15 (3.0.7.RELEASE predates the PR and has its own first-wins tie order), J18 and J19 are neither side.
+  Bind the overlay jar, not the release, for the side you mean.
+- **Overlays that needed more than the changed files**:
+  - J05 also compiles the unchanged trunk `ArrayFormulaRanges`.
+  - J13 `named` also compiles `DefaultArtifact` and `ArtifactUtils`: `VersionRange` calls `DefaultArtifact.empty`,
+    which is private in 3.9.12.
+  - J08 needs the unshaded `fastutil-8.5.19.jar`, because 1.18.2 shades fastutil.
+  - J04 needs `jspecify-1.0.0`, and J18 `jsr305-3.0.2`, to compile only.
+  - J18 forces `cache-api` 1.0.0 over jcache 2.6.1's declared 1.1.0.
+- **Substitutions**:
+  - J03 was built from the pinned `maven/pom-1.6.xml` (version 1.0.20), copied untracked: the root POM needs JavaFX.
+  - J09:
+    - Native built with gcc 15.2.0 and `CC="gcc -fpermissive"`.
+    - QueryTest ran with surefire 2.19.1 named explicitly.
+    - The bundled Linux library is the same blob at both pins: **bind the native library**. The Java classes are
+      identical across the pins, and with the bundled library even the fix fails `emptyBlob`.
+    - sqlite-jdbc extracts its library to `java.io.tmpdir`; point that under the cache.
+  - J12's job uses Maven 3.5.4 and `$O/scripts/maven-settings-https-central.xml`: the POM names Central over http.
+  - Test libraries:
+    - J18 uses TestNG 6.11 (6.12 is on no public repository).
+    - J20 uses junit-jupiter 5.9.0 and assertj 3.23.1 (upstream used `latest.release`).
+    - J14's overlay test framework is 10.4.0's.
+- **Upstream builds that cannot run here**:
+  - J08: `parquet-format-structures` needs a `thrift` 0.23.0 binary.
+  - J15: repo.spring.io answers 401.
+  - J18: repo.spring.io answers 405.
+  - J19: publishing-plugin dependencies such as `http-builder:0.7.2` are on no public repository.
+  - J20: the `io.spring.ge.conventions` plugin is only on repo.spring.io, which answers 401.
+
+  Their landed evidence is the overlay test run.
+- **Multi-commit and mid-PR pins**: J15's parent is the first commit of PR #495 (two commits); the brief's pair is the
+  second commit alone.
+- **Unstable inputs**: built jars carry build timestamps (bind `$O/artifacts/` or the class digests); the overlay jars
+  rebuild identically. No outside SNAPSHOT dependencies were used. J17's job installs `10.2.0-SNAPSHOT` modules into `$O/m2`.
+- **Jobs pending at the time of writing**: J05 POI, J12 Calcite, J14 Lucene and J17 Eclipse Collections upstream builds
+  (see [Jobs](#jobs)). Until they are recorded, J05's and J12's landed tests have not run on a JVM.
+- H2's `TestBigResult` is not JUnit: run its `main` from a scratch folder, since it writes `./data`.
+
+### What is left for the domain work on purpose
+
+- Every case artifact: callers, fixtures, observers, workflows, claims, scopes and manifests; registering preservation
+  questions; all runs, startup facts, checked helpers and warm/clean comparisons. No example folder or id was created.
+- The preflights the setup did not reproduce (listed above), and every extension the brief asks for. Examples: J01's
+  syntax-tree edit, J03's range-axis and swapped-order controls, J05's sheet clone and third reopen, J06's directory
+  rename, J08's whole-file readback, J09's Mac or exact-toolchain native builds, J15's JDBC restart, J18's
+  positive-duration callbacks.
+- Which files make up J13's "comparator, artifact-version, range and artifact sources": `comparator` and `named` are
+  the setup's two readings.
+- The order of cases after J02, J06, J08, J15 and J17.
