@@ -1,0 +1,196 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-213728-verify-parquet-pages-and-independently-r",
+  "title": "Verify Parquet pages and independently reopened row groups",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m49s, peak 1.4 GiB (estimated 9m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-213728-verify-parquet-pages-and-independently-r.json",
+    "sha256": "868bc9ce72a1b969875b65e5765f0ca7f212660f86840f7a2d2c218677c85fc7",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-213728-verify-parquet-pages-and-independently-r",
+      "title": "Verify Parquet pages and independently reopened row groups",
+      "description": "Distinguish the state of a reused page writer after dictionary fallback from an actual closed two-group Parquet file. Independently decode every string, verify data encodings and dictionary contents, and compare the source overlays with a stable-path replacement.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J08"
+        ]
+      },
+      "expected": "Complete source-bound cold, warm, clean and same-path replacement plans with matching semantics and digest-checked receipts, or the first specific open dependency.",
+      "submitted": {
+        "at": "2026-11-24T21:37:28+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "9m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B verification/product-behaviour/qualify.py J08",
+          "run": "python3 -B verification/product-behaviour/qualify.py J08",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J08/first"
+      ]
+    }
+  },
+  "sourceCommit": "5254ce7dc6731ef7e0c1e6e477fdbb506a641b36",
+  "startedAt": "2026-11-24T21:39:22+00:00",
+  "finishedAt": "2026-11-24T21:43:55+00:00",
+  "wallSeconds": 273.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2114724,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2160.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1462521856,
+    "wallSeconds": 229.3,
+    "cpuSeconds": 288.1,
+    "memoryOfEstimate": 0.34,
+    "durationOfEstimate": 0.42
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B verification/product-behaviour/qualify.py J08",
+      "run": "python3 -B verification/product-behaviour/qualify.py J08",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 229.347,
+      "cpuSeconds": 288.142,
+      "cpuThrottledSeconds": 28.31,
+      "peakMemoryBytes": 1462521856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-verification-product.log",
+        "lines": 10,
+        "bytes": 929,
+        "sha256": "21cde428151730f56634146d903e93f6bea9ec7b53985cf3b115f350909985a5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "3 claims in /tmp/product-plan-zzcpgahs/cold.json",
+        "J08 cold [('reuse-after-fallback', 'established', 4), ('fresh-and-below', 'established', 8), ('reopened-file', 'established', 8)]",
+        "3 claims in /tmp/product-plan-zzcpgahs/warm.json",
+        "J08 warm [('reuse-after-fallback', 'established', 2), ('fresh-and-below', 'established', 0), ('reopened-file', 'established', 0)]",
+        "3 claims in /tmp/product-plan-zzcpgahs/clean.json",
+        "J08 clean [('reuse-after-fallback', 'established', 4), ('fresh-and-below', 'established', 8), ('reopened-file', 'established', 8)]",
+        "3 claims in /tmp/product-plan-zzcpgahs/replacement.json",
+        "J08 replacement [('reuse-after-fallback', 'refuted', 2), ('fresh-and-below', 'established', 4), ('reopened-file', 'established', 4)]",
+        "3 claims in /tmp/product-plan-zzcpgahs/replacement-clean.json",
+        "J08 replacement-clean [('reuse-after-fallback', 'refuted', 4), ('fresh-and-below', 'established', 8), ('reopened-file', 'established', 8)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J08/first/plans.zip",
+      "change": "added",
+      "bytes": 287713,
+      "sha256": "435323134e4abeae7727048d477a8771b83b548a516b18bcb6f57eef2431c4dd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/product-behaviour/results/J08/first/summary.json",
+      "change": "added",
+      "bytes": 51495,
+      "sha256": "99f87ea67f9cc6c86773d94876850a56188d901049f7965edbd41771d2105171",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T21:46:22+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J08/first/plans.zip",
+      "verification/product-behaviour/results/J08/first/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1a5a5e54535dc5fe36b26d921d43829f62bcf4d6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5a5e54535dc5fe36b26d921d43829f62bcf4d6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T214355Z-9424752ed880b309",
+      "outputs": "20261124T214355Z-97561144ed4d88c3",
+      "diff": "20261124T214355Z-99407544c626d1bc"
+    }
+  }
+}

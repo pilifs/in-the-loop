@@ -1,0 +1,230 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-212606-qualify-cloned-jsoup-tag-behavior-at-the",
+  "title": "Qualify cloned jsoup tag behavior at the original public parser",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m21s, peak 174.9 MiB (estimated 7m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-212606-qualify-cloned-jsoup-tag-behavior-at-the.json",
+    "sha256": "886dc8da65018c9e4cc5a267d01877bf16f077032c0b1435ed716dc53b360a28",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-212606-qualify-cloned-jsoup-tag-behavior-at-the",
+      "title": "Qualify cloned jsoup tag behavior at the original public parser",
+      "description": "Compare the two pinned jsoup 2423 builds on registered, newly customized, late and ordinary tags. Check the parent element and text after two parses on the same clone. Retain the first frozen public plan, cold, warm and empty-cache evidence, and the result of replacing the fixed artifact at exactly the same path.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J02"
+        ]
+      },
+      "expected": "Both original claim receipts agree with clean runs or record the first concrete open dependency. Replacing the repaired parser reopens or refutes the change and preserves ordinary tags. All declared reports carry verified receipts.",
+      "submitted": {
+        "at": "2026-11-24T21:26:06+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "7m"
+      },
+      "steps": [
+        {
+          "name": "Compare original public DOMs and cache controls",
+          "run": "python3 -B verification/product-behaviour/qualify.py J02",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J02/first"
+      ]
+    }
+  },
+  "sourceCommit": "3237c63e0926b943cb316e19518b7e19aa7c541e",
+  "startedAt": "2026-11-24T21:36:54+00:00",
+  "finishedAt": "2026-11-24T21:41:28+00:00",
+  "wallSeconds": 274.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2114724,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 183431168,
+    "wallSeconds": 81.6,
+    "cpuSeconds": 95.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 183.967,
+      "cpuSeconds": 184.252,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2328313856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "117929b29cbd51766264f41ac0570cef9e7ed2b88648ffc942de465725fd66a5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-212606-qualify-cloned-jsoup-tag-behavior-at-the/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 03s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Compare original public DOMs and cache controls",
+      "run": "python3 -B verification/product-behaviour/qualify.py J02",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 81.594,
+      "cpuSeconds": 95.45,
+      "cpuThrottledSeconds": 15.041,
+      "peakMemoryBytes": 183431168,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-compare-original-public-doms-a.log",
+        "lines": 10,
+        "bytes": 707,
+        "sha256": "0bd3995e73b97eeb6ce9b6a47612a84dc2ca1cafeb22a17280640ade15ead1b5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/product-plan-6nhesae2/cold.json",
+        "J02 cold [('inherited-tree', 'established', 12), ('ordinary-tree', 'established', 8)]",
+        "2 claims in /tmp/product-plan-6nhesae2/warm.json",
+        "J02 warm [('inherited-tree', 'established', 6), ('ordinary-tree', 'established', 0)]",
+        "2 claims in /tmp/product-plan-6nhesae2/clean.json",
+        "J02 clean [('inherited-tree', 'established', 12), ('ordinary-tree', 'established', 8)]",
+        "2 claims in /tmp/product-plan-6nhesae2/replacement.json",
+        "J02 replacement [('inherited-tree', 'refuted', 6), ('ordinary-tree', 'established', 4)]",
+        "2 claims in /tmp/product-plan-6nhesae2/replacement-clean.json",
+        "J02 replacement-clean [('inherited-tree', 'refuted', 12), ('ordinary-tree', 'established', 8)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J02/first/plans.zip",
+      "change": "added",
+      "bytes": 455088,
+      "sha256": "ce3ecf9496de05ae09eee03342fa974ab61321eda0d4a4c05c6ea103e5c30245",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/product-behaviour/results/J02/first/summary.json",
+      "change": "added",
+      "bytes": 47960,
+      "sha256": "12ded71a04bb85a13658c93109f79c7edb82b599231b748a37d0c4502ce47660",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T21:46:22+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J02/first/plans.zip",
+      "verification/product-behaviour/results/J02/first/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1a5a5e54535dc5fe36b26d921d43829f62bcf4d6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5a5e54535dc5fe36b26d921d43829f62bcf4d6/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T214128Z-18188239471df9fb",
+      "outputs": "20261124T214128Z-216452bce897297a",
+      "diff": "20261124T214128Z-240539af7e48a2d5"
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-213728-check-all-collision-subsets-on-the-two-o",
+  "title": "Check all collision subsets on the two original UnifiedMap builds",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m30s, peak 1.3 GiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-213728-check-all-collision-subsets-on-the-two-o.json",
+    "sha256": "12e793fea6bfe42254245784ba591a42da7e6a20174d7144997d6b918c10ff24",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-213728-check-all-collision-subsets-on-the-two-o",
+      "title": "Check all collision subsets on the two original UnifiedMap builds",
+      "description": "For sizes zero through six and two opposite insertion orders, retain the original map view over both removeIf calls. Check all 127 subsets per order against an independent JDK map, including flags, null key and exact mappings. Preserve and perturb the full source-built implementation and API JARs.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {
+        "paths": [
+          "verification/product-behaviour/cases/J17"
+        ]
+      },
+      "expected": "Complete source-bound cold, warm, clean and same-path replacement plans with matching semantics and digest-checked receipts, or the first specific open dependency.",
+      "submitted": {
+        "at": "2026-11-24T21:37:28+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "20m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B verification/product-behaviour/qualify.py J17",
+          "run": "python3 -B verification/product-behaviour/qualify.py J17",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/product-behaviour/results/J17/first"
+      ]
+    }
+  },
+  "sourceCommit": "5254ce7dc6731ef7e0c1e6e477fdbb506a641b36",
+  "startedAt": "2026-11-24T21:39:22+00:00",
+  "finishedAt": "2026-11-24T21:41:37+00:00",
+  "wallSeconds": 135.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2114724,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1370230784,
+    "wallSeconds": 90.4,
+    "cpuSeconds": 96.9,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B verification/product-behaviour/qualify.py J17",
+      "run": "python3 -B verification/product-behaviour/qualify.py J17",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 90.407,
+      "cpuSeconds": 96.917,
+      "cpuThrottledSeconds": 5.511,
+      "peakMemoryBytes": 1370230784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-verification-product.log",
+        "lines": 10,
+        "bytes": 562,
+        "sha256": "5d7eae13a3146a8fa1a0ede67165843d5ac14cfa0cf3aba511ceaae96dcb2cd4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "1 claims in /tmp/product-plan-cz5ine_m/cold.json",
+        "J17 cold [('all-collision-subsets', 'established', 8)]",
+        "1 claims in /tmp/product-plan-cz5ine_m/warm.json",
+        "J17 warm [('all-collision-subsets', 'established', 0)]",
+        "1 claims in /tmp/product-plan-cz5ine_m/clean.json",
+        "J17 clean [('all-collision-subsets', 'established', 8)]",
+        "1 claims in /tmp/product-plan-cz5ine_m/replacement.json",
+        "J17 replacement [('all-collision-subsets', 'established', 4)]",
+        "1 claims in /tmp/product-plan-cz5ine_m/replacement-clean.json",
+        "J17 replacement-clean [('all-collision-subsets', 'established', 8)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/product-behaviour/results/J17/first/plans.zip",
+      "change": "added",
+      "bytes": 10665721,
+      "sha256": "cc9d4151cf9a9bcf5255b8e4b4555ea97dc73997358358b8f8eaa2c431adb418",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/product-behaviour/results/J17/first/summary.json",
+      "change": "added",
+      "bytes": 17662,
+      "sha256": "64ef8acd58206387eb72ff3c8faa7ae2b1ad6017d63c2708908e365cc1d9e51b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T21:46:22+00:00",
+    "applied": [
+      "verification/product-behaviour/results/J17/first/plans.zip",
+      "verification/product-behaviour/results/J17/first/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1a5a5e54535dc5fe36b26d921d43829f62bcf4d6",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1a5a5e54535dc5fe36b26d921d43829f62bcf4d6/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T214137Z-015341261233fe54",
+      "outputs": "20261124T214137Z-061681be86c54753",
+      "diff": "20261124T214137Z-079518e7a521981a"
+    }
+  }
+}

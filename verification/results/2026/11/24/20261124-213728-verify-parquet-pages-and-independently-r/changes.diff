@@ -1,0 +1,1416 @@
+Binary file verification/product-behaviour/results/J08/first/plans.zip changed
+--- /dev/null
++++ b/verification/product-behaviour/results/J08/first/summary.json
+@@ -0,0 +1,1412 @@
++{
++  "case": "J08",
++  "change": "Parquet #3638, page writer reuse and persisted row groups",
++  "label": "first",
++  "frozenSource": "d92dea060ce873e0a64cec67c27e9dadea448efc",
++  "comparatorSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
++  "bindingsSha256": "c430cdff49f562b82e508e8c05506a56b4cf2f82f36374b060147a7ee2f5d810",
++  "archiveSha256": "435323134e4abeae7727048d477a8771b83b548a516b18bcb6f57eef2431c4dd",
++  "runs": {
++    "cold": {
++      "wallSeconds": 63.281,
++      "claims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "42818578f64956b6de9760a894f18c73b88e9d49ec5119c23f4c686cb38a50fa",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "973b0539bcf17a748171cb248812fb736b65bc4b7cb146ccbc1f55df8f69e731"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "executed",
++              "key": "b73119b45d7b1868ecaeb0a04189b9b2a05e54922f0923627d0855c93aef48be"
++            }
++          },
++          "receipt": {
++            "path": "receipts/f17778d7d28ddb6af87257a1688af5c1982a99b495c77a7d114f5e48d7c25833.json",
++            "sha256": "a85a137137d4d020165f53ebef8b0fe6ca477734f89a50a5195683c0ed0be99a"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "708ad3dad523ab47bbb1a5a522be5175c65614d92a61fdc31d008a4585ad8563",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "a9b521299b6f41322d3d1db34da2e324e12891d34e81e4373aa4dd97b0bea038"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "0262b8df5150ef12c8024c9f5fdfa3b5f703334dfc6403c5328d00b735b5c85b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "executed",
++              "key": "d54cdd6d8af0c253948bf6ca0b3df49f6062c05680180bb93c01d9e7df2d3510"
++            }
++          },
++          "receipt": {
++            "path": "receipts/a5b099b478c7d98faf4a72e8d9961becb35ef70aa29e1a6e8fabb6b37d29d7ef.json",
++            "sha256": "99c78546835601d86c1d6e1f8784d6db0b41b0ceadc8f8227b9cf58cb67f96f0"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "616aaabbf0a1c27a166c925783db267790421bfaf726ae00b279bc7500b82b62",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "8656a57180d10e07a19b7aae66e5471ef7fca1d0547ea429929fe74b0b13b9e6"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "c3e985c1679a86d73383f5e48e426162c7e6e824e9bd0a243139130b3545366d"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "executed",
++              "key": "8aafb8edbf74c7fbfd9fcdf344ccc592c306da0469c072c59d8afa9d655e2c8e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/8041560b737a6cb9211d2261ceb765645b0c298a0c3e3aa77e90d18fb7641466.json",
++            "sha256": "81d8a8fb86aef6ab4639b397ea8e498e12e15395f1b9f1762adbb299f3a2a751"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "3381a7527f1e672c3bbfd73200e3a5ce81d0328eaf8b7ac6800e3443e71d3f95",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "refuted",
++              "id": "4c0ff691a3baab77d5719420b59163a4c14459fae6ede00688e864a78ee7afc6"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "executed",
++              "key": "d4f86a88f18290f9cbe863a6a8e0df708520cc0f9757cc12bcc6a58002554bc3"
++            }
++          },
++          "receipt": {
++            "path": "receipts/1dfdba69c6725afdd8800c0b9c191202ebfa0a448351eba1f9dec058bc1a5fc3.json",
++            "sha256": "c55a6c76d1491047656caff992f27953c8e2b7e40cdaa41313c27c4b6f4515d1"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "57c2b7bf593ea4e3e763738998523ae68de452ff1024749ad85f53239b206f0c",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "1b67d3fe427e20233be9a47fe947c34cd57f8985a8a0176726213c3a6e7a96d6"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "a107a9f1d56d04cc8611a17d2d5fb6f5cac5bdbde6326eeaf8ce11d4cb6eb38b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "executed",
++              "key": "390a29d5405e23fc7ec840e7046b4c6c11faa9705183bd0a50bcaf27d94f424a"
++            }
++          },
++          "receipt": {
++            "path": "receipts/34141f97a3937ed01b5faedfc6f52f3d9f0af0920dc0494a0192470e757f7051.json",
++            "sha256": "7c3ef9faba7f325f74facd28623c4696f610e9da9d4741793991437d4025ad88"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "0070687043f528950d3ed7a7a4e831596f356286f6a340824a024105fc03c091",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "7bf6e62ea2acfdedde0a0781d7f0e6ddd74688992cf0b22438648e83c8c5bf34"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "8083a4173e1de89b49a0de2a1c425e72d53714813634d070a3ef7566aebaf847"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "executed",
++              "key": "a536f3671b7643221bfee624e86913b14b8834ab2fdc9b059e9d1487e79bc774"
++            }
++          },
++          "receipt": {
++            "path": "receipts/786972301ff6cc9e564c01603ac50ddc568cf7b5a58a3e90aad47526b187b577.json",
++            "sha256": "9b33ecd665d2765ad8d78ab201657646a0cac1906251c6ce546b5922703b5644"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ]
++    },
++    "warm": {
++      "wallSeconds": 36.487,
++      "claims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "42818578f64956b6de9760a894f18c73b88e9d49ec5119c23f4c686cb38a50fa",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "973b0539bcf17a748171cb248812fb736b65bc4b7cb146ccbc1f55df8f69e731"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "executed",
++              "key": "b73119b45d7b1868ecaeb0a04189b9b2a05e54922f0923627d0855c93aef48be"
++            }
++          },
++          "receipt": {
++            "path": "receipts/253951dafb2d83cf4cfc82003697568f7e61dca7ae13e61b1ac217f44855aefa.json",
++            "sha256": "7064d5b5f0784a2479fb13bda5e2a2a77510953519c3d0b1a89ab01f41a4c8bb"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "708ad3dad523ab47bbb1a5a522be5175c65614d92a61fdc31d008a4585ad8563",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "a9b521299b6f41322d3d1db34da2e324e12891d34e81e4373aa4dd97b0bea038"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "0262b8df5150ef12c8024c9f5fdfa3b5f703334dfc6403c5328d00b735b5c85b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "d54cdd6d8af0c253948bf6ca0b3df49f6062c05680180bb93c01d9e7df2d3510"
++            }
++          },
++          "receipt": {
++            "path": "receipts/34922a7a069c3889b64ec75ac2c3b3e3665182db3c49eb19b63b6fc2b5481729.json",
++            "sha256": "411fb09d3316c839a4c5906666a6f5ac5c7fa325dff506a866b70e2f34d3a54d"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "616aaabbf0a1c27a166c925783db267790421bfaf726ae00b279bc7500b82b62",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "8656a57180d10e07a19b7aae66e5471ef7fca1d0547ea429929fe74b0b13b9e6"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "c3e985c1679a86d73383f5e48e426162c7e6e824e9bd0a243139130b3545366d"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "8aafb8edbf74c7fbfd9fcdf344ccc592c306da0469c072c59d8afa9d655e2c8e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/ac81212ca51077d5a991df31a41e7682cb80c346f77159d30f94f9bb8fd7f119.json",
++            "sha256": "fb202d7985514918f56acc6dafba66b4ee769abdf373091d72526d7f92c86d36"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "3381a7527f1e672c3bbfd73200e3a5ce81d0328eaf8b7ac6800e3443e71d3f95",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "refuted",
++              "id": "4c0ff691a3baab77d5719420b59163a4c14459fae6ede00688e864a78ee7afc6"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "d4f86a88f18290f9cbe863a6a8e0df708520cc0f9757cc12bcc6a58002554bc3"
++            }
++          },
++          "receipt": {
++            "path": "receipts/3374d60bbabcf8f159968d605575174cb9822d844386ff1aed2411784a57f0c6.json",
++            "sha256": "7d11c4ed40ba4fad19a1adbbaa7e591f4a432786ea46616c3cb776e8ca540fcc"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "57c2b7bf593ea4e3e763738998523ae68de452ff1024749ad85f53239b206f0c",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "1b67d3fe427e20233be9a47fe947c34cd57f8985a8a0176726213c3a6e7a96d6"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "a107a9f1d56d04cc8611a17d2d5fb6f5cac5bdbde6326eeaf8ce11d4cb6eb38b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "390a29d5405e23fc7ec840e7046b4c6c11faa9705183bd0a50bcaf27d94f424a"
++            }
++          },
++          "receipt": {
++            "path": "receipts/8a3cfa7f0a8858061df15241741e796dff6f32c3e18b4ab4bee970023b887d73.json",
++            "sha256": "aec0d33cb325ba46fd58bf2d57bedd434695a476a597312e0ae59649201bd3ec"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "0070687043f528950d3ed7a7a4e831596f356286f6a340824a024105fc03c091",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "7bf6e62ea2acfdedde0a0781d7f0e6ddd74688992cf0b22438648e83c8c5bf34"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "8083a4173e1de89b49a0de2a1c425e72d53714813634d070a3ef7566aebaf847"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "a536f3671b7643221bfee624e86913b14b8834ab2fdc9b059e9d1487e79bc774"
++            }
++          },
++          "receipt": {
++            "path": "receipts/6d9d49a4ce8c835074eaf39ad0ab9ed0759d801cad7274c838f17c8bea549250.json",
++            "sha256": "834e279bfe1ba9ba8326dea02f7cc1193481d66bae53fda7dd178acda76d5595"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        }
++      ]
++    },
++    "clean": {
++      "wallSeconds": 64.412,
++      "claims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "42818578f64956b6de9760a894f18c73b88e9d49ec5119c23f4c686cb38a50fa",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "973b0539bcf17a748171cb248812fb736b65bc4b7cb146ccbc1f55df8f69e731"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "executed",
++              "key": "b73119b45d7b1868ecaeb0a04189b9b2a05e54922f0923627d0855c93aef48be"
++            }
++          },
++          "receipt": {
++            "path": "receipts/c8ed32ea4beee3b675ae7f0881e1edfe95aace5bce30d2bd2f5b6ab67fd378ea.json",
++            "sha256": "245f774aca65ebd7df315828d0b67dd4c1d78e4d88fa26c6d8eae6d88af3d1b8"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "708ad3dad523ab47bbb1a5a522be5175c65614d92a61fdc31d008a4585ad8563",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "a9b521299b6f41322d3d1db34da2e324e12891d34e81e4373aa4dd97b0bea038"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "0262b8df5150ef12c8024c9f5fdfa3b5f703334dfc6403c5328d00b735b5c85b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "executed",
++              "key": "d54cdd6d8af0c253948bf6ca0b3df49f6062c05680180bb93c01d9e7df2d3510"
++            }
++          },
++          "receipt": {
++            "path": "receipts/126efd528cc142c6ae6c0d5ca8a1670e69934a4ea2a97e9230aaccd4eb48a747.json",
++            "sha256": "e44cb20bedaf3d634f23c40d51e1cea9d1f90f76c0109701d4a8edbb3ac9c3b8"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "616aaabbf0a1c27a166c925783db267790421bfaf726ae00b279bc7500b82b62",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "8656a57180d10e07a19b7aae66e5471ef7fca1d0547ea429929fe74b0b13b9e6"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "c3e985c1679a86d73383f5e48e426162c7e6e824e9bd0a243139130b3545366d"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "executed",
++              "key": "8aafb8edbf74c7fbfd9fcdf344ccc592c306da0469c072c59d8afa9d655e2c8e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/62c232ee55a741d82778ad4eee0ddac5282a9a42e941091c2bf3e41c5f98507f.json",
++            "sha256": "69faa5dfec391a64ffb1b7420cd674ca102e1a4f2fde94b6c83adb462974ca4a"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "3381a7527f1e672c3bbfd73200e3a5ce81d0328eaf8b7ac6800e3443e71d3f95",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "refuted",
++              "id": "4c0ff691a3baab77d5719420b59163a4c14459fae6ede00688e864a78ee7afc6"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "executed",
++              "key": "d4f86a88f18290f9cbe863a6a8e0df708520cc0f9757cc12bcc6a58002554bc3"
++            }
++          },
++          "receipt": {
++            "path": "receipts/811e5c40cae5a337d1fa29361221478106f49593c0f511a1b4819ae3bdafbcce.json",
++            "sha256": "e0312046453f871361dcbce5aabe65b9a976d61b70bf709b52def5af34deb555"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "57c2b7bf593ea4e3e763738998523ae68de452ff1024749ad85f53239b206f0c",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "1b67d3fe427e20233be9a47fe947c34cd57f8985a8a0176726213c3a6e7a96d6"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "a107a9f1d56d04cc8611a17d2d5fb6f5cac5bdbde6326eeaf8ce11d4cb6eb38b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "executed",
++              "key": "390a29d5405e23fc7ec840e7046b4c6c11faa9705183bd0a50bcaf27d94f424a"
++            }
++          },
++          "receipt": {
++            "path": "receipts/b6f81f28f3ca98227e98268b9205284b7aca2444b57057899024da89e95ed462.json",
++            "sha256": "59bbc3da9938a73ffe1a34cad045a0bcb0661cedd6ade9b56ddb4905db767a2e"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "0070687043f528950d3ed7a7a4e831596f356286f6a340824a024105fc03c091",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "7bf6e62ea2acfdedde0a0781d7f0e6ddd74688992cf0b22438648e83c8c5bf34"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "8083a4173e1de89b49a0de2a1c425e72d53714813634d070a3ef7566aebaf847"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "executed",
++              "key": "a536f3671b7643221bfee624e86913b14b8834ab2fdc9b059e9d1487e79bc774"
++            }
++          },
++          "receipt": {
++            "path": "receipts/4942de1810f6f56e6808b2a4e2e51e50a6b6961750e87cd2b60d247486839a90.json",
++            "sha256": "b11383941411b06dda0ab026f575adea8e7136ae0b1a80174a013d0d4716b1ad"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ]
++    },
++    "replacement": {
++      "wallSeconds": 27.03,
++      "claims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "8ea78228aaaf902c41c13b2d291226afc98086ee3979c8efc3e0568d2c63887f",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "refuted",
++              "id": "026e5dbfe26410aca18a2c0b47f300d2576df5fb082938c905a41c2cf32b2243"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "executed",
++              "key": "1c510d8c807868411418aa950094bc234e360a57a241388eaa7cc28ed20a7574"
++            }
++          },
++          "receipt": {
++            "path": "receipts/e8a0aca3185b7dc6b302bd74bd636a9c4fe381333f71f680a626a4972b154968.json",
++            "sha256": "dcace2690cdaa6ad1b169f86f26b22c55c4a19a9b41ab063324e849070b211e1"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "2594207f3b24a3ebaff55957aaa5eda2ab023412b07fa6bd9cff1cfb3910c989",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "eb1e8f98f62e1e5951de164a78f06cb0be86b5061a6bedd10507e1272d827b63"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "948d98c9d91e1ac672a3088ed24b94819e84cfdb9d7eb2a634330ff953f963a5"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "executed",
++              "key": "7103f1ae06ddbd3a795db6f835365e54e95e9216c4c86e70c5c4971b723a972e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/b973722c42c82b1472df29ff96afd0e50a2f85c6f81a6eec928d263739a1c1e1.json",
++            "sha256": "b184b76d9f839905183be77950a97bd60a6a8fcd9a86e06050b1ed24ddfbe1ce"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "3c0899f44f807acc599bfa2807a603c44e3376c7bb5e6469465a58e9787f57dc",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "64a700249130a88609b1d1796c309ea4f3c0bd62e152fda78219735592ae7f68"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "41033821b2accd7bd73e2eed7b3e5b760af12d3ca6dde74d1d1b0906596382c6"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "executed",
++              "key": "04b7e8ba5c724f38ccb1fc9ffab6e2daf625ffcfd5d30cd21fa711eb0fd8ef06"
++            }
++          },
++          "receipt": {
++            "path": "receipts/227ec2f1e489841386f8a66c16351a808a65109ba033808ecbe3384d3c9d02a8.json",
++            "sha256": "ef0ea7aede11b909c369cd57aa4c3eb92960e4f8b0226932f31b67978f81e687"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ],
++      "originalBinaryClaims": []
++    },
++    "replacement-clean": {
++      "wallSeconds": 37.463,
++      "claims": [
++        {
++          "id": "reuse-after-fallback",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "aaca1926018c76b40426095d7c6a9bc4c455a4437db2a6df44988e4bfa546ff2",
++          "executionKey": "8ea78228aaaf902c41c13b2d291226afc98086ee3979c8efc3e0568d2c63887f",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "old": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "new": {
++                "return": "PLAIN/PLAIN/none/a0/a999/0"
++              },
++              "intendedChange": {
++                "return": "PLAIN/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "refuted",
++              "id": "026e5dbfe26410aca18a2c0b47f300d2576df5fb082938c905a41c2cf32b2243"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "f281384721820e0b2bc5db1b639fe3ee6aff173cfb1fc852852c5eda4eddc3fe"
++            },
++            "new": {
++              "action": "executed",
++              "key": "1c510d8c807868411418aa950094bc234e360a57a241388eaa7cc28ed20a7574"
++            }
++          },
++          "receipt": {
++            "path": "receipts/db16f5954b311582a8c2d750f107b3c633aa5df07de6111d2cbd728e7eba857e.json",
++            "sha256": "5ce6efc5c44bf6c11f034b9174c193bc1515cf157425dc5ec595765e990ab5de"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "fresh-and-below",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "a97e35ec738190b8eb1a23c3ee3b0c4c7b403927f9d3e1aa5e9e8b6cf717ee8d",
++          "executionKey": "2594207f3b24a3ebaff55957aaa5eda2ab023412b07fa6bd9cff1cfb3910c989",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "page",
++                "fresh"
++              ],
++              "expected": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "fresh/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "eb1e8f98f62e1e5951de164a78f06cb0be86b5061a6bedd10507e1272d827b63"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "page",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/PLAIN_DICTIONARY/c:10/c0/c9/1000"
++              },
++              "status": "established",
++              "id": "948d98c9d91e1ac672a3088ed24b94819e84cfdb9d7eb2a634330ff953f963a5"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "ab59c310168db92de624865021e663e729d9554c27d0af4d2a593551fae0a7c6"
++            },
++            "new": {
++              "action": "executed",
++              "key": "7103f1ae06ddbd3a795db6f835365e54e95e9216c4c86e70c5c4971b723a972e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/e1253fca7c841f5ec27558d3735d0f3adc451cd750388ca41e982b443f1e57c8.json",
++            "sha256": "5767b2e862e57e8a7b69d4fb88c038259a21c9e87e78c0e63d3ebb8636a1a9b4"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "reopened-file",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "80fb6c718dffae6e787b90ab9d295bf313b5ac844846354cf749254e44d4d6d1",
++          "executionKey": "3c0899f44f807acc599bfa2807a603c44e3376c7bb5e6469465a58e9787f57dc",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "file",
++                "distinct"
++              ],
++              "expected": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN/none/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "64a700249130a88609b1d1796c309ea4f3c0bd62e152fda78219735592ae7f68"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "file",
++                "repeated"
++              ],
++              "expected": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "old": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "new": {
++                "return": "PLAIN_DICTIONARY/a:10/1000|PLAIN_DICTIONARY/c:10/1000"
++              },
++              "status": "established",
++              "id": "41033821b2accd7bd73e2eed7b3e5b760af12d3ca6dde74d1d1b0906596382c6"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "74962e3194ce2c6c41fd54ea49918fd54f992378129b9c6ee2fd6d5584647692"
++            },
++            "new": {
++              "action": "executed",
++              "key": "04b7e8ba5c724f38ccb1fc9ffab6e2daf625ffcfd5d30cd21fa711eb0fd8ef06"
++            }
++          },
++          "receipt": {
++            "path": "receipts/719aa2fcb476a54ce49a81d59cd7464e1db414c67fd89377057b06e7ab90f647.json",
++            "sha256": "c059d7d0962ff17fcc4c1c28c276292af4acb53663aa8e8b81c43f9067ad84a8"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": []
++    }
++  }
++}

@@ -1,0 +1,1520 @@
+Binary file verification/product-behaviour/results/J15/first/plans.zip changed
+--- /dev/null
++++ b/verification/product-behaviour/results/J15/first/summary.json
+@@ -0,0 +1,1516 @@
++{
++  "case": "J15",
++  "change": "Spring Batch #495 second commit, persisted checkpoint selection and restarted reads",
++  "label": "first",
++  "frozenSource": "d92dea060ce873e0a64cec67c27e9dadea448efc",
++  "comparatorSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
++  "bindingsSha256": "2da79210a263616d451cc230bff31a46b982d4fa01798939f482ca830ac862c5",
++  "archiveSha256": "881d31fbb14614d168063329f7d0c90f8bf5c385341051380d13c409bbf1077c",
++  "runs": {
++    "cold": {
++      "wallSeconds": 43.973,
++      "claims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "8dcc722840367a060ebf5d894a54273e1dbcb86c9cb34525c9905aa2d11ea9c9",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "f5622c5ef6ff49873ed1627ac56fd79cce606bcec19f97b765698a61cfcdc289"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "1750f4f3ea14377220edb872e425cf704dabb12073a0f6af975bcd9732cb880b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "executed",
++              "key": "1f9ba706854f8d49db24842f2d2861d03825fe133010f5bb99969e0955578673"
++            }
++          },
++          "receipt": {
++            "path": "receipts/4b3afebbdbd891398b7412c1730da80f508f738deee9b401bd7794489449430b.json",
++            "sha256": "7dfb605c5a634f1541413670aab368490b562f2b4ae58d6e5db4f40952e6e95f"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "9d74f32a752d70cbac11fb18c0b106adf06064e0a704b4e547906f8ef5a65886",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "e10e199f87cce3ee6464f5e6cfc6fc74ea49a9611bdb28aa18dc7e2fb9a99ad3"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "f7ca9770cbc634d1ed6bce2558062c69949c6327af60f7b81c94ed069d95f3eb"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "f9fa82573280aa8e3927620abe9949e635cb7cd285fba68dd823e4931960da57"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "e2b07fbbb5485b7715fc7d277783d809c216c7ff7109a3251614b8c8d23ac88c"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "3ca9ccf10249827a6c3ca04d6ee52f9a4bee49c69e59b755e99a0c7b1770210a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "executed",
++              "key": "3bea074a64eb637336b173b35837f88596c3e2f40dec3a9e1f34477e5f3e382e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/76c8d7a310d4b019b462a9de2a329b50766d412ffc81e29d3e5a26efffb72c41.json",
++            "sha256": "45b2efc152a5f2fa0c3098c5564b9bd17c0cacf0471298ec506a1ef5f8e321ba"
++          },
++          "freshQualifiedEntries": 20,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "61363281bc4aa4c1637940a62cc64e90836774b95eadef7e34557fcda3ae9cfb",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "bc20b48357dbc41edf690ede9ac8274716b88c9f965ec48f3b5e87cbdbd9b933"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "8255d142dfb4be2f83c297bc446a8f05820e39bac401e031a01cf687020186fa"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "executed",
++              "key": "270a7b80b8b3d2b20017553186a4fba784b365de955e85e20b9af94293ea8af2"
++            }
++          },
++          "receipt": {
++            "path": "receipts/857df9d71fb282d8fa3e73f8a656b904f4a065b2052d778215281497eec06ac6.json",
++            "sha256": "5c600b41bbba2eb6c1b574c498df46933138aa7ec4bbbccc89e04dc25dcd3d35"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "7f5030611fb4481ee49bbda29d6c37f8b2cc7251a1d59214230fc074cf40078f",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "892a71bbb742cf4e9c45e959b48d82876ad54f2254570aa3994aa1da9bc1ff7e"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "27346dae50d87ba7530dd328907a2f2e961202e7fb91608b3b706f5103581fb9"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "ef9e0751ace1ac904b716bb235f098d5f4eed43868af50b6bc8036ff49bc445c"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "ec6e31f8946be93222fb44cc5b6079b8b55e722ffdee7ae1e30669cfab25afa7"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "66733bf1d490c4650e06bea014d3a03485f2bfbbc7309796141c7a98ba38cff8"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "executed",
++              "key": "8682a4468add21b2feb471f5a8673885da904e3d5db42de1f2e02206a925f3cf"
++            }
++          },
++          "receipt": {
++            "path": "receipts/361f3de37eeeecea0f1891109c4261662b7498b00996c551e5eccb1019eb08e1.json",
++            "sha256": "cbb051d342726496c57e5237a3f2203bd44371d653ab557fe10a50f69ee8c121"
++          },
++          "freshQualifiedEntries": 10,
++          "reusedQualifiedEntries": 10
++        }
++      ]
++    },
++    "warm": {
++      "wallSeconds": 9.543,
++      "claims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "8dcc722840367a060ebf5d894a54273e1dbcb86c9cb34525c9905aa2d11ea9c9",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "f5622c5ef6ff49873ed1627ac56fd79cce606bcec19f97b765698a61cfcdc289"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "1750f4f3ea14377220edb872e425cf704dabb12073a0f6af975bcd9732cb880b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "executed",
++              "key": "1f9ba706854f8d49db24842f2d2861d03825fe133010f5bb99969e0955578673"
++            }
++          },
++          "receipt": {
++            "path": "receipts/a5b3f36412cf6334ec9d408506e4b8a3264efb4a9534e6c26899d87309677c4c.json",
++            "sha256": "001ea106a0be03d4e3f2c706dd9236dc06dd89323f803b75348476994d5d6792"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "9d74f32a752d70cbac11fb18c0b106adf06064e0a704b4e547906f8ef5a65886",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "e10e199f87cce3ee6464f5e6cfc6fc74ea49a9611bdb28aa18dc7e2fb9a99ad3"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "f7ca9770cbc634d1ed6bce2558062c69949c6327af60f7b81c94ed069d95f3eb"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "f9fa82573280aa8e3927620abe9949e635cb7cd285fba68dd823e4931960da57"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "e2b07fbbb5485b7715fc7d277783d809c216c7ff7109a3251614b8c8d23ac88c"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "3ca9ccf10249827a6c3ca04d6ee52f9a4bee49c69e59b755e99a0c7b1770210a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "3bea074a64eb637336b173b35837f88596c3e2f40dec3a9e1f34477e5f3e382e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/07cbfe5706af1bad9b87e1738d5c93472815ba7d1abe329502c936e5fd7cf1a8.json",
++            "sha256": "6b732fb68b8d7471ac5338678c0482119b37b53586f4f4efd9b1213cde6be40a"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 20
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "61363281bc4aa4c1637940a62cc64e90836774b95eadef7e34557fcda3ae9cfb",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "bc20b48357dbc41edf690ede9ac8274716b88c9f965ec48f3b5e87cbdbd9b933"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "8255d142dfb4be2f83c297bc446a8f05820e39bac401e031a01cf687020186fa"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "270a7b80b8b3d2b20017553186a4fba784b365de955e85e20b9af94293ea8af2"
++            }
++          },
++          "receipt": {
++            "path": "receipts/c8443c14f85111f42f7fd436e9487abdcb0be56a40ab5f9aaa962cdb02482eb0.json",
++            "sha256": "6a91e280e54c24b3512fd09e93b20460898f48763da6029b62c226441f52b502"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "7f5030611fb4481ee49bbda29d6c37f8b2cc7251a1d59214230fc074cf40078f",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "892a71bbb742cf4e9c45e959b48d82876ad54f2254570aa3994aa1da9bc1ff7e"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "27346dae50d87ba7530dd328907a2f2e961202e7fb91608b3b706f5103581fb9"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "ef9e0751ace1ac904b716bb235f098d5f4eed43868af50b6bc8036ff49bc445c"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "ec6e31f8946be93222fb44cc5b6079b8b55e722ffdee7ae1e30669cfab25afa7"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "66733bf1d490c4650e06bea014d3a03485f2bfbbc7309796141c7a98ba38cff8"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "8682a4468add21b2feb471f5a8673885da904e3d5db42de1f2e02206a925f3cf"
++            }
++          },
++          "receipt": {
++            "path": "receipts/ad579bf0115935f0bd93bdebebd13730cc8f2222883707bcd5feb7ed8cbe26b3.json",
++            "sha256": "860dd9749de226a3cd3cd530f82e8f685ad1b89037432792c1c1fde20b43adae"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 20
++        }
++      ]
++    },
++    "clean": {
++      "wallSeconds": 43.7,
++      "claims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "8dcc722840367a060ebf5d894a54273e1dbcb86c9cb34525c9905aa2d11ea9c9",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "f5622c5ef6ff49873ed1627ac56fd79cce606bcec19f97b765698a61cfcdc289"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "1750f4f3ea14377220edb872e425cf704dabb12073a0f6af975bcd9732cb880b"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "executed",
++              "key": "1f9ba706854f8d49db24842f2d2861d03825fe133010f5bb99969e0955578673"
++            }
++          },
++          "receipt": {
++            "path": "receipts/812f110aea603a3ba797734be50d9254ddcee80af30fc3d498612fbc50cbec84.json",
++            "sha256": "38a08623ece030816b70ef6d9809c8719bdef17aed162108e3cde1d2afe567a6"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "9d74f32a752d70cbac11fb18c0b106adf06064e0a704b4e547906f8ef5a65886",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "e10e199f87cce3ee6464f5e6cfc6fc74ea49a9611bdb28aa18dc7e2fb9a99ad3"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "f7ca9770cbc634d1ed6bce2558062c69949c6327af60f7b81c94ed069d95f3eb"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "f9fa82573280aa8e3927620abe9949e635cb7cd285fba68dd823e4931960da57"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "e2b07fbbb5485b7715fc7d277783d809c216c7ff7109a3251614b8c8d23ac88c"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "3ca9ccf10249827a6c3ca04d6ee52f9a4bee49c69e59b755e99a0c7b1770210a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "executed",
++              "key": "3bea074a64eb637336b173b35837f88596c3e2f40dec3a9e1f34477e5f3e382e"
++            }
++          },
++          "receipt": {
++            "path": "receipts/3504a6cd146a35ddb6635e2febbc8d60d7bc6ee3e4a7144d6664674eef789a40.json",
++            "sha256": "e90dd51ee4052b5b9855c1033575ed1beb66dc3a8b3851e00beb0f0a59b2aac9"
++          },
++          "freshQualifiedEntries": 20,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "61363281bc4aa4c1637940a62cc64e90836774b95eadef7e34557fcda3ae9cfb",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "bc20b48357dbc41edf690ede9ac8274716b88c9f965ec48f3b5e87cbdbd9b933"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "8255d142dfb4be2f83c297bc446a8f05820e39bac401e031a01cf687020186fa"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "executed",
++              "key": "270a7b80b8b3d2b20017553186a4fba784b365de955e85e20b9af94293ea8af2"
++            }
++          },
++          "receipt": {
++            "path": "receipts/a35775fb58c1c7f03fd314a42f61346dfa49d0e0a9b89c148a072ca79c01823b.json",
++            "sha256": "d8a34ba866495f8a9b1d8bd9a25f33ed81b5a5207ff577cb3c47b94e9af295f4"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "7f5030611fb4481ee49bbda29d6c37f8b2cc7251a1d59214230fc074cf40078f",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "892a71bbb742cf4e9c45e959b48d82876ad54f2254570aa3994aa1da9bc1ff7e"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "27346dae50d87ba7530dd328907a2f2e961202e7fb91608b3b706f5103581fb9"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "ef9e0751ace1ac904b716bb235f098d5f4eed43868af50b6bc8036ff49bc445c"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "ec6e31f8946be93222fb44cc5b6079b8b55e722ffdee7ae1e30669cfab25afa7"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "66733bf1d490c4650e06bea014d3a03485f2bfbbc7309796141c7a98ba38cff8"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "executed",
++              "key": "8682a4468add21b2feb471f5a8673885da904e3d5db42de1f2e02206a925f3cf"
++            }
++          },
++          "receipt": {
++            "path": "receipts/452daecfc98dad510ac1aeabb90d0fdce6329a202662f9c00e080d3a129e53e5.json",
++            "sha256": "cbcbc73e2e1050e0e1f21b6ad783ef2b0a98e481bb009a15532ee8d415b539ff"
++          },
++          "freshQualifiedEntries": 10,
++          "reusedQualifiedEntries": 10
++        }
++      ]
++    },
++    "replacement": {
++      "wallSeconds": 16.012,
++      "claims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "32a28d00932f2d67c74c515ea18fcc000873342b92c4c1e6b57d5b69b01fe2c6",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "431ba1972ee4777802a6bf66f2a98d78893b379c1a8e6bfc1625b60fa9c476fd"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "929bf11811e9b0a429dae115342fca7a788842cff6959177903f9cb377c79de2"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "executed",
++              "key": "c5f84f43d90f450c577161fca982e9d9c7eb42c35b272dd543ee9a01303292d7"
++            }
++          },
++          "receipt": {
++            "path": "receipts/cb004c1e0d2954562a8c775186c6ff41fb870bfaa1795367be8b0757783221f8.json",
++            "sha256": "09e09ffa2a88384806eb11aba6515f67016bfdfd03bcb012f959532df51c3f5e"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "795aadb07c8a424a5c81e75072997284e7b5fc5385468d590a01b434c75b2aab",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "985988f08128f3afe81a5cf603aba1c961c1b97ea896f5c782387f5cc91fb4c7"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "1017a84273e120a374d63cde007aa6cf9931034d3dffb0ab21c2018b4ad045ff"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "0e9f3972671ad7a5212b1e964f9728c5c9043af7604f2485209ba42fc9ba9930"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "c8a3f67948c9e2a00f43ea527271f9a40a02ad550d0f6bc4f7003f7cdc9e5dbf"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "efcbc154c44ef879d8993f7555bab514ed0b12b432b04880bfee337cd3162a2e"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "executed",
++              "key": "3ded54eec61a9f220be3e275de32bb3a52a6a4367ca0ca5480545d6dd903e61a"
++            }
++          },
++          "receipt": {
++            "path": "receipts/7b047c21cbc45768b662541df363f4da3d678db1107b57cb92d7fb6eca753591.json",
++            "sha256": "9890bea81d39bc21c4b9155252f667c8a02d3752ba4c464651d48917a4471e93"
++          },
++          "freshQualifiedEntries": 10,
++          "reusedQualifiedEntries": 10
++        }
++      ],
++      "originalBinaryClaims": []
++    },
++    "replacement-clean": {
++      "wallSeconds": 28.3,
++      "claims": [
++        {
++          "id": "tied-checkpoint",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "471db134a15afe490efb5fa1e2252060f0368915ac4bdbe1ddb58121cec36a10",
++          "executionKey": "32a28d00932f2d67c74c515ea18fcc000873342b92c4c1e6b57d5b69b01fe2c6",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "reverse",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "431ba1972ee4777802a6bf66f2a98d78893b379c1a8e6bfc1625b60fa9c476fd"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "jdbc",
++                "tie"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "intendedChange": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "refuted",
++              "id": "929bf11811e9b0a429dae115342fca7a788842cff6959177903f9cb377c79de2"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "912e3b2733f50701ca16d24794bb0f3fd9334b0a03d5d8c5a1790a151e1d5bf4"
++            },
++            "new": {
++              "action": "executed",
++              "key": "c5f84f43d90f450c577161fca982e9d9c7eb42c35b272dd543ee9a01303292d7"
++            }
++          },
++          "receipt": {
++            "path": "receipts/296fd413b356ac9dd06a2a31909766cbf02582b2a8bf9790f6a77d6a1ecfa899.json",
++            "sha256": "c141ef76b73c46c5d462a552a56762f5c9b5175a5315e4cd4f82ced4d28cb486"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "other-orders-and-times",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "792624802cbfebb8e423069ae6c57da892a7a118e5689ffa587dd10de4839faa",
++          "executionKey": "795aadb07c8a424a5c81e75072997284e7b5fc5385468d590a01b434c75b2aab",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "forward",
++                "tie"
++              ],
++              "expected": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "old": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "new": {
++                "return": "2/saved-5/5/row-5/row-6"
++              },
++              "status": "established",
++              "id": "985988f08128f3afe81a5cf603aba1c961c1b97ea896f5c782387f5cc91fb4c7"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "forward",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "1017a84273e120a374d63cde007aa6cf9931034d3dffb0ab21c2018b4ad045ff"
++            },
++            {
++              "input": 2,
++              "arguments": [
++                "reverse",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "0e9f3972671ad7a5212b1e964f9728c5c9043af7604f2485209ba42fc9ba9930"
++            },
++            {
++              "input": 3,
++              "arguments": [
++                "jdbc",
++                "later"
++              ],
++              "expected": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "old": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "new": {
++                "return": "1/saved-2/2/row-2/row-3"
++              },
++              "status": "established",
++              "id": "c8a3f67948c9e2a00f43ea527271f9a40a02ad550d0f6bc4f7003f7cdc9e5dbf"
++            },
++            {
++              "input": 4,
++              "arguments": [
++                "jdbc",
++                "absent"
++              ],
++              "expected": {
++                "return": "none"
++              },
++              "old": {
++                "return": "none"
++              },
++              "new": {
++                "return": "none"
++              },
++              "status": "established",
++              "id": "efcbc154c44ef879d8993f7555bab514ed0b12b432b04880bfee337cd3162a2e"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "f625461214873558938314fd3fd21355a5a0ac0857f6a6b658a7295e50b07b16"
++            },
++            "new": {
++              "action": "executed",
++              "key": "3ded54eec61a9f220be3e275de32bb3a52a6a4367ca0ca5480545d6dd903e61a"
++            }
++          },
++          "receipt": {
++            "path": "receipts/6ef4a46f8f11b3d864407b1d91e77c8c8058a3cf75d5b9b1f54f0fd3fde12fd7.json",
++            "sha256": "0a819c39ca3dbab5606af828d9b1d08b74cd91655e12e7e4f2b81b7adf74f750"
++          },
++          "freshQualifiedEntries": 20,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": []
++    }
++  }
++}
