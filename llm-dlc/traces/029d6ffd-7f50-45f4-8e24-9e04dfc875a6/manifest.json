@@ -77,16 +77,16 @@
   "commits": [
     {
       "change_id": "qyozrlzmrzywtrrumvnlswvxrpsnqpww",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "460f94ae465ef84adae5dde1ed73abd0d7fa5892",
+      "immutable": true,
       "summary": "Refresh the queued brief beyond-jbmc-java-change-verification-cam from the user's revised original",
       "body": "The user revised ~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md at 03:20 UTC, after the queue had copied it. The brief has no run yet, so its repository copy, which the setup and domain runs read, is replaced with the revised original, byte for byte (diff confirms identical). The queue entry already points at that original. Brief text only.",
       "log_sha256": "b0a7f8bd8b6fe477060063f26c86588680bdcda703cb435ef1638d0d6e7d98b1"
     },
     {
       "change_id": "rrxummqrtmwvzykqnvrwzkvzzzmswrms",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4674ee60047d89a5a76e803a2182f2031dd13530",
+      "immutable": true,
       "summary": "Set up the trusted-kernel and receiver-recovery brief",
       "body": "Mechanical setup for llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief.md, recorded in llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief-setup.md. The pinned JDK, Z3, CaDiCaL, cake_lpr, Lean 4.36.0 (file by file), rustc and the jvmcontract binary still match the earlier setup records and the committed evidence. The brief's five inventory checks pass at this head. Guava 31.1-jre, Beam's vendored Guava 32.1.2 and fastutil 8.5.15 were resolved from Maven Central, checked against Central's checksums (16 of 16) and their signatures in a private keyring (16 of 16 valid; fastutil's signature postdates its key's published expiry, recorded). Their sources were pinned to the release tags. Every class the brief names was extracted, hashed and disassembled; the JDK Arrays.class and Lang ArrayUtils.class equal the brief's digests. The trusted-kernel consumer built at this head is byte-identical to the recorded range-capable checker.\n\nOn Temurin 21.0.13, throwaway probes reproduced every count the brief gives: the long range fill (245/80/140), the Guava 31.1 and Beam indexOf grids (780 and 1,554 calls), fastutil (7,745 = 2,735 + 5,010), Shorts/Chars (33 of 216), Lang reverse (44,165 = 40,525 + 3,640), the live System-properties sequence, and the two historical incorrect Guava variants, rebuilt to their recorded digests. The receiver campaign's Maven cache, which a scratch cleanup had removed, was restored by hard links from the earlier snapshot (586 classpath files, 0 missing), and the Configuration, Compress, XZ and JavaParser observations were rerun as recorded. No claim, example, adapter or checker code was written, no verifier run was made, and no verification job was needed.",
       "log_sha256": "b6e9c1a6f2e14dd4eacf10da148ff507ab22bcacb50949f872eef841f50e62fc"
