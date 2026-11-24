@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-192229-verify-log4j-on-the-complete-registered",
+  "title": "Verify Log4j on the complete registered API-first source",
+  "description": "Repeat the first canonical-order change plans on the complete committed Log4j registration. The earlier queue snapshot lacked the new manifests and reached no claim. Keep its empty archive separately. Record all original provider decisions and the strict startup opening.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T19:22:29+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "revision": "8e310c8a6916",
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Verify the frozen implementation",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": "."
+    },
+    {
+      "name": "Run the registered API-first plans",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py log4j canonical",
+      "cwd": "."
+    },
+    {
+      "name": "Audit the original binding decisions",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py log4j canonical",
+      "cwd": "."
+    },
+    {
+      "name": "Record the strict scheduling opening",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py log4j 'schedule()Z'",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/log4j/canonical",
+    "verification/organic-composition/log4j/first-native.json"
+  ]
+}
