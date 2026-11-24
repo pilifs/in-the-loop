@@ -1,0 +1,255 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-082238-compare-jackson-trailing-dot-syntax-thro",
+  "title": "Compare Jackson trailing-dot syntax through four public Databind consumers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7m07s, peak 3.0 GiB (estimated 6m00s, 5.0 GiB); 5 output file(s) changed",
+  "attention": [
+    "1 output(s) changed in the working copy since the job's commit and were not applied (kept under outputs/): rerun the job on the newer commit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-082238-compare-jackson-trailing-dot-syntax-thro.json",
+    "sha256": "7d45b55d16837703311f291d7a27dc839bfbb45e2bc4efba90b360de97b6f051",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-082238-compare-jackson-trailing-dot-syntax-thro",
+      "title": "Compare Jackson trailing-dot syntax through four public Databind consumers",
+      "description": "Isolate the complete unmodified 2.17.1 and 2.17.2 classpaths for the JVM oracle, compare their symbolic copies, then check the predicate change and typed ObjectMapper partition including raw negative-zero bits, decimal scale and exact exception class. Exhaust all 11,111 small strings physically and retain separate symbolic results.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/jackson_pair.py"
+        ]
+      },
+      "expected": "The two releases and original JVM controls are preserved, the independent grammar accounts for each finite-grid difference, and unsupported proofs remain visible.",
+      "submitted": {
+        "at": "2026-11-24T08:22:38+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 18,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "6m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/jackson_pair.py --grid",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/jackson_pair.py --grid",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/N11-core",
+        "verification/beyond-jbmc/qualified/N11-quoted",
+        "verification/beyond-jbmc/qualified/N11-grid.json"
+      ]
+    }
+  },
+  "sourceCommit": "6df5a89936febe2f3d004d22f5eb36653a847fa3",
+  "startedAt": "2026-11-24T08:36:32+00:00",
+  "finishedAt": "2026-11-24T08:46:46+00:00",
+  "wallSeconds": 614.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2719281,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3185840128,
+    "wallSeconds": 427.1,
+    "cpuSeconds": 435.6,
+    "memoryOfEstimate": 0.59,
+    "durationOfEstimate": 1.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 174.881,
+      "cpuSeconds": 175.19,
+      "cpuThrottledSeconds": 0.001,
+      "peakMemoryBytes": 2319290368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "02c1f806a73fea4afb8b137bcc2289696c70643e6cd8e10ffca1afa10d1693a2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-082238-compare-jackson-trailing-dot-syntax-thro/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 54s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/jackson_pair.py --grid",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/jackson_pair.py --grid",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 427.066,
+      "cpuSeconds": 435.595,
+      "cpuThrottledSeconds": 0.838,
+      "peakMemoryBytes": 3185840128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 7,
+        "bytes": 330,
+        "sha256": "f72782336018148551bf0911427ab8f0352de09d7b0a3a1cb8d5270390fb2dcb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N11-core 7 original checks passed",
+        "N11-core changed verified unverifiable SUCCESS SUCCESS",
+        "N11-core nullControl verified unverifiable SUCCESS SUCCESS",
+        "N11-quoted 24 original checks passed",
+        "N11-quoted partition unverifiable unverifiable timeout timeout",
+        "63 changed, 11048 preserved; 63 changed independently for each of four consumers",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-core/executions.zip",
+      "change": "added",
+      "bytes": 33843,
+      "sha256": "b1f8951abcdc309c92e21d3cd339b116cf47059eef33426f7e9373da54a14c92",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-core/results.json.gz",
+      "change": "added",
+      "bytes": 2292,
+      "sha256": "450c691957bd414f2673c797affbfeeab48d2b3c50c5b71e409c03891d2685db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-quoted/executions.zip",
+      "change": "added",
+      "bytes": 7150,
+      "sha256": "1d9d6b3e60087f7188a5bac801af267aaad49d989ca15868aacd0fd9840b9ca0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-quoted/results.json.gz",
+      "change": "added",
+      "bytes": 1768,
+      "sha256": "0d7b5cd1a78099c1239b5b335d38867a47af9db3a53e2017202aeb3a93229224",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-grid.json",
+      "change": "modified",
+      "bytes": 3480,
+      "sha256": "029cf4f6d37eb0e8b62225ffaf9b0cd08aa4d16b9013381b603bf6d4dff5e723",
+      "sourceSha256": "bda9996fcb52e81b46e494c759e2a45352998f6b06b7f484f26cae9dd94bb3e0"
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:47:18+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/N11-core/executions.zip",
+      "verification/beyond-jbmc/qualified/N11-core/results.json.gz",
+      "verification/beyond-jbmc/qualified/N11-quoted/executions.zip",
+      "verification/beyond-jbmc/qualified/N11-quoted/results.json.gz"
+    ],
+    "conflicts": [
+      "verification/beyond-jbmc/qualified/N11-grid.json"
+    ],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/d3c2aea6fe7f83d09dacbca0e7be036d7d06fa71/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T084646Z-4661809cf9aed94b",
+      "outputs": "20261124T084646Z-48779388db3ecca5",
+      "diff": "20261124T084646Z-5057244ea6288e48"
+    }
+  }
+}
