@@ -1,5 +1,7 @@
 # Organic Java change verification
 
+The frozen sources are committed at `4d53968b5bd1`. All runner files match the pre-transfer commitment, including the startup route and proof-cache rules. [Source and executable digests](../../lib/benchmark/organic-composition/freeze.json)
+
 ## ThreeTenBP #77
 
 On the two registered fall-back histories, the parent resolved both occurrences to the earlier instant. The fix resolved the second occurrence one hour later in New York and Berlin. The cursor, its error index and the terminal exception agreed across the change. Repeating the earlier explicit offset also preserved the instant. The original application runner qualified both claims over six inputs on unmodified production JARs. [First plan and complete JVM receipts](../../verification/organic-composition/threeten/opening/plans.zip)

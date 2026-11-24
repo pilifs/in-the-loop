@@ -1,0 +1,26 @@
+{
+  "entry": "org.apache.poi.ss.usermodel.DataFormatter#formatRawCellContents(DILjava/lang/String;)Ljava/lang/String;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Exact retained, repeated and fresh-peer display text, current POI locale, decimal separator and final quoted abbreviation across an A/B/A locale history.",
+  "basis": "Single-section currency pattern from the landed POI test; independent ordinary numeric formatting and the Gregorian calendar date at Excel serial 45292. Both initial user locales are registered.",
+  "cases": [
+    {
+      "args": [
+        "custom",
+        "en-US"
+      ],
+      "expected": {
+        "return": "en-US[.]:0.001~0.001~0.001~literal=false|kk-KZ[,]:0,001~0,001~0,001~literal=false|en-US[.]:0.001~0.001~0.001~literal=false"
+      }
+    },
+    {
+      "args": [
+        "custom",
+        "kk-KZ"
+      ],
+      "expected": {
+        "return": "kk-KZ[,]:0,001~0,001~0,001~literal=false|en-US[.]:0.001~0.001~0.001~literal=false|kk-KZ[,]:0,001~0,001~0,001~literal=false"
+      }
+    }
+  ]
+}

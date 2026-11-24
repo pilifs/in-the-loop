@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-153556-change-the-bound-poi-runtime-image-and-c",
+  "title": "Change the bound POI runtime image and compare warm and clean histories",
+  "description": "Keep POI source, complete release classpaths, public workflow inputs, locale changes and observations fixed. Change only the fixed deployment from Temurin 21 to 25 and compare a resumed plan to an empty cache, recording helper and JVM-side actions independently.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "checked-proof-reuse"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T15:35:56+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "6m"
+  },
+  "steps": [
+    {
+      "name": "Recompute POI histories across a real runtime change",
+      "run": "python3 -B lib/benchmark/organic-composition/poi/profile.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/poi/jdk-profile"
+  ]
+}
