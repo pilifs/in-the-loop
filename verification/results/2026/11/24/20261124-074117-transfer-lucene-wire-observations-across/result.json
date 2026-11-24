@@ -1,0 +1,278 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-074117-transfer-lucene-wire-observations-across",
+  "title": "Transfer Lucene wire observations across widths, records and Protobuf",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 4m08s, peak 991.9 MiB (estimated 15m00s, 6.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-074117-transfer-lucene-wire-observations-across.json",
+    "sha256": "b42443af856ea974b6a8ad060e688ddfd048747d65504800423fff0d880bfb90",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-074117-transfer-lucene-wire-observations-across",
+      "title": "Transfer Lucene wire observations across widths, records and Protobuf",
+      "description": "Check signed short and long mixed directions, UInt32 and UInt64 sizing against independent unsigned shifting, exact-sized UInt32/UInt64/ZigZag writers and readers in both directions, Lucene/Protobuf VInt interoperability and a composite record. Match relocated checker classpaths against separate original JVM class loaders and replay target failures there. Sixteen claims across W03, W05-W08, including a wrong signed API control.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc:standalone",
+        "jvm:wire-compatibility"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/more_wire.py"
+        ]
+      },
+      "expected": "Four signed-width rows, two interoperability rows, two sizing rows, six framed Protobuf rows and two composite-record rows. Require all independent original-JVM controls before classification.",
+      "submitted": {
+        "at": "2026-11-24T07:41:17+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "15m",
+        "timeout": "90m"
+      },
+      "steps": [
+        {
+          "name": "Cross-release frames",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/more_wire.py qualified W03 W05 W06 W07 W08",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/W03",
+        "verification/beyond-jbmc/qualified/W05",
+        "verification/beyond-jbmc/qualified/W06",
+        "verification/beyond-jbmc/qualified/W07",
+        "verification/beyond-jbmc/qualified/W08"
+      ]
+    }
+  },
+  "sourceCommit": "a517dd6cb4b93181fe836954143e094e57fe57c8",
+  "startedAt": "2026-11-24T08:01:22+00:00",
+  "finishedAt": "2026-11-24T08:09:09+00:00",
+  "wallSeconds": 467.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2485762,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 5400.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1040117760,
+    "wallSeconds": 248.1,
+    "cpuSeconds": 259.4,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.28
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Cross-release frames",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/more_wire.py qualified W03 W05 W06 W07 W08",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5400.0,
+      "cancelled": false,
+      "wallSeconds": 248.113,
+      "cpuSeconds": 259.392,
+      "cpuThrottledSeconds": 1.399,
+      "peakMemoryBytes": 1040117760,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-cross-release-frames.log",
+        "lines": 21,
+        "bytes": 1056,
+        "sha256": "ffc61a05ba63dd5386488a4f0accb677dfc4792d6dc1448acba710102ed18747",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "W03 14 original checks passed",
+        "W03 shortOldNew verified unverifiable FAILURE FAILURE",
+        "W03 shortNewOld verified unverifiable FAILURE FAILURE",
+        "W03 longOldNew verified unverifiable FAILURE FAILURE",
+        "W03 longNewOld verified unverifiable FAILURE FAILURE",
+        "W05 9 original checks passed",
+        "W05 protoToLucene unverifiable unverifiable SUCCESS FAILURE",
+        "W05 swappedEntrypoint unverifiable unverifiable FAILURE FAILURE",
+        "W06 11 original checks passed",
+        "W06 size32 unverifiable unverifiable SUCCESS FAILURE",
+        "W06 size64 unverifiable unverifiable SUCCESS FAILURE",
+        "W07 30 original checks passed",
+        "W07 uint32OldNew unverifiable unverifiable SUCCESS FAILURE",
+        "W07 uint32NewOld unverifiable unverifiable SUCCESS FAILURE",
+        "W07 uint64OldNew unverifiable unverifiable SUCCESS FAILURE",
+        "W07 uint64NewOld unverifiable unverifiable SUCCESS FAILURE",
+        "W07 sint64OldNew unverifiable unverifiable FAILURE FAILURE",
+        "W07 sint64NewOld unverifiable unverifiable FAILURE FAILURE",
+        "W08 6 original checks passed",
+        "W08 recordOldNew verified unverifiable FAILURE FAILURE",
+        "W08 recordNewOld verified unverifiable FAILURE FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/W03/executions.zip",
+      "change": "added",
+      "bytes": 416844,
+      "sha256": "559c000e1979bc5a0bd072ec45ac564e68dbbf4a2d5d56c3a5d3084d32b0e91d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W03/results.json.gz",
+      "change": "added",
+      "bytes": 2874,
+      "sha256": "943475e3d041837e0157d4e5513495a19ad6b88b318b0005d0d403c2a3f2e2c9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W05/executions.zip",
+      "change": "added",
+      "bytes": 223883,
+      "sha256": "feafba31f64b1d17f71e34f964ff027ce3869300d5993c8771a79c1cdb58e9a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W05/results.json.gz",
+      "change": "added",
+      "bytes": 2633,
+      "sha256": "249557adf29b67d9a7cc93353c5313b6b6fbe73f463a42b4a5b51fbd1c68a092",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W06/executions.zip",
+      "change": "added",
+      "bytes": 161041,
+      "sha256": "5303d456162bf1ae5bdf694e13a0631041eef87b00fb96f9b541b1915f9093b0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W06/results.json.gz",
+      "change": "added",
+      "bytes": 2433,
+      "sha256": "b6d79ee07348e2ddc91202e146cb8a68b606e023d98b786b26be8203e1e7ad31",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W07/executions.zip",
+      "change": "added",
+      "bytes": 748395,
+      "sha256": "c4e297d044b16f212c969c35533261ae509e244e2b65d87bfefb2dec800ee057",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W07/results.json.gz",
+      "change": "added",
+      "bytes": 3301,
+      "sha256": "19c5768a8a4c7978ee86d19927a29536e27271c9e9bb25820207bcc0147768c1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W08/executions.zip",
+      "change": "added",
+      "bytes": 238767,
+      "sha256": "7a0303e6bca7caef72b99a3c63026123e0c13fafc9663336d974256e6fb75abb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W08/results.json.gz",
+      "change": "added",
+      "bytes": 2460,
+      "sha256": "aba832d090596922311ed6d0c83629f45817a521859d8154f63e67e924e11a65",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:09:25+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/W03/executions.zip",
+      "verification/beyond-jbmc/qualified/W03/results.json.gz",
+      "verification/beyond-jbmc/qualified/W05/executions.zip",
+      "verification/beyond-jbmc/qualified/W05/results.json.gz",
+      "verification/beyond-jbmc/qualified/W06/executions.zip",
+      "verification/beyond-jbmc/qualified/W06/results.json.gz",
+      "verification/beyond-jbmc/qualified/W07/executions.zip",
+      "verification/beyond-jbmc/qualified/W07/results.json.gz",
+      "verification/beyond-jbmc/qualified/W08/executions.zip",
+      "verification/beyond-jbmc/qualified/W08/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "a5025dde8f75d6626f0779e97074fdd399cd0455",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/a5025dde8f75d6626f0779e97074fdd399cd0455/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T080909Z-6907806687bbfadf",
+      "outputs": "20261124T080909Z-748623c2def64c4b",
+      "diff": "20261124T080909Z-7691946463fc87a6"
+    }
+  }
+}
