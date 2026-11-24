@@ -311,8 +311,7 @@ impl Engine<'_> {
             return None;
         }
         // A copy of a class of the previous version of a pair has that class's own name ([`super::runtime`]).
-        let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
-        let name: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
+        let name: Vec<u16> = crate::relocate::binary_name(&class, self.cp.previous.as_deref().or(self.previous.as_deref())).encode_utf16().collect();
         let message = match self.kept(path, o, true)? {
             Ok(Val::R(message)) => message,
             Ok(_) => return None,

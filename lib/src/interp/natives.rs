@@ -32,6 +32,22 @@ fn text_of(s: &JStr, what: &str) -> Exec<String> {
     s.text().ok_or_else(|| Fault::Unsupported(format!("{what} of a String with an isolated surrogate ({})", s.display())))
 }
 
+/// Class.getName takes internal names for objects and JVM descriptors for arrays.
+fn class_name(m: &Machine, ty: &Type) -> String {
+    match ty {
+        Type::Object(name) => m.cp.binary_name(name),
+        Type::Array(_) => m.cp.binary_name(&ty.descriptor()),
+        primitive => primitive.java_name(),
+    }
+}
+
+fn type_name(m: &Machine, ty: &Type) -> String {
+    match ty {
+        Type::Array(element) => format!("{}[]", type_name(m, element)),
+        other => class_name(m, other),
+    }
+}
+
 /// Whether a code point is whitespace as `Character.isWhitespace` says: a space, line or paragraph separator other
 /// than the non-breaking ones (U+00A0, U+2007, U+202F), or one of the controls U+0009–U+000D and U+001C–U+001F.
 fn java_whitespace(c: u32) -> bool {
@@ -240,18 +256,18 @@ fn native_to_string(m: &mut Machine, r: Ref) -> Exec<JStr> {
         Native::Class(t) => match &t {
             Type::Object(name) => {
                 let interface = m.cp.application(name).ok().flatten().is_some_and(|c| c.is_interface());
-                format!("{} {}", if interface { "interface" } else { "class" }, name.replace('/', "."))
+                format!("{} {}", if interface { "interface" } else { "class" }, m.cp.binary_name(name))
             }
-            other => format!("class {}", other.class_get_name()),
+            other => format!("class {}", class_name(m, other)),
         }
         .into(),
         Native::Throwable { class, message, .. } => match message.and_then(|s| m.heap.string(s).cloned()) {
             Some(msg) => {
-                let mut out = JStr::from(format!("{}: ", class.replace('/', ".")));
+                let mut out = JStr::from(format!("{}: ", m.cp.binary_name(&class)));
                 out.push(&msg);
                 out
             }
-            None => class.replace('/', ".").into(),
+            None => m.cp.binary_name(&class).into(),
         },
         Native::Optional(None) => "Optional.empty".into(),
         Native::Optional(Some(v)) => {
@@ -437,7 +453,7 @@ fn native_hash(m: &mut Machine, r: Ref) -> Exec<i32> {
             }
             h
         }
-        Native::Class(t) => string_hash(&t.class_get_name()),
+        Native::Class(t) => string_hash(&class_name(m, &t)),
         Native::Optional(None) => 0,
         Native::Optional(Some(v)) => hash_code(m, v)?,
         other => return unsupported(format!("{}.hashCode is identity-based", other.class_name().replace('/', "."))),
@@ -745,11 +761,11 @@ pub fn invoke_inherited(m: &mut Machine, r: Ref, owner: &str, name: &str, descri
             "toString" => {
                 let text = match throwable_message(m, r) {
                     Some(msg) => {
-                        let mut out = JStr::from(format!("{}: ", class.replace('/', ".")));
+                        let mut out = JStr::from(format!("{}: ", m.cp.binary_name(&class)));
                         out.push(&msg);
                         out
                     }
-                    None => class.replace('/', ".").into(),
+                    None => m.cp.binary_name(&class).into(),
                 };
                 Ok(Some(m.new_string(text)))
             }
@@ -1067,7 +1083,8 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 };
                 m.invoke(&cf, &method, vec![Value::Ref(r), args[0]])
             }
-            "getName" | "getTypeName" => Ok(Some(m.new_string(t.class_get_name()))),
+            "getTypeName" if matches!(t, Type::Array(_)) => Ok(Some(m.new_string(type_name(m, &t)))),
+            "getName" | "getTypeName" => Ok(Some(m.intern(&class_name(m, &t)))),
             "getSimpleName" => {
                 let simple = match &t {
                     Type::Object(n) => m.cp.application(n).ok().flatten().map(|c| c.simple_name()).unwrap_or_else(|| crate::classfile::simple_name_of(n)),
@@ -1075,7 +1092,7 @@ pub fn invoke_native_virtual(m: &mut Machine, r: Ref, _owner: &str, name: &str, 
                 };
                 Ok(Some(m.new_string(simple)))
             }
-            "getCanonicalName" => Ok(Some(m.new_string(t.class_get_name().replace('$', ".")))),
+            "getCanonicalName" => Ok(Some(m.new_string(type_name(m, &t).replace('$', ".")))),
             "getComponentType" => Ok(Some(match &t { Type::Array(element) => m.class_object(element), _ => Value::Null })),
             "getClassLoader" if !t.is_reference() => Ok(Some(Value::Null)),
             "isAssignableFrom" => {

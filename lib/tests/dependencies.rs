@@ -60,6 +60,42 @@ fn regression(name: &str, before: &Path, after: &Path, target: &str) -> equivale
     equivalence::run(&options(name, before, after, target)).unwrap()
 }
 
+#[test]
+fn ordinary_equivalence_observes_original_binary_names_in_proofs_and_replayed_witnesses() {
+    jvmcontract::tool_tier!();
+    let build = |label: &str, body: &str| {
+        let source = format!("package before.library; public class Named {{ static class Token {{}} public static String observe(boolean array) {{ return {body}; }} }}");
+        compile(label, &[("before/library/Named.java", source)])
+    };
+    let original = build("reflect-name-original", "array ? Token[][].class.getName() : new Named().getClass().getName()");
+    let equal = build("reflect-name-equal", r#"array ? "[[Lbefore.library.Named$Token;" : "before.library.Named""#);
+    let changed = build("reflect-name-changed", r#"array ? "[[Lbefore.before.library.Named$Token;" : "before.before.library.Named""#);
+    let target = "before.library.Named#observe";
+    let proved = regression("reflect-name-equal-run", &original, &equal, target);
+    assert_eq!(proved.verdict, Verdict::Verified, "{}", proved.output);
+
+    let mut candidate = options("reflect-name-changed-run", &original, &changed, target);
+    candidate.cache = Some(tmp("reflect-name-original/cache"));
+    for warm in [false, true] {
+        let result = equivalence::run(&candidate).unwrap();
+        assert_eq!(result.verdict, Verdict::Violation, "{}", result.output);
+        assert_eq!(result.reuse.is_some(), warm, "{}", result.output);
+        assert!(result.replay.as_ref().is_some_and(|r| r.reproduced), "{}", result.output);
+        let w = result.counterexample.unwrap();
+        assert!(w.before.contains("before.library.Named") && !w.before.contains("before.before."), "{}", w.before);
+        assert!(w.after.contains("before.before.library.Named"), "{}", w.after);
+        candidate.work = Some(tmp("reflect-name-warm-run"));
+    }
+
+    let name = "before/before/library/Named";
+    let path = changed.join(format!("{name}.class"));
+    std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+    std::fs::write(path, jvmcontract::classfile::writer::ClassWriter::new(name).to_bytes()).unwrap();
+    let ambiguous = regression("reflect-name-collision", &original, &changed, target);
+    assert_eq!(ambiguous.verdict, Verdict::Unverifiable, "{}", ambiguous.output);
+    assert!(ambiguous.problem.unwrap().contains("collides with the relocated previous class"));
+}
+
 fn prove(name: &str, classes: &Path, target: &str, assume: Option<&str>, assert: &str) -> property::Outcome {
     let mut options = property::Options::new(&[classes.to_path_buf()], target);
     options.engine = jvmcontract::Engine::Native;

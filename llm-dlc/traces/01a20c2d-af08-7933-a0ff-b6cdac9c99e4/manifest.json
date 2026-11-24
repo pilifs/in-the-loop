@@ -12,28 +12,29 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T10:47:58.939Z",
-  "duration_seconds": 16628,
+  "ended": "2026-11-24T11:19:55.242Z",
+  "duration_seconds": 18544,
   "stats": {
-    "turns": 1,
-    "api_calls": 883,
-    "tool_calls": 2302,
-    "tool_errors": 52,
-    "compactions": 2,
+    "turns": 2,
+    "api_calls": 996,
+    "tool_calls": 2615,
+    "tool_errors": 58,
+    "compactions": 3,
     "peak_context_tokens": 550355,
     "usage": {
-      "input_tokens": 1452940,
-      "output_tokens": 509461,
-      "cache_read_input_tokens": 296740992,
+      "input_tokens": 1630915,
+      "output_tokens": 570128,
+      "cache_read_input_tokens": 315339904,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 1349,
-    "exec": 870,
-    "apply_patch": 72,
+    "Bash": 1540,
+    "exec": 978,
+    "apply_patch": 84,
     "sleep": 9,
-    "send_message_to_user_async": 2
+    "send_message_to_user_async": 3,
+    "wait": 1
   },
   "files_touched": [
     "lib/benchmark/beyond-jbmc/README.md",
@@ -41,6 +42,7 @@
     "lib/benchmark/beyond-jbmc/blind/auto_upgrade.py",
     "lib/benchmark/beyond-jbmc/blind/calibration.py",
     "lib/benchmark/beyond-jbmc/blind/evaluate_panel.py",
+    "lib/benchmark/beyond-jbmc/blind/identity_followup.py",
     "lib/benchmark/beyond-jbmc/blind/identity_worker.py",
     "lib/benchmark/beyond-jbmc/blind/packets.py",
     "lib/benchmark/beyond-jbmc/blind/reference_jvm.py",
@@ -55,6 +57,7 @@
     "lib/benchmark/beyond-jbmc/evidence.py",
     "lib/benchmark/beyond-jbmc/exception_sites.py",
     "lib/benchmark/beyond-jbmc/extended/CachedCodec.java",
+    "lib/benchmark/beyond-jbmc/extended/CodecNames.java",
     "lib/benchmark/beyond-jbmc/extended/FormatterBinding.java",
     "lib/benchmark/beyond-jbmc/extended/Seed128.lean",
     "lib/benchmark/beyond-jbmc/extended/ThrowSites.java",
@@ -83,6 +86,8 @@
     "lib/src/bmc/reflection.rs",
     "lib/src/bmc/runtime.rs",
     "lib/src/classpath.rs",
+    "lib/src/relocate.rs",
+    "lib/tests/dependencies.rs",
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md"
   ],
   "context_windows": [
@@ -117,24 +122,38 @@
     {
       "index": 2,
       "started": "2026-11-24T10:47:07.067Z",
-      "ended": "2026-11-24T10:47:58.939Z",
+      "ended": "2026-11-24T10:50:33.106Z",
       "turns": 0,
-      "api_calls": 7,
+      "api_calls": 14,
       "usage": {
-        "input_tokens": 20203,
-        "output_tokens": 1103,
-        "cache_read_input_tokens": 200960,
+        "input_tokens": 24120,
+        "output_tokens": 3749,
+        "cache_read_input_tokens": 460672,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 34017
+      "peak_context_tokens": 39838
+    },
+    {
+      "index": 3,
+      "started": "2026-11-24T10:50:33.111Z",
+      "ended": "2026-11-24T11:19:55.242Z",
+      "turns": 1,
+      "api_calls": 106,
+      "usage": {
+        "input_tokens": 174058,
+        "output_tokens": 58021,
+        "cache_read_input_tokens": 18339200,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 237196
     }
   ],
   "log": {
-    "sha256": "7a7a5cc8b3b1adcca15aa956c69bc6ad091e47a3c082f0291ba195ca8b22ea18",
-    "bytes": 12754012,
-    "lines": 7042,
-    "gzip_bytes": 2178450,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/7a7a5cc8b3b1adcca15aa956c69bc6ad091e47a3c082f0291ba195ca8b22ea18.jsonl.gz"
+    "sha256": "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0",
+    "bytes": 15337602,
+    "lines": 7982,
+    "gzip_bytes": 2727029,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -257,6 +276,14 @@
       "summary": "Complete the beyond-JBMC campaign and verify its final evidence",
       "body": "The final Lean kernel proof establishes injectivity of the 128-bit Commons Codec seed transformation for fixed blocks, length and tail. It establishes the exact signed seed boundary, binds all three released JARs and the common 1.14 and 1.15 bytecode, and rejects the deliberately incorrect identity.\n\nThe index covers 187 historical claims, two regression populations of 60 and 49, 32 historical upgrades, 68 disclosed work items and 16 blind pairs. It accounts for all 89 jobs, including four earlier failures with successful replacements. The 203 property comparisons and 24 release comparisons have local evidence. The eight published report pages passed the link audit and all 10 selected Python tests passed.",
       "log_sha256": "7a7a5cc8b3b1adcca15aa956c69bc6ad091e47a3c082f0291ba195ca8b22ea18"
+    },
+    {
+      "change_id": "mrnrzoyrolouqlxvkvrrtpvkyztmltrp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Preserve original names in equivalence (verification pending)",
+      "body": "The ordinary equivalence harness carried the synthetic package of the previous release into reflective class names. Bind class and array names and constant class lookups to the original namespace in native checking, interpreter replay, shrinking and cached witness validation. Keep program String constants intact when their bytes also name a relocated class. Refuse a collision with an actual application class.\n\nA capped probe now proves the exact Sisu Plexus Boolean caller on which the frozen run reported an incorrect difference. A constructed discriminator also exposed a false proof on the frozen checker, with both legal inputs contradicted by original JVMs. The regression exercises both directions, a genuine before package, nested arrays, cache replay and namespace collisions. The affected suites passed across 59 Rust binaries and 86 Python tests. One JBMC process test passed on its automatic retry. The original 89-job index still regenerates byte for byte.\n\nVerification pending in job 20261124-110402-verify-original-class-names-on-plexus-an. It checks cold and warm decisions on the two original Plexus graphs and the preserved name and changed superclass of the Commons Codec incremental hash class.",
+      "log_sha256": "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0"
     }
   ],
   "logs": {
@@ -288,6 +315,12 @@
       "bytes": 1987990,
       "lines": 619,
       "gzip_bytes": 469346,
+      "url": null
+    },
+    "5b28cc4078b313f44dd06587e5bad83e8e515ddf97ea66d71704342a5a25c2b0": {
+      "bytes": 15337602,
+      "lines": 7982,
+      "gzip_bytes": 2727029,
       "url": null
     },
     "726ace1167c232f2be46f62e73daf6a44c8c05ef03205d861c67c022c5642cd4": {

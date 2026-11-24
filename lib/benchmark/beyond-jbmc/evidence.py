@@ -10,6 +10,10 @@ import shutil
 import tempfile
 from history import HERE,ROOT,OUTPUT,encoded,digest
 
+# The published v1 index closed with the signed-seed proof. Later disclosed
+# experiments have their own receipts and do not enter the original job population.
+LAST_CAMPAIGN_JOB = "20261124-102145-certify-the-codec-signed-seed-boundary-b"
+
 def checked_job(job,receipt):
     return job==receipt["spec"] and hashlib.sha256(json.dumps(job,sort_keys=True).encode()).hexdigest()==receipt["sha256"]
 
@@ -59,6 +63,8 @@ def materialize(collected):
 def build(collected,out):
     evidence=collected/"verification/beyond-jbmc";rows=[];missing=[]
     for spec in sorted((ROOT/"verification/jobs/2026/11/24").glob("*.json")):
+        if spec.stem > LAST_CAMPAIGN_JOB:
+            continue
         job=json.loads(spec.read_bytes())
         if not any("lib/benchmark/beyond-jbmc/" in step["run"] for step in job["steps"]):continue
         ident=job["id"];path=collected/"verification/results/2026/11/24"/ident/"result.json"

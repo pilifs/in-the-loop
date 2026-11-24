@@ -1985,8 +1985,9 @@ pub fn run_for_proof(entries: &[std::path::PathBuf], models: bool, class: &str, 
 /// contracts stand in for (`effects`).
 #[allow(clippy::too_many_arguments)]
 pub fn run_for_proof_with(entries: &[std::path::PathBuf], models: bool, class: &str, method: &str, unwind: u32, max_array_length: u32, timeout: Duration, gaps: &GapSetting, parameters: &Parameters, summaries: &[Summary], pure: Option<(String, String, String)>, own_induction: bool, frame: Option<(String, String, String)>, closed_frame: bool, effects: &[Effect], work: &std::path::Path) -> Result<crate::jbmc::JbmcResult, Error> {
-    let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models);
-    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), stand_ins: gaps.stand_ins.clone(), previous: gaps.previous.clone(), parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, closed_frame, effects: std::sync::Arc::new(effects.to_vec()), ..Options::default() })?;
+    let cp = crate::witness::classpath(entries.iter().chain(&gaps.class_dir).map(std::path::PathBuf::as_path))?.with_models(models).with_previous(gaps.previous.clone());
+    let paired = gaps.previous.as_ref().filter(|p| p.fresh_states).cloned();
+    let outcome = check(&cp, class, method, &Options { unwind, timeout, max_array_length, gaps: gaps.mode, contracts: gaps.contracts.clone(), observed: gaps.observed.clone(), models: gaps.models.clone(), stand_ins: gaps.stand_ins.clone(), previous: paired, parameters: parameters.clone(), summaries: std::sync::Arc::new(summaries.to_vec()), pure, own_induction, frame, closed_frame, effects: std::sync::Arc::new(effects.to_vec()), ..Options::default() })?;
     let log = work.join("bmc.log");
     let _ = std::fs::write(&log, format!("jvmcontract's own checker on {class}.{method}\n{}\n", outcome.summary()));
     Ok(outcome.into_jbmc_result(log))

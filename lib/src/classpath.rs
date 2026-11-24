@@ -364,6 +364,8 @@ pub struct Loaded {
 /// The application classes and the JDK, with lazy loading and a cache.
 pub struct ClassPath {
     entries: Vec<Entry>,
+    /// Original namespace of the previous release for observable class names and lookups.
+    pub(crate) previous: Option<std::sync::Arc<crate::relocate::Previous>>,
     jar_release: Option<u32>,
     /// What a JVM was seen to load ([`ClassObservations`]).
     observations: ClassObservations,
@@ -421,7 +423,16 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), byte_array_view_image: Default::default(), wildcard_type_image: Default::default(), method_return_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), previous: None, jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), byte_array_view_image: Default::default(), wildcard_type_image: Default::default(), method_return_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+    }
+
+    pub(crate) fn with_previous(mut self, previous: Option<std::sync::Arc<crate::relocate::Previous>>) -> Self {
+        self.previous = previous;
+        self
+    }
+
+    pub(crate) fn binary_name(&self, name: &str) -> String {
+        crate::relocate::binary_name(name, self.previous.as_deref())
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call

@@ -134,6 +134,7 @@ pub struct Regression<'a> {
     /// Where the harness is, and the previous version relocated: what a stored witness is replayed on.
     pub harness: &'a Path,
     pub before_classes: &'a Path,
+    pub versions: std::sync::Arc<crate::relocate::Previous>,
     pub shown: Shown<'a>,
 }
 
@@ -148,6 +149,7 @@ struct Place {
     key: ClaimKey,
     /// The class path the harness replays a witness on: the harness, both versions, the class path.
     replay: Vec<PathBuf>,
+    versions: std::sync::Arc<crate::relocate::Previous>,
     models: bool,
     /// The harness's parameters, which a witness gives values for.
     types: Vec<Type>,
@@ -486,7 +488,7 @@ impl<'a> Regression<'a> {
         };
         let provenance = format!("jvmcontract {} ({}), --engine native, at {}, on {builds}", env!("CARGO_PKG_VERSION"), binary().get(..19).unwrap_or("unknown binary"), utc_now());
         let required = [Observation::Result, Observation::Exception].iter().map(Observation::id).chain(self.observations.arrays.iter().map(|a| Observation::ArrayParameter { parameter: a.clone() }.id())).collect();
-        let mut place = Place { dir, key, replay, models: self.options.models, types: self.layout.types(), domain: self.shown.domain.to_string(), required, provenance, note: String::new() };
+        let mut place = Place { dir, key, replay, versions: self.versions.clone(), models: self.options.models, types: self.layout.types(), domain: self.shown.domain.to_string(), required, provenance, note: String::new() };
         let keyed = keying.elapsed();
         let looking = Instant::now();
         let before = out.len();
@@ -584,7 +586,7 @@ impl Place {
 
     fn reproduces_untimed(&self, arguments: &[Argument]) -> bool {
         let Ok(cp) = witness::classpath(self.replay.iter().map(PathBuf::as_path)) else { return false };
-        witness::fails_in_harness(&cp.with_models(self.models), harness::CLASS, &self.types, arguments) == Some(true)
+        witness::fails_in_harness(&cp.with_models(self.models).with_previous(Some(self.versions.clone())), harness::CLASS, &self.types, arguments) == Some(true)
     }
 }
 

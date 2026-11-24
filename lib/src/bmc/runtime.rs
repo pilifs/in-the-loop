@@ -44,8 +44,8 @@
 //!   JDK has: whether the argument's class is the receiver's or below it, as `instanceof` decides it
 //!   ([`ClassPath::is_subtype`]). `NullPointerException` for a null argument. Of a primitive type's or an array's
 //!   `Class` it is the JDK call it was.
-//! - In a regression check made as a property of the pair of versions ([`crate::pairing`]) the previous version's
-//!   classes are copies under another package beside the new version's ([`crate::relocate::Previous`]). A copy's
+//! - Both regression harnesses hold copies of the previous version under another package beside the new
+//!   version's classes ([`crate::relocate::Previous`]). A copy's
 //!   `getName()` is its class's own name. A `Class.forName` called by a copy finds the copy of the class named,
 //!   and no class that only the new version's class path has (`ClassNotFoundException`); a class the previous
 //!   version's class path has and the check holds no copy of stays the JDK's call. Called by any other class,
@@ -836,8 +836,7 @@ impl Engine<'_> {
                     return None;
                 }
                 // A copy of a class of the previous version of a pair has that class's own name.
-                let own = self.previous.as_ref().and_then(|p| p.original(&class)).unwrap_or(&class);
-                let units: Vec<u16> = own.replace('/', ".").encode_utf16().collect();
+                let units: Vec<u16> = crate::relocate::binary_name(&class, self.cp.previous.as_deref().or(self.previous.as_deref())).encode_utf16().collect();
                 self.literal(path, Literal::Str(units), STRING)
             }
             "getComponentType" => {
@@ -1169,7 +1168,7 @@ impl Engine<'_> {
                 let mut found = !text.contains('/') && self.cp.exists(&internal);
                 // In a pair of versions, the previous version's code finds its own classes, which the check holds
                 // as copies, and none that only the new version has; the new version's finds no copy.
-                if let Some(previous) = self.previous.clone() {
+                if let Some(previous) = self.cp.previous.as_ref().or(self.previous.as_ref()) {
                     use crate::relocate::Found;
                     let caller = &path.frames.last().expect("a frame").class.name;
                     if previous.original(caller).is_some() {
