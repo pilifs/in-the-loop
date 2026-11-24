@@ -1,0 +1,184 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-152629-check-final-frozen-threeten-histories-an",
+  "title": "Check final frozen ThreeTen histories and complete proof cache inputs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m26s, peak 173.2 MiB (estimated 3m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-152629-check-final-frozen-threeten-histories-an.json",
+    "sha256": "e19a2b70248bf3d04c676b89ad41f543b8ea908f6c80698f36d486893bb8ca9e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-152629-check-final-frozen-threeten-histories-an",
+      "title": "Check final frozen ThreeTen histories and complete proof cache inputs",
+      "description": "Recompute both registered claims on the shared transfer implementation, including all four proof-qualification module digests in its cache identity. Compare actual original calls, startup resources and checked return substitutions with warm and independent clean executions.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-proof-reuse"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:26:29+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Run frozen public claim matrix",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten transfer-baseline",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/threeten/transfer-baseline"
+      ]
+    }
+  },
+  "sourceCommit": "4d53968b5bd1e4d7afbb4d884a2c8e9ad8470d27",
+  "startedAt": "2026-11-24T15:33:26+00:00",
+  "finishedAt": "2026-11-24T15:39:07+00:00",
+  "wallSeconds": 341.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2045688,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 181665792,
+    "wallSeconds": 86.1,
+    "cpuSeconds": 112.7,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.48
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run frozen public claim matrix",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten transfer-baseline",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 86.085,
+      "cpuSeconds": 112.651,
+      "cpuThrottledSeconds": 10.503,
+      "peakMemoryBytes": 181665792,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-frozen-public-claim-matrix.log",
+        "lines": 4,
+        "bytes": 208,
+        "sha256": "ac7ccc06843c5542851ac2f284bfe03c213283fd2eb7c9128f48b2deee547118",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/organic-matrix-ig98rker/planned.json",
+        "2 claims in /tmp/organic-matrix-ig98rker/cold.json",
+        "2 claims in /tmp/organic-matrix-ig98rker/warm.json",
+        "2 claims in /tmp/organic-matrix-ig98rker/clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/threeten/transfer-baseline/plans.zip",
+      "change": "added",
+      "bytes": 389757,
+      "sha256": "eff73bba47138a421df0921e877cc027661bfd040efc274f226657e618ea38a1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/threeten/transfer-baseline/summary.json",
+      "change": "added",
+      "bytes": 12803,
+      "sha256": "54e045f3c9311e822b28b7e66dd3588321d40ad472893e0ae3222684a9ff477b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T15:40:08+00:00",
+    "applied": [
+      "verification/organic-composition/threeten/transfer-baseline/plans.zip",
+      "verification/organic-composition/threeten/transfer-baseline/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "1ef26a5b2cef9ca0faed76b2c9d1efec10b9f7af",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1ef26a5b2cef9ca0faed76b2c9d1efec10b9f7af/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T153907Z-871746ae2f64b501",
+      "outputs": "20261124T153907Z-901256fe35395bcd",
+      "diff": "20261124T153907Z-9195282fd2ec5f13"
+    }
+  }
+}

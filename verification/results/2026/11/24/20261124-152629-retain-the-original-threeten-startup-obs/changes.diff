@@ -1,0 +1,73 @@
+--- /dev/null
++++ b/verification/organic-composition/threeten/observed-native.json
+@@ -0,0 +1,70 @@
++{
++  "old": {
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1ef26a5b2cef9ca0faed76b2c9d1efec10b9f7af/jvmcontract",
++      "prove",
++      "--classes",
++      "/tmp/organic-opening-ortzdwx6",
++      "UpgradeProbe#overlap",
++      "--classpath",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-parent.jar",
++      "--engine",
++      "native",
++      "--assert",
++      "result == true",
++      "--unwind",
++      "16",
++      "--json",
++      "--observed-initializer",
++      "org.threeten.bp.format.DateTimeFormatter"
++    ],
++    "exit": 2,
++    "stdout": "",
++    "stderr": "jvmcontract: --observed-initializer org.threeten.bp.format.DateTimeFormatter: its initialization initialized org.threeten.bp.chrono.Chronology, whose field LOCALE_METHOD holds an object of java.lang.reflect.Method, which the observation neither holds nor describes (an object of java.lang.reflect.Method, a class of the JDK the observer does not describe), so whether the initialization wrote into it is not known, and the check cannot take it\n",
++    "artifacts": [
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-parent.jar",
++        "sha256": "f2db710ef43a72dc7987b55f23b9397376f6fc6f090e335df721553dfc2d6ebc"
++      }
++    ],
++    "disposition": {
++      "stage": "startup observation",
++      "verdict": "refused before native checking",
++      "reason": "jvmcontract: --observed-initializer org.threeten.bp.format.DateTimeFormatter: its initialization initialized org.threeten.bp.chrono.Chronology, whose field LOCALE_METHOD holds an object of java.lang.reflect.Method, which the observation neither holds nor describes (an object of java.lang.reflect.Method, a class of the JDK the observer does not describe), so whether the initialization wrote into it is not known, and the check cannot take it"
++    }
++  },
++  "new": {
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/1ef26a5b2cef9ca0faed76b2c9d1efec10b9f7af/jvmcontract",
++      "prove",
++      "--classes",
++      "/tmp/organic-opening-c7yhoexd",
++      "UpgradeProbe#overlap",
++      "--classpath",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-fix.jar",
++      "--engine",
++      "native",
++      "--assert",
++      "result == true",
++      "--unwind",
++      "16",
++      "--json",
++      "--observed-initializer",
++      "org.threeten.bp.format.DateTimeFormatter"
++    ],
++    "exit": 2,
++    "stdout": "",
++    "stderr": "jvmcontract: --observed-initializer org.threeten.bp.format.DateTimeFormatter: its initialization initialized org.threeten.bp.chrono.Chronology, whose field LOCALE_METHOD holds an object of java.lang.reflect.Method, which the observation neither holds nor describes (an object of java.lang.reflect.Method, a class of the JDK the observer does not describe), so whether the initialization wrote into it is not known, and the check cannot take it\n",
++    "artifacts": [
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-fix.jar",
++        "sha256": "568a09e20cecaec3c5df3e8bcaf3bd35809dc3e329992b7799956d35b535df89"
++      }
++    ],
++    "disposition": {
++      "stage": "startup observation",
++      "verdict": "refused before native checking",
++      "reason": "jvmcontract: --observed-initializer org.threeten.bp.format.DateTimeFormatter: its initialization initialized org.threeten.bp.chrono.Chronology, whose field LOCALE_METHOD holds an object of java.lang.reflect.Method, which the observation neither holds nor describes (an object of java.lang.reflect.Method, a class of the JDK the observer does not describe), so whether the initialization wrote into it is not known, and the check cannot take it"
++    }
++  }
++}
