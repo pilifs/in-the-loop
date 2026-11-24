@@ -1232,6 +1232,24 @@ def tag(files, path=INVENTORY, root=ROOT):
     return out
 
 
+# A test run's processes come after verification jobs (1000, verification/pipeline.py job_oom_score_adj) and before
+# the agents, watchers and terminals (0) in the kernel's kill order, should the machine run out of memory.
+TEST_OOM_SCORE_ADJ = 500
+
+
+def join_kill_order(adj=TEST_OOM_SCORE_ADJ, path=Path("/proc/self/oom_score_adj")):
+    """Raise this process's oom_score_adj to adj, which everything it starts inherits. Raising needs no privilege; a
+    process already later in the order (higher) keeps its place. Returns the value it now has, or None."""
+    try:
+        current = int(path.read_text().split()[0])
+        if current < adj:
+            path.write_text(f"{adj}\n")
+            current = adj
+        return current
+    except (OSError, ValueError, IndexError):
+        return None
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     if argv[:1] == ["watch"]:
@@ -1307,6 +1325,7 @@ def main(argv=None):
                     print(f"  unlisted: {r['file']}::{r['name']}: {r['unlisted']}")
         return 0
     if a.command == "run":
+        join_kill_order()
         changed = changed_paths(ROOT, a.since) if a.changed or a.since else None
         if a.dry_run:
             return run_tier(a.tier, a.path, ROOT, a.only, a.test, a.test_threads, True, a.serial, not a.no_retry,

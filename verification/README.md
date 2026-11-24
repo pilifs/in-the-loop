@@ -101,7 +101,7 @@ and what you need in order to go on: compiling, the tests of what you changed an
 lib/tools/test_costs.py run`, the unit and tool tiers, which is not a job: see CLAUDE.md, Tests), `jvmcontract tla` (which only generates), a TLC run over a few hundred states while you write a model.
 A probe is the one exception to the limits above: a single run of a prover or model checker on one claim, to see where
 it stops or whether a change helps, may run inline for up to 5 minutes and 4 GB, one at a time, under a cap it cannot
-exceed (`systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 COMMAND`). Real-world claims
+exceed (`systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- timeout 300 COMMAND`). Real-world claims
 often need more than 1 GB to show where a checker stops; the cap keeps a runaway probe off the memory loops and jobs count on. Don't
 tune memory or time just to fit under it: a run that needs more is a job. The tool tier of the tests keeps its 1 GB.
 
@@ -279,9 +279,9 @@ Filters: `--status failed`, `--capability D1`, `--since 2026-11-02T00:00`, or jo
 | `passed` | every step exited as expected | check `attention`; if empty, nothing |
 | `failed` | a step's exit was not the expected one: usually the verifier found a problem (a refuted property, an example whose verdict differs from its expectation), sometimes a wrong command | read the step's `tail` and log; tell whoever owns the change |
 | `timeout` | a step hit its timeout and gave no verdict | `resubmit` with a longer `--duration` or `--timeout`, or smaller bounds |
-| `out-of-memory` | the kernel killed a step at its memory limit, so no verdict | `resubmit` with more `--memory`; if more than a runner allows, it waits for a bigger machine |
+| `out-of-memory` | the kernel killed a step at its memory limit, so no verdict; or the machine ran short and the runner stopped the job a second time (`memoryStop`), or the kernel killed it under its own limit when the machine ran out (`limitOoms` 0): `attention` says which | at its own limit: `resubmit` with more `--memory`; if more than a runner allows, it waits for a bigger machine. For the machine's memory: regroup (fewer workers, a higher `--memory` estimate so fewer run beside it, or a smaller job), not a plain rerun |
 | `error` | the pipeline could not run the job: a missing tool, a failed jvmcontract build, an export that failed | fix the cause; this is never a verdict |
-| `cancelled` | the runner was stopped while the job ran | nothing: the next `run` runs it again, and `collect` leaves it out unless named |
+| `cancelled` | the runner was stopped while the job ran, or stopped the job once because the machine fell under its memory floor (`memoryStop`) | nothing: the next `run` runs it again when there is room, and `collect` leaves it out unless named |
 
 `attention` explains, in words, whatever a reader should look at, including in a pass: JBMC printing `VERIFICATION
 ERROR` (no verdict), a log that mentions running out of memory, a process killed at the limit, an estimate off by
@@ -326,6 +326,14 @@ python3 verification/pipeline.py run --workers 3 --cpus 6 --memory 6G --job-memo
 - `max_timeout`, `stall_window`: the hard ceiling on any step, working or not, and how long a step past its timeout
   must be idle and silent to count as hung (see Estimates).
 - `job_memory_max`: no job's limit is above it. A bigger job is deferred, and stays pending for a bigger runner.
+- `memory_floor` (default 8G, `--memory-floor`, 0 for none): what the machine keeps free for everything that is not
+  a job: the watcher, the agents, terminals. No job starts that would take available memory under it. When the machine
+  falls under it anyway (an agent's build, a session that grows), the runner stops its newest job at once, then the next
+  only if that was not enough. A job stopped this way is `cancelled` and runs again when there is room; stopped a second
+  time it is `out-of-memory`, with `memoryStop` saying so, for its submitter to regroup.
+- `job_oom_score_adj` (default 1000): every process of a job starts with it, so should the machine run out all the
+  same, the kernel's OOM killer takes a job's process first. An agent's test runs and probes take 500 and everything
+  else keeps 0 (the order: [llm-dlc/operating-notes.md](../llm-dlc/operating-notes.md#the-kill-order-when-memory-runs-out)).
 - `isolation`: `systemd` runs each step in a transient user scope with `MemoryMax` (no swap, so the cap is exact),
   `OOMPolicy=continue` (so one killed process does not stop the rest) and `CPUQuota`, and reads its peak memory and
   CPU time from the cgroup. Anything a step leaves running, such as a Gradle daemon, is stopped with its scope.

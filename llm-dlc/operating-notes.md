@@ -290,6 +290,32 @@ terminals. If the machine is resized, the table is redone.
 **Why:** memory more than doubled while the CPUs barely grew, so CPUs are what runs out, and a run keeps the
 budget it started with.
 
+## The kill order when memory runs out
+
+The user's rule (2026-11-24): should the machine run short of memory, no open tmux window goes first, nor any
+session, watcher or agent. Verification jobs go first, and the agents then decide how to regroup. The order:
+
+| Goes | What | How |
+|---|---|---|
+| first | every process of a verification job | the runner keeps `memory_floor` (8G) free, and under it stops its newest job at once; each step starts at `oom_score_adj` 1000 (`job_oom_score_adj`) |
+| second | an agent's test run (`test_costs.py run`, so `default_run.py` too) and a capped probe | `oom_score_adj` 500 (`join_kill_order`, `choom -n 500` in the probe command) |
+| last | the tmux windows: Claude and Codex sessions, the watcher, a loop's agent, the runner | `oom_score_adj` 0, as they start |
+
+- An ordinary user can raise a process's `oom_score_adj` but never lower it, so the order is made by raising the jobs,
+  not by protecting the sessions. A scope's `OOMScoreAdjust=` is refused for scopes on this systemd: the step wrapper
+  writes `/proc/self/oom_score_adj` instead, and whatever it starts inherits it.
+- A cap still kills inside its own scope first: a job over its `MemoryMax`, or a loop over its cap, loses its own
+  biggest process. Start a heavy inline command (a build, a long script) with `choom -n 500 --`, so that inside a
+  loop's cap it dies before the agent does.
+- **Regrouping.** A job the runner stopped for the machine's memory is `cancelled` and runs again when there is
+  room. A second time, it is `out-of-memory` with `memoryStop`, as is a job the kernel killed under its own limit
+  (`limitOoms` 0; `attention` says so). Neither is a verdict, nor a reason to give the job more memory: run fewer
+  workers, raise its `--memory` estimate so fewer run beside it, or split it, and find what took the room.
+
+**Why:** on 2026-11-22 a global OOM killed the watcher's window, with the runner in it, and at 04:16 on 2026-11-24 a
+loop's 20G cap killed a process beside its Codex agent. Every process had `oom_score_adj` 0, so the kernel took the
+biggest, whoever's it was.
+
 ## Decisions of the user that are written nowhere else
 
 - **Verification pipeline** (2026-11-17): the user plans to rework verification into "a more semantic pipeline

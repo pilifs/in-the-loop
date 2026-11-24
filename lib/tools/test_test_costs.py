@@ -476,6 +476,21 @@ class Changed(unittest.TestCase):
                 os.environ.update(old)
 
 
+class KillOrder(unittest.TestCase):
+    """A test run comes after the verification jobs and before the agents in the kernel's kill order."""
+
+    def test_a_test_run_raises_its_oom_score_to_500_and_never_lowers_one_already_later(self):
+        with tempfile.TemporaryDirectory() as d:
+            adj = Path(d) / "oom_score_adj"
+            adj.write_text("0\n")
+            self.assertEqual(tc.join_kill_order(path=adj), 500)
+            self.assertEqual(adj.read_text().strip(), "500")
+            adj.write_text("1000\n")  # a test run inside a verification job keeps the job's place, first
+            self.assertEqual(tc.join_kill_order(path=adj), 1000)
+            self.assertEqual(adj.read_text().strip(), "1000")
+            self.assertIsNone(tc.join_kill_order(path=Path(d) / "missing"), "no /proc: the run goes on as it is")
+
+
 class Watching(unittest.TestCase):
     """The process sampling, on made-up commands of well under a second."""
 

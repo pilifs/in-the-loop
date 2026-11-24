@@ -36,7 +36,7 @@ area="$TMPDIR/neutral-operator-reproduction"
 python3 "$op/isolation.py" product "$area/product" \
   --jdk "$HOME/.sdkman/candidates/java/21.0.13.0+9-tem" \
   --bitwuzla "$HOME/tools/bitwuzla/current/lib/x86_64-linux-gnu"
-systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 timeout 300 \
+systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- timeout 300 \
   python3 "$op/probe.py" --product "$area/product" --native --with-dependencies \
   --scratch "$area/synthetic-case" --output "$area/namespace.json"
 python3 "$op/codex_probe.py" --product "$area/product" \

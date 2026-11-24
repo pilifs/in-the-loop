@@ -24,6 +24,12 @@ max_timeout = "6h"
 stall_window = "10m"
 # For building jvmcontract from lib/ when a job needs it and that tree is not cached yet.
 build_memory = "3G"
+# What the machine keeps free for the watcher, the agents and terminals: no job starts that would go under it, and under
+# it the runner stops its newest job, so a job goes before anything else. 0: no floor.
+memory_floor = "8G"
+# Every process of a job starts with this oom_score_adj, first in the kernel's kill order (test runs and probes: 500;
+# the rest of the machine: 0). See llm-dlc/operating-notes.md, "The kill order when memory runs out".
+job_oom_score_adj = 1000
 state_dir = "verification/.state"
 # Work directories (an export of the job's commit) are kept for jobs that did not pass: always | failed | never.
 keep_workdirs = "failed"
