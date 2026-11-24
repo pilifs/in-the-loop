@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-24T13:29:59.579Z",
-  "ended": "2026-11-24T13:45:09.397Z",
-  "duration_seconds": 910,
+  "ended": "2026-11-24T13:59:09.058Z",
+  "duration_seconds": 1749,
   "stats": {
     "turns": 1,
-    "api_calls": 60,
-    "tool_calls": 61,
-    "tool_errors": 1,
+    "api_calls": 90,
+    "tool_calls": 92,
+    "tool_errors": 2,
     "compactions": 0,
-    "peak_context_tokens": 161329,
+    "peak_context_tokens": 227938,
     "usage": {
-      "input_tokens": 120,
-      "output_tokens": 50963,
-      "cache_read_input_tokens": 6241699,
-      "cache_creation_input_tokens": 149601
+      "input_tokens": 180,
+      "output_tokens": 94303,
+      "cache_read_input_tokens": 11948355,
+      "cache_creation_input_tokens": 216210
     }
   },
   "tools": {
-    "Bash": 57,
-    "Read": 2,
-    "Write": 2
+    "Bash": 87,
+    "Write": 3,
+    "Read": 2
   },
   "files_touched": [
     "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-setup.md",
@@ -41,24 +41,24 @@
     {
       "index": 0,
       "started": "2026-11-24T13:29:59.579Z",
-      "ended": "2026-11-24T13:45:09.397Z",
+      "ended": "2026-11-24T13:59:09.058Z",
       "turns": 1,
-      "api_calls": 60,
+      "api_calls": 90,
       "usage": {
-        "input_tokens": 120,
-        "output_tokens": 50963,
-        "cache_read_input_tokens": 6241699,
-        "cache_creation_input_tokens": 149601
+        "input_tokens": 180,
+        "output_tokens": 94303,
+        "cache_read_input_tokens": 11948355,
+        "cache_creation_input_tokens": 216210
       },
-      "peak_context_tokens": 161329
+      "peak_context_tokens": 227938
     }
   ],
   "log": {
-    "sha256": "68140286718d8ec7afd4aab6751e32a5e2593b93a3de05d95f9edd068d160cd1",
-    "bytes": 1258449,
-    "lines": 446,
-    "gzip_bytes": 222751,
-    "path": "llm-dlc/traces/2355bc24-959f-4644-baf5-ccfd523d2140/logs/68140286718d8ec7afd4aab6751e32a5e2593b93a3de05d95f9edd068d160cd1.jsonl.gz"
+    "sha256": "1949a545a077be0629599d52fbd582027c2641b0ad80858cdd512ffa00840aab",
+    "bytes": 1879011,
+    "lines": 678,
+    "gzip_bytes": 311232,
+    "path": "llm-dlc/traces/2355bc24-959f-4644-baf5-ccfd523d2140/logs/1949a545a077be0629599d52fbd582027c2641b0ad80858cdd512ffa00840aab.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -69,9 +69,23 @@
       "summary": "Queue the organic-composition fast follow's upstream builds (verification pending)",
       "body": "Setup for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md. Starts the setup record and queues three build jobs that take over a minute: POI's poi module at both #1420 revisions with TestDataFormatter (20261124-134447-setup-build-apache-poi-s-poi-module-at-b), ICU4J core at both #3249 revisions with the RBBI tests (20261124-134447-setup-build-icu4j-core-at-both-3249-revi), and Log4j core at both #1173 revisions with PatternProcessorTest (20261124-134447-setup-build-log4j-core-at-both-1173-revi). Each runs the landed test on the fix, the parent's own, and the landed one transplanted onto the parent. The setup session already fetched every pinned revision and resolved POI's Gradle configurations online. No claims or examples.",
       "log_sha256": "68140286718d8ec7afd4aab6751e32a5e2593b93a3de05d95f9edd068d160cd1"
+    },
+    {
+      "change_id": "pqwkunuwlkpvmprrusptvnzwnoktlsms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the fast follow's sources, builds and preflights; rerun the POI build (verification pending)",
+      "body": "Setup record for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md. It covers the 20 pinned revisions (shallow mirrors and worktrees in ~/.cache/in-the-loop), the toolchain (Maven 3.8.4 and Gradle 9.8.1 checked against their publishers' checksums and signatures), and the built jars of cases A, C, E, F, H and I with each PR's landed test run on both sides. The landed test fails on the parent for A, E, F #755, H and I, and does not separate the sides for C and F #628. It also covers the six release graphs (14 jars, all good signatures) and the brief's JVM preflights for A, C, E, F, G (releases), H, I and D (76.1 release), each reproduced as the brief states. The first POI job failed only because the script looked for the jar in the wrong folder; job 20261124-135600-setup-build-apache-poi-s-poi-module-at-b reruns it with the path fixed. No claims or examples.",
+      "log_sha256": "1949a545a077be0629599d52fbd582027c2641b0ad80858cdd512ffa00840aab"
     }
   ],
   "logs": {
+    "1949a545a077be0629599d52fbd582027c2641b0ad80858cdd512ffa00840aab": {
+      "bytes": 1879011,
+      "lines": 678,
+      "gzip_bytes": 311232,
+      "url": null
+    },
     "68140286718d8ec7afd4aab6751e32a5e2593b93a3de05d95f9edd068d160cd1": {
       "bytes": 1258449,
       "lines": 446,
