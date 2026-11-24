@@ -88,7 +88,7 @@ use super::*;
 use std::collections::BTreeSet;
 
 /// What a run that asked for a class by name, or for a class's loader, took for granted.
-pub const CLASS_PATH_ASSUMPTION: &str = "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)";
+pub const CLASS_PATH_ASSUMPTION: &str = "within each original deployment the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)";
 
 /// What a run that asked the current thread for its context class loader took for granted.
 pub const CONTEXT_LOADER_ASSUMPTION: &str = "the check runs on one thread, whose context class loader is the class loader of the check's class path: nothing has set another (Thread.setContextClassLoader), as on a JVM started with that class path";
@@ -348,9 +348,24 @@ impl Engine<'_> {
             .or_insert_with(|| Val::I(self.b.fresh(32))).clone()
     }
 
+    /// A class mirror identifies its own defining loader. For the default thread context loader, follow the
+    /// active release's call stack. A shared, uncopied mirror cannot identify a loader in a pair.
+    fn previous_loader(&self, path: &Path, mirror: Option<&str>) -> Option<bool> {
+        let Some(old) = self.cp.previous.as_deref().or(self.previous.as_deref()) else { return Some(false); };
+        let side = |name: &str| {
+            if old.original(name).is_some() { Some(true) }
+            else if old.relocated.contains(name) { Some(false) }
+            else { None }
+        };
+        match mirror {
+            Some(class) => side(class),
+            None => path.frames.iter().rev().find_map(|f| side(&f.class.name)),
+        }
+    }
+
     pub(super) fn object_hash(&mut self, path: &mut Path, object: usize, special: bool, m: &crate::classfile::MemberRef) -> Option<Step> {
         if m.name != "hashCode" || m.descriptor != "()I" || path.objects[object].assumed || path.objects[object].unknown { return None; }
-        let loader = path.literals.get(&Literal::Loader) == Some(&object);
+        let loader = [false, true].into_iter().any(|previous| path.literals.get(&Literal::Loader { previous }) == Some(&object));
         let class = &path.objects[object].class;
         if !special && !loader && class != "java/lang/Object" && class != "java/lang/Class"
             && !self.cp.is_application(class) { return None; }
@@ -802,7 +817,8 @@ impl Engine<'_> {
             }
             self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
             self.assumed.insert(CONTEXT_LOADER_ASSUMPTION.to_string());
-            let loader = self.literal(path, Literal::Loader, LOADER);
+            let previous = self.previous_loader(path, None)?;
+            let loader = self.literal(path, Literal::Loader { previous }, LOADER);
             self.push(path, Val::R(Some(loader)));
             self.advance(path);
             return Some(Ok(None));
@@ -869,7 +885,8 @@ impl Engine<'_> {
                     return None;
                 }
                 self.assumed.insert(CLASS_PATH_ASSUMPTION.to_string());
-                self.literal(path, Literal::Loader, LOADER)
+                let previous = self.previous_loader(path, Some(&class))?;
+                self.literal(path, Literal::Loader { previous }, LOADER)
             }
             _ => return None,
         };
@@ -1153,15 +1170,17 @@ impl Engine<'_> {
             ("java/lang/Integer", "valueOf", [Val::I(bits)]) => self.cached_integral(path, "java/lang/Integer", bits),
             (CLASS, "forName", [Val::R(named), rest @ ..]) => {
                 // With a loader and no initialization, or by the caller's loader and with it.
-                let initializes = match rest {
-                    [Val::I(initialize), Val::R(Some(loader))] if self.b.constant_value(initialize) == Some(0) && path.literals.get(&Literal::Loader) == Some(loader) => false,
-                    [] if self.cp.is_application(&path.frames.last().expect("a frame").class.name) => true,
+                let (initializes, previous_loader) = match rest {
+                    [Val::I(initialize), Val::R(Some(loader))] if self.b.constant_value(initialize) == Some(0) => {
+                        let side = [false, true].into_iter().find(|&previous| path.literals.get(&Literal::Loader { previous }) == Some(loader))?;
+                        (false, side)
+                    }
+                    [] if self.cp.is_application(&path.frames.last().expect("a frame").class.name) => (true, self.previous_loader(path, None)?),
                     _ => return None,
                 };
                 let Some(named) = *named else { return Some(self.raise(path, "java/lang/NullPointerException")) };
                 let text = String::from_utf16(&self.constant_units(path, named)?).ok()?;
-                let caller = &path.frames.last().expect("a frame").class.name;
-                let (internal, found) = self.cp.named_class(caller, &text, self.cp.previous.as_deref().or(self.previous.as_deref()))?;
+                let (internal, found) = self.cp.named_class_for_loader(&text, self.cp.previous.as_deref().or(self.previous.as_deref()), previous_loader)?;
                 // Released libraries check for VarHandle before selecting their byte-array implementation.
                 // The qualified bootstrap image supplies the class under the engine's stated JDK startup.
                 let bootstrap_view = internal == super::byte_views::HANDLE && self.gap_mode == GapMode::Strict

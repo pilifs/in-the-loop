@@ -66,6 +66,14 @@ class ChangePlanTest(unittest.TestCase):
             self.assertEqual(reordered["unresolved"][0]["reason"], "manifest can change declared search order")
             manifest("Class-Path: https://example.invalid/extra.jar a%20b.jar //host/share.jar")
             self.assertEqual(len(change_inventory.manifest_classpath([jar], 21)["unresolved"]), 3)
+            with zipfile.ZipFile(jar, "w") as archive:
+                archive.writestr("META-INF/manifest.mf", "Manifest-Version: 1.0\nClass-Path: extra.jar\n\n")
+            self.assertEqual(change_inventory.manifest_classpath([jar], 21)["unresolved"][0]["reason"], "present implicit provider")
+            with zipfile.ZipFile(jar, "a") as archive:
+                archive.writestr("META-INF/MANIFEST.MF", "Manifest-Version: 1.0\n\n")
+            self.assertEqual(change_inventory.manifest_classpath([jar], 21)["unresolved"][0]["reason"], "ambiguous manifest member")
+            manifest("Class-Path: extra.jar\x1cother.jar")
+            self.assertTrue(change_inventory.manifest_classpath([jar], 21)["unresolved"])
 
     def test_missing_partition_and_before_entry_stay_open_but_one_original_witness_refutes(self):
         result = change_evidence.compose(self.scope, self.report)

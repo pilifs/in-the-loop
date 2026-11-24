@@ -64,10 +64,35 @@ pub struct Run {
 /// `entries` is the class path: the harness's directory and the application's classes, never the tool's JDK
 /// models or extracted JDK classes, which the JVM has of its own.
 pub fn run(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
-    crate::phases::timed(crate::phases::Step::Jvm, || run_untimed(dir, harness_class, types, slots, arguments, calls, entries))
+    crate::phases::timed(crate::phases::Step::Jvm, || {
+        let (jdk, check, calls) = run_untimed(dir, Some(harness_class), types, slots, arguments, calls, entries)?;
+        Ok(Run { jdk, check: check.ok_or("the JVM run printed no outcome of the harness")?, calls })
+    })
 }
 
-fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Run, String> {
+/// Run public static calls on the two untouched deployments in fresh JVMs. The caller supplies the
+/// equivalence observation on these two results. No harness classes or relocated application bytes are loaded.
+pub(crate) fn original_pair(dir: &Path, types: &[Type], slots: &[u16], arguments: &[Argument],
+    sides: [(&DirectCall, &[PathBuf]); 2], agree: impl FnOnce(&Replayed, &Replayed) -> Option<bool>) -> Result<Run, String> {
+    crate::phases::timed(crate::phases::Step::Jvm, || {
+        let mut calls = Vec::with_capacity(2);
+        let mut release = None;
+        for (label, (call, entries)) in ["old", "new"].into_iter().zip(sides) {
+            let (jdk, _, mut observed) = run_untimed(&dir.join(label), None, types, slots, arguments, std::slice::from_ref(call), entries)?;
+            if release.as_ref().is_some_and(|r| r != &jdk) { return Err("the two original JVM releases differ".into()); }
+            let value = observed.pop().filter(|r| r.outcome != "<not run>").ok_or("the original JVM did not return its direct observation")?;
+            release = Some(jdk);
+            calls.push(value);
+        }
+        let holds = agree(&calls[0], &calls[1]).ok_or("cannot compare these original JVM observations")?;
+        let check = if holds { Check::Holds } else { Check::Refuted };
+        Ok(Run { jdk: release.expect("two JVMs"), check, calls })
+    })
+}
+
+type Execution = (String, Option<Check>, Vec<Replayed>);
+
+fn run_untimed(dir: &Path, harness_class: Option<&str>, types: &[Type], slots: &[u16], arguments: &[Argument], calls: &[DirectCall], entries: &[PathBuf]) -> Result<Execution, String> {
     for t in types {
         // A String is passed as a new String of the witness's code units ([`push`]).
         if crate::values::is_string(t) || crate::harness::is_string_array(t) || crate::bmc::reference_inputs::heap_array(t) {
@@ -92,6 +117,8 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
         if let Some((package, _)) = component.rsplit_once('/') {
             driver = format!("{package}/{CLASS}");
         }
+    }
+    if harness_class.is_none() || types.iter().any(|t| crate::bmc::reference_inputs::component(t).is_some()) {
         let cp = crate::witness::classpath(entries.iter().map(PathBuf::as_path)).map_err(|e| e.to_string())?;
         while cp.application(&driver).map_err(|e| e.to_string())?.is_some() {
             driver.push('$');
@@ -110,7 +137,7 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     main.max_stack = 16 + types.iter().map(Type::slots).sum::<u16>();
 
     // The harness's check.
-    {
+    if let Some(harness_class) = harness_class {
         let (start, end, assertion, any, done) = (main.label(), main.label(), main.label(), main.label(), main.label());
         let locals = references(arguments, types, first_array_local, &mut main, &mut writer);
         main.bind(start);
@@ -223,8 +250,10 @@ fn run_untimed(dir: &Path, harness_class: &str, types: &[Type], slots: &[u16], a
     std::fs::write(driver_path, writer.to_bytes()).map_err(|e| format!("cannot write the JVM run: {e}"))?;
     let absolute = |p: &Path| std::path::absolute(p).unwrap_or_else(|_| p.to_path_buf());
     let mut class_path = vec![absolute(dir)];
-    if open_classes(&dir.join(OPENED), harness_class, calls, entries)? {
-        class_path.push(absolute(&dir.join(OPENED)));
+    if let Some(harness_class) = harness_class {
+        if open_classes(&dir.join(OPENED), harness_class, calls, entries)? {
+            class_path.push(absolute(&dir.join(OPENED)));
+        }
     }
     class_path.extend(entries.iter().map(|e| absolute(e)));
     let class_path = std::env::join_paths(&class_path).map_err(|e| format!("a class path entry cannot be joined: {e}"))?;
@@ -333,7 +362,7 @@ fn open_classes(out: &Path, harness_class: &str, calls: &[DirectCall], entries: 
 }
 
 /// Reads the run's lines.
-fn parse(text: &str, jdk: String, types: &[Type], slots: &[u16], calls: &[DirectCall]) -> Result<Run, String> {
+fn parse(text: &str, jdk: String, types: &[Type], slots: &[u16], calls: &[DirectCall]) -> Result<Execution, String> {
     let mut check = None;
     let mut replayed: Vec<Replayed> = calls.iter().map(|_| Replayed { outcome: "<not run>".into(), returned: None, result_array: None, result_fields: None, arrays_after: Vec::new(), objects_after: Vec::new(), thrown: None, references: Vec::new(), views: Vec::new(), category: None, result_paths: Default::default(), object_paths: Vec::new() }).collect();
     let mut message_of: Option<usize> = None;
@@ -406,7 +435,7 @@ fn parse(text: &str, jdk: String, types: &[Type], slots: &[u16], calls: &[Direct
             }
         }
     }
-    Ok(Run { jdk, check: check.ok_or("the JVM run printed no outcome of the harness")?, calls: replayed })
+    Ok((jdk, check, replayed))
 }
 
 fn elements(text: &str, element: &Type) -> Result<Vec<Value>, String> {

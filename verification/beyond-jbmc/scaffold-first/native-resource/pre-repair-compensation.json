@@ -1,0 +1,278 @@
+{
+ "checkerSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
+ "registered": {
+  "case": "compensating",
+  "target": "PairResourceGate#read",
+  "inputs": [
+   false,
+   true
+  ],
+  "entry": "ClassLoader.getResources, first URL and first original stream byte",
+  "selected": "META-INF/paint",
+  "control": "META-INF/missing",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "sides": {
+   "old": {
+    "observations": [
+     -1,
+     65
+    ],
+    "sourceSha256": "7ee0e64f365db1ef6a2aff7f1346a4434f5d150e64a540ba2fb1e96938c608e8",
+    "classSha256": "5c1014e1d104f4b12a0b2ab0b273d8cd3f0dbce4c63b63ab56ea782fe3fdaefc",
+    "orderedJarDigests": [
+     "18fedcbcf72552a2b6c713c4b57aba22d253e66711f9f166f8d3957cf98a1705"
+    ]
+   },
+   "new": {
+    "observations": [
+     -1,
+     65
+    ],
+    "sourceSha256": "51a8a76fa7ef19292087c4e4a4fb70515dbc5c23f3f6146edadbb7e031f4537a",
+    "classSha256": "249943bb6d0893654133b712acee5ad4dcf9c61ac9632d9becb65de47c553b61",
+    "orderedJarDigests": [
+     "016aa4263a9d3e528f2f968ed6a8f9daf26427af8d85b7fdb59510f2dd70d949"
+    ]
+   }
+  }
+ },
+ "argv": [
+  "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/ordinary-resource-pair/pre-repair-jvmcontract",
+  "equivalence",
+  "--before",
+  "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-resource-compensation-jrf9o65d/old/classes",
+  "--after",
+  "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-resource-compensation-jrf9o65d/new/classes",
+  "--before-classpath",
+  "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-resource-compensation-jrf9o65d/old/fixture.jar",
+  "--classpath",
+  "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-resource-compensation-jrf9o65d/new/fixture.jar",
+  "--target",
+  "PairResourceGate#read",
+  "--engine",
+  "native",
+  "--gaps",
+  "strict",
+  "--unwind",
+  "16",
+  "--work",
+  "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-resource-compensation-jrf9o65d/proof",
+  "--json"
+ ],
+ "result": {
+  "wire_version": 1,
+  "verdict": "violation",
+  "target": "PairResourceGate#read",
+  "domain": "selected: boolean",
+  "counterexample": {
+   "input": "read(selected=true)",
+   "before": "66",
+   "after": "65",
+   "values": [
+    "true"
+   ],
+   "shrink_runs": 0,
+   "inputs": [
+    {
+     "name": "selected",
+     "type": "boolean",
+     "value": true
+    }
+   ],
+   "call": {
+    "class": "PairResourceGate",
+    "class_file": "PairResourceGate.class",
+    "classes": "after",
+    "method": "read",
+    "descriptor": "(Z)I",
+    "static": true,
+    "arguments": [
+     {
+      "name": "selected",
+      "type": "boolean",
+      "value": true,
+      "from": "selected"
+     }
+    ]
+   },
+   "previous_call": {
+    "class": "PairResourceGate",
+    "class_file": "PairResourceGate.class",
+    "classes": "before",
+    "method": "read",
+    "descriptor": "(Z)I",
+    "static": true,
+    "arguments": [
+     {
+      "name": "selected",
+      "type": "boolean",
+      "value": true,
+      "from": "selected"
+     }
+    ]
+   },
+   "differs": [
+    "result"
+   ],
+   "jvm": "21.0.13"
+  },
+  "proof": "found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain selected: boolean",
+  "problem": null,
+  "statement": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-resource-compensation-jrf9o65d/proof/harness/EquivalenceHarness.java",
+  "findings": [
+   {
+    "rule_id": "behaviour-changed",
+    "message": "Behaviour of PairResourceGate#read changed:\n  read(selected=true)\n    before: 66\n    after:  65",
+    "uri": null,
+    "line": 7
+   }
+  ],
+  "output": "✗ Behaviour of PairResourceGate#read changed:\n  read(selected=true)\n    before: 66\n    after:  65\n  (found by jvmcontract's own checker (CaDiCaL) in 0.0 s searching inputs in [0:20], run on a JVM (JDK 21.0.13), since the interpreter cannot run it; domain selected: boolean)\n\nIf the change is intended, say for which inputs with --unchanged-unless, and the verifier proves that nothing else changed. The expression is what a reviewer approves.\n",
+  "work": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/original-resource-compensation-jrf9o65d/proof",
+  "search": {
+   "engine": "native",
+   "checker": "jvmcontract's own checker (CaDiCaL)",
+   "seconds": 0.019266179,
+   "properties": 1,
+   "unwind": 16,
+   "max_array_length": 8,
+   "stage": "[0:20]",
+   "native": {
+    "paths": 2,
+    "merges": 0,
+    "solver_calls": 3,
+    "solving_seconds": 3.7801e-05,
+    "gates_evaluated": 1,
+    "evaluating_seconds": 2.284e-06,
+    "divisions": 0,
+    "divisions_built": 0,
+    "multiplications": 0,
+    "multiplications_built": 0,
+    "variables": 2,
+    "clauses": 1,
+    "seconds": 0.016999297,
+    "loading_seconds": 0.001059435,
+    "decoding_seconds": 0.000103114,
+    "encoding_seconds": 6.404e-06,
+    "witness_seconds": 1.5709e-05,
+    "assumed": [
+     "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+     "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are []",
+     "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/paint resources (classpath index and entry SHA-256) are [3:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c]"
+    ]
+   },
+   "gap_mode": "strict",
+   "deadline_seconds": 600.0,
+   "runs": [
+    {
+     "checker": "native",
+     "purpose": "proof",
+     "stage": null,
+     "budget_seconds": 600.0,
+     "seconds": 0.017,
+     "ended": "violation",
+     "ending": "counterexample",
+     "phases": {
+      "loading": 0.001,
+      "lowering": 0.0,
+      "symbolic": 0.016,
+      "encoding": 0.0,
+      "solving": 0.0,
+      "trace": 0.0,
+      "other": 0.0
+     },
+     "formula": {
+      "variables": 2,
+      "clauses": 1
+     }
+    }
+   ],
+   "phases": {
+    "seconds": 0.118,
+    "setup": 0.001,
+    "harness": 0.0,
+    "gaps": 0.0,
+    "contracts": 0.0,
+    "runs": 0.017,
+    "replay": 0.007,
+    "jvm": 0.062,
+    "other": 0.031
+   }
+  },
+  "replay": {
+   "by": "jvm",
+   "reproduced": true
+  },
+  "stated": {
+   "kind": "regression",
+   "domain": {
+    "parameters": [
+     {
+      "name": "selected",
+      "type": "boolean",
+      "kind": "primitive",
+      "null": false
+     }
+    ],
+    "shared_arrays": false,
+    "text": "selected: boolean"
+   },
+   "assumptions": [
+    {
+     "kind": "initialization",
+     "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+     "basis": "engine"
+    },
+    {
+     "kind": "library",
+     "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+     "basis": "engine"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are []",
+     "basis": "engine"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/paint resources (classpath index and entry SHA-256) are [3:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c]",
+     "basis": "engine"
+    }
+   ],
+   "observations": {
+    "result": "the result, equal in both versions",
+    "exceptions": "whether it throws, and which of 16 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exception either version declares, java.lang.Exception; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+   },
+   "bounds": {
+    "unwind": 16,
+    "max_array_length": null,
+    "complete": false
+   },
+   "models": {
+    "used": true,
+    "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+    "classes": 40,
+    "jdk": "21.0.13"
+   },
+   "checker": {
+    "engine": "native",
+    "name": "jvmcontract's own checker (CaDiCaL)",
+    "solver": "CaDiCaL 1.9.5 (bundled)",
+    "fallback": null,
+    "sat": {
+     "solver": "CaDiCaL",
+     "version": "1.9.5",
+     "source": "bundled by the Rust crate cadical 0.1.16",
+     "configuration": [
+      "CaDiCaL's default options",
+      "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+      "the run's deadline through CaDiCaL's terminate callback",
+      "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+     ]
+    }
+   },
+   "gap_mode": "strict",
+   "confirmation": null
+  }
+ }
+}

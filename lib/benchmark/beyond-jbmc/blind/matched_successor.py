@@ -9,7 +9,7 @@ from scaffold_first import DEST, HERE, OUTPUT, compressed, digest, read, registe
 from history import ROOT
 
 
-def repeat(slot):
+def repeat(slot, output_root):
     _, ref, spec, _, _ = registered(slot)
     scaffold = compressed(DEST / "scaffolds" / (slot + ".json.gz"))
     if scaffold["firstScaffoldStop"]:
@@ -17,7 +17,7 @@ def repeat(slot):
     old_pair = read(OUTPUT / "blind" / slot / "matched/report.json")
     separate = old_pair["status"] != "measured"
     previous = OUTPUT / "blind" / slot / ("assisted" if separate else "matched")
-    out = DEST / "matched-native" / slot
+    out = output_root / slot
     out.mkdir(parents=True, exist_ok=True)
     checker = Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve()
     exit_code = matched_namespace(BASE / slot / "packet", ref, out, checker, False,
@@ -45,5 +45,7 @@ def repeat(slot):
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("slots", nargs="+")
-    for slot in ap.parse_args().slots:
-        repeat(slot)
+    ap.add_argument("--output", type=Path, default=DEST / "matched-native")
+    args = ap.parse_args()
+    for slot in args.slots:
+        repeat(slot, args.output)

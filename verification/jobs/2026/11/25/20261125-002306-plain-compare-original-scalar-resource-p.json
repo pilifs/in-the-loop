@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-002306-plain-compare-original-scalar-resource-p",
+  "title": "plain compare original scalar resource predicates across engines",
+  "description": "On each original deployment, the registered Boolean selects a real JAR resource or a missing control. Compare the exact expected byte and its inverse on strict native, staged JBMC and stock JBMC, including the post-call false control and original JVM witnesses.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/native_resources.py"
+    ]
+  },
+  "expected": "Two original domains, each with its primary and inverse, raw property IDs, reach controls, and replay of any alleged witness.",
+  "submitted": {
+    "at": "2026-11-25T00:23:06+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.py plain --profiles old new",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/native-resource/comparators/plain"
+  ]
+}

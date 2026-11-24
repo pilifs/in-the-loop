@@ -85,8 +85,8 @@ def locked_candidates(work, pair, checker, missing):
     return read(raw / "locked-report.json")
 
 
-def run(slot, checker, policy):
-    output = DEST / "remeasured" / slot
+def run(slot, checker, policy, output_root):
+    output = output_root / slot
     output.mkdir(parents=True, exist_ok=True)
     with scratch(prefix="successor-portfolio-") as tmp:
         work = Path(tmp)
@@ -137,6 +137,7 @@ def run(slot, checker, policy):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("slots", nargs="+")
+    parser.add_argument("--output", type=Path, default=DEST / "remeasured")
     args = parser.parse_args()
     freeze = read(HERE.parent / "freeze.json")
     checker = Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve()
@@ -144,4 +145,4 @@ if __name__ == "__main__":
         raise ValueError("operator or JDK differs from the freeze")
     policy = {**freeze, "checkerSha256": sha(checker)}
     for slot in args.slots:
-        run(slot, checker, policy)
+        run(slot, checker, policy, args.output)

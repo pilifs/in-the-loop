@@ -1,4 +1,5 @@
 """Make a local manifest resource appear, bind it explicitly, and compare resumed and empty-cache application plans."""
+import argparse
 import os
 from pathlib import Path
 import subprocess
@@ -9,8 +10,9 @@ from scaffold_first import DEST, JDK, compile_java, digest, javaenv, read, save,
 from history import ROOT
 
 
-def main():
-    out = DEST / "manifest-controls"
+def main(alternate_case=False):
+    manifest_name = "meta-inf/manifest.mf" if alternate_case else "META-INF/MANIFEST.MF"
+    out = DEST / ("manifest-case-controls" if alternate_case else "manifest-controls")
     out.mkdir(parents=True, exist_ok=True)
     checker = Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve()
     with scratch(prefix="manifest-presence-") as tmp:
@@ -32,7 +34,7 @@ public class Palette {
             folder.mkdir()
             jar = folder / "palette.jar"
             with zipfile.ZipFile(jar, "w") as archive:
-                archive.writestr("META-INF/MANIFEST.MF", "Manifest-Version: 1.0\r\nClass-Path: optional.jar\r\n\r\n")
+                archive.writestr(manifest_name, "Manifest-Version: 1.0\r\nClass-Path: optional.jar\r\n\r\n")
                 archive.write(compiled / "demo/Palette.class", "demo/Palette.class")
             manifests[side] = {"sourceSha256": digest(src), "commit": "constructed-" + side,
                                "classpath": [{"file": str(jar), "sha256": digest(jar)}]}
@@ -93,8 +95,10 @@ public class Palette {
                 previous = plan
                 print(name, expected, new_value, actions, flush=True)
         save(out / "summary.json", {"job": os.environ.get("VERIFY_JOB_ID"), "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"),
-             "checkerSha256": digest(checker), "archiveSha256": digest(out / "plans.zip"), "observations": records})
+             "checkerSha256": digest(checker), "manifestMember": manifest_name, "archiveSha256": digest(out / "plans.zip"), "observations": records})
 
 
 if __name__ == "__main__":
-    main()
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument("--alternate-case", action="store_true")
+    main(p.parse_args().alternate_case)

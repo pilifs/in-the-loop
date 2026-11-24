@@ -1406,7 +1406,9 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let through_contracts = unreplayed.as_deref().and_then(|t| crate::equivalence::unconfirmed_through_contracts(&last, &render(&found).0, t));
             let contracted = through_contracts.is_some();
             let mut unconfirmed = through_contracts.or_else(|| unreplayed.as_deref().map(|t| crate::equivalence::unreplayed(&last, &render(&found).0, t, "the method")));
-            if let Some(p) = &unconfirmed {
+            if previous.is_some() && last.native.as_ref().is_some_and(crate::bmc::Stats::reads_jar_resources) {
+                unconfirmed = Some("a witness to this paired property reads an original release's resources and needs the complete postcondition replayed on separate original classpaths".into());
+            } else if let Some(p) = &unconfirmed {
                 let mut entries = vec![harness_dir.clone()];
                 entries.extend(options.classes.iter().cloned());
                 entries.extend(options.classpath.iter().cloned());

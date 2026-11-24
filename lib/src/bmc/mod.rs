@@ -1037,8 +1037,8 @@ enum Literal {
     Class(String),
     /// A primitive mirror belongs to a different namespace from reference classes.
     PrimitiveClass(String),
-    /// The loader of the classes of the check's class path ([`runtime`]).
-    Loader,
+    /// The current or previous original application's loader. A retained loader keeps its own deployment.
+    Loader { previous: bool },
     /// The `java.util.logging.Logger` of a name ([`runtime`]).
     Logger(Vec<u16>),
     /// A charset of `java.nio.charset.StandardCharsets`, by its field's name ([`bytes`]).
@@ -2602,7 +2602,7 @@ impl<'a> Engine<'a> {
                     let class = match literal {
                         Literal::Str(_) => STRING,
                         Literal::Class(_) | Literal::PrimitiveClass(_) => "java/lang/Class",
-                        Literal::Loader => "java/lang/ClassLoader",
+                        Literal::Loader { .. } => "java/lang/ClassLoader",
                         Literal::Logger(_) => "java/util/logging/Logger",
                         Literal::Charset(_) => bytes::CHARSET,
                         Literal::Locale(_) => locale::LOCALE,
@@ -5115,7 +5115,7 @@ impl<'a> Engine<'a> {
             Literal::Charset(field) if self.cp.charset_name_literal(field).is_some() => {
                 self.alloc(path, &format!("sun/nio/cs/{field}"))
             }
-            Literal::Class(_) | Literal::PrimitiveClass(_) | Literal::Loader | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
+            Literal::Class(_) | Literal::PrimitiveClass(_) | Literal::Loader { .. } | Literal::Logger(_) | Literal::Charset(_) | Literal::Locale(_) | Literal::Level(_) | Literal::Thread | Literal::EmptyMap => self.alloc(path, class),
             Literal::Truth(truth) => {
                 let o = self.alloc(path, class);
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));

@@ -46,20 +46,24 @@ def manifest_classpath(files, feature):
         if file.is_dir():
             continue
         with zipfile.ZipFile(file) as archive:
-            if feature < 21 and "META-INF/INDEX.LIST" in archive.namelist():
+            members = archive.namelist()
+            if feature < 21 and any(name.upper() == "META-INF/INDEX.LIST" for name in members):
                 unresolved.append({"provider": position, "reason": "JAR index can name additional providers"})
-            try:
-                data = archive.read("META-INF/MANIFEST.MF")
-            except KeyError:
+            manifests = [name for name in members if name.upper() == "META-INF/MANIFEST.MF"]
+            if not manifests:
                 continue
+            if len(manifests) != 1:
+                unresolved.append({"provider": position, "reason": "ambiguous manifest member"})
+                continue
+            data = archive.read(manifests[0])
         # java.util.jar.Manifest joins continuation lines in the main section.
         main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
-        declarations = [line.partition(b":")[2].strip() for line in main.split(b"\n")
+        declarations = [line.partition(b":")[2].strip(b" \t\f") for line in main.split(b"\n")
                         if line.lower().startswith(b"class-path:")]
         if not declarations:
             continue
-        if len(declarations) != 1 or not declarations[0].isascii():
-            unresolved.append({"provider": position, "reason": "ambiguous or non-ASCII manifest Class-Path"})
+        if len(declarations) != 1 or not re.fullmatch(rb"[\x20-\x7e\t\f]*", declarations[0]):
+            unresolved.append({"provider": position, "reason": "ambiguous or unsupported manifest Class-Path"})
             continue
         tokens = declarations[0].decode("ascii").split()
         if not tokens:
@@ -205,8 +209,8 @@ def deployment(files, jdk):
     for position, file in enumerate(files):
         for name, data in entries(file, feature):
             sha = hashlib.sha256(data).hexdigest()
-            if name == "META-INF/MANIFEST.MF":
-                main = data.replace(b"\r\n", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
+            if name.upper() == "META-INF/MANIFEST.MF" and not file.is_dir():
+                main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
                 if any(line.lower().startswith(b"class-path:") and line.partition(b":")[2].strip()
                        for line in main.splitlines()):
                     implicit.append(file.name)

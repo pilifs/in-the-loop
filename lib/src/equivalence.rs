@@ -1151,6 +1151,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         classes: old_classes,
         shared: options.before_classpath.is_none(),
         classpath: std::iter::once(options.before.clone()).chain(options.before_entries().iter().cloned()).collect(),
+        current_classpath: std::iter::once(options.after.clone()).chain(options.classpath.iter().cloned()).collect(),
         calls_as_one_function: options.shared_callees,
         fresh_states: paired,
     };
@@ -2544,6 +2545,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let through_contracts = unreplayed.and_then(|(t, _)| unconfirmed_through_contracts(&last, &witness::call_in(&method_name, &layout, &found).0, t));
             let contracted = through_contracts.is_some();
             let mut unconfirmed = through_contracts.or_else(|| unreplayed.map(|(t, which)| self::unreplayed(&last, &witness::call_in(&method_name, &layout, &found).0, t, which)));
+            let resource_lookup = last.native.as_ref().is_some_and(crate::bmc::Stats::reads_jar_resources);
+            if resource_lookup && unconfirmed.is_none() {
+                unconfirmed = Some("the resource witness needs both original JVM classpaths".into());
+            }
             // A witness the interpreter cannot run is run on a JVM: the harness on it, with the JDK's real calls
             // where any contracts stood, then each version alone when both are static methods of the harness's
             // parameters, for what each did, and what they differ in.
@@ -2564,7 +2569,24 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 };
                 let slots: Vec<u16> = layout.params.iter().map(|p| p.slot).collect();
                 let rendered = witness::call_in(&method_name, &layout, &found).0;
-                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::CLASS, &flat_types, &slots, &found, &calls, &entries) {
+                let physical = if resource_lookup {
+                    let integral = |t: &Type| matches!(t, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long);
+                    if alone && results_agree_when.is_none() && options.correspondence.is_none() && iff_pairs.is_empty() && flat_types.iter().all(integral)
+                        && descriptor.ret == before_descriptor.ret && integral(&descriptor.ret)
+                        && method.is_public() && before_method.is_public()
+                        && class.access & crate::classfile::flags::PUBLIC != 0 && before_class.access & crate::classfile::flags::PUBLIC != 0 {
+                        let old = crate::jvm_witness::DirectCall { owner: before_class_internal.clone(), name: before_method_name.clone(),
+                                                                   descriptor: before_method.descriptor.clone(), ret: before_descriptor.ret.clone() };
+                        crate::jvm_witness::original_pair(&work.join("original-jvm-witness"), &flat_types, &slots, &found,
+                            [(&old, &versions.classpath), (&calls[1], &versions.current_classpath)],
+                            |a, b| Some(a.returned.as_ref()? == b.returned.as_ref()?))
+                    } else {
+                        Err("this resource-dependent witness needs original-graph replay for its caller and observation".into())
+                    }
+                } else {
+                    crate::jvm_witness::run(&work.join("jvm-witness"), harness::CLASS, &flat_types, &slots, &found, &calls, &entries)
+                };
+                match physical {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
                         let alone_words = "<not run alone on the JVM, which the harness's assertion fails on>".to_string();
                         // What the two differ in is the JVM's to say where it ran each version; otherwise it is

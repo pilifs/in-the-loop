@@ -16,25 +16,34 @@ const OPENED: &str = "<JDK.opened>";
 const SOURCE_URL: &str = "<JDK.sourceURL>";
 const URL_PATH: &str = "<JDK.jarURLPath>";
 const READER: &str = "<JDK.privatePropertiesReader>";
+const RESOURCE_BINDING: &str = "original-jar-resources:";
+
+impl super::Stats {
+    pub(crate) fn reads_jar_resources(&self) -> bool {
+        self.assumption_ids.values().any(|id| id.starts_with(RESOURCE_BINDING))
+    }
+}
 
 impl Engine<'_> {
     pub(super) fn app_resources(&mut self, path: &mut Path, o: usize, m: &MemberRef, args: &[Val]) -> Option<Step> {
         if (m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()) !=
             ("java/lang/ClassLoader", "getResources", "(Ljava/lang/String;)Ljava/util/Enumeration;")
-            || self.gap_mode != GapMode::Strict || !self.contracts.is_empty() || self.previous.is_some()
-            || path.literals.get(&Literal::Loader) != Some(&o) || !self.cp.jar_resource_image() { return None; }
+            || self.gap_mode != GapMode::Strict || !self.contracts.is_empty() || !self.cp.jar_resource_image() { return None; }
+        let older = [false, true].into_iter().find(|&previous| path.literals.get(&Literal::Loader { previous }) == Some(&o))?;
         let [Val::R(Some(key))] = args else { return None };
         let name = String::from_utf16(&self.constant_units(path, *key)?).ok()?;
-        let resources = self.cp.local_jar_resources(&name)?;
+        let versions = self.cp.previous.as_deref().or(self.previous.as_deref());
+        let deployment = versions.map(|v| if older { v.classpath.as_slice() } else { v.current_classpath.as_slice() });
+        let resources = self.cp.local_jar_resources(&name, deployment)?;
         if let Err(stop) = self.keeps(path, None, "consults the application class loader's resource cache") { return Some(Err(stop)); }
         let cursor = self.alloc(path, ENUM);
         let mut bindings = Vec::new();
-        for (index, (provider, bytes)) in resources.into_iter().enumerate() {
+        for (index, (provider, bytes, url_path)) in resources.into_iter().enumerate() {
             bindings.push(format!("{provider}:{}", crate::digest::sha256_hex(&bytes)));
             let data = self.alloc(path, "[B");
             path.objects[data].array = Some(Array { element: Type::Byte, length: self.b.constant(bytes.len() as i64, 32),
                 cells: bytes.iter().map(|b| self.b.constant(i64::from(*b), 8)).collect(), refs: vec![] });
-            if let Some(file) = self.cp.local_jar_url_path(provider, &name) {
+            if let Some(file) = url_path {
                 let text = self.string(path, &file.encode_utf16().collect::<Vec<_>>());
                 path.objects[data].fields.insert(URL_PATH.into(), Val::R(Some(text)));
             }
@@ -42,7 +51,10 @@ impl Engine<'_> {
         }
         path.objects[cursor].fields.insert(RESOURCE.into(), Val::I(self.b.constant(bindings.len() as i64, 32)));
         path.objects[cursor].fields.insert(POSITION.into(), Val::I(self.b.constant(0, 32)));
-        self.assumed.insert(format!("the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered {name} resources (classpath index and entry SHA-256) are [{}]", bindings.join(", ")));
+        let side = if older { "previous" } else { "current" };
+        let assumption = format!("the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered {name} resources (classpath index and entry SHA-256) are [{}] on the {side} deployment", bindings.join(", "));
+        self.assumption_ids.insert(assumption.clone(), format!("{RESOURCE_BINDING}{}", crate::digest::sha256_hex(assumption.as_bytes())));
+        self.assumed.insert(assumption);
         self.push(path, Val::R(Some(cursor)));
         self.advance(path);
         Some(Ok(None))

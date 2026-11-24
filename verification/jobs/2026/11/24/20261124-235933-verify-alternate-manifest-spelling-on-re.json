@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-235933-verify-alternate-manifest-spelling-on-re",
+  "title": "Verify alternate manifest spelling on real JVM resource lookups",
+  "description": "The JDK loads the optional local resource when the manifest has lowercase directory and member names. Repeat absent, cached, unexpectedly present, explicitly bound, clean and restored states through the ordinary public application plan. Both case variants must protect the same resource boundary.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:change-plan"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/manifest_controls.py"
+    ]
+  },
+  "submitted": {
+    "at": "2026-11-24T23:59:33+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m",
+    "timeout": "6m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls.py --alternate-case",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/manifest-case-controls"
+  ]
+}

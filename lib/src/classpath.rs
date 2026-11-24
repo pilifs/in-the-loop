@@ -466,6 +466,10 @@ impl ClassPath {
     /// Resolve the binary name as seen by the calling release. A missing definition
     /// is a Java outcome. An array or a definition outside the prepared copy needs the JVM.
     pub(crate) fn named_class(&self, caller: &str, binary: &str, previous: Option<&crate::relocate::Previous>) -> Option<(String, bool)> {
+        self.named_class_for_loader(binary, previous, previous.is_some_and(|p| p.original(caller).is_some()))
+    }
+
+    pub(crate) fn named_class_for_loader(&self, binary: &str, previous: Option<&crate::relocate::Previous>, older: bool) -> Option<(String, bool)> {
         if binary.starts_with('[') {
             return None;
         }
@@ -474,7 +478,7 @@ impl ClassPath {
             return Some((name, false));
         }
         if let Some(old) = previous {
-            if old.original(caller).is_some() {
+            if older {
                 match old.find(&name) {
                     crate::relocate::Found::Class(copy) => name = copy,
                     crate::relocate::Found::NotCopied => return None,
@@ -667,11 +671,22 @@ impl ClassPath {
     /// The ordinary built-in loader's base META-INF resources. Decline other providers,
     /// manifest class paths, signed or indexed archives, duplicate URLs and mutable
     /// directory resources. The proof states the clean launch and fixed classpath.
-    pub(crate) fn local_jar_resources(&self, name: &str) -> Option<Vec<(usize, Vec<u8>)>> {
+    pub(crate) fn local_jar_resources(&self, name: &str, deployment: Option<&[PathBuf]>) -> Option<Vec<(usize, Vec<u8>, Option<String>)>> {
         let tail = name.strip_prefix("META-INF/")?;
-        if tail.is_empty() || tail.starts_with('.') || tail.contains("..") || tail.len() > 128
-            || !tail.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_'))
+        if tail.len() > 128 || tail.split('/').any(|part| part.is_empty() || part.starts_with('.') || part.contains("..")
+            || !part.bytes().all(|b| b.is_ascii_alphanumeric() || matches!(b, b'.' | b'-' | b'_' | b'$')))
             || self.jdk()?.contains_resource(name).ok()? { return None; }
+        if let Some(files) = deployment {
+            let mut original = Self::new().bound_to(self.jar_release);
+            for path in files {
+                original.add(path).ok()?;
+            }
+            return original.jar_resource_entries(name);
+        }
+        self.jar_resource_entries(name)
+    }
+
+    fn jar_resource_entries(&self, name: &str) -> Option<Vec<(usize, Vec<u8>, Option<String>)>> {
         let mut seen = std::collections::BTreeSet::new();
         let mut urls = Vec::new();
         for (i, entry) in self.entries.iter().enumerate() {
@@ -698,7 +713,7 @@ impl ClassPath {
                     }
                     if zip.contains(name) {
                         if urls.len() == 32 { return None; }
-                        urls.push((i, zip.checked_resource(name, 16384)?));
+                        urls.push((i, zip.checked_resource(name, 16384)?, self.local_jar_url_path(i, name)));
                     }
                 }
             }
