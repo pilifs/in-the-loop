@@ -350,3 +350,98 @@ Use `ProductChecks.reach:()V` as the post-call false control and the two lower e
 [semver]: https://semver.org/#spec-item-11
 [sv]: https://gitlab.com/sosy-lab/benchmarking/sv-benchmarks/-/tree/7efe28dd29576b46927b7a34e8f742bd90966a75/java
 [svres]: https://sv-comp.sosy-lab.org/2026/results/results-verified/jbmc.2025-12-09_16-35-43.results.SV-COMP26_valid-assert.Java.valid-assert.Main.xml.bz2.fixed.xml.bz2.table.html
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- `$B` = `~/.cache/in-the-loop/beyond-jbmc`. JDK 21.0.13 by full path, `~/.sdkman/candidates/java/21.0.13.0+9-tem/bin/`.
+  The default `java` is 25.0.5 (`~/.sdkman/candidates/java/25.0.5.0+8-tem`), the historical profile.
+- **Tools** ([table](#starting-commit-and-tools)):
+  - `lib/target/release/jvmcontract`, rebuilt at `9920f659e67c1aea4aa114c59c93813dbd61b69d`, sha256
+    `f02a6de8c6298109711f9cc4f81fb00c84168cfb276abfd57c1e1ab4dc6f9ca6`;
+  - JBMC 6.11.0, both packages. On `PATH`: `/usr/bin/jbmc` with `/usr/lib/core-models.jar`. The 22.04 package is
+    under `~/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/`.
+- **Historical 187**:
+  - unmodified copy `$B/historical/results-867fa025.json`, sha256 `14c25280da82eaba7116753d704c33527aedf0e2008ff0eb664a805068d1de75`;
+  - 187 unique IDs, all present in `run.load_cases` at this head;
+  - what changed in their inputs: [The historical 187](#the-historical-187).
+- **42 release graphs** in `$B/releases/NAME/` (`lib/`, `sources/`, `classpath.txt` ordered, `tree.txt`). They cover
+  every released version the brief names, plus RoaringBitmap neighbours 1.6.15, 1.6.18, 1.6.25 and 1.6.28, and Spring
+  6.1.3 and 6.2.3 with `spring-context`. Every jar was checked against Central's checksums and its signature; digests
+  are in [the release table](#released-artifacts) and `$B/logs/release-jars.sha256`. Offline resolution works with
+  `mvn -o -s $B/maven-settings.xml`.
+- **Pinned sources** ([table](#pinned-sources)):
+  - Commons Codec `c89d2af770f05457fbefa5fb4713c888bf177fb2` (= `rel/commons-codec-1.15`), `$B/src/commons-codec-c89d2af7`;
+  - protobuf `0a2f7757e38b07c2e40c5c885a7100e8c16eb40f`, `$B/src/protobuf-0a2f7757` (`java/` only);
+  - SV-Benchmarks `7efe28dd29576b46927b7a34e8f742bd90966a75` (= `svcomp26`), `$B/src/sv-benchmarks-7efe28dd` (`java/` only).
+- **SV-COMP 26 official JBMC results**: `$B/svcomp/results.xml.bz2` and `table.html`, with the twelve B rows extracted
+  [here](#pinned-sources).
+- **Class bytes and disassembly** for every class the casebook names: `$B/classes/RELEASE/`, `$B/logs/classes.sha256`,
+  `$B/logs/javap/RELEASE/` ([Class entries](#class-entries)).
+- **JVM probes and their outputs**: `$B/probes/{sv,jvm/wn,jvm/hc,jvm/s}/` and `$B/logs/jvm-*.txt`. They reproduce
+  observations; they are not adapters. `$B/probes/sv/replay.sh JDKBIN` replays the twelve B tasks with a typed
+  choice-stream `Verifier`.
+
+### What was verified on a JVM
+
+On Temurin 21.0.13, and for the B tasks on 25.0.5 as well. Full rows: [What was replayed on a JVM](#what-was-replayed-on-a-jvm).
+- **B**: all six false-task witnesses fail their assertion (B02 `s`, B04 `s,s`, B06 `i8`, B08 `i0`, B10 `i2,i0`,
+  B12 `i2,i0,i0`), and B01, B03, B05 pass.
+- **W01–W07**: the four-cell WirePair table exactly. W01, W04, W05 and W06-UInt32 hold over **all 2³² ints**. W03's
+  256/65,536 shorts. W05 holds on all three protobuf versions.
+- **N01–N11**: every JVM statement, including N04's 1,617/2,000 (807/808), N06's 370 and 397, N08's hash and NaN
+  changes, N11's 63/11,048 and its `ObjectMapper` paragraph (63 per type, `-0.`, mixes follow core).
+- **H01, H03–H06, H08–H10, C01–C06, C08, C09**: as stated, with the exceptions below.
+- **C10**: the new release as stated.
+- **S01, S02, S04–S09**: as stated, on Spring 6.1.3, 6.1.14, 6.2.0 and 6.2.3.
+
+### What to know before starting
+
+- **H07 does not reproduce with `RoaringBitmap.contains(long,long)`**: true,false,false on 1.6.25–1.6.28 for every h
+  and representation. The stated true,true,false → true,false,false appears only with the subset form
+  `contains(RoaringBitmap)`, where the superset is a bitmap container (9,999 single adds) and the query a run
+  container. The 1.6.26→1.6.27 diff is `BitmapContainer.contains(RunContainer)` (and its Mappeable twin). The caller
+  is yours to choose.
+- **H08 differs by append path**: `appendElement("input").attr("name","b")` shows [a]/[a]/[a] → [a]/[a, b]/[a], while
+  `append("<input name=b>")` gives [a]/[a, b]/[a] on both 1.18.1 and 1.18.2.
+- **H02's "predecessor-only detector" is undefined** in the brief. Next == previous node is not rejected on the
+  two-node cycle; next == current node does not terminate on it. The oracle part holds 256/256.
+- **N06's 397** is against `Double.parseDouble`; against `new BigDecimal` there are 0 disagreements.
+- **C10's old release**: 6.0.0 makes ^0 and ^0.x true on all four versions (1.0.0 included), and ^0.0 and ^0.0.x
+  false on all four (0.0.0 included).
+- **H06**: old releases also throw `ArrayIndexOutOfBoundsException` (index −1) once the origin passes the container
+  start.
+- **First changed RoaringBitmap jars**: the iterator clone first changed in **1.6.17** (1.6.15 and 1.6.16 old, 1.6.18
+  new); containment first changed in **1.6.27** (1.6.25 and 1.6.26 old, 1.6.28 new).
+- **W02**: the slice bound is only an `assert` in both Lucene releases, so the outcome depends on `-ea`. Without it, a
+  len=3 slice takes 4 bytes.
+- **The protobuf pin `0a2f7757` is PR #15043's head, not a release tag.** The released sources are the sources jars.
+- **SV-COMP 26 ran on SV-Benchmarks `svcomp26-rc.1`** (`e8b309124df9bee33baf12bd47c629245971fce7`), not the pinned
+  `svcomp26`. The twelve tasks, `common` and `valid-assert.prp` are object-identical at both. The published run was
+  JBMC 6.8.0 at 900 s and 15 GB.
+- **The checker at this head is not the baseline's**: `lib/` changed after `867fa025` (last commit
+  `850595ae1e2f91815eee3b5822cd640f96eed630`). For the historical refresh:
+  - `conformance.json` gained `conformance/mapCapacity/2`, so pass the 187 IDs exactly;
+  - `Conformance.java` gained 22 lines, which moves later line numbers;
+  - 22 conformance cases changed only their `nativeStrict` annotation.
+- **Class majors**: lucene-core 9.0.0 is 55, Spring 6.x and semver4j 6.x are 61. The rest are ≤ 52.
+- **Two JBMC 6.11.0 packages with different `core-models.jar`**; the archived benchmark names only the version.
+  Name the pairing in each standalone run.
+- **Signatures**: JTS 1.18.2's key expired 2022-03-20, after its 2021-08-27 signature (`EXPKEYSIG` + `VALIDSIG`).
+  No snapshot dependencies.
+- **Grids**: where the brief gives none, the probes chose them (named in each row). Several reproduce the brief's
+  counts on a different or smaller grid: C04 150,000 vs 659,180 checks; the long and float spaces are sampled.
+
+### What is left for the domain work on purpose
+
+- **All checker runs**:
+  - the three-column refresh of the 187 (strict native, integrated staged JBMC, standalone stock JBMC);
+  - every native or JBMC statement in the casebook;
+  - the brief's §5 `jvmcontract`/`jbmc` commands;
+  - every proof, cache or reuse question (C05 clean/warm, C06/C07 cache).
+- **The 16-pair blind panel**: drawing, seeding, sealing and its manifest. This setup did not look at any candidate
+  population.
+- **Fixtures with no released input**: H11–H14, E01–E03, S03 (historical formatter slices), C07 (the zone choice),
+  W08/W09, and the H08 reparenting and H07 widening.
+- **Every harness, caller, adapter, claim, example and score.**
