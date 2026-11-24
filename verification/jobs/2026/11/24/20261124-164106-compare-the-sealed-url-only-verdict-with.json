@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-164106-compare-the-sealed-url-only-verdict-with",
+  "title": "Compare the sealed URL-only verdict with the original landed JUnit tests",
+  "description": "The public claim, ten original observations and first checked continuation were hash-bound before opening upstream tests. Compile all 39 unmodified landed test sources against the fixed production build. Run the four newly added methods, the rearranged writer test and the earlier bulk-insertion control on both production JARs on JDK 8 and 21. Retain both complete original production JARs and licenses, with all test dependencies separate.",
+  "kind": "real-world",
+  "capabilities": [
+    "original-upstream-test",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T16:41:06+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Verify preregistration, run original JUnit and retain the production inputs",
+      "run": "python3 -B lib/benchmark/organic-composition/url-only/landed_tests.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/url-only/upstream-reference.json",
+    "verification/organic-composition/url-only/original-production.zip"
+  ]
+}
