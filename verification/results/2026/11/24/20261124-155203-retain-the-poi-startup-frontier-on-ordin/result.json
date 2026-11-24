@@ -1,0 +1,171 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-155203-retain-the-poi-startup-frontier-on-ordin",
+  "title": "Retain the POI startup frontier on ordinary and controlled processes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 10.0s, peak 137.4 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-155203-retain-the-poi-startup-frontier-on-ordin.json",
+    "sha256": "94974976860061c9db35d5aaafe44bedf24a32d5467ee7527ffdb38c8d390bd5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-155203-retain-the-poi-startup-frontier-on-ordin",
+      "title": "Retain the POI startup frontier on ordinary and controlled processes",
+      "description": "The frozen public POI claims passed. Its separate observed-initializer experiment refused before producing JSON because Log4j inspected the system-properties table. Record this precise outcome from the original caller on both production revisions and also retry with two processors, a root working directory and an empty environment. The transfer implementation is verified byte for byte before the case-specific recording.",
+      "kind": "real-world",
+      "capabilities": [
+        "observed-initializer",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:52:03+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Record four bound native startup attempts",
+          "run": "python3 -B lib/benchmark/organic-composition/poi/startup_frontier.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/poi/observed-frontier.json"
+      ]
+    }
+  },
+  "sourceCommit": "3a95da4a75a142cda8a5a2ea00676beeaa79fe22",
+  "startedAt": "2026-11-24T15:56:39+00:00",
+  "finishedAt": "2026-11-24T16:00:54+00:00",
+  "wallSeconds": 255.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2661725,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 144039936,
+    "wallSeconds": 10.0,
+    "cpuSeconds": 18.1,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Record four bound native startup attempts",
+      "run": "python3 -B lib/benchmark/organic-composition/poi/startup_frontier.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 10.021,
+      "cpuSeconds": 18.105,
+      "cpuThrottledSeconds": 2.771,
+      "peakMemoryBytes": 144039936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-record-four-bound-native-start.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/poi/observed-frontier.json",
+      "change": "added",
+      "bytes": 57517,
+      "sha256": "319d2486e4c2737a7cdbee4c856126d7c7c05bcd56f981c6dbb32c96985a8b80",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T16:01:24+00:00",
+    "applied": [
+      "verification/organic-composition/poi/observed-frontier.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ca35ff2b9ff2e65e5432bfb5b60c63cf4e533e28",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ca35ff2b9ff2e65e5432bfb5b60c63cf4e533e28/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T160054Z-4103762133d3a994",
+      "outputs": "20261124T160054Z-432755c904e97c1c",
+      "diff": "20261124T160054Z-45534207d574d1a1"
+    }
+  }
+}
