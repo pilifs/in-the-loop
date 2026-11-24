@@ -1,0 +1,209 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-113530-validate-reflective-class-lookup-across",
+  "title": "Validate reflective class lookup across the released Codec pair",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.4s, peak 93.2 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-113530-validate-reflective-class-lookup-across.json",
+    "sha256": "6b3c5c2d0aad0b5d8163d6e4b0fd4855e37c57fc60b1cc8e2df636d3e7d5c95e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-113530-validate-reflective-class-lookup-across",
+      "title": "Validate reflective class lookup across the released Codec pair",
+      "description": "Compare ordered original Plexus and Codec releases on the ordinary strict checker after binding reflective cache dependencies. Verify preserved names and the changed Codec superclass, then require a JVM-reproduced witness for lookup of the incremental x86 class introduced in Codec 1.14. Run every Boolean caller cold and warm and preserve the earlier six measurements.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {},
+      "expected": "Eight native verdicts agree with every original Boolean outcome, and every reported changed input reproduces with exact before and after strings.",
+      "submitted": {
+        "at": "2026-11-24T11:35:30+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "12m",
+        "notes": "The first six comparisons in job 20261124-110402-verify-original-class-names-on-plexus-an took 2.2 seconds of measured execution."
+      },
+      "steps": [
+        {
+          "name": "Replay four public comparisons on both original JVMs and native",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/identity_followup.py --output verification/beyond-jbmc/followup/lookup-and-names.json.gz",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/followup/lookup-and-names.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "c53d6d2d839e32d02ab540f3c5545a490469c79e",
+  "startedAt": "2026-11-24T11:48:53+00:00",
+  "finishedAt": "2026-11-24T11:52:02+00:00",
+  "wallSeconds": 189.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 191329,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": "The first six comparisons in job 20261124-110402-verify-original-class-names-on-plexus-an took 2.2 seconds of measured execution."
+  },
+  "usage": {
+    "peakMemoryBytes": 97681408,
+    "wallSeconds": 2.4,
+    "cpuSeconds": 3.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 177.702,
+      "cpuSeconds": 178.04,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2293972992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "972babfb0d089d88350c04c9059a68768947695f28263dc98c3b46dfb5410221",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-113530-validate-reflective-class-lookup-across/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Replay four public comparisons on both original JVMs and native",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/identity_followup.py --output verification/beyond-jbmc/followup/lookup-and-names.json.gz",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 2.405,
+      "cpuSeconds": 3.116,
+      "cpuThrottledSeconds": 0.16,
+      "peakMemoryBytes": 97681408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-four-public-comparisons.log",
+        "lines": 1,
+        "bytes": 90,
+        "sha256": "c2b6d1a9bb5d1e3cf5f2236c792fda4c2a5c597fe3ec0ff0c543e25c20e4234b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Checked the full Boolean domain on both original JVMs and strict native for plexus, codec"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/followup/lookup-and-names.json.gz",
+      "change": "added",
+      "bytes": 7557,
+      "sha256": "2778653266471d45a53cd31d498fc363d76b403160c0a6727ac29a6e2e0c26a7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T11:52:30+00:00",
+    "applied": [
+      "verification/beyond-jbmc/followup/lookup-and-names.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "530944c5d2a48f01642bff23c35e054243722aea",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/530944c5d2a48f01642bff23c35e054243722aea/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T115202Z-01496576525a4aab",
+      "outputs": "20261124T115202Z-035916f867988e5d",
+      "diff": "20261124T115202Z-054034aa956621eb"
+    }
+  }
+}
