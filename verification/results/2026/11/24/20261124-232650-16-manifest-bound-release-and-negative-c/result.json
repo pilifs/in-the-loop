@@ -1,0 +1,193 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-232650-16-manifest-bound-release-and-negative-c",
+  "title": "16 manifest-bound release and negative controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m12s, peak 183.4 MiB (estimated 5m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-232650-16-manifest-bound-release-and-negative-c.json",
+    "sha256": "b4b1a931004bb5a0df7bef58084893ce27ca012eec28b9d51e634fece23f8594",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-232650-16-manifest-bound-release-and-negative-c",
+      "title": "16 manifest-bound release and negative controls",
+      "description": "Repeat the locked primary and control on the unmodified original release graph. Bind absent manifest paths, preserve provider order, and compare cold, warm and clean decisions to a deliberately wrong expectation. Every input retains its actual original method entry and two fresh JVM repetitions.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:change-plan"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/original_plans.py"
+        ]
+      },
+      "expected": "Both original public calls are qualified or expose their first open dependency. Warm and clean decisions and the false expectation are retained with their receipts.",
+      "submitted": {
+        "at": "2026-11-24T23:26:50+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "5m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/original_plans.py",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/original_plans.py 16 --label manifest-bound --modes cold warm clean wrong",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/scaffold-first/original-plans/manifest-bound/16"
+      ]
+    }
+  },
+  "sourceCommit": "67b641140b320137f548eedef59c74fcdfc37a17",
+  "startedAt": "2026-11-24T23:37:10+00:00",
+  "finishedAt": "2026-11-24T23:41:40+00:00",
+  "wallSeconds": 270.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3182348,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 192360448,
+    "wallSeconds": 73.0,
+    "cpuSeconds": 88.0,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.24
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/original_plans.py",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/original_plans.py 16 --label manifest-bound --modes cold warm clean wrong",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 72.987,
+      "cpuSeconds": 88.032,
+      "cpuThrottledSeconds": 7.654,
+      "peakMemoryBytes": 192360448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 8,
+        "bytes": 708,
+        "sha256": "2e83f9f0cecf580a831b80df5527f556f5dc4d6b8a3fc4979cc4c3874bb3f85e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/original-release-plan-5ojf0fct/cold.json",
+        "16 cold [('primary', 'established', None), ('control', 'established', None)]",
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/original-release-plan-5ojf0fct/warm.json",
+        "16 warm [('primary', 'established', None), ('control', 'established', None)]",
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/original-release-plan-5ojf0fct/clean.json",
+        "16 clean [('primary', 'established', None), ('control', 'established', None)]",
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/original-release-plan-5ojf0fct/wrong.json",
+        "16 wrong [('primary', 'refuted', None), ('control', 'established', None)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/original-plans/manifest-bound/16/plans.zip",
+      "change": "added",
+      "bytes": 388540,
+      "sha256": "a48d92efb9d5baa7456e9feea1b4ce3d101a0ab3bcb919a93aafee7eff088d03",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/original-plans/manifest-bound/16/summary.json",
+      "change": "added",
+      "bytes": 5915,
+      "sha256": "9c4a6d199a1f50863d2c50a86a2f07bb51ea796fe9fb571a5724343f29eb6aa1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T23:47:17+00:00",
+    "applied": [
+      "verification/beyond-jbmc/scaffold-first/original-plans/manifest-bound/16/plans.zip",
+      "verification/beyond-jbmc/scaffold-first/original-plans/manifest-bound/16/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b07dfe1c5d5bd48b7a2d31e2edeaad26a16f8dcb",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b07dfe1c5d5bd48b7a2d31e2edeaad26a16f8dcb/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T234140Z-630360e497311d40",
+      "outputs": "20261124T234140Z-694302a2a17acb12",
+      "diff": "20261124T234140Z-7172387be2ded653"
+    }
+  }
+}
