@@ -1,0 +1,48 @@
+{
+  "entry": "org.apache.logging.log4j.core.appender.rolling.PatternProcessor#getNextTime(JIZ)J",
+  "probeClass": "UpgradeProbe",
+  "cases": [
+    {
+      "args": [
+        "GMT+10:00",
+        "omitted",
+        "time-based"
+      ],
+      "expected": {
+        "return": "13,17/1393941600000,1393855200000,0,31,1393855200000,0/1393941600000,1393855200000,1393855200000,32,1393855200000,0/1394028000000,1393941600000,1393855200000,33,1393941600000,0"
+      }
+    },
+    {
+      "args": [
+        "GMT+10:00",
+        "omitted",
+        "ordinary"
+      ],
+      "expected": {
+        "return": "0,0/1393941600000,1393855200000,0,31,1393855200000,0/1393941600000,1393855200000,1393855200000,32,1393855200000,0/1394028000000,1393941600000,1393855200000,33,1393941600000,0"
+      }
+    },
+    {
+      "args": [
+        "GMT-10:00",
+        "omitted",
+        "time-based"
+      ],
+      "expected": {
+        "return": "13,17/1394013600000,1393927200000,0,31,1393927200000,0/1394013600000,1393927200000,1393927200000,32,1393927200000,0/1394100000000,1394013600000,1393927200000,33,1394013600000,0"
+      }
+    },
+    {
+      "args": [
+        "GMT-10:00",
+        "omitted",
+        "ordinary"
+      ],
+      "expected": {
+        "return": "0,0/1394013600000,1393927200000,0,31,1393927200000,0/1394013600000,1393927200000,1393927200000,32,1393927200000,0/1394100000000,1394013600000,1393927200000,33,1394013600000,0"
+      }
+    }
+  ],
+  "observer": "One constructed PatternProcessor, an initial update on a seeded receiver, and three schedules with updates immediately before and at the first deadline. Observe next, recorded, previous and current epoch milliseconds.",
+  "basis": "Fixed-offset local midnight derived independently by integer arithmetic on epoch milliseconds, with the previous recorded midnight retained across calls."
+}

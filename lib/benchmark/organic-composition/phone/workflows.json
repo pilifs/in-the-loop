@@ -1,0 +1,43 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "libphonenumber PR 2272, regional formatting and clear/replay histories",
+  "workflows": [
+    {
+      "id": "regional-change",
+      "cohort": "registered",
+      "scope": "regional-change.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "0@0/08@0/081@0/08-12@5/08-123@5/08-123 4@5/08-123 45@5/08-12 34 56@5|clear@0|0@0/08@0/081@0/08-12@5/08-123@5/08-123 4@5/08-123 45@5/08-12 34 56@5"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "0@0/02@0/022@0/02 21@5/02 212@5/02 212-3@5/02 212-34@5/02 212-345@5/02 212-3456@5|clear@0|0@0/02@0/022@0/02 21@5/02 212@5/02 212-3@5/02 212-34@5/02 212-345@5/02 212-3456@5"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JVM per trial, default metadata loader from the original ordered JAR, fixed JDK bootstrap digit code and ASCII decimal inputs, one formatter for both passes."
+      ]
+    },
+    {
+      "id": "preserved-replay",
+      "cohort": "registered",
+      "scope": "preserved-replay.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JVM per trial, default metadata loader from the original ordered JAR, fixed JDK bootstrap digit code and ASCII decimal inputs, one formatter for both passes."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+[
+  {
+    "side": "old",
+    "workflow": "alias-and-partial-batch",
+    "input": [
+      "alias"
+    ],
+    "expected": "base=seed/true|returns=true/true|first=a/a|sameInput=false/false|sameSlots=false|removedFirst=true|remaining=3:a,b",
+    "actual": "base=seed/true|returns=true/true|first=a/a|sameInput=false/false|sameSlots=false|removedFirst=true|remaining=3:a,b",
+    "agrees": true,
+    "wallSeconds": 0.083
+  },
+  {
+    "side": "old",
+    "workflow": "alias-and-partial-batch",
+    "input": [
+      "nan"
+    ],
+    "expected": "base=seed/true|batch=return|afterBatch=5:head,NaN,tail|afterRecovery=6:after",
+    "actual": "base=seed/true|batch=return|afterBatch=5:head,NaN,tail|afterRecovery=6:after",
+    "agrees": true,
+    "wallSeconds": 0.071
+  },
+  {
+    "side": "old",
+    "workflow": "alias-and-partial-batch",
+    "input": [
+      "infinity"
+    ],
+    "expected": "base=seed/true|batch=return|afterBatch=5:head,Infinity,tail|afterRecovery=6:after",
+    "actual": "base=seed/true|batch=return|afterBatch=5:head,Infinity,tail|afterRecovery=6:after",
+    "agrees": true,
+    "wallSeconds": 0.075
+  },
+  {
+    "side": "old",
+    "workflow": "preserved-elements",
+    "input": [
+      "plain"
+    ],
+    "expected": "base=seed/true|returns=true|added=head/7/true|removed=7|left=4/head/true",
+    "actual": "base=seed/true|returns=true|added=head/7/true|removed=7|left=4/head/true",
+    "agrees": true,
+    "wallSeconds": 0.078
+  },
+  {
+    "side": "old",
+    "workflow": "preserved-elements",
+    "input": [
+      "constructor"
+    ],
+    "expected": "base=seed/true|copy=a|stored=true|removed=true|left=2",
+    "actual": "base=seed/true|copy=a|stored=true|removed=true|left=2",
+    "agrees": true,
+    "wallSeconds": 0.07
+  },
+  {
+    "side": "new",
+    "workflow": "alias-and-partial-batch",
+    "input": [
+      "alias"
+    ],
+    "expected": "base=seed/true|returns=true/true|first=a/a,b|sameInput=true/true|sameSlots=true|removedFirst=true|remaining=3:c",
+    "actual": "base=seed/true|returns=true/true|first=a/a,b|sameInput=true/true|sameSlots=true|removedFirst=true|remaining=3:c",
+    "agrees": true,
+    "wallSeconds": 0.08
+  },
+  {
+    "side": "new",
+    "workflow": "alias-and-partial-batch",
+    "input": [
+      "nan"
+    ],
+    "expected": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after",
+    "actual": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after",
+    "agrees": true,
+    "wallSeconds": 0.076
+  },
+  {
+    "side": "new",
+    "workflow": "alias-and-partial-batch",
+    "input": [
+      "infinity"
+    ],
+    "expected": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after",
+    "actual": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after",
+    "agrees": true,
+    "wallSeconds": 0.076
+  },
+  {
+    "side": "new",
+    "workflow": "preserved-elements",
+    "input": [
+      "plain"
+    ],
+    "expected": "base=seed/true|returns=true|added=head/7/true|removed=7|left=4/head/true",
+    "actual": "base=seed/true|returns=true|added=head/7/true|removed=7|left=4/head/true",
+    "agrees": true,
+    "wallSeconds": 0.078
+  },
+  {
+    "side": "new",
+    "workflow": "preserved-elements",
+    "input": [
+      "constructor"
+    ],
+    "expected": "base=seed/true|copy=a|stored=true|removed=true|left=2",
+    "actual": "base=seed/true|copy=a|stored=true|removed=true|left=2",
+    "agrees": true,
+    "wallSeconds": 0.069
+  }
+]

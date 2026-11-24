@@ -1,0 +1,28 @@
+{
+  "entry": "com.google.gson.Gson#fromJson(Ljava/lang/String;Lcom/google/gson/reflect/TypeToken;)Ljava/lang/Object;",
+  "probeClass": "UpgradeProbe",
+  "cases": [
+    {
+      "args": [
+        "stream",
+        "plain",
+        "paths"
+      ],
+      "expected": {
+        "return": "1=x,2=y|$.,$.,$.,$."
+      }
+    },
+    {
+      "args": [
+        "stream",
+        "mixed",
+        "paths"
+      ],
+      "expected": {
+        "return": "1=x,2=y|$.,$.,$.,$.;JsonSyntaxException/IllegalStateException@com.google.gson.stream.JsonReader.unexpectedTokenError|$.,$.,$.,error=$.;2=z,1=r|$.,$.,$.,$."
+      }
+    }
+  ],
+  "observer": "Ordered integer keys and values, the original exception site on an array value, and subsequent successful reuse of the same Gson. The paths projection adds getPath, getPreviousPath and the path extracted from the original diagnostic.",
+  "basis": "Predicted from literal object member spellings, mathematical decimal keys and the declared reader-specific failure site. The padded keys distinguish the original name from the parsed integer."
+}

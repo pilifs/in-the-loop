@@ -1,0 +1,114 @@
+{
+  "old": {
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92c33aeff5337dc16ac571e10ad68182dd8539cb/jvmcontract",
+      "prove",
+      "--classes",
+      "/tmp/organic-opening-hjx1cr07",
+      "UpgradeProbe#currency",
+      "--classpath",
+      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/B-poi-parent.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-codec/commons-codec/1.23.0/commons-codec-1.23.0.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-collections4/4.6.0/commons-collections4-4.6.0.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/com/zaxxer/SparseBitSet/1.3/SparseBitSet-1.3.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/logging/log4j/log4j-api/2.26.1/log4j-api-2.26.1.jar",
+      "--engine",
+      "native",
+      "--assert",
+      "result == true",
+      "--unwind",
+      "16",
+      "--json"
+    ],
+    "exit": 1,
+    "stdout": "[\n  {\n    \"wire_version\": 1,\n    \"verdict\": \"unverifiable\",\n    \"target\": \"UpgradeProbe#currency\",\n    \"domain\": \"kazakhFirst: boolean\",\n    \"assume\": null,\n    \"assert\": \"result == true\",\n    \"throws\": [],\n    \"throws_checked\": [],\n    \"counterexample\": null,\n    \"proof\": null,\n    \"problem\": \"the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\",\n    \"statement\": \"/tmp/jvmcontract-property-2423852-1795534933873356149-0/harness/PropertyHarness.java\",\n    \"findings\": [\n      {\n        \"rule_id\": \"unverifiable\",\n        \"message\": \"UpgradeProbe#currency cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\",\n        \"uri\": null,\n        \"line\": 43\n      }\n    ],\n    \"output\": \"\u2717 UpgradeProbe#currency cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\\n\",\n    \"work\": \"/tmp/jvmcontract-property-2423852-1795534933873356149-0\",\n    \"search\": {\n      \"engine\": \"native\",\n      \"checker\": \"jvmcontract's own checker (CaDiCaL)\",\n      \"seconds\": 0.007679043,\n      \"properties\": 1,\n      \"unwind\": 16,\n      \"max_array_length\": 8,\n      \"stage\": null,\n      \"native\": {\n        \"paths\": 2,\n        \"merges\": 0,\n        \"solver_calls\": 1,\n        \"solving_seconds\": 9.939e-6,\n        \"gates_evaluated\": 1,\n        \"evaluating_seconds\": 1.132e-6,\n        \"divisions\": 0,\n        \"divisions_built\": 0,\n        \"multiplications\": 0,\n        \"multiplications_built\": 0,\n        \"variables\": 2,\n        \"clauses\": 1,\n        \"seconds\": 0.003214049,\n        \"loading_seconds\": 0.000145201,\n        \"decoding_seconds\": 0.000061224,\n        \"encoding_seconds\": 2.816e-6,\n        \"witness_seconds\": 0.0\n      },\n      \"gap_mode\": \"strict\",\n      \"gaps\": [\n        {\n          \"id\": \"jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13\",\n          \"kind\": \"jdk-primitive-method\",\n          \"call\": \"java.util.Locale.equals(java.lang.Object)\",\n          \"sites\": [\n            \"UpgradeProbe.observe:10\"\n          ],\n          \"approximation\": \"has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)\",\n          \"treatment\": \"refused\"\n        }\n      ],\n      \"deadline_seconds\": 600.0,\n      \"runs\": [\n        {\n          \"checker\": \"native\",\n          \"purpose\": \"proof\",\n          \"stage\": null,\n          \"budget_seconds\": 600.0,\n          \"seconds\": 0.003,\n          \"ended\": \"no-verdict\",\n          \"ending\": \"no-verdict\",\n          \"phases\": {\n            \"loading\": 0.0,\n            \"lowering\": 0.0,\n            \"symbolic\": 0.003,\n            \"encoding\": 0.0,\n            \"solving\": 0.0,\n            \"trace\": 0.0,\n            \"other\": 0.0\n          },\n          \"formula\": {\n            \"variables\": 2,\n            \"clauses\": 1\n          }\n        }\n      ],\n      \"phases\": {\n        \"seconds\": 0.02,\n        \"setup\": 0.001,\n        \"harness\": 0.0,\n        \"gaps\": 0.0,\n        \"contracts\": 0.0,\n        \"runs\": 0.003,\n        \"replay\": 0.0,\n        \"jvm\": 0.0,\n        \"other\": 0.016\n      }\n    },\n    \"stated\": {\n      \"kind\": \"property\",\n      \"domain\": {\n        \"parameters\": [\n          {\n            \"name\": \"kazakhFirst\",\n            \"type\": \"boolean\",\n            \"kind\": \"primitive\",\n            \"null\": false\n          }\n        ],\n        \"shared_arrays\": false,\n        \"text\": \"kazakhFirst: boolean\"\n      },\n      \"assumptions\": [\n        {\n          \"kind\": \"initialization\",\n          \"text\": \"every JDK class is initialized already, its static initializer having run and thrown nothing\",\n          \"basis\": \"engine\"\n        }\n      ],\n      \"observations\": {\n        \"result\": \"the result and the parameters, against result == true\",\n        \"exceptions\": \"none may be thrown\"\n      },\n      \"bounds\": {\n        \"unwind\": 16,\n        \"max_array_length\": null,\n        \"complete\": false\n      },\n      \"models\": {\n        \"used\": true,\n        \"digest\": \"sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac\",\n        \"classes\": 40,\n        \"jdk\": \"21.0.13\"\n      },\n      \"checker\": {\n        \"engine\": \"native\",\n        \"name\": \"jvmcontract's own checker (CaDiCaL)\",\n        \"solver\": \"CaDiCaL 1.9.5 (bundled)\",\n        \"fallback\": null,\n        \"sat\": {\n          \"solver\": \"CaDiCaL\",\n          \"version\": \"1.9.5\",\n          \"source\": \"bundled by the Rust crate cadical 0.1.16\",\n          \"configuration\": [\n            \"CaDiCaL's default options\",\n            \"incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions\",\n            \"the run's deadline through CaDiCaL's terminate callback\",\n            \"a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback\"\n          ]\n        }\n      },\n      \"gap_mode\": \"strict\",\n      \"confirmation\": null\n    }\n  }\n]\n",
+    "stderr": "",
+    "artifacts": [
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/B-poi-parent.jar",
+        "sha256": "6e43938a40a3bafd59ba6bcc89f03a89a9f4c54520f08c3d8481d5dc1e7502a5"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-codec/commons-codec/1.23.0/commons-codec-1.23.0.jar",
+        "sha256": "47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-collections4/4.6.0/commons-collections4-4.6.0.jar",
+        "sha256": "4e0d0896bac5356cead277bac0283f09813e14417e3e84e0c86b573b54d218a3"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar",
+        "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+        "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/com/zaxxer/SparseBitSet/1.3/SparseBitSet-1.3.jar",
+        "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/logging/log4j/log4j-api/2.26.1/log4j-api-2.26.1.jar",
+        "sha256": "f1810a4704ccce019d02bba029dc02a4f2ac0c997f647b465e7d409c1927f822"
+      }
+    ],
+    "disposition": {
+      "stage": "native",
+      "verdict": "unverifiable",
+      "reason": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    }
+  },
+  "new": {
+    "argv": [
+      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92c33aeff5337dc16ac571e10ad68182dd8539cb/jvmcontract",
+      "prove",
+      "--classes",
+      "/tmp/organic-opening-v8503hsz",
+      "UpgradeProbe#currency",
+      "--classpath",
+      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/B-poi-fix.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-codec/commons-codec/1.23.0/commons-codec-1.23.0.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-collections4/4.6.0/commons-collections4-4.6.0.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/com/zaxxer/SparseBitSet/1.3/SparseBitSet-1.3.jar:/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/logging/log4j/log4j-api/2.26.1/log4j-api-2.26.1.jar",
+      "--engine",
+      "native",
+      "--assert",
+      "result == true",
+      "--unwind",
+      "16",
+      "--json"
+    ],
+    "exit": 1,
+    "stdout": "[\n  {\n    \"wire_version\": 1,\n    \"verdict\": \"unverifiable\",\n    \"target\": \"UpgradeProbe#currency\",\n    \"domain\": \"kazakhFirst: boolean\",\n    \"assume\": null,\n    \"assert\": \"result == true\",\n    \"throws\": [],\n    \"throws_checked\": [],\n    \"counterexample\": null,\n    \"proof\": null,\n    \"problem\": \"the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\",\n    \"statement\": \"/tmp/jvmcontract-property-2423923-1795534934945724861-0/harness/PropertyHarness.java\",\n    \"findings\": [\n      {\n        \"rule_id\": \"unverifiable\",\n        \"message\": \"UpgradeProbe#currency cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\",\n        \"uri\": null,\n        \"line\": 43\n      }\n    ],\n    \"output\": \"\u2717 UpgradeProbe#currency cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)\\n\",\n    \"work\": \"/tmp/jvmcontract-property-2423923-1795534934945724861-0\",\n    \"search\": {\n      \"engine\": \"native\",\n      \"checker\": \"jvmcontract's own checker (CaDiCaL)\",\n      \"seconds\": 0.009999974,\n      \"properties\": 1,\n      \"unwind\": 16,\n      \"max_array_length\": 8,\n      \"stage\": null,\n      \"native\": {\n        \"paths\": 2,\n        \"merges\": 0,\n        \"solver_calls\": 1,\n        \"solving_seconds\": 0.000013485,\n        \"gates_evaluated\": 1,\n        \"evaluating_seconds\": 1.503e-6,\n        \"divisions\": 0,\n        \"divisions_built\": 0,\n        \"multiplications\": 0,\n        \"multiplications_built\": 0,\n        \"variables\": 2,\n        \"clauses\": 1,\n        \"seconds\": 0.00433957,\n        \"loading_seconds\": 0.000173615,\n        \"decoding_seconds\": 0.000064301,\n        \"encoding_seconds\": 3.275e-6,\n        \"witness_seconds\": 0.0\n      },\n      \"gap_mode\": \"strict\",\n      \"gaps\": [\n        {\n          \"id\": \"jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13\",\n          \"kind\": \"jdk-primitive-method\",\n          \"call\": \"java.util.Locale.equals(java.lang.Object)\",\n          \"sites\": [\n            \"UpgradeProbe.observe:10\"\n          ],\n          \"approximation\": \"has no approximation: its value could only be made up, so it is refused under --gaps assume too, and only a contract closes it (--gaps advised)\",\n          \"treatment\": \"refused\"\n        }\n      ],\n      \"deadline_seconds\": 600.0,\n      \"runs\": [\n        {\n          \"checker\": \"native\",\n          \"purpose\": \"proof\",\n          \"stage\": null,\n          \"budget_seconds\": 600.0,\n          \"seconds\": 0.004,\n          \"ended\": \"no-verdict\",\n          \"ending\": \"no-verdict\",\n          \"phases\": {\n            \"loading\": 0.0,\n            \"lowering\": 0.0,\n            \"symbolic\": 0.004,\n            \"encoding\": 0.0,\n            \"solving\": 0.0,\n            \"trace\": 0.0,\n            \"other\": 0.0\n          },\n          \"formula\": {\n            \"variables\": 2,\n            \"clauses\": 1\n          }\n        }\n      ],\n      \"phases\": {\n        \"seconds\": 0.026,\n        \"setup\": 0.001,\n        \"harness\": 0.0,\n        \"gaps\": 0.0,\n        \"contracts\": 0.0,\n        \"runs\": 0.004,\n        \"replay\": 0.0,\n        \"jvm\": 0.0,\n        \"other\": 0.021\n      }\n    },\n    \"stated\": {\n      \"kind\": \"property\",\n      \"domain\": {\n        \"parameters\": [\n          {\n            \"name\": \"kazakhFirst\",\n            \"type\": \"boolean\",\n            \"kind\": \"primitive\",\n            \"null\": false\n          }\n        ],\n        \"shared_arrays\": false,\n        \"text\": \"kazakhFirst: boolean\"\n      },\n      \"assumptions\": [\n        {\n          \"kind\": \"initialization\",\n          \"text\": \"every JDK class is initialized already, its static initializer having run and thrown nothing\",\n          \"basis\": \"engine\"\n        }\n      ],\n      \"observations\": {\n        \"result\": \"the result and the parameters, against result == true\",\n        \"exceptions\": \"none may be thrown\"\n      },\n      \"bounds\": {\n        \"unwind\": 16,\n        \"max_array_length\": null,\n        \"complete\": false\n      },\n      \"models\": {\n        \"used\": true,\n        \"digest\": \"sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac\",\n        \"classes\": 40,\n        \"jdk\": \"21.0.13\"\n      },\n      \"checker\": {\n        \"engine\": \"native\",\n        \"name\": \"jvmcontract's own checker (CaDiCaL)\",\n        \"solver\": \"CaDiCaL 1.9.5 (bundled)\",\n        \"fallback\": null,\n        \"sat\": {\n          \"solver\": \"CaDiCaL\",\n          \"version\": \"1.9.5\",\n          \"source\": \"bundled by the Rust crate cadical 0.1.16\",\n          \"configuration\": [\n            \"CaDiCaL's default options\",\n            \"incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions\",\n            \"the run's deadline through CaDiCaL's terminate callback\",\n            \"a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback\"\n          ]\n        }\n      },\n      \"gap_mode\": \"strict\",\n      \"confirmation\": null\n    }\n  }\n]\n",
+    "stderr": "",
+    "artifacts": [
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/B-poi-fix.jar",
+        "sha256": "3bb5a6d4840677d91125456f35afab47e2b2a904ac8dc3c730d704957852d5fa"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-codec/commons-codec/1.23.0/commons-codec-1.23.0.jar",
+        "sha256": "47504a3ce71d73a1b0af07675546b8d8c5af87f82ef12b6381f9eb3c17dd5a5b"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-collections4/4.6.0/commons-collections4-4.6.0.jar",
+        "sha256": "4e0d0896bac5356cead277bac0283f09813e14417e3e84e0c86b573b54d218a3"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar",
+        "sha256": "1e56d7b058d28b65abd256b8458e3885b674c1d588fa43cd7d1cbb9c7ef2b308"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/commons-io/commons-io/2.22.0/commons-io-2.22.0.jar",
+        "sha256": "2b9a7b1f726fb86216dbd2c8321eabe0221dbd5b1be81c18e1cb53811b104758"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/com/zaxxer/SparseBitSet/1.3/SparseBitSet-1.3.jar",
+        "sha256": "f76b85adb0c00721ae267b7cfde4da7f71d3121cc2160c9fc00c0c89f8c53c8a"
+      },
+      {
+        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/m2/org/apache/logging/log4j/log4j-api/2.26.1/log4j-api-2.26.1.jar",
+        "sha256": "f1810a4704ccce019d02bba029dc02a4f2ac0c997f647b465e7d409c1927f822"
+      }
+    ],
+    "disposition": {
+      "stage": "native",
+      "verdict": "unverifiable",
+      "reason": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.Locale.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.Locale.equals(java.lang.Object) at UpgradeProbe.observe:10). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)"
+    }
+  }
+}

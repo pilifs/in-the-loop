@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from targets import change_evidence, change_inventory
+from targets import change_evidence, change_helpers, change_inventory
 
 
 class ChangePlanTest(unittest.TestCase):
@@ -34,6 +34,30 @@ class ChangePlanTest(unittest.TestCase):
         new.append(copy.deepcopy(new[1]))
         with self.assertRaisesRegex(ValueError, "duplicate trial"):
             change_evidence.compose(self.scope, self.report)
+
+    def test_checked_replay_requires_the_proof_on_each_side_and_repetition(self):
+        trial = self.report["sides"]["old"]["trials"][0]
+        self.report["sides"]["old"]["requiredHelperProof"] = "old-class"
+        self.assertEqual(change_evidence.compose(self.scope, self.report)["status"], "open")
+        evidence = {"proofKey": "old-class", "applications": [{"args": [4], "result": 4}],
+                    "startupArguments": ["entered"]}
+        for row in self.report["sides"]["old"]["trials"]:
+            row["checkedApplications"] = [copy.deepcopy(evidence), copy.deepcopy(evidence)]
+        self.assertEqual(change_evidence.compose(self.scope, self.report)["status"], "established")
+        trial["checkedApplications"][1]["proofKey"] = "different-class"
+        self.assertEqual(change_evidence.compose(self.scope, self.report)["status"], "open")
+
+    def test_closed_finite_helper_excludes_state_and_decodes_switch_alignment(self):
+        # An iconst, a tableswitch with one case at 20, and a return.
+        table = bytes.fromhex("03aa0000 00000013 00000000 00000000 00000013 ac")
+        self.assertEqual(list(change_inventory.instructions(table)), [(0, 3), (1, 170), (20, 172)])
+        self.assertTrue(change_helpers.local_integral_body(table))
+        self.assertFalse(change_helpers.local_integral_body(bytes.fromhex("b20001ac")))
+        self.assertFalse(change_helpers.local_integral_body(bytes.fromhex("b80001ac")))
+        self.assertTrue(change_helpers.local_integral_body(bytes.fromhex("1201ac"), {1: (3, 42)}))
+        self.assertFalse(change_helpers.local_integral_body(bytes.fromhex("1201ac"), {1: (17, 42)}))
+        with self.assertRaises(ValueError):
+            list(change_inventory.instructions(bytes.fromhex("11ff")))
 
     def test_exception_needs_two_escaping_frames_on_the_declared_client(self):
         trial = self.report["sides"]["new"]["trials"][0]

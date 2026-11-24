@@ -1,0 +1,32 @@
+{
+  "entry": "com.ibm.icu.text.RuleBasedBreakIterator#next()I",
+  "probeClass": "UpgradeProbe",
+  "observer": "All UTF-16 boundary offsets and word statuses forward and backward after three setText calls on the same factory-produced rule iterator.",
+  "basis": "Disclosed ICU rule-change preflight and independently specified Unicode lengths: both texts have five UTF-16 units, and nonword and word boundaries carry statuses 0 and 200.",
+  "cases": [
+    {
+      "args": [
+        "fi"
+      ],
+      "expected": {
+        "return": "0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0"
+      }
+    },
+    {
+      "args": [
+        "sv"
+      ],
+      "expected": {
+        "return": "0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0"
+      }
+    },
+    {
+      "args": [
+        "en_US_POSIX"
+      ],
+      "expected": {
+        "return": "0:0,2:200,3:0,5:200/5:200,3:0,2:200,0:0|0:0,2:200,3:0,5:200/5:200,3:0,2:200,0:0|0:0,2:200,3:0,5:200/5:200,3:0,2:200,0:0"
+      }
+    }
+  ]
+}

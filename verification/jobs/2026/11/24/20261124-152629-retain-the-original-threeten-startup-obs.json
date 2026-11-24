@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-152629-retain-the-original-threeten-startup-obs",
+  "title": "Retain the original ThreeTen startup-observation refusal on both revisions",
+  "description": "The first retry exposed a real Chronology.LOCALE_METHOD blocker before the verifier emitted JSON. Record and validate this specific pre-verification refusal on both original formatter deployments. Keep the raw command, status and both output streams.",
+  "kind": "real-world",
+  "capabilities": [
+    "observed-initializer",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T15:26:29+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Retry both original public entries with the real startup observation",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py threeten overlap org.threeten.bp.format.DateTimeFormatter",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/threeten/observed-native.json"
+  ]
+}

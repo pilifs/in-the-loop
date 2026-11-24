@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-190304-transfer-both-original-gson-readers-thro",
+  "title": "Transfer both original Gson readers through the frozen plan",
+  "description": "Compare paths, original failure diagnostics, integer keys and values across plain and success/failure/recovery maps on both original Gson 3098 deployments. Preserve the streaming and tree String-helper controls separately, match cold, warm and empty-cache public results, and record the first strict native refusal.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "checked-helpers"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T19:03:04+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "Check the frozen runner",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": "."
+    },
+    {
+      "name": "Measure the strict original startup frontier",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py gson 'readPaths()Z'",
+      "cwd": "."
+    },
+    {
+      "name": "Run public Gson plans and disjoint reader controls",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py gson first",
+      "cwd": "."
+    },
+    {
+      "name": "Compare original observations and dependencies",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py gson first",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/gson/first",
+    "verification/organic-composition/gson/first-native.json"
+  ]
+}

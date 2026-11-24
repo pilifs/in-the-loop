@@ -1,0 +1,32 @@
+{
+  "entry": "org.json.JSONArray#putAll(Ljava/util/Collection;)Lorg/json/JSONArray;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Receiver and element identity, caller-owned nested-list contents and partial batch contents after failure, removal and reuse. A seed and original public NULL sentinel must survive backing-array growth.",
+  "basis": "Registered from the two original production implementations and an independent list-state calculation before running the observer or inspecting any upstream test. Two initially occupied slots force the collection capacity path.",
+  "cases": [
+    {
+      "args": [
+        "alias"
+      ],
+      "expected": {
+        "return": "base=seed/true|returns=true/true|first=a/a|sameInput=false/false|sameSlots=false|removedFirst=true|remaining=3:a,b"
+      }
+    },
+    {
+      "args": [
+        "nan"
+      ],
+      "expected": {
+        "return": "base=seed/true|batch=return|afterBatch=5:head,NaN,tail|afterRecovery=6:after"
+      }
+    },
+    {
+      "args": [
+        "infinity"
+      ],
+      "expected": {
+        "return": "base=seed/true|batch=return|afterBatch=5:head,Infinity,tail|afterRecovery=6:after"
+      }
+    }
+  ]
+}

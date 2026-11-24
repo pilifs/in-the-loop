@@ -245,7 +245,7 @@ def run_observation(run_dir, launch, subject_cp, sites, main, encoded, trace_exc
 
 def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None,
              inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None, search_startup_witness=False,
-             side_cache=None, after_jdk=None, application_change=False):
+             side_cache=None, after_jdk=None, application_change=False, checked_helper=None):
     jdk, probe = jdk.resolve(), probe.resolve()
     after_jdk = after_jdk.resolve() if after_jdk else jdk
     if after_jdk != jdk and native_caller:
@@ -344,7 +344,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             raise ValueError("the observer must declare public static String observe(String[] args)")
         helper_class=lambda f:f.relative_to(output).as_posix()[:-6]
         compiled=sorted(output.rglob("*.class"))
-        if any(helper_class(f) not in ("UpgradeObservation", "UpgradeTrace", "UpgradeClassLookup") and helper_class(f).split("$")[0] not in {main.replace(".","/"), *fixture_classes} for f in compiled):
+        if any(helper_class(f).split("$")[0] not in ("UpgradeObservation", "UpgradeTrace", "UpgradeClassLookup") and helper_class(f).split("$")[0] not in {main.replace(".","/"), *fixture_classes} for f in compiled):
             raise ValueError("the observer compiler produced an unrelated class")
         via = spec.get("invocationVia", "")
         direct = via or caller
@@ -386,6 +386,18 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             trial_env = {**env, "PATH": str(subject_jdk/"bin")+":/usr/bin:/bin"}
             if any(runtime_jar.read_class(jar,name) is not None for jar in files for name in report["probeClasses"]):
                 raise ValueError("observer classes shadow an input artifact")
+            proof = None
+            if checked_helper:
+                from targets import change_helpers
+                config, checker, images, cache_folder = checked_helper
+                proof = change_helpers.prove(config, files, subject_jdk, images[subject_jdk], checker,
+                                             temp/("proof-"+side), cache_folder/"helper-proofs" if cache_folder else None)
+                report.setdefault("helperProofs", {})[side] = proof
+                if proof["action"] == "refused":
+                    raise ValueError(f"{side}: strict checker refused helper {proof['entry']}")
+                table = change_helpers.trace_config(temp/("checked-"+side), config, proof)
+                launch.insert(1, "-Dupgrade.checked.table=" + str(table))
+                side_record["requiredHelperProof"] = proof["key"]
             if side_cache is not None:
                 hit = side_cache.lookup(side, files, side_record, report)
                 if hit is not None:
@@ -470,6 +482,9 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
                     pc, dispatched = site_marks[0].split("\t", 1)
                     if int(pc) not in sites or "#" not in dispatched:
                         raise ValueError("the live caller does not match the declared observer instruction")
+                    if proof:
+                        application = change_helpers.applications(marks, class_origins(child_output), config, proof, files, case["args"])
+                        trial_record.setdefault("checkedApplications", []).append(application)
                     trial_record.setdefault("entryInvocations", []).append(
                         {"observerCodeIndex": int(pc), "dispatchedTo": dispatched})
                     trial_record["qualifiedMethodEntries"] += 1

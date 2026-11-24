@@ -1,0 +1,26 @@
+{
+  "entry": "org.apache.commons.io.input.CharSequenceInputStream#read([BII)I",
+  "probeClass": "UpgradeProbe",
+  "cases": [
+    {
+      "args": [
+        "two-resets",
+        "explicit"
+      ],
+      "expected": {
+        "return": "65/3=51c3a9e4253647/R/3=51c3a9e4253647/R/3=51b8ad5a253647/-1=51b8ad5a253647/-1=51b8ad5a253647/0=51b8ad5a253647"
+      }
+    },
+    {
+      "args": [
+        "after-eof",
+        "explicit"
+      ],
+      "expected": {
+        "return": "65/5=51c3a9e4b8ad47/1=51c35ae4b8ad47/-1=51c35ae4b8ad47/R/5=51c3a9e4b8ad47/1=51c35ae4b8ad47/-1=51c35ae4b8ad47/R/-1=51c35ae4b8ad47/-1=51c35ae4b8ad47/-1=51c35ae4b8ad47/0=51c35ae4b8ad47"
+      }
+    }
+  ],
+  "observer": "The prefix and every subsequent return count and all seven bytes of the same caller-owned destination, including short reads, EOF, zero-length read and both outer guards.",
+  "basis": "Independent byte-sequence model of an explicitly selected UTF-8 encoder with one saved position. The disclosed parent consumes its mark on the first reset; the fix retains it."
+}

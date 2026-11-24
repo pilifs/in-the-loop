@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-144229-measure-threeten-overlap-histories-on-th",
+  "title": "Measure ThreeTen overlap histories on the unmodified change plan",
+  "description": "Run the existing application planner as found at the start of the organic campaign. Preserve the plan, finite old/new JVM observations and strict native first refusals at the public history of two parses through one cursor.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T14:42:29+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "9m"
+  },
+  "steps": [
+    {
+      "name": "Capture first strict native results",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py threeten overlap",
+      "cwd": "."
+    },
+    {
+      "name": "Plan and execute the original histories",
+      "run": "python3 -B lib/benchmark/organic-composition/plan_run.py threeten opening planned cold",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/threeten"
+  ]
+}

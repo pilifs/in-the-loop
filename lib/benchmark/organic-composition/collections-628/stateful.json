@@ -1,0 +1,40 @@
+{
+  "entry": "org.apache.commons.collections4.iterators.IteratorChain#next()Ljava/lang/Object;",
+  "probeClass": "UpgradeProbe",
+  "observer": "Both lock states, provenance of next and remove, rest of the traversal and the two original backing lists.",
+  "basis": "The upstream nested-chain and compatibility contracts, exposed optimization/repair behavior, and independent identity and mutability of the two supplied lists.",
+  "cases": [
+    {
+      "args": [
+        "advanced"
+      ],
+      "expected": {
+        "return": "a/true/b/ok/[c, d, e]/[a, c]/[d, e]/LL"
+      }
+    },
+    {
+      "args": [
+        "late"
+      ],
+      "expected": {
+        "return": "UU/UU/true/LL/[a, b, c, late]/rejected"
+      }
+    },
+    {
+      "args": [
+        "override"
+      ],
+      "expected": {
+        "return": "unadvanced/true/child-a/ok/[child-b, child-c, d, e]/[b, c]/[d, e]/LL"
+      }
+    },
+    {
+      "args": [
+        "unmodifiable"
+      ],
+      "expected": {
+        "return": "unadvanced/true/a/UnsupportedOperationException/[b, c, d, e]/[a, b, c]/[d, e]/LL"
+      }
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "Apache POI PR 1420, literal currency period across locale changes",
+  "workflows": [
+    {
+      "id": "currency-history",
+      "cohort": "registered",
+      "scope": "currency-history.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "en-US[.]:0.001000000тг.~0.001000000тг.~0.001000000тг.~literal=true|kk-KZ[,]:0,001000000тг.~0,001000000тг.~0,001000000тг.~literal=true|en-US[.]:0.001000000тг.~0.001000000тг.~0.001000000тг.~literal=true"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "kk-KZ[,]:0,001000000тг.~0,001000000тг.~0,001000000тг.~literal=true|en-US[.]:0.001000000тг.~0.001000000тг.~0.001000000тг.~literal=true|kk-KZ[,]:0,001000000тг.~0,001000000тг.~0,001000000тг.~literal=true"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Pinned complete :poi graph and JDK image, UTC, fresh JVM, initial default and POI thread locale set before construction, subsequent locale changes confined to this trial and restored."
+      ],
+      "checkedHelper": "helper.json"
+    },
+    {
+      "id": "numeric-and-date",
+      "cohort": "registered",
+      "scope": "numeric-and-date.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Pinned complete :poi graph and JDK image, UTC, fresh JVM, initial default and POI thread locale set before construction, subsequent locale changes confined to this trial and restored."
+      ],
+      "checkedHelper": "helper.json"
+    },
+    {
+      "id": "currency-history-ordinary",
+      "cohort": "control",
+      "scope": "currency-history.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "en-US[.]:0.001000000тг.~0.001000000тг.~0.001000000тг.~literal=true|kk-KZ[,]:0,001000000тг.~0,001000000тг.~0,001000000тг.~literal=true|en-US[.]:0.001000000тг.~0.001000000тг.~0.001000000тг.~literal=true"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "kk-KZ[,]:0,001000000тг.~0,001000000тг.~0,001000000тг.~literal=true|en-US[.]:0.001000000тг.~0.001000000тг.~0.001000000тг.~literal=true|kk-KZ[,]:0,001000000тг.~0,001000000тг.~0,001000000тг.~literal=true"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Pinned complete :poi graph and JDK image, UTC, fresh JVM, initial default and POI thread locale set before construction, subsequent locale changes confined to this trial and restored."
+      ]
+    },
+    {
+      "id": "numeric-and-date-ordinary",
+      "cohort": "control",
+      "scope": "numeric-and-date.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Pinned complete :poi graph and JDK image, UTC, fresh JVM, initial default and POI thread locale set before construction, subsequent locale changes confined to this trial and restored."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "Log4j #1173, daily rollover timezone and retained scheduling state",
+  "workflows": [
+    {
+      "id": "explicit",
+      "cohort": "registered",
+      "scope": "explicit.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "13,17/1393999200000,1393912800000,0,31,1393912800000,0/1393999200000,1393912800000,1393912800000,32,1393912800000,0/1394085600000,1393999200000,1393912800000,33,1393999200000,0"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "0,0/1393999200000,1393912800000,0,31,1393912800000,0/1393999200000,1393912800000,1393912800000,32,1393912800000,0/1394085600000,1393999200000,1393912800000,33,1393999200000,0"
+            }
+          },
+          {
+            "input": 2,
+            "expectedNew": {
+              "return": "13,17/1393999200000,1393912800000,0,31,1393912800000,0/1393999200000,1393912800000,1393912800000,32,1393912800000,0/1394085600000,1393999200000,1393912800000,33,1393999200000,0"
+            }
+          },
+          {
+            "input": 3,
+            "expectedNew": {
+              "return": "0,0/1393999200000,1393912800000,0,31,1393912800000,0/1393999200000,1393912800000,1393912800000,32,1393912800000,0/1394085600000,1393999200000,1393912800000,33,1393999200000,0"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JDK 21 JVM. The specified process default is set before public construction. Daily pattern, fixed offset, one receiver, no external Log4j configuration."
+      ]
+    },
+    {
+      "id": "omitted",
+      "cohort": "registered",
+      "scope": "omitted.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JDK 21 JVM. The specified process default is set before public construction. Daily pattern, fixed offset, one receiver, no external Log4j configuration."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,425 @@
+{
+  "proof": {
+    "key": "7d083496f6c830fb27ac7daf5b47131606e22b6d9386bcc43b63ea373c66d496",
+    "qualification": {
+      "change_helpers.py": "760a6a7174b33376ddc6abed96f6c2155156ee35168f5994de23da90ec138664",
+      "change_inventory.py": "831e7ac76736ef6f6a7a53cdfadb607be2bfc5e7c80e706613e2cf307e481594",
+      "runtime_jar.py": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
+      "runtime_jdk.py": "8c6518fdc92c120c8bed194f1993d02f5268cc120c390371f0f508ca3b00ff0a"
+    },
+    "entry": "com.ibm.icu.text.UTF16#isTrailSurrogate(I)Z",
+    "provider": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar",
+    "classSha256": "0cba408d08acb711264a661fb94bbe24a8fbb33a400d3a465c77c1722de1a0bb",
+    "codeSha256": "e144cd2346c82b809896c0670cc6d1d4ea2b12eba1de34aaf32cf8cd731c4a49",
+    "poolSha256": "771bbf3f91f92c9afa0de51d4e790c0869e3a5fbb01ab525a43f4ba39003318b",
+    "rows": [
+      {
+        "args": [
+          56320
+        ],
+        "result": 1
+      },
+      {
+        "args": [
+          56360
+        ],
+        "result": 1
+      },
+      {
+        "args": [
+          57343
+        ],
+        "result": 1
+      },
+      {
+        "args": [
+          56319
+        ],
+        "result": 0
+      },
+      {
+        "args": [
+          57344
+        ],
+        "result": 0
+      },
+      {
+        "args": [
+          0
+        ],
+        "result": 0
+      },
+      {
+        "args": [
+          65535
+        ],
+        "result": 0
+      },
+      {
+        "args": [
+          58
+        ],
+        "result": 0
+      },
+      {
+        "args": [
+          120
+        ],
+        "result": 0
+      },
+      {
+        "args": [
+          121
+        ],
+        "result": 0
+      }
+    ],
+    "contract": "com.ibm.icu.text.UTF16#isTrailSurrogate(int)\n  assume: (codePoint == 56320) || (codePoint == 56360) || (codePoint == 57343) || (codePoint == 56319) || (codePoint == 57344) || (codePoint == 0) || (codePoint == 65535) || (codePoint == 58) || (codePoint == 120) || (codePoint == 121)\n  assert: (codePoint == 56320 && result == true) || (codePoint == 56360 && result == true) || (codePoint == 57343 && result == true) || (codePoint == 56319 && result == false) || (codePoint == 57344 && result == false) || (codePoint == 0 && result == false) || (codePoint == 65535 && result == false) || (codePoint == 58 && result == false) || (codePoint == 120 && result == false) || (codePoint == 121 && result == false)\n",
+    "consumer": "public final class CheckedHelperUse { public static boolean check(int choice) { switch(choice) {\ncase 0: return com.ibm.icu.text.UTF16.isTrailSurrogate(56320) == true;\ncase 1: return com.ibm.icu.text.UTF16.isTrailSurrogate(56360) == true;\ncase 2: return com.ibm.icu.text.UTF16.isTrailSurrogate(57343) == true;\ncase 3: return com.ibm.icu.text.UTF16.isTrailSurrogate(56319) == false;\ncase 4: return com.ibm.icu.text.UTF16.isTrailSurrogate(57344) == false;\ncase 5: return com.ibm.icu.text.UTF16.isTrailSurrogate(0) == false;\ncase 6: return com.ibm.icu.text.UTF16.isTrailSurrogate(65535) == false;\ncase 7: return com.ibm.icu.text.UTF16.isTrailSurrogate(58) == false;\ncase 8: return com.ibm.icu.text.UTF16.isTrailSurrogate(120) == false;\ncase 9: return com.ibm.icu.text.UTF16.isTrailSurrogate(121) == false;\ndefault: return false; } } }\n",
+    "argv": [
+      "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/release/jvmcontract",
+      "prove",
+      "--classes",
+      "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/tmp89k35pol/proof",
+      "--classpath",
+      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar",
+      "CheckedHelperUse#check",
+      "--assume",
+      "choice >= 0 && choice < 10",
+      "--assert",
+      "result == true",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--timeout",
+      "60",
+      "--json",
+      "--lemmas",
+      "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/tmp89k35pol/proof/helper.contract"
+    ],
+    "exit": 0,
+    "proof": [
+      {
+        "wire_version": 1,
+        "verdict": "verified",
+        "target": "CheckedHelperUse#check",
+        "domain": "choice: int",
+        "assume": "choice >= 0 && choice < 10",
+        "assert": "result == true",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over choice: int in 0.0 s; loops unwound 16 times with unwinding assertions",
+        "problem": null,
+        "statement": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/jvmcontract-property-2489820-1795535292624933064-0/harness/PropertyHarness.java",
+        "findings": [],
+        "output": "lemma: ✓ com.ibm.icu.text.UTF16#isTrailSurrogate(int) satisfies `(codePoint == 56320 && result == true) || (codePoint == 56360 && result == true) || (codePoint == 57343 && result == true) || (codePoint == 56319 && result == false) || (codePoint == 57344 && result == false) || (codePoint == 0 && result == false) || (codePoint == 65535 && result == false) || (codePoint == 58 && result == false) || (codePoint == 120 && result == false) || (codePoint == 121 && result == false)` on every input where (codePoint == 56320) || (codePoint == 56360) || (codePoint == 57343) || (codePoint == 56319) || (codePoint == 57344) || (codePoint == 0) || (codePoint == 65535) || (codePoint == 58) || (codePoint == 120) || (codePoint == 121) (jvmcontract's own checker (CaDiCaL): 1 properties proved over codePoint: int in 0.0 s; loops unwound 16 times with unwinding assertions)\nlemma:   not vacuous: isTrailSurrogate(codePoint=0) reaches the calls\nnote: javac 21.0.13 compiled the expressions as they are written, with the tool's Java for the induction hypothesis or the lemmas' summaries (PropertyClaim.java, beside the harness), and the checker runs the result as bytecode, as it runs the target\nnote: lemma, proved above in 0.0 s: com.ibm.icu.text.UTF16#isTrailSurrogate(int) satisfies `(codePoint == 56320 && result == true) || (codePoint == 56360 && result == true) || (codePoint == 57343 && result == true) || (codePoint == 56319 && result == false) || (codePoint == 57344 && result == false) || (codePoint == 0 && result == false) || (codePoint == 65535 && result == false) || (codePoint == 58 && result == false) || (codePoint == 120 && result == false) || (codePoint == 121 && result == false)` where (codePoint == 56320) || (codePoint == 56360) || (codePoint == 57343) || (codePoint == 56319) || (codePoint == 57344) || (codePoint == 0) || (codePoint == 65535) || (codePoint == 58) || (codePoint == 120) || (codePoint == 121), on Strings of at most 8 code units; its calls within that are taken to return what it states, and any other runs the method as written\n✓ CheckedHelperUse#check satisfies `result == true` on every input where choice >= 0 && choice < 10 (jvmcontract's own checker (CaDiCaL): 1 properties proved over choice: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: check(choice=4) reaches the calls\n",
+        "work": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/jvmcontract-property-2489820-1795535292624933064-0",
+        "search": {
+          "engine": "native",
+          "checker": "jvmcontract's own checker (CaDiCaL)",
+          "seconds": 0.007009354,
+          "properties": 1,
+          "unwind": 16,
+          "max_array_length": 8,
+          "stage": null,
+          "native": {
+            "paths": 22,
+            "merges": 0,
+            "solver_calls": 22,
+            "solving_seconds": 0.000139984,
+            "gates_evaluated": 396,
+            "evaluating_seconds": 9.088e-06,
+            "divisions": 0,
+            "divisions_built": 0,
+            "multiplications": 0,
+            "multiplications_built": 0,
+            "variables": 433,
+            "clauses": 1201,
+            "seconds": 0.004706405,
+            "loading_seconds": 0.000159888,
+            "decoding_seconds": 5.828e-05,
+            "encoding_seconds": 0.000178282,
+            "witness_seconds": 0.0
+          },
+          "gap_mode": "strict",
+          "deadline_seconds": 60.0,
+          "runs": [
+            {
+              "checker": "native",
+              "purpose": "proof",
+              "stage": null,
+              "budget_seconds": 60.0,
+              "seconds": 0.005,
+              "ended": "verified",
+              "ending": "verified",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.004,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 433,
+                "clauses": 1201
+              }
+            },
+            {
+              "checker": "native",
+              "purpose": "probe",
+              "stage": null,
+              "budget_seconds": 59.993,
+              "seconds": 0.003,
+              "ended": "violation",
+              "ending": "counterexample",
+              "phases": {
+                "loading": 0.0,
+                "lowering": 0.0,
+                "symbolic": 0.003,
+                "encoding": 0.0,
+                "solving": 0.0,
+                "trace": 0.0,
+                "other": 0.0
+              },
+              "formula": {
+                "variables": 187,
+                "clauses": 524
+              }
+            }
+          ],
+          "phases": {
+            "seconds": 0.56,
+            "setup": 0.002,
+            "harness": 0.0,
+            "gaps": 0.0,
+            "contracts": 0.0,
+            "runs": 0.008,
+            "replay": 0.0,
+            "jvm": 0.0,
+            "other": 0.55
+          }
+        },
+        "stated": {
+          "kind": "property",
+          "domain": {
+            "parameters": [
+              {
+                "name": "choice",
+                "type": "int",
+                "kind": "primitive",
+                "null": false
+              }
+            ],
+            "shared_arrays": false,
+            "text": "choice: int"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "choice >= 0 && choice < 10",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            },
+            {
+              "kind": "summary",
+              "text": "com.ibm.icu.text.UTF16#isTrailSurrogate(int) satisfies `(codePoint == 56320 && result == true) || (codePoint == 56360 && result == true) || (codePoint == 57343 && result == true) || (codePoint == 56319 && result == false) || (codePoint == 57344 && result == false) || (codePoint == 0 && result == false) || (codePoint == 65535 && result == false) || (codePoint == 58 && result == false) || (codePoint == 120 && result == false) || (codePoint == 121 && result == false)` where (codePoint == 56320) || (codePoint == 56360) || (codePoint == 57343) || (codePoint == 56319) || (codePoint == 57344) || (codePoint == 0) || (codePoint == 65535) || (codePoint == 58) || (codePoint == 120) || (codePoint == 121), on Strings of at most 8 code units: proved beside this check, at its bounds, and applied at the method's calls within that; any other call runs the method as written",
+              "basis": "proved"
+            }
+          ],
+          "observations": {
+            "result": "the result and the parameters, against result == true",
+            "exceptions": "none may be thrown"
+          },
+          "bounds": {
+            "unwind": 16,
+            "max_array_length": null,
+            "complete": true
+          },
+          "models": {
+            "used": true,
+            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+            "classes": 40,
+            "jdk": "21.0.13"
+          },
+          "checker": {
+            "engine": "native",
+            "name": "jvmcontract's own checker (CaDiCaL)",
+            "solver": "CaDiCaL 1.9.5 (bundled)",
+            "fallback": null,
+            "sat": {
+              "solver": "CaDiCaL",
+              "version": "1.9.5",
+              "source": "bundled by the Rust crate cadical 0.1.16",
+              "configuration": [
+                "CaDiCaL's default options",
+                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                "the run's deadline through CaDiCaL's terminate callback",
+                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+              ]
+            }
+          },
+          "gap_mode": "strict",
+          "confirmation": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found check(choice=4).",
+            "witness": "check(choice=4)"
+          }
+        }
+      }
+    ],
+    "proofDigest": "3807e5ef5ba4b955236ef083066e8acf6862b63c143d6f7372e802e8f6907c29",
+    "finiteCertificate": {
+      "domain": [
+        {
+          "args": [
+            56320
+          ],
+          "result": 1
+        },
+        {
+          "args": [
+            56360
+          ],
+          "result": 1
+        },
+        {
+          "args": [
+            57343
+          ],
+          "result": 1
+        },
+        {
+          "args": [
+            56319
+          ],
+          "result": 0
+        },
+        {
+          "args": [
+            57344
+          ],
+          "result": 0
+        },
+        {
+          "args": [
+            0
+          ],
+          "result": 0
+        },
+        {
+          "args": [
+            65535
+          ],
+          "result": 0
+        },
+        {
+          "args": [
+            58
+          ],
+          "result": 0
+        },
+        {
+          "args": [
+            120
+          ],
+          "result": 0
+        },
+        {
+          "args": [
+            121
+          ],
+          "result": 0
+        }
+      ],
+      "body": {
+        "classSha256": "0cba408d08acb711264a661fb94bbe24a8fbb33a400d3a465c77c1722de1a0bb",
+        "codeSha256": "e144cd2346c82b809896c0670cc6d1d4ea2b12eba1de34aaf32cf8cd731c4a49",
+        "poolSha256": "771bbf3f91f92c9afa0de51d4e790c0869e3a5fbb01ab525a43f4ba39003318b"
+      },
+      "afterSuccessfulInitialization": true,
+      "provider": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar",
+      "closedInstructions": [
+        26,
+        17,
+        126,
+        18,
+        160,
+        4,
+        167,
+        3,
+        172
+      ],
+      "normalReturns": 10,
+      "consumerClassSha256": "7958152b6ad0d471e10f01133dbc68d368c307fa72901ad7475691b8f192e72f"
+    },
+    "finiteDigest": "be0245cba9bf2624286ae4fd14a6fa5398e860f9937c8ceba51af46d72418097",
+    "basis": "strict native lemma",
+    "action": "proved"
+  },
+  "input": [
+    "en_US"
+  ],
+  "exit": 0,
+  "markers": [
+    "UPGRADE-STARTUP ZmlsZTovaG9tZS9maWxpcC8uY2FjaGUvaW4tdGhlLWxvb3Avb3JnYW5pYy1jb21wb3NpdGlvbi1mZi9hcnRpZmFjdHMvRC1pY3UtZml4LWNvcmUuamFyIS9jb20vaWJtL2ljdS9JQ1VDb25maWcucHJvcGVydGllcw==",
+    "UPGRADE-STARTUP ZmlsZTovaG9tZS9maWxpcC8uY2FjaGUvaW4tdGhlLWxvb3Avb3JnYW5pYy1jb21wb3NpdGlvbi1mZi9hcnRpZmFjdHMvRC1pY3UtZml4LWNvcmUuamFyIS9jb20vaWJtL2ljdS9pbXBsL2RhdGEvaWN1ZGF0YS9icmtpdHIvZW5fVVMucmVz",
+    "UPGRADE-STARTUP ZmlsZTovaG9tZS9maWxpcC8uY2FjaGUvaW4tdGhlLWxvb3Avb3JnYW5pYy1jb21wb3NpdGlvbi1mZi9hcnRpZmFjdHMvRC1pY3UtZml4LWNvcmUuamFyIS9jb20vaWJtL2ljdS9pbXBsL2RhdGEvaWN1ZGF0YS9icmtpdHIvZW4ucmVz",
+    "UPGRADE-STARTUP ZmlsZTovaG9tZS9maWxpcC8uY2FjaGUvaW4tdGhlLWxvb3Avb3JnYW5pYy1jb21wb3NpdGlvbi1mZi9hcnRpZmFjdHMvRC1pY3UtZml4LWNvcmUuamFyIS9jb20vaWJtL2ljdS9pbXBsL2RhdGEvaWN1ZGF0YS9icmtpdHIvcm9vdC5yZXM=",
+    "UPGRADE-STARTUP ZmlsZTovaG9tZS9maWxpcC8uY2FjaGUvaW4tdGhlLWxvb3Avb3JnYW5pYy1jb21wb3NpdGlvbi1mZi9hcnRpZmFjdHMvRC1pY3UtZml4LWNvcmUuamFyIS9jb20vaWJtL2ljdS9pbXBsL2RhdGEvaWN1ZGF0YS9icmtpdHIvd29yZC5icms=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJjb20uaWJtLmljdS5pbXBsLkNoYXJhY3Rlckl0ZXJhdGlvbiNuZXh0VHJhaWwzMihMamF2YS90ZXh0L0NoYXJhY3Rlckl0ZXJhdG9yO0kpSSIsImJjaSI6NDAsImFyZ3MiOls1NjMyMF0sInJlc3VsdCI6MX0=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJjb20uaWJtLmljdS5pbXBsLkNoYXJhY3Rlckl0ZXJhdGlvbiNuZXh0VHJhaWwzMihMamF2YS90ZXh0L0NoYXJhY3Rlckl0ZXJhdG9yO0kpSSIsImJjaSI6NDAsImFyZ3MiOls1NjM2MF0sInJlc3VsdCI6MX0=",
+    "UPGRADE-HIT com.ibm.icu.text.RuleBasedBreakIterator#next()I",
+    "UPGRADE-CALL-SITE 129\tcom.ibm.icu.text.RuleBasedBreakIterator#next()I"
+  ],
+  "observation": {
+    "return": "0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0"
+  },
+  "applications": {
+    "proofKey": "7d083496f6c830fb27ac7daf5b47131606e22b6d9386bcc43b63ea373c66d496",
+    "applications": [
+      {
+        "caller": "com.ibm.icu.impl.CharacterIteration#nextTrail32(Ljava/text/CharacterIterator;I)I",
+        "bci": 40,
+        "args": [
+          56320
+        ],
+        "result": 1
+      },
+      {
+        "caller": "com.ibm.icu.impl.CharacterIteration#nextTrail32(Ljava/text/CharacterIterator;I)I",
+        "bci": 40,
+        "args": [
+          56360
+        ],
+        "result": 1
+      }
+    ],
+    "startupEntry": "java.net.URL#openStream()Ljava/io/InputStream;",
+    "startupArguments": [
+      "file:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar!/com/ibm/icu/ICUConfig.properties",
+      "file:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar!/com/ibm/icu/impl/data/icudata/brkitr/en_US.res",
+      "file:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar!/com/ibm/icu/impl/data/icudata/brkitr/en.res",
+      "file:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar!/com/ibm/icu/impl/data/icudata/brkitr/root.res",
+      "file:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar!/com/ibm/icu/impl/data/icudata/brkitr/word.brk"
+    ],
+    "resources": [
+      {
+        "jar": "45f175800c28882b34223896697afb5050669f22a64d4989ba06d2f287037f7a",
+        "entry": "com/ibm/icu/impl/data/icudata/brkitr/word.brk",
+        "sha256": "e7e505439ca75fd34cb1fc584142a5c4ee7d1e60dbd73925ced84565bcb66d9c"
+      }
+    ]
+  }
+}

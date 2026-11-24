@@ -1,0 +1,28 @@
+{
+  "schema": "iterator-effect-experiment/v1",
+  "claim": "The first parent hasNext in the registered unmodifiable history can resume with a checked updateCurrentIterator effect and still reach the original throwing removal boundary.",
+  "registeredWorkflow": "stateful",
+  "arguments": ["unmodifiable"],
+  "helper": "org.apache.commons.collections4.iterators.IteratorChain#updateCurrentIterator()V",
+  "caller": "org.apache.commons.collections4.iterators.IteratorChain#hasNext()Z",
+  "observer": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+  "roots": ["parent", "child", "backing", "tail", "Boolean.TRUE"],
+  "frame": "All instance fields and array slots reachable from these five entry roots, retaining detached queue nodes. Admission requires equality of the whole entry graph and the independently predicted poststate. Temporary objects, static fields, VM headers and unrelated heap objects are outside the claim.",
+  "preconditions": "The public observer creates a fresh unadvanced child over the mutable backing list. Parent.hasNext has locked the parent. Both current and last-used fields and both caches are initially null. The parent has a decorated iterator followed by a fixed-size sibling. The child's queue still points to the original mutable iterator.",
+  "endpoints": {
+    "628-old": "retained child",
+    "628-new": "flattened child",
+    "755-old": "flattened child",
+    "755-new": "retained child"
+  },
+  "expectedEffect": "All endpoints pop the parent's decorator, retain it as current and cache true. When the decorator wraps the child, the child locks, pops and retains the original mutable iterator, and caches true. When the decorator wraps the mutable iterator directly, the child, its queue and its lock stay untouched. Include all detached node fields and keep both leaf cursors, both last-used fields and both backing lists unchanged.",
+  "continuation": "After substitution the original next returns a. At parent.remove its last-used reference is the selected decorator. Its delegate is still the child on the retained endpoints and the original mutable iterator on the flattened endpoints. The exception must originate at the original UnmodifiableIterator.remove instruction on that very decorator and be caught by UpgradeProbe.observe. A removal reaching the mutable iterator instead fails qualification. Compare the complete public observation, including both final locks, with the frozen first plan.",
+  "controls": [
+    "Withhold either ordinary reference execution or use a certificate from a different deployment.",
+    "Present a different mutable cursor at entry or omit the cleared item of the detached parent node.",
+    "Supply the opposite child lock, or bypass the decorator while keeping the original next value possible. Refuse both live substitutions before the public next.",
+    "Replace the throw receiver or its original throwing site in the evidence while holding public output fixed."
+  ],
+  "qualification": "Two independent ordinary JVMs establish the finite effect on the named original deployment before two fresh JVMs may substitute it. Check original bytecode, classpath, public observer, call sites, logical object identities and the full frame.",
+  "assurance": "One registered finite unmodifiable history at each original endpoint. Startup and the frozen public plan retain their previously recorded assurance."
+}

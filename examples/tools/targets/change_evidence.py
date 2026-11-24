@@ -20,8 +20,13 @@ def write_json(path, value):
             Path(out.name).unlink(missing_ok=True)
 
 
-def outcome(trial, entry, client):
+def outcome(trial, entry, client, required_helper=None):
     """A returned value or an exception actually escaping the selected original invocation."""
+    if required_helper:
+        applications = trial.get("checkedApplications", [])
+        if (len(applications) != 2 or any(a.get("proofKey") != required_helper or not a.get("applications")
+                                          or not a.get("startupArguments") for a in applications)):
+            return None
     observations = trial.get("observations", [])
     invocations = trial.get("entryInvocations", [])
     if (trial.get("qualifiedMethodEntries") != 2 or len(observations) != 2
@@ -56,12 +61,12 @@ class SideCache:
                        "observerClasses": report["probeClasses"], "call": report["observerInvocation"]})
 
     @staticmethod
-    def valid(payload, domain, entry, client):
+    def valid(payload, domain, entry, client, required_helper=None):
         trials = payload["trials"]
         if (len(trials) != len(domain) or not payload["loadedDependencyClasses"]
                 or set(payload["loadedPerInput"]) != {str(i) for i in range(len(domain))}):
             return False
-        return all(t["input"] == i and outcome(t, entry, client) == case["expected"]
+        return all(t["input"] == i and outcome(t, entry, client, required_helper) == case["expected"]
                    and "return" in case["expected"] for i, (case, t) in enumerate(zip(domain, trials)))
 
     def lookup(self, side, files, binding, report):
@@ -73,7 +78,7 @@ class SideCache:
                 record = json.loads(path.read_text())
                 payload = record["evidence"]
                 if (record["key"] == key and digest(payload) == record["evidenceSha256"]
-                        and self.valid(payload, report["cases"], report["entry"], binding["classpath"][0])):
+                        and self.valid(payload, report["cases"], report["entry"], binding["classpath"][0], binding.get("requiredHelperProof"))):
                     self.actions[side]["action"] = "exact reuse"
                     return payload
             except (KeyError, TypeError, ValueError):
@@ -83,7 +88,7 @@ class SideCache:
     def remember(self, side, binding, report, loaded_per_input):
         payload = {"trials": binding["trials"], "loadedDependencyClasses": binding["loadedDependencyClasses"],
                    "loadedPerInput": {str(i): sorted(v) for i, v in loaded_per_input.items()}}
-        if self.valid(payload, report["cases"], report["entry"], binding["classpath"][0]):
+        if self.valid(payload, report["cases"], report["entry"], binding["classpath"][0], binding.get("requiredHelperProof")):
             key = self.actions[side]["key"]
             write_json(self.directory / (key + ".json"),
                        {"key": key, "evidenceSha256": digest(payload), "evidence": payload})
@@ -111,7 +116,7 @@ def compose(spec, report, intent="preserve"):
         for side in ("old", "new"):
             trial = indexed[side].get(i, {})
             cp = sides.get(side, {}).get("classpath", [])
-            values[side] = outcome(trial, spec["entry"], cp[0]) if cp else None
+            values[side] = outcome(trial, spec["entry"], cp[0], sides[side].get("requiredHelperProof")) if cp else None
             if trial.get("beforeEntry"):
                 startup[side] = trial["beforeEntry"]
         old, new = values["old"], values["new"]

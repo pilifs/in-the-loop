@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-172132-transfer-the-frozen-public-change-plan-t",
+  "title": "Transfer the frozen public change plan to Commons IO repeated resets",
+  "description": "Run both exact Commons IO #520 production JARs through the frozen application verifier. Independently registered histories compare each bulk return and every byte of the same caller-owned array through a second reset, reset after EOF, a single reset, short reads and zero-length reads. Substitute the checked minimum in the real bulk read. Compare cold, warm, clean and unrelated runs and reopen both derivations with a false declaration.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "checked-proof-reuse"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T17:21:32+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "Verify the pre-transfer implementation",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": "."
+    },
+    {
+      "name": "Run the registered transfer with cache and helper controls",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py io first --controls",
+      "cwd": "."
+    },
+    {
+      "name": "Requalify all original scopes and compare matched runs",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py io first",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/io/first"
+  ]
+}

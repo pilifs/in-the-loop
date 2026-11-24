@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-155203-transfer-checked-digit-returns-and-live",
+  "title": "Transfer checked digit returns and live regional metadata to libphonenumber",
+  "description": "On both original PR 2272 production JARs, replay every visible prefix and remembered position across append, clear and reuse. Exercise Swedish and Ecuadorian fixed-line changes, US and Ecuadorian mobile preservation, checked Character.forDigit at the original call, the selected production resource URL, incorrect-premise rejection and clean cache recomputation.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "checked-proof-reuse",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T15:52:03+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "8m"
+  },
+  "steps": [
+    {
+      "name": "Check the shared freeze and ordinary public native entry",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/native_open.py phone phone",
+      "cwd": "."
+    },
+    {
+      "name": "Qualify and preserve the first libphonenumber plans",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py phone first --controls",
+      "cwd": "."
+    },
+    {
+      "name": "Requalify every resource and public input",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py phone first && python3 -B lib/benchmark/organic-composition/phone/metadata.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/phone/first-native.json",
+    "verification/organic-composition/phone/first",
+    "verification/organic-composition/phone/metadata.json"
+  ]
+}

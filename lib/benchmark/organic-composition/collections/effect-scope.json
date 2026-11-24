@@ -1,0 +1,28 @@
+{
+  "schema": "iterator-effect-experiment/v1",
+  "claim": "The first parent hasNext in the registered advanced history can continue from a checked effect of updateCurrentIterator on the original receiver.",
+  "registeredWorkflow": "stateful",
+  "arguments": ["advanced"],
+  "helper": "org.apache.commons.collections4.iterators.IteratorChain#updateCurrentIterator()V",
+  "caller": "org.apache.commons.collections4.iterators.IteratorChain#hasNext()Z",
+  "observer": "UpgradeProbe#observe([Ljava/lang/String;)Ljava/lang/String;",
+  "roots": ["parent", "child", "backing", "tail", "Boolean.TRUE"],
+  "frame": "Every non-static field and array slot transitively reachable from these roots at entry, including fields of objects detached by queue removal. The poststate must introduce no reference outside that object set. Temporary allocations, VM headers and process-wide state are outside the claim.",
+  "preconditions": "Fresh single-threaded observer on the bound JDK and original ordered classpath. The parent is the live hasNext receiver. The child has consumed exactly the first backing element, has its own mutable list iterator, and is locked. The fixed-size sibling has not advanced. Both original lists and both queues are distinct.",
+  "expectedEffect": "Pop the parent's first queue node. Make its item the current iterator and cache Boolean.TRUE. If the item is the retained child, cache TRUE there as well. Preserve both locks, both last-used references, the leaf cursor and the contents of both backing lists. Check the full LinkedList unlink frame including the detached node.",
+  "endpoints": {
+    "628-old": "retained child",
+    "628-new": "flattened child",
+    "755-old": "flattened child",
+    "755-new": "retained child"
+  },
+  "continuation": "At parent.remove entry the selected iterator must be the same reference chosen at parent.hasNext. The ultimate removal receiver must be the pre-advanced mutable iterator for retained children and the fixed-size sibling for flattened children. The full observation must equal both its registration and the original plan receipt.",
+  "qualification": "Two fresh ordinary executions must agree with the declared frame and each other before substitution. Two further fresh JVMs may apply it only at the same live body, call sites, deployment, JDK and complete prestate. Read back the written graph before continuing the public caller.",
+  "controls": [
+    "Withhold a reference execution before substitution.",
+    "Exchange the selected child and sibling in a proposed effect.",
+    "Omit the detached queue node's item write, which the public return alone cannot expose.",
+    "Change a cursor in the prestate or replay a certificate on another deployment."
+  ],
+  "assurance": "A case-specific finite original-JVM effect for this one registered input. The remaining inputs, arbitrary nesting and all other heap shapes retain their previous assurance."
+}

@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-155711-verify-icu-word-boundary-histories-throu",
+  "title": "Verify ICU word-boundary histories through the actual changed rule data",
+  "description": "The preceding frozen transfers selected unchanged packaged resources. Test a real data-only change on the two complete ICU4J core builds. Record exact UTF-16 boundaries and statuses in both directions across text replacement. Bind the selected binary and locale fallback on both releases. Replay the genuine six-resource edit at a stable path and compare warm decisions to an empty cache.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "checked-proof-reuse",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T15:57:11+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "12m"
+  },
+  "steps": [
+    {
+      "name": "Verify freeze and measure original ordinary native predicate",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/native_open.py icu english",
+      "cwd": "."
+    },
+    {
+      "name": "Capture complete first ICU cold, warm and clean plans",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py icu first",
+      "cwd": "."
+    },
+    {
+      "name": "Recheck each consumed result and actual resource",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py icu first && python3 -B lib/benchmark/organic-composition/icu/resources.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/icu/first-native.json",
+    "verification/organic-composition/icu/first",
+    "verification/organic-composition/icu/resource-transfer"
+  ]
+}
