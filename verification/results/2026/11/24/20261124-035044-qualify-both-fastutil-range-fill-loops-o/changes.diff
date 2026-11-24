@@ -1,0 +1,180 @@
+--- /dev/null
++++ b/verification/kernel-recovery/fastutil.json
+@@ -0,0 +1,177 @@
++{
++  "schema": "release-range-qualification/v1",
++  "sourceCommit": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
++  "key": "fastutil-8.5.15/IntArrays.fill",
++  "jarSha256": "cffeb6673bdf1e6e4377d684df2f55ac359cf5cf6df613e05e62deeea500936a",
++  "request": "request 1\ntheorem range-fill-frame-v1\nenvironment initialized-verified-jvm-v1\nclass it/unimi/dsi/fastutil/ints/IntArrays b455b9400c7fe47a938229a25f04f7d55c4cc09a2332580d28e098d80afe1f0c\nentry fill ([IIII)V\ncompanion ensureFromTo ([III)V\ncallee it/unimi/dsi/fastutil/Arrays 1ecbd5a1984248e84cd734a5a6c674aa91f2362dd3ce42c77d5c35b91ad22d96\n",
++  "requestSha256": "e5c1c8016050e3865b70c8fd2ceae22af724c49aecb928c95095281c458ff962",
++  "certificate": "certificate 1\nrequest e5c1c8016050e3865b70c8fd2ceae22af724c49aecb928c95095281c458ff962\nhints prefix-and-suffix remaining\nensureFromTo(III)V@0>3 local-static-boolean\nensureFromTo(III)V@0>3 step\nensureFromTo(III)V@100>101 step\nensureFromTo(III)V@101>102 step\nensureFromTo(III)V@102>146 implied-by-range\nensureFromTo(III)V@102>146 step\nensureFromTo(III)V@146>exit normal-unchanged\nensureFromTo(III)V@18>19 step\nensureFromTo(III)V@19>54 implied-by-range\nensureFromTo(III)V@19>54 step\nensureFromTo(III)V@3>18 implied-by-range\nensureFromTo(III)V@3>18 step\nensureFromTo(III)V@3>6 implied-by-range\nensureFromTo(III)V@3>6 step\nensureFromTo(III)V@54>55 step\nensureFromTo(III)V@55>56 step\nensureFromTo(III)V@56>100 implied-by-range\nensureFromTo(III)V@56>100 step\nensureFromTo(III)V@6>7 step\nensureFromTo(III)V@7>18 implied-by-range\nensureFromTo(III)V@7>18 step\nensureFromTo([III)V@0>1 step\nensureFromTo([III)V@1>2 nonnull\nensureFromTo([III)V@1>2 step\nensureFromTo([III)V@2>3 step\nensureFromTo([III)V@3>4 step\nensureFromTo([III)V@4>7 resolved-valid-range\nensureFromTo([III)V@4>7 step\nensureFromTo([III)V@7>exit normal-unchanged\nfill([IIII)V@0>1 step\nfill([IIII)V@10>11 step\nfill([IIII)V@11>14 no-signed-overflow\nfill([IIII)V@11>14 step\nfill([IIII)V@14>17 step\nfill([IIII)V@14>44 exhausted-cursor-minus-one\nfill([IIII)V@14>44 step\nfill([IIII)V@17>18 step\nfill([IIII)V@18>19 step\nfill([IIII)V@19>20 step\nfill([IIII)V@1>2 step\nfill([IIII)V@20>21 in-bounds-suffix-store\nfill([IIII)V@20>21 step\nfill([IIII)V@21>10 extend-written-suffix\nfill([IIII)V@21>10 step\nfill([IIII)V@21>10 variant-decreases\nfill([IIII)V@24>25 step\nfill([IIII)V@25>27 empty-written-prefix\nfill([IIII)V@25>27 step\nfill([IIII)V@27>29 step\nfill([IIII)V@29>30 step\nfill([IIII)V@2>3 step\nfill([IIII)V@30>33 step\nfill([IIII)V@30>44 step\nfill([IIII)V@33>34 step\nfill([IIII)V@34>36 step\nfill([IIII)V@36>37 step\nfill([IIII)V@37>38 in-bounds-prefix-store\nfill([IIII)V@37>38 step\nfill([IIII)V@38>41 no-signed-overflow\nfill([IIII)V@38>41 step\nfill([IIII)V@3>6 resolved-valid-range\nfill([IIII)V@3>6 step\nfill([IIII)V@41>27 extend-written-prefix\nfill([IIII)V@41>27 step\nfill([IIII)V@41>27 variant-decreases\nfill([IIII)V@44>exit exact-write-frame\nfill([IIII)V@6>7 step\nfill([IIII)V@7>10 empty-written-suffix\nfill([IIII)V@7>10 step\nfill([IIII)V@7>24 step\n",
++  "certificateSha256": "8c81a75d440398ac65873207d0ffa62cb785fbb03c5e6fb9707d4b43d030d49c",
++  "generationSeconds": 0.6936932590324432,
++  "classSha256": "b455b9400c7fe47a938229a25f04f7d55c4cc09a2332580d28e098d80afe1f0c",
++  "supportSha256": [
++    "1ecbd5a1984248e84cd734a5a6c674aa91f2362dd3ce42c77d5c35b91ad22d96"
++  ],
++  "build": {
++    "exit": 0,
++    "stdout": "",
++    "wallSeconds": 1.242825,
++    "peakKiB": 190056,
++    "binarySha256": "40ec3fbe0a7a9b2198a0e2d46b613795b29f701894ac82ed01b468af6d1d4386"
++  },
++  "before": {
++    "exit": 2,
++    "stdout": "rejected bad support",
++    "wallSeconds": 0.001649,
++    "peakKiB": 47516,
++    "checkerSha256": "5591785151ac8237e35c3bfdbe8c5eea25e7f5c5df1e5f4206d0e626a6ab65a5"
++  },
++  "after": {
++    "exit": 0,
++    "stdout": "accepted range-fill-frame-v1 it/unimi/dsi/fastutil/ints/IntArrays#fill([IIII)V companion ensureFromTo([III)V environment initialized-verified-jvm-v1 class b455b9400c7fe47a938229a25f04f7d55c4cc09a2332580d28e098d80afe1f0c request e5c1c8016050e3865b70c8fd2ceae22af724c49aecb928c95095281c458ff962 obligations 70",
++    "wallSeconds": 0.002151,
++    "peakKiB": 47516,
++    "checkerSha256": "40ec3fbe0a7a9b2198a0e2d46b613795b29f701894ac82ed01b468af6d1d4386"
++  },
++  "controls": [
++    {
++      "missing": "fill([IIII)V@21>10 extend-written-suffix",
++      "result": {
++        "exit": 2,
++        "stdout": "rejected missing obligation fill([IIII)V@21>10 extend-written-suffix",
++        "wallSeconds": 0.001757,
++        "peakKiB": 47516,
++        "checkerSha256": "40ec3fbe0a7a9b2198a0e2d46b613795b29f701894ac82ed01b468af6d1d4386"
++      }
++    },
++    {
++      "missing": "fill([IIII)V@14>44 exhausted-cursor-minus-one",
++      "result": {
++        "exit": 2,
++        "stdout": "rejected missing obligation fill([IIII)V@14>44 exhausted-cursor-minus-one",
++        "wallSeconds": 0.001732,
++        "peakKiB": 47516,
++        "checkerSha256": "40ec3fbe0a7a9b2198a0e2d46b613795b29f701894ac82ed01b468af6d1d4386"
++      }
++    },
++    {
++      "missing": "fill([IIII)V@41>27 extend-written-prefix",
++      "result": {
++        "exit": 2,
++        "stdout": "rejected missing obligation fill([IIII)V@41>27 extend-written-prefix",
++        "wallSeconds": 0.001634,
++        "peakKiB": 47516,
++        "checkerSha256": "40ec3fbe0a7a9b2198a0e2d46b613795b29f701894ac82ed01b468af6d1d4386"
++      }
++    }
++  ],
++  "jvm": {
++    "-ea": {
++      "sourceSha256": "ea63ea23e226e78200aaedc8ca1c1c973b7211d4cfd44c1300864a911ba79488",
++      "classSha256": "cdd3de9d35e81182fbfab704982d6c7d40048c0ba06aef05419595becaa6da85",
++      "jvmOptions": [
++        "-Xverify:all",
++        "-ea"
++      ],
++      "observations": [
++        "checks=7745 pass=7745 zeroOriginBranch=2735 otherBranch=5010",
++        "[0,2) value 99 on [0,0,0] -> [99, 99, 0]",
++        "[1,1) value 99 on [5,6,7] -> [5, 6, 7]",
++        "from=-1 to=0 len=2 -> java.lang.ArrayIndexOutOfBoundsException: Start index (-1) is negative",
++        "from=1 to=0 len=2 -> java.lang.IllegalArgumentException: Start index (1) is greater than end index (0)",
++        "from=0 to=3 len=2 -> java.lang.ArrayIndexOutOfBoundsException: End index (3) is greater than array length (2)"
++      ]
++    },
++    "-da": {
++      "sourceSha256": "ea63ea23e226e78200aaedc8ca1c1c973b7211d4cfd44c1300864a911ba79488",
++      "classSha256": "cdd3de9d35e81182fbfab704982d6c7d40048c0ba06aef05419595becaa6da85",
++      "jvmOptions": [
++        "-Xverify:all",
++        "-da"
++      ],
++      "observations": [
++        "checks=7745 pass=7745 zeroOriginBranch=2735 otherBranch=5010",
++        "[0,2) value 99 on [0,0,0] -> [99, 99, 0]",
++        "[1,1) value 99 on [5,6,7] -> [5, 6, 7]",
++        "from=-1 to=0 len=2 -> java.lang.ArrayIndexOutOfBoundsException: Start index (-1) is negative",
++        "from=1 to=0 len=2 -> java.lang.IllegalArgumentException: Start index (1) is greater than end index (0)",
++        "from=0 to=3 len=2 -> java.lang.ArrayIndexOutOfBoundsException: End index (3) is greater than array length (2)"
++      ]
++    }
++  },
++  "regressions": {
++    "guavaChecks": 18,
++    "rangeChecks": [
++      {
++        "case": "fill-any-length",
++        "disposition": "accepted",
++        "firstDecision": "accepted range-fill-frame-v1 java/util/Arrays#fill([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab request 130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5 obligations 37"
++      },
++      {
++        "case": "caller-any-length",
++        "disposition": "accepted",
++        "firstDecision": "accepted range-fill-caller-frame-observation-v1 fill/Range#observe([I[IIIII)I companion fill([IIII)V environment initialized-verified-jvm-v1 class 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742 request ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9 obligations 51"
++      },
++      {
++        "case": "caller-extra-any-length",
++        "disposition": "rejected",
++        "firstDecision": "rejected checked witness shared [11], from=0 to=0 value=7 k=0: returned 7, after [7], expected 11 and [11]; first rule: callee write interval or arguments at 17: [Root, From, Next, Value]"
++      },
++      {
++        "case": "saved-local",
++        "disposition": "accepted",
++        "firstDecision": "accepted range-fill-frame-v1 fixtures/RangeLoops#savedValue([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a request a1e70a9f14b89a97ed47739c9e8b5224c1fcc07f2ce2300024cabf79ae9247c7 obligations 39"
++      },
++      {
++        "case": "missing-store",
++        "disposition": "rejected",
++        "firstDecision": "rejected written prefix or progress at back edge 19"
++      },
++      {
++        "case": "wrong-value",
++        "disposition": "rejected",
++        "firstDecision": "rejected written prefix or outside frame at store 20"
++      },
++      {
++        "case": "strict-empty-guard",
++        "disposition": "unsupported",
++        "firstDecision": "unsupported range guard From Lt To at strictRangeCheck@2"
++      },
++      {
++        "case": "wrong-observed-root",
++        "disposition": "rejected",
++        "firstDecision": "rejected checked witness distinct a=[] other=[31], from=0 to=0 value=7 k=0: array bounds exception at read 11, expected normal return 31; first rule: caller read needs a valid index in the observed root"
++      },
++      {
++        "case": "omit-caller-frame",
++        "disposition": "rejected",
++        "firstDecision": "rejected missing obligation observe([I[IIIII)I@12>exit exact-write-frame"
++      },
++      {
++        "case": "omit-distinct-read",
++        "disposition": "rejected",
++        "firstDecision": "rejected missing obligation observe([I[IIIII)I@11>12 distinct-root"
++      },
++      {
++        "case": "omit-loop-decrease",
++        "disposition": "rejected",
++        "firstDecision": "rejected missing obligation fill([IIII)V@24>10 variant-decreases"
++      },
++      {
++        "case": "missing-callee",
++        "disposition": "rejected",
++        "firstDecision": "rejected expected one external callee class"
++      },
++      {
++        "case": "substitute-callee",
++        "disposition": "rejected",
++        "firstDecision": "rejected external callee class digest"
++      },
++      {
++        "case": "wrong-loop-slot",
++        "disposition": "unsupported",
++        "firstDecision": "unsupported range cut point or cursor"
++      }
++    ]
++  }
++}

@@ -1,0 +1,176 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-035044-qualify-both-fastutil-range-fill-loops-o",
+  "title": "Qualify both fastutil range fill loops on original release classes",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.2s, peak 106.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-035044-qualify-both-fastutil-range-fill-loops-o.json",
+    "sha256": "ce8f7e8bca2376dd7ff543e5d26c480a9296c469de9457d9b7b3f6ef4596e4c3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-035044-qualify-both-fastutil-range-fill-loops-o",
+      "title": "Qualify both fastutil range fill loops on original release classes",
+      "description": "Check both branches of fastutil 8.5.15 IntArrays.fill through its resolved cross-class bounds check, with the post-JDK checker frozen before transfer. Replay the two JVM assertion settings, the 7745 valid inputs, the written prefix and suffix obligations, and all prior Guava and range controls.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "array-induction"
+      ],
+      "links": {
+        "examples": [
+          "337"
+        ]
+      },
+      "expected": "Seventy checked requirements establish the exact valid-range frame and termination. Both JVM settings match every expected cell and incomplete hints fail on their omitted edges.",
+      "submitted": {
+        "at": "2026-11-24T03:50:44+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "python3",
+        "rustc",
+        "setpriv",
+        "java",
+        "javac",
+        "javap"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Qualify both fastutil range fill loops on original release classes",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/release_fill.py --output verification/kernel-recovery/fastutil.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/kernel-recovery/fastutil.json"
+      ]
+    }
+  },
+  "sourceCommit": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+  "startedAt": "2026-11-24T04:22:45+00:00",
+  "finishedAt": "2026-11-24T04:23:01+00:00",
+  "wallSeconds": 16.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 112066560,
+    "wallSeconds": 5.2,
+    "cpuSeconds": 8.6,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Qualify both fastutil range fill loops on original release classes",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/release_fill.py --output verification/kernel-recovery/fastutil.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 5.209,
+      "cpuSeconds": 8.648,
+      "cpuThrottledSeconds": 0.4,
+      "peakMemoryBytes": 112066560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-both-fastutil-range-fi.log",
+        "lines": 1,
+        "bytes": 339,
+        "sha256": "2fefa3cf1ef49f7a0d4614c5b1df87fd55ec84c64a898ef0c492ae35768aa120",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "fastutil-8.5.15/IntArrays.fill accepted range-fill-frame-v1 it/unimi/dsi/fastutil/ints/IntArrays#fill([IIII)V companion ensureFromTo([III)V environment initialized-verified-jvm-v1 class b455b9400c7fe47a938229a25f04f7d55c4cc09a2332580d28e098d80afe1f0c request e5c1c8016050e3865b70c8fd2ceae22af724c49ae"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/kernel-recovery/fastutil.json",
+      "change": "added",
+      "bytes": 10485,
+      "sha256": "d74453b6b8c3614177c3290c43f742b0db554dc0c80d02ba2d6390a5246afb7d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:23:38+00:00",
+    "applied": [
+      "verification/kernel-recovery/fastutil.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 2,
+    "occurrences": {
+      "logs": "20261124T042301Z-383081807df890d2",
+      "outputs": "20261124T042301Z-404171f247eb157f",
+      "diff": "20261124T042301Z-4214823c114bb74b"
+    }
+  }
+}
