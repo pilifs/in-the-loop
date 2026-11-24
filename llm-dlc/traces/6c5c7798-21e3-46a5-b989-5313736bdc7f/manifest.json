@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-24T02:52:37.569Z",
-  "duration_seconds": 725111,
+  "ended": "2026-11-24T02:55:24.822Z",
+  "duration_seconds": 725278,
   "stats": {
     "turns": 1119,
-    "api_calls": 4921,
-    "tool_calls": 4431,
+    "api_calls": 4928,
+    "tool_calls": 4438,
     "tool_errors": 57,
     "compactions": 13,
     "peak_context_tokens": 626480,
     "usage": {
-      "input_tokens": 12078,
-      "output_tokens": 2178762,
-      "cache_read_input_tokens": 1476516557,
-      "cache_creation_input_tokens": 7279601
+      "input_tokens": 12094,
+      "output_tokens": 2181785,
+      "cache_read_input_tokens": 1479963760,
+      "cache_creation_input_tokens": 7285835
     }
   },
   "tools": {
-    "Bash": 4256,
+    "Bash": 4263,
     "SendMessage": 43,
     "Edit": 33,
     "ToolSearch": 22,
@@ -261,24 +261,24 @@
     {
       "index": 13,
       "started": "2026-11-23T13:16:11.056Z",
-      "ended": "2026-11-24T02:52:37.569Z",
+      "ended": "2026-11-24T02:55:24.822Z",
       "turns": 112,
-      "api_calls": 449,
+      "api_calls": 456,
       "usage": {
-        "input_tokens": 1134,
-        "output_tokens": 185021,
-        "cache_read_input_tokens": 141025697,
-        "cache_creation_input_tokens": 454898
+        "input_tokens": 1150,
+        "output_tokens": 188044,
+        "cache_read_input_tokens": 144472900,
+        "cache_creation_input_tokens": 461132
       },
-      "peak_context_tokens": 489793
+      "peak_context_tokens": 496027
     }
   ],
   "log": {
-    "sha256": "c4aa7b99cfdef39a1c60e96802e1117078f8df039a8acea87300d42a1434c34c",
-    "bytes": 78111149,
-    "lines": 42157,
-    "gzip_bytes": 12181571,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/c4aa7b99cfdef39a1c60e96802e1117078f8df039a8acea87300d42a1434c34c.jsonl.gz"
+    "sha256": "50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7",
+    "bytes": 78237437,
+    "lines": 42226,
+    "gzip_bytes": 12200082,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -10129,6 +10129,46 @@
       "summary": "VF-057: the corrupted-producer control is measured",
       "body": "change-verification's job 20261124-014943 injected one wrong conclusion into the historical Python/Z3 rule. The faulted producer established a false heap-preservation claim that the genuine one leaves unresolved, and the independent checker refuted it with a JVM-confirmed witness. VF-057 records the receipt; what remains is to state it in the trusted-kernel decision record, which the next queued brief starts from. Documentation only.",
       "log_sha256": "c4aa7b99cfdef39a1c60e96802e1117078f8df039a8acea87300d42a1434c34c"
+    },
+    {
+      "change_id": "sqqtpqsoxlkltooovmpvnpuwqystuspt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add a brief queue: briefs run one after the other, and the handover between them is one command",
+      "body": "llm-dlc/tools/brief_queue.py keeps the briefs a watcher runs in llm-dlc/loop-summaries/queue.json (gitignored) and logs every change to the committed llm-dlc/loops/queue.jsonl, so the queue no longer lives in one watcher's memory. Any session may add (with --first, --after or --before), move, remove or change a brief; a brief copied into ~/code/scripts/analysis/queue/ is added in file-name order. Each brief takes the defaults the user sent with every brief until now (an Opus 5.5 setup phase; Codex Astra 6.2 at max effort continuing the previous domain session; the 'aspirational' texts, now llm-dlc/loops/domain-prompt-aspirational.md), unless KEY=VALUE or a queue.KEY front-matter line overrides them. 'brief_queue.py next [--finished]' is the whole handover, recorded step by step so a failure or a crash resumes where it stopped: it commits the watcher's decisions, lands the run, checkpoints develop, clears failed jobs' work folders whose originals are remote_verified, moves the workspace onto the line, starts the next setup run, and after it lands the setup, puts its notes into both copies of the brief and starts the domain run. It never promotes main and never runs the default tests: the user decided on 2026-11-23 that both stay theirs. The /single-agent-run skill gains 'A queue of briefs' (the handover, the plateau rule the user chose: with a brief waiting, two cycles with no claim decided are a reason to stop, and what to do when a client refuses a session), and llm-dlc/README.md describes it.\n\nVerified with llm-dlc/tools/test_brief_queue.py: three unit tests (front matter and settings, naming and placement, cleanup only of archived failed-job folders) and two tool tests that take briefs through real single-agent runs on the stand-in client: one from the inbox with a setup phase and one added with --no-setup, moved first, run, landed, checkpointed, setup notes put into both copies, and a failing step named and resumed. test_costs.py run --changed passes, and the tier lint agrees.",
+      "log_sha256": "50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7"
+    },
+    {
+      "change_id": "tstrtzupslyzkqnvtwstsrxkmzwttpmt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Add two setup lessons from 2026-11-23 to the setup agent template",
+      "body": "The setup agent template now says to resolve every plugin and dependency an offline command needs online first, before running it offline in a job, and to copy digests, revisions and paths into the Setup Agent Notes in full, or point to the record's row, never shortened. Both come from 2026-11-23's setup runs: jbmc-setup's Guava job failed on a late offline plugin resolution after its build had passed, and trusted-kernel-setup's notes gave Ints.class a shortened digest whose tail belonged to Ints$IntArrayAsList (the domain agent caught it against the full table). Verified with test_costs.py run --changed: test_single_run (21) and test_brief_queue (5) pass.",
+      "log_sha256": "50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7"
+    },
+    {
+      "change_id": "zkyyxvkunxvkqnsqmnmzonumyroxnnsx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Let a loop recover a working copy another session left stale, instead of ending",
+      "body": "feature-loop.sh reads @- (last_change) before and right after each turn, while its agent isn't working. When jj refuses there with \"The working copy is stale\", the loop now runs llm-dlc/tools/unstale.py, as CLAUDE.md tells an agent to, and says so in its log and summary. Then it reads @- again and goes on. If unstale.py can't recover (two copies with edits of their own), the loop stops with status 1 as before, and the log says a person is needed. Before this, the loop ended on the first refusal: on 2026-11-23 21:15 trusted-kernel's second cycle ended that way, before its verdict, after a turn that had gone well. The cause, in the operating notes' section on stale workspaces, is another workspace's sync.py rewriting commits this line is based on. The operating notes now say a loop recovers itself.",
+      "log_sha256": "50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7"
+    },
+    {
+      "change_id": "pprnxmksvqlyrsntorqumxypuzzvstnm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record VF-059: nothing picks a brief up from the queue while no run is going",
+      "body": "The brief queue moves only when a watcher runs brief_queue.py next at a handover. A brief added to the inbox or with add while the queue is idle waits until someone asks, and nothing restarts a watcher session that has ended. VF-059 records the intent to automate pickup: first a skill rule that has the watcher run next at each regular report while idle, then a supervisor (a systemd user timer or service, the queue's phase 3) that also restarts a watcher. The user decided on 2026-11-24 to record it and build it later. The line already has VF-055 to VF-058, so this takes VF-059. A merge keeps both sides at the top of the open list. No code changed, so no tests apply.",
+      "log_sha256": "50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7"
+    },
+    {
+      "change_id": "qnuplzsusvoxvxuupmtxyyxlsrloyqko",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the brief queue into the line",
+      "body": "Merges the brief-queue workspace's four commits, at the user's request after change-verification: sqqtpqso (brief_queue.py, its tests, the aspirational domain prompt, the single-agent-run skill's section 'A queue of briefs', README and costs rows), tstrtzup (two setup-template lessons), zkyyxvku (feature-loop.sh recovers a stale working copy with unstale.py, with tests and an operating-notes line) and pprnxmks (VF-059). The only conflict was verification/findings.md, resolved by keeping both sides with VF-059 first. test_brief_queue, test_single_run, test_unstale, the changed-test selection and the tier lint pass.",
+      "log_sha256": "50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7"
     }
   ],
   "logs": {
@@ -11319,6 +11359,12 @@
       "lines": 9992,
       "gzip_bytes": 3979471,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/506c844ca3c412ead772bad503b6eb6aea81274b6009a5ed21bb9b7e63b50948.jsonl.gz"
+    },
+    "50a9064dc1c7e895aa5c66c4bd3727668697b333a23d27f5ad79bb1f8b30a3f7": {
+      "bytes": 78237437,
+      "lines": 42226,
+      "gzip_bytes": 12200082,
+      "url": null
     },
     "50fe1a7950881029639bef7a965990a3b4592228a53387a6601b8c204edb5d19": {
       "bytes": 44663325,

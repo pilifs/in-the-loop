@@ -215,6 +215,49 @@ python3 llm-dlc/tools/single_run.py setup NAME-setup --brief FILE [--workspace W
 
   Tell the user in a few lines what was set up, what was verified and what could not be done.
 
+## A queue of briefs
+
+When the user queues briefs, they run one after the other, each as a run of this skill with a setup phase first.
+The queue is data, not your memory: [`llm-dlc/tools/brief_queue.py`](../../../llm-dlc/tools/brief_queue.py)
+keeps it in `llm-dlc/loop-summaries/queue.json`, logs every change to the committed `llm-dlc/loops/queue.jsonl`,
+and does the handover between two briefs. Any session may add, move or remove a brief; a session that takes the
+watcher's place reads `brief_queue.py status` and carries on.
+
+- **Adding.** A brief copied into the user's inbox (`~/code/scripts/analysis/queue/`) is added by the next `inbox`
+  or `next`, in the order of the file names. `brief_queue.py add BRIEF [--first | --after NAME] [KEY=VALUE ...]`
+  adds any other. Each brief's copy goes into `llm-dlc/loops/` unchanged and is committed. The defaults are what
+  the user asked for with each brief until now:
+  - an Opus 5.5 setup phase;
+  - Codex Astra 6.2 at max effort, continuing the session of the domain run before it;
+  - the workspace the domain runs share, and no limit on cycles;
+  - the two "aspirational" texts of `llm-dlc/loops/domain-prompt-aspirational.md`.
+
+  A brief overrides a default with `KEY=VALUE`, or with `queue.KEY: VALUE` lines in a `---` block at its top.
+- **The handover is `brief_queue.py next`.** Run it when a brief's run has finished, with `--finished`, and when
+  the queue has nothing running. It does every step that is due and records each:
+  - land the run;
+  - checkpoint develop;
+  - clear the work folders of failed jobs whose originals are in the archive;
+  - move the workspace onto the line;
+  - start the next brief's setup run. After the setup run: land it, put its notes into both copies of the brief,
+    and start the domain run.
+
+  A step that fails is named, and the next call carries on from it. It never promotes `main` and never runs the
+  default tests: tell the user when a brief is done, and they decide both.
+- **"Finished" is your judgment, as `stop` is.** A setup run that stopped to wait on its jobs is not finished:
+  `single_run.py jobs`, then `start`, as "A setup phase" says. The setup run is watched by that section's rules,
+  and the domain run by the rest of this skill.
+- **A waiting brief makes a plateau a reason to stop.** The user wants runs to go on while they advance. But when
+  a brief is waiting and the run has had two cycles in a row with no claim decided, answer `stop`, give that as
+  the reason, and hand over with `next --finished`.
+- **When a client refuses a session** (Codex's cybersecurity filter, say), start the brief's domain run again by
+  hand:
+  - use a new name and a new session, with the queue's prompt files (`~/.cache/in-the-loop/prompts/NAME-*.txt`);
+  - point the queue at it with `brief_queue.py set NAME run=NEWNAME`;
+  - for later briefs to continue the new session, nothing is needed: `previous` follows the queue's last start.
+    For a run started by hand, record it with `brief_queue.py defaults --last-session ID`.
+- **Report from the queue:** `brief_queue.py report` gives each brief's runs, legs and landing.
+
 ## Redaction decisions, when the user delegated them
 
 By default every redaction decision is the user's: a finding is proposed (`sync.py allow propose ID --reason

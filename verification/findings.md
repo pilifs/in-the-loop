@@ -18,6 +18,35 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-059: nothing picks a brief up from the queue while no run is going
+
+- **Status**: open. The user decided on 2026-11-24 to record the intent and build it later.
+- **Raised**: 2026-11-24 by the advisor session, with the user, before the brief queue (`llm-dlc/tools/brief_queue.py`)
+ was first used for real. The first queued brief is `trusted-kernel-and-receiver-recovery`, taken from the inbox
+ after change-verification.
+- **Found**:
+ - **The queue moves only when a watcher runs `brief_queue.py next`**, at a handover, and `next --finished` after a
+   run it judged finished. No daemon, timer or supervisor watches the queue file or the inbox
+   (`~/code/scripts/analysis/queue/`). A brief in the inbox is read in only by the next `next`.
+ - **Briefs that follow one another work:** each handover's `next` takes the next brief, inbox first.
+ - **An idle queue doesn't:** once the queue is empty and no run is going, a brief added later waits. It waits
+   until someone tells the watcher to run `next`, or runs it themselves. The same holds if the watcher session
+   itself has ended or died: nothing restarts it, and on 2026-11-22 an out-of-memory kill ended one.
+- **Needs**: an automated way to pick work up from the queue. In increasing order of size:
+ 1. **A rule in `/single-agent-run`'s section "A queue of briefs":** when no run is going, the watcher runs
+    `brief_queue.py next` at each of its regular reports (every 30 minutes), so a brief added to the inbox or
+    with `add` starts within one report. This needs a live watcher session.
+ 2. **A supervisor** (the brief queue's phase 3, not built): a small systemd user timer or service that starts
+    the queue when it is idle, and restarts a watcher whose session has ended, so runs go on with no watcher
+    open. It also needs a decision on who judges cycles when there is no watcher, and on how the
+    watcher's delegated decisions carry over.
+ - Either way, a start still follows the user's rules: no promotion to `main` and no default test run from the
+   queue. The fallback rules for a cybersecurity-filter stop (VF-046) still hold.
+- **Tracked in**: this entry. The queue's design is in `llm-dlc/tools/brief_queue.py`'s docstring and the
+ skill section above.
+- **Closes when**: a brief added while no run is going starts without anyone being asked to, and the arrangement
+ is described in the skill and tested.
+
 ### VF-058: receiver-construction's second cycle was stopped by the filter, and its named frontiers are open
 
 - **Status**: open. The work was stopped by OpenAI's cybersecurity filter, not by a plateau and not by a decision that it was done.
