@@ -1,0 +1,301 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-181646-resolve-the-decorator-cache-field-and-re",
+  "title": "Resolve the decorator cache field and replay four original histories",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 30.1s, peak 97.1 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 2 (Qualify the decorated continuation and its live controls) was held back 26.7s by its 1-CPU quota in 29.3s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-181646-resolve-the-decorator-cache-field-and-re.json",
+    "sha256": "c95724e0330f36518d9f89b2e805437354698335df0d676d165d5fcdd7e61b93",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-181646-resolve-the-decorator-cache-field-and-re",
+      "title": "Resolve the decorator cache field and replay four original histories",
+      "description": "Retry the unmodifiable iterator experiment after JDI could not resolve the field type in the iterator loader at the first substitution. Resolve the existing bootstrap Boolean without initialization when needed on substituted JVMs, then require the same helper instruction, receiver and entire prestate. Compare two ordinary and two substituted continuations and four live negative controls per endpoint. Verify the throwing decorator and public catch and recheck both sets of finite certificates.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-heap-effects",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T18:16:46+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Preserve the four pre-advanced certificates",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --audit",
+          "cwd": "."
+        },
+        {
+          "name": "Qualify the decorated continuation and its live controls",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable",
+          "cwd": "."
+        },
+        {
+          "name": "Independently check the archived decorated certificates",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable --audit",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/collections/checked-decorator-effect.json"
+      ]
+    }
+  },
+  "sourceCommit": "14c92ac014f1379b35d004b7a051cf006cf18c53",
+  "startedAt": "2026-11-24T18:20:50+00:00",
+  "finishedAt": "2026-11-24T18:25:21+00:00",
+  "wallSeconds": 271.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 450191,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 101855232,
+    "wallSeconds": 30.1,
+    "cpuSeconds": 25.5,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.25
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 229.949,
+      "cpuSeconds": 229.807,
+      "cpuThrottledSeconds": 0.418,
+      "peakMemoryBytes": 3248218112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "2f6cb3dd807ebdcca6de6ea67016a7dbec419c52bb620c126bffcf52fdf06699",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-181646-resolve-the-decorator-cache-field-and-re/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 49s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Preserve the four pre-advanced certificates",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --audit",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.188,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 33587200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-preserve-the-four-pre-advanced.log",
+        "lines": 4,
+        "bytes": 292,
+        "sha256": "278903509571239341dc0df827608440a99e78d4092be286e17efb2504d890a8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "628-old retained child 9 changed fields, java.util.ArrayList$Itr#remove()V",
+        "628-new flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-old flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-new retained child 9 changed fields, java.util.ArrayList$Itr#remove()V"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Qualify the decorated continuation and its live controls",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 29.265,
+      "cpuSeconds": 25.079,
+      "cpuThrottledSeconds": 26.718,
+      "peakMemoryBytes": 101855232,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-qualify-the-decorated-continua.log",
+        "lines": 4,
+        "bytes": 460,
+        "sha256": "69780c8349c9f5d1e5d8ef3e6a3db416366d6b3778b0cdae734a502ba6ade915",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "628-old retained child 16 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V",
+        "628-new flattened child 8 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V",
+        "755-old flattened child 8 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V",
+        "755-new retained child 16 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Independently check the archived decorated certificates",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --history unmodifiable --audit",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.405,
+      "cpuSeconds": 0.244,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 33718272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-independently-check-the-archiv.log",
+        "lines": 4,
+        "bytes": 460,
+        "sha256": "69780c8349c9f5d1e5d8ef3e6a3db416366d6b3778b0cdae734a502ba6ade915",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "628-old retained child 16 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V",
+        "628-new flattened child 8 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V",
+        "755-old flattened child 8 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V",
+        "755-new retained child 16 changed fields, org.apache.commons.collections4.iterators.UnmodifiableIterator#remove()V"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/collections/checked-decorator-effect.json",
+      "change": "added",
+      "bytes": 79623,
+      "sha256": "33fc21ef5de950f291a7b6cb1b0a56b46bda53012e9e1482520e367044946d74",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T18:25:36+00:00",
+    "applied": [
+      "verification/organic-composition/collections/checked-decorator-effect.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "940aa28948230ffc27ea9694ce57c4adae2cf46d",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/940aa28948230ffc27ea9694ce57c4adae2cf46d/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T182521Z-932410ee9071afc4",
+      "outputs": "20261124T182521Z-9536088513b3ca6e",
+      "diff": "20261124T182521Z-9728533d289dafd1"
+    }
+  }
+}
