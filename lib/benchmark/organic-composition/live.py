@@ -1,15 +1,32 @@
 """Run the frozen original-entry tracer with an additional case-specific JDI observer."""
 import base64
 from functools import cache
+import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+import zipfile
 
-from plan_run import JDK, ROOT
+from freeze import files
+from plan_run import HERE, JDK, ROOT
 from prepare import sha
 sys.path.insert(0, str(ROOT / "examples/tools"))
-from targets import runtime_jar, upgrade_claims, upgrade_replay
+from targets import change_inventory, change_plan, runtime_jar, upgrade_claims, upgrade_replay
+
+
+def frozen_cold(archive):
+    """Check the recorded executable and live runner inputs without rebuilding an unused checker."""
+    pin = json.loads((HERE / "freeze.json").read_bytes())
+    if (pin["files"] != {str(p): sha(ROOT / p) for p in files()} or pin["jdk"] != change_inventory.jdk_binding(JDK)
+            or pin["runnerIdentity"] != change_plan.runner_identity()):
+        raise ValueError("different frozen runner or JDK")
+    with zipfile.ZipFile(archive) as original:
+        plan = json.loads(original.read("cold.json"))
+    if (plan["executionState"] != "complete" or plan["tools"] !=
+            {"comparator": pin["checkerSha256"], "jvmRunner": pin["runnerIdentity"]}):
+        raise ValueError("different frozen public plan or executable")
+    return plan
 
 
 def compile_tracer(case, work, jars):
