@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084159-close-all-187-standalone-jbmc-targets-an",
+  "title": "Close all 187 standalone JBMC targets and post-call controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 12m34s, peak 6.0 GiB (estimated 16m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -) passed, but the kernel killed 3 process(es) in it at the memory limit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084159-close-all-187-standalone-jbmc-targets-an.json",
+    "sha256": "349fddc905762db843a08ca185a43b83a68282c14407bfdb6c2c2d6088f72af4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084159-close-all-187-standalone-jbmc-targets-an",
+      "title": "Close all 187 standalone JBMC targets and post-call controls",
+      "description": "Repeat the original packaged stock JBMC profile on every one of the same 187 statements. Save named target and reach properties, complete unwinding and original JVM evidence.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:41:59+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 27,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "16m",
+        "timeout": "64m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/stock_history.py closing",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/stock"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:55:40+00:00",
+  "finishedAt": "2026-11-24T09:11:33+00:00",
+  "wallSeconds": 953.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 3840.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 960.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 6442450944,
+    "wallSeconds": 754.9,
+    "cpuSeconds": 771.8,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 0.79
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/stock_history.py closing",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3840.0,
+      "cancelled": false,
+      "wallSeconds": 754.927,
+      "cpuSeconds": 771.787,
+      "cpuThrottledSeconds": 2.458,
+      "peakMemoryBytes": 6442450944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 3,
+      "memoryHighEvents": 143,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 187,
+        "bytes": 7525,
+        "sha256": "7005cd2f053271689676323f15785a0d0148c89eb8e98f923a4ed0bd3e39209d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "conformance/toShort/1 SUCCESS FAILURE",
+        "conformance/fromLong/1 FAILURE FAILURE",
+        "conformance/nextChar/1 SUCCESS FAILURE",
+        "conformance/nextChar/2 FAILURE FAILURE",
+        "conformance/absolute/1 FAILURE FAILURE",
+        "conformance/increment/1 SUCCESS FAILURE",
+        "conformance/byteSum/1 SUCCESS FAILURE",
+        "conformance/byteSum/2 FAILURE FAILURE",
+        "conformance/leadingZeros/1 SUCCESS FAILURE",
+        "conformance/leadingZeros/2 FAILURE FAILURE",
+        "conformance/leadingZeros/3 FAILURE FAILURE",
+        "conformance/leadingZerosLong/1 SUCCESS FAILURE",
+        "conformance/leadingZerosLong/2 FAILURE FAILURE",
+        "real/midpoint/broken-property FAILURE FAILURE",
+        "real/bucket/broken-property FAILURE FAILURE",
+        "real/oddity/broken-property FAILURE FAILURE",
+        "real/checksum/broken-property FAILURE FAILURE",
+        "real/midpoint/fixed-property SUCCESS FAILURE",
+        "real/bucket/fixed-property SUCCESS FAILURE",
+        "real/oddity/fixed-property SUCCESS FAILURE",
+        "real/checksum/fixed-property SUCCESS FAILURE",
+        "real/midpoint/fix-confined SUCCESS FAILURE",
+        "real/midpoint/search-within-bound SUCCESS FAILURE",
+        "real/bucket/fix-confined FAILURE FAILURE",
+        "real/oddity/fix-confined SUCCESS FAILURE",
+        "real/checksum/fix-confined FAILURE FAILURE",
+        "held/saturating SUCCESS FAILURE",
+        "held/average/bits SUCCESS FAILURE",
+        "held/floor-mod/wide-modulus FAILURE FAILURE",
+        "held/ceil-div timeout FAILURE",
+        "held/lower-bound SUCCESS FAILURE",
+        "held/utf8-length SUCCESS FAILURE",
+        "held/reverse no property report FAILURE",
+        "held/prefix-sums SUCCESS FAILURE",
+        "held/overlap/meets SUCCESS FAILURE",
+        "held/overlap/length FAILURE FAILURE",
+        "held/average/unsigned-shift FAILURE FAILURE",
+        "held/floor-mod/jdk FAILURE FAILURE",
+        "example/141 SUCCESS FAILURE",
+        "example/142 no property report no property report"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/stock/executions.zip",
+      "change": "added",
+      "bytes": 2500319,
+      "sha256": "d649b5aac7f3ee593e701a866d80842b3057e1d67628885a7081657a09ee04ba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/stock/results.json.gz",
+      "change": "added",
+      "bytes": 35481,
+      "sha256": "1fc2af37e52c516c96ec70ffeabed32e7923e26caf73aede72fbacf1c2e3c12e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:11:55+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/stock/executions.zip",
+      "verification/beyond-jbmc/closing/stock/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T091133Z-5847182ef0a73130",
+      "outputs": "20261124T091133Z-619337d8dabcf8d0",
+      "diff": "20261124T091133Z-6413578a38f994f2"
+    }
+  }
+}
