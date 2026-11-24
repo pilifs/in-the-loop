@@ -1,0 +1,145 @@
+[
+  {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "ReferencePair#primary",
+    "domain": "n: int",
+    "assume": null,
+    "assert": "result",
+    "throws": [],
+    "throws_checked": [],
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int in 1.2 s; loops unwound 16 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/assurance/harness/PropertyHarness.java",
+    "findings": [],
+    "output": "✓ ReferencePair#primary satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int in 1.2 s; loops unwound 16 times with unwinding assertions)\n",
+    "work": "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/assurance",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 1.207670652,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 10,
+        "merges": 0,
+        "solver_calls": 478,
+        "solving_seconds": 1.048819283,
+        "gates_evaluated": 142739,
+        "evaluating_seconds": 0.003529844,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 46619,
+        "clauses": 156392,
+        "seconds": 1.202128736,
+        "loading_seconds": 0.000909773,
+        "decoding_seconds": 0.000236245,
+        "encoding_seconds": 0.101739186,
+        "witness_seconds": 0.0
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 1.202,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.05,
+            "encoding": 0.102,
+            "solving": 1.049,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 46619,
+            "clauses": 156392
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 1.218,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 1.202,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.015
+      }
+    },
+    "stated": {
+      "kind": "property",
+      "domain": {
+        "parameters": [
+          {
+            "name": "n",
+            "type": "int",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "n: int"
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result and the parameters, against result",
+        "exceptions": "none may be thrown"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "harness",
+        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+      }
+    }
+  }
+]

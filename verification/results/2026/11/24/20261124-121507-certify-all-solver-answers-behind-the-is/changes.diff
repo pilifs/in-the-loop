@@ -1,0 +1,518 @@
+--- /dev/null
++++ b/verification/beyond-jbmc/followup/iscwt-assurance/assurance.json
+@@ -0,0 +1,27 @@
++{
++  "status": "checked",
++  "ordinary": "established",
++  "requestSha256": "4dd5cf8448c7f5aae91ed62b0bc4c005dc39c08cac01994d3185b9fec35ad5cf",
++  "boundarySha256": "1109ee8039ea69f2c56c3fcc710bd5f69b04046f5abdf5e4458b72b9aef204d2",
++  "checkerSha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54",
++  "unsatCoverage": "all UNSAT answers certified",
++  "satModelsChecked": 9,
++  "answers": {
++    "sat": 9,
++    "unsat": 469
++  },
++  "passes": [
++    {
++      "id": "1-proof",
++      "solverFree": false,
++      "attempts": 478,
++      "answers": {
++        "sat": 9,
++        "unsat": 469
++      }
++    }
++  ],
++  "generationSeconds": 68.14507599000353,
++  "freshCheckSeconds": 86.4000483660493,
++  "bundleBytes": 141171872
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/followup/iscwt-assurance/boundary.json
+@@ -0,0 +1,115 @@
++{
++  "schema": "native-sat-boundary/v1",
++  "requestSha256": "4dd5cf8448c7f5aae91ed62b0bc4c005dc39c08cac01994d3185b9fec35ad5cf",
++  "ordinary": {
++    "status": "established",
++    "execution": "220c6eb9-005e-4590-9eb3-bd52c18a9e35",
++    "receiptSha256": "7ad33d83c1f09e69e9ca4620174e957b7547aed3c7583ddee5900e285681a005",
++    "conclusion": {
++      "status": "established",
++      "vacuous": false,
++      "stated": {
++        "kind": "property",
++        "domain": {
++          "parameters": [
++            {
++              "name": "n",
++              "type": "int",
++              "kind": "primitive",
++              "null": false
++            }
++          ],
++          "shared_arrays": false,
++          "text": "n: int"
++        },
++        "assumptions": [
++          {
++            "kind": "initialization",
++            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++            "basis": "engine"
++          }
++        ],
++        "observations": {
++          "result": "the result and the parameters, against result",
++          "exceptions": "none may be thrown"
++        },
++        "bounds": {
++          "unwind": 16,
++          "max_array_length": null,
++          "complete": true
++        },
++        "models": {
++          "used": true,
++          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++          "classes": 40,
++          "jdk": "21.0.13"
++        },
++        "checker": {
++          "engine": "native",
++          "name": "jvmcontract's own checker (CaDiCaL)",
++          "solver": "CaDiCaL 1.9.5 (bundled)",
++          "fallback": null,
++          "sat": {
++            "solver": "CaDiCaL",
++            "version": "1.9.5",
++            "source": "bundled by the Rust crate cadical 0.1.16",
++            "configuration": [
++              "CaDiCaL's default options",
++              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++              "the run's deadline through CaDiCaL's terminate callback",
++              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++            ]
++          }
++        },
++        "gap_mode": "strict",
++        "confirmation": null,
++        "vacuity": {
++          "status": "non-vacuous",
++          "basis": "harness",
++          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++        }
++      }
++    },
++    "jvmReplay": []
++  },
++  "generatedClasses": {
++    "harness/PropertyHarness.class": "05353fb03892173d9ef1e1706762e89b44c214f4b8c4e4c9392c77f24445936a",
++    "jdk/java/lang/Byte.class": "5fcd7c81556e31ed11c863c08b7a8414469bd591ef5334cc536642cdb7bb3915",
++    "jdk/java/lang/Integer.class": "44bc6d0e77a7f4965c2fa6bcecc9af63b841ef94eace398fcbc1f954c3835179",
++    "jdk/java/lang/Long.class": "cc18d51ef0f74906c2c8714849ff778f7e01a4a29539ba8817faedb989a50f29",
++    "jdk/java/lang/Math.class": "f01ef790ce8af52b262c5f717f0e3db201863b9deb834915787ef31ed744d170",
++    "jdk/java/lang/Short.class": "b7090cb2cede8931f40b998f3b9cb3a48de96fc9adc89ddd7680df80df665efa",
++    "jdk/java/lang/StrictMath.class": "6f089f974b0bf962d9347880f9617a08ee4eea8771e61c447e9bed67fdd0c191",
++    "models/java/lang/Byte$ByteCache.class": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
++    "models/java/lang/Character.class": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
++    "models/java/lang/Enum.class": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
++    "models/java/lang/Integer$IntegerCache.class": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
++    "models/java/lang/Long$LongCache.class": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
++    "models/java/lang/Short$ShortCache.class": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
++    "models/java/nio/charset/Charset.class": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
++    "models/java/nio/charset/IllegalCharsetNameException.class": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
++    "models/java/nio/charset/StandardCharsets$Standard.class": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
++    "models/java/nio/charset/StandardCharsets.class": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
++    "models/java/nio/charset/UnsupportedCharsetException.class": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
++    "models/java/util/HashMap$Node.class": "c66aca00b2b1e53462fa6fdc3a2c1af902f30331d6ad899a42adf504c6068fd4",
++    "models/java/util/HashMap.class": "207980788541bb406059227942b40bbbf5be4af515c005b1afefdb9bd796af54",
++    "models/java/util/ImmutableCollections$AbstractImmutableList.class": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
++    "models/java/util/ImmutableCollections$List12.class": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
++    "models/java/util/ImmutableCollections$ListItr.class": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
++    "models/java/util/ImmutableCollections$ListN.class": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
++    "models/java/util/ImmutableCollections.class": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
++    "models/java/util/List.class": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5"
++  },
++  "passes": [
++    {
++      "id": "1-proof",
++      "purpose": "proof",
++      "ending": "verified",
++      "calls": "SSSUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUSUUSUUSUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUSUUSUUSUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU",
++      "clauses": 156392,
++      "nativeLog": "bmc.log",
++      "nativeLogSha256": "79fe1c42d0f05823e0e4b87dd9bac25cc38189b4850c0b40771b4b0d1ac4515b",
++      "transcriptSha256": "35379cc5af82be1f87018b442f20666a082610864354bbc8839783367ca9db23"
++    }
++  ]
++}
+Binary file verification/beyond-jbmc/followup/iscwt-assurance/evidence.zip changed
+--- /dev/null
++++ b/verification/beyond-jbmc/followup/iscwt-assurance/negative-control.json
+@@ -0,0 +1,5 @@
++{
++  "wrongObservationRejected": true,
++  "originalRequest": "4dd5cf8448c7f5aae91ed62b0bc4c005dc39c08cac01994d3185b9fec35ad5cf",
++  "alteredRequest": "e6892e058e206f8f686804dc7e744e4e84306af7968288a3b8fe5e563562697f"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/followup/iscwt-assurance/ordinary.json
+@@ -0,0 +1,145 @@
++[
++  {
++    "wire_version": 1,
++    "verdict": "verified",
++    "target": "ReferencePair#primary",
++    "domain": "n: int",
++    "assume": null,
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int in 1.2 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/assurance/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ ReferencePair#primary satisfies `result` on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over n: int in 1.2 s; loops unwound 16 times with unwinding assertions)\n",
++    "work": "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/assurance",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 1.207670652,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 10,
++        "merges": 0,
++        "solver_calls": 478,
++        "solving_seconds": 1.048819283,
++        "gates_evaluated": 142739,
++        "evaluating_seconds": 0.003529844,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 46619,
++        "clauses": 156392,
++        "seconds": 1.202128736,
++        "loading_seconds": 0.000909773,
++        "decoding_seconds": 0.000236245,
++        "encoding_seconds": 0.101739186,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 1.202,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.001,
++            "lowering": 0.0,
++            "symbolic": 0.05,
++            "encoding": 0.102,
++            "solving": 1.049,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 46619,
++            "clauses": 156392
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 1.218,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 1.202,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.015
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "n",
++            "type": "int",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "n: int"
++      },
++      "assumptions": [
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "harness",
++        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++      }
++    }
++  }
++]
+--- /dev/null
++++ b/verification/beyond-jbmc/followup/iscwt-assurance/request.json
+@@ -0,0 +1,210 @@
++{
++  "schema": "native-sat-request/v1",
++  "run": "220c6eb9-005e-4590-9eb3-bd52c18a9e35",
++  "case": "ISCWT registered glyph",
++  "target": "ReferencePair#primary",
++  "argv": [
++    "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/f646f02d347db2f5646f89426a207ab81485488d/jvmcontract",
++    "prove",
++    "ReferencePair#primary",
++    "--classes",
++    "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/claims",
++    "--classpath",
++    "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/caller:/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/old:/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/000.jar:/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/001.jar:/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/002.jar:/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/003.jar:/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/004.jar:/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/005.jar",
++    "--engine",
++    "native",
++    "--gaps",
++    "strict",
++    "--assert",
++    "result",
++    "--unwind",
++    "16",
++    "--max-array-length",
++    "8",
++    "--timeout",
++    "120",
++    "--work",
++    "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/assurance",
++    "--json"
++  ],
++  "claim": {
++    "observation": "boolean result; no exception",
++    "domain": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
++    "unwind": 16,
++    "arrayBound": 8
++  },
++  "beforeLaunch": {
++    "twoCopy": {
++      "old": {
++        "000.jar": "126d61d1f6585d4d37eb1691158d60a2c7496620fb56ca4e27a2b78a265e0e13",
++        "001.jar": "5917bcf686755a8ee57c80f3a83e9714b81ff3491279b887278602a517893be6",
++        "002.jar": "b181db7bfbd817d131ebaf9293d4e8921066bcc0a74b6d718359047fbe2a5d70",
++        "003.jar": "550134ec4df745dc83a1d38929f7037b510e672f89b1b9b7202e49e35f56ed03",
++        "004.jar": "cdba7ca19934a77137bbfc7b68f54f9d48dcc354ab71839ac3e9dfe5f807a548",
++        "005.jar": "e93f9981f4da67a573f223ce5d8474970d2ecdaf7411303cd6de59ab9be88109"
++      },
++      "new": {
++        "000.jar": "2f7d8b22a37221ada6ff72a8ccd3661fc0ba2681e3274ca1faa9f6b9c4127452",
++        "001.jar": "9a0e9d4f71631f125279a6d947578fe3b5b26d7360f3063218e0c785e0bad089",
++        "002.jar": "f9c97f289c87becefa5209fd238a46d5bb9e490d45e8780a477c0771aa7c9f4d",
++        "003.jar": "9cbb2048c7560e731a10a432386035f7a5c4f0c3005141e4267c1719046e8b32",
++        "004.jar": "532af880a01a2d620000455411ae9b4575e9e918a3e5187b2d9909189e3ee52b",
++        "005.jar": "fade55f330d447dbaadbb71f9ad2a42d25437b3ad53b92c74d26f6ba2abdaf3b"
++      },
++      "thinCallers": {
++        "ReferenceAPI.class": "6b7a58a9753a04534c0f6d23d83228bc9c6ecbc1abbb828f8ded5eb0951b3059"
++      },
++      "symbolicClaimClasses": {
++        "ReferencePair.class": "0e6617ccf7670125085c7ced05b4495fdc5ad35ac4caa25f24dfdcfe3be32e8c"
++      },
++      "oldEntryMapSha256": "d8343bbbf96936601815d35f5909d83b8305dd9bc10907f71e4d1a7e338a8911",
++      "shadowedOldClasses": [],
++      "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++      "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++      "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++      "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++    },
++    "inputs": {
++      "old": [
++        {
++          "path": "old/000.jar",
++          "sha256": "126d61d1f6585d4d37eb1691158d60a2c7496620fb56ca4e27a2b78a265e0e13"
++        },
++        {
++          "path": "old/001.jar",
++          "sha256": "5917bcf686755a8ee57c80f3a83e9714b81ff3491279b887278602a517893be6"
++        },
++        {
++          "path": "old/002.jar",
++          "sha256": "b181db7bfbd817d131ebaf9293d4e8921066bcc0a74b6d718359047fbe2a5d70"
++        },
++        {
++          "path": "old/003.jar",
++          "sha256": "550134ec4df745dc83a1d38929f7037b510e672f89b1b9b7202e49e35f56ed03"
++        },
++        {
++          "path": "old/004.jar",
++          "sha256": "cdba7ca19934a77137bbfc7b68f54f9d48dcc354ab71839ac3e9dfe5f807a548"
++        },
++        {
++          "path": "old/005.jar",
++          "sha256": "e93f9981f4da67a573f223ce5d8474970d2ecdaf7411303cd6de59ab9be88109"
++        }
++      ],
++      "new": [
++        {
++          "path": "new/000.jar",
++          "sha256": "2f7d8b22a37221ada6ff72a8ccd3661fc0ba2681e3274ca1faa9f6b9c4127452"
++        },
++        {
++          "path": "new/001.jar",
++          "sha256": "9a0e9d4f71631f125279a6d947578fe3b5b26d7360f3063218e0c785e0bad089"
++        },
++        {
++          "path": "new/002.jar",
++          "sha256": "f9c97f289c87becefa5209fd238a46d5bb9e490d45e8780a477c0771aa7c9f4d"
++        },
++        {
++          "path": "new/003.jar",
++          "sha256": "9cbb2048c7560e731a10a432386035f7a5c4f0c3005141e4267c1719046e8b32"
++        },
++        {
++          "path": "new/004.jar",
++          "sha256": "532af880a01a2d620000455411ae9b4575e9e918a3e5187b2d9909189e3ee52b"
++        },
++        {
++          "path": "new/005.jar",
++          "sha256": "fade55f330d447dbaadbb71f9ad2a42d25437b3ad53b92c74d26f6ba2abdaf3b"
++        }
++      ]
++    },
++    "sources": {
++      "ReferencePair.java": "85907efc55447e2e41a28b0eeca8dd7008cbac0e2671e3c4cbec1abbe8282183",
++      "ReferenceAPI.java": "2a6fdf245953670ce87d5013d524f2edbfc0c6a3a00d560c2a28ec50172aa9e9"
++    },
++    "frozenComparisonSha256": "4604203a2b62f5f7072b719d78edd106d3d6a038c19e7aea877bd3d0818a817b",
++    "originalJvmSha256": "69ceeac0e32ad0d7e7c64b83f974a2b80feb9fe8d6f4ee255fc163222107c5ae",
++    "docketSha256": "73908efcce3481243ad39447cb1f01bf11af4cb650159d4a74a8ae1052b7dfa2",
++    "registered": {
++      "question": "Does an Adobe Font Metrics glyph record preserve its decimal or hexadecimal character code and horizontal width?",
++      "control": "The same record preserves the glyph name A.",
++      "domain": "Widths from 0 through 1023. Even widths use decimal C 65 and odd widths use hexadecimal CH <41>. The high word holds the code and the low word holds the width.",
++      "bounds": [
++        0,
++        1023
++      ],
++      "seeds": [
++        0,
++        1,
++        255,
++        512,
++        1023
++      ],
++      "entries": [
++        "de.intarsys.cwt.font.afm.AFMChar#create",
++        "de.intarsys.cwt.font.afm.AFMChar#getCode",
++        "de.intarsys.cwt.font.afm.AFMChar#getWidth"
++      ],
++      "basis": [
++        {
++          "side": "after",
++          "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
++          "text": "public static AFMChar create(String glyph)"
++        },
++        {
++          "side": "after",
++          "member": "distribution/src/de/intarsys/cwt/font/afm/AFMChar.java",
++          "text": "Integer.parseInt(value.substring(1, value.length() - 1),"
++        }
++      ],
++      "expected": {
++        "beforeExpression": "(65L<<32) + n",
++        "afterExpression": "(65L<<32) + n",
++        "controlExpression": "1"
++      },
++      "scopeNotes": "",
++      "assistance": "curator-supplied public caller and expected results only in the matched lane"
++    }
++  },
++  "bindings": [
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/claims",
++      "content": "eddc2abbb7d58485e7161e3e64ba6d9b183c2e4db98367a7323ee143ab60cf1c"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/caller",
++      "content": "9fbf5bf9a757afb73a6959642497e971b486e72f0ec6fc270437c5c33fa3eaef"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/tokenizer-followup-t1i5pu0n/old",
++      "content": "dbeb392cd50c59ebc8ecf4dba135c56c744a1004911b973814ceb981da71f580"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/000.jar",
++      "content": "2f7d8b22a37221ada6ff72a8ccd3661fc0ba2681e3274ca1faa9f6b9c4127452"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/001.jar",
++      "content": "9a0e9d4f71631f125279a6d947578fe3b5b26d7360f3063218e0c785e0bad089"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/002.jar",
++      "content": "f9c97f289c87becefa5209fd238a46d5bb9e490d45e8780a477c0771aa7c9f4d"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/003.jar",
++      "content": "9cbb2048c7560e731a10a432386035f7a5c4f0c3005141e4267c1719046e8b32"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/004.jar",
++      "content": "532af880a01a2d620000455411ae9b4575e9e918a3e5187b2d9909189e3ee52b"
++    },
++    {
++      "path": "/home/filip/.cache/in-the-loop/beyond-jbmc/panel/evaluation/08/packet/new/005.jar",
++      "content": "fade55f330d447dbaadbb71f9ad2a42d25437b3ad53b92c74d26f6ba2abdaf3b"
++    }
++  ],
++  "checkerSha256": "bca32b2af9f774ac5ec268c8a87b549638152113cae50558489588140b8ec928",
++  "sourceCommit": "f4d13542a03f073c1705e145edce78fc8352d8f3",
++  "job": "20261124-121507-certify-all-solver-answers-behind-the-is"
++}
