@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-230231-check-javaparser-traversal-in-fresh-sepa",
+  "title": "Check JavaParser traversal in fresh separator environments",
+  "description": "Bind the original property-read offset on both JavaParser revisions. Replay ordinary and supplied LF, CRLF and absent settings on separate processes, check first and repeated failed class initialization, and test the four named traversal tasks for all non-null separators up to two UTF-16 units.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:02:31+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Bind the physical read and check the public profiles",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py javaparser",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/transfer/javaparser"
+  ]
+}

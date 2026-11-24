@@ -757,9 +757,9 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
         Insn::InvokeSpecial(i) | Insn::InvokeStatic(i) | Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) =>
             cf.pool.member(*i).is_ok_and(|m| cp.is_application(&m.owner)
                 || cp.checked_image_class(&m.owner).is_some()
+                || (matches!(insn, Insn::InvokeStatic(_)) && super::runtime::models_static(&m.owner, &m.name, &m.descriptor))
                 || matches!((m.owner.as_str(), m.name.as_str(), m.descriptor.as_str()),
                     ("java/lang/Class", "getClassLoader", "()Ljava/lang/ClassLoader;")
-                    | ("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;")
                     | ("java/util/TimeZone", "getTimeZone", "(Ljava/lang/String;)Ljava/util/TimeZone;")
                     | ("java/util/HashSet", "<init>", "(I)V")
                     | ("java/util/Set", "add", "(Ljava/lang/Object;)Z")
@@ -783,7 +783,10 @@ pub(super) fn builds_static_objects(cp: &ClassPath, cf: &crate::classfile::Class
 pub(super) fn assertion_prologue(cf: &crate::classfile::ClassFile, ops: &[(u32, Insn)]) -> Option<u32> {
     let [(_, Insn::Ldc(class)), (pc, Insn::InvokeVirtual(call)), ..] = ops else { return None };
     let method = cf.pool.member(*call).ok()?;
-    if cf.pool.class_name(*class).ok()? != cf.name || method.owner != "java/lang/Class"
+    let status_owner = cf.pool.class_name(*class).ok()?;
+    // javac also emits this prologue in member classes, using the outer class literal.
+    if (status_owner != cf.name && cf.outer_class().as_deref() != Some(status_owner))
+        || method.owner != "java/lang/Class"
         || method.name != "desiredAssertionStatus" || method.descriptor != "()Z" { return None; }
     let field = cf.field("$assertionsDisabled")?;
     (field.is_static() && field.is_final() && field.descriptor == "Z"

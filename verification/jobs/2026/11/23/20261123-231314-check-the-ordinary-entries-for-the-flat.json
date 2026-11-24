@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-231314-check-the-ordinary-entries-for-the-flat",
+  "title": "Check the ordinary entries for the flat monitor history",
+  "description": "Recheck the original callable entries and their first unsupported instruction under the same strict native bounds after removing nested synchronized calls.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:13:14+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "20m"
+  },
+  "steps": [
+    {
+      "name": "Measure the selected original property",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py schedule native --stage single-monitor",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/single-monitor/schedule/native"
+  ]
+}

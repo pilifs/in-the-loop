@@ -100,6 +100,8 @@ The same preflight names where JBMC runs bytecode it has otherwise than the JVM,
 
 ## Commands
 
+`construct` lists public producers for a receiver type and emits a JVM entry for each admitted history. `sites` inventories selectable instructions in a bound method. For a strict primitive property that stops at a system-property read during startup, `prove --engine native --search-startup-witness` can seek a counterexample and replay the unchanged claim on a fresh JVM. [Receiver construction and investigation commands](benchmark/receiver-discovery/README.md)
+
 ```bash
 # Behavioural, capability and API contracts of a module, as a build step (exit 1 on any drift).
 jvmcontract verify --contracts src/contract --classes build/classes/java/main \

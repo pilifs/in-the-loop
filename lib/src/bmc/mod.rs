@@ -4272,6 +4272,10 @@ impl<'a> Engine<'a> {
                         return Ok(None);
                     }
                 }
+                if (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
+                    == ("java/lang/Long$LongCache", "cache", "[Ljava/lang/Long;") {
+                    if let Some(step) = self.long_cache_return(path) { return step; }
+                }
                 if class.name == "java/lang/Character" && path.frames.last().is_some_and(|f| f.method == "valueOf")
                     && (member.owner.as_str(), member.name.as_str(), member.descriptor.as_str())
                         == ("java/lang/Character$CharacterCache", "cache", "[Ljava/lang/Character;") {

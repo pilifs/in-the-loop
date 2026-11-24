@@ -1,0 +1,134 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "independent-float-mutation",
+    "family": "independent-float-mutation",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "commons-lang3"
+        ],
+        "runtimeLibraries": [
+          "commons-lang3"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "revision": "original",
+      "target": "FloatHistory#exact",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "exact",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FloatHistory#exact",
+      "relation": "calibration",
+      "claim": "claims/exact.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "translated",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FloatHistory#translated",
+      "relation": "calibration",
+      "claim": "claims/translated.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "after-return",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FloatHistory#afterReturn",
+      "relation": "calibration",
+      "claim": "claims/after-return.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "adjacent",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FloatHistory#adjacent",
+      "relation": "calibration",
+      "claim": "claims/adjacent.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "rounded",
+      "kind": "prove",
+      "revision": "original",
+      "target": "FloatHistory#rounded",
+      "relation": "calibration",
+      "claim": "claims/rounded.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "revision": "original",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle",
+      "kind": "oracle",
+      "revision": "original",
+      "path": "controls/original.json"
+    }
+  ]
+}

@@ -1178,7 +1178,7 @@ impl ClassPath {
     /// JDK array operations and the character and collection methods used by their callers.
     pub(crate) fn collection_static(&self, owner: &str, name: &str, descriptor: &str) -> bool {
         matches!((owner, name, descriptor),
-            ("java/util/Arrays", "fill", "([CC)V" | "([II)V" | "([IIII)V" | "([Ljava/lang/Object;Ljava/lang/Object;)V")
+            ("java/util/Arrays", "fill", "([BB)V" | "([CC)V" | "([II)V" | "([IIII)V" | "([Ljava/lang/Object;Ljava/lang/Object;)V")
             | ("java/lang/StringUTF16", "newBytesFor", "(I)[B")
             | ("java/lang/StringUTF16", "newBytesLength", "(I)I")
             | ("java/lang/Character", "toLowerCase", "(C)C" | "(I)I")
@@ -1589,9 +1589,32 @@ impl ClassPath {
             "java/util/LinkedList" => matches!((owner, name, desc),
                 ("java/util/LinkedList" | "java/util/AbstractSequentialList" | "java/util/AbstractList" | "java/util/AbstractCollection", "<init>", "()V")
                 | ("java/util/LinkedList" | "java/util/Deque", "addFirst", "(Ljava/lang/Object;)V")
-                | ("java/util/LinkedList", "linkFirst", "(Ljava/lang/Object;)V")),
+                | ("java/util/LinkedList", "linkFirst" | "linkLast", "(Ljava/lang/Object;)V")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/Collection", "add", "(Ljava/lang/Object;)Z")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/Collection", "addAll", "(Ljava/util/Collection;)Z")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/AbstractCollection" | "java/util/Collection", "isEmpty", "()Z")
+                | ("java/util/LinkedList" | "java/util/List" | "java/util/AbstractCollection" | "java/util/Collection", "size", "()I")
+                | ("java/util/LinkedList" | "java/util/List", "remove", "(I)Ljava/lang/Object;")
+                | ("java/util/LinkedList", "addAll", "(ILjava/util/Collection;)Z")
+                | ("java/util/LinkedList", "checkElementIndex" | "checkPositionIndex", "(I)V")
+                | ("java/util/LinkedList", "isElementIndex" | "isPositionIndex", "(I)Z")
+                | ("java/util/LinkedList", "outOfBoundsMsg", "(I)Ljava/lang/String;")
+                | ("java/util/LinkedList", "node", "(I)Ljava/util/LinkedList$Node;")
+                | ("java/util/LinkedList", "unlink", "(Ljava/util/LinkedList$Node;)Ljava/lang/Object;")),
             "java/util/LinkedList$Node" => owner == receiver && name == "<init>"
                 && desc == "(Ljava/util/LinkedList$Node;Ljava/lang/Object;Ljava/util/LinkedList$Node;)V",
+            "java/util/concurrent/CopyOnWriteArrayList" => matches!((owner,name,desc),
+                ("java/util/concurrent/CopyOnWriteArrayList","<init>","()V")
+                | ("java/util/concurrent/CopyOnWriteArrayList","getArray","()[Ljava/lang/Object;")
+                | ("java/util/concurrent/CopyOnWriteArrayList","setArray","([Ljava/lang/Object;)V")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/util/Collection","size","()I")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/util/Collection","isEmpty","()Z")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/lang/Iterable" | "java/util/Collection","iterator","()Ljava/util/Iterator;")
+                | ("java/util/concurrent/CopyOnWriteArrayList" | "java/util/List" | "java/util/Collection","add","(Ljava/lang/Object;)Z")),
+            "java/util/concurrent/CopyOnWriteArrayList$COWIterator" => matches!((owner,name,desc),
+                ("java/util/concurrent/CopyOnWriteArrayList$COWIterator","<init>","([Ljava/lang/Object;I)V")
+                | ("java/util/concurrent/CopyOnWriteArrayList$COWIterator" | "java/util/Iterator","hasNext","()Z")
+                | ("java/util/concurrent/CopyOnWriteArrayList$COWIterator" | "java/util/Iterator","next","()Ljava/lang/Object;")),
             QUEUE => matches!((owner, name, desc),
                 (QUEUE, "<init>", "()V" | "(I)V") | (QUEUE, "size" | "remainingCapacity", "()I") | ("java/util/AbstractCollection", "size", "()I")
                 | ("java/util/AbstractCollection" | QUEUE, "isEmpty", "()Z")),
@@ -1881,7 +1904,8 @@ impl ClassPath {
             | ("java/lang/Math", "multiplyHigh", "(JJ)J")
             | ("java/lang/Integer", "decode", "(Ljava/lang/String;)Ljava/lang/Integer;")
             | ("java/lang/Integer", "parseInt", "(Ljava/lang/CharSequence;III)I")
-            | ("java/lang/Integer", "intValue", "()I")
+            | ("java/lang/Long" | "java/lang/Integer", "intValue", "()I")
+            | ("java/lang/Long" | "java/lang/Integer", "longValue", "()J")
             | ("java/lang/Byte", "<init>", "(B)V") | ("java/lang/Short", "<init>", "(S)V")
             | ("java/lang/Long", "<init>", "(J)V") | ("java/lang/Float", "<init>", "(F)V")
             | ("java/lang/Double", "<init>", "(D)V") | ("java/lang/Number", "<init>", "()V"))
@@ -1942,11 +1966,12 @@ impl ClassPath {
         let interface = match (name, descriptor) {
             ("putIfAbsent", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;") if class == "java/util/EnumMap" => "java/util/Map",
             ("end", "()V") if class.starts_with("java/util/stream/ReduceOps$") => "java/util/stream/Sink",
-            ("stream", "()Ljava/util/stream/Stream;") if class == "java/util/Arrays$ArrayList"
+            ("stream", "()Ljava/util/stream/Stream;") if matches!(class, "java/util/Arrays$ArrayList" | "java/util/Collections$EmptySet")
                 || class == "java/util/ArrayList" && !self.runs_model(class) => "java/util/Collection",
             ("begin", "(J)V") | ("end", "()V") if class.starts_with("java/util/stream/FindOps$FindSink") => "java/util/stream/Sink",
-            ("getExactSizeIfKnown", "()J") if class == "java/util/Spliterators$ArraySpliterator" => "java/util/Spliterator",
+            ("getExactSizeIfKnown", "()J") if matches!(class, "java/util/Spliterators$ArraySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef") => "java/util/Spliterator",
             ("forEachRemaining", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/util/Iterator",
+            ("forEach", "(Ljava/util/function/Consumer;)V") if self.is_application(class) => "java/lang/Iterable",
             ("getExactSizeIfKnown", "()J") | ("hasCharacteristics", "(I)Z") if class == "java/util/Spliterators$IteratorSpliterator" => "java/util/Spliterator",
             _ => return None,
         };
@@ -2035,7 +2060,7 @@ impl ClassPath {
             | "java/util/stream/FindOps" | "java/util/stream/FindOps$FindOp" | "java/util/stream/FindOps$FindSink" | "java/util/stream/FindOps$FindSink$OfRef"
             | "java/util/Spliterators$EmptySpliterator" | "java/util/Spliterators$EmptySpliterator$OfRef" | "java/util/Spliterators$EmptySpliterator$OfInt"
             | "java/util/Spliterators$EmptySpliterator$OfLong" | "java/util/Spliterators$EmptySpliterator$OfDouble"
-            | "java/util/Collections$EmptySet" | "java/util/Collections$UnmodifiableSet" | "java/util/Collections$UnmodifiableCollection"
+            | "java/util/Collections$EmptyMap" | "java/util/Collections$EmptySet" | "java/util/Collections$UnmodifiableSet" | "java/util/Collections$UnmodifiableCollection"
             | "java/util/stream/Collectors" | "java/util/stream/Collectors$CollectorImpl" | "java/util/stream/Collector$Characteristics"
             | "java/util/stream/ReduceOps" | "java/util/stream/StreamShape"
             | "java/util/EnumMap" | "java/util/EnumMap$1" | "java/util/EnumSet" | "java/util/RegularEnumSet"

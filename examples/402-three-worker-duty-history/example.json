@@ -1,0 +1,37 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "402",
+  "title": "Three workers sharing one duty monitor",
+  "summary": "Two started workers and the caller observe a three-bit duty mask. The assertion runs on the third commit; the split protocol releases the shared monitor between reading and committing.",
+  "origin": "constructed",
+  "categories": [
+    "functional"
+  ],
+  "tags": [
+    "jvm-internals",
+    "race-condition",
+    "external-target",
+    "own-checker"
+  ],
+  "severity": "medium",
+  "subject": {
+    "system": "Three workers sharing one duty monitor",
+    "file": "original/Duty.java",
+    "symbol": "Duty#atomic"
+  },
+  "approach": {
+    "id": "B11",
+    "name": "Property proofs",
+    "tool": "lib",
+    "engine": "native"
+  },
+  "change": {
+    "kind": "feature",
+    "description": "Two started workers and the caller observe a three-bit duty mask. The assertion runs on the third commit; the split protocol releases the shared monitor between reading and committing."
+  },
+  "target": "target.json",
+  "verdictLabel": "Registered receiver and property controls",
+  "notes": [
+    "The campaign keeps strict native results, exact comparator profiles, original inputs and independent JVM observations under verification/receiver-discovery."
+  ]
+}

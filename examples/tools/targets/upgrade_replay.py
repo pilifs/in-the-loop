@@ -244,7 +244,7 @@ def run_observation(run_dir, launch, subject_cp, sites, main, encoded, trace_exc
 
 
 def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixtures=None, progress=None,
-             inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None):
+             inspect_receiver=False, native_caller=None, native_seconds=60, receipts=None, search_startup_witness=False):
     spec = json.loads(specfile.read_text())
     working_directory = spec.get("workingDirectory", ".")
     if working_directory not in (".", "fixtures"):
@@ -363,7 +363,7 @@ def evaluate(specfile, before, after, probe, jdk, dependencies, timeout, *, fixt
             native_start = time.monotonic()
             try:
                 report["nativeCaller"] = upgrade_receiver.native_inputs(native_caller, jdk, temp, output,
-                    main, domain, prepared, env, native_seconds, identity["feature"], resources, working_directory, receipts)
+                    main, domain, prepared, env, native_seconds, identity["feature"], resources, working_directory, receipts, search_startup_witness=search_startup_witness)
             except (OSError, ValueError, subprocess.SubprocessError) as error:
                 report["nativeCaller"] = {"domain":"registered finite caller inputs", "reason":str(error)}
             # Keep the existing physical replay budget independent of both native checks.
@@ -501,6 +501,7 @@ def main(argv=None):
     ap.add_argument("--fixtures", type=Path)
     ap.add_argument("--inspect-receiver", action="store_true", help="record actual JVM constructors, field types and aliases at the selected entry")
     ap.add_argument("--native-caller", type=Path, help="also run this strict native checker on both original finite caller paths")
+    ap.add_argument("--search-startup-witness", action="store_true", help="seek ordinary JVM-confirmed inputs after a refused property read")
     ap.add_argument("--native-seconds", type=int, default=60, help="native time budget per revision")
     a=ap.parse_args(argv)
     if a.native_seconds < 1: ap.error("--native-seconds must be positive")
@@ -509,7 +510,7 @@ def main(argv=None):
     try:
         result=evaluate(a.spec,a.before,a.after,a.probe,a.jdk,(a.old_dependency,a.new_dependency),a.seconds,
                         fixtures=a.fixtures, progress=result, inspect_receiver=a.inspect_receiver,
-                        native_caller=a.native_caller.resolve() if a.native_caller else None, native_seconds=a.native_seconds,
+                        native_caller=a.native_caller.resolve() if a.native_caller else None, native_seconds=a.native_seconds, search_startup_witness=a.search_startup_witness,
                         receipts=a.output.parent / (a.output.stem+"-receipts"))
     except (OSError,ValueError,KeyError,subprocess.SubprocessError) as e:
         detail = result.get("stoppedAt",{}).get("exception")

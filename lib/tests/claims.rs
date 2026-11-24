@@ -1507,6 +1507,7 @@ fn boxed_characters_and_array_observations_match_the_jvm() {
     use jvmcontract::interp::{Machine, Value};
     let Some(classes) = classes() else { return };
     assert!(Command::new("java").arg("-cp").arg(classes).arg("claims.CharacterFormats").status().unwrap().success());
+    proved(classes, "claims.CharacterFormats#cachedLong", 6);
     let cp = jvmcontract::witness::classpath([classes]).unwrap();
     let mut machine = Machine::new(&cp);
     for name in ["boxed", "arrays", "cached"] {

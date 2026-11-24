@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-231925-repeat-xz-cache-profiles-from-the-digest",
+  "title": "Repeat XZ cache profiles from the digest-bound preparation snapshot",
+  "description": "Repeat the failed opening profile job after relocating the pinned classpaths into a job-private preparation. Observe fresh cache identity, original four frames, and first and repeated erroneous initialization on both XZ versions.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:19:25+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Check original bounds and independent controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py xz",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/transfer/xz"
+  ]
+}

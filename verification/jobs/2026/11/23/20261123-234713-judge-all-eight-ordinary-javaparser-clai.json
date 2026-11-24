@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-234713-judge-all-eight-ordinary-javaparser-clai",
+  "title": "Judge all eight ordinary JavaParser claims with confirmed startup search",
+  "description": "Run the exact original registered target, postcondition, guard, bounds and dependency graph with the strict native checker. When a literal system property stalls startup, seek a candidate under a one-character value and accept only an input that refutes the unchanged harness on a fresh JVM. Preserve successful subset proofs and unreproduced candidates as ordinary refusals.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:47:13+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "6m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "Run unmodified registered claims",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py javaparser",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/transfer/javaparser-ordinary-native"
+  ]
+}

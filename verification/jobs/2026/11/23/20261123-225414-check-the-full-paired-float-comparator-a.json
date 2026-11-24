@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-225414-check-the-full-paired-float-comparator-a",
+  "title": "Check the full paired-float comparator and reachable negative",
+  "description": "Run JBMC 6.11.0 on two independent primitive float parameters. Compare exact subtraction, translation and the post-return control to the raw-bit JVM census.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc:standalone"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:54:14+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "3m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "Run the standalone float controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float standalone",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/opening/float/standalone"
+  ]
+}

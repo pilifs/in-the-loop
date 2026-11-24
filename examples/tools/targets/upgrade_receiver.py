@@ -80,7 +80,7 @@ def caller_source(observer, cases):
     return "\n".join([*lines, "}", ""])
 
 
-def native_inputs(checker, jdk, temp, compiled, observer, cases, prepared, env, seconds, feature, resources, working_directory, receipts):
+def native_inputs(checker, jdk, temp, compiled, observer, cases, prepared, env, seconds, feature, resources, working_directory, receipts, search_startup_witness=False):
     """Compile once against the original probe, run each revision independently at the selected subject JDK."""
     source = temp / "UpgradeCallerClaim.java"
     source.write_text(caller_source(observer, cases), encoding="ascii")
@@ -103,6 +103,8 @@ def native_inputs(checker, jdk, temp, compiled, observer, cases, prepared, env, 
     evidence = {"domain": "registered finite caller inputs", "target": target, "assume": guard,
                 "checkerSha256": sha(checker), "adapterClassSha256": sha(directory / (owner.replace(".", "/")+".class")),
                 "maxArrayLength": 128, "unwind": 64, "timeoutSeconds": seconds, "sides": {}}
+    if search_startup_witness:
+        evidence["searchStartupWitness"] = True
     for side, (paths, _, binding) in prepared.items():
         if any(_contains(p, owner) for p in paths):
             raise ValueError("generated native caller shadows an original class")
@@ -118,6 +120,8 @@ def native_inputs(checker, jdk, temp, compiled, observer, cases, prepared, env, 
                "--engine", "native", "--gaps", "strict", "--assume", guard, "--assert", "result",
                "--unwind", "64", "--max-array-length", "128", "--timeout", str(seconds),
                "--work", temp/("native-"+side), "--json"]
+        if search_startup_witness:
+            cmd.append("--search-startup-witness")
         started = time.monotonic()
         result = {"commit": binding["commit"], "callerClassSha256": binding["callerClassSha256"],
                   "orderedClasspathSha256": binding["classpath"]}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-225413-compare-guava-parser-properties-under-bo",
+  "title": "Compare Guava parser properties under both JBMC profiles",
+  "description": "Run the same direct-String properties with packaged JBMC and the pinned original JDK Arrays class. Retain assertion IDs, all independent completeness failures, raw properties, and the tilde discrepancy.",
+  "kind": "library",
+  "capabilities": [
+    "jbmc:standalone"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:54:13+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "6m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Run the standalone hex controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py hex standalone",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/opening/hex/standalone"
+  ]
+}

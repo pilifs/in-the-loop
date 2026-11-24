@@ -1,0 +1,82 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "jgrapht-receiver-histories",
+    "family": "jgrapht-dag",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-g",
+            "-parameters"
+          ]
+        },
+        "compileLibraries": [
+          "jgrapht-core",
+          "jheaps",
+          "apfloat"
+        ],
+        "runtimeLibraries": [
+          "jgrapht-core",
+          "jheaps",
+          "apfloat"
+        ]
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ],
+    "libraryCatalog": "controls/libraries.json"
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "revision": "original",
+      "target": "GraphHistory#identities",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "edge-identity",
+      "kind": "prove",
+      "revision": "original",
+      "target": "GraphHistory#identities",
+      "relation": "calibration",
+      "claim": "claims/edge-identity.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "revision": "original",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle",
+      "kind": "oracle",
+      "revision": "original",
+      "path": "controls/original.json"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-220815-repeat-json-and-yaml-public-callers-befo",
+  "title": "Repeat JSON and YAML public callers before receiver changes",
+  "description": "Run the original registered four-input Configuration callers on both old and new Jackson and SnakeYAML graphs. Check exact original classpaths, caller identities and physical entry on every trial, and preserve strict native stops.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:08:15+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "Measure commons-configuration-565",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening commons-configuration-565",
+      "cwd": "."
+    },
+    {
+      "name": "Measure commons-configuration-601",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening commons-configuration-601",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/opening/commons-configuration-565",
+    "verification/receiver-discovery/opening/commons-configuration-601"
+  ]
+}

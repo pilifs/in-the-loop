@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-231925-recheck-independent-float-operands-with",
+  "title": "Recheck independent float operands with exact aligned significands",
+  "description": "Verify all six registered two-input measurements on the new guarded arithmetic circuit. Keep the original full cartesian bounds, adjacent range, rounded addition, generated constructor and exact JVM witness bits.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:19:25+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "3m",
+    "timeout": "40m"
+  },
+  "steps": [
+    {
+      "name": "Check original bounds and independent controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/deeper.py float native --stage aligned",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/deeper/aligned/float/native"
+  ]
+}

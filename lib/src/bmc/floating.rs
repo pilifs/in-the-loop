@@ -1,9 +1,12 @@
 //! JVM comparisons over IEEE 754 interchange bits. The stack carries the raw word until an
 //! opcode or a method descriptor supplies its interpretation. Primitive conversions and comparisons use
-//! bit-vector circuits. Arithmetic uses the JVM rounding rules on exhaustively covered operand tuples.
+//! bit-vector circuits. Addition and subtraction over a proved band of normal exponents use a
+//! rounded fixed-point circuit. The remaining arithmetic enumerates exhaustively covered operand tuples.
 
 use super::{unsupported, ArithOp, Bits, Blaster, Engine, Kind, Lit, Model, Narrow, Path, Step, Stop, Val, FALSE, TRUE};
 use crate::interp::Value;
+
+mod binade;
 
 fn fraction_width(bits: &Bits) -> usize {
     match bits.len() {
@@ -208,6 +211,12 @@ fn round_up(b: &mut Blaster, bits: &Bits, count: usize) -> Lit {
 /// Normalize a two's-complement magnitude at its highest one. Accumulate a
 /// single rounding decision so a carry from all ones advances the exponent.
 fn integral_to_floating(b: &mut Blaster, x: &Bits, width: usize) -> Bits {
+    scaled_integer_to_floating(b, x, width, 0)
+}
+
+/// Encode an integer times a power of two. The caller guarantees that a
+/// nonzero result is normal and finite, including a carry after rounding.
+fn scaled_integer_to_floating(b: &mut Blaster, x: &Bits, width: usize, unit_exponent: i64) -> Bits {
     let fraction = if width == 64 { 52 } else { 23 };
     let bias = if width == 64 { 1023 } else { 127 };
     let sign = b.negative(x);
@@ -216,7 +225,7 @@ fn integral_to_floating(b: &mut Blaster, x: &Bits, width: usize) -> Bits {
     let mut word = b.constant(0, width);
     let mut increment = FALSE;
     for lead in 0..magnitude.len() {
-        let mut candidate = b.constant(((bias + lead) as i64) << fraction, width);
+        let mut candidate = b.constant((bias + unit_exponent + lead as i64) << fraction, width);
         let discarded = lead.saturating_sub(fraction);
         candidate[fraction - (lead - discarded)..fraction].copy_from_slice(&magnitude[discarded..lead]);
         let up = if discarded == 0 { FALSE } else { round_up(b, &magnitude, discarded) };
@@ -439,6 +448,13 @@ impl Engine<'_> {
             bits
         } else {
             let x = self.pop_word(path, kind)?;
+            if matches!(op, ArithOp::Add | ArithOp::Sub) {
+                if let Some(word) = self.bounded_binade_sum(path, &x, &y, op == ArithOp::Sub)? {
+                    self.push(path, if kind == Kind::Double { Val::J(word) } else { Val::I(word) });
+                    self.advance(path);
+                    return Ok(None);
+                }
+            }
             // A normal value divided by two stays exact while its exponent remains normal.
             if op == ArithOp::Div && self.b.constant_value(&y) == Some(if kind == Kind::Float { 0x4000_0000 } else { 0x4000_0000_0000_0000 }) {
                 let fraction = fraction_width(&x);

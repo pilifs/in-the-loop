@@ -1,0 +1,201 @@
+{
+  "$schema": "../schema/target.schema.json",
+  "schema": "example-target/v1",
+  "identity": {
+    "case": "three-worker-duty-history",
+    "family": "three-worker-duty-history",
+    "role": "control",
+    "sourceConfidence": "reproduced"
+  },
+  "history": {
+    "repository": "https://github.com/pilifs/in-the-loop",
+    "revisions": {
+      "original": {
+        "fixture": "original",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-g",
+            "-parameters"
+          ]
+        }
+      },
+      "single-monitor": {
+        "fixture": "single-monitor",
+        "fixtureCompiler": {
+          "jdk": "21",
+          "flags": [
+            "--release",
+            "8",
+            "-g",
+            "-parameters"
+          ]
+        }
+      }
+    }
+  },
+  "preparation": {
+    "route": "fixture",
+    "jdks": [
+      "21"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "replay",
+      "kind": "replay",
+      "revision": "original",
+      "target": "Duty#atomic",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "atomic",
+      "kind": "prove",
+      "revision": "original",
+      "target": "Duty#atomic",
+      "relation": "calibration",
+      "claim": "claims/atomic.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "split",
+      "kind": "prove",
+      "revision": "original",
+      "target": "Duty#split",
+      "relation": "calibration",
+      "claim": "claims/split.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "atomic-terminal",
+      "kind": "prove",
+      "revision": "original",
+      "target": "Duty#atomicTerminal",
+      "relation": "calibration",
+      "claim": "claims/atomic-terminal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "split-terminal",
+      "kind": "prove",
+      "revision": "original",
+      "target": "Duty#splitTerminal",
+      "relation": "calibration",
+      "claim": "claims/split-terminal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay"
+      ]
+    },
+    {
+      "id": "replay-single-monitor",
+      "kind": "replay",
+      "revision": "single-monitor",
+      "target": "Duty#atomic",
+      "relation": "calibration",
+      "expected": "established"
+    },
+    {
+      "id": "atomic-single-monitor",
+      "kind": "prove",
+      "revision": "single-monitor",
+      "target": "Duty#atomic",
+      "relation": "calibration",
+      "claim": "claims/atomic.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "established",
+      "requires": [
+        "replay-single-monitor"
+      ]
+    },
+    {
+      "id": "split-single-monitor",
+      "kind": "prove",
+      "revision": "single-monitor",
+      "target": "Duty#split",
+      "relation": "calibration",
+      "claim": "claims/split.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-single-monitor"
+      ]
+    },
+    {
+      "id": "atomic-terminal-single-monitor",
+      "kind": "prove",
+      "revision": "single-monitor",
+      "target": "Duty#atomicTerminal",
+      "relation": "calibration",
+      "claim": "claims/atomic-terminal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-single-monitor"
+      ]
+    },
+    {
+      "id": "split-terminal-single-monitor",
+      "kind": "prove",
+      "revision": "single-monitor",
+      "target": "Duty#splitTerminal",
+      "relation": "calibration",
+      "claim": "claims/split-terminal.json",
+      "engine": "native",
+      "gaps": "strict",
+      "expected": "refuted",
+      "requires": [
+        "replay-single-monitor"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "id": "driver",
+      "kind": "driver",
+      "revision": "original",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle",
+      "kind": "oracle",
+      "revision": "original",
+      "path": "controls/original.json"
+    },
+    {
+      "id": "driver-single-monitor",
+      "kind": "driver",
+      "revision": "single-monitor",
+      "path": "driver/Cases.java"
+    },
+    {
+      "id": "oracle-single-monitor",
+      "kind": "oracle",
+      "revision": "single-monitor",
+      "path": "controls/original.json"
+    }
+  ]
+}

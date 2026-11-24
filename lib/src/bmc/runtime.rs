@@ -514,6 +514,40 @@ impl Engine<'_> {
         Some(Ok(None))
     }
 
+    /// The selected JDK's Long.valueOf has taken its mandatory cache branch.
+    /// Its next instructions index by (int)value + 128 and return that box.
+    /// Reuse the same canonical entries the ordinary boxed-constant model uses.
+    pub(super) fn long_cache_return(&mut self, path: &mut Path) -> Option<Step> {
+        let frame = path.frames.last()?;
+        let next = frame.at + 1;
+        if frame.class.name != "java/lang/Long" || frame.method != "valueOf"
+            || frame.lambda_return != LambdaReturn::Pass || !frame.stack.is_empty()
+            || frame.code.descriptor != "(J)Ljava/lang/Long;"
+            || !matches!(frame.code.insns.get(next..)?,
+                [Insn::Load(Kind::Long,0), Insn::Convert(Kind::Long,Narrow::To(Kind::Int)), Insn::IConst(128),
+                 Insn::Arith(ArithOp::Add,Kind::Int), Insn::ArrayLoad(ArrayKind::Ref), Insn::Return(Some(Kind::Ref)), ..])
+            || self.is_observed("java/lang/Long$LongCache")
+            || !self.cp.load("java/lang/Long").ok().flatten().is_some_and(|c| c.origin == crate::classpath::Origin::Jdk) {
+            return None;
+        }
+        let Val::J(word) = frame.locals.first()?.as_ref()?.clone() else { return None; };
+        let below = self.b.slt(&word, &self.b.constant(-128, 64));
+        let above = self.b.slt(&self.b.constant(127, 64), &word);
+        let mut outside = path.cond.clone();
+        outside.push(self.b.or(below, above));
+        match self.solve(&outside) {
+            Ok(false) => {}
+            Ok(true) => return None,
+            Err(stop) => return Some(Err(stop)),
+        }
+        let step = self.cached_integral(path, "java/lang/Long", &word)?;
+        if matches!(step, Ok(None)) {
+            // Leave the original areturn to deliver the canonical reference to its caller.
+            path.frames.last_mut().expect("Long.valueOf").at = next + 5;
+        }
+        Some(step)
+    }
+
     /// Materialize the cache entries a path asks for, even when the key is an arbitrary
     /// int. For each concrete assignment the oldest candidate with equal value is the
     /// cached object. Outside the single VM-wide cache interval every call allocates.
@@ -666,7 +700,7 @@ impl Engine<'_> {
                 || (frame.class.name.starts_with(&format!("{class}$")) && self.cp.load(&class).ok().flatten()
                     .is_some_and(|loaded| matches!(loaded.origin, crate::classpath::Origin::Jdk)));
             if frame.method != "<clinit>" { return None; }
-            let own_prologue = frame.class.name == class && self.cp.is_application(&class)
+            let own_prologue = self.cp.is_application(&frame.class.name) && self.cp.is_application(&class)
                 && frame.class.method("<clinit>", "()V")?.code.as_ref()?.instructions().ok()
                     .and_then(|ops| super::gaps::assertion_prologue(&frame.class, &ops)) == Some(frame.pc());
             if !own_prologue && (self.cp.state_image_class(&frame.class.name).is_none() || !image_host) { return None; }

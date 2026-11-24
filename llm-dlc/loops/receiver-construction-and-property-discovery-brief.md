@@ -331,3 +331,7 @@ Every observation the brief states for an existing library or fixture reproduced
 - The isolation control of case 4, the property-read approach of case 6, case 7's `id=<hex>` client and its
   137,257-string census, case 8's adjacent-range transfer, and case 9's three-worker fixture and schedule enumerator.
 - All claims, examples, sidecars, scoring and the frozen generator.
+
+## Results
+
+The [campaign results](receiver-construction-and-property-discovery-results.md) give the observed opening, qualified public histories, selected checks, ordinary verdicts and remaining blockers.

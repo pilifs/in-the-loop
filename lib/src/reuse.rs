@@ -76,6 +76,7 @@ pub const PROPERTY_OPTIONS: &[(&str, &str)] = &[
     ("unwind", "a bound of the claim"),
     ("max_array_length", "a bound of the claim"),
     ("shrink", "the checker's settings: it chooses the witness shown"),
+    ("search_startup_witness", "the checker's settings: it can seek an original-JVM counterexample after a refused property read"),
     ("timeout_seconds", "only whether a verdict is reached, and an unresolved result is never stored"),
     ("jbmc", "JBMC's: the cache is used with --engine native only"),
     ("java_home", "the checker's settings"),
@@ -316,7 +317,7 @@ pub fn property_claim(options: &Options) -> Result<Option<CanonicalClaim>, Unsup
         Some(p) => format!("sha256:{}", sha256_hex(&std::fs::read(p).map_err(|e| uncacheable(format!("its contracts {} could not be read: {e}", p.display())))?)),
         None => "none".into(),
     };
-    let checker = format!(
+    let mut checker = format!(
         "engine native; property; gaps {}; contracts {contracts}; contract library {}; max trust {}; solver {}; shrink {}; confirm {}; java home {}",
         options.gaps.name(),
         if options.contract_library { "on" } else { "off" },
@@ -326,6 +327,7 @@ pub fn property_claim(options: &Options) -> Result<Option<CanonicalClaim>, Unsup
         if options.confirm { "on" } else { "off" },
         options.java_home.as_ref().map(|h| h.display().to_string()).unwrap_or_else(|| "found".into()),
     );
+    if options.search_startup_witness { checker.push_str(", with original-JVM startup witness search"); }
     Ok(Some(CanonicalClaim {
         contract,
         closures,

@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-233644-check-both-conformance-suites-after-rece",
+  "title": "Check both conformance suites after receiver arithmetic changes",
+  "description": "Run the existing proof-tier JVM conformance suites against both engines after the fixed-point float circuit, original JDK byte-array and numeric accessor execution, and member-class assertion handling changed.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T23:36:44+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "jbmc",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "25m",
+    "timeout": "60m"
+  },
+  "steps": [
+    {
+      "name": "Both conformance suites",
+      "run": "JVMCONTRACT_JBMC_MEMORY_MB=2048 python3 lib/tools/test_costs.py run --only rust --tier proof --test conformance --test-threads 2",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

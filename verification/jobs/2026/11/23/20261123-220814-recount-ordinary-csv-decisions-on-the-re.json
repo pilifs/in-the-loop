@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261123-220814-recount-ordinary-csv-decisions-on-the-re",
+  "title": "Recount ordinary CSV decisions on the receiver campaign opening",
+  "description": "Repeat all four strict native claims on Commons CSV PR 218 with their original public builder and reader and validate every fresh receipt against the registered guard and assertion.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "receiver-construction"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-23T22:08:14+00:00",
+    "session": "01a20324-17e6-78c3-be25-0c0c16fe5fbb"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "2m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "Measure 366",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/callers.py opening 366",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/opening/366"
+  ]
+}
