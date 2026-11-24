@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-215955-reopen-join-sorted-lucene-keys-and-test",
+  "title": "Reopen join-sorted Lucene keys and test the child filter",
+  "description": "Read ordered parent IDs, sort key for each hit and total count; additionally compare fixed numeric child substitutions 5 and 50 with a parent-level default of 99. Read descending keys and all-present ascending keys on both original versions. Test the initial prediction that excluding the child with no value preserves the ascending result. Record both parent IDs and actual returned keys. Run the frozen application plan and compare cold, warm, clean and same-path production JAR replacement with qualified receipts.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "checked-proof-reuse"
+  ],
+  "links": {
+    "paths": [
+      "verification/product-behaviour/cases/J14"
+    ]
+  },
+  "expected": "Source-bound public observations, cache actions and original receipts for each question. The relevant change matches the clean result or identifies the first open dependency.",
+  "submitted": {
+    "at": "2026-11-24T21:59:55+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "7m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B verification/product-behaviour/qualify.py J14",
+      "run": "python3 -B verification/product-behaviour/qualify.py J14",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/product-behaviour/results/J14/first"
+  ]
+}

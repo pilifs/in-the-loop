@@ -117,11 +117,13 @@ def run(case_id, label):
             for left, right in (("cold", "warm"), ("warm", "clean"), ("replacement", "replacement-clean")):
                 if outcomes(runs[left][key]) != outcomes(runs[right][key]):
                     raise ValueError(f"{left} differs from {right} for {key}")
-        # An open initial result is a finding. A changed value or a reused replaced artifact requires investigation.
+        # Some registered questions deliberately retain a preservation hypothesis falsified in physical preflight.
         questions = {q["id"]: q for q in case["questions"]}
         for row in runs["cold"]["claims"]:
-            if row["status"] == "refuted":
-                raise ValueError(f"initial result refutes the registered {row['id']}")
+            inputs = questions[row["id"]]["inputs"]
+            refuted = any("physicalAfter" in i and i["physicalAfter"] != i.get("after", i["before"]) for i in inputs)
+            if row["status"] != "open" and row["status"] != ("refuted" if refuted else "established"):
+                raise ValueError(f"initial result disagrees with the independent observation of {row['id']}")
         for row in runs["replacement"]["claims"]:
             question = questions[row["id"]]
             changed = any(i.get("after", i["before"]) != i["before"] for i in question["inputs"])

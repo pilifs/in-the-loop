@@ -89,7 +89,7 @@ def materialize(folder, work):
         inputs = question["inputs"]
         changes = [{"input": i, "expectedNew": {"return": item["after"]}}
                    for i, item in enumerate(inputs) if item.get("after", item["before"]) != item["before"]]
-        scope = {"entry": question.get("entry", case["entry"]), "probeClass": "UpgradeProbe",
+        scope = {"entry": question.get("entry", case["entry"]), "probeClass": case.get("probeClass", "UpgradeProbe"),
                  "observer": question["observer"], "basis": question["basis"],
                  "cases": [{"args": item["args"], "expected": {"return": item["before"]}} for item in inputs]}
         if "invocationVia" in question:
@@ -142,9 +142,11 @@ def physical(folder):
                            "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8", "TZ": "UTC", "TMPDIR": str(trial)}
                     subprocess.run([java / "java", "-Xmx96m", "-Djava.io.tmpdir=" + str(trial),
                                     "-Dupgrade.observation.file=" + str(obs), "-cp", str(classes) + os.pathsep + cp,
-                                    "UpgradeObservation", "UpgradeProbe", *args], check=True, cwd=trial, env=env, timeout=40)
+                                    "UpgradeObservation", case.get("probeClass", "UpgradeProbe"), *args],
+                                   check=True, cwd=trial, env=env, timeout=40)
                     observed = upgrade_replay.typed_outcome(obs.read_text().splitlines())
-                    expected = item.get("after", item["before"]) if side == "new" else item["before"]
+                    # Keep the original preservation prediction in the formal claim when a fresh JVM refutes it.
+                    expected = item.get("physicalAfter", item.get("after", item["before"])) if side == "new" else item["before"]
                     if observed != {"return": expected}:
                         raise ValueError(f"{folder.name} {side} {item['args']}: expected {expected!r}, observed {observed}")
                     observations.append({"side": side, "question": question["id"], "args": item["args"], **observed})

@@ -1,0 +1,88 @@
+{
+  "project": "jgrapht",
+  "change": "JGraphT — See a rejected graph-view update in both the view and the backing graph",
+  "commits": {
+    "old": "c01e02903d45c82a9ecaf5c4329cdf847eb9e183",
+    "new": "637503d4ebfbce3bb1ffca97348a90e856f4346e"
+  },
+  "sourceRoots": [
+    "jgrapht-core/src/main/java/org/jgrapht/graph/AsWeightedGraph.java"
+  ],
+  "artifacts": [
+    "artifacts/J16-jgrapht-{side}-overlay.jar"
+  ],
+  "supportClasspaths": [
+    "releases/jgrapht-core-1.5.1/classpath.txt"
+  ],
+  "deployment": "Pinned weighted graph view over the shared original JGraphT 1.5.1 runtime.",
+  "entry": "org.jgrapht.graph.AsWeightedGraph#setEdgeWeight(Ljava/lang/Object;D)V",
+  "assumptions": [
+    "One fresh JVM per registered assertion profile, class-loader assertion status selected before the graph initializes, same edge retained through both views and two updates."
+  ],
+  "questions": [
+    {
+      "id": "disabled-cache-write-through",
+      "observer": "Observe termination and read both the computed view and backing graph after each attempted update.",
+      "basis": "Uncached weights are computed as 7. The parent may write through to the backing edge; the fixed rejection preserves its starting 2.",
+      "inputs": [
+        {
+          "args": [
+            "off",
+            "uncached",
+            "through"
+          ],
+          "before": "returned/7.0/9.0|returned/7.0/11.0",
+          "after": "UnsupportedOperationException/7.0/2.0|UnsupportedOperationException/7.0/2.0"
+        },
+        {
+          "args": [
+            "on",
+            "uncached",
+            "through"
+          ],
+          "before": "AssertionError/7.0/2.0|AssertionError/7.0/2.0",
+          "after": "UnsupportedOperationException/7.0/2.0|UnsupportedOperationException/7.0/2.0"
+        }
+      ]
+    },
+    {
+      "id": "cached-and-local",
+      "observer": "Repeat with caching and either write-through or view-only updates.",
+      "basis": "Cached values follow both writes; local views leave the backing graph at 2.",
+      "inputs": [
+        {
+          "args": [
+            "off",
+            "cached",
+            "through"
+          ],
+          "before": "returned/9.0/9.0|returned/11.0/11.0"
+        },
+        {
+          "args": [
+            "off",
+            "cached",
+            "local"
+          ],
+          "before": "returned/9.0/2.0|returned/11.0/2.0"
+        },
+        {
+          "args": [
+            "on",
+            "cached",
+            "through"
+          ],
+          "before": "returned/9.0/9.0|returned/11.0/11.0"
+        },
+        {
+          "args": [
+            "on",
+            "cached",
+            "local"
+          ],
+          "before": "returned/9.0/2.0|returned/11.0/2.0"
+        }
+      ]
+    }
+  ]
+}

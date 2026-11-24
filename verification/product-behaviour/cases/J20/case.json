@@ -1,0 +1,78 @@
+{
+  "project": "micrometer",
+  "change": "Micrometer — Expose configured timer percentiles across reporting steps",
+  "commits": {
+    "old": "41c9493e7f6781f4588906ed36cca87385a5a76c",
+    "new": "f18f09fa8d782a39081856f9667827ae00af638a"
+  },
+  "probeClass": "io.micrometer.signalfx.UpgradeProbe",
+  "sourceRoots": [
+    "implementations/micrometer-registry-signalfx/src/main/java/io/micrometer/signalfx/SignalfxTimer.java"
+  ],
+  "artifacts": [
+    "artifacts/J20-micrometer-{side}-overlay.jar"
+  ],
+  "supportClasspaths": [
+    "releases/micrometer-1.10.0/classpath.txt"
+  ],
+  "deployment": "Pinned timer class over Micrometer 1.10.0 and SignalFx 1.0.25. The real registry publishes protobuf to a fresh loopback receiver with scheduled export disabled.",
+  "entry": "io.micrometer.signalfx.SignalfxTimer#takeSnapshot()Lio/micrometer/core/instrument/distribution/HistogramSnapshot;",
+  "assumptions": [
+    "Clock advances by exactly one minute per interval. The same registered timer and five-minute percentile window span both. Only an in-process loopback receiver accepts the emitted batches."
+  ],
+  "questions": [
+    {
+      "id": "delta-percentiles",
+      "observer": "Decode actual wire counts, totals, bucket labels and deltas, and quantile gauge labels and numeric values on two intervals.",
+      "basis": "Counts and totals are sums of the four known samples. Delta buckets use only the new interval. The numeric percentile gauge must equal a separate SimpleMeterRegistry histogram on the same inputs.",
+      "inputs": [
+        {
+          "args": [
+            "delta",
+            "same"
+          ],
+          "before": "4/2.200/[0, 1, 2, 3, 4]/{}|4/2.200/[0, 1, 2, 3, 4]/{}",
+          "after": "4/2.200/[0, 1, 2, 3, 4]/{0.95=2.004844544, 0.99=2.004844544}|4/2.200/[0, 1, 2, 3, 4]/{0.95=2.004844544, 0.99=2.004844544}"
+        },
+        {
+          "args": [
+            "delta",
+            "vary"
+          ],
+          "before": "4/2.200/[0, 1, 2, 3, 4]/{}|4/2.015/[0, 3, 3, 3, 4]/{}",
+          "after": "4/2.200/[0, 1, 2, 3, 4]/{0.95=2.004844544, 0.99=2.004844544}|4/2.015/[0, 3, 3, 3, 4]/{0.95=2.004844544, 0.99=2.004844544}"
+        }
+      ],
+      "invocationVia": "io.micrometer.signalfx.SignalFxMeterRegistry#publish()V"
+    },
+    {
+      "id": "cumulative-and-unconfigured",
+      "observer": "Compare cumulative buckets and both percentile gauges, and a delta profile with no configured quantiles.",
+      "basis": "The cumulative buckets add both intervals. The independent timer supplies both percentile values. Unconfigured intervals emit zero phi gauges.",
+      "inputs": [
+        {
+          "args": [
+            "cumulative",
+            "same"
+          ],
+          "before": "4/2.200/[0, 1, 2, 3, 4]/{0.95=2.004844544, 0.99=2.004844544}|4/2.200/[0, 2, 4, 6, 8]/{0.95=2.004844544, 0.99=2.004844544}"
+        },
+        {
+          "args": [
+            "cumulative",
+            "vary"
+          ],
+          "before": "4/2.200/[0, 1, 2, 3, 4]/{0.95=2.004844544, 0.99=2.004844544}|4/2.015/[0, 4, 5, 6, 8]/{0.95=2.004844544, 0.99=2.004844544}"
+        },
+        {
+          "args": [
+            "delta",
+            "none"
+          ],
+          "before": "4/2.200/[0, 1, 2, 3, 4]/{}|4/2.200/[0, 1, 2, 3, 4]/{}"
+        }
+      ],
+      "invocationVia": "io.micrometer.signalfx.SignalFxMeterRegistry#publish()V"
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "project": "resilience4j",
+  "change": "Resilience4j — Repeat a circuit-breaker command without creating another transition",
+  "commits": {
+    "old": "4e564affebf280ba20880bdc8736b42f8f92234a",
+    "new": "4ecc7c889cad7bfa6cb574af52252480f7e0d7cf"
+  },
+  "jdk": "8.0.512.0+9-tem",
+  "sourceRoots": [
+    "resilience4j-circuitbreaker/src/main"
+  ],
+  "artifacts": [
+    "artifacts/J19-resilience4j-{side}-overlay.jar"
+  ],
+  "supportClasspaths": [
+    "releases/resilience4j-1.3.1/classpath.txt"
+  ],
+  "deployment": "Both pinned changed circuit-breaker classes over the original 1.3.1 support.",
+  "entry": "io.github.resilience4j.circuitbreaker.internal.CircuitBreakerStateMachine#transitionToHalfOpenState()V",
+  "assumptions": [
+    "One synchronous public listener, original default state machine, one fresh breaker per history. No automatic transitions or external calls."
+  ],
+  "questions": [
+    {
+      "id": "repeated-commands",
+      "observer": "Report return or exception, state and cumulative listener count after each of six commands, followed by the full transition sequence.",
+      "basis": "Only the first command in each pair changes state. Repeating the command may throw on the parent and returns on the fix.",
+      "inputs": [
+        {
+          "args": [
+            "repeat"
+          ],
+          "before": "ok/OPEN/1|IllegalStateTransitionException/OPEN/1|ok/HALF_OPEN/2|IllegalStateTransitionException/HALF_OPEN/2|ok/CLOSED/3|IllegalStateTransitionException/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED",
+          "after": "ok/OPEN/1|ok/OPEN/1|ok/HALF_OPEN/2|ok/HALF_OPEN/2|ok/CLOSED/3|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+        }
+      ],
+      "invocationVia": "io.github.resilience4j.circuitbreaker.CircuitBreaker#transitionToHalfOpenState()V"
+    },
+    {
+      "id": "genuine-and-invalid",
+      "observer": "Read state and events around a genuinely invalid CLOSED to HALF_OPEN and an ordinary three-transition cycle.",
+      "basis": "Invalid commands cannot create an event or change state. Each genuine transition creates one event.",
+      "inputs": [
+        {
+          "args": [
+            "invalid"
+          ],
+          "before": "IllegalStateTransitionException/CLOSED/0@"
+        },
+        {
+          "args": [
+            "single"
+          ],
+          "before": "ok/OPEN/1|ok/HALF_OPEN/2|ok/CLOSED/3@CLOSED_TO_OPEN,OPEN_TO_HALF_OPEN,HALF_OPEN_TO_CLOSED"
+        }
+      ],
+      "invocationVia": "io.github.resilience4j.circuitbreaker.CircuitBreaker#transitionToHalfOpenState()V"
+    }
+  ]
+}

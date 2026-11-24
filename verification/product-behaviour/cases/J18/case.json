@@ -1,0 +1,78 @@
+{
+  "project": "caffeine",
+  "change": "Caffeine — Honor immediate expiry when the cache also has a size limit",
+  "commits": {
+    "old": "5473cab8afb17ec7aa288b57d74d81de6372351e",
+    "new": "78be027a7e89e750e3a1cc27584d7a8224d164bf"
+  },
+  "jdk": "8.0.512.0+9-tem",
+  "sourceRoots": [
+    "jcache/src/main/java/com/github/benmanes/caffeine/jcache/CacheFactory.java"
+  ],
+  "artifacts": [
+    "artifacts/J18-caffeine-{side}-overlay.jar"
+  ],
+  "supportClasspaths": [
+    "releases/caffeine-jcache-2.6.1/classpath.txt"
+  ],
+  "deployment": "Pinned CacheFactory over Caffeine JCache 2.6.1 and the setup's JCache API 1.0.0 override.",
+  "entry": "com.github.benmanes.caffeine.jcache.CacheFactory#createCache(Ljava/lang/String;Ljavax/cache/configuration/Configuration;)Lcom/github/benmanes/caffeine/jcache/CacheProxy;",
+  "assumptions": [
+    "Fresh manager/cache, direct executor, constant ticker and zero or one-minute creation/update/read expiry, maximum two entries where enabled."
+  ],
+  "questions": [
+    {
+      "id": "size-with-expiry",
+      "observer": "Observe both gets and the create/update/read callbacks in order after two puts of the same key.",
+      "basis": "Zero expiry removes each newly created entry. Positive expiry preserves the value and should invoke the policy at all four operations.",
+      "inputs": [
+        {
+          "args": [
+            "combined",
+            "zero"
+          ],
+          "before": "20/20/",
+          "after": "null/null/CC"
+        },
+        {
+          "args": [
+            "combined",
+            "positive"
+          ],
+          "before": "20/20/",
+          "after": "20/20/CURR"
+        }
+      ],
+      "invocationVia": "javax.cache.CacheManager#createCache(Ljava/lang/String;Ljavax/cache/configuration/Configuration;)Ljavax/cache/Cache;"
+    },
+    {
+      "id": "single-policies",
+      "observer": "Check independent size and expiry profiles, and count survivors after maintenance without choosing a victim.",
+      "basis": "Unexpired entries survive until size maintenance. A size bound of two permits exactly two entries after nine keys.",
+      "inputs": [
+        {
+          "args": [
+            "expiry",
+            "zero"
+          ],
+          "before": "null/null/CC"
+        },
+        {
+          "args": [
+            "expiry",
+            "positive"
+          ],
+          "before": "20/20/CURR"
+        },
+        {
+          "args": [
+            "size",
+            "maintenance"
+          ],
+          "before": "20/20//size=2/visible=2"
+        }
+      ],
+      "invocationVia": "javax.cache.CacheManager#createCache(Ljava/lang/String;Ljavax/cache/configuration/Configuration;)Ljavax/cache/Cache;"
+    }
+  ]
+}

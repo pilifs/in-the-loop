@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-215957-check-circuit-breaker-command-results-an",
+  "title": "Check circuit-breaker command results and listener counts",
+  "description": "Report return or exception, state and cumulative listener count after each of six commands, followed by the full transition sequence. Read state and events around a genuinely invalid CLOSED to HALF_OPEN and an ordinary three-transition cycle. Run the frozen application plan and compare cold, warm, clean and same-path production JAR replacement with qualified receipts.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "checked-proof-reuse"
+  ],
+  "links": {
+    "paths": [
+      "verification/product-behaviour/cases/J19"
+    ]
+  },
+  "expected": "Source-bound public observations, cache actions and original receipts for each question. The relevant change matches the clean result or identifies the first open dependency.",
+  "submitted": {
+    "at": "2026-11-24T21:59:57+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B verification/product-behaviour/qualify.py J19",
+      "run": "python3 -B verification/product-behaviour/qualify.py J19",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/product-behaviour/results/J19/first"
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "project": "lucene",
+  "change": "Apache Lucene \u2014 Sort parent search hits when only some children have values",
+  "commits": {
+    "old": "182ee9c4cc3bc52ace12e699248b750377a3aa2f",
+    "new": "167503f6d84d8e43db4ec6ae3baf17337290393f"
+  },
+  "jdk": "25.0.5.0+8-tem",
+  "sourceRoots": [
+    "lucene/join/src/java",
+    "lucene/core/src/java"
+  ],
+  "artifacts": [
+    "artifacts/J14-lucene-{side}-join.jar",
+    "artifacts/J14-lucene-{side}-core.jar"
+  ],
+  "deployment": "Original pinned Lucene join and core source builds on JDK 25.",
+  "entry": "org.apache.lucene.search.join.ToParentBlockJoinSortField#<init>(Ljava/lang/String;Lorg/apache/lucene/search/SortField$Type;ZLorg/apache/lucene/search/join/BitSetProducer;Lorg/apache/lucene/search/join/BitSetProducer;)V",
+  "assumptions": [
+    "Index writer closed before opening a DirectoryReader. Two fixed parent/child blocks. A common five-argument constructor sorts the same children on both versions."
+  ],
+  "questions": [
+    {
+      "id": "missing-child",
+      "observer": "Read ordered parent IDs, sort key for each hit and total count; additionally compare fixed numeric child substitutions 5 and 50 with a parent-level default of 99.",
+      "basis": "Ascending includes the absent child on the fix. Numeric substitution 5 wins for A, while 50 leaves its sibling's 30 as the minimum.",
+      "inputs": [
+        {
+          "args": [
+            "missing",
+            "ascending"
+          ],
+          "before": "2=B:20,A:30",
+          "after": "2=A:null,B:20"
+        },
+        {
+          "args": [
+            "numeric",
+            "ascending"
+          ],
+          "before": "2=B:20,A:30|overload-absent",
+          "after": "2=A:null,B:20|2=A:5,B:20|2=B:20,A:30"
+        }
+      ]
+    },
+    {
+      "id": "descending-and-all-present",
+      "observer": "Read descending keys and all-present ascending keys on both original versions.",
+      "basis": "The present maxima determine descending order and a present value of 35 leaves the sibling minimum at 30.",
+      "inputs": [
+        {
+          "args": [
+            "missing",
+            "descending"
+          ],
+          "before": "2=B:40,A:30"
+        },
+        {
+          "args": [
+            "all",
+            "ascending"
+          ],
+          "before": "2=B:20,A:30"
+        }
+      ]
+    },
+    {
+      "id": "filtered-child-hypothesis",
+      "observer": "Test the initial prediction that excluding the child with no value preserves the ascending result. Record both parent IDs and actual returned keys.",
+      "basis": "The initial prediction counted only matching children. The fresh fixed JVM refuted it. The original ToParentDocValues compares the count of matching children with values to the length of the entire block, including the excluded document.",
+      "inputs": [
+        {
+          "args": [
+            "filtered",
+            "ascending"
+          ],
+          "before": "2=B:20,A:30",
+          "physicalAfter": "2=A:null,B:20"
+        }
+      ]
+    }
+  ]
+}
