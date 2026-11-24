@@ -188,6 +188,10 @@ update-stale` then resets the files on disk: edits jj had not yet seen were sile
 again 2026-11-17), and the working-copy change can be left in two copies.
 
 - Use `python3 llm-dlc/tools/unstale.py`, as `CLAUDE.md` says, never `update-stale` itself.
+- A loop does this itself. `feature-loop.sh` reads `@-` before and after each turn, while its agent isn't working.
+  On a stale working copy it runs `unstale.py` there, and says so in its log and summary. It stops for a person
+  only when `unstale.py` can't recover. Before 2026-11-24 the loop ended on it with status 1. On 2026-11-23
+  21:15 that ended trusted-kernel's second cycle before its verdict, after a turn that had gone well.
 - In a side workspace, run a jj command (`jj st`) after each batch of edits, so jj has seen them.
 - Restore generated files (`llm-dlc/README.md`'s session table, `llm-dlc/index.json`) from `@-`, not from a
   backup: a backup also takes back what the base had gained.

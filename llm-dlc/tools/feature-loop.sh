@@ -741,7 +741,7 @@ fi
 
 cleanup() {
   [[ -n "$reader" ]] && kill "$reader" 2>/dev/null
-  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.compact" "$STATE.item-stop" "$FEATURE_LOOP_COPY"
+  rm -f "$STATE" "$LOCK" "$STATE.pid" "$STATE.compacted" "$STATE.notes" "$STATE.turn" "$STATE.compact" "$STATE.item-stop" "$STATE.jj" "$FEATURE_LOOP_COPY"
   # Last, however the loop ended, so the session to resume or read is on screen.
   log "session: $SESSION_ID"
 }
@@ -1094,7 +1094,31 @@ between_items() {
 
 # `sync.py commit` finishes @ and starts an empty change, so a commit moves @-.
 # Change IDs, unlike commit IDs, survive a rewrite of the commit.
-last_change() { jj log --no-graph -r @- -T change_id; }
+#
+# Another session's jj operation can meet this workspace's (a watcher landing, a checkpoint), and jj then refuses
+# every command here with "The working copy is stale". The loop reads @- before and right after each turn, when
+# the agent is not working and nothing else edits this checkout, so it recovers there as CLAUDE.md tells an agent
+# to: unstale.py saves what was not committed, updates the working copy and takes the edits back. It says so in the
+# log and the summary. When unstale.py can't tell which copy of the edits to keep, the loop stops as it always did,
+# with the error in the log: a person decides that.
+last_change() {
+  local out
+  if out=$(jj log --no-graph -r @- -T change_id 2>"$STATE.jj"); then
+    printf '%s\n' "$out"
+    return 0
+  fi
+  if ! grep -q 'working copy is stale' "$STATE.jj"; then
+    cat "$STATE.jj" >&2
+    return 1
+  fi
+  log "the working copy is stale (another session's jj operation met this one's); recovering with unstale.py" >&2
+  if ! python3 llm-dlc/tools/unstale.py >&2; then
+    log "unstale.py could not recover the working copy; it needs a person" >&2
+    return 1
+  fi
+  note "- $(stamp): the working copy was stale after another session's jj operation, and unstale.py recovered it"
+  jj log --no-graph -r @- -T change_id
+}
 
 # Start a cycle: count it, and take it from the ones left.
 next_cycle() {

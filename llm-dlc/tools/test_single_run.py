@@ -60,10 +60,19 @@ if work:
         until = time.time() + 30
         while time.time() < until and not Path(os.environ["STANDIN_GO"]).exists():
             time.sleep(0.1)
-    if mode in ("commit", "wait"):
+    if mode in ("commit", "wait", "stale"):
         Path("work.txt").write_text("turn %d at %s\n" % (turns + 1, time.time()))
         subprocess.run(["jj", "--quiet", "describe", "-m", "Made-up work, turn %d" % (turns + 1)], check=True)
         subprocess.run(["jj", "--quiet", "new"], check=True)
+    if mode == "stale":
+        # another session, in a workspace of its own, puts a commit under this turn's at the same moment: the
+        # files this workspace should have change, and jj here refuses every command until it is brought up to date
+        other = Path(os.environ["STANDIN_OTHER"])
+        if not other.exists():
+            subprocess.run(["jj", "--quiet", "workspace", "add", "--name", "other", "-r", "default@--", str(other)], check=True)
+        (other / "other.txt").write_text("another session's file\n")
+        subprocess.run(["jj", "--quiet", "describe", "-m", "Another session's commit"], cwd=other, check=True)
+        subprocess.run(["jj", "--quiet", "rebase", "-s", "default@-", "-d", "other@"], cwd=other, check=True)
     elif mode == "leave":
         Path("left.txt").write_text("not committed\n")
 projects.mkdir(parents=True, exist_ok=True)
@@ -88,7 +97,7 @@ class SingleRunTest(unittest.TestCase):
         self.root = self.tmp / "checkout"
         tools = self.root / "llm-dlc/tools"
         tools.mkdir(parents=True)
-        for name in ("feature-loop.sh", "loop-common.sh", "conductor.py", "agent_client.py"):
+        for name in ("feature-loop.sh", "loop-common.sh", "conductor.py", "agent_client.py", "unstale.py"):
             shutil.copy(TOOLS / name, tools / name)
         (self.root / ".gitignore").write_text("llm-dlc/loop-summaries/\n")
         # the checkout's instructions, which a Codex run is checked to be given whole before it starts
@@ -385,6 +394,36 @@ class SingleRunTest(unittest.TestCase):
     def codex_calls(self):
         """What the stand-in was run for, the check of the instructions before the run (`debug prompt-input`) left out."""
         return [json.loads(line)["argv"][0] for line in self.codex_log.read_text().splitlines() if json.loads(line)["argv"][0] != "debug"]
+
+    @cost("tool")
+    def test_a_working_copy_another_session_left_stale_after_a_turn_is_recovered_and_the_run_goes_on(self):
+        # 2026-11-23 21:15: a turn ended well, jj then said "The working copy is stale", and the run ended with
+        # status 1 before its verdict.
+        self.start("--prompt", PROMPT, "--continue", CONTINUE, modes="stale,commit", STANDIN_OTHER=str(self.tmp / "other"))
+        first = self.wait()
+        self.assertEqual(first["cycle"]["cycle"], 1)
+        self.assertIn("Made-up work, turn 1", " ".join(first["cycle"]["commits"]))
+        log = (self.run_dir() / "loop.log").read_text()
+        self.assertIn("the working copy is stale", log)
+        self.assertIn("ran jj workspace update-stale", log)
+        self.tool("answer", "thing", "continue", "--reason", "It goes on.")
+        second = self.wait()
+        self.assertEqual(second["cycle"]["cycle"], 2)
+        self.tool("answer", "thing", "stop", "--reason", "Done.")
+        self.assertEqual(self.wait(kind="ended")["event"]["status"], 0)
+        self.assertRegex(self.record(), r"- \S+ \S+: the working copy was stale after another session's jj operation, "
+                                        r"and unstale\.py recovered it")
+        self.assertEqual((self.root / "other.txt").read_text(), "another session's file\n")
+
+    @cost("tool")
+    def test_a_stale_working_copy_that_unstale_cannot_recover_still_ends_the_run_for_a_person(self):
+        (self.root / "llm-dlc/tools/unstale.py").write_text("import sys\nprint('two copies with edits of their own')\nsys.exit(1)\n")
+        self.start("--prompt", PROMPT, "--continue", CONTINUE, modes="stale", STANDIN_OTHER=str(self.tmp / "other"))
+        ended = self.wait(kind="ended")
+        self.assertEqual(ended["event"]["status"], 1)
+        log = (self.run_dir() / "loop.log").read_text()
+        self.assertIn("two copies with edits of their own", log)
+        self.assertIn("unstale.py could not recover the working copy; it needs a person", log)
 
     @cost("tool")
     def test_a_last_cycle_whose_turn_failed_ends_the_run_needing_attention_and_not_as_done(self):
