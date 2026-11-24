@@ -1,0 +1,80 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "Gson #3098, promoted integer map keys and public diagnostics",
+  "workflows": [
+    {
+      "id": "stream-paths",
+      "cohort": "registered",
+      "scope": "stream-paths.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "1=x,2=y|$.1,$.1,$.2,$.2"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "1=x,2=y|$.1,$.1,$.2,$.2;JsonSyntaxException/IllegalStateException@com.google.gson.stream.JsonReader.unexpectedTokenError|$.01,$.01,$.002,error=$.002;2=z,1=r|$.002,$.002,$.01,$.01"
+            }
+          }
+        ]
+      },
+      "assumptions": [
+        "Fresh pinned JVM for each trial. One Gson and one registered value adapter for all documents in a history."
+      ],
+      "deterministicUnderAssumptions": true
+    },
+    {
+      "id": "stream-values",
+      "cohort": "registered",
+      "scope": "stream-values.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "assumptions": [
+        "Fresh pinned JVM for each trial. One Gson and one registered value adapter for all documents in a history."
+      ],
+      "deterministicUnderAssumptions": true
+    },
+    {
+      "id": "tree-paths",
+      "cohort": "registered",
+      "scope": "tree-paths.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "1=x,2=y|$.1,$.1,$.2,$.2"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "1=x,2=y|$.1,$.1,$.2,$.2;JsonSyntaxException/IllegalStateException@com.google.gson.internal.bind.JsonTreeReader.nextString|$.01,$.01,$.002,error=$.002;2=z,1=r|$.002,$.002,$.01,$.01"
+            }
+          }
+        ]
+      },
+      "assumptions": [
+        "Fresh pinned JVM for each trial. One Gson and one registered value adapter for all documents in a history."
+      ],
+      "deterministicUnderAssumptions": true
+    },
+    {
+      "id": "tree-values",
+      "cohort": "registered",
+      "scope": "tree-values.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "assumptions": [
+        "Fresh pinned JVM for each trial. One Gson and one registered value adapter for all documents in a history."
+      ],
+      "deterministicUnderAssumptions": true
+    }
+  ]
+}
