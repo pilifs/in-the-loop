@@ -1,0 +1,226 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-145949-consume-checked-remainders-in-the-origin",
+  "title": "Consume checked remainders in the original ThreeTen public histories",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m43s, peak 205.3 MiB (estimated 5m00s, 4.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-145949-consume-checked-remainders-in-the-origin.json",
+    "sha256": "827bc6eeaf2f6444cbeb662ff95f05dcafc80960307a4a2521f929c9189cd926",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-145949-consume-checked-remainders-in-the-origin",
+      "title": "Consume checked remainders in the original ThreeTen public histories",
+      "description": "Use both upstream ThreeTen builds and the existing application plan. Compare cold, warm, clean, unrelated, incorrect-helper and damaged-TZDB configurations. Require a checked result forced at the original conversion site and the selected provider's live resource in both independent trials.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-proof-reuse",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T14:59:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m"
+      },
+      "steps": [
+        {
+          "name": "Evaluate original application and cache controls",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten qualified --controls",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/threeten/qualified"
+      ]
+    }
+  },
+  "sourceCommit": "a96f60b3d734e5544c1fb560f66eb8fd919478d2",
+  "startedAt": "2026-11-24T15:12:08+00:00",
+  "finishedAt": "2026-11-24T15:20:01+00:00",
+  "wallSeconds": 473.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1800624,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 215318528,
+    "wallSeconds": 223.3,
+    "cpuSeconds": 297.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.74
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 237.538,
+      "cpuSeconds": 237.933,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2286223360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "926f51b7305ababa03130dccc29c157cfec1619a7b709ebcdcf20e529777ace7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-145949-consume-checked-remainders-in-the-origin/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Evaluate original application and cache controls",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py threeten qualified --controls",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 223.304,
+      "cpuSeconds": 297.161,
+      "cpuThrottledSeconds": 30.007,
+      "peakMemoryBytes": 215318528,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-evaluate-original-application.log",
+        "lines": 11,
+        "bytes": 629,
+        "sha256": "ec3f3f1e86fead732ca57b62c5028a03bbe8dafa58124784213c30efb6c79064",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/organic-matrix-o8yykp3i/planned.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/cold.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/warm.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/clean.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/unrelated-warm.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/unrelated-clean.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/wrong-warm.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/wrong-clean.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/resource-before.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/resource-warm.json",
+        "2 claims in /tmp/organic-matrix-o8yykp3i/resource-clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/threeten/qualified/plans.zip",
+      "change": "added",
+      "bytes": 1090784,
+      "sha256": "52235c5f0ed48b2f08d623eba66a9fd968a179b055f0136b2d5f90f790a3609d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/threeten/qualified/summary.json",
+      "change": "added",
+      "bytes": 37583,
+      "sha256": "150870894ec0e91e2a89cadc054e923d7ad84ad4f832304d743df26e71d9ac07",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T15:20:11+00:00",
+    "applied": [
+      "verification/organic-composition/threeten/qualified/plans.zip",
+      "verification/organic-composition/threeten/qualified/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "c8ceb8d14c291550427fb0a58fd06d6a81998f05",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/c8ceb8d14c291550427fb0a58fd06d6a81998f05/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T152001Z-4993491735297f96",
+      "outputs": "20261124T152001Z-53154234ab6e563a",
+      "diff": "20261124T152001Z-5558855c9927fa00"
+    }
+  }
+}
