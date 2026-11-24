@@ -1,0 +1,106 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "Commons Lang #1839, partial calendar updates, ISO weekdays and recovery",
+  "workflows": [
+    {
+      "id": "mixed",
+      "cohort": "registered",
+      "scope": "mixed.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1735430400000,1735430400000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1735430400000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1735430400000/7,true,55,-1,131071,1735430400000,1735430400000"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "0,true,10,-1,131071,1734825600000,1734825600000/7,true,21,-1,131071,1735430400000,1735430400000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1735430400000,1735430400000"
+            }
+          },
+          {
+            "input": 2,
+            "expectedNew": {
+              "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1736035200000,1736035200000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1736035200000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1736035200000/7,true,55,-1,131071,1736035200000,1736035200000"
+            }
+          },
+          {
+            "input": 3,
+            "expectedNew": {
+              "return": "0,true,10,-1,131071,1735430400000,1735430400000/7,true,21,-1,131071,1736035200000,1736035200000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1736035200000,1736035200000"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh original JVM, UTC, GregorianCalendar in the chosen locale and mode; the same ParsePosition has its index moved to the next token by its caller, keeping its error index."
+      ]
+    },
+    {
+      "id": "preserved",
+      "cohort": "registered",
+      "scope": "preserved.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh original JVM, UTC, GregorianCalendar in the chosen locale and mode; the same ParsePosition has its index moved to the next token by its caller, keeping its error index."
+      ]
+    },
+    {
+      "id": "mixed-private",
+      "cohort": "control",
+      "scope": "mixed.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1735430400000,1735430400000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1735430400000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1735430400000/7,true,55,-1,131071,1735430400000,1735430400000"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "0,true,10,-1,131071,1734825600000,1734825600000/7,true,21,-1,131071,1735430400000,1735430400000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1735430400000,1735430400000"
+            }
+          },
+          {
+            "input": 2,
+            "expectedNew": {
+              "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1736035200000,1736035200000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1736035200000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1736035200000/7,true,55,-1,131071,1736035200000,1736035200000"
+            }
+          },
+          {
+            "input": 3,
+            "expectedNew": {
+              "return": "0,true,10,-1,131071,1735430400000,1735430400000/7,true,21,-1,131071,1736035200000,1736035200000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1736035200000,1736035200000"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh original JVM, UTC, GregorianCalendar in the chosen locale and mode; the same ParsePosition has its index moved to the next token by its caller, keeping its error index."
+      ],
+      "checkedHelper": "helper.json"
+    },
+    {
+      "id": "preserved-private",
+      "cohort": "control",
+      "scope": "preserved.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh original JVM, UTC, GregorianCalendar in the chosen locale and mode; the same ParsePosition has its index moved to the next token by its caller, keeping its error index."
+      ],
+      "checkedHelper": "helper.json"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "entry": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z",
+  "probeClass": "UpgradeProbe",
+  "cases": [
+    {
+      "args": [
+        "US",
+        "strict",
+        "mixed"
+      ],
+      "expected": {
+        "return": "0,true,10,-1,131071,1735430400000,1735430400000/7,true,21,-1,131071,1735430400000,1735430400000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1735516800000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1735516800000/7,true,55,-1,131071,1735430400000,1735430400000"
+      }
+    },
+    {
+      "args": [
+        "US",
+        "lenient",
+        "mixed"
+      ],
+      "expected": {
+        "return": "0,true,10,-1,131071,1735430400000,1735430400000/7,true,21,-1,131071,1735430400000,1735430400000/8,java.lang.IllegalArgumentException,32,-1,131071,1735516800000,1735516800000/15,java.lang.IllegalArgumentException,44,-1,131071,1735516800000,1735516800000/7,true,55,-1,131071,1735430400000,1735430400000"
+      }
+    },
+    {
+      "args": [
+        "DE",
+        "strict",
+        "mixed"
+      ],
+      "expected": {
+        "return": "0,true,10,-1,131071,1736035200000,1736035200000/7,true,21,-1,131071,1736035200000,1736035200000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1735516800000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1735516800000/7,true,55,-1,131071,1736035200000,1736035200000"
+      }
+    },
+    {
+      "args": [
+        "DE",
+        "lenient",
+        "mixed"
+      ],
+      "expected": {
+        "return": "0,true,10,-1,131071,1736035200000,1736035200000/7,true,21,-1,131071,1736035200000,1736035200000/8,java.lang.IllegalArgumentException,32,-1,131071,1735516800000,1735516800000/15,java.lang.IllegalArgumentException,44,-1,131071,1735516800000,1735516800000/7,true,55,-1,131071,1736035200000,1736035200000"
+      }
+    }
+  ],
+  "observer": "Each parse reports its return or exception, index and error index, Calendar.isSet mask, and the instant (or invalid state) in both the original mode and a lenient snapshot. One formatter, calendar and cursor serve the complete history.",
+  "basis": "A separate Java program with a JDK-only classpath specifies Calendar field writes and resolves ISO weeks. SimpleDateFormat independently compares the acceptance and instants of the repaired calendar specification."
+}

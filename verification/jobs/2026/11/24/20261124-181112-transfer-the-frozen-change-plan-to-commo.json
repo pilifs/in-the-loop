@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-181112-transfer-the-frozen-change-plan-to-commo",
+  "title": "Transfer the frozen change plan to Commons Lang weekday parsing",
+  "description": "Evaluate four mixed and four preservation histories on the two complete original Commons Lang 1839 JARs. Compare a single retained calendar and cursor after valid dates, out-of-range weekdays, lexical failures and later recovery to a preregistered JDK-only reference. Retain both original finite outcomes, the private-helper control and its per-deployment eligibility, and cold, warm, independent clean and disposable controls.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "checked-helpers"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T18:11:12+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "6m"
+  },
+  "steps": [
+    {
+      "name": "Verify the shared freeze",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": "."
+    },
+    {
+      "name": "Run the first calendar history matrix",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py lang first --controls",
+      "cwd": "."
+    },
+    {
+      "name": "Check the frozen calendar claims and private helper refusals",
+      "run": "python3 -B lib/benchmark/organic-composition/lang/audit_first.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/lang/first",
+    "verification/organic-composition/lang/frozen-dispositions.json"
+  ]
+}
