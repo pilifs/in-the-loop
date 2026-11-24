@@ -1,0 +1,198 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-100249-extend-jackson-trailing-dot-compatibilit",
+  "title": "Extend Jackson trailing-dot compatibility to every five-unit input",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m08s, peak 6.0 GiB (estimated 7m00s, 4.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -) passed, but the kernel killed 1 process(es) in it at the memory limit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-100249-extend-jackson-trailing-dot-compatibilit.json",
+    "sha256": "494dd0a07b752172584d6d551b1df516360721e44bcafc23ee390c707f9d7acf",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-100249-extend-jackson-trailing-dot-compatibilit",
+      "title": "Extend Jackson trailing-dot compatibility to every five-unit input",
+      "description": "Check the two original predicate implementations on all 100,000 length-five words over the disclosed ten-symbol alphabet. Run the strict and packaged comparisons, retain the unchanged exponent and dot controls, and independently exhaust the larger grid on original JARs.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/README.md"
+        ]
+      },
+      "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+      "submitted": {
+        "at": "2026-11-24T10:02:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 23,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "7m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/additional_controls.py N11-extended",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/N11-extended"
+      ]
+    }
+  },
+  "sourceCommit": "2bff5d7bba98e71c3c914bee71a0ee938c096ecd",
+  "startedAt": "2026-11-24T10:16:44+00:00",
+  "finishedAt": "2026-11-24T10:22:30+00:00",
+  "wallSeconds": 346.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3567885,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 6442450944,
+    "wallSeconds": 128.3,
+    "cpuSeconds": 132.0,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/additional_controls.py N11-extended",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 128.346,
+      "cpuSeconds": 131.989,
+      "cpuThrottledSeconds": 0.528,
+      "peakMemoryBytes": 6442450944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 1,
+      "memoryHighEvents": 224,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 180,
+        "sha256": "69d8983617595dc783c7d7d9320ae1bfff4738080fc6e3f8ad6ea47de6b67fe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N11-extended 4 original checks passed",
+        "N11-extended fifthLength verified unverifiable no property report SUCCESS",
+        "N11-extended exerciseNegative verified unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-extended/executions.zip",
+      "change": "added",
+      "bytes": 28440,
+      "sha256": "0d8a4e82c5c45b1797dda36fd70c3145e0f8970b9840e5807f13d1cc2b8bdd61",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-extended/grid.json",
+      "change": "added",
+      "bytes": 458,
+      "sha256": "e87a07216dd6b4a0aedb448284a26db4b57f6911cb6d6eeb212905420aede026",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-extended/results.json.gz",
+      "change": "added",
+      "bytes": 2267,
+      "sha256": "57467d7ba799a4a7f9c7730996aed728b521f73e17631cda0121883b04a042a6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T10:22:32+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/N11-extended/executions.zip",
+      "verification/beyond-jbmc/qualified/N11-extended/grid.json",
+      "verification/beyond-jbmc/qualified/N11-extended/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T102230Z-819122c785b558f3",
+      "outputs": "20261124T102230Z-8433976e2f8d5fee",
+      "diff": "20261124T102230Z-862151ee5106550e"
+    }
+  }
+}

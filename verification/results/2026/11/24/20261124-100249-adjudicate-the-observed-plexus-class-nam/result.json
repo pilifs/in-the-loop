@@ -1,0 +1,234 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-100249-adjudicate-the-observed-plexus-class-nam",
+  "title": "Adjudicate the observed Plexus class-name counterexample on its full Boolean domain",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.8s, peak 162.2 MiB (estimated 4m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-100249-adjudicate-the-observed-plexus-class-nam.json",
+    "sha256": "0cfbc5a7c9d51694f2a19e81d92cc207f805b1d5b6eaecea8b558132a39b9707",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-100249-adjudicate-the-observed-plexus-class-nam",
+      "title": "Adjudicate the observed Plexus class-name counterexample on its full Boolean domain",
+      "description": "Recompile the exact frozen automatic caller, verify its class digest, and run both Boolean inputs on each unmodified Sisu release in a networkless JVM. Record the original default counterexample separately and try the existing guarded native two-copy profile as an assisted diagnosis.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/README.md"
+        ]
+      },
+      "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+      "submitted": {
+        "at": "2026-11-24T10:02:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 28,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "4m",
+        "timeout": "20m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/identity_replay.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/blind/03/identity-diagnostic"
+      ]
+    }
+  },
+  "sourceCommit": "2bff5d7bba98e71c3c914bee71a0ee938c096ecd",
+  "startedAt": "2026-11-24T10:16:44+00:00",
+  "finishedAt": "2026-11-24T10:20:25+00:00",
+  "wallSeconds": 221.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3567885,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 170094592,
+    "wallSeconds": 2.8,
+    "cpuSeconds": 4.1,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.01
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 199.573,
+      "cpuSeconds": 199.917,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2308915200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "2d52d915d67d144071b303d175210de0290401f6a0aa518a43e51e336cc57d7c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-100249-adjudicate-the-observed-plexus-class-nam/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 19s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/blind/identity_replay.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1200.0,
+      "cancelled": false,
+      "wallSeconds": 2.808,
+      "cpuSeconds": 4.106,
+      "cpuThrottledSeconds": 1.161,
+      "peakMemoryBytes": 170094592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/blind/03/identity-diagnostic/guarded.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/blind/03/identity-diagnostic/guarded.stdout",
+      "change": "added",
+      "bytes": 10641,
+      "sha256": "66bf13c740301582241ee0314aaf1da603659243e45420fddafd3cf75cce13a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/blind/03/identity-diagnostic/process.log",
+      "change": "added",
+      "bytes": 58,
+      "sha256": "68f8e3bf04ec676f2d4c48ef405d4b74a5b18a5edba623bea68acd5050b35180",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/blind/03/identity-diagnostic/report.json",
+      "change": "added",
+      "bytes": 5813,
+      "sha256": "412b855e9b9041309d2629795b46f124960f1cafee69256eb763485b8ebfea44",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T10:22:32+00:00",
+    "applied": [
+      "verification/beyond-jbmc/blind/03/identity-diagnostic/guarded.stderr",
+      "verification/beyond-jbmc/blind/03/identity-diagnostic/guarded.stdout",
+      "verification/beyond-jbmc/blind/03/identity-diagnostic/process.log",
+      "verification/beyond-jbmc/blind/03/identity-diagnostic/report.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T102025Z-285170389b84479d",
+      "outputs": "20261124T102025Z-310824e9019888a0",
+      "diff": "20261124T102025Z-3393006a15d88f5a"
+    }
+  }
+}

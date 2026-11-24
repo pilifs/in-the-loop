@@ -1,0 +1,523 @@
+--- /dev/null
++++ b/verification/beyond-jbmc/blind/03/identity-diagnostic/guarded.stdout
+@@ -0,0 +1,326 @@
++{
++  "wire_version": 1,
++  "verdict": "verified",
++  "target": "PublicCaller#observe",
++  "domain": "p0: boolean",
++  "counterexample": null,
++  "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over p0: boolean in 0.0 s; loops unwound 16 times with unwinding assertions",
++  "problem": null,
++  "statement": "/guest/.cache/in-the-loop/tmp/paired-guard/pair/RegressionPair.java",
++  "findings": [],
++  "output": "note: checked as a property of the pair of versions: RegressionPair.agree (/guest/.cache/in-the-loop/tmp/paired-guard/pair/RegressionPair.java) calls the previous version's PublicCaller#observe, relocated under `before`, and then the new one's on the same inputs, each on its own dependency closure, each array argument a copy of its own, and returns whether they returned equal results or threw exceptions of classes of one name, implementing the same interfaces, that extend classes of one name up to Object (a copy's class being its own); an exception's message, cause and own fields are not compared. Each starts as if it ran alone: the scope, the previous version and the new one each from a fresh state of the static fields, the classes' initialization and the default locale\n✓ PublicCaller#observe: the two versions agree on every input where true (the pair's property, below)\n✓ RegressionPair#agree satisfies `result` on every input where true (jvmcontract's own checker (CaDiCaL): 1 properties proved over p0: boolean in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: agree(p0=false) reaches the calls\n",
++  "work": "/guest/.cache/in-the-loop/tmp/paired-guard",
++  "search": {
++    "engine": "native",
++    "checker": "jvmcontract's own checker (CaDiCaL)",
++    "seconds": 0.012286288,
++    "properties": 1,
++    "unwind": 16,
++    "max_array_length": 8,
++    "stage": null,
++    "native": {
++      "paths": 1,
++      "merges": 0,
++      "solver_calls": 0,
++      "solving_seconds": 0.0,
++      "gates_evaluated": 0,
++      "evaluating_seconds": 0.0,
++      "divisions": 0,
++      "divisions_built": 0,
++      "multiplications": 0,
++      "multiplications_built": 0,
++      "variables": 2,
++      "clauses": 1,
++      "seconds": 0.010263153,
++      "loading_seconds": 0.001404946,
++      "decoding_seconds": 0.000095317,
++      "encoding_seconds": 0.001616852,
++      "witness_seconds": 0.0
++    },
++    "gap_mode": "strict",
++    "deadline_seconds": 120.0,
++    "runs": [
++      {
++        "checker": "native",
++        "purpose": "proof",
++        "stage": null,
++        "budget_seconds": 120.0,
++        "seconds": 0.01,
++        "ended": "verified",
++        "ending": "verified",
++        "phases": {
++          "loading": 0.001,
++          "lowering": 0.0,
++          "symbolic": 0.007,
++          "encoding": 0.002,
++          "solving": 0.0,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 2,
++          "clauses": 1
++        }
++      },
++      {
++        "checker": "native",
++        "purpose": "probe",
++        "stage": null,
++        "budget_seconds": 119.988,
++        "seconds": 0.006,
++        "ended": "violation",
++        "ending": "counterexample",
++        "phases": {
++          "loading": 0.0,
++          "lowering": 0.0,
++          "symbolic": 0.006,
++          "encoding": 0.0,
++          "solving": 0.0,
++          "trace": 0.0,
++          "other": 0.0
++        },
++        "formula": {
++          "variables": 2,
++          "clauses": 1
++        }
++      }
++    ]
++  },
++  "stated": {
++    "kind": "property",
++    "domain": {
++      "parameters": [
++        {
++          "name": "p0",
++          "type": "boolean",
++          "kind": "primitive",
++          "null": false
++        }
++      ],
++      "shared_arrays": false,
++      "text": "p0: boolean"
++    },
++    "assumptions": [
++      {
++        "kind": "precondition",
++        "text": "true",
++        "basis": "stated"
++      },
++      {
++        "kind": "initialization",
++        "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++        "basis": "engine"
++      }
++    ],
++    "observations": {
++      "result": "the result and the parameters, against result",
++      "exceptions": "none may be thrown"
++    },
++    "bounds": {
++      "unwind": 16,
++      "max_array_length": null,
++      "complete": true
++    },
++    "models": {
++      "used": true,
++      "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++      "classes": 40,
++      "jdk": "21.0.13"
++    },
++    "checker": {
++      "engine": "native",
++      "name": "jvmcontract's own checker (CaDiCaL)",
++      "solver": "CaDiCaL 1.9.5 (bundled)",
++      "fallback": null,
++      "sat": {
++        "solver": "CaDiCaL",
++        "version": "1.9.5",
++        "source": "bundled by the Rust crate cadical 0.1.16",
++        "configuration": [
++          "CaDiCaL's default options",
++          "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++          "the run's deadline through CaDiCaL's terminate callback",
++          "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++        ]
++      }
++    },
++    "gap_mode": "strict",
++    "confirmation": null,
++    "vacuity": {
++      "status": "non-vacuous",
++      "basis": "probe",
++      "text": "Some input in the domain reaches the calls: the tool's own checker found agree(p0=false).",
++      "witness": "agree(p0=false)"
++    }
++  },
++  "pair": {
++    "verdict": "verified",
++    "target": "RegressionPair#agree",
++    "domain": "p0: boolean",
++    "assume": "true",
++    "assert": "result",
++    "throws": [],
++    "throws_checked": [],
++    "counterexample": null,
++    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over p0: boolean in 0.0 s; loops unwound 16 times with unwinding assertions",
++    "problem": null,
++    "statement": "/guest/.cache/in-the-loop/tmp/paired-guard/pair-work/harness/PropertyHarness.java",
++    "findings": [],
++    "output": "✓ RegressionPair#agree satisfies `result` on every input where true (jvmcontract's own checker (CaDiCaL): 1 properties proved over p0: boolean in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: agree(p0=false) reaches the calls\n",
++    "work": "/guest/.cache/in-the-loop/tmp/paired-guard/pair-work",
++    "search": {
++      "engine": "native",
++      "checker": "jvmcontract's own checker (CaDiCaL)",
++      "seconds": 0.012286288,
++      "properties": 1,
++      "unwind": 16,
++      "max_array_length": 8,
++      "stage": null,
++      "native": {
++        "paths": 1,
++        "merges": 0,
++        "solver_calls": 0,
++        "solving_seconds": 0.0,
++        "gates_evaluated": 0,
++        "evaluating_seconds": 0.0,
++        "divisions": 0,
++        "divisions_built": 0,
++        "multiplications": 0,
++        "multiplications_built": 0,
++        "variables": 2,
++        "clauses": 1,
++        "seconds": 0.010263153,
++        "loading_seconds": 0.001404946,
++        "decoding_seconds": 0.000095317,
++        "encoding_seconds": 0.001616852,
++        "witness_seconds": 0.0
++      },
++      "gap_mode": "strict",
++      "deadline_seconds": 120.0,
++      "runs": [
++        {
++          "checker": "native",
++          "purpose": "proof",
++          "stage": null,
++          "budget_seconds": 120.0,
++          "seconds": 0.01,
++          "ended": "verified",
++          "ending": "verified",
++          "phases": {
++            "loading": 0.001,
++            "lowering": 0.0,
++            "symbolic": 0.007,
++            "encoding": 0.002,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 2,
++            "clauses": 1
++          }
++        },
++        {
++          "checker": "native",
++          "purpose": "probe",
++          "stage": null,
++          "budget_seconds": 119.988,
++          "seconds": 0.006,
++          "ended": "violation",
++          "ending": "counterexample",
++          "phases": {
++            "loading": 0.0,
++            "lowering": 0.0,
++            "symbolic": 0.006,
++            "encoding": 0.0,
++            "solving": 0.0,
++            "trace": 0.0,
++            "other": 0.0
++          },
++          "formula": {
++            "variables": 2,
++            "clauses": 1
++          }
++        }
++      ],
++      "phases": {
++        "seconds": 0.031,
++        "setup": 0.001,
++        "harness": 0.0,
++        "gaps": 0.0,
++        "contracts": 0.0,
++        "runs": 0.016,
++        "replay": 0.0,
++        "jvm": 0.0,
++        "other": 0.013
++      }
++    },
++    "stated": {
++      "kind": "property",
++      "domain": {
++        "parameters": [
++          {
++            "name": "p0",
++            "type": "boolean",
++            "kind": "primitive",
++            "null": false
++          }
++        ],
++        "shared_arrays": false,
++        "text": "p0: boolean"
++      },
++      "assumptions": [
++        {
++          "kind": "precondition",
++          "text": "true",
++          "basis": "stated"
++        },
++        {
++          "kind": "initialization",
++          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++          "basis": "engine"
++        }
++      ],
++      "observations": {
++        "result": "the result and the parameters, against result",
++        "exceptions": "none may be thrown"
++      },
++      "bounds": {
++        "unwind": 16,
++        "max_array_length": null,
++        "complete": true
++      },
++      "models": {
++        "used": true,
++        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++        "classes": 40,
++        "jdk": "21.0.13"
++      },
++      "checker": {
++        "engine": "native",
++        "name": "jvmcontract's own checker (CaDiCaL)",
++        "solver": "CaDiCaL 1.9.5 (bundled)",
++        "fallback": null,
++        "sat": {
++          "solver": "CaDiCaL",
++          "version": "1.9.5",
++          "source": "bundled by the Rust crate cadical 0.1.16",
++          "configuration": [
++            "CaDiCaL's default options",
++            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++            "the run's deadline through CaDiCaL's terminate callback",
++            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++          ]
++        }
++      },
++      "gap_mode": "strict",
++      "confirmation": null,
++      "vacuity": {
++        "status": "non-vacuous",
++        "basis": "probe",
++        "text": "Some input in the domain reaches the calls: the tool's own checker found agree(p0=false).",
++        "witness": "agree(p0=false)"
++      }
++    }
++  }
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/blind/03/identity-diagnostic/process.log
+@@ -0,0 +1 @@
++verified for the unchanged reference on the guarded route
+--- /dev/null
++++ b/verification/beyond-jbmc/blind/03/identity-diagnostic/report.json
+@@ -0,0 +1,187 @@
++{
++ "phase": "assisted after locked first pass",
++ "originalJvm": [
++  [
++   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
++   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
++  ],
++  [
++   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
++   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
++  ]
++ ],
++ "sourceSha256": "86a3c2b2fa890217bb525958dfd9333588656904ded2cba9802fbf2e0cf48409",
++ "callerSha256": "36e4c75e2fa8ae6d3474eb6d8f11a1762ebbd480045a27b9d4fe99115105f37a",
++ "originalWitness": {
++  "firstReportSha256": "ab3b01a678d7a0cb7421203c5750fdea16373c3b8ba8c0424d1850af3dfbea1b",
++  "original": {
++   "old": [
++    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
++    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
++   ],
++   "new": [
++    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
++    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
++   ]
++  },
++  "callerSha256": "36e4c75e2fa8ae6d3474eb6d8f11a1762ebbd480045a27b9d4fe99115105f37a",
++  "alleged": {
++   "input": "observe(p0=false)",
++   "before": "\"before.org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]\"",
++   "after": "\"org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]\"",
++   "values": [
++    "false"
++   ],
++   "shrink_runs": 0,
++   "inputs": [
++    {
++     "name": "p0",
++     "type": "boolean",
++     "value": false
++    }
++   ],
++   "call": {
++    "class": "PublicCaller",
++    "class_file": "PublicCaller.class",
++    "classes": "after",
++    "method": "observe",
++    "descriptor": "(Z)Ljava/lang/String;",
++    "static": true,
++    "arguments": [
++     {
++      "name": "p0",
++      "type": "boolean",
++      "value": false,
++      "from": "p0"
++     }
++    ]
++   },
++   "previous_call": {
++    "class": "PublicCaller",
++    "class_file": "PublicCaller.class",
++    "classes": "before",
++    "method": "observe",
++    "descriptor": "(Z)Ljava/lang/String;",
++    "static": true,
++    "arguments": [
++     {
++      "name": "p0",
++      "type": "boolean",
++      "value": false,
++      "from": "p0"
++     }
++    ]
++   },
++   "differs": [
++    "result"
++   ]
++  },
++  "job": "20261124-100249-adjudicate-the-observed-plexus-class-nam"
++ },
++ "guardedArgv": [
++  "/opt/checker",
++  "equivalence",
++  "--before",
++  "/guest/.cache/in-the-loop/tmp/old",
++  "--after",
++  "/guest/.cache/in-the-loop/tmp/new",
++  "--before-classpath",
++  "/inputs/old/001.jar:/inputs/old/002.jar:/inputs/old/003.jar:/inputs/old/004.jar:/inputs/old/005.jar:/inputs/old/006.jar:/inputs/old/007.jar:/inputs/old/008.jar:/inputs/old/009.jar:/inputs/old/010.jar:/inputs/old/011.jar:/inputs/old/012.jar:/inputs/old/013.jar:/inputs/old/014.jar:/inputs/old/015.jar:/inputs/old/016.jar:/inputs/old/017.jar:/inputs/old/018.jar",
++  "--classpath",
++  "/inputs/new/001.jar:/inputs/new/002.jar:/inputs/new/003.jar:/inputs/new/004.jar:/inputs/new/005.jar:/inputs/new/006.jar:/inputs/new/007.jar:/inputs/new/008.jar:/inputs/new/009.jar:/inputs/new/010.jar:/inputs/new/011.jar:/inputs/new/012.jar:/inputs/new/013.jar:/inputs/new/014.jar:/inputs/new/015.jar:/inputs/new/016.jar:/inputs/new/017.jar:/inputs/new/018.jar:/inputs/new/019.jar",
++  "--target",
++  "PublicCaller#observe",
++  "--assume",
++  "true",
++  "--engine",
++  "native",
++  "--gaps",
++  "strict",
++  "--unwind",
++  "16",
++  "--max-array-length",
++  "8",
++  "--timeout",
++  "120",
++  "--json",
++  "--work",
++  "/guest/.cache/in-the-loop/tmp/paired-guard"
++ ],
++ "verdict": "verified",
++ "problem": null,
++ "counterexample": null,
++ "stated": {
++  "kind": "property",
++  "domain": {
++   "parameters": [
++    {
++     "name": "p0",
++     "type": "boolean",
++     "kind": "primitive",
++     "null": false
++    }
++   ],
++   "shared_arrays": false,
++   "text": "p0: boolean"
++  },
++  "assumptions": [
++   {
++    "kind": "precondition",
++    "text": "true",
++    "basis": "stated"
++   },
++   {
++    "kind": "initialization",
++    "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++    "basis": "engine"
++   }
++  ],
++  "observations": {
++   "result": "the result and the parameters, against result",
++   "exceptions": "none may be thrown"
++  },
++  "bounds": {
++   "unwind": 16,
++   "max_array_length": null,
++   "complete": true
++  },
++  "models": {
++   "used": true,
++   "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++   "classes": 40,
++   "jdk": "21.0.13"
++  },
++  "checker": {
++   "engine": "native",
++   "name": "jvmcontract's own checker (CaDiCaL)",
++   "solver": "CaDiCaL 1.9.5 (bundled)",
++   "fallback": null,
++   "sat": {
++    "solver": "CaDiCaL",
++    "version": "1.9.5",
++    "source": "bundled by the Rust crate cadical 0.1.16",
++    "configuration": [
++     "CaDiCaL's default options",
++     "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++     "the run's deadline through CaDiCaL's terminate callback",
++     "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++    ]
++   }
++  },
++  "gap_mode": "strict",
++  "confirmation": null,
++  "vacuity": {
++   "status": "non-vacuous",
++   "basis": "probe",
++   "text": "Some input in the domain reaches the calls: the tool's own checker found agree(p0=false).",
++   "witness": "agree(p0=false)"
++  }
++ },
++ "cost": {
++  "seconds": 0.689,
++  "cpuSeconds": 1.25,
++  "peakMB": 114.6,
++  "exit": 0,
++  "killed": false
++ }
++}

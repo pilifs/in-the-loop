@@ -1,0 +1,187 @@
+{
+ "phase": "assisted after locked first pass",
+ "originalJvm": [
+  [
+   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
+   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
+  ],
+  [
+   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
+   "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
+  ]
+ ],
+ "sourceSha256": "86a3c2b2fa890217bb525958dfd9333588656904ded2cba9802fbf2e0cf48409",
+ "callerSha256": "36e4c75e2fa8ae6d3474eb6d8f11a1762ebbd480045a27b9d4fe99115105f37a",
+ "originalWitness": {
+  "firstReportSha256": "ab3b01a678d7a0cb7421203c5750fdea16373c3b8ba8c0424d1850af3dfbea1b",
+  "original": {
+   "old": [
+    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
+    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
+   ],
+   "new": [
+    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]",
+    "org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]"
+   ]
+  },
+  "callerSha256": "36e4c75e2fa8ae6d3474eb6d8f11a1762ebbd480045a27b9d4fe99115105f37a",
+  "alleged": {
+   "input": "observe(p0=false)",
+   "before": "\"before.org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]\"",
+   "after": "\"org.codehaus.plexus.component.repository.ComponentDescriptor [role: 'null', hint: 'default', realm: null]\"",
+   "values": [
+    "false"
+   ],
+   "shrink_runs": 0,
+   "inputs": [
+    {
+     "name": "p0",
+     "type": "boolean",
+     "value": false
+    }
+   ],
+   "call": {
+    "class": "PublicCaller",
+    "class_file": "PublicCaller.class",
+    "classes": "after",
+    "method": "observe",
+    "descriptor": "(Z)Ljava/lang/String;",
+    "static": true,
+    "arguments": [
+     {
+      "name": "p0",
+      "type": "boolean",
+      "value": false,
+      "from": "p0"
+     }
+    ]
+   },
+   "previous_call": {
+    "class": "PublicCaller",
+    "class_file": "PublicCaller.class",
+    "classes": "before",
+    "method": "observe",
+    "descriptor": "(Z)Ljava/lang/String;",
+    "static": true,
+    "arguments": [
+     {
+      "name": "p0",
+      "type": "boolean",
+      "value": false,
+      "from": "p0"
+     }
+    ]
+   },
+   "differs": [
+    "result"
+   ]
+  },
+  "job": "20261124-100249-adjudicate-the-observed-plexus-class-nam"
+ },
+ "guardedArgv": [
+  "/opt/checker",
+  "equivalence",
+  "--before",
+  "/guest/.cache/in-the-loop/tmp/old",
+  "--after",
+  "/guest/.cache/in-the-loop/tmp/new",
+  "--before-classpath",
+  "/inputs/old/001.jar:/inputs/old/002.jar:/inputs/old/003.jar:/inputs/old/004.jar:/inputs/old/005.jar:/inputs/old/006.jar:/inputs/old/007.jar:/inputs/old/008.jar:/inputs/old/009.jar:/inputs/old/010.jar:/inputs/old/011.jar:/inputs/old/012.jar:/inputs/old/013.jar:/inputs/old/014.jar:/inputs/old/015.jar:/inputs/old/016.jar:/inputs/old/017.jar:/inputs/old/018.jar",
+  "--classpath",
+  "/inputs/new/001.jar:/inputs/new/002.jar:/inputs/new/003.jar:/inputs/new/004.jar:/inputs/new/005.jar:/inputs/new/006.jar:/inputs/new/007.jar:/inputs/new/008.jar:/inputs/new/009.jar:/inputs/new/010.jar:/inputs/new/011.jar:/inputs/new/012.jar:/inputs/new/013.jar:/inputs/new/014.jar:/inputs/new/015.jar:/inputs/new/016.jar:/inputs/new/017.jar:/inputs/new/018.jar:/inputs/new/019.jar",
+  "--target",
+  "PublicCaller#observe",
+  "--assume",
+  "true",
+  "--engine",
+  "native",
+  "--gaps",
+  "strict",
+  "--unwind",
+  "16",
+  "--max-array-length",
+  "8",
+  "--timeout",
+  "120",
+  "--json",
+  "--work",
+  "/guest/.cache/in-the-loop/tmp/paired-guard"
+ ],
+ "verdict": "verified",
+ "problem": null,
+ "counterexample": null,
+ "stated": {
+  "kind": "property",
+  "domain": {
+   "parameters": [
+    {
+     "name": "p0",
+     "type": "boolean",
+     "kind": "primitive",
+     "null": false
+    }
+   ],
+   "shared_arrays": false,
+   "text": "p0: boolean"
+  },
+  "assumptions": [
+   {
+    "kind": "precondition",
+    "text": "true",
+    "basis": "stated"
+   },
+   {
+    "kind": "initialization",
+    "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+    "basis": "engine"
+   }
+  ],
+  "observations": {
+   "result": "the result and the parameters, against result",
+   "exceptions": "none may be thrown"
+  },
+  "bounds": {
+   "unwind": 16,
+   "max_array_length": null,
+   "complete": true
+  },
+  "models": {
+   "used": true,
+   "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+   "classes": 40,
+   "jdk": "21.0.13"
+  },
+  "checker": {
+   "engine": "native",
+   "name": "jvmcontract's own checker (CaDiCaL)",
+   "solver": "CaDiCaL 1.9.5 (bundled)",
+   "fallback": null,
+   "sat": {
+    "solver": "CaDiCaL",
+    "version": "1.9.5",
+    "source": "bundled by the Rust crate cadical 0.1.16",
+    "configuration": [
+     "CaDiCaL's default options",
+     "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+     "the run's deadline through CaDiCaL's terminate callback",
+     "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+    ]
+   }
+  },
+  "gap_mode": "strict",
+  "confirmation": null,
+  "vacuity": {
+   "status": "non-vacuous",
+   "basis": "probe",
+   "text": "Some input in the domain reaches the calls: the tool's own checker found agree(p0=false).",
+   "witness": "agree(p0=false)"
+  }
+ },
+ "cost": {
+  "seconds": 0.689,
+  "cpuSeconds": 1.25,
+  "peakMB": 114.6,
+  "exit": 0,
+  "killed": false
+ }
+}
