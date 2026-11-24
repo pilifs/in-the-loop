@@ -1,0 +1,212 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-065453-freeze-vecmath-and-commons-math-multipli",
+  "title": "Freeze vecmath and Commons Math multiplication before the numeric rule",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 23.9s, peak 116.5 MiB (estimated 5m00s, 5.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-065453-freeze-vecmath-and-commons-math-multipli.json",
+    "sha256": "8756aae71c2652b23588a3e8837c1edf06567f3759ada4843ff75b7a12e08789",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-065453-freeze-vecmath-and-commons-math-multipli",
+      "title": "Freeze vecmath and Commons Math multiplication before the numeric rule",
+      "description": "Compare unmodified public Tuple2f.scale and Vector2D.scalarMultiply calls on the same two independent symbolic binary32 or binary64 binades. Keep separate stock assertions and post-call controls, replay incorrect positivity and unrounded-product oracles on the JVM, and retain each checker invocation and result. No floating opcode has changed at this revision.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc:floating-point"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/numeric"
+        ]
+      },
+      "expected": "Four vecmath rows and one Commons Math row, each with strict native, integrated staged, stock target and stock reach. Physical numeric controls pass.",
+      "submitted": {
+        "at": "2026-11-24T06:54:53+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "5m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Wide symbolic numeric opening",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py opening N01-N02 N10",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/opening/N01-N02",
+        "verification/beyond-jbmc/opening/N10"
+      ]
+    }
+  },
+  "sourceCommit": "669fc2c7553a4be73baf21328f3e4b51b5e5aca6",
+  "startedAt": "2026-11-24T07:12:45+00:00",
+  "finishedAt": "2026-11-24T07:16:16+00:00",
+  "wallSeconds": 211.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2042315,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 122171392,
+    "wallSeconds": 23.9,
+    "cpuSeconds": 26.6,
+    "memoryOfEstimate": 0.02,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Wide symbolic numeric opening",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py opening N01-N02 N10",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 23.855,
+      "cpuSeconds": 26.591,
+      "cpuThrottledSeconds": 0.252,
+      "peakMemoryBytes": 122171392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-wide-symbolic-numeric-opening.log",
+        "lines": 7,
+        "bytes": 335,
+        "sha256": "ceda9de59b87df9f9c280bc3a66a9dd68427ab13e232decdfa10cc9a49f5a5d5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N01-N02 8 original checks passed",
+        "N01-N02 range unverifiable verified SUCCESS FAILURE",
+        "N01-N02 underflow unverifiable verified SUCCESS FAILURE",
+        "N01-N02 positive unverifiable violation FAILURE FAILURE",
+        "N01-N02 unrounded unverifiable violation FAILURE FAILURE",
+        "N10 2 original checks passed",
+        "N10 underflow unverifiable verified SUCCESS FAILURE"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/opening/N01-N02/executions.zip",
+      "change": "added",
+      "bytes": 61726,
+      "sha256": "41f197022e42c34d747e6e1a87b5e6bd6777a5a0dd9cb5f6f45e5f4a39074309",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/N01-N02/results.json.gz",
+      "change": "added",
+      "bytes": 1975,
+      "sha256": "2c574d0f06ceadcdb0208530b2d70c850c367974d84facb392ec27eb6ffdc2a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/N10/executions.zip",
+      "change": "added",
+      "bytes": 15730,
+      "sha256": "e697e8cfa68a0c27fbc08fb9bf0d41d815e185446e74051f96fb951577ac9002",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/N10/results.json.gz",
+      "change": "added",
+      "bytes": 1300,
+      "sha256": "32e00b7c5f3d3a401b06b797abeb43578314321ac9fedeb239443f8468b38056",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T07:16:28+00:00",
+    "applied": [
+      "verification/beyond-jbmc/opening/N01-N02/executions.zip",
+      "verification/beyond-jbmc/opening/N01-N02/results.json.gz",
+      "verification/beyond-jbmc/opening/N10/executions.zip",
+      "verification/beyond-jbmc/opening/N10/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b6943f57adc486fe4470c5d77c08b75805c3a64e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b6943f57adc486fe4470c5d77c08b75805c3a64e/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T071616Z-847330711178bf9c",
+      "outputs": "20261124T071616Z-87022721953fdd95",
+      "diff": "20261124T071616Z-888513d561186423"
+    }
+  }
+}
