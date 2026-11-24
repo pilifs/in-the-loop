@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084249-check-spring-6-1-14-original-public-regi",
+  "title": "Check Spring 6.1.14 original public registration and metadata histories",
+  "description": "Compile the original public fixtures against the earlier release. Include bridge/decoy resolution, merged alias errors and positive/negative cache invalidation. The central two releases additionally run the original formatter, listener vectors and all four optional-injection orders.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 11,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "27m",
+    "timeout": "108m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified S04-S06-6.1.14 S03-6.1.14 S07-6.1.14 S08-6.1.14",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/S04-S06-6.1.14",
+    "verification/beyond-jbmc/qualified/S03-6.1.14",
+    "verification/beyond-jbmc/qualified/S07-6.1.14",
+    "verification/beyond-jbmc/qualified/S08-6.1.14"
+  ]
+}

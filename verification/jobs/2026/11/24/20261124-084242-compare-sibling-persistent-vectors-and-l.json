@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084242-compare-sibling-persistent-vectors-and-l",
+  "title": "Compare sibling persistent vectors and live jsoup form and XML observations",
+  "description": "Prove or bound persistent base/sibling preservation through every operation, and track both append paths, reparenting and XML serialization/reparse on the original jsoup versions.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:42+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 11,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "29m",
+    "timeout": "116m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified H04-3.1.4 H04-4.0.2 H08-1.18.1 H08-1.18.2 H09-1.18.2 H09-1.18.3",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/H04-3.1.4",
+    "verification/beyond-jbmc/qualified/H04-4.0.2",
+    "verification/beyond-jbmc/qualified/H08-1.18.1",
+    "verification/beyond-jbmc/qualified/H08-1.18.2",
+    "verification/beyond-jbmc/qualified/H09-1.18.2",
+    "verification/beyond-jbmc/qualified/H09-1.18.3"
+  ]
+}

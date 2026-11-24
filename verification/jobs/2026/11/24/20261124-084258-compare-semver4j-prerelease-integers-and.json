@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084258-compare-semver4j-prerelease-integers-and",
+  "title": "Compare Semver4j prerelease integers and the four caret-zero ranges",
+  "description": "Use exact return versus NumberFormatException observations before comparing normalized order, with boundary digits beyond signed long; exercise every one of the 16 zero-caret pairs.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:58+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 11,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "22m",
+    "timeout": "88m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified C09-6.0.0 C09-6.1.0 C10-6.0.0 C10-6.1.0",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/C09-6.0.0",
+    "verification/beyond-jbmc/qualified/C09-6.1.0",
+    "verification/beyond-jbmc/qualified/C10-6.0.0",
+    "verification/beyond-jbmc/qualified/C10-6.1.0"
+  ]
+}

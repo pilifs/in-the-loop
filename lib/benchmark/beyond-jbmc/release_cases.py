@@ -4,6 +4,7 @@ import gzip
 import json
 import os
 from pathlib import Path
+import subprocess
 import zipfile
 
 from history import scratch, HERE, ROOT, OUTPUT, JBMC, MODELS, benchmark, digest, encoded
@@ -12,6 +13,7 @@ from campaign import JDK, compile_java, javaenv, jvm_controls, replay_witness
 from subjects import Claim, Subject
 from wire_campaign import CACHE
 from disclosed_cases import CASES, COMPANIONS, COMPILE_GRAPH
+from extended_subjects import CASES as EXTENDED, COMPILE, JOINT
 
 VEC = "vecmath-1.5.2"
 MATH = "commons-math3-3.6.1"
@@ -21,6 +23,7 @@ TIE = ("0x1p-75f","0x1p-75f")
 NORMAL = ("1.5f", "2.5f")
 SUBJECTS = {
     **CASES,
+    **EXTENDED,
     "N01-N02": ("numeric", Subject(0, "Product", VEC, (
         Claim("range", "float x, float y", holds=(NORMAL, ("0x1.fffffep0f","0x1.fffffep1f"))),
         Claim("underflow", "float x, float y", holds=(TIE, ("0x1.4p-75f","0x1.8p-75f"))),
@@ -41,6 +44,8 @@ SUBJECTS = {
 
 
 def jars_for(graph):
+    if graph in JOINT:
+        return list(dict.fromkeys(jar for member in JOINT[graph] for jar in jars_for(member)))
     if graph == "jdk":
         return []
     paths = (CACHE / graph / "classpath.txt").read_text().strip().split(os.pathsep)
@@ -64,11 +69,19 @@ def run(key, phase, out, physical_only):
         # The controls also call the Guava public transfer.
         sources = [HERE / directory / (subject.owner+".java")]
         sources += [HERE / directory / (name + ".java") for name in COMPANIONS.get(subject.owner, [])]
-        compiler_jars = jars_for(COMPILE_GRAPH.get((subject.owner,subject.graph),subject.graph))
-        compile_java(sources, classes, compiler_jars, env)
+        key_pair = (subject.owner,subject.graph)
+        compiler_jars = jars_for(COMPILE_GRAPH.get(key_pair,COMPILE.get(key_pair,subject.graph)))
+        if subject.owner=="FormatterBinding":
+            sources.append(ROOT/"examples/374-spring-formatter-binding/adapter/springwork/DateEdits.java")
+            classes.mkdir()
+            subprocess.run([JDK/"bin/javac","--release","17","-parameters","-g","-proc:none",
+                            "-cp",classpath(compiler_jars),"-d",classes,*sources],env=env,check=True)
+        else:
+            compile_java(sources, classes, compiler_jars, env)
         cp = [classes, *jars]
         record = {"subject": subject.owner, "classpath": [str(p) for p in jars], "jarsSha256": {p.name: digest(p) for p in jars}, "compileClasspath": list(map(str, compiler_jars)),
-                  "subjectSha256": digest(classes/(subject.owner+".class")), "jdkModulesSha256": digest(JDK/"lib/modules"),
+                  "subjectSha256": digest(classes/(subject.owner+".class")), "sourcesSha256":{f.name:digest(f) for f in sources},
+                  "jdkModulesSha256": digest(JDK/"lib/modules"),
                   "jvmcontractSha256": digest(Path(checker)), "jbmcSha256": digest(JBMC), "coreModelsSha256": digest(MODELS),
                   "jvm": jvm_controls(subject, work, cp, env), "rows": [], "phase": phase,
                   "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"), "job": os.environ.get("VERIFY_JOB_ID")}

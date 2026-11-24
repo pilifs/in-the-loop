@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084241-check-lang-reference-payloads-and-explic",
+  "title": "Check Lang reference payloads and explicit cyclic or shared public histories",
+  "description": "Supply the integer-wrap and aliasing caller with both equal-but-distinct and shared mutable tails. Exercise the 64 three-node topologies and four starts and distinguish directly supplied from explicitly constructed receivers.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:42:41+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 11,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "24m",
+    "timeout": "96m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified H01 H02 H03 H10",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/H01",
+    "verification/beyond-jbmc/qualified/H02",
+    "verification/beyond-jbmc/qualified/H03",
+    "verification/beyond-jbmc/qualified/H10"
+  ]
+}

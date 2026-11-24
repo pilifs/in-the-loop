@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-084300-recheck-spring-example-374-on-its-origin",
+  "title": "Recheck Spring example 374 on its original historical public binder",
+  "description": "Reuse the exact prior history graphs, JDK, public domain, prefix observations and original fixture on the frozen checker. Keep these historical slices distinct from the released 6.x classpaths.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/freeze.json"
+    ]
+  },
+  "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+  "submitted": {
+    "at": "2026-11-24T08:43:00+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 12,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "18m",
+    "timeout": "72m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/spring-java-data/measure.py 374 --stage beyond-jbmc-frozen --seconds 120 --only annotated-parent annotated-landed preservation-parent preservation-landed",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "examples/374-spring-formatter-binding/records/beyond-jbmc-frozen"
+  ]
+}
