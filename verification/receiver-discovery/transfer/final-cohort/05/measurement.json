@@ -1,0 +1,235 @@
+{
+  "job": "20261124-000959-receiver-groups-02-05-on-final-ordinary",
+  "source": "e957366abc4d877a390b4fa131bb4dd11df322b5",
+  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "cases": {
+    "commons-csv-8993be87": {
+      "overloads": {
+        "org.apache.commons.csv.CSVParser#nextRecord()": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "preserved",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "verified",
+          "firstOutstanding": null,
+          "counterexample": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
+            "witness": "matches(selector=0)"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "42b44db843bf14776715420bc9d49dc564063041aebfe72377f1391ccd0e093a"
+        },
+        "new": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "verified",
+          "firstOutstanding": null,
+          "counterexample": null,
+          "vacuity": {
+            "status": "non-vacuous",
+            "basis": "probe",
+            "text": "Some input in the domain reaches the calls: the tool's own checker found matches(selector=0).",
+            "witness": "matches(selector=0)"
+          },
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "fca0108062250ceea7c5ed630717ab8e3bade7e50b031954b9442a8a53805616"
+        }
+      }
+    },
+    "commons-fileupload-377": {
+      "overloads": {
+        "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use"
+        }
+      },
+      "status": "preserved",
+      "inputs": 4,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ThreadLocal.withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;@jdk-21.0.13 (java.lang.ThreadLocal.withInitial(java.util.function.Supplier) at org.apache.commons.io.IOUtils.<clinit>:205). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "62c4603d9da56d049fb4745c560a684e6bdd8bfc77ea35d9529f73eb9c691646"
+        },
+        "new": {
+          "jvmInputsReached": 4,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.ThreadLocal.withInitial(Ljava/util/function/Supplier;)Ljava/lang/ThreadLocal;@jdk-21.0.13 (java.lang.ThreadLocal.withInitial(java.util.function.Supplier) at org.apache.commons.io.IOUtils.<clinit>:206). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 4",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "74347f7f2381372bc19eea91eb777aae6c79d184c95f4fd68f036e5457d0381e"
+        }
+      }
+    },
+    "compsuite-i-94": {
+      "overloads": {
+        "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(com.alibaba.citrus.service.form.Validator$Context, java.lang.String)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+        }
+      },
+      "status": "open",
+      "inputs": 3,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 3,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>()V (com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() at UpgradeProbe.observe:12). With --gaps assume it assumes instead that com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "9c4618297261b8b409c9e442470c0cb4b8af69160be31589a3ea567825b0aa3c"
+        },
+        "new": {
+          "jvmInputsReached": 0,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>()V (com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() at UpgradeProbe.observe:12). With --gaps assume it assumes instead that com.alibaba.citrus.service.form.AbstractFormServiceTests.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 3",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "426d8906527ea35517a8b3d25892209dbe5303acc38feb7b927c1dc21a7c3c94"
+        }
+      }
+    },
+    "reflector-35": {
+      "overloads": {
+        "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class)": {
+          "verdict": "unverifiable",
+          "firstOutstanding": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet"
+        }
+      },
+      "status": "open",
+      "inputs": 2,
+      "sides": {
+        "old": {
+          "jvmInputsReached": 0,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String; (java.lang.String.replace(char, char) at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<clinit>:17). With --gaps assume it assumes instead that java.lang.String.replace(char, char) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "689b91bf86afb1babd0143d3e0697a20d7029f5f2fea382b5f8d8400df361cb2"
+        },
+        "new": {
+          "jvmInputsReached": 0,
+          "startupSearchRan": false,
+          "verdict": "unverifiable",
+          "firstOutstanding": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.String.replace(CC)Ljava/lang/String; (java.lang.String.replace(char, char) at ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator.<clinit>:17). With --gaps assume it assumes instead that java.lang.String.replace(char, char) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+          "counterexample": null,
+          "vacuity": null,
+          "assumptions": [
+            {
+              "kind": "precondition",
+              "text": "selector >= 0 && selector < 2",
+              "basis": "stated"
+            },
+            {
+              "kind": "initialization",
+              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+              "basis": "engine"
+            }
+          ],
+          "rawSha256": "32cd585cf4adae233ec7db1d49224c0d4cbad40bf20f482f2b3a19da2059659f"
+        }
+      }
+    }
+  },
+  "searchStartupWitness": true,
+  "receiptPackSha256": "e52839eda9495217c972823ca2e85f09f5e8e94434aa9eebc4cf6a935fdc8d3b"
+}
