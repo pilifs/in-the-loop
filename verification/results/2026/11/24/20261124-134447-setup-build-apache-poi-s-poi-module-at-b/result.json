@@ -1,0 +1,243 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-134447-setup-build-apache-poi-s-poi-module-at-b",
+  "title": "Setup: build Apache POI's poi module at both #1420 revisions and run TestDataFormatter",
+  "status": "failed",
+  "summary": "failed: 1 failed, 3 skipped step(s) in 13.9s, peak 1.1 GiB (estimated 15m00s, 5.0 GiB)",
+  "attention": [
+    "step 1 (B-poi-fix: :poi:jar, TestDataFormatter (landed)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-134447-setup-build-apache-poi-s-poi-module-at-b.json",
+    "sha256": "3b7c830e6979aac4e9338125e87b45d2427dd822a0b2bbbbe4b2d7e8517da4f3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-134447-setup-build-apache-poi-s-poi-module-at-b",
+      "title": "Setup: build Apache POI's poi module at both #1420 revisions and run TestDataFormatter",
+      "description": "Setup for case B of llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/organic-composition-ff/worktrees (B-poi-fix = bd15f5bc, B-poi-parent = 6b277ffc), builds :poi:jar with the upstream Gradle 9.8.1 wrapper on JDK 17.0.21 (toolchain 17, auto-download off), --offline: the setup session resolved every :poi configuration online first into the cache's gradle-home. Runs each side's own TestDataFormatter, then the landed file transplanted onto the parent, where the new tests are expected to fail (the transplant is restored after). Jars to .../artifacts with sha256, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-setup.md",
+          "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md"
+        ]
+      },
+      "expected": "every step exits 0: TestDataFormatter passes on both sides' own tests; the transplanted landed test has failures on the parent",
+      "submitted": {
+        "at": "2026-11-24T13:44:47+00:00",
+        "session": "2355bc24-959f-4644-baf5-ccfd523d2140",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "5G",
+        "duration": "15m"
+      },
+      "steps": [
+        {
+          "name": "B-poi-fix: :poi:jar, TestDataFormatter (landed)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/B-poi-fix; echo worktree=B-poi-fix commit=$(git rev-parse HEAD); $G :poi:jar; J=$(ls poi/build/libs/poi-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/B-poi-fix.jar; echo built-jar=$J; sha256sum $O/artifacts/B-poi-fix.jar; rm -rf poi/build/test-results/test; set +e; $G :poi:test --rerun --tests 'org.apache.poi.ss.usermodel.TestDataFormatter' > $O/logs/B-poi-fix.poi.test-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; summarize poi/build/test-results/test | tee $O/logs/B-poi-fix.poi.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/B-poi-fix.poi.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/B-poi-fix.poi.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/B-poi-fix.poi.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "B-poi-parent: :poi:jar, its own TestDataFormatter",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/B-poi-parent; echo worktree=B-poi-parent commit=$(git rev-parse HEAD); $G :poi:jar; J=$(ls poi/build/libs/poi-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/B-poi-parent.jar; echo built-jar=$J; sha256sum $O/artifacts/B-poi-parent.jar; rm -rf poi/build/test-results/test; set +e; $G :poi:test --rerun --tests 'org.apache.poi.ss.usermodel.TestDataFormatter' > $O/logs/B-poi-parent.poi.test-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; summarize poi/build/test-results/test | tee $O/logs/B-poi-parent.poi.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/B-poi-parent.poi.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/B-poi-parent.poi.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/B-poi-parent.poi.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "B-poi-parent: the landed TestDataFormatter transplanted (expected to fail)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/B-poi-parent; echo worktree=B-poi-parent commit=$(git rev-parse HEAD); git -C $W/B-poi-parent show bd15f5bc11c1433725d031642bdfaf64f4c2ce72:poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java > $W/B-poi-parent/poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java; echo transplanted poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java from bd15f5bc11c1433725d031642bdfaf64f4c2ce72; rm -rf poi/build/test-results/test; set +e; $G :poi:test --rerun --tests 'org.apache.poi.ss.usermodel.TestDataFormatter' > $O/logs/B-poi-parent.transplanted.poi.test-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; summarize poi/build/test-results/test | tee $O/logs/B-poi-parent.transplanted.poi.junit.txt; git -C $W/B-poi-parent checkout -q -- poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java; git -C $W/B-poi-parent status --short --untracked-files=no; test $(grep -o 'tests=[0-9]*' $O/logs/B-poi-parent.transplanted.poi.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/B-poi-parent.transplanted.poi.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/B-poi-parent.transplanted.poi.junit.txt | cut -d= -f2) )) -gt 0; echo landed-test-fails-on-parent=yes; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/B-poi-fix clean -fdxq; git -C $W/B-poi-parent clean -fdxq; du -sh $W",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "a4cf5a16d2936ecf022801df5df11bb7ed125276",
+  "startedAt": "2026-11-24T13:53:54+00:00",
+  "finishedAt": "2026-11-24T13:54:18+00:00",
+  "wallSeconds": 24.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1029943,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1135439872,
+    "wallSeconds": 13.9,
+    "cpuSeconds": 45.5,
+    "memoryOfEstimate": 0.21,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "B-poi-fix: :poi:jar, TestDataFormatter (landed)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/B-poi-fix; echo worktree=B-poi-fix commit=$(git rev-parse HEAD); $G :poi:jar; J=$(ls poi/build/libs/poi-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/B-poi-fix.jar; echo built-jar=$J; sha256sum $O/artifacts/B-poi-fix.jar; rm -rf poi/build/test-results/test; set +e; $G :poi:test --rerun --tests 'org.apache.poi.ss.usermodel.TestDataFormatter' > $O/logs/B-poi-fix.poi.test-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; summarize poi/build/test-results/test | tee $O/logs/B-poi-fix.poi.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/B-poi-fix.poi.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/B-poi-fix.poi.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/B-poi-fix.poi.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 13.924,
+      "cpuSeconds": 45.498,
+      "cpuThrottledSeconds": 0.796,
+      "peakMemoryBytes": 1135439872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-b-poi-fix-poi-jar-testdataform.log",
+        "lines": 73,
+        "bytes": 5447,
+        "sha256": "46c3539fb5cb9609b5de50ebc9af662aa291d1dee8f8bf52defeb20e236dfa9f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "                                  ^",
+        "/home/filip/.cache/in-the-loop/organic-composition-ff/worktrees/B-poi-fix/poi/src/main/java/org/apache/poi/logging/NoOpLogger.java:543: warning: [deprecation] <R>exit(R) in Logger has been deprecated",
+        "    public <R> R exit(R result) {",
+        "                 ^",
+        "  where R is a type-variable:",
+        "    R extends Object declared in method <R>exit(R)",
+        "/home/filip/.cache/in-the-loop/organic-composition-ff/worktrees/B-poi-fix/poi/src/main/java/org/apache/poi/logging/NoOpLogger.java:538: warning: [deprecation] exit() in Logger has been deprecated",
+        "    public void exit() {",
+        "                ^",
+        "/home/filip/.cache/in-the-loop/organic-composition-ff/worktrees/B-poi-fix/poi/src/main/java/org/apache/poi/logging/NoOpLogger.java:293: warning: [deprecation] entry(Object...) in Logger has been deprecated",
+        "    public void entry(Object... params) {",
+        "                ^",
+        "/home/filip/.cache/in-the-loop/organic-composition-ff/worktrees/B-poi-fix/poi/src/main/java/org/apache/poi/logging/NoOpLogger.java:288: warning: [deprecation] entry() in Logger has been deprecated",
+        "    public void entry() {",
+        "                ^",
+        "/home/filip/.cache/in-the-loop/organic-composition-ff/worktrees/B-poi-fix/poi/src/main/java/org/apache/poi/poifs/nio/CleanerUtil.java:79: warning: [removal] AccessController in java.security has been deprecated and marked for removal",
+        "        final Object hack = AccessController.doPrivileged(",
+        "                            ^",
+        "/home/filip/.cache/in-the-loop/organic-composition-ff/worktrees/B-poi-fix/poi/src/main/java/org/apache/poi/poifs/nio/CleanerUtil.java:179: warning: [removal] AccessController in java.security has been deprecated and marked for removal",
+        "            final Throwable error = AccessController.doPrivileged(",
+        "                                    ^",
+        "13 warnings",
+        "",
+        "> Task :poi:compileModuleInfo",
+        "> Task :poi:processResources",
+        "> Task :poi:classes",
+        "> Task :poi:jar",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/organic-composition-ff/worktrees/B-poi-fix/build/reports/problems/problems-report.html",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.8.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 13s",
+        "5 actionable tasks: 5 executed",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.1/userguide/configuration_cache_enabling.html",
+        "ls: cannot access 'poi/build/libs/poi-*.jar': No such file or directory"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "B-poi-parent: :poi:jar, its own TestDataFormatter",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/B-poi-parent; echo worktree=B-poi-parent commit=$(git rev-parse HEAD); $G :poi:jar; J=$(ls poi/build/libs/poi-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/B-poi-parent.jar; echo built-jar=$J; sha256sum $O/artifacts/B-poi-parent.jar; rm -rf poi/build/test-results/test; set +e; $G :poi:test --rerun --tests 'org.apache.poi.ss.usermodel.TestDataFormatter' > $O/logs/B-poi-parent.poi.test-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; summarize poi/build/test-results/test | tee $O/logs/B-poi-parent.poi.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/B-poi-parent.poi.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/B-poi-parent.poi.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/B-poi-parent.poi.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 3,
+      "name": "B-poi-parent: the landed TestDataFormatter transplanted (expected to fail)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/B-poi-parent; echo worktree=B-poi-parent commit=$(git rev-parse HEAD); git -C $W/B-poi-parent show bd15f5bc11c1433725d031642bdfaf64f4c2ce72:poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java > $W/B-poi-parent/poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java; echo transplanted poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java from bd15f5bc11c1433725d031642bdfaf64f4c2ce72; rm -rf poi/build/test-results/test; set +e; $G :poi:test --rerun --tests 'org.apache.poi.ss.usermodel.TestDataFormatter' > $O/logs/B-poi-parent.transplanted.poi.test-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; summarize poi/build/test-results/test | tee $O/logs/B-poi-parent.transplanted.poi.junit.txt; git -C $W/B-poi-parent checkout -q -- poi/src/test/java/org/apache/poi/ss/usermodel/TestDataFormatter.java; git -C $W/B-poi-parent status --short --untracked-files=no; test $(grep -o 'tests=[0-9]*' $O/logs/B-poi-parent.transplanted.poi.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/B-poi-parent.transplanted.poi.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/B-poi-parent.transplanted.poi.junit.txt | cut -d= -f2) )) -gt 0; echo landed-test-fails-on-parent=yes; ",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    },
+    {
+      "index": 4,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-composition-ff; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/B-poi-fix clean -fdxq; git -C $W/B-poi-parent clean -fdxq; du -sh $W",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T13:54:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T135418Z-85043978e97e004c",
+      "workdir": "20261124T135422Z-2725305d130a86d0"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-134447-setup-build-apache-poi-s-poi-module-at-b"
+}
