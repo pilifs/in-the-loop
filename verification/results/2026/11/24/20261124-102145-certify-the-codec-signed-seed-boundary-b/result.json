@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-102145-certify-the-codec-signed-seed-boundary-b",
+  "title": "Certify the Codec signed seed boundary by kernel-level bit identities",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.6s, peak 106.6 MiB (estimated 1m00s, 1.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/induction_cases.py seed) was held back 2.5s by its 1-CPU quota in 2.6s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-102145-certify-the-codec-signed-seed-boundary-b.json",
+    "sha256": "c2ae137ccb0684f022989226eae3383651f30da3f59ad19ba656fb849b57652d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-102145-certify-the-codec-signed-seed-boundary-b",
+      "title": "Certify the Codec signed seed boundary by kernel-level bit identities",
+      "description": "Use a generic structural fold-injectivity proof over the two-word state. Prove rotation, doubled XOR-shifts and sign extension from individual bit identities without compiled Boolean evaluation. Verify the original seed overloads and normalized bytecode for the shared 386-instruction body and its two helper methods. Keep the false empty-slice digest as a negative control.",
+      "kind": "library",
+      "capabilities": [
+        "assurance:induction"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/extended/Seed128.lean"
+        ]
+      },
+      "expected": "All 128-bit seed and round-injectivity theorems check with standard kernel axioms and the wrong seed identity is rejected.",
+      "submitted": {
+        "at": "2026-11-24T10:21:45+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 31,
+      "requires": [
+        "lean"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m",
+        "timeout": "6m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py seed",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py seed",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/assurance/seed-sequence"
+      ]
+    }
+  },
+  "sourceCommit": "32d3efa25fe2ae77cc8babc983b75f7cb894becf",
+  "startedAt": "2026-11-24T10:43:14+00:00",
+  "finishedAt": "2026-11-24T10:43:24+00:00",
+  "wallSeconds": 10.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3864712,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 360.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 111828992,
+    "wallSeconds": 2.6,
+    "cpuSeconds": 2.4,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py seed",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py seed",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 360.0,
+      "cancelled": false,
+      "wallSeconds": 2.607,
+      "cpuSeconds": 2.435,
+      "cpuThrottledSeconds": 2.517,
+      "peakMemoryBytes": 111828992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 1,
+        "bytes": 55,
+        "sha256": "1b04b640a4ca1b84fdb7b345495304b86c0b991a31be110e15d1016e4858f8b3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "seed 4 theorems checked and incorrect control rejected"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/assurance/seed-sequence/kernel.log",
+      "change": "added",
+      "bytes": 277,
+      "sha256": "a6544361302f97777765597dbfc0c14f234a164cf362a263316ddd3721063cf5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/assurance/seed-sequence/receipt.json",
+      "change": "added",
+      "bytes": 6599,
+      "sha256": "9e701d13c191e2aab5fa122c3cea5e9aad873ef450dc5d6da18ffa7f72e1a7d2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T10:43:57+00:00",
+    "applied": [
+      "verification/beyond-jbmc/assurance/seed-sequence/kernel.log",
+      "verification/beyond-jbmc/assurance/seed-sequence/receipt.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T104324Z-999081b0f8a1df8a",
+      "outputs": "20261124T104325Z-020229e85a6d3fe3",
+      "diff": "20261124T104325Z-0402126256e04881"
+    }
+  }
+}

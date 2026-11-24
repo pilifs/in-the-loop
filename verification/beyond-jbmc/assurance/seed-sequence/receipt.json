@@ -1,0 +1,330 @@
+{
+ "prover": "Lean (version 4.36.0, x86_64-unknown-linux-gnu, commit 611c117bfaf7b7ae1cfcf246ce6fba31e8f509e9, Release)",
+ "proverSha256": "db7f559d05795e7af52e42bc966c90240a39dcb9712161c54c97afa546e20c00",
+ "model": "extended/Seed128.lean",
+ "modelSha256": "df2c5774265a3280145d81b9a71a893f4f24bc4517886fe588d15f289bfb7774",
+ "claims": [
+  "step_inj",
+  "avalanche_inj",
+  "output_inj",
+  "signed_seed_boundary"
+ ],
+ "kernelOutput": "'Seed128.step_inj' depends on axioms: [propext, Quot.sound]\n'Seed128.avalanche_inj' depends on axioms: [propext, Quot.sound]\n'Seed128.output_inj' depends on axioms: [propext, Quot.sound]\n'Seed128.signed_seed_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]\n",
+ "compiledBooleanCertificateReductions": [],
+ "originalClasses": [
+  {
+   "artifact": "commons-codec-1.13.jar",
+   "sha256": "61f7a3079e92b9fdd605238d0295af5fd11ac411a0a0af48deace1f6c5ffa072",
+   "members": {
+    "org/apache/commons/codec/digest/MurmurHash3": "a02592bcb2a95b6a7cceecd38674ea8480e07989ea5f52a2837f127bfa63c1c9"
+   }
+  },
+  {
+   "artifact": "commons-codec-1.14.jar",
+   "sha256": "a128e4f93fabe5381ded64cf2873019e06030b718eb43ceeae0b0e5d17ad33e9",
+   "members": {
+    "org/apache/commons/codec/digest/MurmurHash3": "69a0315c33c1e7d02f82f56fb878b3b5473e927e77d03ee3010c3858a67e1813"
+   }
+  },
+  {
+   "artifact": "commons-codec-1.15.jar",
+   "sha256": "b3e9f6d63a790109bf0d056611fbed1cf69055826defeb9894a71369d246ed63",
+   "members": {
+    "org/apache/commons/codec/digest/MurmurHash3": "0178269ac4dbbb80fffd0e92caa5dd1d07d3dab8b3f9459414c6b1d326730a70"
+   }
+  }
+ ],
+ "callersSha256": {
+  "extended/CodecPublic.java": "b6411ea381a4a320b0eda337da6c8bbb5ca6557edf68b5807977823ddaf6d020",
+  "extended/CodecChanges.java": "f76b87b613b3568b72ec99104de1561cf43299a13cfd2fb122195c452c33a5e5"
+ },
+ "job": "20261124-102145-certify-the-codec-signed-seed-boundary-b",
+ "argv": [
+  "/home/filip/.elan/toolchains/leanprover--lean4---v4.36.0/bin/lean",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-102145-certify-the-codec-signed-seed-boundary-b/lib/benchmark/beyond-jbmc/extended/Seed128.lean"
+ ],
+ "negative": "example : Seed128.output [] (0,0) 0 (0xffffffffffffffff) = Seed128.output [] (0,0) 0 (0xffffffff) := by decide",
+ "rejection": "'Seed128.step_inj' depends on axioms: [propext, Quot.sound]\n'Seed128.avalanche_inj' depends on axioms: [propext, Quot.sound]\n'Seed128.output_inj' depends on axioms: [propext, Quot.sound]\n'Seed128.signed_seed_boundary' depends on axioms: [propext, Classical.choice, Quot.sound]\n/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/campaign-sequence-2egprqp3/FalseSeed128.lean:140:104: error: Tactic `decide` proved that the proposition\n  Seed128.output [] (0, 0) 0 18446744073709551615 = Seed128.output [] (0, 0) 0 4294967295\nis false\n",
+ "scope": "Executable algebra over fixed-width bit vectors and finite byte lists. Original Java correspondence is measured separately on the released caller and its bounds.",
+ "bytecode": {
+  "releaseWrappers": {
+   "1.13": {
+    "classSha256": "a02592bcb2a95b6a7cceecd38674ea8480e07989ea5f52a2837f127bfa63c1c9",
+    "wrapper": [
+     [
+      0,
+      "iload_3",
+      "",
+      ""
+     ],
+     [
+      1,
+      "i2l",
+      "",
+      ""
+     ],
+     [
+      2,
+      "lstore",
+      "4",
+      ""
+     ],
+     [
+      4,
+      "iload_3",
+      "",
+      ""
+     ],
+     [
+      5,
+      "i2l",
+      "",
+      ""
+     ],
+     [
+      6,
+      "lstore",
+      "6",
+      ""
+     ],
+     [
+      8,
+      "iload_2",
+      "",
+      ""
+     ],
+     [
+      9,
+      "iconst_4",
+      "",
+      ""
+     ],
+     [
+      10,
+      "ishr",
+      "",
+      ""
+     ]
+    ],
+    "wrapperInstructions": 604
+   },
+   "1.14": {
+    "classSha256": "69a0315c33c1e7d02f82f56fb878b3b5473e927e77d03ee3010c3858a67e1813",
+    "wrapper": [
+     [
+      0,
+      "aload_0",
+      "",
+      ""
+     ],
+     [
+      1,
+      "iload_1",
+      "",
+      ""
+     ],
+     [
+      2,
+      "iload_2",
+      "",
+      ""
+     ],
+     [
+      3,
+      "iload_3",
+      "",
+      ""
+     ],
+     [
+      4,
+      "invokestatic",
+      "#",
+      "Method hash128x64:([BIII)[J"
+     ],
+     [
+      7,
+      "areturn",
+      "",
+      ""
+     ]
+    ],
+    "wrapperInstructions": 6,
+    "unsignedWrapper": [
+     [
+      0,
+      "aload_0",
+      "",
+      ""
+     ],
+     [
+      1,
+      "iload_1",
+      "",
+      ""
+     ],
+     [
+      2,
+      "iload_2",
+      "",
+      ""
+     ],
+     [
+      3,
+      "iload_3",
+      "",
+      ""
+     ],
+     [
+      4,
+      "i2l",
+      "",
+      ""
+     ],
+     [
+      5,
+      "ldc2_w",
+      "#",
+      "long 4294967295l"
+     ],
+     [
+      8,
+      "land",
+      "",
+      ""
+     ],
+     [
+      9,
+      "invokestatic",
+      "#",
+      "Method hash128x64:([BIIJ)[J"
+     ],
+     [
+      12,
+      "areturn",
+      "",
+      ""
+     ]
+    ]
+   },
+   "1.15": {
+    "classSha256": "0178269ac4dbbb80fffd0e92caa5dd1d07d3dab8b3f9459414c6b1d326730a70",
+    "wrapper": [
+     [
+      0,
+      "aload_0",
+      "",
+      ""
+     ],
+     [
+      1,
+      "iload_1",
+      "",
+      ""
+     ],
+     [
+      2,
+      "iload_2",
+      "",
+      ""
+     ],
+     [
+      3,
+      "iload_3",
+      "",
+      ""
+     ],
+     [
+      4,
+      "i2l",
+      "",
+      ""
+     ],
+     [
+      5,
+      "invokestatic",
+      "#",
+      "Method hash128x64Internal:([BIIJ)[J"
+     ],
+     [
+      8,
+      "areturn",
+      "",
+      ""
+     ]
+    ],
+    "wrapperInstructions": 7,
+    "unsignedWrapper": [
+     [
+      0,
+      "aload_0",
+      "",
+      ""
+     ],
+     [
+      1,
+      "iload_1",
+      "",
+      ""
+     ],
+     [
+      2,
+      "iload_2",
+      "",
+      ""
+     ],
+     [
+      3,
+      "iload_3",
+      "",
+      ""
+     ],
+     [
+      4,
+      "i2l",
+      "",
+      ""
+     ],
+     [
+      5,
+      "ldc2_w",
+      "#",
+      "long 4294967295l"
+     ],
+     [
+      8,
+      "land",
+      "",
+      ""
+     ],
+     [
+      9,
+      "invokestatic",
+      "#",
+      "Method hash128x64Internal:([BIIJ)[J"
+     ],
+     [
+      12,
+      "areturn",
+      "",
+      ""
+     ]
+    ]
+   }
+  },
+  "common14And15": {
+   "body": {
+    "instructions": 386,
+    "sha256": "52ab839f3ab7f71f261e6bd5f1db1de37cf96ad9f737d1edfb9fbc22929bc665"
+   },
+   "avalanche": {
+    "instructions": 28,
+    "sha256": "98efdd8acfccf4899666ded474e7313641e417a8465aa8791a64814bd8bc3b2e"
+   },
+   "readWord": {
+    "instructions": 84,
+    "sha256": "c128e7d55bcbbf02dca976bebe8bd4943794241dcb3179afe50817bff1d96523"
+   }
+  },
+  "normalization": "constant-pool numeric references only"
+ }
+}
