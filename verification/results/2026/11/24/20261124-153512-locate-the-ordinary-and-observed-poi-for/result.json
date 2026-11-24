@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-153512-locate-the-ordinary-and-observed-poi-for",
+  "title": "Locate the ordinary and observed POI formatter startup frontiers",
+  "status": "failed",
+  "summary": "failed: 1 passed, 1 failed step(s) in 5.4s, peak 105.7 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "declared output verification/organic-composition/poi/observed-native.json was not produced",
+    "step 1 (Strict diagnostic) was held back 2.4s by its 1-CPU quota in 2.2s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (Observe formatter startup) exited 1, expected 0",
+    "step 2 (Observe formatter startup) was held back 3.6s by its 1-CPU quota in 3.2s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-153512-locate-the-ordinary-and-observed-poi-for.json",
+    "sha256": "85210772ed58052a6c3469ce91e538e79e53f6d1311b93259a7e89f7e28069e4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-153512-locate-the-ordinary-and-observed-poi-for",
+      "title": "Locate the ordinary and observed POI formatter startup frontiers",
+      "description": "Retry the exact currency-history predicate at both original production revisions using strict native checking and a real observed DataFormatter initializer. Retain the first native or pre-verifier refusal alongside the independently qualified finite plan.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "observed-initializer"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:35:12+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "3G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Strict diagnostic",
+          "run": "python3 -B lib/benchmark/organic-composition/native_open.py poi currency",
+          "cwd": "."
+        },
+        {
+          "name": "Observe formatter startup",
+          "run": "python3 -B lib/benchmark/organic-composition/native_open.py poi currency org.apache.poi.ss.usermodel.DataFormatter",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/poi/first-native.json",
+        "verification/organic-composition/poi/observed-native.json"
+      ]
+    }
+  },
+  "sourceCommit": "21abb24a019f041f98a1364f53db081d100bccfd",
+  "startedAt": "2026-11-24T15:38:55+00:00",
+  "finishedAt": "2026-11-24T15:42:18+00:00",
+  "wallSeconds": 203.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2045688,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 110829568,
+    "wallSeconds": 5.4,
+    "cpuSeconds": 5.2,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Strict diagnostic",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py poi currency",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 2.206,
+      "cpuSeconds": 2.057,
+      "cpuThrottledSeconds": 2.383,
+      "peakMemoryBytes": 65753088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-strict-diagnostic.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Observe formatter startup",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py poi currency org.apache.poi.ss.usermodel.DataFormatter",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 3.207,
+      "cpuSeconds": 3.117,
+      "cpuThrottledSeconds": 3.625,
+      "peakMemoryBytes": 110829568,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-observe-formatter-startup.log",
+        "lines": 8,
+        "bytes": 937,
+        "sha256": "e7f32bbc1bd9646b461c245a9e0bb7707bd26bda6ac3fddef7ef5bc02b1684c6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-153512-locate-the-ordinary-and-observed-poi-for/lib/benchmark/organic-composition/native_open.py\", line 48, in <module>",
+        "    measure(*sys.argv[1:])",
+        "    ~~~~~~~^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-153512-locate-the-ordinary-and-observed-poi-for/lib/benchmark/organic-composition/native_open.py\", line 41, in measure",
+        "    raise ValueError(f\"missing native disposition on {side}: {proc.stderr[:500]}\")",
+        "ValueError: missing native disposition on old: jvmcontract: --observed-initializer org.apache.poi.ss.usermodel.DataFormatter: org.apache.logging.log4j.status.StatusLogger$PropertiesUtilsDouble read the system properties as a whole (their keys, entries or values, through System.getProperties()), and ",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/poi/first-native.json",
+      "change": "added",
+      "bytes": 19624,
+      "sha256": "50a1f97839bfc04282175ef86a32a19ae1c432c0ee9ee46653cf4e07b4bcfbc4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T15:42:33+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/organic-composition/poi/first-native.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "92c33aeff5337dc16ac571e10ad68182dd8539cb",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/92c33aeff5337dc16ac571e10ad68182dd8539cb/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T154218Z-42157410d78497dd",
+      "outputs": "20261124T154218Z-4413988218e464fe",
+      "diff": "20261124T154218Z-4572126863abd567",
+      "workdir": "20261124T154221Z-979418a3ea3d7599"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-153512-locate-the-ordinary-and-observed-poi-for"
+}
