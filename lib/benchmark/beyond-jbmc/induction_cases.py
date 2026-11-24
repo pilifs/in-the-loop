@@ -7,8 +7,9 @@ import subprocess
 import zipfile
 
 from history import HERE,OUTPUT,digest,encoded,scratch
-from release_cases import jars_for
+from release_cases import JDK,jars_for
 from wire_calculus import LEAN
+from jvm_disassembly import methods
 
 MODELS={
     "wire":("wire/FrameInduction.lean",("full_word","parse_suffix","word_suffix","record_suffix","entire_sequence","record_progress","prefix_capacity"),
@@ -20,7 +21,41 @@ MODELS={
              "example : StreamHash.oneShot [0xff] 0 = 0x79a8e694 := by decide",("commons-codec-1.15",),
              ("org/apache/commons/codec/digest/MurmurHash3","org/apache/commons/codec/digest/MurmurHash3$IncrementalHash32x86"),
              ("extended/Incremental.java",)),
+    "seed":("extended/Seed128.lean",("step_inj","avalanche_inj","output_inj","signed_seed_boundary"),
+            "example : Seed128.output [] (0,0) 0 (0xffffffffffffffff) = Seed128.output [] (0,0) 0 (0xffffffff) := by decide",
+            ("commons-codec-1.13","commons-codec-1.14","commons-codec-1.15"),("org/apache/commons/codec/digest/MurmurHash3",),
+            ("extended/CodecPublic.java","extended/CodecChanges.java")),
 }
+
+def seed_bindings(work):
+    from hashlib import sha256
+    bodies={};wrappers={}
+    for version in ("1.13","1.14","1.15"):
+        jar,=jars_for("commons-codec-"+version)
+        target=work/"MurmurHash3.class"
+        with zipfile.ZipFile(jar) as z:target.write_bytes(z.read("org/apache/commons/codec/digest/MurmurHash3.class"))
+        listing,_=methods(JDK/"bin/javap",target)
+        def body(method,desc):
+            return [[i.pc,i.op,re.sub(r"#\d+","#",i.arg),i.member] for i in listing[method,desc]["code"]]
+        head=body("hash128","([BIII)[J")
+        wrappers[version]={"classSha256":digest(target),"wrapper":head[:9],"wrapperInstructions":len(head)}
+        if version=="1.13":
+            if [i[1] for i in head[:6]]!=["iload_3","i2l","lstore","iload_3","i2l","lstore"]:
+                raise ValueError("1.13 seed initialization differs")
+            continue
+        named="hash128x64" if version=="1.14" else "hash128x64Internal"
+        unsigned=body("hash128x64","([BIII)[J")
+        if [i[1] for i in unsigned[4:7]]!=["i2l","ldc2_w","land"] or unsigned[5][3]!="long 4294967295l":
+            raise ValueError("canonical 32-bit seed is no longer zero-extended")
+        if version=="1.14" and head[-2][3]!="Method hash128x64:([BIII)[J":
+            raise ValueError("middle wrapper no longer selects the unsigned overload")
+        if version=="1.15" and (head[4][1]!="i2l" or head[-2][3]!="Method hash128x64Internal:([BIIJ)[J"):
+            raise ValueError("last wrapper no longer sign-extends the caller seed")
+        wrappers[version]["unsignedWrapper"]=unsigned
+        bodies[version]={n:body(m,d) for n,m,d in (("body",named,"([BIIJ)[J"),("avalanche","fmix64","(J)J"),("readWord","getLittleEndianLong","([BI)J"))}
+    if bodies["1.14"]!=bodies["1.15"]:raise ValueError("hash bodies or dependencies differ in normalized bytecode")
+    return {"releaseWrappers":wrappers,"common14And15":{k:{"instructions":len(v),"sha256":sha256(encoded(v)).hexdigest()}
+                                                        for k,v in bodies["1.14"].items()},"normalization":"constant-pool numeric references only"}
 
 
 def run(name):
@@ -51,6 +86,7 @@ def run(name):
                 "originalClasses":identity,"callersSha256":{c:digest(HERE/c) for c in callers},
                 "job":os.environ.get("VERIFY_JOB_ID"),"argv":cmd,"negative":wrong,"rejection":control.stdout,
                 "scope":"Executable algebra over fixed-width bit vectors and finite byte lists. Original Java correspondence is measured separately on the released caller and its bounds."}
+        if name=="seed":report["bytecode"]=seed_bindings(work)
         (out/"receipt.json").write_bytes(encoded(report))
         print(name,len(claims),"theorems checked and incorrect control rejected",flush=True)
 

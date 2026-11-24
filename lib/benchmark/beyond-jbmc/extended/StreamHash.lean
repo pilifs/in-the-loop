@@ -15,7 +15,7 @@ structure Core where
   pending : Pending
 
 def key (w : Word) : Word := (w * 0xcc9e2d51).rotateLeft 15 * 0x1b873593
-def block (h : Word) (a b c d : Byte) : Word :=
+@[irreducible] def block (h : Word) (a b c d : Byte) : Word :=
   (h ^^^ key (d ++ c ++ b ++ a)).rotateLeft 13 * 5 + 0xe6546b64
 
 def push (s : Core) (v : Byte) : Core :=
@@ -33,12 +33,15 @@ def blocks (h : Word) : List Byte → Core
   | [a] => ⟨h,.one a⟩
   | [] => ⟨h,.zero⟩
 
-theorem fold_blocks : ∀ (xs : List Byte) (h : Word), xs.foldl push ⟨h,.zero⟩ = blocks h xs
-  | [], _ => rfl
-  | [_], _ => rfl
-  | [_,_], _ => rfl
-  | [_,_,_], _ => rfl
-  | a::b::c::d::rest,h => fold_blocks rest (block h a b c d)
+theorem fold_blocks (xs : List Byte) (h : Word) : xs.foldl push ⟨h,.zero⟩ = blocks h xs := by
+  induction h, xs using blocks.induct with
+  | case1 h a b c d rest ih =>
+    change rest.foldl push ⟨block h a b c d,.zero⟩ = blocks (block h a b c d) rest
+    exact ih
+  | case2 => rfl
+  | case3 => rfl
+  | case4 => rfl
+  | case5 => rfl
 
 def finalMix (h : Word) : Word :=
   let x := (h ^^^ (h >>> 16)) * 0x85ebca6b

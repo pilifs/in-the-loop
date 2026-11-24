@@ -25,16 +25,33 @@ def groups (v : Word) : Groups :=
   else .five a b c d (v.extractLsb' 28 4)
 
 def value : Groups → Word
-  | .one a => a.zeroExtend 32
-  | .two a b => (b ++ a).zeroExtend 32
-  | .three a b c => (c ++ b ++ a).zeroExtend 32
-  | .four a b c d => (d ++ c ++ b ++ a).zeroExtend 32
-  | .five a b c d e => e ++ d ++ c ++ b ++ a
+  | .one a => (0 : BitVec 25) ++ a
+  | .two a b => (0 : BitVec 18) ++ (b ++ a)
+  | .three a b c => (0 : BitVec 11) ++ (c ++ (b ++ a))
+  | .four a b c d => (0 : BitVec 4) ++ (d ++ (c ++ (b ++ a)))
+  | .five a b c d e => e ++ (d ++ (c ++ (b ++ a)))
 
 theorem full_word (v : Word) : value (groups v) = v := by
-  unfold groups
-  repeat' split
-  all_goals simp only [value] <;> bv_decide
+  have low14 : v.extractLsb' 7 7 ++ v.extractLsb' 0 7 = v.extractLsb' 0 14 :=
+    BitVec.extractLsb'_append_extractLsb'_eq_extractLsb' (by decide)
+  have low21 : v.extractLsb' 14 7 ++ v.extractLsb' 0 14 = v.extractLsb' 0 21 :=
+    BitVec.extractLsb'_append_extractLsb'_eq_extractLsb' (by decide)
+  have low28 : v.extractLsb' 21 7 ++ v.extractLsb' 0 21 = v.extractLsb' 0 28 :=
+    BitVec.extractLsb'_append_extractLsb'_eq_extractLsb' (by decide)
+  by_cases a : v.extractLsb' 7 25 = 0
+  · simp only [groups,ite_eq_left a,value]
+    simpa only [a] using (BitVec.extractLsb'_append_extractLsb' (x:=v) (w:=25) (len:=7))
+  by_cases b : v.extractLsb' 14 18 = 0
+  · simp only [groups,ite_eq_right a,ite_eq_left b,value,low14]
+    simpa only [b] using (BitVec.extractLsb'_append_extractLsb' (x:=v) (w:=18) (len:=14))
+  by_cases c : v.extractLsb' 21 11 = 0
+  · simp only [groups,ite_eq_right a,ite_eq_right b,ite_eq_left c,value,low14,low21]
+    simpa only [c] using (BitVec.extractLsb'_append_extractLsb' (x:=v) (w:=11) (len:=21))
+  by_cases d : v.extractLsb' 28 4 = 0
+  · simp only [groups,ite_eq_right a,ite_eq_right b,ite_eq_right c,ite_eq_left d,value,low14,low21,low28]
+    simpa only [d] using (BitVec.extractLsb'_append_extractLsb' (x:=v) (w:=4) (len:=28))
+  · simp only [groups,ite_eq_right a,ite_eq_right b,ite_eq_right c,ite_eq_right d,value,low14,low21,low28]
+    exact BitVec.extractLsb'_append_extractLsb' (x:=v) (w:=4) (len:=28)
 
 def cont (v : Seven) : Byte := (1 : BitVec 1) ++ v
 def last (v : Seven) : Byte := (0 : BitVec 1) ++ v
@@ -144,7 +161,7 @@ theorem prefix_capacity (w ordering : Bool) (pre rest : List Entry) (pos cap : N
     (fit : pos + ((pre++rest).flatMap (emit w ordering)).length ≤ cap) (valid : cap ≤ 2147483647) :
     pos + (pre.flatMap (emit w ordering)).length ≤ cap ∧
     pos + (pre.flatMap (emit w ordering)).length ≤ 2147483647 := by
-  simp at fit
+  simp only [List.flatMap_append,List.length_append] at fit
   omega
 
 #print axioms full_word

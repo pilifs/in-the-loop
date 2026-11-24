@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-100249-retain-raw-proof-outputs-for-the-frozen",
+  "title": "Retain raw proof outputs for the frozen 60-claim control panel",
+  "description": "Reproduce all 60 original Java semantics controls on the stored checker. Capture complete raw proof and witness output from the existing two-profile producer and include the separate installed stock harness records, binding archive files and the engine digest.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/README.md"
+    ]
+  },
+  "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+  "submitted": {
+    "at": "2026-11-24T10:02:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 25,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "22m",
+    "timeout": "110m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/control_archive.py 60",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/closing/control-evidence/60"
+  ]
+}

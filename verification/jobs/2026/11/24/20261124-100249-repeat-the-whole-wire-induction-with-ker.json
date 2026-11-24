@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-100249-repeat-the-whole-wire-induction-with-ker",
+  "title": "Repeat the whole wire induction with kernel-only word slices",
+  "description": "Use direct adjacent-slice identities for the full 32-bit VInt and the append-length lemma for all prefix cursor bounds. Recheck every sequence, progress and alternate ordering claim with the deliberately false byte-order control.",
+  "kind": "library",
+  "capabilities": [
+    "assurance:induction"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/README.md"
+    ]
+  },
+  "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+  "submitted": {
+    "at": "2026-11-24T10:02:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 31,
+  "requires": [
+    "lean"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m",
+    "timeout": "6m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py wire",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py wire",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/assurance/wire-sequence"
+  ]
+}

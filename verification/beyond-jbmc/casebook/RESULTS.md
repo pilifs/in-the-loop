@@ -12,20 +12,20 @@ The 68 rows are work items. Columns count qualified property results within the 
 | W06 | Two changed size implementations versus an independent shift oracle, UInt32 and UInt64. | 2 | 0 | 0 | 2 |
 | W07 | Both directions for UInt32, UInt64 and ZigZag on exact-sized records. The stock unsigned proofs and disputed ZigZag witnesses have different dispositions. | 6 | 0 | 0 | 4 |
 | W08 | Fixed header plus independent VInt payload in both directions, including separate value, suffix and position checks. | 2 | 2 | 0 | 0 |
-| W09 | The sequence theorem and alternate field-order experiment are separate from an unrestricted released Java loop. | 0 | 0 | 0 | 0 |
+| W09 | The sequence theorem and alternate field-order experiment are separate from an unrestricted released Java loop. | 2 | 2 | 0 | 0 |
 | N01 | Two independent binary32 factors, 2⁴⁶ pairs, range and sign-related companion. The unrounded double-product sibling is false. | 2 | 2 | 2 | 2 |
 | N02 | Two independent binary32 factors, 2⁴⁶ pairs. Exact zero boundary and three possible rounded underflow results. | 2 | 2 | 2 | 2 |
 | N03 | Two component scaleAdd with 2,048 cancellation inputs. Positive-zero bits through n=1,448, then the negative predecessor spacing. | 2 | 1 | 1 | 0 |
-| N04 | Every suffix 000–999, either sign, String and char-array slices at offsets 0–2. | 2 | 2 | 0 | 0 |
+| N04 | Every suffix 000–999, either sign, String and char-array slices at offsets 0–2. | 4 | 4 | 0 | 0 |
 | N05 | The accepted threshold family and the general 19-ASCII-digit input within the 24-unit array bound are reported separately. | 2 | 1 | 0 | 0 |
 | N06 | All 65,536 code units after 0. The Commons Unicode-digit predicate and the joint Double.parseDouble partition are separate claims. | 2 | 1 | 0 | 0 |
-| N07 | Two independently symbolic UTF-16 units, real String and custom CharSequence, both libraries and argument directions, plus null controls. | 4 | 1 | 0 | 0 |
+| N07 | Two independently symbolic UTF-16 units, real String and custom CharSequence, both libraries and argument directions, plus null controls. | 8 | 3 | 1 | 1 |
 | N08 | Signed zeros and separately boxed NaN bits. Equality, emitted hashes, ordering, raw bits and reflexive cases distinguish the profiles. | 8 | 0 | 2 | 2 |
 | N09 | Signed-coordinate box [−8,8] and a separate large near-collinear family of integer determinants one. Both point orders and releases. | 4 | 0 | 0 | 0 |
 | N10 | Two independent binary64 factors, 2¹⁰⁴ pairs, three subnormal-or-zero results on the public fresh-vector call. | 1 | 1 | 1 | 1 |
-| N11 | Exact 11,111-string Core partition, separate null control and four public quoted-token consumers. Original JVMs exhaust the finite domain. | 3 | 2 | 0 | 0 |
+| N11 | Exact 11,111-string Core partition, separate null control and four public quoted-token consumers. Original JVMs exhaust the finite domain. | 5 | 4 | 1 | 0 |
 | H01 | Direct Cell[] inputs and explicit null, shared and distinct MutableInt payloads. Java int wraparound included. | 3 | 2 | 2 | 3 |
-| H02 | Three publicly linked MutableObjects, 64 successor graphs × four starts. The self-link-only detector misses a two-node cycle. | 1 | 1 | 0 | 1 |
+| H02 | Three publicly linked MutableObjects, 64 successor graphs × four starts. The self-link-only detector misses a two-node cycle. | 2 | 2 | 1 | 2 |
 | H03 | Two public MutableObject roots, equal values or identical MutableInt tails, an untouched sibling and arbitrary initial int. | 1 | 1 | 1 | 1 |
 | H04 | Two persistent vector branches, lengths 1–6, all valid indices and arbitrary replacement int, with checks after every operation. | 2 | 2 | 0 | 0 |
 | H05 | Forward clone through six steps and a container boundary. Versions 1.6.15/16 and 1.6.17/18 retain the neighbor observations. | 4 | 4 | 0 | 0 |
@@ -33,11 +33,11 @@ The 68 rows are work items. Columns count qualified property results within the 
 | H07 | Range and subset overloads are distinct. The changed query requires a bitmap superset and run subset, tested across 9,994 hole positions. | 8 | 4 | 0 | 0 |
 | H08 | Element and HTML append, subsequent removal, and independent live reparenting on real FormElement objects. | 4 | 0 | 2 | 0 |
 | H09 | Serialize and reparse the attribute aXa for lower-case letters, decimal digits, underscore, dot and hyphen. | 2 | 0 | 1 | 0 |
-| H10 | Plane identities before and after ArrayUtils.reverse(Object[]), including aliasing. Directly supplied and constructed arrays have separate receipts. | 1 | 1 | 0 | 0 |
-| H11 | Two Flat[] roots, both alias choices. The conditional frame and the deliberately false unconditional frame exercise different input models. | 2 | 2 | 2 | 2 |
-| H12 | A Flat[] slot and a scalar root, including shared entry at MAX_VALUE. Observe both identity and wrapped mutation. | 1 | 1 | 1 | 1 |
-| H13 | Three concrete runtime types dispatched through a base array. The corresponding real registration transfer also appears in S06. | 2 | 2 | 2 | 2 |
-| H14 | Null tail, self-link and two-node cycle. A proof about independent generated trees cannot establish absence of Java self-links. | 2 | 2 | 2 | 2 |
+| H10 | Plane identities before and after ArrayUtils.reverse(Object[]), including aliasing. Directly supplied and constructed arrays have separate receipts. | 2 | 1 | 0 | 0 |
+| H11 | Two Flat[] roots, both alias choices. The conditional frame and the deliberately false unconditional frame exercise different input models. | 4 | 2 | 2 | 3 |
+| H12 | A Flat[] slot and a scalar root, including shared entry at MAX_VALUE. Observe both identity and wrapped mutation. | 2 | 1 | 1 | 2 |
+| H13 | Three concrete runtime types dispatched through a base array. The corresponding real registration transfer also appears in S06. | 3 | 2 | 2 | 3 |
+| H14 | Null tail, self-link and two-node cycle. A proof about independent generated trees cannot establish absence of Java self-links. | 3 | 2 | 2 | 2 |
 | E01 | All three original modes, caller and callee top frames, independent occurrence and escape selection and the coarse result. | 1 | 1 | 1 | 1 |
 | E02 | Mode zero constructs the receiver. The same exception now originates inside read. The helper variant and repaired original sites have separate receipts. | 0 | 0 | 0 | 0 |
 | E03 | Same-instance rethrow and newly allocated NPE with their physical throw frames, saved identity and catch history. | 1 | 1 | 0 | 0 |
@@ -77,23 +77,23 @@ The following rows group property decisions by library upgrade or independent be
 
 | Release pair or corpus task | Both | Native only | Comparator only | Neither |
 |---|---:|---:|---:|---:|
-| Lucene 8.11.0 → 9.0.0 | 4 | 14 | 1 | 2 |
+| Lucene 8.11.0 → 9.0.0 | 4 | 16 | 1 | 2 |
 | Protobuf ↔ Lucene | 0 | 0 | 2 | 0 |
 | Protobuf 3.25.5 → 4.33.0 | 0 | 0 | 6 | 2 |
 | vecmath 1.5.2 | 4 | 1 | 1 | 0 |
-| Jackson Core 2.19.0 | 0 | 3 | 0 | 1 |
-| Commons Lang 3.17.0 | 4 | 2 | 1 | 1 |
-| Guava 33.4.8-jre and Commons Lang 3.17.0 | 0 | 1 | 0 | 3 |
+| Jackson Core 2.19.0 | 0 | 5 | 0 | 1 |
+| Commons Lang 3.17.0 | 5 | 2 | 1 | 2 |
+| Guava 33.4.8-jre and Commons Lang 3.17.0 | 1 | 2 | 0 | 5 |
 | Commons Numbers 1.1 → 1.2 | 0 | 0 | 3 | 5 |
 | JTS 1.18.2 → 1.20.0 | 0 | 0 | 0 | 4 |
 | Commons Math 3.6.1 | 1 | 0 | 0 | 0 |
-| Jackson 2.17.1 → 2.17.2 | 0 | 2 | 0 | 1 |
+| Jackson 2.17.1 → 2.17.2 | 1 | 3 | 0 | 1 |
 | PCollections 3.1.4 → 4.0.2 | 0 | 2 | 0 | 0 |
 | RoaringBitmap 1.6.16 → 1.6.17 and neighbors | 2 | 6 | 0 | 0 |
 | RoaringBitmap 1.6.26 → 1.6.27 and neighbors | 0 | 4 | 0 | 4 |
 | jsoup 1.18.1 → 1.18.2 | 0 | 0 | 2 | 2 |
 | jsoup 1.18.2 → 1.18.3 | 0 | 0 | 1 | 1 |
-| Constructed heap fixtures | 7 | 0 | 0 | 0 |
+| Constructed heap fixtures | 7 | 0 | 3 | 2 |
 | Constructed exception histories | 1 | 1 | 0 | 0 |
 | JDK generic metadata fixture | 0 | 3 | 0 | 0 |
 | Spring release families and separately bound historical binder | 0 | 4 | 2 | 32 |
@@ -114,3 +114,5 @@ The following rows group property decisions by library upgrade or independent be
 | algorithms/BinaryTreeSearch-FunUnsat01 | 0 | 0 | 0 | 1 |
 | algorithms/InsertionSort-FunSat01 | 0 | 0 | 0 | 1 |
 | algorithms/InsertionSort-FunUnsat01 | 0 | 0 | 0 | 1 |
+
+Using one vote per release unit or public program, every measured predicate was decided by both profiles in 2 units, by native alone in 4, by an admissible comparator alone in 3, and by neither across the entire unit in 28. This uses the scopes actually listed in the property table. Unbounded sequence theorems and bytecode occurrence investigations have separate receipts.

@@ -101,7 +101,7 @@ def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py"):
             "--setenv","TZ","UTC","--setenv","LANG","C.UTF-8","--chdir",fake_home+"/.cache/in-the-loop/tmp"]
         for rel in ("lib/benchmark","lib/python","lib/tools","examples/tools"):
             cmd+=["--ro-bind",str(ROOT/rel),"/tool/"+rel]
-        if worker not in ("matched_worker.py","assisted_worker.py"):raise ValueError("unknown matched worker")
+        if worker not in ("matched_worker.py","assisted_worker.py","identity_worker.py"):raise ValueError("unknown matched worker")
         cmd+=["/usr/bin/python3","-B","/tool/lib/benchmark/beyond-jbmc/blind/"+worker]
         if physical:cmd.append("--physical-only")
         with (out/"process.log").open("wb") as f:

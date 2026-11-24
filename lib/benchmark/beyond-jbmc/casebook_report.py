@@ -143,6 +143,7 @@ def build(root,out):
     related={
         "E01":["qualified/E-sites/sites.json.gz"],"E02":["qualified/E-sites/sites.json.gz"],"E03":["qualified/E-sites/sites.json.gz"],
         "W09":["assurance/wire-calculus.json","assurance/wire-sequence/receipt.json"],"C04":["assurance/codec-sequence/receipt.json"],
+        "C01":["assurance/seed-sequence/receipt.json"],
         "C05":["qualified/C01-C05-1.14-1.15/cache.json"],"C06":["qualified/C06-C07/reuse.json.gz","qualified/C06-C07-equality/result.json.gz"],
         "C07":["qualified/C06-C07/reuse.json.gz","qualified/C06-C07-equality/result.json.gz"],"H11":["qualified/H11-may-alias/results.json"],
         "S03":["examples/374-spring-formatter-binding/records/beyond-jbmc-frozen/run.json"],
@@ -160,13 +161,21 @@ def build(root,out):
             n=p["native"]["disposition"] in DECISIONS;j=any(p[e]["disposition"] in DECISIONS for e in ("integrated","stock"))
             groups[row["unit"]][partition(n,j)]+=1
             for e in ("native","integrated","stock"):totals[e][p[e]["disposition"]]+=1
+    complete_units=Counter()
+    for c in groups.values():
+        total=sum(c.values())
+        all_native=bool(total) and c["both"]+c["native-only"]==total
+        all_comparator=bool(total) and c["both"]+c["comparator-only"]==total
+        complete_units[partition(all_native,all_comparator)]+=1
     out.mkdir(parents=True,exist_ok=True)
-    (out/"matrix.json.gz").write_bytes(gzip.compress(encoded({"tasks":list(cases.values()),"units":groups,"propertyCounts":totals,"matchedCosts":costs(flat)}),mtime=0))
+    (out/"matrix.json.gz").write_bytes(gzip.compress(encoded({"tasks":list(cases.values()),"units":groups,
+        "allMeasuredPropertiesByReplicationUnit":complete_units,"propertyCounts":totals,"matchedCosts":costs(flat)}),mtime=0))
     md=["# Disclosed casebook","","The 68 rows are work items. Columns count qualified property results within the measured scopes. A proved helper or a bounded model has its own statement. The same release pair supplies several work items. The data file retains each literal comparison, failed control, JVM replay, cost and underlying receipt. [Full matrix](matrix.json.gz)","","| ID | Measured scope | Properties | Native | Integrated | Stock |","|---|---|---:|---:|---:|---:|"]
     for key,r in cases.items():
         q=r["qualified"];md.append(f"| {key} | {r['scope']} | {len(r['properties'])} | {q['native']} | {q['integrated']} | {q['stock']} |")
     md+=["","The following rows group property decisions by library upgrade or independent benchmark program. Each number still counts predicates in the indicated unit. A unit with several predicates contributes one project to transfer claims.","","| Release pair or corpus task | Both | Native only | Comparator only | Neither |","|---|---:|---:|---:|---:|"]
     for unit,c in groups.items():md.append("| "+unit+" | "+" | ".join(str(c[k]) for k in ("both","native-only","comparator-only","neither"))+" |")
+    md+=["",f"Using one vote per release unit or public program, every measured predicate was decided by both profiles in {complete_units['both']} units, by native alone in {complete_units['native-only']}, by an admissible comparator alone in {complete_units['comparator-only']}, and by neither across the entire unit in {complete_units['neither']}. This uses the scopes actually listed in the property table. Unbounded sequence theorems and bytecode occurrence investigations have separate receipts."]
     (out/"RESULTS.md").write_text("\n".join(md)+"\n")
     print(len(cases),"work items,",len(flat),"measured property rows,",len(groups),"replication units")
 if __name__=="__main__":

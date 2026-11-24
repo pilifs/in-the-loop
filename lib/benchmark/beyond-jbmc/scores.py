@@ -35,12 +35,12 @@ def stock_disposition(stock,expected,contrary):
         if witness=="held":return "incorrect refutation"
         return "witness unconfirmed"
     if t["status"]!="SUCCESS":return t["status"]
-    if expected=="violation" or contrary:return "incorrect proof"
     if any("unwind" in p["property"] or "recursion" in p["property"] for p in t.get("otherFailures",[])):
         return "incomplete unwinding"
     if t.get("otherFailures") or t["exit"]!=0:return "other failed property"
     if reach["status"]!="FAILURE":return "false post-call control did not fail"
     if reach.get("otherFailures"):return "post-call control has additional failures"
+    if expected=="violation" or contrary:return "incorrect proof"
     return "proved"
 
 
@@ -65,6 +65,7 @@ def qualified(row):
         if data.get("jvmReplay") is not None:o["jvmReplay"]=data["jvmReplay"]
         if key=="stock":
             o["target"]=data.get("target");o["reach"]=row["stock"]["reach"].get("target");o["otherFailures"]=data.get("otherFailures")
+            o["targetSuccessContradictedOnOriginalCaller"]=data["status"]=="SUCCESS" and (expected=="violation" or contrary)
         result[key]=o
     return result
 

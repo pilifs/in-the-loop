@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-100249-save-original-raw-engine-records-for-all",
+  "title": "Save original raw engine records for all 49 follow-up controls",
+  "description": "Repeat the five frozen follow-up families with the original producer on the stored checker. Archive every integrated and native command, raw result and original JVM replay along with the producer's separately identified packaged stock profile.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/README.md"
+    ]
+  },
+  "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+  "submitted": {
+    "at": "2026-11-24T10:02:49+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 25,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "22m",
+    "timeout": "110m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/control_archive.py 49",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/closing/control-evidence/49"
+  ]
+}
