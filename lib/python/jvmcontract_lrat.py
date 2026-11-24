@@ -88,7 +88,10 @@ def capture(request, ordinary, work, trace_dir, runs):
     logs = {}
     for log in sorted(work.rglob("bmc.log")):
         raw = log.read_bytes()
-        line = next((l for l in raw.decode().splitlines() if "; solver calls written to " in l), "")
+        summaries = [line for line in raw.decode().splitlines() if "; solver calls written to " in line]
+        if len(summaries) != 1:
+            raise ValueError(f"{log.relative_to(work)}: expected one native solver summary, found {len(summaries)}")
+        line = summaries[0]
         summary = re.match(r"^(Verified|Violation|Unverifiable): .*?, ([0-9,]+) solver calls .*?, ([0-9,]+) clauses", line)
         link = re.search(r"; solver boundary \[([SU?F]*)\]; solver calls written to (.+)$", line)
         if not summary or not link:
@@ -115,7 +118,9 @@ def capture(request, ordinary, work, trace_dir, runs):
     for i, run in enumerate(runs, 1):
         if run.get("checker") != "native":
             raise ValueError(f"pass {i}: unsupported checker {run.get('checker')}")
-        matching = [p for p, info in logs.items() if info["ending"] == run["ended"] and
+        # Run::of in deadline.rs distinguishes two ways the native Unverifiable result can end.
+        ending = "unverifiable" if run["ended"] in ("out-of-time", "no-verdict") else run["ended"]
+        matching = [p for p, info in logs.items() if info["ending"] == ending and
                     info["purpose"] == run["purpose"] and info["clauses"] == run["formula"]["clauses"]]
         if len(matching) != 1:
             raise ValueError(f"pass {i}/{run['purpose']}: {len(matching)} matching native logs")
@@ -181,6 +186,8 @@ def trace_events(raw, run):
         yield row, formula
     if next(stream, None) is not None or models or calls != int(end[2]):
         raise ValueError(f"{pass_id}: transcript contains an unmatched model or call")
+    if run["ending"] == "unverifiable":
+        raise ValueError(f"{pass_id}: native pass ended without a verdict")
 
 
 def issue(request, boundary, streams, target):
@@ -219,7 +226,8 @@ def verify(request, boundary, target):
     if boundary.get("schema") != "native-sat-boundary/v1" or boundary.get("requestSha256") != identity(request):
         raise ValueError("top-level request differs from the retained native boundary")
     ordinary = boundary["ordinary"]
-    if request.get("schema") != "native-sat-request/v1" or ordinary.get("execution") != request.get("run"):
+    if (request.get("schema") != "native-sat-request/v1" or not isinstance(request.get("run"), str)
+            or not request["run"] or ordinary.get("execution") != request["run"]):
         raise ValueError("native boundary belongs to another execution")
     if not boundary["passes"] or ordinary["status"] not in ("established", "refuted"):
         raise ValueError("ordinary verdict has no eligible completed native passes")
@@ -231,19 +239,24 @@ def verify(request, boundary, target):
     with zipfile.ZipFile(target) as pack, tempfile.TemporaryDirectory() as temp:
         cnf, proof = Path(temp) / "query.cnf", Path(temp) / "query.lrat"
         names = pack.namelist()
-        if len(names) != len(set(names)):
-            raise ValueError("duplicate file in the evidence bundle")
+        duplicates = [name for name, n in collections.Counter(names).items() if n > 1]
+        if duplicates:
+            raise ValueError(f"duplicate file in the evidence bundle: {duplicates[0]}")
         manifest = json.loads(pack.read("manifest.json"))
         if manifest.get("schema") != "native-sat-evidence/v1" or manifest.get("requestSha256") != identity(request):
             raise ValueError("bundle belongs to another top-level request")
         if manifest["boundarySha256"] != identity(boundary):
             raise ValueError("bundle belongs to another ordinary execution")
+        if not isinstance(manifest.get("events"), list):
+            raise ValueError("the bundle has no event list")
         rows = iter(manifest["events"])
         required = {"manifest.json"}
         counts = collections.Counter()
         passes = []
         for pas in boundary["passes"]:
             trace = f"traces/{pas['id']}.icnf"
+            if trace in required:
+                raise ValueError(f"{pas['id']}: repeated native pass identity")
             required.add(trace)
             if trace not in names:
                 raise ValueError(f"{pas['id']}: missing transcript")
@@ -255,8 +268,11 @@ def verify(request, boundary, target):
                     raise ValueError(f"{key}: missing or misordered event (found {item.get('key') if isinstance(item, dict) else None})")
                 actual = dict(item)
                 checksum = actual.pop("proofSha256", None)
-                if actual != expected:
-                    raise ValueError(f"{key}: event formula, assumptions, answer or model differs from the native call")
+                # JSON booleans and integers are distinct even though True == 1 in Python.
+                if identity(actual) != identity(expected):
+                    field = next(k for k in sorted(actual.keys() | expected.keys()) if k not in actual
+                                 or k not in expected or identity(actual[k]) != identity(expected[k]))
+                    raise ValueError(f"{key}: {field} differs from the native call")
                 if status == "unsat":
                     name = f"proofs/{key}.lrat"
                     if name not in names:
@@ -278,8 +294,12 @@ def verify(request, boundary, target):
                 per_pass[status] += 1
             passes.append({"id": pas["id"], "solverFree": not any(k in per_pass for k in ("sat", "unsat", "unknown")),
                            "attempts": len(pas["calls"]), "answers": dict(per_pass)})
-        if next(rows, None) is not None or required != set(names):
-            raise ValueError("unmatched event or file after the final native pass")
+        for extra in rows:
+            label = extra.get("key") if isinstance(extra, dict) else repr(extra)
+            raise ValueError(f"unmatched event after the final native pass: {label}")
+        for name in names:
+            if name not in required:
+                raise ValueError(f"unmatched file after the final native pass: {name}")
     return {"status": "checked", "ordinary": ordinary["status"], "requestSha256": identity(request),
             "boundarySha256": identity(boundary), "checkerSha256": CAKE_SHA if checker else None,
             "unsatCoverage": "all UNSAT answers certified" if counts["unsat"] else "no UNSAT calls",

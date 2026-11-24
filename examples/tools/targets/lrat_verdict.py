@@ -42,10 +42,11 @@ def certify(plan, execution, prepared, verifier, receipt, work):
         if receipt.status == "refuted" and not any(r.get("by") == "jvm" and r.get("reproduced") for r in replay):
             from targets import replay_candidate
             replay = [replay_candidate.check(plan, prepared, c["witness"]["inputs"], work / "lrat-witness" / str(i),
-                                              verifier.identities["checkedEntry"])
+                                              verifier.identities["checkedEntry"], checker=verifier.identities)
                       for i, c in enumerate(record["evidence"].get("counterexamples") or []) if c.get("witness")]
             if not any(r.get("by") == "jvm" and r.get("reproduced") for r in replay):
-                raise ValueError("ordinary refutation lacks a reproduced original JVM witness")
+                why = next((r["reason"] for r in replay if r.get("reason")), "no typed witness")
+                raise ValueError(f"ordinary refutation lacks a reproduced original JVM witness: {why}")
         runs = [run for observation in verifier.observations or []
                 for run in (observation.get("search") or {}).get("runs", [])]
         anchor = {"status": receipt.status, "receiptSha256": lrat.digest(ordinary_path.read_bytes()),

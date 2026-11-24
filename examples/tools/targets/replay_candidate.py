@@ -156,7 +156,7 @@ def source(entry, claim, inputs, names, *, argument_expression=None, helper=""):
     return "class CandidateReplay { public static void main(String[] args)" + throws + " {\n" + "\n".join(statements) + "\n} " + helper + "}\n"
 
 
-def check(plan, prepared, inputs, work, entry=None):
+def check(plan, prepared, inputs, work, entry=None, *, checker=None):
     entry = entry or plan.target
     claim = plan.claim
     selected = claim.get("observations") or ["result", "exception"]
@@ -164,7 +164,7 @@ def check(plan, prepared, inputs, work, entry=None):
               "by": "jvm", "reproduced": False, "sides": {}}
     aliases = qualification.alias_groups([p.split(",") for p in claim.get("mayAlias", [])])
     try:
-        if not supported(entry, claim):
+        if checker is None and not supported(entry, claim):
             raise ValueError("independent replay requires boolean, int, long or integer-array inputs and result")
         jdk = runtime._verifier_jdk(plan, prepared)
         report["jdkRelease"] = jdk["release"]
@@ -174,9 +174,27 @@ def check(plan, prepared, inputs, work, entry=None):
             where = runtime._preparation_dir(p)
             arts = runtime._checked(where, p)
             original = p.source["target"]["loadedFrom"]
-            holder = original if entry == plan.target else next(a.path for a in arts if a.role == "adapter")
             owner, method, desc = runtime_jar.parse_target(entry)
+            if checker is None:
+                holder = original if entry == plan.target else next(a.path for a in arts if a.role == "adapter")
+            else:
+                bound = checker["entryBindings"][rev]
+                if bound["entry"] != entry:
+                    raise ValueError(f"{rev}: replay entry differs from the bound checker invocation")
+                holder = bound["loadedFrom"]
             data = runtime.bound_class(where, p, holder, owner)
+            resolved = entry
+            if checker is not None:
+                if data is None or hashlib.sha256(data).hexdigest() != bound["classSha256"]:
+                    raise ValueError(f"{rev}: replay class differs from the bound checker invocation")
+                if not desc:
+                    candidates = [d for n, d in runtime_jar.methods(data) if n == method]
+                    if len(candidates) != 1:
+                        raise ValueError(f"{rev}: {entry} has {len(candidates)} declared descriptors")
+                    desc = candidates[0]
+                    resolved = entry + desc
+                if not supported(resolved, claim):
+                    raise ValueError(f"{rev}: unsupported JVM witness entry {resolved}")
             names, _ = runtime_jar.parameter_names(data, method, desc)
             if not all(re.fullmatch(r"[A-Za-z_$][A-Za-z0-9_$]*", n) for n in names):
                 raise ValueError("invalid parameter name on the prepared entry")
@@ -185,12 +203,19 @@ def check(plan, prepared, inputs, work, entry=None):
                                                     claim["bounds"]["maxArrayLength"])
             if problem:
                 raise ValueError("domain mismatch: " + problem)
-            java = source(entry, claim, inputs, names)
+            java = source(resolved, claim, inputs, names)
             path = work / (rev + ".java")
             path.write_text(java)
-            cp = [a for a in arts if a.path in (original, holder) or a.role in ("dependency", "stub")]
-            if entry != plan.target:
-                cp.sort(key=lambda a: a.path != holder)
+            if checker is None:
+                cp = [a for a in arts if a.path in (original, holder) or a.role in ("dependency", "stub")]
+                if entry != plan.target:
+                    cp.sort(key=lambda a: a.path != holder)
+            else:
+                artifacts = {a.path: a for a in arts}
+                ordered = checker["classpath"][rev]
+                cp = [artifacts[a["path"]] for a in ordered]
+                if [a.sha256 for a in cp] != [a["sha256"] for a in ordered]:
+                    raise ValueError(f"{rev}: replay classpath differs from the bound checker invocation")
             settings = claim.get("observedRuntime", {})
             flags = [f"-XX:ActiveProcessorCount={settings['processors']}"] if settings.get("processors") else []
             command = [str(Path(jdk["home"]) / "bin/java"), *flags, "-cp", os.pathsep.join(str((where / a.path).absolute()) for a in cp), str(path.absolute())]
@@ -202,6 +227,8 @@ def check(plan, prepared, inputs, work, entry=None):
             rows = result.stdout.splitlines()
             side = {"entryClassSha256": hashlib.sha256(data).hexdigest(), "classpath": [a.sha256 for a in cp],
                     "program": java, "admitted": bool(rows and rows[0] == "admitted")}
+            if checker is not None:
+                side["descriptor"] = desc
             if settings:
                 side["observedRuntime"] = settings
             report["sides"][rev] = side
