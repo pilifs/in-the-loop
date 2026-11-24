@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-041236-replay-the-original-xz-frame-and-cache-w",
+  "title": "Replay the original XZ frame and cache witnesses on clean sources",
+  "description": "The first transfer shared the conflicted JavaParser export in VF-060. Repeat both unmodified ordinary XZ claims and the admitted nondefault process witness with a fresh-default comparison. The existing constructor-progress job separately handles all physical and fixed-setting profiles on this same source.",
+  "kind": "real-world",
+  "capabilities": [
+    "receiver-construction",
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "expected": "Source-bound ordinary and conditional verdicts with original JVM outcomes, including all registered caller inputs.",
+  "submitted": {
+    "at": "2026-11-24T04:12:36+00:00",
+    "session": "01a20bbf-66e7-7ad0-9353-1fdb338d0b28"
+  },
+  "revision": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "1m",
+    "timeout": "12m",
+    "notes": "The original three-step XZ transfer completed in 62 seconds. This repeat uses two of those steps."
+  },
+  "steps": [
+    {
+      "name": "Check both original XZ frame claims",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz --output verification/receiver-discovery/recovery/xz/clean-ordinary",
+      "cwd": "."
+    },
+    {
+      "name": "Replay the default and nondefault settings",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/property_witness.py xz --output verification/receiver-discovery/recovery/xz/clean-witnesses",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/recovery/xz/clean-ordinary",
+    "verification/receiver-discovery/recovery/xz/clean-witnesses"
+  ]
+}
