@@ -1,0 +1,330 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-155711-verify-icu-word-boundary-histories-throu",
+  "title": "Verify ICU word-boundary histories through the actual changed rule data",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 4m02s, peak 352.5 MiB (estimated 12m00s, 5.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-155711-verify-icu-word-boundary-histories-throu.json",
+    "sha256": "eeaa4aa0f67acbf9ae62a47d126ce85db365bd3b9c4d36d86cdbae716a482a85",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-155711-verify-icu-word-boundary-histories-throu",
+      "title": "Verify ICU word-boundary histories through the actual changed rule data",
+      "description": "The preceding frozen transfers selected unchanged packaged resources. Test a real data-only change on the two complete ICU4J core builds. Record exact UTF-16 boundaries and statuses in both directions across text replacement. Bind the selected binary and locale fallback on both releases. Replay the genuine six-resource edit at a stable path and compare warm decisions to an empty cache.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-proof-reuse",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:57:11+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "12m"
+      },
+      "steps": [
+        {
+          "name": "Verify freeze and measure original ordinary native predicate",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/native_open.py icu english",
+          "cwd": "."
+        },
+        {
+          "name": "Capture complete first ICU cold, warm and clean plans",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py icu first",
+          "cwd": "."
+        },
+        {
+          "name": "Recheck each consumed result and actual resource",
+          "run": "python3 -B lib/benchmark/organic-composition/audit.py icu first && python3 -B lib/benchmark/organic-composition/icu/resources.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/icu/first-native.json",
+        "verification/organic-composition/icu/first",
+        "verification/organic-composition/icu/resource-transfer"
+      ]
+    }
+  },
+  "sourceCommit": "ef9f62b5badecb59c347e0a4e030d24c449b1586",
+  "startedAt": "2026-11-24T16:01:00+00:00",
+  "finishedAt": "2026-11-24T16:09:15+00:00",
+  "wallSeconds": 495.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2661725,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 2880.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 369627136,
+    "wallSeconds": 242.6,
+    "cpuSeconds": 300.5,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.34
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 243.264,
+      "cpuSeconds": 243.447,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2309890048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "54cc5ccb3b751708ace8db30aa4ee12c1a2178fb15e84ee67a883690c533a2ac",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-155711-verify-icu-word-boundary-histories-throu/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 03s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Verify freeze and measure original ordinary native predicate",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/native_open.py icu english",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 2.005,
+      "cpuSeconds": 3.057,
+      "cpuThrottledSeconds": 0.399,
+      "peakMemoryBytes": 75702272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-verify-freeze-and-measure-orig.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Capture complete first ICU cold, warm and clean plans",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py icu first",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 124.324,
+      "cpuSeconds": 156.165,
+      "cpuThrottledSeconds": 17.733,
+      "peakMemoryBytes": 327966720,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-capture-complete-first-icu-col.log",
+        "lines": 4,
+        "bytes": 208,
+        "sha256": "ce15d355bdccc85657148bb3eb98a5999d55c5c01c6fa301308cddb293f6cf0d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "4 claims in /tmp/organic-matrix-09pc1phv/planned.json",
+        "4 claims in /tmp/organic-matrix-09pc1phv/cold.json",
+        "4 claims in /tmp/organic-matrix-09pc1phv/warm.json",
+        "4 claims in /tmp/organic-matrix-09pc1phv/clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Recheck each consumed result and actual resource",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py icu first && python3 -B lib/benchmark/organic-composition/icu/resources.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2880.0,
+      "cancelled": false,
+      "wallSeconds": 116.307,
+      "cpuSeconds": 141.296,
+      "cpuThrottledSeconds": 18.05,
+      "peakMemoryBytes": 369627136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-recheck-each-consumed-result-a.log",
+        "lines": 4,
+        "bytes": 316,
+        "sha256": "1e64fe82d1082e8fc9950a2f269e8ca351ad0a5f6233de14a9452aa39d08a209",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "icu first matched original observations, proof identities, applied values and startup witnesses: [['cold', 'warm'], ['cold', 'clean']]",
+        "4 claims in /tmp/icu-actual-change-fxyocsuc/before.json",
+        "4 claims in /tmp/icu-actual-change-fxyocsuc/changed-warm.json",
+        "4 claims in /tmp/icu-actual-change-fxyocsuc/changed-clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/icu/first-native.json",
+      "change": "added",
+      "bytes": 15681,
+      "sha256": "365628d3dca170826d30ad3315dd10b13e751a8660d8d3c19edc402419faefe2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/icu/first/plans.zip",
+      "change": "added",
+      "bytes": 1895035,
+      "sha256": "6b13765994888aa9e1160b60e25b83590b1fa439611a42ea288d1fc21afbf2f4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/icu/first/summary.json",
+      "change": "added",
+      "bytes": 20517,
+      "sha256": "5daf47d627a9bd97f1ee874203e28ed066d98dabab6fa9fbae6c64c7513d7a70",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/icu/resource-transfer/plans.zip",
+      "change": "added",
+      "bytes": 1432573,
+      "sha256": "54b8986ff5c89a97e403baa75c47ccc5ab42caed8be70d6225ef300b2df140c6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/icu/resource-transfer/report.json",
+      "change": "added",
+      "bytes": 20690,
+      "sha256": "1d3ece110a4b47ba7abe50ab94ab30883429247e9375d3f4926a3a4f24cf1ced",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T16:09:27+00:00",
+    "applied": [
+      "verification/organic-composition/icu/first-native.json",
+      "verification/organic-composition/icu/first/plans.zip",
+      "verification/organic-composition/icu/first/summary.json",
+      "verification/organic-composition/icu/resource-transfer/plans.zip",
+      "verification/organic-composition/icu/resource-transfer/report.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3dd06e78154ee24184d0797b33b16662a276ddc7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3dd06e78154ee24184d0797b33b16662a276ddc7/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T160915Z-406596d8b1392a2c",
+      "outputs": "20261124T160915Z-4563841f3c132226",
+      "diff": "20261124T160915Z-4813867b8e42bb96"
+    }
+  }
+}
