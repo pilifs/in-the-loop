@@ -16,9 +16,9 @@ def summary(row):
     return {k: row[k] for k in ("verdict", "problem", "assume", "assert", "counterexample", "stated", "target")}
 
 
-def measure(case):
+def measure(case, out):
     checker = Path(os.environ["JVMCONTRACT"]).resolve()
-    result = {**identities(), "checkerSha256": sha(checker), "rows": {}}
+    result = {**identities(), "checkerSha256": sha(checker), "bindings": {}, "rows": {}}
     scope = read(RESULTS / "scope.json")
     for side in (["control"] if case == "controls" else ["old", "new"]):
         with tempfile.TemporaryDirectory() as dirname:
@@ -58,6 +58,12 @@ public class InstalledCaller {{
         System.setProperties(parent);
         return UpgradeCallerClaim.matches(selector);
     }}
+    public static boolean noLookups(int selector) {{
+        Properties table = new Properties();
+        table.setProperty({key}, ",  ,");
+        System.setProperties(table);
+        return UpgradeCallerClaim.matches(selector);
+    }}
     public static boolean inherited(int selector) {{
         Properties parent = new Properties();
         parent.setProperty({key}, "_");
@@ -70,7 +76,14 @@ public class InstalledCaller {{
                 # comparisons in recovery.py. These three explicit table replacements are controls.
                 command([JDK / "bin/javac", "-proc:none", "-g", "-parameters", "-cp",
                          os.pathsep.join(map(str, cp)), "-d", cp[0], code])
-                targets = dict.fromkeys(("empty", "own", "inherited"))
+                targets = dict.fromkeys(("empty", "own", "noLookups", "inherited"))
+                result["bindings"][side] = {
+                    "callerClassSha256": sha(cp[0] / "UpgradeCallerClaim.class"),
+                    "probeClassSha256": sha(cp[0] / "UpgradeProbe.class"),
+                    "profileClassSha256": sha(cp[0] / (owner + ".class")),
+                    "classpath": scope["registeredCallers"][case]["sides"][side]["orderedClasspathSha256"],
+                    "property": prop,
+                }
                 args = [[str(i)] for i in range(4)]
                 guard = scope["registeredCallers"][case]["assume"]
             tools = compiler(temp)
@@ -93,7 +106,6 @@ public class InstalledCaller {{
                     raise ValueError((name, attempt["verdict"], attempt["problem"]))
                 rows[name] = {"jvm": output, "native": summary(attempt)}
             result["rows"][side] = rows
-    out = OUT / "installed-properties"
     out.mkdir(parents=True, exist_ok=True)
     write(out / (case + ".json"), result)
 
@@ -101,4 +113,6 @@ public class InstalledCaller {{
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("case", choices=["controls", "commons-configuration-565", "commons-configuration-601"])
-    measure(p.parse_args().case)
+    p.add_argument("--output", type=Path, default=OUT / "installed-properties")
+    args = p.parse_args()
+    measure(args.case, args.output)

@@ -15,7 +15,8 @@
 //!   `substring` ([`Engine::range`]): the literal `""` where it is empty. `NullPointerException` for a null regex.
 //!   Other symbolic combinations are refused.
 //! - With limit zero (including the one-argument overload), concrete UTF-16 text can also be split at a
-//!   literal separator surrounded by one or more Java default-regex whitespace characters on both sides.
+//!   literal separator surrounded by one or more Java default-regex whitespace characters on both sides,
+//!   or at maximal runs of a positive ASCII character class such as `[\s,]+`.
 //!   Positive-width matches keep leading empty pieces and drop trailing ones; a miss retains the input.
 //! - `Pattern.quote(String)`: a String that, as a regular expression, matches the argument's units and nothing
 //!   else (its Javadoc). `NullPointerException` for null.
@@ -560,30 +561,56 @@ pub fn split_character(units: &[u16]) -> Option<u16> {
     }
 }
 
+/// A single greedy positive character class. The class parser handles the default Java
+/// regex shorthands. Leave ranges, intersections, negations and nested classes to the JDK.
+fn split_class_run(pattern: &[u16]) -> Option<Vec<(u16, u16)>> {
+    let members = pattern.strip_prefix(&[u16::from(b'[')])?.strip_suffix(&[u16::from(b']'), u16::from(b'+')])?;
+    if members.iter().any(|&c| matches!(c, 0x26 | 0x2d | 0x5b | 0x5d)) { return None; }
+    let mut reader = Reader { units: pattern, at: 0, groups: 0 };
+    match reader.atom()? {
+        Node::One(Atom::Class(ranges, false)) if reader.eat('+') && reader.done() => Some(ranges),
+        _ => None,
+    }
+}
+
 /// Ranges for positive-width matches at limit zero. Regex \s without a Unicode flag has six ASCII members.
 fn concrete_split(text: &[u16], pattern: &[u16]) -> Option<Vec<std::ops::Range<usize>>> {
     let whitespace = |u: u16| matches!(u, 0x09..=0x0d | 0x20);
-    let (delimiter, padded) = if let Some(unit) = split_character(pattern) {
-        (unit, false)
-    } else {
-        let space_plus = [92, 115, 43]; // \s+
-        let middle = pattern.strip_prefix(&space_plus[..])?.strip_suffix(&space_plus[..])?;
-        let [unit] = middle else { return None };
-        if !matches!(*unit, 0x2c | 0x3a..=0x3e) { return None; } // comma, colon, semicolon, <, =, >
-        (*unit, true)
-    };
     let mut parts = Vec::new();
     let mut after = 0;
-    for (i, &unit) in text.iter().enumerate() {
-        if unit != delimiter || i < after { continue; }
-        let (mut begin, mut end) = (i, i + 1);
-        if padded {
-            while begin > after && whitespace(text[begin - 1]) { begin -= 1; }
-            while end < text.len() && whitespace(text[end]) { end += 1; }
-            if begin == i || end == i + 1 { continue; }
+    if let Some(ranges) = split_class_run(pattern) {
+        let member = |unit: u16| ranges.iter().any(|&(lo, hi)| (lo..=hi).contains(&unit));
+        let mut pos = 0;
+        while pos < text.len() {
+            if member(text[pos]) {
+                parts.push(after..pos);
+                while pos < text.len() && member(text[pos]) { pos += 1; }
+                after = pos;
+            } else {
+                pos += 1;
+            }
         }
-        parts.push(after..begin);
-        after = end;
+    } else {
+        let (delimiter, padded) = if let Some(unit) = split_character(pattern) {
+            (unit, false)
+        } else {
+            let space_plus = [92, 115, 43]; // \s+
+            let middle = pattern.strip_prefix(&space_plus[..])?.strip_suffix(&space_plus[..])?;
+            let [unit] = middle else { return None };
+            if !matches!(*unit, 0x2c | 0x3a..=0x3e) { return None; } // comma, colon, semicolon, <, =, >
+            (*unit, true)
+        };
+        for (i, &unit) in text.iter().enumerate() {
+            if unit != delimiter || i < after { continue; }
+            let (mut begin, mut end) = (i, i + 1);
+            if padded {
+                while begin > after && whitespace(text[begin - 1]) { begin -= 1; }
+                while end < text.len() && whitespace(text[end]) { end += 1; }
+                if begin == i || end == i + 1 { continue; }
+            }
+            parts.push(after..begin);
+            after = end;
+        }
     }
     if parts.is_empty() { return Some(vec![0..text.len()]); }
     parts.push(after..text.len());
