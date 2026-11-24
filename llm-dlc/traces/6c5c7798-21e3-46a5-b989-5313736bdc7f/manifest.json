@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-24T05:10:05.511Z",
-  "duration_seconds": 733359,
+  "ended": "2026-11-24T05:10:43.379Z",
+  "duration_seconds": 733397,
   "stats": {
     "turns": 1131,
-    "api_calls": 5000,
-    "tool_calls": 4523,
+    "api_calls": 5001,
+    "tool_calls": 4524,
     "tool_errors": 57,
     "compactions": 13,
     "peak_context_tokens": 626480,
     "usage": {
-      "input_tokens": 12268,
-      "output_tokens": 2221353,
-      "cache_read_input_tokens": 1518359406,
-      "cache_creation_input_tokens": 7359576
+      "input_tokens": 12270,
+      "output_tokens": 2221685,
+      "cache_read_input_tokens": 1518930515,
+      "cache_creation_input_tokens": 7360281
     }
   },
   "tools": {
-    "Bash": 4340,
+    "Bash": 4341,
     "SendMessage": 50,
     "Edit": 33,
     "ToolSearch": 23,
@@ -261,24 +261,24 @@
     {
       "index": 13,
       "started": "2026-11-23T13:16:11.056Z",
-      "ended": "2026-11-24T05:10:05.511Z",
+      "ended": "2026-11-24T05:10:43.379Z",
       "turns": 124,
-      "api_calls": 528,
+      "api_calls": 529,
       "usage": {
-        "input_tokens": 1324,
-        "output_tokens": 227612,
-        "cache_read_input_tokens": 182868546,
-        "cache_creation_input_tokens": 534873
+        "input_tokens": 1326,
+        "output_tokens": 227944,
+        "cache_read_input_tokens": 183439655,
+        "cache_creation_input_tokens": 535578
       },
-      "peak_context_tokens": 571111
+      "peak_context_tokens": 571816
     }
   ],
   "log": {
-    "sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84",
-    "bytes": 79690307,
-    "lines": 43047,
-    "gzip_bytes": 12441531,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84.jsonl.gz"
+    "sha256": "ae4e97547f246780b51942508736319ba01275caaef763fe395eb8e1937ef152",
+    "bytes": 79798504,
+    "lines": 43060,
+    "gzip_bytes": 12464727,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/ae4e97547f246780b51942508736319ba01275caaef763fe395eb8e1937ef152.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -10204,307 +10204,315 @@
     },
     {
       "change_id": "qyozrlzmrzywtrrumvnlswvxrpsnqpww",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "460f94ae465ef84adae5dde1ed73abd0d7fa5892",
+      "immutable": true,
       "summary": "Refresh the queued brief beyond-jbmc-java-change-verification-cam from the user's revised original",
       "body": "The user revised ~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md at 03:20 UTC, after the queue had copied it. The brief has no run yet, so its repository copy, which the setup and domain runs read, is replaced with the revised original, byte for byte (diff confirms identical). The queue entry already points at that original. Brief text only.",
       "log_sha256": "9a7619106e2d61629d7fbdf3c5babcdb89d6c3c1e7b776d1571cbf43ea1758a5"
     },
     {
       "change_id": "wvyoszqwuvzloylpvsvvuyoqkrtmvxms",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9c925b779bff84a4f43e49818f6930867a6c3264",
+      "immutable": true,
       "summary": "Record the watcher's decisions on trusted-kernel-and-receiver-recovery-setup",
       "body": "The watcher's verdicts on the single-agent run trusted-kernel-and-receiver-recovery-setup (llm-dlc/decisions/single-trusted-kernel-and-receiver-recovery-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "43a4ade282b14e46f7c37c442d632208269e8adcc5a0b1e4142568f657d66265"
     },
     {
       "change_id": "rrxummqrtmwvzykqnvrwzkvzzzmswrms",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4674ee60047d89a5a76e803a2182f2031dd13530",
+      "immutable": true,
       "summary": "Set up the trusted-kernel and receiver-recovery brief",
       "body": "Mechanical setup for llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief.md, recorded in llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief-setup.md. The pinned JDK, Z3, CaDiCaL, cake_lpr, Lean 4.36.0 (file by file), rustc and the jvmcontract binary still match the earlier setup records and the committed evidence. The brief's five inventory checks pass at this head. Guava 31.1-jre, Beam's vendored Guava 32.1.2 and fastutil 8.5.15 were resolved from Maven Central, checked against Central's checksums (16 of 16) and their signatures in a private keyring (16 of 16 valid; fastutil's signature postdates its key's published expiry, recorded). Their sources were pinned to the release tags. Every class the brief names was extracted, hashed and disassembled; the JDK Arrays.class and Lang ArrayUtils.class equal the brief's digests. The trusted-kernel consumer built at this head is byte-identical to the recorded range-capable checker.\n\nOn Temurin 21.0.13, throwaway probes reproduced every count the brief gives: the long range fill (245/80/140), the Guava 31.1 and Beam indexOf grids (780 and 1,554 calls), fastutil (7,745 = 2,735 + 5,010), Shorts/Chars (33 of 216), Lang reverse (44,165 = 40,525 + 3,640), the live System-properties sequence, and the two historical incorrect Guava variants, rebuilt to their recorded digests. The receiver campaign's Maven cache, which a scratch cleanup had removed, was restored by hard links from the earlier snapshot (586 classpath files, 0 missing), and the Configuration, Compress, XZ and JavaParser observations were rerun as recorded. No claim, example, adapter or checker code was written, no verifier run was made, and no verification job was needed.",
       "log_sha256": "43a4ade282b14e46f7c37c442d632208269e8adcc5a0b1e4142568f657d66265"
     },
     {
       "change_id": "vqluqkxnysvmtvtqskotvsxlqrszltxs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ecdd9226453535fed4c1bede1deb05cc6abe6566",
+      "immutable": true,
       "summary": "Merge the single-agent run trusted-kernel-and-receiver-recovery-setup into the line",
       "body": "The single-agent run trusted-kernel-and-receiver-recovery-setup (session 029d6ffd-7f50-45f4-8e24-9e04dfc875a6) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "43a4ade282b14e46f7c37c442d632208269e8adcc5a0b1e4142568f657d66265"
     },
     {
       "change_id": "qrolnwotnqunwxsyruvmkvspzsptvzxs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "884115da882f673069b4c774defa53732f8c7795",
+      "immutable": true,
       "summary": "Put the setup notes of trusted-kernel-and-receiver-recovery into its brief",
       "body": "The setup run trusted-kernel-and-receiver-recovery-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief.md and ~/code/scripts/analysis/trusted-kernel-and-receiver-recovery-brief.md, for the domain agent.",
       "log_sha256": "43a4ade282b14e46f7c37c442d632208269e8adcc5a0b1e4142568f657d66265"
     },
     {
       "change_id": "tlqopkxnlsvzzospulrzkvqzmuwnusmq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "15c36ab7db86322cc4fd886a4eb5f8b5369a9a4d",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "43a4ade282b14e46f7c37c442d632208269e8adcc5a0b1e4142568f657d66265"
     },
     {
       "change_id": "tuppllptypzurwssmrsnpqxmmrxryswn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7bd40fdd9378a7bb8c0f90cb49125a2516dd7bfa",
+      "immutable": true,
       "summary": "VF-058: the receiver campaign's Maven cache lives in an old session's scratch folder",
       "body": "The watcher's 2026-11-23 cleanup of ~/.cache/in-the-loop/agent-tmp/0cea9d0e-… removed the receiver campaign's Maven cache, which prepared.json files name by absolute path. The trusted-kernel-and-receiver-recovery setup restored it from a hard-link snapshot. VF-058 records the hazard, the check to run before cleaning any agent-tmp folder, and the lasting fix of a stable path. Documentation only.",
       "log_sha256": "1a0dce3db20ce78ffb7e9e65200ad18200ebe70d3a5834451fdc08afc7019ef5"
     },
     {
       "change_id": "qyzskpnkqqkwvoookvuqklvmswxqzryq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a4e56bd543d003e6f43bfbbfacf911fd7970b1ea",
+      "immutable": true,
       "summary": "Record verification results for 3 job(s)",
       "body": "Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261124-033410-qualify-long-range-fill-and-portable-gua: failed: 1 failed step(s) in 0.2s, peak 3.9 MiB (estimated 1m00s, 1.0 GiB) 20261124-033453-audit-historical-induction-queries-again: failed: 1 passed, 1 failed step(s) in 1.7s, peak 119.0 MiB (estimated 1m00s, 1.0 GiB) 20261124-033937-check-five-original-array-contracts-thro: failed: 1 failed step(s) in 0.2s, peak 11.8 MiB (estimated 2m00s, 1.0 GiB) Collected by the watcher of the trusted-kernel-and-receiver-recovery run, which keeps the queue while the run is under way.",
       "log_sha256": "37fc8fcb29057b32b2ec0a46a88b958769c4511feb9a3d1f1c0df026b28db403"
     },
     {
       "change_id": "tvowykmkrumpxvuwmzlkwwnxwovukumy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "12156702e24fb7b35dffd59e686b719fd7b79f01",
+      "immutable": true,
       "summary": "Record VF-060: jobs exported from a conflicted revision run on jj's conflict layout",
       "body": "Six jobs of the queued trusted-kernel-and-receiver-recovery run were exported from a revision with a jj conflict, which the agent later resolved. Each work folder held jj's JJ-CONFLICT-README and three whole-tree conflict copies (7.3 GB against about 1.8 GB normally), so free disk fell from 94 to 49 GB in 30 minutes; one job ran to completion on that layout. VF-060 asks the pipeline to refuse conflicted source revisions. Documentation only.",
       "log_sha256": "2b99fb1c7ccdea479ffff2ccf85ba8a2380e27d04e6b0ec7d38507f9c71029e6"
     },
     {
       "change_id": "wnuksuxkvkxulvvtowvnouzkptonntqv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f695159938046887eb4e74bc7fd46cae44061314",
+      "immutable": true,
       "summary": "Record verification results for 4 job(s)",
       "body": "Outputs applied for 2 of the 4 job(s); 2 declared or produced none. 20261124-033119-recheck-javaparser-traversal-across-live: passed: 2 passed step(s) in 13m01s, peak 389.2 MiB (estimated 12m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-033120-recheck-xz-ordinary-frame-witnesses-and: passed: 3 passed step(s) in 1m02s, peak 175.9 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261124-033637-recover-json-and-yaml-public-callers-fro: failed: 1 failed, 2 skipped step(s) in 0.6s, peak 51.9 MiB (estimated 3m00s, 2.0 GiB) 20261124-033703-certify-ordinary-native-verdicts-and-rep: failed: 1 failed step(s) in 0.2s, peak 14.6 MiB (estimated 4m00s, 2.0 GiB) Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "f2a60b8de7b887fa127f53888554d747d08121fd8b68933f3dc83aef48ed87e2"
     },
     {
       "change_id": "zymuwnlyrrnyxpspspvvrzxonprqlvzu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e2f79d7057d13a2a13dd76c88ede1594c6f6f6db",
+      "immutable": true,
       "summary": "VF-046: a third filter stop; the queued brief continues in a fresh session",
       "body": "OpenAI's cybersecurity filter refused trusted-kernel-and-receiver-recovery's first cycle 30 minutes in, in session 461ff7e6 (fresh for change-verification, which ran cleanly). Following the brief queue's procedure, the watcher committed the unverified work-in-progress in the workspace (uwuytsrn), started the domain run again as trusted-kernel-and-receiver-recovery-2 in fresh session fbbe8930, and pointed the queue at it (queue.jsonl). VF-046 records the occurrence. Documentation and queue log only.",
       "log_sha256": "6e6019dd87099fe40730f891ddf56f16cfa2d6454dbd3f132d130b915ba6580d"
     },
     {
       "change_id": "wrlmpxwrqloutmnlqoqqnnomyquolllk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "dbb835ce150768b5c90725c6e9303c3a33f5cbfa",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 2 of the 2 job(s). 20261124-034953-audit-historical-induction-queries-again: passed: 2 passed step(s) in 7.7s, peak 113.4 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-034953-qualify-long-range-fill-and-portable-gua: passed: 1 passed step(s) in 8.3s, peak 123.4 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "3552911a9546771e74788ad49cfb619eb8c293328ec326eb040b2ab2491942b5"
     },
     {
       "change_id": "upouuyxqtrmqxlznptuquxnrvmnqklrv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3c00141a4ed50f4fbd85a00037dbc4302866a5c8",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-034954-check-five-original-array-contracts-thro: passed: 1 passed step(s) in 36.8s, peak 188.3 MiB (estimated 2m00s, 1.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "05a4afccefacb7abf5722d4aa7622c283d67b9de13de98362abed40997f34279"
     },
     {
       "change_id": "plkwvopmmpywtvtynmkqvmqupwmvsutx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "16d5dbbb63737a29a8bad2d7e5f01e55bebaffd1",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-034422-check-replacement-properties-identity-an: passed: 3 passed step(s) in 27.3s, peak 120.0 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "a853357f3251fe12408d7acba8423a491a2f80a2bede14c82b75409898e0c671"
     },
     {
       "change_id": "oqrmymmutslpvuvvsxksmolkpqvktxsy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "a21f9f50d92a22ce603c6ade51870ec2f1a57514",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 1 of the 2 job(s); 1 declared or produced none. 20261124-035044-check-the-executed-jdk-range-branches-an: failed: 1 failed step(s) in 4.0s, peak 199.8 MiB (estimated 2m00s, 3.0 GiB) 20261124-035044-qualify-both-fastutil-range-fill-loops-o: passed: 1 passed step(s) in 5.2s, peak 106.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "fcef88ca7b7f1e8585591b2cb9a45fef63d7d4ef1e51bab16124e16375701754"
     },
     {
       "change_id": "wuuktxuuyytpowpqplpxkuylrrsvwkpt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "039024abbef1a26c0457ce96fe343905ace26d72",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261124-035004-check-whole-verdict-lrat-on-the-complete: failed: 1 failed, 1 skipped step(s) in 13.4s, peak 166.5 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed; signals: example:task-as-expected×7 Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "8dead9148cef6f0f8d01c82edcb68338c2e883bfc5f03dabc09e0426fd82b9c3"
     },
     {
       "change_id": "ukryvsmxtwopwvxwlppzrxuwvxvumwuu",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "86ac2546081fa79c47f3a514bdb4caefd310be6f",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-041236-replay-the-original-xz-frame-and-cache-w: passed: 2 passed step(s) in 11.4s, peak 114.1 MiB (estimated 1m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "8dead9148cef6f0f8d01c82edcb68338c2e883bfc5f03dabc09e0426fd82b9c3"
     },
     {
       "change_id": "wrzoqtxuywlkuumlmyzsvuvqqvxmpnqz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "cdd2fbca20f142aafc30928559abd35cce0952f6",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-035617-retry-xz-frame-and-cache-roots-beyond-bo: passed: 1 passed step(s) in 47.7s, peak 176.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "2f3c31af4edb4e58a8717d6c3d7954b7ec334eac7266d5a99d4a126743149da6"
     },
     {
       "change_id": "qvtrkqsmskqkqmlnyompovmmtzxkmzpt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "87edd0ba48b0b7c6123950e04b3ee2a083026d4a",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-035245-recover-json-and-yaml-public-callers-fro: passed: 3 passed step(s) in 1m48s, peak 195.3 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "2f3c31af4edb4e58a8717d6c3d7954b7ec334eac7266d5a99d4a126743149da6"
     },
     {
       "change_id": "psxlxlrnqyxyokrmqpruzyzlmtlllomz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "aa93b37df12b4f1e19490095aea368d4ad3de6c6",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 2 of the 2 job(s). 20261124-041759-bind-the-commons-lang-reversal-theorem-t: passed: 1 passed step(s) in 5.0s, peak 192.6 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-041856-replay-the-configuration-callers-past-th: passed: 2 passed step(s) in 27.3s, peak 114.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "57b29925cfe8eae0a4985a0272cceb64dc0986236ea2d44265d2f1b354aaab48"
     },
     {
       "change_id": "uoxmonoxxytuxutvpkuylqrqnkkovzyw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d023fbcc61ccf0c9235c5410642f4b1b1de06a23",
+      "immutable": true,
       "summary": "Record verification results for 4 job(s)",
       "body": "Outputs applied for 4 of the 4 job(s). 20261124-043118-certify-the-ordinary-guava-verdict-and-h: passed: 2 passed step(s) in 4.4s, peak 131.1 MiB (estimated 3m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×2 Applied 17 output(s). 20261124-043118-check-jackson-and-utf-16-ordinary-sat-ev: passed: 2 passed step(s) in 18.0s, peak 152.9 MiB (estimated 3m00s, 2.0 GiB); 19 output file(s) changed; signals: example:task-as-expected×6 Applied 19 output(s). 20261124-043143-check-the-executed-jdk-range-branches-an: passed: 1 passed step(s) in 15.3s, peak 270.4 MiB (estimated 2m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-043151-compare-the-three-pinned-guava-controls: passed: 1 passed step(s) in 27.7s, peak 174.4 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "07872dbb85c3318e143f73887a9219977db17f3b9880fb43fbdfe7e3015c6277"
     },
     {
       "change_id": "qvplywqvpvokqsvlszylywtxmqrzxrqx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4644ab5fa962483041873513cafa8a8f2aa1362d",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-041236-replay-javaparser-separator-claims-on-th: passed: 2 passed step(s) in 14m19s, peak 376.5 MiB (estimated 13m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "7783e0d35cb8923b2958281c196dfe0b35de408052ba5742a1382e2d23d07234"
     },
     {
       "change_id": "xwtwuskuwoultkqsvmtzrlonzkmtwvwn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "946157668db21812cfcca297ff5d235f84330a90",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261124-043349-qualify-live-parent-removal-through-the: passed: 1 passed step(s) in 3.0s, peak 97.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
       "log_sha256": "ec6a85ef021816f3ca523e90f9f91274708f1b0dfab00838bda6efa486bdf391"
     },
     {
       "change_id": "nqqyqmuxznnumumppkktusqvwpwsvwto",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8f6bf8091878fd8e12e832b1328953fd37d16734",
+      "immutable": true,
       "summary": "Close VF-057 and record VF-058's progress",
       "body": "The queued run trusted-kernel-and-receiver-recovery built its rollout decision (expand the opt-in Rust checker for array methods) on VF-057's corrupted-producer control, which closes VF-057. On VF-058's receiver frontiers it matched all 16 stock Configuration observations and refuted the four JSON and YAML caller guarantees under an admitted property prestate. JVM-witness coverage rose from 6/46 to 10/46 sides while strict native stayed at 4/46, so VF-058 stays open. Documentation only.",
       "log_sha256": "189f383e3c9646f565e111bf7ed87a922ff23b7d2ef18c9f41277944e46b3450"
     },
     {
       "change_id": "vwllymlzolwlnkvlxpuqnqysqlpsmvzq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "106058fe89b2478921bc23e060787287ae009d6d",
+      "immutable": true,
       "summary": "Record the watcher's decisions on trusted-kernel-and-receiver-recovery-2",
       "body": "The watcher's verdicts on the single-agent run trusted-kernel-and-receiver-recovery-2 (llm-dlc/decisions/single-trusted-kernel-and-receiver-recovery-2.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "4f98f0705837d399a83e450146e64a988f9153783cb79b2acef3f1d886479677"
     },
     {
       "change_id": "qpvwsnytvqkqlzwwlwkpsuzzqlwkowkm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3c23fad0d906a159b2d474ef35970d5bb6b49ec7",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "4f98f0705837d399a83e450146e64a988f9153783cb79b2acef3f1d886479677"
     },
     {
       "change_id": "kkloyokxwzkzumkvmkpwrqkppuzvxonp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6ad30197aa036c184908a233f2d12497322bd223",
+      "immutable": true,
       "summary": "Record the watcher's decision D001 on trusted-kernel-and-receiver-recovery-2 (stop, hand-over)",
       "body": "The queued brief's kernel half was complete in one cycle, and VF-058's strict-native receiver remainder stays recorded there; the watcher handed over to the next queued brief. Decision record only.",
       "log_sha256": "0e004fd21cab43ebe076d7b86933758d4b98a731dfb07c0fa90fe9c97aafcf8f"
     },
     {
       "change_id": "tlrsxqwkpnzyopzkmqsxzqkqzvkkxnrn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0cdc8c907308ad1d1569edd624935180d4abbdaa",
+      "immutable": true,
       "summary": "Repeat original startup claims and controls (verification pending)",
       "body": "Keep the original receiver campaign receipts and put each fresh JavaParser and XZ run in a separate output directory. The unchanged default destinations still serve the original reproduction commands. All three driver entry points loaded, the earlier receiver scorecard verified, and the changed test selection passed.\n\nJob 20261124-033119-recheck-javaparser-traversal-across-live compares eight ordinary JavaParser roots and their missing, fixed and bounded arbitrary separators. Job 20261124-033120-recheck-xz-ordinary-frame-witnesses-and compares both XZ roots, four frame observations and the admitted nondefault cache witness.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "uwuytsrnvoxzmqwruqmtspkmvqklrsps",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "7498bf43e834494e48bd77b31c9fb23a3901a244",
+      "immutable": true,
       "summary": "Work in progress left by session 461ff7e6 when OpenAI's filter stopped it (unverified)",
       "body": "The queued run trusted-kernel-and-receiver-recovery was refused by OpenAI's cybersecurity filter at 03:57 UTC, 30 minutes into cycle 1 (VF-046). The watcher commits what the agent had not yet committed, unchanged and unverified, so that the fresh session continuing the brief finds it in the log rather than as unexplained working-copy changes. It contains range-fill checker work (RangeRule.lean, Reverse.lean, range/export.rs, range/fastutil.rs, fastutil_certificate.py, lean_range.py, release_fill.py and edits to the trusted-kernel bytecode, classfile, main and range modules), receiver-discovery installed_table.py, and edits to lib/src/bmc/map_views.rs, runtime.rs, classpath.rs and the claims tests and fixtures. None of it has been compiled, tested or verified by a job; the next session reviews it before relying on any of it.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "uuuporzqoqmllvzruvuumsrvvxkoolno",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "164ef7d92b4d4107beac7c7457bc48748db16933",
+      "immutable": true,
       "summary": "Recheck startup transfers on a clean source (verification pending)",
       "body": "Jobs 20261124-041236-replay-javaparser-separator-claims-on-th and 20261124-041236-replay-the-original-xz-frame-and-cache-w pin the conflict-free recovery revision. They preserve the earlier results and repeat the original caller roots and process-state witnesses in separate output directories. The verification schema validator reported zero problems.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "lmqrluzytyuwkyxvktmyrnkpmynympmo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8640976505c1c29a441ceb4f3cea1c790f824386",
+      "immutable": true,
       "summary": "Close VF-057 on the independently refuted historical heap frame",
       "body": "Add the historical producer outcome and the Rust witness as separate routes for the same request. The inventory checks the managed job output digest and its class, formula, certificate, solver, JVM and independent checker against their original records. A pristine comparison detects drift and the same producer repeats the false result. The consumer catches the actual store at PC 25. This supports an opt-in independent check for qualified first-match methods.\n\nThe 111 previous rows compare equal with the original table. All 113 rows and all ten change-plan nodes regenerate and validate, and the seven verification layout tests pass.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "wmlwruoqpvrrlvntwlkuolxkqvwpxmwn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9497f30bade8b75ae3ebcf7c392c0e71bf772442",
+      "immutable": true,
       "summary": "Check Configuration lookup-name splitting (verification pending)",
       "body": "Support the class of ASCII whitespace and commas used by Configuration to split the live lookup-name setting. Compare limit-zero behavior, supplementary characters, trailing runs and unchanged reference identity with the original JDK in the SpringStartup regression. On the installed-property path this moves execution past the delimiter used at parseLookups PC 11.\n\nJob 20261124-041856-replay-the-configuration-callers-past-th checks the two public Configuration upgrades and explicit property-table profiles. The focused native/JVM regression passed and the job file validated.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "kpykwsmvlvwtzyypxuupxrruuxnlrykn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "726974c656a9b920fd4b62fa9258ab5368a14b8e",
+      "immutable": true,
       "summary": "Check complete native verdicts and JVM replay (verification pending)",
       "body": "Reconcile the native call journal with each independently bound request and ordinary receipt. Reject surplus events, retain the first interrupted call, and resolve a unique descriptor from the deployed class when replaying an original JVM counterexample. The five registered workloads report solver-free paths, checked SAT models, checked UNSAT proofs, sizes and timings. The held-back core and extension results are collected independently.\n\nThe LRAT reader regressions and route tests passed. The original Jackson JVM replayed the selected long witness. Jobs 20261124-043118-certify-the-ordinary-guava-verdict-and-h and 20261124-043118-check-jackson-and-utf-16-ordinary-sat-ev exercise the complete entrypoints, negative controls and independent recheck.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "tuopokqkuyzznpnottkypzqvlztmqnvm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "972190e851378bfe57c36d02ac921728019216c4",
+      "immutable": true,
       "summary": "Bind Lean range proofs to loaded methods (verification pending)",
       "body": "Qualify the signed comparison used in the generated Lean decisions to remove an ambiguity with the system compare function. Bind the two-cursor reversal theorem to the method loaded from Commons Lang 3.17.0 and its two resolved Math helpers. Lean checks the read and store sequence against a mirror of the entry heap. A physical JVM checked 40,525 normal returns and 3,640 exact exceptions, including the empty-array signed-bounds counterexample.\n\nOne capped Lean probe checked the reversal theorem and a separate probe checked an iteration decision after the fix. Job 20261124-041759-bind-the-commons-lang-reversal-theorem-t qualifies the release. Job 20261124-043143-check-the-executed-jdk-range-branches-an repeats the full 600-entry branch export, the two executed JDK back edges and their controls.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "mowsquqxktkzlspvovruxzmxowzotnnz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "06b7a111b3eb3d99fca6b19b39806525795b78bf",
+      "immutable": true,
       "summary": "Measure historical record comparisons (verification pending)",
       "body": "Run the original release and both pinned Guava benchmark variants through the historical adapter. The local source mirror and the public mutation recipe reproduce both incorrect class digests. Compare with no stored record, then with an independently generated pristine record and the exact solver inventory. Keep this reproducibility measurement separate from the semantic counterexamples.\n\nDistinguish malformed loop hints and misbound deployments from unsupported bytecode in the second-opinion result. The four adapter tests passed. Job 20261124-043151-compare-the-three-pinned-guava-controls checks the actual recorder and both comparisons.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "oxukptwtnnszwlvsoplwkxrxsozqxqwk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "850595ae1e2f91815eee3b5822cd640f96eed630",
+      "immutable": true,
       "summary": "Follow live property removal on the JDK (verification pending)",
       "body": "Exercise the full install, replace, inherit and remove sequence against the actual Properties table. Cover removal at the head and interior of a colliding String-key bucket. The original caller keeps the same reference in a static initializer while a child sees changes through its parent. For the reader transfer, qualify the JavaLangAccess object cached by the JDK 25 DataInputStream initializer from the verified bootstrap provider.\n\nThe native and physical JVM regressions passed with both Temurin 21.0.13 and 25.0.5. Job 20261124-043349-qualify-live-parent-removal-through-the repeats the full live-table claims and the inverse identity control on the managed runner.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "mmlptprqqswtqnrsmtottolxwtsumwol",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e7de7e846bd2a9ee5ea1151264b4111574bca697",
+      "immutable": true,
       "summary": "Record the kernel and receiver recovery decisions",
       "body": "Integrate the managed receipts and publish one comparison of 116 requests and controls. Forty input files are checked against 18 passed jobs, including their opening baselines. Close VF-057 on the producer frame error and VF-058 on the four Configuration sides, with separate owners for the remaining strict-native startup frontiers. The report records the source-fault and missing-query experiments at their measured scopes, checker and preparation costs, and the next investment.\n\nThe release, range, frame, LRAT, change-plan and receiver inventories all validated. Fresh ordinary executions checked 33 UNSAT proofs and 38 SAT assignments, both JDK back edges passed Lean, and the JavaParser and XZ clean reruns were collected. The final native changed-test run passed all 59 Rust test binaries and the three selected Python files. The verification schema and cost-tier lint passed.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
     },
     {
       "change_id": "svwunoopomvzrnmuvzppoztqqkwwroux",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9920f659e67c1aea4aa114c59c93813dbd61b69d",
+      "immutable": true,
       "summary": "Merge the queued run trusted-kernel-and-receiver-recovery-2 into the line",
       "body": "The queue's domain-land step stopped on a conflict in verification/findings.md. The watcher had updated VF-057 (closed) and VF-058 (progress) under Open, while the agent moved both to 'Decided and closed' with its own resolutions, which carry the same evidence. Resolved by taking the agent's move. VF-060, VF-059 and VF-056 stay open. Merged by hand as llm-dlc/runtime.md shows, so that brief_queue.py next can carry on.",
       "log_sha256": "23c0903ea6ff6fcff087b8f1016049e71ea1ba6482f8897df6b8cb9b8cbeaa84"
+    },
+    {
+      "change_id": "yutynmuvtnlpsqnqwkortrluxuvyyomo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "ae4e97547f246780b51942508736319ba01275caaef763fe395eb8e1937ef152"
     }
   ],
   "logs": {
@@ -13213,6 +13221,12 @@
       "lines": 1782,
       "gzip_bytes": 810179,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/adec07668f0851a2fe2c52c4a167359d28f5aac201f425dcc3ffb8364142c238.jsonl.gz"
+    },
+    "ae4e97547f246780b51942508736319ba01275caaef763fe395eb8e1937ef152": {
+      "bytes": 79798504,
+      "lines": 43060,
+      "gzip_bytes": 12464727,
+      "url": null
     },
     "ae94bc3ddaaf7cbcf5eb819b7af15c2bf47c980257f63a6c15363fe592b6ac26": {
       "bytes": 49248989,
