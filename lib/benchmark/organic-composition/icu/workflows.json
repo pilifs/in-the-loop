@@ -1,0 +1,37 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "ICU4J PR 3249 word rules, locale fallback and retained UTF-16 iterator",
+  "workflows": [
+    {
+      "id": "english-word",
+      "cohort": "registered",
+      "scope": "english-word.json",
+      "probe": "UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0|0:0,5:200/5:200,0:0"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Explicit ULocale and ordered original ICU resources, default break-iterator service, no external ICU data path or custom registration, fresh JVM per trial."
+      ]
+    },
+    {
+      "id": "locale-controls",
+      "cohort": "registered",
+      "scope": "locale-controls.json",
+      "probe": "UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Explicit ULocale and ordered original ICU resources, default break-iterator service, no external ICU data path or custom registration, fresh JVM per trial."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-155712-classify-all-utf-16-units-on-both-origin",
+  "title": "Classify all UTF-16 units on both original ICU4J surrogate helpers",
+  "description": "Check the original public trail-surrogate predicate at the full unsigned UTF-16 code-unit bound on both production revisions. Verify the primitive frame, exhaust all 65,536 original JVM returns, and retain the direct native assertion and any real initialization refusal.",
+  "kind": "real-world",
+  "capabilities": [
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T15:57:12+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Run both full-domain helper comparisons",
+      "run": "python3 -B lib/benchmark/organic-composition/icu/surrogates.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/icu/surrogates.json"
+  ]
+}
