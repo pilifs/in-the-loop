@@ -289,17 +289,180 @@ S03 was not run: it needs the historical source slices.
 
 ### W, N · wire formats and numerics
 
-_In progress._
+Probes: `$B/probes/jvm/wn/` (digests in `probes.sha256`). The helper that wrote them could not save a `REPORT.md`, so
+this section is the report. Release pairs are isolated the same way throughout. A thin caller (`*Ops.java`) is
+compiled once against the older release and loaded once per release into its own `URLClassLoader` (parent: the
+platform loader). The main program has no library on its classpath. Only primitives, primitive arrays, `String` and
+`boolean[]` cross between releases. Each run took 0.2–17.5 s with `-Xmx2g` or less. W08 and W09 were not run: they
+need design. The checker statements in these rows (stock JBMC proved, native refused) were not run either.
+
+| ID | Grid (the probe's choice unless the brief gives it) | Observed | Brief |
+|---|---|---|---|
+| W01 (§4) | the brief's `WirePair` (only `public` dropped), separate JVMs exchanging a file; rerun by this setup (`$B/logs/jvm-W01-wirepair-setup.txt`, frames in `$B/probes/jvm/wn/frames/`) | frames `33 01 02 03 04 55` (8.11.0) and `33 04 03 02 01 55` (9.0.0); 8→8 `01020304`, 8→9 `04030201`, 9→8 `04030201`, 9→9 `01020304` | reproduces |
+| W01 | **all 2³² ints** | same-release identity 4,294,967,296 on both; mixed = `Integer.reverseBytes(v)` on all, both directions; preserved 65,536 each way = the palindromes; 8.11 writes big-endian and 9.0 little-endian on every value | reproduces |
+| W02 | `byte[16]`, offsets 0..12, len 4 and 16−off, 6 entry fills (Random(2)), 209 values (Random(22)): 32,604 cases; reads on the same array object | 9.0 writes little-endian at [off, off+4), touches nothing else, position off+4, 32604/32604; 8.11 the same, big-endian. Same-buffer reads: identity within a release, reverseBytes mixed. `VH_LE_INT` = `VarHandle[varType=int, coord=[class [B, int]]`. Flipped-order control rejected 14904/15048, off-by-one 15024/15048 (the misses are palindromic or coincidental) | reproduces the brief's frame; the rest are observations |
+| W03 | all 65,536 shorts; 70,600 longs (Random(3), sign-change seeds, MIN+k/MAX−k, 65,536 built palindromes) | shorts: mixed = `Short.reverseBytes`, 256 preserved each way; 128 → −32768 (an unsigned reversal would give 32768). Longs: mixed = `Long.reverseBytes` and preserved ⇔ palindrome on the whole grid | reproduces (longs on the grid) |
+| W04 | **all 2³²** + 12 named values in framed slices | both writers = an independent 7-bit oracle on all; all four read compositions return v with the exact end; 127=`7f`, 128=`8001`, 16383=`ff7f`, 16384=`808001`, −1=`ffffffff0f`; next byte `0x55` | reproduces |
+| W05 | **all 2³²** × protobuf 3.25.5, 4.28.3, 4.33.0 | `writeUInt32NoTag` bytes = Lucene `writeVInt`, ends and cross reads equal, on all values and versions. −1: UInt32 `ffffffff0f`, Int32 `ffffffffffffffffff01`; Int32 length differs on all 2³¹ negatives (10 bytes). Lucene `readVInt` on Int32(−1) throws "Invalid vInt detected" | reproduces |
+| W06 | UInt32 **all 2³²**; UInt64 54,349 (bit-length edges ±1, 7-bit boundaries, −1/MIN/MAX, 1,000 per length of Random(6)) | 3.25.5 and 4.33.0 `computeUInt32SizeNoTag`/`computeUInt64SizeNoTag` equal the shift oracle and each other everywhere | reproduces (UInt64 on the grid) |
+| W07 | 582/711/728 values × 8 field numbers × 4 compositions = 64,672 reads (Random(7)) | 0 failures: value, exact consumption, flanks and trailing tag; sizes and frames identical old/new. A flipped terminal byte keeps size 2 but reads 428 for 300 | reproduces |
+| N01 | 32,768 pairs (Random(101)) + 3×3 edges | 2⁴⁶ pairs confirmed; 32777/32777 products in [2,8), max `0x1.fffffcp2`; companion `y == −x` bitwise. `nextUp(1f)·nextUp(2f)`: `0x1.000004p1` vs binary64 `0x1.000004000004p1` | reproduces |
+| N02 | 32,768 pairs (Random(102)) + edges; also the brief's `Product.java` | 2⁻¹⁴⁹ ×28236, 2⁻¹⁴⁸ ×4540, 0 ×1; zero ⇔ both 2⁻⁷⁵; `Product.underflow` true on all; (2⁻⁷⁵)² = 0 | reproduces (sample) |
+| N03 | the named point + j,k ∈ 1..256 | `scaleAdd` +0 (bits 0) vs `Math.fma` −0x1.0p-46; −0 kept when both inputs are −0; scaleAdd ≠ fma on 65536/65536 of the family | reproduces |
+| N04 | the 2,000 inputs; char[] overload at offset 3 | 1,617 accepted by both overloads, last suffix 807 (+) and 808 (−), = a BigInteger oracle | reproduces |
+| N05 | 1,617 × offsets 0..7 with outside digits changed (Random(55)); 100,000 × 2 signs (Random(5)) | `parseLong19` exact 12936/12936, stable under outside changes; the first rejected magnitudes wrap (+…808 → MIN, −…809 → MAX); 184,664 in-range all exact | reproduces |
+| N06 | all 65,536 code units, JDK 21.0.13 (Unicode 15.0) | 370 accepted. **Against `Double.parseDouble`** (47 accepted): 397 disagreements = 360 non-ASCII digits + 4 suffixes d/D/f/F + 33 chars ≤ U+0020. Against `new BigDecimal`: 0 | reproduces with `Double.parseDouble` as "JDK decimal parsing" |
+| N07 | **all 2³² ordered one-unit pairs**, String and a custom CharSequence | Guava = ASCII-fold oracle on all; Lang-only true on 2,412 ordered pairs, Guava-only 0; Kelvin U+212A vs K: Guava false, Lang true; both symmetric; Guava NPEs on null, Lang null-safe ((null,null) true); Lang gives the same on custom CharSequence and String | reproduces |
+| N08 | 12 pairs (±0, four NaN bit patterns, ordinary values) | hash of −0: −2147483648 in 1.1, 0 in 1.2; `compareTo` separates the zeros in both; NaN `equals` false in 1.1 for every pattern (not even `x.equals(x)`), true in 1.2; NaN hash 2146959360 for all patterns. In 1.1, 1.0 equals `nextUp(1.0)` with different hashes | reproduces |
+| N09 | {−1,0,1}⁴ (81); box [−8,8]⁴ (83,521); 100,000 near-collinear (Random(9)) | both releases = exact determinant sign, and the swapped control reverses, on all | reproduces |
+| N10 | 32,768 pairs (Random(110)) + edges; 10,000 normal vectors | 2⁻¹⁰⁷⁴ ×28329, 2⁻¹⁰⁷³ ×4447, 0 ×1; zero ⇔ both lower endpoints. Normal values: exact product, receiver unchanged, fresh object | reproduces (sample) |
+| N11 | the 11,111 strings; also every string of length 5 and 6 | 63 false→true, 0 true→false, 11,048 kept; flipped ⇔ `[+-]?[0-9]+\.` on all; null, `.`, `7.e1` rejected by both. Length 5: 135 flips, 6: 405, the partition holds | reproduces |
+| N11 `ObjectMapper` | 11,111 × Double/Float/BigDecimal/Number × 2 releases; 9 controls (`-0.`, `0.`, `7.`, `+9.`, `-77.`, `90.`, `.`, `7.e1`, `0`) × all 8 core/databind/annotations mixes | 63 changed for each type, the same set as the flips. `"-0."`: old `InvalidFormatException` ×4; new Double bits `8000000000000000`, Float `80000000`, BigDecimal 0 scale 0, Number a Double −0. The mixes follow core 72/72 | reproduces |
+
+**W02 bounds.** Both releases check the slice length only by `assert`, so without `-ea` a len=3 slice takes a full
+4-byte write. With `-ea`, 9.0 throws before writing and 8.11 throws after writing 3 bytes. Past the array end, 9.0
+throws before writing ("Index 13 out of bounds for length 13" on `byte[16]`), while 8.11 writes 3 bytes and then
+throws.
 
 ### H, C · histories and reuse
 
-_In progress._
+Probes: `$B/probes/jvm/hc/` (one source per case, `run.sh` runs them all, `C01compare.sh` does the C01 comparison,
+digests in `probes.sha256`). The helper that wrote them could not save a `REPORT.md`, so this section is the report.
+Each log `$B/logs/jvm-<ID>.txt` marks its blocks `### release=`, `### cmd:` and `### exit=`. Every release ran in its
+own JVM with `-Xmx2g -Duser.timezone=UTC`, and the whole set took about 3 s. H11–H14 and C07 were not run: they need
+fixtures or a selection decision.
+
+| ID | Grid (the probe's choice unless the brief gives it) | Observed | Brief |
+|---|---|---|---|
+| H01 | entry {−1,0,1,41,MAX,MIN,−2} × {distinct, shared} receivers, plus a null payload | `getAndAdd(1)` returns the entry and stores entry+1 in 14/14 cases. "Unchanged" fails at −1 (it stores 0). MAX wraps to MIN. A shared receiver shows entry+1 through both cells, and a null payload throws NPE. | reproduces |
+| H02 | 4³ = 64 topologies × starts {null, n0, n1, n2} | The identity walk equals the successor-index oracle 256/256. The "predecessor-only detector" is not defined by the brief. Two readings were tried. Next == previous node: on the two-node cycle it gives `repeat:[0,1]`, as the oracle does, and it fails 84 cases, all self-loops. Next == current node: it fails 36 cases and does not terminate on the two-node cycle. | oracle reproduces; detector **not determined** |
+| H03 | tail {0,7,MAX} × {shared, disjoint}, Java serialization of [rootA, rootB, sibling] | Shared: equal and identical, and an increment through a is seen through b. Disjoint: equal, not identical, and b is unchanged. The sibling stays 100. The deserialized graph keeps identity and replays the same. | reproduces (no values stated) |
+| H04 | sizes 1..6 × index 0..size−1 = 21; s1 = base.with(i,−1), s2 = base.minus(i), s3 = s1.minus(i) | 21/21 on 3.1.4 and on 4.0.2, every vector equal to its independent copy | reproduces |
+| H05 | elements 10,20,30,65576,65586,65596; clone.next() ×6, original `peekNext()` after each | 1.6.15, 1.6.16: 10,10,40,50,60,0. 1.6.17, 1.6.18: 10 at every step | reproduces; **first changed jar 1.6.17** |
+| H06 | A: clone.next() ×6; B: alternate 12 steps; C: drain clone then origin | 1.6.15/16: origin 65596,65596,65566,65556,65546, then `ArrayIndexOutOfBoundsException` (index −1) at step 6; B and C throw it too. 1.6.17/18: origin stays 65596; B gives [65596,65586,65576,30,20,10] on both cursors; C: origin full after clone exhausted | reproduces (the old AIOOBE is beyond the brief); first changed jar 1.6.17 |
+| H07 | h ∈ {4,63,64,65,4096,5000,9995}; reps R `add(0L,10000L)`+`remove(h)` (run container), B 9,999 single adds (bitmap container), O B+`runOptimize`; L `contains(long,long)`, S `contains(RoaringBitmap q)` with q = `add(h−4,h+d)` (run container) | **L gives true,false,false on all four releases, every rep and every h.** S on rep B: true,true,false on 1.6.25 and 1.6.26, true,false,false on 1.6.27 and 1.6.28, at all seven h. S on R and O: true,false,false everywhere | **differs with `contains(long,long)`**; reproduces only as bitmap-container ⊇ run-container subset `contains(RoaringBitmap)`. The 1.6.26→1.6.27 source diff changes only `BitmapContainer.contains(RunContainer)` (and its Mappeable twin), `start+length` → `start+length+1`. First changed jar 1.6.27 |
+| H08 | parse `<form><input name=a></form>`, append input b, remove b; two append paths | `appendElement("input").attr("name","b")`: 1.18.1 [a]/[a]/[a], 1.18.2 [a]/[a, b]/[a]. **`append("<input name=b>")`: [a]/[a, b]/[a] on both** | reproduces with `appendElement` only |
+| H09 | names {alpha, _name, a-b, a.b, a1}; xmlParser document and HTML shell with XML syntax; reparse with xmlParser | 1.18.2 prints `<unit />` for a-b, a.b, a1 (absent on reparse); alpha, _name kept. 1.18.3 keeps all five, on both paths | reproduces |
+| H10 | distinct planes; the same plane twice | distinct: arr[0]==p1, arr[1]==p0, type `[[[C`, contents intact; identical: both slots the same plane | reproduces |
+| C01 | 1,300 slices: 13 seeds {−1,0,1,42,104729,MAX,MIN,−2,0x7fff,0x8000,−123456,0xdeadbeef,0x9747b28c} × offsets {0,1,2,3,7} × lengths 0..19 over 32 bytes of Random(1300) | 1.13 = 1.15 `hash128` 1300/1300. 1.14 `hash128` = 1.15 `hash128x64` 1300/1300. 1.13 vs 1.14: equal on all 700 slices with seed ≥ 0, different on all 600 with seed < 0. Seed −1, empty slice: 1.13 and 1.15 `e4c18f38c65bd6ed 8efd8ae920620daf`; 1.14 and 1.15 `hash128x64` `6af1df4d9d3bc9ec 857421121ee6446b` | reproduces |
+| C02 | every array of length 0..2 (65,793) + 20,000 slices of Random(97655), offsets 0..3, lengths 3..16, × seeds {0,1,−1,0x9747b28c}: 343,172 checks | byte ff, seed 0: `79a8e694` and `fd6cf10d`. Outputs differ in 238,476 cases; the predicate holds in exactly those | reproduces on this grid |
+| C03 | seeds {0,−1,0x9747b28c} × slice start 0..3 × length 0..16 × every split: 1,836 | `end()` = one-shot 1836/1836; a second `end()` = the first; input unchanged | reproduces |
+| C04 | 50,000 cases of Random(659180), lengths 0..40, 3..6 chunks (empty allowed): 150,000 checks (the brief's preflight had 659,180) | any partition = one-shot; reset after 1..3 pending bytes = one-shot; repeat `end()` = first, each 50000/50000 | reproduces on this grid |
+| C05 | `javap -c -p` of `MurmurHash3` and inner classes (`$B/logs/javap-codec-{1.13,1.14,1.15}.txt`), compared after replacing `#n` by `#` (`$B/logs/jvm-C05.txt`) | 1.14 vs 1.15 identical: 61 entries, including `hash32x86(byte[],int,int,int)`, `getLittleEndianInt`, `mix32`, `fmix32`, `fmix64`, every `hash32`/`hash64` overload, all of `IncrementalHash32x86` and `IncrementalHash32`. Different: `hash128(byte[],int,int,int)` (1.14 calls `hash128x64:([BIII)`, 1.15 does `i2l` and calls `hash128x64Internal:([BIIJ)`), and `hash128x64(byte[],int,int,int)` (the callee was renamed). The private `hash128x64(byte[],int,int,long)` of 1.14 and `hash128x64Internal(byte[],int,int,long)` of 1.15 are identical after normalization | listing claim reproduces; the brief's "three helpers" are not named |
+| C06 | the 12 instants (15th, 12:00 UTC, 2023), Joda ISO chronology, `ZoneInfoProvider` from the jar under test, no provider property | 2.12.0: −6h Jan–Mar, −5h Apr–Oct, −6h Nov–Dec. 2.12.1: −6h all 12 | reproduces |
+| C08 | 1.08, 1.8, 01.02.03, plain + 15 extras | 5.6.0 null/1.8.0/null/null; 5.7.0 1.8.0/1.8.0/1.2.3/null. Extras differ only where a group has a leading zero (00, 01, 1.00, 00.00.00): null on 5.6.0, coerced on 5.7.0 | reproduces |
+| C09 | `1.0.0-<digits>` vs `1.0.0-1`, the four digit strings | 6.0.0: 1, 1, `NumberFormatException` ×2. 6.1.0: 1,1,1,1 | reproduces |
+| C10 | {^0, ^0.x, ^0.0, ^0.0.x} × {0.0.0, 0.0.5, 0.5.0, 1.0.0} | 6.1.0: ^0, ^0.x T,T,T,F; ^0.0, ^0.0.x T,T,F,F. 6.0.0: ^0, ^0.x true on all four (1.0.0 included); ^0.0, ^0.0.x false on all four (0.0.0 included) | new release reproduces; the brief states no old values |
+
+**Joda-Time jars** (`$B/logs/jvm-C06-jardiff.txt`). 2.12.0 has 748 entries and 2.12.1 has 744. All **247 common
+class entries are byte-identical**. Of the 496 other common entries, 483 are identical; the 13 that are not:
+- `META-INF/MANIFEST.MF`, `pom.properties`, `pom.xml`, `format/messages_iw.properties`;
+- the `tz/data` zones America/Bahia_Banderas, Chihuahua, Mazatlan, Merida, Mexico_City, Monterrey, Ojinaga, and
+  Pacific/Fiji, plus `ZoneInfoMap`.
+
+Only in 2.12.0: America/Nipigon, Rainy_River, Thunder_Bay, Asia/Istanbul, Europe/Nicosia. Only in 2.12.1:
+`format/messages_sq.properties`.
+
+**RoaringBitmap neighbours.** Iterator clone: 1.6.15 and 1.6.16 old, 1.6.17 and 1.6.18 new. The 1.6.16→1.6.17
+sources change only `IntIteratorFlyweight`, `ReverseIntIteratorFlyweight` and their buffer twins. Containment: 1.6.25
+and 1.6.26 old, 1.6.27 and 1.6.28 new. Jar digests: `$B/logs/release-table.md` (the main table above).
 
 ## Disk
 
-`$B` is 188 MB with `m2` (the release folders are hard links into `m2`). Mirrors: commons-codec 0.8 MB, protobuf
+`$B` is 181 MB with `m2` (the release folders are hard links into `m2`). Mirrors: commons-codec 0.8 MB, protobuf
 1.4 MB, sv-benchmarks 37 MB. `$B/tmp` is the `TMPDIR` for this work. Nothing was left in `/tmp`.
 
 ## Setup Agent Notes
 
-_Written when setup is complete._
+### What is ready, and where
+
+- `$B` = `~/.cache/in-the-loop/beyond-jbmc`. JDK 21.0.13 by full path, `~/.sdkman/candidates/java/21.0.13.0+9-tem/bin/`.
+  The default `java` is 25.0.5 (`~/.sdkman/candidates/java/25.0.5.0+8-tem`), the historical profile.
+- **Tools** ([table](#starting-commit-and-tools)):
+  - `lib/target/release/jvmcontract`, rebuilt at `9920f659e67c1aea4aa114c59c93813dbd61b69d`, sha256
+    `f02a6de8c6298109711f9cc4f81fb00c84168cfb276abfd57c1e1ab4dc6f9ca6`;
+  - JBMC 6.11.0, both packages. On `PATH`: `/usr/bin/jbmc` with `/usr/lib/core-models.jar`. The 22.04 package is
+    under `~/.cache/in-the-loop/jbmc-java-semantics-gap/releases/cbmc-6.11.0/ubuntu-22.04/`.
+- **Historical 187**:
+  - unmodified copy `$B/historical/results-867fa025.json`, sha256 `14c25280da82eaba7116753d704c33527aedf0e2008ff0eb664a805068d1de75`;
+  - 187 unique IDs, all present in `run.load_cases` at this head;
+  - what changed in their inputs: [The historical 187](#the-historical-187).
+- **42 release graphs** in `$B/releases/NAME/` (`lib/`, `sources/`, `classpath.txt` ordered, `tree.txt`). They cover
+  every released version the brief names, plus RoaringBitmap neighbours 1.6.15, 1.6.18, 1.6.25 and 1.6.28, and Spring
+  6.1.3 and 6.2.3 with `spring-context`. Every jar was checked against Central's checksums and its signature; digests
+  are in [the release table](#released-artifacts) and `$B/logs/release-jars.sha256`. Offline resolution works with
+  `mvn -o -s $B/maven-settings.xml`.
+- **Pinned sources** ([table](#pinned-sources)):
+  - Commons Codec `c89d2af770f05457fbefa5fb4713c888bf177fb2` (= `rel/commons-codec-1.15`), `$B/src/commons-codec-c89d2af7`;
+  - protobuf `0a2f7757e38b07c2e40c5c885a7100e8c16eb40f`, `$B/src/protobuf-0a2f7757` (`java/` only);
+  - SV-Benchmarks `7efe28dd29576b46927b7a34e8f742bd90966a75` (= `svcomp26`), `$B/src/sv-benchmarks-7efe28dd` (`java/` only).
+- **SV-COMP 26 official JBMC results**: `$B/svcomp/results.xml.bz2` and `table.html`, with the twelve B rows extracted
+  [here](#pinned-sources).
+- **Class bytes and disassembly** for every class the casebook names: `$B/classes/RELEASE/`, `$B/logs/classes.sha256`,
+  `$B/logs/javap/RELEASE/` ([Class entries](#class-entries)).
+- **JVM probes and their outputs**: `$B/probes/{sv,jvm/wn,jvm/hc,jvm/s}/` and `$B/logs/jvm-*.txt`. They reproduce
+  observations; they are not adapters. `$B/probes/sv/replay.sh JDKBIN` replays the twelve B tasks with a typed
+  choice-stream `Verifier`.
+
+### What was verified on a JVM
+
+On Temurin 21.0.13, and for the B tasks on 25.0.5 as well. Full rows: [What was replayed on a JVM](#what-was-replayed-on-a-jvm).
+- **B**: all six false-task witnesses fail their assertion (B02 `s`, B04 `s,s`, B06 `i8`, B08 `i0`, B10 `i2,i0`,
+  B12 `i2,i0,i0`), and B01, B03, B05 pass.
+- **W01–W07**: the four-cell WirePair table exactly. W01, W04, W05 and W06-UInt32 hold over **all 2³² ints**. W03's
+  256/65,536 shorts. W05 holds on all three protobuf versions.
+- **N01–N11**: every JVM statement, including N04's 1,617/2,000 (807/808), N06's 370 and 397, N08's hash and NaN
+  changes, N11's 63/11,048 and its `ObjectMapper` paragraph (63 per type, `-0.`, mixes follow core).
+- **H01, H03–H06, H08–H10, C01–C06, C08, C09**: as stated, with the exceptions below.
+- **C10**: the new release as stated.
+- **S01, S02, S04–S09**: as stated, on Spring 6.1.3, 6.1.14, 6.2.0 and 6.2.3.
+
+### What to know before starting
+
+- **H07 does not reproduce with `RoaringBitmap.contains(long,long)`**: true,false,false on 1.6.25–1.6.28 for every h
+  and representation. The stated true,true,false → true,false,false appears only with the subset form
+  `contains(RoaringBitmap)`, where the superset is a bitmap container (9,999 single adds) and the query a run
+  container. The 1.6.26→1.6.27 diff is `BitmapContainer.contains(RunContainer)` (and its Mappeable twin). The caller
+  is yours to choose.
+- **H08 differs by append path**: `appendElement("input").attr("name","b")` shows [a]/[a]/[a] → [a]/[a, b]/[a], while
+  `append("<input name=b>")` gives [a]/[a, b]/[a] on both 1.18.1 and 1.18.2.
+- **H02's "predecessor-only detector" is undefined** in the brief. Next == previous node is not rejected on the
+  two-node cycle; next == current node does not terminate on it. The oracle part holds 256/256.
+- **N06's 397** is against `Double.parseDouble`; against `new BigDecimal` there are 0 disagreements.
+- **C10's old release**: 6.0.0 makes ^0 and ^0.x true on all four versions (1.0.0 included), and ^0.0 and ^0.0.x
+  false on all four (0.0.0 included).
+- **H06**: old releases also throw `ArrayIndexOutOfBoundsException` (index −1) once the origin passes the container
+  start.
+- **First changed RoaringBitmap jars**: the iterator clone first changed in **1.6.17** (1.6.15 and 1.6.16 old, 1.6.18
+  new); containment first changed in **1.6.27** (1.6.25 and 1.6.26 old, 1.6.28 new).
+- **W02**: the slice bound is only an `assert` in both Lucene releases, so the outcome depends on `-ea`. Without it, a
+  len=3 slice takes 4 bytes.
+- **The protobuf pin `0a2f7757` is PR #15043's head, not a release tag.** The released sources are the sources jars.
+- **SV-COMP 26 ran on SV-Benchmarks `svcomp26-rc.1`** (`e8b309124df9bee33baf12bd47c629245971fce7`), not the pinned
+  `svcomp26`. The twelve tasks, `common` and `valid-assert.prp` are object-identical at both. The published run was
+  JBMC 6.8.0 at 900 s and 15 GB.
+- **The checker at this head is not the baseline's**: `lib/` changed after `867fa025` (last commit
+  `850595ae1e2f91815eee3b5822cd640f96eed630`). For the historical refresh:
+  - `conformance.json` gained `conformance/mapCapacity/2`, so pass the 187 IDs exactly;
+  - `Conformance.java` gained 22 lines, which moves later line numbers;
+  - 22 conformance cases changed only their `nativeStrict` annotation.
+- **Class majors**: lucene-core 9.0.0 is 55, Spring 6.x and semver4j 6.x are 61. The rest are ≤ 52.
+- **Two JBMC 6.11.0 packages with different `core-models.jar`**; the archived benchmark names only the version.
+  Name the pairing in each standalone run.
+- **Signatures**: JTS 1.18.2's key expired 2022-03-20, after its 2021-08-27 signature (`EXPKEYSIG` + `VALIDSIG`).
+  No snapshot dependencies.
+- **Grids**: where the brief gives none, the probes chose them (named in each row). Several reproduce the brief's
+  counts on a different or smaller grid: C04 150,000 vs 659,180 checks; the long and float spaces are sampled.
+
+### What is left for the domain work on purpose
+
+- **All checker runs**:
+  - the three-column refresh of the 187 (strict native, integrated staged JBMC, standalone stock JBMC);
+  - every native or JBMC statement in the casebook;
+  - the brief's §5 `jvmcontract`/`jbmc` commands;
+  - every proof, cache or reuse question (C05 clean/warm, C06/C07 cache).
+- **The 16-pair blind panel**: drawing, seeding, sealing and its manifest. This setup did not look at any candidate
+  population.
+- **Fixtures with no released input**: H11–H14, E01–E03, S03 (historical formatter slices), C07 (the zone choice),
+  W08/W09, and the H08 reparenting and H07 widening.
+- **Every harness, caller, adapter, claim, example and score.**
