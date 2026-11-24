@@ -1,0 +1,292 @@
+--- /dev/null
++++ b/verification/kernel-recovery/range-jdk.json
+@@ -0,0 +1,289 @@
++{
++  "schema": "independent-range-transfer/v1",
++  "sourceCommit": "b23efef26a97a163fe3053313be928484cdaea6f",
++  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
++  "jdk": "openjdk 21.0.13 2026-10-20 LTS",
++  "regressions": {
++    "guavaChecks": 18,
++    "rangeChecks": [
++      {
++        "case": "fill-any-length",
++        "disposition": "accepted",
++        "firstDecision": "accepted range-fill-frame-v1 java/util/Arrays#fill([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab request 130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5 obligations 37"
++      },
++      {
++        "case": "caller-any-length",
++        "disposition": "accepted",
++        "firstDecision": "accepted range-fill-caller-frame-observation-v1 fill/Range#observe([I[IIIII)I companion fill([IIII)V environment initialized-verified-jvm-v1 class 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742 request ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9 obligations 51"
++      },
++      {
++        "case": "caller-extra-any-length",
++        "disposition": "rejected",
++        "firstDecision": "rejected checked witness shared [11], from=0 to=0 value=7 k=0: returned 7, after [7], expected 11 and [11]; first rule: callee write interval or arguments at 17: [Root, From, Next, Value]"
++      },
++      {
++        "case": "saved-local",
++        "disposition": "accepted",
++        "firstDecision": "accepted range-fill-frame-v1 fixtures/RangeLoops#savedValue([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 9c80627febddd76294efa0b9ed2e217567ca56035f72454745beba62d793840a request a1e70a9f14b89a97ed47739c9e8b5224c1fcc07f2ce2300024cabf79ae9247c7 obligations 39"
++      },
++      {
++        "case": "missing-store",
++        "disposition": "rejected",
++        "firstDecision": "rejected written prefix or progress at back edge 19"
++      },
++      {
++        "case": "wrong-value",
++        "disposition": "rejected",
++        "firstDecision": "rejected written prefix or outside frame at store 20"
++      },
++      {
++        "case": "strict-empty-guard",
++        "disposition": "unsupported",
++        "firstDecision": "unsupported range guard From Lt To at strictRangeCheck@2"
++      },
++      {
++        "case": "wrong-observed-root",
++        "disposition": "rejected",
++        "firstDecision": "rejected checked witness distinct a=[] other=[31], from=0 to=0 value=7 k=0: array bounds exception at read 11, expected normal return 31; first rule: caller read needs a valid index in the observed root"
++      },
++      {
++        "case": "omit-caller-frame",
++        "disposition": "rejected",
++        "firstDecision": "rejected missing obligation observe([I[IIIII)I@12>exit exact-write-frame"
++      },
++      {
++        "case": "omit-distinct-read",
++        "disposition": "rejected",
++        "firstDecision": "rejected missing obligation observe([I[IIIII)I@11>12 distinct-root"
++      },
++      {
++        "case": "omit-loop-decrease",
++        "disposition": "rejected",
++        "firstDecision": "rejected missing obligation fill([IIII)V@24>10 variant-decreases"
++      },
++      {
++        "case": "missing-callee",
++        "disposition": "rejected",
++        "firstDecision": "rejected expected one external callee class"
++      },
++      {
++        "case": "substitute-callee",
++        "disposition": "rejected",
++        "firstDecision": "rejected external callee class digest"
++      },
++      {
++        "case": "wrong-loop-slot",
++        "disposition": "unsupported",
++        "firstDecision": "unsupported range cut point or cursor"
++      }
++    ]
++  },
++  "cases": {
++    "jdk-21.0.13/long-fill": {
++      "request": "request 1\ntheorem range-fill-frame-v1\nenvironment initialized-verified-jvm-v1\nclass java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\nentry fill ([JIIJ)V\ncompanion rangeCheck (III)V\n",
++      "requestSha256": "92753d23c01765a38dad0b129b3cb2a39a79a599deac19fe6a852fbbad5ae0c4",
++      "certificate": "certificate 1\nrequest 92753d23c01765a38dad0b129b3cb2a39a79a599deac19fe6a852fbbad5ae0c4\nhints written-prefix remaining 10 5\nfill([JIIJ)V@0>1 step\nfill([JIIJ)V@10>12 step\nfill([JIIJ)V@12>13 step\nfill([JIIJ)V@13>16 step\nfill([JIIJ)V@13>27 step\nfill([JIIJ)V@16>17 step\nfill([JIIJ)V@17>19 step\nfill([JIIJ)V@19>20 step\nfill([JIIJ)V@1>2 nonnull\nfill([JIIJ)V@1>2 step\nfill([JIIJ)V@20>21 in-bounds-prefix-store\nfill([JIIJ)V@20>21 step\nfill([JIIJ)V@21>24 no-signed-overflow\nfill([JIIJ)V@21>24 step\nfill([JIIJ)V@24>10 extend-written-prefix\nfill([JIIJ)V@24>10 step\nfill([JIIJ)V@24>10 variant-decreases\nfill([JIIJ)V@27>exit exact-write-frame\nfill([JIIJ)V@2>3 step\nfill([JIIJ)V@3>4 step\nfill([JIIJ)V@4>7 resolved-valid-range\nfill([JIIJ)V@4>7 step\nfill([JIIJ)V@7>8 step\nfill([JIIJ)V@8>10 empty-written-prefix\nfill([JIIJ)V@8>10 step\nrangeCheck(III)V@0>1 step\nrangeCheck(III)V@1>2 step\nrangeCheck(III)V@2>46 implied-by-range\nrangeCheck(III)V@2>46 step\nrangeCheck(III)V@46>47 step\nrangeCheck(III)V@47>59 implied-by-range\nrangeCheck(III)V@47>59 step\nrangeCheck(III)V@59>60 step\nrangeCheck(III)V@60>61 step\nrangeCheck(III)V@61>73 implied-by-range\nrangeCheck(III)V@61>73 step\nrangeCheck(III)V@73>exit normal-unchanged\n",
++      "certificateSha256": "670ae38c7e0e390e6ca963901924c18a13567203f53659eb3db8b599b3ebce0e",
++      "generationSeconds": 0.49159199197310954,
++      "classSha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++      "supportSha256": [],
++      "before": {
++        "exit": 3,
++        "stdout": "unsupported range-fill descriptors",
++        "wallSeconds": 0.005731,
++        "peakKiB": 29992,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "after": {
++        "exit": 0,
++        "stdout": "accepted range-fill-frame-v1 java/util/Arrays#fill([JIIJ)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab request 92753d23c01765a38dad0b129b3cb2a39a79a599deac19fe6a852fbbad5ae0c4 obligations 37",
++        "wallSeconds": 0.002071,
++        "peakKiB": 29992,
++        "checkerSha256": "5591785151ac8237e35c3bfdbe8c5eea25e7f5c5df1e5f4206d0e626a6ab65a5"
++      },
++      "jvm": {
++        "sourceSha256": "3fba2f72ec32c163ff3d871bc0647c6ee689115f4008b63548cc925c2da8c94d",
++        "classSha256": "bc7a263ed33f0aa649f8a0fd4040840ada3447bbb992ea530d35ea357779433c",
++        "jvmOptions": [
++          "-Xverify:all"
++        ],
++        "observations": [
++          "checks=245 pass=245 narrowChanged=80 extendChanged=140 emptyRangeChecks=105 wholeRangeChecks=28",
++          "oneCell4294967296 -> 4294967296 (narrowed would be 0)",
++          "from=-1 to=0 len=2 -> java.lang.ArrayIndexOutOfBoundsException",
++          "from=1 to=0 len=2 -> java.lang.IllegalArgumentException",
++          "from=0 to=3 len=2 -> java.lang.ArrayIndexOutOfBoundsException"
++        ]
++      }
++    },
++    "guava-31.1-jre/Ints": {
++      "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Ints eabfacbd2cdbcabe454f2ace17add37b33db8d0dd3f964e68f2662e7ab1e9a6f\nentry indexOf ([II)I\ncompanion indexOf ([IIII)I\nsupport com/google/common/primitives/IntsMethodsForWeb c356227267677f91131b7de0e9b3020956fa14656a5ab2ccf40fbca6e3296d81\n",
++      "requestSha256": "d8ff70921a00170351e015a20b8ee936f48d4bccc40cdeaa70b52dd2bba06590",
++      "certificate": "certificate 1\nrequest d8ff70921a00170351e015a20b8ee936f48d4bccc40cdeaa70b52dd2bba06590\nhints first-prefix remaining 3 4 7 7,7\nindexOf([II)I@0>1 step\nindexOf([II)I@1>2 step\nindexOf([II)I@2>3 step\nindexOf([II)I@3>4 step\nindexOf([II)I@4>5 safe\nindexOf([II)I@4>5 step\nindexOf([II)I@5>8 resolved-full-range\nindexOf([II)I@5>8 step\nindexOf([II)I@8>exit frame\nindexOf([II)I@8>exit result\nindexOf([IIII)I@0>1 step\nindexOf([IIII)I@10>12 step\nindexOf([IIII)I@12>13 safe\nindexOf([IIII)I@12>13 step\nindexOf([IIII)I@13>14 step\nindexOf([IIII)I@14>17 step\nindexOf([IIII)I@14>20 step\nindexOf([IIII)I@17>19 step\nindexOf([IIII)I@19>exit frame\nindexOf([IIII)I@19>exit result\nindexOf([IIII)I@1>3 invariant-entry\nindexOf([IIII)I@1>3 step\nindexOf([IIII)I@20>23 step\nindexOf([IIII)I@23>3 invariant-preserved\nindexOf([IIII)I@23>3 step\nindexOf([IIII)I@23>3 variant-decreases\nindexOf([IIII)I@26>27 step\nindexOf([IIII)I@27>exit frame\nindexOf([IIII)I@27>exit result\nindexOf([IIII)I@3>5 step\nindexOf([IIII)I@5>6 step\nindexOf([IIII)I@6>26 step\nindexOf([IIII)I@6>9 step\nindexOf([IIII)I@9>10 step\n",
++      "certificateSha256": "05cf8eb9a881f3ba7e33a2105034a92af34c132705ae529c16f16948eb4ca97d",
++      "generationSeconds": 0.2480374970473349,
++      "classSha256": "eabfacbd2cdbcabe454f2ace17add37b33db8d0dd3f964e68f2662e7ab1e9a6f",
++      "supportSha256": [
++        "c356227267677f91131b7de0e9b3020956fa14656a5ab2ccf40fbca6e3296d81"
++      ],
++      "oldCertificate": {
++        "exit": 2,
++        "stdout": "rejected certificate does not bind external request",
++        "wallSeconds": 0.002516,
++        "peakKiB": 32008,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "result": {
++        "exit": 0,
++        "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Ints#indexOf([II)I companion indexOf([IIII)I environment initialized-verified-jvm-v1 class eabfacbd2cdbcabe454f2ace17add37b33db8d0dd3f964e68f2662e7ab1e9a6f request d8ff70921a00170351e015a20b8ee936f48d4bccc40cdeaa70b52dd2bba06590 obligations 34",
++        "wallSeconds": 0.002352,
++        "peakKiB": 32008,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "jarSha256": "a42edc9cab792e39fe39bb94f3fca655ed157ff87a8af78e1d6ba5b07c4a00ab",
++      "jvm": {
++        "sourceSha256": "9894ddd36ca486177cf8fe9ce79020aec4edbd1690bc4cbaab60d459e76a0172",
++        "classSha256": "e0aff8a21d6bbda36c2299a61f88d634ece01d2b7f149bd558ae2ec06e3b9e61",
++        "jvmOptions": [
++          "-Xverify:all"
++        ],
++        "observations": [
++          "Ints loaded sha256 eabfacbd2cdbcabe454f2ace17add37b33db8d0dd3f964e68f2662e7ab1e9a6f",
++          "Longs loaded sha256 c19ed9c07ff3c3df1970dc233d3928106e4f30b99bf5707844c7c4e38d80a2f4",
++          "int calls=780 agree=780 heapUnchanged=780",
++          "long calls=1554 agree=1554 heapUnchanged=1554"
++        ]
++      }
++    },
++    "guava-31.1-jre/Longs": {
++      "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Longs c19ed9c07ff3c3df1970dc233d3928106e4f30b99bf5707844c7c4e38d80a2f4\nentry indexOf ([JJ)I\ncompanion indexOf ([JJII)I\n",
++      "requestSha256": "43dda47413ee03dad6dd841ae7b8a2586701b0fa568606a9ef6acff54b1fca62",
++      "certificate": "certificate 1\nrequest 43dda47413ee03dad6dd841ae7b8a2586701b0fa568606a9ef6acff54b1fca62\nhints first-prefix remaining 3 5 7 7,7\nindexOf([JJ)I@0>1 step\nindexOf([JJ)I@1>2 step\nindexOf([JJ)I@2>3 step\nindexOf([JJ)I@3>4 step\nindexOf([JJ)I@4>5 safe\nindexOf([JJ)I@4>5 step\nindexOf([JJ)I@5>8 resolved-full-range\nindexOf([JJ)I@5>8 step\nindexOf([JJ)I@8>exit frame\nindexOf([JJ)I@8>exit result\nindexOf([JJII)I@0>1 step\nindexOf([JJII)I@10>11 step\nindexOf([JJII)I@11>13 step\nindexOf([JJII)I@13>14 safe\nindexOf([JJII)I@13>14 step\nindexOf([JJII)I@14>15 step\nindexOf([JJII)I@15>16 step\nindexOf([JJII)I@16>19 step\nindexOf([JJII)I@16>22 step\nindexOf([JJII)I@19>21 step\nindexOf([JJII)I@1>3 invariant-entry\nindexOf([JJII)I@1>3 step\nindexOf([JJII)I@21>exit frame\nindexOf([JJII)I@21>exit result\nindexOf([JJII)I@22>25 step\nindexOf([JJII)I@25>3 invariant-preserved\nindexOf([JJII)I@25>3 step\nindexOf([JJII)I@25>3 variant-decreases\nindexOf([JJII)I@28>29 step\nindexOf([JJII)I@29>exit frame\nindexOf([JJII)I@29>exit result\nindexOf([JJII)I@3>5 step\nindexOf([JJII)I@5>7 step\nindexOf([JJII)I@7>10 step\nindexOf([JJII)I@7>28 step\n",
++      "certificateSha256": "07a639a0f39564ff682907a7f139abf29b6ff18701ccf04cb2f921ac62c1355d",
++      "generationSeconds": 0.28999753890093416,
++      "classSha256": "c19ed9c07ff3c3df1970dc233d3928106e4f30b99bf5707844c7c4e38d80a2f4",
++      "supportSha256": [],
++      "oldCertificate": {
++        "exit": 2,
++        "stdout": "rejected certificate does not bind external request",
++        "wallSeconds": 0.001689,
++        "peakKiB": 32008,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "result": {
++        "exit": 0,
++        "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Longs#indexOf([JJ)I companion indexOf([JJII)I environment initialized-verified-jvm-v1 class c19ed9c07ff3c3df1970dc233d3928106e4f30b99bf5707844c7c4e38d80a2f4 request 43dda47413ee03dad6dd841ae7b8a2586701b0fa568606a9ef6acff54b1fca62 obligations 35",
++        "wallSeconds": 0.001533,
++        "peakKiB": 32008,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "jarSha256": "a42edc9cab792e39fe39bb94f3fca655ed157ff87a8af78e1d6ba5b07c4a00ab",
++      "jvm": {
++        "sourceSha256": "9894ddd36ca486177cf8fe9ce79020aec4edbd1690bc4cbaab60d459e76a0172",
++        "classSha256": "e0aff8a21d6bbda36c2299a61f88d634ece01d2b7f149bd558ae2ec06e3b9e61",
++        "jvmOptions": [
++          "-Xverify:all"
++        ],
++        "observations": [
++          "Ints loaded sha256 eabfacbd2cdbcabe454f2ace17add37b33db8d0dd3f964e68f2662e7ab1e9a6f",
++          "Longs loaded sha256 c19ed9c07ff3c3df1970dc233d3928106e4f30b99bf5707844c7c4e38d80a2f4",
++          "int calls=780 agree=780 heapUnchanged=780",
++          "long calls=1554 agree=1554 heapUnchanged=1554"
++        ]
++      }
++    },
++    "beam-vendor-guava-32_1_2-jre-0.1/Ints": {
++      "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass org/apache/beam/vendor/guava/v32_1_2_jre/com/google/common/primitives/Ints db1bba7192869fb40970108088b804ee2fa9cd452a1149db41e973a87f893e35\nentry indexOf ([II)I\ncompanion indexOf ([IIII)I\nsupport org/apache/beam/vendor/guava/v32_1_2_jre/com/google/common/primitives/IntsMethodsForWeb fe4198a61b552bdb882580006a8cee38f404b2a4dda2171504dcedd8c5cb0412\n",
++      "requestSha256": "864d72938756c0d4b7779704aa9c7390470e0347d9a20f3954486282c27ca8d8",
++      "certificate": "certificate 1\nrequest 864d72938756c0d4b7779704aa9c7390470e0347d9a20f3954486282c27ca8d8\nhints first-prefix remaining 3 4 7 7,7\nindexOf([II)I@0>1 step\nindexOf([II)I@1>2 step\nindexOf([II)I@2>3 step\nindexOf([II)I@3>4 step\nindexOf([II)I@4>5 safe\nindexOf([II)I@4>5 step\nindexOf([II)I@5>8 resolved-full-range\nindexOf([II)I@5>8 step\nindexOf([II)I@8>exit frame\nindexOf([II)I@8>exit result\nindexOf([IIII)I@0>1 step\nindexOf([IIII)I@10>12 step\nindexOf([IIII)I@12>13 safe\nindexOf([IIII)I@12>13 step\nindexOf([IIII)I@13>14 step\nindexOf([IIII)I@14>17 step\nindexOf([IIII)I@14>20 step\nindexOf([IIII)I@17>19 step\nindexOf([IIII)I@19>exit frame\nindexOf([IIII)I@19>exit result\nindexOf([IIII)I@1>3 invariant-entry\nindexOf([IIII)I@1>3 step\nindexOf([IIII)I@20>23 step\nindexOf([IIII)I@23>3 invariant-preserved\nindexOf([IIII)I@23>3 step\nindexOf([IIII)I@23>3 variant-decreases\nindexOf([IIII)I@26>27 step\nindexOf([IIII)I@27>exit frame\nindexOf([IIII)I@27>exit result\nindexOf([IIII)I@3>5 step\nindexOf([IIII)I@5>6 step\nindexOf([IIII)I@6>26 step\nindexOf([IIII)I@6>9 step\nindexOf([IIII)I@9>10 step\n",
++      "certificateSha256": "840a2c0ae3096d21a8e419d372731f673cec5d1641634902cdb05abb7f084f86",
++      "generationSeconds": 0.27615069900639355,
++      "classSha256": "db1bba7192869fb40970108088b804ee2fa9cd452a1149db41e973a87f893e35",
++      "supportSha256": [
++        "fe4198a61b552bdb882580006a8cee38f404b2a4dda2171504dcedd8c5cb0412"
++      ],
++      "oldCertificate": {
++        "exit": 2,
++        "stdout": "rejected certificate does not bind external request",
++        "wallSeconds": 0.001936,
++        "peakKiB": 32248,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "result": {
++        "exit": 0,
++        "stdout": "accepted least-index-frame-total-v1 org/apache/beam/vendor/guava/v32_1_2_jre/com/google/common/primitives/Ints#indexOf([II)I companion indexOf([IIII)I environment initialized-verified-jvm-v1 class db1bba7192869fb40970108088b804ee2fa9cd452a1149db41e973a87f893e35 request 864d72938756c0d4b7779704aa9c7390470e0347d9a20f3954486282c27ca8d8 obligations 34",
++        "wallSeconds": 0.001924,
++        "peakKiB": 32248,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "jarSha256": "44669a8f43cdef8ac20e02484ead0d1cf8199d47e00c7f1828b579b7dfb0f9a2",
++      "jvm": {
++        "sourceSha256": "9894ddd36ca486177cf8fe9ce79020aec4edbd1690bc4cbaab60d459e76a0172",
++        "classSha256": "e0aff8a21d6bbda36c2299a61f88d634ece01d2b7f149bd558ae2ec06e3b9e61",
++        "jvmOptions": [
++          "-Xverify:all"
++        ],
++        "observations": [
++          "Ints loaded sha256 db1bba7192869fb40970108088b804ee2fa9cd452a1149db41e973a87f893e35",
++          "Longs loaded sha256 54c7919264e3616e328b3e56edbd9c725a1b764d4019888991cb9518cbdcfd28",
++          "int calls=780 agree=780 heapUnchanged=780",
++          "long calls=1554 agree=1554 heapUnchanged=1554"
++        ]
++      }
++    },
++    "beam-vendor-guava-32_1_2-jre-0.1/Longs": {
++      "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass org/apache/beam/vendor/guava/v32_1_2_jre/com/google/common/primitives/Longs 54c7919264e3616e328b3e56edbd9c725a1b764d4019888991cb9518cbdcfd28\nentry indexOf ([JJ)I\ncompanion indexOf ([JJII)I\n",
++      "requestSha256": "0700a44d9172c0efcbb883da89a08784c020fc3c625c9007a0d02f33e2a2d169",
++      "certificate": "certificate 1\nrequest 0700a44d9172c0efcbb883da89a08784c020fc3c625c9007a0d02f33e2a2d169\nhints first-prefix remaining 3 5 7 7,7\nindexOf([JJ)I@0>1 step\nindexOf([JJ)I@1>2 step\nindexOf([JJ)I@2>3 step\nindexOf([JJ)I@3>4 step\nindexOf([JJ)I@4>5 safe\nindexOf([JJ)I@4>5 step\nindexOf([JJ)I@5>8 resolved-full-range\nindexOf([JJ)I@5>8 step\nindexOf([JJ)I@8>exit frame\nindexOf([JJ)I@8>exit result\nindexOf([JJII)I@0>1 step\nindexOf([JJII)I@10>11 step\nindexOf([JJII)I@11>13 step\nindexOf([JJII)I@13>14 safe\nindexOf([JJII)I@13>14 step\nindexOf([JJII)I@14>15 step\nindexOf([JJII)I@15>16 step\nindexOf([JJII)I@16>19 step\nindexOf([JJII)I@16>22 step\nindexOf([JJII)I@19>21 step\nindexOf([JJII)I@1>3 invariant-entry\nindexOf([JJII)I@1>3 step\nindexOf([JJII)I@21>exit frame\nindexOf([JJII)I@21>exit result\nindexOf([JJII)I@22>25 step\nindexOf([JJII)I@25>3 invariant-preserved\nindexOf([JJII)I@25>3 step\nindexOf([JJII)I@25>3 variant-decreases\nindexOf([JJII)I@28>29 step\nindexOf([JJII)I@29>exit frame\nindexOf([JJII)I@29>exit result\nindexOf([JJII)I@3>5 step\nindexOf([JJII)I@5>7 step\nindexOf([JJII)I@7>10 step\nindexOf([JJII)I@7>28 step\n",
++      "certificateSha256": "610b87ec06ad2355ecf25c12bb5103e1e2e51fa0e0ed42b7fffcb6376f3ebd6b",
++      "generationSeconds": 0.29340970097109675,
++      "classSha256": "54c7919264e3616e328b3e56edbd9c725a1b764d4019888991cb9518cbdcfd28",
++      "supportSha256": [],
++      "oldCertificate": {
++        "exit": 2,
++        "stdout": "rejected certificate does not bind external request",
++        "wallSeconds": 0.001937,
++        "peakKiB": 32248,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "result": {
++        "exit": 0,
++        "stdout": "accepted least-index-frame-total-v1 org/apache/beam/vendor/guava/v32_1_2_jre/com/google/common/primitives/Longs#indexOf([JJ)I companion indexOf([JJII)I environment initialized-verified-jvm-v1 class 54c7919264e3616e328b3e56edbd9c725a1b764d4019888991cb9518cbdcfd28 request 0700a44d9172c0efcbb883da89a08784c020fc3c625c9007a0d02f33e2a2d169 obligations 35",
++        "wallSeconds": 0.002429,
++        "peakKiB": 32248,
++        "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1"
++      },
++      "jarSha256": "44669a8f43cdef8ac20e02484ead0d1cf8199d47e00c7f1828b579b7dfb0f9a2",
++      "jvm": {
++        "sourceSha256": "9894ddd36ca486177cf8fe9ce79020aec4edbd1690bc4cbaab60d459e76a0172",
++        "classSha256": "e0aff8a21d6bbda36c2299a61f88d634ece01d2b7f149bd558ae2ec06e3b9e61",
++        "jvmOptions": [
++          "-Xverify:all"
++        ],
++        "observations": [
++          "Ints loaded sha256 db1bba7192869fb40970108088b804ee2fa9cd452a1149db41e973a87f893e35",
++          "Longs loaded sha256 54c7919264e3616e328b3e56edbd9c725a1b764d4019888991cb9518cbdcfd28",
++          "int calls=780 agree=780 heapUnchanged=780",
++          "long calls=1554 agree=1554 heapUnchanged=1554"
++        ]
++      }
++    },
++    "fastutil-8.5.15/fill-before-external-guard": {
++      "request": "request 1\ntheorem range-fill-frame-v1\nenvironment initialized-verified-jvm-v1\nclass it/unimi/dsi/fastutil/ints/IntArrays b455b9400c7fe47a938229a25f04f7d55c4cc09a2332580d28e098d80afe1f0c\nentry fill ([IIII)V\ncompanion ensureFromTo ([III)V\n",
++      "requestSha256": "dc23444e935d6a4e82dca5b6fa3c8860750068de9bc89c6926b4325f5fa5b1e4",
++      "certificate": "certificate 1\nrequest dc23444e935d6a4e82dca5b6fa3c8860750068de9bc89c6926b4325f5fa5b1e4\nhints written-prefix remaining 10 2\nensureFromTo([III)V@0>1 step\nensureFromTo([III)V@1>2 nonnull\nensureFromTo([III)V@1>2 step\nensureFromTo([III)V@2>3 step\nensureFromTo([III)V@3>4 step\nensureFromTo([III)V@4>7 resolved-valid-range\nensureFromTo([III)V@4>7 step\nensureFromTo([III)V@7>exit normal-unchanged\nfill([IIII)V@0>1 step\nfill([IIII)V@10>11 step\nfill([IIII)V@11>14 no-signed-overflow\nfill([IIII)V@11>14 step\nfill([IIII)V@14>17 step\nfill([IIII)V@14>44 step\nfill([IIII)V@17>18 step\nfill([IIII)V@18>19 step\nfill([IIII)V@19>20 step\nfill([IIII)V@1>2 step\nfill([IIII)V@20>21 in-bounds-prefix-store\nfill([IIII)V@20>21 step\nfill([IIII)V@21>10 extend-written-prefix\nfill([IIII)V@21>10 step\nfill([IIII)V@21>10 variant-decreases\nfill([IIII)V@24>25 step\nfill([IIII)V@25>27 step\nfill([IIII)V@27>29 step\nfill([IIII)V@29>30 step\nfill([IIII)V@2>3 step\nfill([IIII)V@30>33 step\nfill([IIII)V@30>44 step\nfill([IIII)V@33>34 step\nfill([IIII)V@34>36 step\nfill([IIII)V@36>37 step\nfill([IIII)V@37>38 in-bounds-prefix-store\nfill([IIII)V@37>38 step\nfill([IIII)V@38>41 no-signed-overflow\nfill([IIII)V@38>41 step\nfill([IIII)V@3>6 resolved-valid-range\nfill([IIII)V@3>6 step\nfill([IIII)V@41>27 step\nfill([IIII)V@44>exit exact-write-frame\nfill([IIII)V@6>7 step\nfill([IIII)V@7>10 empty-written-prefix\nfill([IIII)V@7>10 step\nfill([IIII)V@7>24 step\n",
++      "certificateSha256": "3c9ff68672a579ac2b154263458318d5e3f2ade8ccec6e0781b42d1c0e0128a1",
++      "generationSeconds": 0.47437475400511175,
++      "classSha256": "b455b9400c7fe47a938229a25f04f7d55c4cc09a2332580d28e098d80afe1f0c",
++      "supportSha256": [],
++      "before": {
++        "exit": 3,
++        "stdout": "unsupported range-fill descriptors",
++        "wallSeconds": 0.002152,
++        "peakKiB": 52444,
++        "checkerSha256": "5591785151ac8237e35c3bfdbe8c5eea25e7f5c5df1e5f4206d0e626a6ab65a5"
++      },
++      "jarSha256": "cffeb6673bdf1e6e4377d684df2f55ac359cf5cf6df613e05e62deeea500936a"
++    }
++  }
++}
