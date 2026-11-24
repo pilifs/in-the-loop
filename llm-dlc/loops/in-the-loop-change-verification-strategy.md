@@ -96,3 +96,71 @@ The implementation can stay behind today's internal runner while the public UX e
 [queued-entry]: https://chatgpt.com/library?file_id=libfile_fde3_f-2e191a46fe7c8191a774323fac5df54f_1a220e41ac0481919d2d88e5f0713c02&account_id=personal
 [queued-kernel]: https://chatgpt.com/library?file_id=libfile_fde3_f-d4fed885de8c819180cd3769573c81da_1a220e41ac0481919d2d88e5f0713c02&account_id=personal
 [boot]: https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Migration-Guide
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+`$B` = `~/.cache/in-the-loop/change-verification`. Detail in the sections above.
+- **Retrofit/Wire (`compsuite-i-1`)**: both pins checked out at `$B/src/retrofit-{old,new}` (mirror
+  `~/.cache/in-the-loop/git-mirrors/retrofit.git`). The built jars, the upstream test classes, and ordered
+  `runtime.cp` / `test.cp` for both sides are in `$B/retrofit/{old,new}/`, with `files.sha256`. Every dependency is
+  in `$B/m2` (settings `$B/maven-settings.xml`), SHA-1- and signature-checked against Central, and that includes
+  Wire 3.0.2's own declared okio 2.4.1 and kotlin-stdlib 1.3.50. The builds run on JDK 8 (`$J8`), offline (`mvn -o`).
+- The campaign's own prepared Retrofit area (`prepared.json` per side) is
+  `~/.cache/in-the-loop/receiver-construction/receivers/area/modules/compsuite-i-1/`. The scenario scopes are
+  `lib/benchmark/external-upgrades/scenarios/compsuite-i-1/{scope.json,operational/scope.json}`. The historical
+  receipts are `verification/external-upgrades/corpus-runs/v3-final-finite/01/compsuite-i-1.json` (response) and
+  `…/operational/01/compsuite-i-1.json` (request).
+- **Example 345**: all six library jars in `~/.cache/in-the-loop/targets/sha256/`, digest-checked. The four upstream
+  commits are checked out at `$B/src/{io,csv}-345-{parent,fix}`.
+- **Spring Boot 2.7.18 and 3.0.13** starter graphs (web, validation, actuator, test) and build plugins are in `$B/m2`,
+  with classpaths in `$B/resolve/boot-*/`. JDK 17 is `~/.sdkman/candidates/java/17.0.21.0+9-tem`.
+- The checker release binary `lib/target/release/jvmcontract` is current at `0d3e17f2`.
+- The queued briefs' setups and caches are intact (table above). Semantics gap, receiver construction and Spring have
+  results on this line. **The trusted kernel (Guava 336 → 346) is set up but has not run.**
+
+### What was verified on a JVM
+
+- Retrofit, JDK 8: `WireConverterFactoryTest` passes 5/5 on Wire 2.2.0. On 3.0.2 `serializeAndDeserialize` errors
+  with `NoSuchMethodError okio.Utf8.size$default(Ljava/lang/String;IIILjava/lang/Object;)J`, through Maven and from
+  the cached classpath alike.
+- A throwaway probe through `WireConverterFactory`, on the two recorded phones: the response converter returns
+  `(519) 867-5309` and `123` on both sides. The request converter writes `Cg4oNTE5KSA4NjctNTMwOQ==` and `CgMxMjM=`
+  on the old side and throws the same `NoSuchMethodError` on the new side. That is the brief's preserved read and
+  missed write. Informational: with Wire's declared okio 2.4.1 in place of 1.15.0, the new side writes the expected
+  bytes too.
+- Example 345, JDK 21: `validate_example.py 345 --replay` passes. `parent-parent` violates the oracle on 68 of 96
+  inputs and `fix-fix` holds it on all 96.
+- The organic recount reproduces the brief exactly: strict native 39/46, finite 46/46. The stored scorecard differs
+  from it only by the later JavaParser receipt `20261122T030639Z-e73e09a8`.
+
+### What to know before starting
+
+- **The default `java` is JDK 25.** Retrofit's subject JDK is 8 (`$J8`), 345 runs on 21, and the Boot prefetch
+  used 17.
+- The new Retrofit side's runtime has **okio 1.15.0**, because Retrofit's `dependencyManagement` keeps it there,
+  while Wire 3.0.2 declares okio 2.4.1. The pair's whole source diff is one line of the root POM. Old and new built
+  Retrofit jars are byte-identical, and so are the test classes.
+- Retrofit's built jars carry timestamps, so a rebuild changes their sha256 but not their classes. Compare class
+  content (`$B/scripts/jar_classes.py`) or use the campaign's normalized assets. The operational receipt's core-jar
+  digests are not reproducible from anything cached.
+- `validate_example.py NNN --replay` **writes a new receipt into the example** and rewrites `examples/index.json`,
+  and it re-runs only the task named `replay`. It also runs about 4 minutes of tests.
+- `pin.py --check v3.json` and `current_report.py --check` fail at this head because the product changed since V3
+  was pinned, not because a receipt is wrong. The organic `report.py --check` fails for the reason the brief gives.
+- In `$B/m2`, about 2 GB are hard links shared with the receiver-construction snapshot. Don't edit files there in
+  place.
+- Four Boot-graph jars rest on SHA-1 alone: hibernate-validator 6.2.5/8.0.1 (signing key unavailable) and
+  jboss-logging 3.4.3/3.5.3 (unsigned on Central). There are no snapshot dependencies anywhere in this setup.
+
+### What is left for the domain work on purpose
+
+- Everything the brief's steps ask for: the baseline runs of the current workflow on 345 and Retrofit, the inventory
+  and planner inputs, the new request-side obligation, the second-commit matrix, and the scoring.
+- Running `check_scenarios.py` or `build.py --review-upgrade` on `compsuite-i-1`, and any claims, adapters or
+  sidecars for it.
+- Choosing the held-back Spring Boot 2.7 → 3.0 application, its workflows, budgets and expectations, and fetching its
+  own sources. Only the generic starter graphs are prefetched.
+- Whether the okio-2.4.1 graph counts as a valid new-side deployment, or as a migrated client.
+- Running the trusted-kernel experiment.
