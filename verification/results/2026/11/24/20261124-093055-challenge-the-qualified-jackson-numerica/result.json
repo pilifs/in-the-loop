@@ -1,0 +1,282 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-093055-challenge-the-qualified-jackson-numerica",
+  "title": "Challenge the qualified Jackson numerical and grammar proofs",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 42.3s, peak 2.6 GiB (estimated 6m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-093055-challenge-the-qualified-jackson-numerica.json",
+    "sha256": "7bac9c6d10a32aaf6484a84de83c7cb97d940d18eb1bd71e55fb906c708c562d",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-093055-challenge-the-qualified-jackson-numerica",
+      "title": "Challenge the qualified Jackson numerical and grammar proofs",
+      "description": "Refute a sign-insensitive 19-digit cutoff and a mixed-version string-predicate identity with literal witnesses, including the upstream -0. example, on the frozen checker and both JBMC profiles. Replay on isolated original releases.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/text/JacksonIdentity.java"
+        ]
+      },
+      "expected": "Retain original counterexamples and separate any comparator false success or vacuous post-call check.",
+      "submitted": {
+        "at": "2026-11-24T09:30:55+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "6m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N04-controls",
+          "cwd": "."
+        },
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/additional_controls.py N11-identity",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/N04-controls",
+        "verification/beyond-jbmc/qualified/N11-identity"
+      ]
+    }
+  },
+  "sourceCommit": "f312702115c4e25f1140da49ba51c1d7bf3339fe",
+  "startedAt": "2026-11-24T09:54:58+00:00",
+  "finishedAt": "2026-11-24T09:59:02+00:00",
+  "wallSeconds": 244.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3401695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 360.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2813120512,
+    "wallSeconds": 42.3,
+    "cpuSeconds": 46.9,
+    "memoryOfEstimate": 0.65,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 178.312,
+      "cpuSeconds": 178.465,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2370699264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "15099f8e6cc96690b1f5a15a1a56bf722c4751c8077cce72731a8a614ebc9efe",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-challenge-the-qualified-jackson-numerica/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 58s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N04-controls",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 5.413,
+      "cpuSeconds": 6.71,
+      "cpuThrottledSeconds": 0.16,
+      "peakMemoryBytes": 89673728,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 162,
+        "sha256": "c4f17d6ec98b9a882f6d07f14b5348f2124fbe0d0a8a85763d42f311b51f4ecb",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N04-controls 4 original checks passed",
+        "N04-controls signBlind violation unverifiable SUCCESS SUCCESS",
+        "N04-controls all19Safe violation unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/additional_controls.py N11-identity",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 36.879,
+      "cpuSeconds": 40.156,
+      "cpuThrottledSeconds": 0.41,
+      "peakMemoryBytes": 2813120512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 155,
+        "sha256": "4cddcdd98c6765da05cffca99fdda81891f7efc72633acd61da72c3f8c9ae2e6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "N11-identity 3 original checks passed",
+        "N11-identity unchanged violation unverifiable SUCCESS SUCCESS",
+        "N11-identity fixed violation violation SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/N04-controls/executions.zip",
+      "change": "added",
+      "bytes": 17078,
+      "sha256": "11991efb702e438c978395a259dc675e6509ce7ae201b3f9510c75a93c05fa4a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N04-controls/results.json.gz",
+      "change": "added",
+      "bytes": 2045,
+      "sha256": "9eaf181950a3db1022215e312b4dc100604c9dbc97bb473ceb38853faa086c10",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-identity/executions.zip",
+      "change": "added",
+      "bytes": 35640,
+      "sha256": "557e67b2236bc521acca2aa3cf3b3169ce67a58b473e7ec8c02b39d65bf79716",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/N11-identity/results.json.gz",
+      "change": "added",
+      "bytes": 2354,
+      "sha256": "c50d46a0927728ca72d873d83be77b0c2a24f8c60111aa8ab89967306deb8b03",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:59:32+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/N04-controls/executions.zip",
+      "verification/beyond-jbmc/qualified/N04-controls/results.json.gz",
+      "verification/beyond-jbmc/qualified/N11-identity/executions.zip",
+      "verification/beyond-jbmc/qualified/N11-identity/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "94d15354ec0af1ea448d15088a43e8524624819b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/94d15354ec0af1ea448d15088a43e8524624819b/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T095902Z-943876d65e9e0d1b",
+      "outputs": "20261124T095902Z-966947cd832634f9",
+      "diff": "20261124T095902Z-9841883cf861555f"
+    }
+  }
+}
