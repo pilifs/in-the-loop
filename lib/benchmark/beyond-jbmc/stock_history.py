@@ -192,7 +192,7 @@ def scalar(typ, value):
     return number - (1 << len(bits)) if typ != "char" and bits[0] == "1" else number
 
 
-def arguments(trace, name, method, params):
+def arguments(trace, name, method, params, bound):
     values, memory = {}, {}
     types = dict((n, t) for t, n in params)
     for s in trace:
@@ -212,7 +212,7 @@ def arguments(trace, name, method, params):
                 values[key] = None
                 continue
             length = int(memory[ptr + ".length"]["data"])
-            if not 0 <= length <= 8:
+            if not 0 <= length <= bound:
                 raise ValueError("input outside the declared bound")
             items = []
             if length:
@@ -222,9 +222,9 @@ def arguments(trace, name, method, params):
     return [values[n] for _, n in params]
 
 
-def stock_run(name, method, cp, params, archive, prefix):
+def stock_run(name, method, cp, params, archive, prefix, *, bound=8, unwind=16):
     cmd = [str(JBMC), name, "--classpath", classpath([*cp, MODELS]), "--function", f"{name}.{method}",
-           "--unwind", "16", "--unwinding-assertions", "--throw-runtime-exceptions", "--max-nondet-array-length", "8",
+           "--unwind", str(unwind), "--unwinding-assertions", "--throw-runtime-exceptions", "--max-nondet-array-length", str(bound),
            "--max-nondet-tree-depth", "4", "--sat-solver", "cadical", "--trace", "--json-ui"]
     measured = benchmark.measure(cmd, 120)
     archive.writestr(prefix + "/argv.json", encoded(cmd))
@@ -237,7 +237,7 @@ def stock_run(name, method, cp, params, archive, prefix):
         data = json.loads(measured["stdout"])
         target, = [p for part in data for p in part.get("result", []) if p["property"] == row["target"]["property"]]
         try:
-            row["arguments"] = arguments(target["trace"], name, method, params)
+            row["arguments"] = arguments(target["trace"], name, method, params, bound)
         except (KeyError, ValueError, IndexError):
             row["inputStatus"] = "trace not reconstructed"
     return row

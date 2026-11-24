@@ -33,6 +33,17 @@ fn plain_declarations(cf: &ClassFile) -> bool {
             && m.parsed_descriptor().is_ok_and(|d| bootstrap_type(&d.ret) && d.params.iter().all(bootstrap_type)))
 }
 
+// One interface's public, abstract declarations, with no superinterface search or bridge selection.
+// Every erased member type must resolve, including the methods other than the one requested.
+fn plain_interface(cp: &ClassPath, cf: &ClassFile) -> bool {
+    let loaded = |ty: &Type| bootstrap_type(ty) || matches!(ty, Type::Object(name)
+        if name.starts_with("java/") && cp.load(name).ok().flatten().is_some_and(|v| v.origin == crate::classpath::Origin::Jdk));
+    cf.is_interface() && cf.interfaces.is_empty() && cf.super_class.as_deref() == Some("java/lang/Object")
+        && cf.fields.is_empty() && cf.methods.iter().all(|m| m.access == (flags::PUBLIC | flags::ABSTRACT)
+            && m.attributes.iter().all(|a| a.name != "Exceptions")
+            && m.parsed_descriptor().is_ok_and(|d| loaded(&d.ret) && d.params.iter().all(&loaded)))
+}
+
 impl Engine<'_> {
     pub(super) fn reflection_method(&mut self, path: &mut Path, o: usize, call: &MemberRef, args: &[Val]) -> Option<Step> {
         let (name, desc) = (call.name.as_str(), call.descriptor.as_str());
@@ -49,6 +60,8 @@ impl Engine<'_> {
                 ("getParameterCount", "()I") if path.objects[o].class == METHOD => Val::I(self.b.constant(0, 32)),
                 ("getDeclaringClass", "()Ljava/lang/Class;") =>
                     Val::R(Some(self.literal(path, Literal::Class(member.owner.clone()), CLASS))),
+                ("getGenericReturnType", "()Ljava/lang/reflect/Type;") if path.objects[o].class == METHOD =>
+                    return self.generic_method_return(path, o, &member.owner, &member.name, &member.ty),
                 ("getReturnType", "()Ljava/lang/Class;") if path.objects[o].class == METHOD => {
                     let key = if member.ty.is_reference() { Literal::Class(class_of(&member.ty)) }
                         else { Literal::PrimitiveClass(member.ty.descriptor()) };
@@ -68,7 +81,8 @@ impl Engine<'_> {
         if !self.cp.reflection_copies() || !self.cp.is_application(&path.frames.last()?.class.name) { return None; }
         let declaring = self.class_named(path, o)?;
         let cf = self.cp.application(&declaring).ok()??;
-        if !plain_declarations(&cf) { return None; }
+        let interface = method && plain_interface(self.cp, &cf);
+        if !plain_declarations(&cf) && !interface { return None; }
         let Val::R(Some(text)) = args.first()? else { return None };
         let member_name = String::from_utf16(&self.constant_units(path, *text)?).ok()?;
         // On the bound image a non-proxy class and a caller from the same application loader
@@ -80,7 +94,8 @@ impl Engine<'_> {
             if self.b.constant_value(&array.length) != Some(0) || member_name.starts_with('<') { return None; }
             let mut candidates = cf.methods.iter().filter(|m| m.name == member_name && m.is_public() && m.descriptor.starts_with("()"));
             let m = candidates.next()?;
-            if candidates.next().is_some() || m.access & !(flags::PUBLIC | flags::FINAL | flags::STATIC) != 0 { return None; }
+            let allowed = flags::PUBLIC | flags::FINAL | flags::STATIC | if interface { flags::ABSTRACT } else { 0 };
+            if candidates.next().is_some() || m.access & !allowed != 0 { return None; }
             (m.access, m.parsed_descriptor().ok()?.ret)
         } else {
             let mut matches = cf.fields.iter().filter(|f| f.name == member_name);

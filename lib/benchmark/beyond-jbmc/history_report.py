@@ -3,7 +3,6 @@ import argparse
 from collections import Counter
 import gzip
 import json
-import os
 from pathlib import Path
 import re
 import statistics

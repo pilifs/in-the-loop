@@ -13,4 +13,5 @@ for phase, graph in (("old", SPRING_OLD), ("new", SPRING_NEW)):
     closed = Claim("resolved") if phase == "new" else Claim("resolved", holds=(), fails=((),))
     opened = Claim("unresolved") if phase == "old" else Claim("unresolved", holds=(), fails=((),))
     CASES["S02-S09-" + phase] = ("reflection", Subject(0, "SpringTypes", graph, (
-        closed, opened, Claim("methodReturn"), Claim("releasedSignature"), Claim("afterClear"))))
+        closed, opened, Claim("methodReturn"), Claim("releasedSignature"), Claim("afterClear"),
+        Claim("publicMethod"), Claim("genericReturn"))))

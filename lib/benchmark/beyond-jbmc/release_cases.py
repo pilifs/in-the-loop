@@ -72,51 +72,59 @@ def run(key, phase, out, physical_only):
                   "jvmcontractSha256": digest(Path(checker)), "jbmcSha256": digest(JBMC), "coreModelsSha256": digest(MODELS),
                   "jvm": jvm_controls(subject, work, cp, env), "rows": [], "phase": phase,
                   "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"), "job": os.environ.get("VERIFY_JOB_ID")}
-        methods = []
+        measure_subject(key, subject, phase, work, env, cp, record, out, physical_only)
+
+
+def measure_subject(key, subject, phase, work, env, cp, record, out, physical_only, original_cp=None):
+    classes, jars = cp[0], cp[1:]
+    checker = str(Path(os.environ.get("JVMCONTRACT", ROOT/"lib/target/release/jvmcontract")).resolve())
+    if original_cp is None:
+        original_cp = cp
+    methods = []
+    for c in subject.claims:
+        names = ", ".join(p.split()[-1] for p in c.parameters.split(",") if p)
+        seed = (c.holds or c.fails)[0]
+        methods += [f"public static void {c.method}({c.parameters}) throws Exception {{ assert {subject.owner}.{c.method}({names}); }}",
+                    f"public static void {c.method}Reach() throws Exception {{ {subject.owner}.{c.method}({', '.join(seed)}); assert false; }}"]
+    adapter = work / "ReleasedAssertions.java"
+    adapter.write_text("public final class ReleasedAssertions {\n" + "\n".join(methods) + "\n}\n")
+    stock = work / "stock"
+    compile_java([adapter], stock, cp, env)
+    print(key, record["jvm"]["stdout"], flush=True)
+    if physical_only: return
+    out.mkdir(parents=True, exist_ok=True)
+    with zipfile.ZipFile(out / "executions.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.write(adapter, adapter.name)
         for c in subject.claims:
-            names = ", ".join(p.split()[-1] for p in c.parameters.split(",") if p)
-            seed = (c.holds or c.fails)[0]
-            methods += [f"public static void {c.method}({c.parameters}) throws Exception {{ assert {subject.owner}.{c.method}({names}); }}",
-                        f"public static void {c.method}Reach() throws Exception {{ {subject.owner}.{c.method}({', '.join(seed)}); assert false; }}"]
-        adapter = work / "ReleasedAssertions.java"
-        adapter.write_text("public final class ReleasedAssertions {\n" + "\n".join(methods) + "\n}\n")
-        stock = work / "stock"
-        compile_java([adapter], stock, cp, env)
-        print(key, record["jvm"]["stdout"], flush=True)
-        if physical_only: return
-        out.mkdir(parents=True, exist_ok=True)
-        with zipfile.ZipFile(out / "executions.zip", "w", zipfile.ZIP_DEFLATED) as archive:
-            archive.write(adapter, adapter.name)
-            for c in subject.claims:
-                params = [tuple(p.strip().split()) for p in c.parameters.split(",") if p]
-                name = c.method
-                row = {"method": name, "expected": "violation" if c.fails else "verified"}
-                for engine in ("native","jbmc"):
-                    folder = work / (name + "-" + engine)
-                    folder.mkdir()
-                    cmd = [checker, "prove", subject.owner+"#"+name, "--classes", str(classes), "--classpath", classpath(jars),
-                           "--engine", engine, "--gaps", "strict", "--assert", "result", "--timeout", "120", "--unwind","16",
-                           "--max-array-length","8","--jbmc",str(JBMC),"--jbmc-staging","staged","--json","--work",str(folder/"proof")]
-                    m = benchmark.measure(cmd, 240)
-                    outcome = benchmark.outcome_of({"kind":"property"}, m["stdout"])
-                    result = benchmark.classify({"kind":"property","expected":row["expected"]}, outcome, m)
-                    for field in ("seconds","cpuSeconds","peakMB","exit","killed"): result[field] = m[field]
-                    if outcome and result["verdict"] == "violation":
-                        result["jvmReplay"] = replay_witness(subject,c,outcome,folder,cp,env)
-                    archive.writestr(name+"/"+engine+"/argv.json", encoded(cmd))
-                    for stream in ("stdout","stderr"): archive.writestr(name+"/"+engine+"/"+stream, m[stream])
-                    row[engine] = result
-                stock_cp = [stock,*cp]
-                target = stock_run("ReleasedAssertions", name, stock_cp, params, archive, name+"/stock/target")
-                if "arguments" in target:
-                    values = [{"value":v} for v in target["arguments"]]
-                    target["jvmReplay"] = replay_witness(subject,c,{"counterexample":{"inputs":values}},work,cp,env)
-                reach = stock_run("ReleasedAssertions", name+"Reach", stock_cp, [], archive, name+"/stock/reach")
-                row["stock"] = {"target":target,"reach":reach}
-                record["rows"].append(row)
-                print(key, name, row["native"]["verdict"], row["jbmc"]["verdict"], target["status"], reach["status"], flush=True)
-        record["executionsSha256"] = digest(out/"executions.zip")
-        (out/"results.json.gz").write_bytes(gzip.compress(encoded(record),mtime=0))
+            params = [tuple(p.strip().split()) for p in c.parameters.split(",") if p]
+            name = c.method
+            row = {"method": name, "expected": "violation" if c.fails else "verified"}
+            for engine in ("native","jbmc"):
+                folder = work / (name + "-" + engine)
+                folder.mkdir()
+                cmd = [checker, "prove", subject.owner+"#"+name, "--classes", str(classes), "--classpath", classpath(jars),
+                       "--engine", engine, "--gaps", "strict", "--assert", "result", "--timeout", "120", "--unwind",str(subject.unwind),
+                       "--max-array-length",str(subject.bound),"--jbmc",str(JBMC),"--jbmc-staging","staged","--json","--work",str(folder/"proof")]
+                m = benchmark.measure(cmd, 240)
+                outcome = benchmark.outcome_of({"kind":"property"}, m["stdout"])
+                result = benchmark.classify({"kind":"property","expected":row["expected"]}, outcome, m)
+                for field in ("seconds","cpuSeconds","peakMB","exit","killed"): result[field] = m[field]
+                if outcome and result["verdict"] == "violation":
+                    result["jvmReplay"] = replay_witness(subject,c,outcome,folder,original_cp,env)
+                archive.writestr(name+"/"+engine+"/argv.json", encoded(cmd))
+                for stream in ("stdout","stderr"): archive.writestr(name+"/"+engine+"/"+stream, m[stream])
+                row[engine] = result
+            stock_cp = [stock,*cp]
+            target = stock_run("ReleasedAssertions", name, stock_cp, params, archive, name+"/stock/target", bound=subject.bound, unwind=subject.unwind)
+            if "arguments" in target:
+                values = [{"value":v} for v in target["arguments"]]
+                target["jvmReplay"] = replay_witness(subject,c,{"counterexample":{"inputs":values}},work,original_cp,env)
+            reach = stock_run("ReleasedAssertions", name+"Reach", stock_cp, [], archive, name+"/stock/reach", bound=subject.bound, unwind=subject.unwind)
+            row["stock"] = {"target":target,"reach":reach}
+            record["rows"].append(row)
+            print(key, name, row["native"]["verdict"], row["jbmc"]["verdict"], target["status"], reach["status"], flush=True)
+    record["executionsSha256"] = digest(out/"executions.zip")
+    (out/"results.json.gz").write_bytes(gzip.compress(encoded(record),mtime=0))
 
 
 if __name__ == "__main__":
@@ -124,5 +132,6 @@ if __name__ == "__main__":
     p.add_argument("phase",choices=("opening","qualified","closing"))
     p.add_argument("subjects",nargs="+",choices=SUBJECTS)
     p.add_argument("--physical-only",action="store_true")
+    p.add_argument("--output", type=Path, help="directory containing one result directory per subject")
     args=p.parse_args()
-    for key in args.subjects: run(key,args.phase,OUTPUT/args.phase/key,args.physical_only)
+    for key in args.subjects: run(key,args.phase,(args.output or OUTPUT/args.phase)/key,args.physical_only)

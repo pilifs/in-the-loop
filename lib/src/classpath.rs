@@ -390,6 +390,8 @@ pub struct ClassPath {
     soft_queue_image: std::cell::OnceCell<bool>,
     generic_interface_image: std::cell::OnceCell<bool>,
     byte_array_view_image: std::cell::OnceCell<bool>,
+    wildcard_type_image: std::cell::OnceCell<bool>,
+    method_return_image: std::cell::OnceCell<bool>,
     explicit_utc: std::cell::OnceCell<bool>,
     string_buffer_layout: std::cell::OnceCell<Option<bool>>,
     basic_base64: std::cell::OnceCell<bool>,
@@ -419,7 +421,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), byte_array_view_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), byte_array_view_image: Default::default(), wildcard_type_image: Default::default(), method_return_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -429,6 +431,8 @@ impl ClassPath {
         self.cache.borrow_mut().clear();
         self.classes.replace(None);
         self.byte_array_view_image.take();
+        self.wildcard_type_image.take();
+        self.method_return_image.take();
         self.initializer_runs.borrow_mut().clear();
         self
     }
@@ -505,6 +509,8 @@ impl ClassPath {
         self.thread_local_keys.take();
         self.class_table_image.take();
         self.byte_array_view_image.take();
+        self.wildcard_type_image.take();
+        self.method_return_image.take();
         self.jar_resource_image.take();
         self.properties_reader_image.take();
         self.system_properties_image.take();
@@ -1355,6 +1361,28 @@ impl ClassPath {
             && self.matches_jdk_classes(&names, &["c3e8ff6b32aa29978abfaefd40f227bfbe05c5060014744eed6d7fc1f6482ef9"])) // Temurin 21.0.13
     }
 
+    /// OpenJDK's wildcard objects expose clones of their reified upper and lower bounds.
+    pub(crate) fn wildcard_type_image(&self) -> bool {
+        let names = ["java/lang/Enum", "java/lang/reflect/WildcardType", "sun/reflect/generics/reflectiveObjects/WildcardTypeImpl",
+            "sun/reflect/generics/reflectiveObjects/LazyReflectiveObjectGenerator", "sun/reflect/generics/tree/Wildcard",
+            "sun/reflect/generics/tree/BottomSignature", "sun/reflect/generics/tree/FieldTypeSignature"];
+        *self.wildcard_type_image.get_or_init(|| names.iter().all(|name| !self.is_application(name))
+            && self.matches_jdk_classes(&names, &["38a096cf9c1cc8cd19b9e65912b447d7a04e0bad4db2fec770d4045e5b793c2e"])) // Temurin 21.0.13
+    }
+
+    /// Method repositories cache their return Type on the reflective copy. Class-scoped
+    /// variables come from the declaring class's repository on this image.
+    pub(crate) fn method_return_image(&self) -> bool {
+        let names = ["java/lang/Class", "java/lang/reflect/Method", "java/lang/reflect/TypeVariable", "java/util/List",
+            "sun/reflect/generics/repository/MethodRepository", "sun/reflect/generics/repository/ConstructorRepository",
+            "sun/reflect/generics/repository/ClassRepository", "sun/reflect/generics/reflectiveObjects/TypeVariableImpl",
+            "sun/reflect/generics/scope/MethodScope", "sun/reflect/generics/scope/ClassScope",
+            "sun/reflect/generics/visitor/Reifier", "sun/reflect/generics/factory/CoreReflectionFactory",
+            "java/util/SequencedCollection", "java/util/Collection", "java/lang/Iterable"];
+        *self.method_return_image.get_or_init(|| names.iter().all(|name| !self.is_application(name))
+            && self.matches_jdk_classes(&names, &["c5392bc22b8b3208ef6b7acdc25d12af8722dc48db3c04291ae78196ae5f32bf"]))
+    }
+
     /// ClassRepository clones its interfaces array, retaining the reified Type objects on the mirror.
     pub(crate) fn generic_interface_image(&self) -> bool {
         *self.generic_interface_image.get_or_init(|| self.matches_jdk_classes(
@@ -1894,6 +1922,7 @@ impl ClassPath {
             | ("java/lang/Integer", "equals", "(Ljava/lang/Object;)Z")
             | ("java/lang/Integer", "hashCode", "()I" | "(I)I")
             | ("java/lang/Integer", "toString", "()Ljava/lang/String;")
+            | ("java/lang/Short", "reverseBytes", "(S)S")
             | ("java/lang/Integer", "reverseBytes", "(I)I")
             | ("java/lang/Long", "reverseBytes", "(J)J")
             | ("java/lang/Integer", "compareUnsigned" | "compare", "(II)I")

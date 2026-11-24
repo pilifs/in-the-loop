@@ -1,6 +1,7 @@
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
 import java.util.List;
 import org.springframework.core.GenericTypeResolver;
@@ -17,6 +18,21 @@ public final class SpringTypes {
 
     static Class<?> nested(Type ret, Class<?> ctx) {
         return ResolvableType.forType(GenericTypeResolver.resolveType(ret, ctx)).getGeneric(0).getGeneric(0).resolve();
+    }
+
+    public static boolean publicMethod() throws Exception {
+        Method m = Supplier.class.getMethod("get");
+        return m.getDeclaringClass() == Supplier.class && m.getParameterCount() == 0 && m.getReturnType() == List.class;
+    }
+
+    public static boolean genericReturn() throws Exception {
+        Method m = Supplier.class.getMethod("get");
+        ParameterizedType outer = (ParameterizedType)m.getGenericReturnType();
+        ParameterizedType inner = (ParameterizedType)outer.getActualTypeArguments()[0];
+        TypeVariable<?> variable = (TypeVariable<?>)inner.getActualTypeArguments()[0];
+        return outer.getRawType() == List.class && inner.getRawType() == List.class
+                && variable.getName().equals("T") && variable.getBounds()[0] == Object.class
+                && variable.equals(Supplier.class.getTypeParameters()[0]);
     }
 
     public static boolean resolved() throws Exception {

@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-074201-measure-public-java-trees-and-sorting-on",
+  "title": "Measure public Java trees and sorting on four original SV-Benchmarks tasks",
+  "description": "Use pinned unmodified Main classes, the valid-assert property, packaged Verifier nondeterminism, both strict routes and standalone stock JBMC. Verify the official SV-COMP 26 XML and replay disclosed choice streams separately on the original JVM. Retain named assertions, reach controls and failed unwinding.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jbmc:public-valid-assert"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/sv_public.py"
+    ]
+  },
+  "expected": "Four exact original task receipts and physical JVM witnesses, with unwinding and model limits reported.",
+  "submitted": {
+    "at": "2026-11-24T07:42:01+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 18,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "12m",
+    "timeout": "50m"
+  },
+  "steps": [
+    {
+      "name": "Public valid-assert tasks",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/sv_public.py --phase opening B09 B10 B11 B12",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/opening/svcomp/B09",
+    "verification/beyond-jbmc/opening/svcomp/B10",
+    "verification/beyond-jbmc/opening/svcomp/B11",
+    "verification/beyond-jbmc/opening/svcomp/B12"
+  ]
+}
