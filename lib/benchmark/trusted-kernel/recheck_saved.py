@@ -1,5 +1,6 @@
 """Recheck saved semantic bundles, including the original frozen program, with no evidence generator."""
 
+import argparse
 import json
 from pathlib import Path
 import os
@@ -79,6 +80,9 @@ def verify_saved(phase, binary):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true", help="compare with the frozen replay and leave it intact")
+    args = parser.parse_args()
     ev = HERE / "evidence"
     with tempfile.TemporaryDirectory() as directory:
         tmp = Path(directory)
@@ -99,7 +103,7 @@ def main():
                 if row["route"] == "Rust"
                 else lean_check(req, cert, artifact)
             )
-            if ck["exit"] != row["exit"]:
+            if (ck["exit"], ck["stdout"]) != (row["exit"], row["outcome"]):
                 raise ValueError((name, ck))
         result = {
             "frozenBundlesAndSubstitutions": frozen_checks,
@@ -110,7 +114,14 @@ def main():
             "snapshotSha256": digest(snapshot.read_bytes()),
             "sourceCommit": os.environ.get("VERIFY_SOURCE_COMMIT"),
         }
-    (ev / "clean-replay.json").write_text(json.dumps(result, indent=2) + "\n")
+    dest = ev / "clean-replay.json"
+    if args.check:
+        expected = read(dest)
+        expected.pop("sourceCommit")
+        if expected != {k: v for k, v in result.items() if k != "sourceCommit"}:
+            raise ValueError("the frozen clean replay differs")
+    else:
+        dest.write_text(json.dumps(result, indent=2) + "\n")
     print(result)
 
 

@@ -1,0 +1,621 @@
+{
+  "schema": "change-independent-evidence/v1",
+  "evaluation": {
+    "path": "lib/benchmark/trusted-kernel/evidence/cases.json",
+    "sha256": "4c6529a034cdffd379ab524272edc14f229c1ca82bed99e7029f733e0484d90b"
+  },
+  "nodes": [
+    {
+      "id": "336/first-any-length",
+      "kind": "java-method",
+      "example": 336,
+      "task": "first-any-length",
+      "claimKey": "cf77b58842a14dfc5d3c9abb1f063fb7e6d33129c94a541b7ded7de7f86dc9b2",
+      "entry": "com.google.common.primitives.Ints#indexOf([II)I",
+      "statement": "The public call terminates normally, returns the first matching index or -1 when absent, and preserves the heap.",
+      "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs.",
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/IntsMethodsForWeb.bin",
+          "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6"
+        }
+      ],
+      "request": {
+        "path": "lib/benchmark/trusted-kernel/requests/Ints.request",
+        "sha256": "7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740"
+      },
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/transfer/Ints/evidence.cert",
+        "sha256": "6e9d8964e61f6f40ca58840fc6b936bd39dd08045b964a8fcf31f3b277b02104"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/transfer/results.json",
+        "sha256": "35b476b8f269ed4049dac5b7686f152c4b26818119cafb2fa62e6d2bf42c1cac",
+        "control": "Ints"
+      },
+      "checker": {
+        "name": "Rust Guava semantic checker",
+        "sha256": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b"
+      },
+      "assumptionsRemoved": [
+        "historical Python induction rule",
+        "javap",
+        "Z3",
+        "certificate issuer",
+        "prior verdict and cache"
+      ],
+      "assumptionsRetained": [
+        "Verified class bytes, pinned resolution, successful initialization and single-threaded JVM execution.",
+        "Sufficient VM resources and no asynchronous termination.",
+        "Independent class decoding and induction rules, their correspondence to JVM execution, SHA-256 and the Rust toolchain."
+      ]
+    },
+    {
+      "id": "346/first-any-length",
+      "kind": "java-method",
+      "example": 346,
+      "task": "first-any-length",
+      "claimKey": "41253a07cc37be4ae7ec8b802a8b22012881dba24bb8e8637c54ffad0f870e48",
+      "entry": "com.google.common.primitives.Longs#indexOf([JJ)I",
+      "statement": "The public call terminates normally, returns the first matching index or -1 when absent, and preserves the heap.",
+      "scope": "Every non-null, already allocated long array of legal Java length and all signed scalar inputs.",
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Longs.bin",
+          "sha256": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9"
+        }
+      ],
+      "request": {
+        "path": "lib/benchmark/trusted-kernel/requests/Longs.request",
+        "sha256": "19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984"
+      },
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/transfer/Longs/evidence.cert",
+        "sha256": "22417f3f425c15e82321277f229aa17cef3131f7af2e7617f6ae0410b4e030f8"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/transfer/results.json",
+        "sha256": "35b476b8f269ed4049dac5b7686f152c4b26818119cafb2fa62e6d2bf42c1cac",
+        "control": "Longs"
+      },
+      "checker": {
+        "name": "Rust Guava semantic checker",
+        "sha256": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b"
+      },
+      "assumptionsRemoved": [
+        "historical Python induction rule",
+        "javap",
+        "Z3",
+        "certificate issuer",
+        "prior verdict and cache"
+      ],
+      "assumptionsRetained": [
+        "Verified class bytes, pinned resolution, successful initialization and single-threaded JVM execution.",
+        "Sufficient VM resources and no asynchronous termination.",
+        "Independent class decoding and induction rules, their correspondence to JVM execution, SHA-256 and the Rust toolchain."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-2",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "1ddd22fc13ea02de1b06363c42ecf8c9556ae8fd5373885f4e61348abc4acb85",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 2,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          442
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-2.lrat",
+        "memberSha256": "f4c35df2ebd6621621d2dd0689d3db18a3778ce43c66d1569ff771f0cd9dca52"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-2"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-5",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "ef342086f7245fccfb059da712f770dd0a9e8cca665a25ec46fa9ac4fd2e59ea",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 5,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          -442,
+          -506,
+          567,
+          566
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-5.lrat",
+        "memberSha256": "e4620e81a18f0e1718cd246c9fb7a796a88b913b51cdcbf0f393eb600d1b5c75"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-5"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-8",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "8dc7bd682e8acc6bd50ab959f5f8563875bd2ab060953a8d01b741e55ce4b482",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 8,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          -442,
+          -506,
+          567,
+          -566,
+          -630,
+          693,
+          692
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-8.lrat",
+        "memberSha256": "1e8016564112e3e3dae628b1da1847551acf92abe91ddcc212f2cc8a8cfb7d25"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-8"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-11",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "3dcd7d115502d1c010d0fdad568c25316d48e0faf354f122bd4b64ac031772cc",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 11,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          -442,
+          -506,
+          567,
+          -566,
+          -630,
+          693,
+          -692,
+          -756,
+          815,
+          814
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-11.lrat",
+        "memberSha256": "70577bd61c4c06c1bc6318a78d5baf95c8ef0419f8fa64b7306ddabf21b241c2"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-11"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-14",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "2b758f063aacbe1cf15b36a70d9ab1ec721aab07df7c7b132795867c20fefb56",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 14,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          -442,
+          -506,
+          567,
+          -566,
+          -630,
+          693,
+          -692,
+          -756,
+          815,
+          -814,
+          -878,
+          939,
+          938
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-14.lrat",
+        "memberSha256": "d5bbd2452a66bc26b2be68e8da8c68022087a8a229696555eccb6360b0d56937"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-14"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-17",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "7a9723b27fb3f5a5042999673ab853670a71cfffb591573863a307b9aa8666d8",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 17,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          -442,
+          -506,
+          567,
+          -566,
+          -630,
+          693,
+          -692,
+          -756,
+          815,
+          -814,
+          -878,
+          939,
+          -938,
+          -1002,
+          1063,
+          1062
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-17.lrat",
+        "memberSha256": "ce11aa9a5ffc0331f57a73f212fef26350837a93def489fc33c5cc488d5c434d"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-17"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-20",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "c7c982b683d651857ed0077f529da02dfb5542b7bf307a3966d5028161409ede",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 20,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          -442,
+          -506,
+          567,
+          -566,
+          -630,
+          693,
+          -692,
+          -756,
+          815,
+          -814,
+          -878,
+          939,
+          -938,
+          -1002,
+          1063,
+          -1062,
+          -1126,
+          1187,
+          1186
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-20.lrat",
+        "memberSha256": "7a7992c3ab4fa7c772391dcf17554245488b9e65582d5e1e85ee787b85281660"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-20"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    },
+    {
+      "id": "336/first-8-release/trace-0-23",
+      "kind": "solver-query",
+      "example": 336,
+      "task": "first-8-release",
+      "parentNativeClaimId": "0a6e65a00e6d5c94",
+      "claimKey": "f557c1fbabd3a2c84fd4bbacd7e930e6cc83352de1bfc71057a0822a14581d34",
+      "statement": "The clause prefix for this solve is unsatisfiable under its recorded assumption units.",
+      "scope": {
+        "queryOneBased": 23,
+        "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+        "assumptions": [
+          -33,
+          -97,
+          443,
+          -442,
+          -506,
+          567,
+          -566,
+          -630,
+          693,
+          -692,
+          -756,
+          815,
+          -814,
+          -878,
+          939,
+          -938,
+          -1002,
+          1063,
+          -1062,
+          -1126,
+          1187,
+          -1186,
+          -1250,
+          1307,
+          1306
+        ]
+      },
+      "disposition": "established",
+      "artifacts": [
+        {
+          "path": "lib/benchmark/trusted-kernel/inputs/Ints.bin",
+          "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
+        },
+        {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/traces/trace-0.icnf.gz",
+          "sha256": "478ed932d7ebc6cea3e5aa30229b750839f126f244a0c82a33e968cb15204e31"
+        }
+      ],
+      "certificate": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/proofs.tar.gz",
+        "sha256": "75bbd60ab2ede934845e0295a9d69c9cf5b6af1a4797968225c111bd2c9585ba",
+        "member": "trace-0-23.lrat",
+        "memberSha256": "2c5f298ebb80795a59815fad93dd2e549a41b8f5b96f2975331b28cf0de02d66"
+      },
+      "receipt": {
+        "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+        "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+        "query": "trace-0-23"
+      },
+      "checker": {
+        "name": "cake_lpr",
+        "revision": "033aad53",
+        "sha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54"
+      },
+      "assumptionsRemoved": [
+        "CaDiCaL's UNSAT answer and proof generation"
+      ],
+      "assumptionsRetained": [
+        "Transcript binding, clause-prefix extraction and assumption encoding.",
+        "cake_lpr and its verified checker toolchain.",
+        "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+      ]
+    }
+  ]
+}

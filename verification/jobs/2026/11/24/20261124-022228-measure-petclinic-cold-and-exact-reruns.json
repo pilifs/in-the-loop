@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-022228-measure-petclinic-cold-and-exact-reruns",
+  "title": "Measure Petclinic cold and exact reruns from original sources",
+  "description": "Run the three frozen JDK 17 deployments in fresh verifier processes for a cold baseline, exact rerun and clean comparison. Resolve the original Maven graph and compile all sources even on a hit. Re-execute failed startup and compare all observed effects, intents, execution bindings and input scopes to clean, including the unchanged-source compiler outcome.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "target:replay"
+  ],
+  "links": {},
+  "expected": "All deployment outcomes match at unchanged scope, and exact positive reuse and repeated failed starts have measured total CPU, RSS and wall cost.",
+  "submitted": {
+    "at": "2026-11-24T02:22:28+00:00",
+    "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+  },
+  "requires": [
+    "maven",
+    "javac",
+    "java",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "memoryLimit": "4G",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Rebuild and compare all three whole-workflow passes",
+      "run": "python3 -B lib/benchmark/change-verification/petclinic.py --compare-passes --output verification/change-verification/petclinic-cost.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/change-verification/petclinic-cost.json"
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-015038-compare-six-wire-change-plans-against-in",
+  "title": "Compare six Wire change plans against independent clean JVM runs",
+  "description": "Discover the Retrofit 2.6.0 public converter operations on both deployments, reach their concrete original methods through the public factory, and compare full finite results after cache, test-resource, deployment-resource and classpath-order changes. Record separate historical and additional denominators and actual work and cost.",
+  "kind": "real-world",
+  "capabilities": [
+    "target:replay",
+    "jvmcontract:observations"
+  ],
+  "links": {},
+  "expected": "All six controls agree with clean original-entry recomputation. Both registered reads survive, and both added writes reproduce NoSuchMethodError on the intended runtime.",
+  "submitted": {
+    "at": "2026-11-24T01:50:38+00:00",
+    "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Run and validate all incremental and clean controls",
+      "run": "python3 lib/benchmark/change-verification/wire_matrix.py --output verification/change-verification/wire/summary.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/change-verification/wire"
+  ]
+}

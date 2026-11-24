@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-015127-evaluate-the-registered-petclinic-2-7-to",
+  "title": "Evaluate the registered Petclinic 2.7 to 3.0 migration",
+  "description": "Resolve both original Maven graphs, compile all production code and exercise the three sealed HTTP workflows on shared JDK 17. Try the old binary and unchanged source on the new graph, compare both intended applications, and independently recompute the same caller results from fresh H2 databases.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "target:replay"
+  ],
+  "links": {},
+  "expected": "All registered deployments retain separate linkage, source and caller observations and all incremental scopes agree with clean HTTP recomputation.",
+  "submitted": {
+    "at": "2026-11-24T01:51:27+00:00",
+    "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+  },
+  "requires": [
+    "maven",
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "memoryLimit": "4G",
+    "duration": "8m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Build and check the original and migrated applications",
+      "run": "python3 lib/benchmark/change-verification/petclinic.py --output verification/change-verification/petclinic.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/change-verification/petclinic.json"
+  ]
+}

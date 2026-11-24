@@ -167,12 +167,12 @@ def historic(phase):
     return results
 
 
-def subject_rows(phase, keys=None, recorded_phase=None, required_engines=None):
+def subject_rows(phase, keys=None, recorded_phase=None, required_engines=None, *, directory=None):
     result = {}
     for key,subject in CLAIMS.items():
         if keys is not None and key not in keys:
             continue
-        p = BASE/phase/key/"measurement.json"
+        p = (directory if directory is not None else BASE/phase)/key/"measurement.json"
         d = read(p)
         collected(p,d["job"],d["source"])
         raw = p.parent/"raw.tar.gz"

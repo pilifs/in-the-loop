@@ -43,6 +43,7 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
        python3 examples/tools/build.py --plan ID --task T  the plan of one task of a real-world example with a target sidecar
        python3 examples/tools/build.py ID --task T         one attempt at that task (examples/tools/targets/route.py)
        python3 examples/tools/build.py --upgrade-claims --help  find original consumer call sites for a changed dependency
+       python3 examples/tools/build.py --change-plan --help  plan and resume one application change across caller claims
        python3 examples/tools/build.py --inspect-jdbc-driver --help  check URL selection on a locked original driver classpath
        python3 examples/tools/build.py --review-upgrade --help  compare finite caller observations on two original classpaths
        python3 examples/tools/build.py ID --finite-domain  exhaust the certified integer inputs to each supported task on a JVM
@@ -215,6 +216,9 @@ def stages(out):
 
 
 def main(argv):
+    if argv and argv[0] == "--change-plan":
+        from targets import change_plan
+        return change_plan.main(argv[1:])
     if argv and argv[0] == "--upgrade-claims":
         from targets import upgrade_claims
         return upgrade_claims.main(argv[1:])

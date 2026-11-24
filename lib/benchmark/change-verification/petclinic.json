@@ -1,0 +1,22 @@
+{
+  "schema": "held-back-application/v1",
+  "repository": "https://github.com/spring-projects/spring-petclinic",
+  "before": "9ecdc1111e3da388a750ace41a125287d9620534",
+  "migration": "1315cf6e1f1e88e4850e5573388a89ba4469df07",
+  "after": "dade7fcf31248b21eb158985b250c436b2e9eb54",
+  "selection": "Parent of the upstream Spring Boot 3 migration through the first stable 3.0.0 application. Chosen from POM commit history before reading the implementation or upstream tests.",
+  "deployment": "Both sides on Temurin 17.0.21+9, original Maven runtime dependency graph, embedded server, default in-memory database, fresh database per run, UTC. One serial HTTP client, English locale.",
+  "questions": ["old binary on new runtime", "unchanged sources compiled against new runtime", "upstream adapted application on its intended runtime"],
+  "allowedChanges": ["javax to jakarta type names", "framework and generated markup details outside the declared observations", "new persistent identifier values"],
+  "productionWorkflows": [
+    {"id": "startup", "action": "Start the application and fetch the owner creation form.", "acceptance": "GET /owners/new returns 200 with firstName and telephone fields."},
+    {"id": "reject-owner", "action": "Submit the owner form with an empty last name and a nonnumeric telephone.", "acceptance": "The response redisplays the form with validation errors and does not create an owner with the submitted first name."},
+    {"id": "create-and-read-owner", "action": "Submit a valid owner, follow the new owner's detail link and search by last name.", "acceptance": "A redirect identifies the saved owner. Its detail page contains the supplied name and phone number. Searching the unique last name retrieves that owner."}
+  ],
+  "independentExamples": {
+    "invalid": {"firstName": "Mara", "lastName": "", "address": "10 Main St", "city": "York", "telephone": "invalid"},
+    "valid": {"firstName": "Inez", "lastName": "Verity", "address": "12 Main St", "city": "York", "telephone": "0123456789"}
+  },
+  "budget": {"cpus": 2, "memoryGiB": 4, "minutesPerPreparation": 12, "secondsPerStartup": 90, "secondsPerRequest": 10},
+  "scoring": "Freeze these three roots. Count each workflow once per deployment and compare incremental and clean results at equal scope. A missing build, failed startup or narrower controller-only result leaves the downstream workflow open. Record later discoveries and any adapter or intent interventions separately."
+}

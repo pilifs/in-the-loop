@@ -5,7 +5,10 @@ import gzip
 import hashlib
 import json
 from pathlib import Path
+import subprocess
 import sys
+import tarfile
+import tempfile
 import xml.etree.ElementTree as ET
 
 HERE = Path(__file__).resolve().parent
@@ -311,12 +314,45 @@ def score(number, case, stages):
             "primary": PRIMARY[number], "preservation": PRESERVED[number], "caseDecided": formal, "tasks": results}
 
 
+def frozen_scorecard():
+    """Re-run the published grader against its immutable input trees, including the collector's two selector bundles."""
+    pin = read(HERE / "receipt-set.json")
+    with tempfile.TemporaryDirectory(prefix="organic-receipts-") as temporary:
+        directory = Path(temporary)
+        with subprocess.Popen(["git", "-C", ROOT, "archive", pin["revision"], "--", *pin["paths"]],
+                              stdout=subprocess.PIPE) as archive:
+            with tarfile.open(fileobj=archive.stdout, mode="r|") as files:
+                files.extractall(directory, filter="data")
+            if archive.wait():
+                raise ValueError("the published organic evaluation revision is unavailable in the local Git repository")
+        output = directory / "scorecard.json"
+        subprocess.run([sys.executable, "-B", directory / HERE.relative_to(ROOT) / "report.py",
+                        "--output", output], cwd=directory, check=True, stdout=subprocess.DEVNULL)
+        return output.read_text()
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--stages", default="factory-confirmation,startup,confirmation,final,reserve,ordered,streams,utf16,baseline", help="most recent first")
-    ap.add_argument("--output", type=Path, default=ROOT / "verification/organic-java-pr-campaign.json")
+    ap.add_argument("--stages", help="read current evidence in these stages, most recent first")
+    ap.add_argument("--output", type=Path)
+    ap.add_argument("--current", action="store_true", help="include receipts added since the published evaluation")
     ap.add_argument("--check", action="store_true")
     args = ap.parse_args()
+    published = ROOT / "verification/organic-java-pr-campaign.json"
+    if not args.current and args.stages is None:
+        raw = frozen_scorecard()
+        out = args.output or published
+        if args.check:
+            if out.read_text() != raw:
+                raise ValueError("stored scorecard differs from its pinned receipts")
+        else:
+            out.write_text(raw)
+        print(json.dumps(json.loads(raw)["summary"]))
+        return
+    args.output = args.output or published.with_name("organic-java-pr-campaign-current.json")
+    if args.output.resolve() == published:
+        ap.error("the current report needs its own output path")
+    args.stages = args.stages or "factory-confirmation,startup,confirmation,final,reserve,ordered,streams,utf16,baseline"
     corpus = read(HERE / "cases.json")
     rows = {n: score(n, c, args.stages.split(",")) for n, c in corpus["cases"].items()}
     reserves = {n: score(n, c, args.stages.split(",")) for n, c in corpus.get("reserves", {}).items()

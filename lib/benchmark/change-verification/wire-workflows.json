@@ -1,0 +1,33 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "Retrofit 2.6.0 upgrades Wire 2.2.0 to 3.0.2",
+  "environment": [
+    "fresh JVM per call",
+    "no network requests",
+    "fixed English locale and UTC"
+  ],
+  "workflows": [
+    {
+      "id": "response",
+      "cohort": "registered",
+      "scope": "response/scope.json",
+      "probe": "response/UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
+      ]
+    },
+    {
+      "id": "request",
+      "cohort": "additional",
+      "scope": "request/scope.json",
+      "probe": "request/UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
+      ]
+    }
+  ]
+}

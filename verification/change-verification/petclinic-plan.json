@@ -1,0 +1,963 @@
+{
+  "schema": "java-change-plan/v1",
+  "change": "Spring Petclinic on Spring Boot 2.7.3 and 3.0.0",
+  "claims": [
+    {
+      "id": "old/startup",
+      "claimKey": "39f0773e012679a586d675e6d13a86895fb6fa05699acd3813ac84eab6e50377",
+      "executionKey": "d3b7893ba79c741ef5d5b071a34a0fa63473dde0e715e9424d7cb6d205c25865",
+      "scope": {
+        "id": "startup",
+        "action": "Start the application and fetch the owner creation form.",
+        "acceptance": "GET /owners/new returns 200 with firstName and telephone fields."
+      },
+      "status": "established",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": null,
+      "dependsOn": []
+    },
+    {
+      "id": "old/reject-owner",
+      "claimKey": "7f00944302787c635ef5c727f4cb99b2223cb3a521ffc7a08d7482e403e527fa",
+      "executionKey": "d3b7893ba79c741ef5d5b071a34a0fa63473dde0e715e9424d7cb6d205c25865",
+      "scope": {
+        "id": "reject-owner",
+        "action": "Submit the owner form with an empty last name and a nonnumeric telephone.",
+        "acceptance": "The response redisplays the form with validation errors and does not create an owner with the submitted first name."
+      },
+      "status": "established",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": null,
+      "dependsOn": [
+        {
+          "id": "old/startup",
+          "reason": "requires a live container and the actual owner repository",
+          "rule": "startup enables the observation; its HTTP and database effects require their own trials"
+        }
+      ]
+    },
+    {
+      "id": "old/create-and-read-owner",
+      "claimKey": "5b0ce2d31c31b24e1ea4ab711bfba4f3d980a52c60c029acc06be26178ca3d9f",
+      "executionKey": "d3b7893ba79c741ef5d5b071a34a0fa63473dde0e715e9424d7cb6d205c25865",
+      "scope": {
+        "id": "create-and-read-owner",
+        "action": "Submit a valid owner, follow the new owner's detail link and search by last name.",
+        "acceptance": "A redirect identifies the saved owner. Its detail page contains the supplied name and phone number. Searching the unique last name retrieves that owner."
+      },
+      "status": "established",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": null,
+      "dependsOn": [
+        {
+          "id": "old/startup",
+          "reason": "requires a live container and the actual owner repository",
+          "rule": "startup enables the observation; its HTTP and database effects require their own trials"
+        }
+      ]
+    },
+    {
+      "id": "oldBinaryNewRuntime/startup",
+      "claimKey": "39f0773e012679a586d675e6d13a86895fb6fa05699acd3813ac84eab6e50377",
+      "executionKey": "5bd264b25fa81a81fb64ef9430ea26c6d3d777b033e04ceae009d3dd48c3622d",
+      "scope": {
+        "id": "startup",
+        "action": "Start the application and fetch the owner creation form.",
+        "acceptance": "GET /owners/new returns 200 with firstName and telephone fields."
+      },
+      "status": "refuted",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": null,
+      "dependsOn": []
+    },
+    {
+      "id": "oldBinaryNewRuntime/reject-owner",
+      "claimKey": "7f00944302787c635ef5c727f4cb99b2223cb3a521ffc7a08d7482e403e527fa",
+      "executionKey": "5bd264b25fa81a81fb64ef9430ea26c6d3d777b033e04ceae009d3dd48c3622d",
+      "scope": {
+        "id": "reject-owner",
+        "action": "Submit the owner form with an empty last name and a nonnumeric telephone.",
+        "acceptance": "The response redisplays the form with validation errors and does not create an owner with the submitted first name."
+      },
+      "status": "open",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": "oldBinaryNewRuntime/startup",
+      "dependsOn": [
+        {
+          "id": "oldBinaryNewRuntime/startup",
+          "reason": "requires a live container and the actual owner repository",
+          "rule": "startup enables the observation; its HTTP and database effects require their own trials"
+        }
+      ]
+    },
+    {
+      "id": "oldBinaryNewRuntime/create-and-read-owner",
+      "claimKey": "5b0ce2d31c31b24e1ea4ab711bfba4f3d980a52c60c029acc06be26178ca3d9f",
+      "executionKey": "5bd264b25fa81a81fb64ef9430ea26c6d3d777b033e04ceae009d3dd48c3622d",
+      "scope": {
+        "id": "create-and-read-owner",
+        "action": "Submit a valid owner, follow the new owner's detail link and search by last name.",
+        "acceptance": "A redirect identifies the saved owner. Its detail page contains the supplied name and phone number. Searching the unique last name retrieves that owner."
+      },
+      "status": "open",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": "oldBinaryNewRuntime/startup",
+      "dependsOn": [
+        {
+          "id": "oldBinaryNewRuntime/startup",
+          "reason": "requires a live container and the actual owner repository",
+          "rule": "startup enables the observation; its HTTP and database effects require their own trials"
+        }
+      ]
+    },
+    {
+      "id": "adapted/startup",
+      "claimKey": "39f0773e012679a586d675e6d13a86895fb6fa05699acd3813ac84eab6e50377",
+      "executionKey": "a774beee8b9c49a02c5e5ca0dbd5df570c955fa1c9d0981c50d3969f4604d411",
+      "scope": {
+        "id": "startup",
+        "action": "Start the application and fetch the owner creation form.",
+        "acceptance": "GET /owners/new returns 200 with firstName and telephone fields."
+      },
+      "status": "established",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": null,
+      "dependsOn": []
+    },
+    {
+      "id": "adapted/reject-owner",
+      "claimKey": "7f00944302787c635ef5c727f4cb99b2223cb3a521ffc7a08d7482e403e527fa",
+      "executionKey": "a774beee8b9c49a02c5e5ca0dbd5df570c955fa1c9d0981c50d3969f4604d411",
+      "scope": {
+        "id": "reject-owner",
+        "action": "Submit the owner form with an empty last name and a nonnumeric telephone.",
+        "acceptance": "The response redisplays the form with validation errors and does not create an owner with the submitted first name."
+      },
+      "status": "established",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": null,
+      "dependsOn": [
+        {
+          "id": "adapted/startup",
+          "reason": "requires a live container and the actual owner repository",
+          "rule": "startup enables the observation; its HTTP and database effects require their own trials"
+        }
+      ]
+    },
+    {
+      "id": "adapted/create-and-read-owner",
+      "claimKey": "5b0ce2d31c31b24e1ea4ab711bfba4f3d980a52c60c029acc06be26178ca3d9f",
+      "executionKey": "a774beee8b9c49a02c5e5ca0dbd5df570c955fa1c9d0981c50d3969f4604d411",
+      "scope": {
+        "id": "create-and-read-owner",
+        "action": "Submit a valid owner, follow the new owner's detail link and search by last name.",
+        "acceptance": "A redirect identifies the saved owner. Its detail page contains the supplied name and phone number. Searching the unique last name retrieves that owner."
+      },
+      "status": "established",
+      "source": "two original HTTP trials, compared against separate clean launches",
+      "firstOpenDependency": null,
+      "dependsOn": [
+        {
+          "id": "adapted/startup",
+          "reason": "requires a live container and the actual owner repository",
+          "rule": "startup enables the observation; its HTTP and database effects require their own trials"
+        }
+      ]
+    }
+  ],
+  "comparatorSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "entryInventory": [
+    {
+      "id": "GET /",
+      "old": "org.springframework.samples.petclinic.system.WelcomeController#welcome",
+      "new": "org.springframework.samples.petclinic.system.WelcomeController#welcome",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /oups",
+      "old": "org.springframework.samples.petclinic.system.CrashController#triggerException",
+      "new": "org.springframework.samples.petclinic.system.CrashController#triggerException",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /owners",
+      "old": "org.springframework.samples.petclinic.owner.OwnerController#processFindForm",
+      "new": "org.springframework.samples.petclinic.owner.OwnerController#processFindForm",
+      "workflows": [
+        "reject-owner",
+        "create-and-read-owner"
+      ],
+      "disposition": "in registered workflows"
+    },
+    {
+      "id": "GET /owners/find",
+      "old": "org.springframework.samples.petclinic.owner.OwnerController#initFindForm",
+      "new": "org.springframework.samples.petclinic.owner.OwnerController#initFindForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /owners/new",
+      "old": "org.springframework.samples.petclinic.owner.OwnerController#initCreationForm",
+      "new": "org.springframework.samples.petclinic.owner.OwnerController#initCreationForm",
+      "workflows": [
+        "startup"
+      ],
+      "disposition": "in registered workflows"
+    },
+    {
+      "id": "GET /owners/{ownerId}",
+      "old": "org.springframework.samples.petclinic.owner.OwnerController#showOwner",
+      "new": "org.springframework.samples.petclinic.owner.OwnerController#showOwner",
+      "workflows": [
+        "create-and-read-owner"
+      ],
+      "disposition": "in registered workflows"
+    },
+    {
+      "id": "GET /owners/{ownerId}/edit",
+      "old": "org.springframework.samples.petclinic.owner.OwnerController#initUpdateOwnerForm",
+      "new": "org.springframework.samples.petclinic.owner.OwnerController#initUpdateOwnerForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /owners/{ownerId}/pets/new",
+      "old": "org.springframework.samples.petclinic.owner.PetController#initCreationForm",
+      "new": "org.springframework.samples.petclinic.owner.PetController#initCreationForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /owners/{ownerId}/pets/{petId}/edit",
+      "old": "org.springframework.samples.petclinic.owner.PetController#initUpdateForm",
+      "new": "org.springframework.samples.petclinic.owner.PetController#initUpdateForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /owners/{ownerId}/pets/{petId}/visits/new",
+      "old": "org.springframework.samples.petclinic.owner.VisitController#initNewVisitForm",
+      "new": "org.springframework.samples.petclinic.owner.VisitController#initNewVisitForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /vets",
+      "old": "org.springframework.samples.petclinic.vet.VetController#showResourcesVetList",
+      "new": "org.springframework.samples.petclinic.vet.VetController#showResourcesVetList",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "GET /vets.html",
+      "old": "org.springframework.samples.petclinic.vet.VetController#showVetList",
+      "new": "org.springframework.samples.petclinic.vet.VetController#showVetList",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "POST /owners/new",
+      "old": "org.springframework.samples.petclinic.owner.OwnerController#processCreationForm",
+      "new": "org.springframework.samples.petclinic.owner.OwnerController#processCreationForm",
+      "workflows": [
+        "reject-owner",
+        "create-and-read-owner"
+      ],
+      "disposition": "in registered workflows"
+    },
+    {
+      "id": "POST /owners/{ownerId}/edit",
+      "old": "org.springframework.samples.petclinic.owner.OwnerController#processUpdateOwnerForm",
+      "new": "org.springframework.samples.petclinic.owner.OwnerController#processUpdateOwnerForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "POST /owners/{ownerId}/pets/new",
+      "old": "org.springframework.samples.petclinic.owner.PetController#processCreationForm",
+      "new": "org.springframework.samples.petclinic.owner.PetController#processCreationForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "POST /owners/{ownerId}/pets/{petId}/edit",
+      "old": "org.springframework.samples.petclinic.owner.PetController#processUpdateForm",
+      "new": "org.springframework.samples.petclinic.owner.PetController#processUpdateForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    },
+    {
+      "id": "POST /owners/{ownerId}/pets/{petId}/visits/new",
+      "old": "org.springframework.samples.petclinic.owner.VisitController#processNewVisitForm",
+      "new": "org.springframework.samples.petclinic.owner.VisitController#processNewVisitForm",
+      "workflows": [],
+      "disposition": "open: outside the frozen acceptance examples"
+    }
+  ],
+  "discoveryMisses": {
+    "old": [],
+    "new": []
+  },
+  "obligations": [
+    {
+      "obligation": {
+        "entry": "GET /",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /oups",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /oups",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /oups",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "before: the parameter model (Model) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter model (Model) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/find",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/find",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/find",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/new",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/new",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/new",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/edit",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/edit",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/edit",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/edit",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter model (Model) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter model (Model) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/new",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/new",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/new",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/new",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/{petId}/visits/new",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/{petId}/visits/new",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /owners/{ownerId}/pets/{petId}/visits/new",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /vets",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /vets",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /vets",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /vets.html",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /vets.html",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /vets.html",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "GET /vets.html",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter model (Model) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter model (Model) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/new",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/new",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/new",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/new",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/edit",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/edit",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/edit",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/edit",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/new",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/new",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/new",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/new",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "before: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/edit",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "before: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter model (ModelMap) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/visits/new",
+        "observation": "result",
+        "change": "preserved",
+        "needs": "a proof that both versions answer each request with the same value, under one environment model for both"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/visits/new",
+        "observation": "exception",
+        "change": "preserved",
+        "needs": "a proof that for each request both versions return normally or both throw, and throw the same category"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/visits/new",
+        "observation": "status",
+        "change": "preserved",
+        "needs": "a proof that both versions take the same outcome for each request, so that they answer with the same status"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    },
+    {
+      "obligation": {
+        "entry": "POST /owners/{ownerId}/pets/{petId}/visits/new",
+        "observation": "unresolved",
+        "change": "unresolved",
+        "differences": [
+          "before: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled",
+          "after: the parameter result (BindingResult) is supplied by the framework, not by the request: not modeled"
+        ],
+        "needs": "a model of what the analysis can't see: until then no obligation of this entry point is discharged without the assumption that it doesn't matter"
+      },
+      "disposition": "open",
+      "reason": "entry comparison identifies an observation to check"
+    }
+  ],
+  "measurementSha256": "7e1b46c1d60ae5de61792c114f15359f44a6c1bd2248918e0bdd0cc2a832d577"
+}
