@@ -1,0 +1,425 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo",
+  "title": "Setup: build Apache POI's poi-ooxml at both #1584 revisions and run TestXSSFHyperlink",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 2m28s, peak 3.8 GiB (estimated 25m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo.json",
+    "sha256": "765b4fa100815ac047ac30ba3f815a9716eb49ff2689192460c41eca0aadbdb3",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo",
+      "title": "Setup: build Apache POI's poi-ooxml at both #1584 revisions and run TestXSSFHyperlink",
+      "description": "Setup for case J05 of llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/organic-pr-20/worktrees (J05-poi-fix = c94ee8ad, J05-poi-parent = 72ad1d5e), builds :poi-ooxml:jar (which needs :poi and the XMLBeans schema build of :poi-ooxml-full) with the upstream Gradle 9.9.1 wrapper (wrapper jar and distribution checked against services.gradle.org) on JDK 17.0.21, toolchain auto-download off. The setup session resolved every configuration of :poi, :poi-ooxml-full, :poi-scratchpad and :poi-ooxml online at both revisions first; the first step is online anyway and the rest run --offline. Runs each side's own TestXSSFHyperlink, then the landed file transplanted onto the parent, where the new tests are expected to fail (restored after), then the landed test offline on the fix. Jars and changed-class digests to .../artifacts and the log, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md",
+          "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md"
+        ]
+      },
+      "expected": "every step exits 0: TestXSSFHyperlink passes on both sides' own trees; the transplanted landed test fails on the parent; the offline rerun passes",
+      "submitted": {
+        "at": "2026-11-24T20:35:08+00:00",
+        "session": "9c1d1c59-e947-449f-97e1-6ebf7cc523bb",
+        "by": "setup agent (Claude Opus 5.5)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "6G",
+        "duration": "25m"
+      },
+      "steps": [
+        {
+          "name": "J05-poi-fix: :poi-ooxml:jar online, TestXSSFHyperlink (landed)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain  -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-fix; echo worktree=J05-poi-fix commit=$(git rev-parse HEAD); $G :poi-ooxml:jar; JR=$(ls build/dist/maven/poi-ooxml/poi-ooxml-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $JR $O/artifacts/J05-poi-fix-poi-ooxml.jar; echo built-jar=$JR; sha256sum $O/artifacts/J05-poi-fix-poi-ooxml.jar; echo XSSFHyperlink.class $(unzip -p $O/artifacts/J05-poi-fix-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFHyperlink.class | sha256sum | cut -c1-64); echo XSSFSheet.class $(unzip -p $O/artifacts/J05-poi-fix-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFSheet.class | sha256sum | cut -c1-64); echo XSSFWorkbook.class $(unzip -p $O/artifacts/J05-poi-fix-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFWorkbook.class | sha256sum | cut -c1-64); rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-fix.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-fix.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "J05-poi-parent: :poi-ooxml:jar offline, its own TestXSSFHyperlink",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-parent; echo worktree=J05-poi-parent commit=$(git rev-parse HEAD); $G :poi-ooxml:jar; JR=$(ls build/dist/maven/poi-ooxml/poi-ooxml-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $JR $O/artifacts/J05-poi-parent-poi-ooxml.jar; echo built-jar=$JR; sha256sum $O/artifacts/J05-poi-parent-poi-ooxml.jar; echo XSSFHyperlink.class $(unzip -p $O/artifacts/J05-poi-parent-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFHyperlink.class | sha256sum | cut -c1-64); echo XSSFSheet.class $(unzip -p $O/artifacts/J05-poi-parent-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFSheet.class | sha256sum | cut -c1-64); echo XSSFWorkbook.class $(unzip -p $O/artifacts/J05-poi-parent-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFWorkbook.class | sha256sum | cut -c1-64); rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-parent.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-parent.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "J05-poi-parent: the landed TestXSSFHyperlink transplanted (expected to fail)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-parent; echo worktree=J05-poi-parent commit=$(git rev-parse HEAD); git -C $W/J05-poi-parent show c94ee8ad9096bdb8cf8e5e59d8d12432e950dbf3:poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java > $W/J05-poi-parent/poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java; echo transplanted poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java from c94ee8ad9096bdb8cf8e5e59d8d12432e950dbf3; rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt; git -C $W/J05-poi-parent checkout -q -- poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java; git -C $W/J05-poi-parent status --short --untracked-files=no; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt | cut -d= -f2) )) -gt 0; echo landed-test-fails-on-parent=yes; ",
+          "cwd": "."
+        },
+        {
+          "name": "J05-poi-fix: TestXSSFHyperlink again, offline",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-fix; echo worktree=J05-poi-fix commit=$(git rev-parse HEAD); rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/J05-poi-fix clean -fdxq; git -C $W/J05-poi-parent clean -fdxq; du -sh $W",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "9958b09d805c22a194bb4cba2043f453a38e8055",
+  "startedAt": "2026-11-24T20:36:27+00:00",
+  "finishedAt": "2026-11-24T20:39:08+00:00",
+  "wallSeconds": 161.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1788994,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 4129898496,
+    "wallSeconds": 148.2,
+    "cpuSeconds": 459.2,
+    "memoryOfEstimate": 0.64,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "J05-poi-fix: :poi-ooxml:jar online, TestXSSFHyperlink (landed)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain  -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-fix; echo worktree=J05-poi-fix commit=$(git rev-parse HEAD); $G :poi-ooxml:jar; JR=$(ls build/dist/maven/poi-ooxml/poi-ooxml-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $JR $O/artifacts/J05-poi-fix-poi-ooxml.jar; echo built-jar=$JR; sha256sum $O/artifacts/J05-poi-fix-poi-ooxml.jar; echo XSSFHyperlink.class $(unzip -p $O/artifacts/J05-poi-fix-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFHyperlink.class | sha256sum | cut -c1-64); echo XSSFSheet.class $(unzip -p $O/artifacts/J05-poi-fix-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFSheet.class | sha256sum | cut -c1-64); echo XSSFWorkbook.class $(unzip -p $O/artifacts/J05-poi-fix-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFWorkbook.class | sha256sum | cut -c1-64); rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-fix.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-fix.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-fix.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 78.433,
+      "cpuSeconds": 246.289,
+      "cpuThrottledSeconds": 24.037,
+      "peakMemoryBytes": 4129898496,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-j05-poi-fix-poi-ooxml-jar-onli.log",
+        "lines": 133,
+        "bytes": 9854,
+        "sha256": "30702609aedd8bb37447cc5784133dcbd8ba161b5e47cabf7130bff681a8f0af",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "                              ^",
+        "/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-fix/poi-ooxml/src/main/java/org/apache/poi/xssf/usermodel/BaseXSSFFormulaEvaluator.java:172: warning: [deprecation] setCellType(CellType) in Cell has been deprecated",
+        "            cell.setCellType(cellType);",
+        "                ^",
+        "/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-fix/poi-ooxml/src/main/java/org/apache/poi/poifs/crypt/dsig/SignaturePart.java:365: warning: [unchecked] getPrefixes(String) in SignaturePart.XPathNSContext implements getPrefixes(String) in NamespaceContext",
+        "        public Iterator getPrefixes(String val) {",
+        "                        ^",
+        "  return type requires unchecked conversion from Iterator to Iterator<String>",
+        "/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-fix/poi-ooxml/src/main/java/org/apache/poi/poifs/crypt/dsig/services/RelationshipTransformService.java:115: warning: [deprecation] Provider(String,double,String) in Provider has been deprecated",
+        "            super(NAME, 1d, NAME);",
+        "            ^",
+        "10 warnings",
+        "",
+        "> Task :poi-ooxml:compileModuleInfo",
+        "> Task :poi-ooxml:classes",
+        "> Task :poi-ooxml:jar",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-fix/build/reports/problems/problems-report.html",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 44s",
+        "15 actionable tasks: 15 executed",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html",
+        "built-jar=build/dist/maven/poi-ooxml/poi-ooxml-6.1.0-SNAPSHOT.jar",
+        "9d0ae6180b304856edec2a728baa561e063e31da1a128b510051cb0d4da077e9  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J05-poi-fix-poi-ooxml.jar",
+        "XSSFHyperlink.class b4d13e8ea689d2332f7e7521b648f90da2c6e663b56422349dd1109f071ba0ad",
+        "XSSFSheet.class d5ba47066a0a43fd4506ab590a41612aa01fb7269643d0db9e44a00ec6cb935f",
+        "XSSFWorkbook.class 60a4dbb2bc55e15e9c47729b56fac0a91187fbde5eb491da0c05e6b1403fb78f",
+        "gradle-test-exit=0",
+        "For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 32s",
+        "33 actionable tasks: 19 executed, 14 up-to-date",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html",
+        "junit tests=30 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "J05-poi-parent: :poi-ooxml:jar offline, its own TestXSSFHyperlink",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-parent; echo worktree=J05-poi-parent commit=$(git rev-parse HEAD); $G :poi-ooxml:jar; JR=$(ls build/dist/maven/poi-ooxml/poi-ooxml-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $JR $O/artifacts/J05-poi-parent-poi-ooxml.jar; echo built-jar=$JR; sha256sum $O/artifacts/J05-poi-parent-poi-ooxml.jar; echo XSSFHyperlink.class $(unzip -p $O/artifacts/J05-poi-parent-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFHyperlink.class | sha256sum | cut -c1-64); echo XSSFSheet.class $(unzip -p $O/artifacts/J05-poi-parent-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFSheet.class | sha256sum | cut -c1-64); echo XSSFWorkbook.class $(unzip -p $O/artifacts/J05-poi-parent-poi-ooxml.jar org/apache/poi/xssf/usermodel/XSSFWorkbook.class | sha256sum | cut -c1-64); rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-parent.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-parent.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-parent.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 43.139,
+      "cpuSeconds": 133.113,
+      "cpuThrottledSeconds": 2.935,
+      "peakMemoryBytes": 1756459008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-j05-poi-parent-poi-ooxml-jar-o.log",
+        "lines": 90,
+        "bytes": 6147,
+        "sha256": "54fd5f04f66c71c7bd8bdcd998580b582bf27bd8db3312e91015c0cc046bd446",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "                              ^",
+        "/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-parent/poi-ooxml/src/main/java/org/apache/poi/xssf/usermodel/BaseXSSFFormulaEvaluator.java:172: warning: [deprecation] setCellType(CellType) in Cell has been deprecated",
+        "            cell.setCellType(cellType);",
+        "                ^",
+        "/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-parent/poi-ooxml/src/main/java/org/apache/poi/poifs/crypt/dsig/SignaturePart.java:365: warning: [unchecked] getPrefixes(String) in SignaturePart.XPathNSContext implements getPrefixes(String) in NamespaceContext",
+        "        public Iterator getPrefixes(String val) {",
+        "                        ^",
+        "  return type requires unchecked conversion from Iterator to Iterator<String>",
+        "/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-parent/poi-ooxml/src/main/java/org/apache/poi/poifs/crypt/dsig/services/RelationshipTransformService.java:115: warning: [deprecation] Provider(String,double,String) in Provider has been deprecated",
+        "            super(NAME, 1d, NAME);",
+        "            ^",
+        "10 warnings",
+        "",
+        "> Task :poi-ooxml:compileModuleInfo FROM-CACHE",
+        "> Task :poi-ooxml:classes",
+        "> Task :poi-ooxml:jar",
+        "",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J05-poi-parent/build/reports/problems/problems-report.html",
+        "",
+        "Deprecated Gradle features were used in this build, making it incompatible with Gradle 10.",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 21s",
+        "15 actionable tasks: 10 executed, 5 from cache",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html",
+        "built-jar=build/dist/maven/poi-ooxml/poi-ooxml-6.1.0-SNAPSHOT.jar",
+        "f41126458a52fe68421ba0a47276781750306296699fbd9da033f31d2e77ffc8  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J05-poi-parent-poi-ooxml.jar",
+        "XSSFHyperlink.class e67911994a9acbb27c4438d6849ed24ae062c7721f3b8fc5d6020d1668dee917",
+        "XSSFSheet.class 27e210e09b286e1e6a195d7a3767e038a76ed154cc5a0a2a41bb92e91070395f",
+        "XSSFWorkbook.class 0118e25416f3e0a2cf649d12006aa7f297cf5640a434be00b673739448620025",
+        "gradle-test-exit=0",
+        "For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 20s",
+        "33 actionable tasks: 10 executed, 9 from cache, 14 up-to-date",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html",
+        "junit tests=26 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "J05-poi-parent: the landed TestXSSFHyperlink transplanted (expected to fail)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-parent; echo worktree=J05-poi-parent commit=$(git rev-parse HEAD); git -C $W/J05-poi-parent show c94ee8ad9096bdb8cf8e5e59d8d12432e950dbf3:poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java > $W/J05-poi-parent/poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java; echo transplanted poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java from c94ee8ad9096bdb8cf8e5e59d8d12432e950dbf3; rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt; git -C $W/J05-poi-parent checkout -q -- poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java; git -C $W/J05-poi-parent status --short --untracked-files=no; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-parent.transplanted.TestXSSFHyperlink.junit.txt | cut -d= -f2) )) -gt 0; echo landed-test-fails-on-parent=yes; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 14.225,
+      "cpuSeconds": 43.593,
+      "cpuThrottledSeconds": 0.976,
+      "peakMemoryBytes": 1265557504,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-j05-poi-parent-the-landed-test.log",
+        "lines": 15,
+        "bytes": 898,
+        "sha256": "9d2f5652a9369afa02d36dcf7deea81b8138b7918cbbb40de08f5fed7ab194a0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J05-poi-parent commit=72ad1d5e111c2cd00c4842a0431eb1d9ca4b605c",
+        "transplanted poi-ooxml/src/test/java/org/apache/poi/xssf/usermodel/TestXSSFHyperlink.java from c94ee8ad9096bdb8cf8e5e59d8d12432e950dbf3",
+        "gradle-test-exit=1",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD FAILED in 13s",
+        "33 actionable tasks: 3 executed, 30 up-to-date",
+        "junit tests=30 failures=5 errors=0 skipped=0",
+        "junit failed TestXSSFHyperlink#testAddRemovedLoadedHyperlinkAgain()",
+        "junit failed TestXSSFHyperlink#testCloneSheetWithLoadedHyperlinkKeepsWorkbookRelationships()",
+        "junit failed TestXSSFHyperlink#testMoveLoadedHyperlinkToAnotherSheet()",
+        "junit failed TestXSSFHyperlink#testRemoveSharedHyperlinkFromOneCell()",
+        "junit failed TestXSSFHyperlink#testSetAddressOfRemovedHyperlink()",
+        "landed-test-fails-on-parent=yes"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "J05-poi-fix: TestXSSFHyperlink again, offline",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem; G=\"./gradlew --no-daemon --console=plain --offline -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$HOME/.sdkman/candidates/java/17.0.21.0+9-tem\"; cd $W/J05-poi-fix; echo worktree=J05-poi-fix commit=$(git rev-parse HEAD); rm -rf poi-ooxml/build/test-results/test; set +e; $G :poi-ooxml:test --rerun --tests 'org.apache.poi.xssf.usermodel.TestXSSFHyperlink' > $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-test-exit=$rc; tail -5 $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.gradle-log.txt; summarize poi-ooxml/build/test-results/test | tee $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J05-poi-fix.offline.TestXSSFHyperlink.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 11.426,
+      "cpuSeconds": 35.347,
+      "cpuThrottledSeconds": 0.545,
+      "peakMemoryBytes": 1213440000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-j05-poi-fix-testxssfhyperlink.log",
+        "lines": 8,
+        "bytes": 498,
+        "sha256": "f85c964f64a0450cd094e20e6c2fe9868aa6385a7cf48ed5a509bfaaf6173949",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J05-poi-fix commit=c94ee8ad9096bdb8cf8e5e59d8d12432e950dbf3",
+        "gradle-test-exit=0",
+        "For more on this, please refer to https://docs.gradle.org/9.9.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 11s",
+        "33 actionable tasks: 1 executed, 32 up-to-date",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.9.1/userguide/configuration_cache_enabling.html",
+        "junit tests=30 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/J05-poi-fix clean -fdxq; git -C $W/J05-poi-parent clean -fdxq; du -sh $W",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 1.003,
+      "cpuSeconds": 0.884,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 7921664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-remove-the-build-trees.log",
+        "lines": 1,
+        "bytes": 60,
+        "sha256": "b1101c551570ae4daa86a25d495e346ea72426b277af598ce89bf73a9da62f22",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "1.6G\t/home/filip/.cache/in-the-loop/organic-pr-20/worktrees"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T20:42:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T203908Z-1047748f972f74ed"
+    }
+  }
+}

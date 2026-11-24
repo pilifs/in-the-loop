@@ -1,0 +1,314 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-203513-setup-build-lucene-core-and-join-at-both",
+  "title": "Setup: build Lucene core and join at both #15727 revisions and run the landed block-join tests",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 56.1s, peak 1.3 GiB (estimated 20m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-203513-setup-build-lucene-core-and-join-at-both.json",
+    "sha256": "13d937a57f4a416fcc2f34916515cb335182564bd85f1bc51ebd767a2b3281c4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-203513-setup-build-lucene-core-and-join-at-both",
+      "title": "Setup: build Lucene core and join at both #15727 revisions and run the landed block-join tests",
+      "description": "Setup for case J14 of llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/organic-pr-20/worktrees (J14-lucene-fix = 167503f6, J14-lucene-parent = 182ee9c4; Lucene 11.0.0-SNAPSHOT, minJava 25), runs the upstream ./gradlew (wrapper jar and Gradle 9.3.1 checked against services.gradle.org by the setup session) on JDK 25.0.5 with the cache's GRADLE_USER_HOME: builds lucene-core and lucene-join jars and runs TestBlockJoinSorting and TestBlockJoinSelector with tests.seed=DEADBEEF, first on the fix online, then on the parent (its own copies) offline, then the fix again offline. No transplant: the landed tests call constructors and a wrap overload that only the fix has, so they do not compile on the parent (shown by the setup's overlay run). Jars to .../artifacts with sha256, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md",
+          "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md"
+        ]
+      },
+      "expected": "every step exits 0: both sides' own block-join tests pass, the fix's offline rerun passes, jars are copied",
+      "submitted": {
+        "at": "2026-11-24T20:35:13+00:00",
+        "session": "9c1d1c59-e947-449f-97e1-6ebf7cc523bb",
+        "by": "setup agent (Claude Opus 5.5), fork C"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 6.0,
+        "memory": "6G",
+        "duration": "20m"
+      },
+      "steps": [
+        {
+          "name": "J14-lucene-fix: lucene:core and lucene:join jars, landed TestBlockJoinSorting/TestBlockJoinSelector (online)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-fix; echo worktree=J14-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4  :lucene:core:jar :lucene:join:jar :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-fix.online.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-fix-core.jar; J=$(ls lucene/join/build/libs/lucene-join-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-fix-join.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-fix-join.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "J14-lucene-parent: jars and its own TestBlockJoinSorting/TestBlockJoinSelector (offline)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-parent; echo worktree=J14-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4 --offline :lucene:core:jar :lucene:join:jar :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-parent.offline.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-parent-core.jar; J=$(ls lucene/join/build/libs/lucene-join-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-parent-join.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-parent-join.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "J14-lucene-fix: the landed tests again (offline)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-fix; echo worktree=J14-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4 --offline :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/J14-lucene-fix clean -fdxq; git -C $W/J14-lucene-fix status --short; git -C $W/J14-lucene-parent clean -fdxq; git -C $W/J14-lucene-parent status --short; du -sh $W/J14-*",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "9958b09d805c22a194bb4cba2043f453a38e8055",
+  "startedAt": "2026-11-24T20:36:27+00:00",
+  "finishedAt": "2026-11-24T20:37:35+00:00",
+  "wallSeconds": 68.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1788994,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 6.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4800.0
+  },
+  "estimate": {
+    "cpus": 6.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1444409344,
+    "wallSeconds": 56.1,
+    "cpuSeconds": 82.6,
+    "memoryOfEstimate": 0.22,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "J14-lucene-fix: lucene:core and lucene:join jars, landed TestBlockJoinSorting/TestBlockJoinSelector (online)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-fix; echo worktree=J14-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4  :lucene:core:jar :lucene:join:jar :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-fix.online.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-fix.online.join.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-fix-core.jar; J=$(ls lucene/join/build/libs/lucene-join-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-fix-join.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-fix-join.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 22.846,
+      "cpuSeconds": 32.585,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1377042432,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-j14-lucene-fix-lucene-core-and.log",
+        "lines": 12,
+        "bytes": 925,
+        "sha256": "5fac3161f5f1a7df82c06821d482dff426024b78384e5353184cbc549b9254ac",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J14-lucene-fix commit=167503f6d84d8e43db4ec6ae3baf17337290393f",
+        "gradle-exit=0",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J14-lucene-fix/build/reports/problems/problems-report.html",
+        "",
+        "BUILD SUCCESSFUL in 22s",
+        "23 actionable tasks: 17 executed, 6 up-to-date",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.3.1/userguide/configuration_cache_enabling.html",
+        "junit tests=7 failures=0 errors=0 skipped=0",
+        "built-jar=lucene/core/build/libs/lucene-core-11.0.0-SNAPSHOT.jar",
+        "8b9ffdb814889600e2fc11f40bd2123570eed05d938ac5f23f6176a57a90b7b2  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J14-lucene-fix-core.jar",
+        "built-jar=lucene/join/build/libs/lucene-join-11.0.0-SNAPSHOT.jar",
+        "a6b588f917be51515eb65f9b530be8d0a627fd30d10d087f31a78ef9d6f62e4a  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J14-lucene-fix-join.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "J14-lucene-parent: jars and its own TestBlockJoinSorting/TestBlockJoinSelector (offline)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-parent; echo worktree=J14-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4 --offline :lucene:core:jar :lucene:join:jar :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-parent.offline.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-parent.offline.join.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-parent-core.jar; J=$(ls lucene/join/build/libs/lucene-join-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/J14-lucene-parent-join.jar; echo built-jar=$J; sha256sum $O/artifacts/J14-lucene-parent-join.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 22.45,
+      "cpuSeconds": 33.674,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1444409344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-j14-lucene-parent-jars-and-its.log",
+        "lines": 12,
+        "bytes": 937,
+        "sha256": "3e533d4c839888c875bd72b19b8ce25684d116b6511f380ccebdd6b700b76446",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J14-lucene-parent commit=182ee9c4cc3bc52ace12e699248b750377a3aa2f",
+        "gradle-exit=0",
+        "[Incubating] Problems report is available at: file:///home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J14-lucene-parent/build/reports/problems/problems-report.html",
+        "",
+        "BUILD SUCCESSFUL in 21s",
+        "23 actionable tasks: 21 executed, 2 up-to-date",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.3.1/userguide/configuration_cache_enabling.html",
+        "junit tests=4 failures=0 errors=0 skipped=0",
+        "built-jar=lucene/core/build/libs/lucene-core-11.0.0-SNAPSHOT.jar",
+        "2178ad5cc66d63da8686eb29c024fc443fe2edff8dcbeda98dfa93e8d8586de6  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J14-lucene-parent-core.jar",
+        "built-jar=lucene/join/build/libs/lucene-join-11.0.0-SNAPSHOT.jar",
+        "de89cbce23adf3a614f7955c019a21c60e66d0ec7d50d5124890cd3271fb46b7  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J14-lucene-parent-join.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "J14-lucene-fix: the landed tests again (offline)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$HOME/.sdkman/candidates/java/25.0.5.0+8-tem; cd $W/J14-lucene-fix; echo worktree=J14-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-9.3.1.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/join/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4 --offline :lucene:join:test --rerun --tests TestBlockJoinSorting --tests TestBlockJoinSelector > $O/logs/J14-lucene-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/J14-lucene-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/join/build/test-results/test | tee $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J14-lucene-fix.rerun.offline.join.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 10.434,
+      "cpuSeconds": 16.066,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 931950592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-j14-lucene-fix-the-landed-test.log",
+        "lines": 8,
+        "bytes": 381,
+        "sha256": "6254383e6dd49b4377f8069b669cbc3198a9da05b4106f63ad463676bed6f9b8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J14-lucene-fix commit=167503f6d84d8e43db4ec6ae3baf17337290393f",
+        "gradle-exit=0",
+        "> Task :lucene:join:wipeTaskTemp UP-TO-DATE",
+        "",
+        "BUILD SUCCESSFUL in 9s",
+        "22 actionable tasks: 3 executed, 19 up-to-date",
+        "Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.3.1/userguide/configuration_cache_enabling.html",
+        "junit tests=7 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp GRADLE_USER_HOME=$O/gradle-home; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/J14-lucene-fix clean -fdxq; git -C $W/J14-lucene-fix status --short; git -C $W/J14-lucene-parent clean -fdxq; git -C $W/J14-lucene-parent status --short; du -sh $W/J14-*",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4800.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.251,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 9555968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-remove-the-build-trees.log",
+        "lines": 2,
+        "bytes": 153,
+        "sha256": "dc23342e11383a29e233c51cfdf34c75c03e8eaa8eea9df5c5706f3621fd57ed",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "149M\t/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J14-lucene-fix",
+        "149M\t/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J14-lucene-parent"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T20:42:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T203735Z-856982b2525ad3e9"
+    }
+  }
+}
