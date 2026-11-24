@@ -138,6 +138,21 @@ public final class LiveMapViews {
                 && System.getProperty("missing", "fallback") == "fallback";
     }
 
+    public static boolean removeInheritedProperty(boolean head) {
+        Properties parent = new Properties();
+        String first = new String("first"), second = new String("second");
+        parent.setProperty("Aa", first);
+        parent.setProperty("BB", second); // String hash collision, two nodes in the same bucket.
+        Properties child = new Properties(parent);
+        System.setProperties(child);
+        String removed = head ? "Aa" : "BB", retained = head ? "BB" : "Aa";
+        String old = head ? first : second, remaining = head ? second : first;
+        return !child.containsKey(removed) && System.getProperty(removed) == old
+            && parent.remove(removed) == old && System.getProperty(removed) == null
+            && parent.getProperty(retained) == remaining && System.getProperty(retained) == remaining
+            && parent.size() == 1 && child.isEmpty();
+    }
+
     public static boolean synchronizedBacking() {
         try {
             Collections.synchronizedMap(null);
@@ -158,7 +173,7 @@ public final class LiveMapViews {
                 || losesNonEmptyProperties()) throw new AssertionError();
         Properties original = System.getProperties();
         try {
-            if (!installedProperties()) throw new AssertionError();
+            if (!installedProperties() || !removeInheritedProperty(true) || !removeInheritedProperty(false)) throw new AssertionError();
         } finally {
             System.setProperties(original);
         }

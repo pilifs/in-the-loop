@@ -1130,9 +1130,9 @@ impl ClassPath {
             && field.is_static() && field.descriptor == desc).then_some(f.name)
     }
 
-    /// Follow the read-only UTF-8 decoder callback to the JavaLangAccess
-    /// implementation installed by System during VM startup in this image.
-    pub(crate) fn utf8_language_access(&self) -> Option<String> {
+    /// Check that the JDK holder's final JLA field receives the fieldless provider
+    /// installed by System during bootstrap, through the actual SharedSecrets getter.
+    pub(crate) fn language_access_provider(&self, holder: &str) -> Option<String> {
         use crate::classfile::{Insn::*, Kind};
         let image = |owner: &str| match self.load(owner).ok()?? {
             Loaded { class, origin: Origin::Jdk } => Some(class), _ => None,
@@ -1159,22 +1159,30 @@ impl ClassPath {
         if ctor.owner != provider || ctor.name != "<init>" || ctor.descriptor != "()V"
             || assign.owner != shared.name || assign.name != "setJavaLangAccess" || assign.descriptor != "(Ljdk/internal/access/JavaLangAccess;)V" { return None; }
         let implementation = image(provider)?;
-        if !implementation.interfaces.iter().any(|i| i == access) || implementation.fields.iter().any(|f| !f.is_static()) { return None; }
+        if implementation.super_class.as_deref() != Some("java/lang/Object") || !implementation.interfaces.iter().any(|i| i == access)
+            || implementation.fields.iter().any(|f| !f.is_static()) { return None; }
         let bootstrap = system.method("initPhase1", "()V")?.code.as_ref()?.instructions().ok()?;
         if !matches!(bootstrap.first(), Some((_,InvokeStatic(i))) if system.pool.member(*i)
             .is_ok_and(|m| m.owner == system.name && m.name == "setJavaLangAccess" && m.descriptor == "()V")) { return None; }
-        let utf = image("sun/nio/cs/UTF_8")?;
-        let init = code(&utf, "<clinit>", "()V")?;
-        let final_field = utf.field("JLA")?;
+        let holder = image(holder)?;
+        let init = code(&holder, "<clinit>", "()V")?;
+        let final_field = holder.field("JLA")?;
         if !final_field.is_static() || !final_field.is_final() || final_field.descriptor != field.descriptor
             || !matches!(init.last(), Some((_, Return(None)))) || init[..init.len()-1].iter().any(|(_, op)| !op.targets().is_empty() || matches!(op, Return(_) | Ret(_))) { return None; }
-        let mut writes = init.iter().enumerate().filter(|(_,(_,op))| matches!(op, PutStatic(i) if utf.pool.member(*i)
-            .is_ok_and(|m| m.owner == utf.name && m.name == "JLA" && m.descriptor == field.descriptor)));
+        let mut writes = init.iter().enumerate().filter(|(_,(_,op))| matches!(op, PutStatic(i) if holder.pool.member(*i)
+            .is_ok_and(|m| m.owner == holder.name && m.name == "JLA" && m.descriptor == field.descriptor)));
         let (at, _) = writes.next()?;
         let InvokeStatic(index) = init[at.checked_sub(1)?].1 else { return None };
-        let get = utf.pool.member(index).ok()?;
+        let get = holder.pool.member(index).ok()?;
         (writes.next().is_none() && get.owner == shared.name && get.name == "getJavaLangAccess"
             && get.descriptor == "()Ljdk/internal/access/JavaLangAccess;").then(|| provider.to_owned())
+    }
+
+    /// The Java 25 DataInputStream initializer caches the VM's existing provider for readUTF.
+    pub(crate) fn data_input_access(&self, caller: &str, method: &str, member: &crate::classfile::MemberRef) -> Option<String> {
+        if caller != "java/io/DataInputStream" || method != "<clinit>" || member.owner != "jdk/internal/access/SharedSecrets"
+            || member.name != "getJavaLangAccess" || member.descriptor != "()Ljdk/internal/access/JavaLangAccess;" { return None; }
+        self.language_access_provider(caller)
     }
 
     /// JDK array operations and the character and collection methods used by their callers.
@@ -1669,6 +1677,7 @@ impl ClassPath {
             | ("get" | "remove", "(Ljava/lang/Object;)Ljava/lang/Object;") | ("containsKey", "(Ljava/lang/Object;)Z")
             | ("put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | ("putVal", "(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;")
+            | ("replaceNode", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | ("initTable", "()[Ljava/util/concurrent/ConcurrentHashMap$Node;")
             | ("forEach", "(Ljava/util/function/BiConsumer;)V")
             | ("putAll", "(Ljava/util/Map;)V") | ("tryPresize", "(I)V") | ("entrySet", "()Ljava/util/Set;")

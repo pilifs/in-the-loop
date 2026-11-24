@@ -1213,6 +1213,16 @@ impl<'a> Machine<'a> {
                     self.statics.retain(|c, _| c == crate::pairing::CLASS);
                     self.init.retain(|c, _| c == crate::pairing::CLASS);
                     None
+                } else if let Some(provider) = self.cp.data_input_access(&class.name, &method.name, &member) {
+                    let value = match self.statics.get("<JVM.languageAccess>").and_then(|fields| fields.get("object")).copied() {
+                        Some(value) => value,
+                        None => {
+                            let value = Value::Ref(self.alloc(Object::Instance { class: provider, fields: BTreeMap::new(), base: Base::Object }));
+                            self.statics.entry("<JVM.languageAccess>".into()).or_default().insert("object".into(), value);
+                            value
+                        }
+                    };
+                    Some(value)
                 } else if crate::bmc::runtime::property_call(&member.owner, &member.name, &member.descriptor) {
                     self.system_property(&member.name, &args, matches!(code.insns.get(*i + 1), Some(Insn::Pop)))?
                 } else if self.cp.is_application(&member.owner) || self.cp.state_image_class(&member.owner).is_some() || self.cp.map_image_class(&member.owner).is_some() {

@@ -1051,6 +1051,7 @@ enum Literal {
     CollectionsEmptyList,
     CollectionsEmptySet,
     HashSetPresent,
+    JavaLangAccess(String),
     BasicBase64Decoder,
     BasicBase64Encoder,
     EmptySuppressedArray,
@@ -2609,6 +2610,7 @@ impl<'a> Engine<'a> {
                         Literal::BasicBase64Encoder => "java/util/Base64$Encoder",
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
+                        Literal::JavaLangAccess(provider) => provider.as_str(),
                         Literal::AsciiBoxes => "[Ljava/lang/Character;",
                         Literal::LineSeparator => STRING,
                         Literal::Truth(_) => runtime::BOOLEAN,
@@ -4220,8 +4222,8 @@ impl<'a> Engine<'a> {
                         self.advance(path);
                         return Ok(None);
                     }
-                    if let Some(provider) = self.cp.utf8_language_access() {
-                        let object = self.alloc(path, &provider);
+                    if let Some(provider) = self.cp.language_access_provider(&declaring) {
+                        let object = self.literal(path, Literal::JavaLangAccess(provider.clone()), &provider);
                         let value = Val::R(Some(object));
                         path.statics.insert(slot, value.clone());
                         self.push(path, value);
@@ -5113,7 +5115,7 @@ impl<'a> Engine<'a> {
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
                 o
             }
-            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::BasicBase64Decoder | Literal::BasicBase64Encoder => self.alloc(path, class),
+            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::JavaLangAccess(_) | Literal::BasicBase64Decoder | Literal::BasicBase64Encoder => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
                 path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());
@@ -5260,10 +5262,34 @@ impl<'a> Engine<'a> {
     /// a model's is called, a JDK method the engine models is computed, and any other is a gap or refused. A
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
+        if let Some(provider) = self.cp.data_input_access(caller, &path.frames.last().expect("a frame").method, member) {
+            let access = self.literal(path, Literal::JavaLangAccess(provider.clone()), &provider);
+            self.push(path, Val::R(Some(access)));
+            self.advance(path);
+            return Ok(None);
+        }
         if caller == crate::models::CONCURRENT_MAP && member.owner == caller && member.name == "casTabAt"
             && member.descriptor == "([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$Node;)Z"
             && !self.cp.runs_model(caller) && self.cp.known_concurrent_table() {
             return self.concurrent_slot_cas(path);
+        }
+        // The selected single-threaded image stores the reference with release ordering.
+        // Its offset calculation is an ordinary array index only on this typed, in-bounds path.
+        if caller == crate::models::CONCURRENT_MAP && member.owner == caller && member.name == "setTabAt"
+            && member.descriptor == "([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;)V"
+            && !self.cp.runs_model(caller) && self.cp.known_concurrent_table() {
+            let stack = &path.frames.last().expect("a frame").stack;
+            if let [.., Val::R(Some(o)), Val::I(index), Val::R(update)] = stack.as_slice() {
+                let target = &path.objects[*o];
+                let node = "java/util/concurrent/ConcurrentHashMap$Node";
+                if target.class == "[Ljava/util/concurrent/ConcurrentHashMap$Node;"
+                    && update.is_none_or(|r| self.cp.is_subtype(&path.objects[r].class, node))
+                    && target.as_array().is_some_and(|a| matches!(
+                        (self.b.constant_value(index), self.b.constant_value(&a.length)), (Some(i), Some(n)) if i >= 0 && i < n)) {
+                    return self.array_insn(path, &Insn::ArrayStore(ArrayKind::Ref));
+                }
+            }
+            return unsupported("ConcurrentHashMap.setTabAt requires an in-bounds Node array slot and a compatible value");
         }
         if self.cp.concurrent_table_read(&member.owner, &member.name, &member.descriptor) {
             let stack = &path.frames.last().expect("a frame").stack;

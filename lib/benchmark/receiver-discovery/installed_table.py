@@ -101,7 +101,7 @@ public class InstalledCaller {{
                 attempt = native(checker, cp, owner + "#" + name, guard, 64, 128, 60, temp / name)
                 if attempt["verdict"] == "verified" and any(v != "returned true" for v in output):
                     raise ValueError(("positive contradicts original JVM", name, output))
-                if case == "controls" and name in ("liveIdentity", "wrongIdentity") and attempt["verdict"] != (
+                if case == "controls" and name in ("liveIdentity", "wrongIdentity", "ownAndInherited", "nonStringPrevious") and attempt["verdict"] != (
                         "verified" if expected else "violation"):
                     raise ValueError((name, attempt["verdict"], attempt["problem"]))
                 rows[name] = {"jvm": output, "native": summary(attempt)}
