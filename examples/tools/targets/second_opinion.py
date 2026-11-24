@@ -25,6 +25,10 @@ REQUESTS = {
 }
 
 
+class BindingError(ValueError):
+    """The selected deployment and the registered external request describe different subjects."""
+
+
 def digest(path):
     with Path(path).open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
@@ -80,27 +84,27 @@ def bind(folder, target, spec, request, work):
                "range-fill-caller-frame-observation-v1" if "caller" in spec else "range-fill-frame-v1")
     if (len(lines) != len(fields) or fields["request"] != "1" or
             (fields["environment"], fields["theorem"], fields["entry"]) != (ENVIRONMENT, theorem, f"{name} {desc}")):
-        raise ValueError("external request disagrees with the selected contract")
+        raise BindingError("external request disagrees with the selected contract")
     artifact = extract(owner, home, jars, work / "class.bin")
     if fields["class"] != f"{owner} {digest(artifact)}":
-        raise ValueError("original class does not match the external request")
+        raise BindingError("original class does not match the external request")
     dependencies = []
     if "caller" in spec:
         called, method, signature = runtime_jar.parse_target(spec["entry"])
         dependency = called.replace(".", "/")
         role = "callee"
         if fields["companion"] != f"{method} {signature}":
-            raise ValueError("caller request selects a different callee method")
+            raise BindingError("caller request selects a different callee method")
     else:
         dependency = runtime_jar.super_class(artifact.read_bytes())
         role = "support"
     if dependency and dependency != "java/lang/Object":
         bound = extract(dependency, home, jars, work / "dependency.bin")
         if fields.get(role) != f"{dependency} {digest(bound)}":
-            raise ValueError(f"external {role} differs from the deployed class")
+            raise BindingError(f"external {role} differs from the deployed class")
         dependencies.append(bound)
     elif "support" in fields or "callee" in fields:
-        raise ValueError("external request adds an unbound dependency")
+        raise BindingError("external request adds an unbound dependency")
     classes = {owner: digest(artifact)}
     if dependencies:
         classes[dependency] = digest(dependencies[0])
@@ -124,13 +128,17 @@ def classify(run, request_sha, fields):
         return "independently established" if count != output and count.isdecimal() and int(count) > 0 else "checker unavailable"
     if code == 2 and output.startswith("rejected checked witness "):
         return "checked counterexample"
+    if code == 3 and output in ("unsupported cut point or cursor local", "unsupported range cut point or cursor"):
+        return "invalid evidence"
     if code == 3 and output.startswith("unsupported "):
         return "unsupported scope"
     if code == 2 and output.startswith("rejected "):
         reason = output.removeprefix("rejected ")
         if reason.startswith(("certificate", "missing obligation", "unexpected obligation", "duplicate obligation",
                               "missing hints", "external ", "support class", "superclass resolution",
-                              "missing external", "invalid witness", "bad support")):
+                              "missing external", "invalid witness", "bad support", "missing prefix invariant",
+                              "missing written-prefix cut", "invalid cut PC", "invalid cursor slot",
+                              "invalid range cut PC", "invalid range cursor slot", "witness outside int domain")):
             return "invalid evidence"
         return "unsupported scope"
     return "checker unavailable"
@@ -158,6 +166,8 @@ def evaluate(folder, target, spec, work, supplied_kernel=None, supplied_evidence
         return {**result, "assurance": "unsupported scope", "reason": "no independently registered request for this contract"}
     try:
         check_bound(folder, target, spec, work, selection, supplied_kernel, supplied_evidence, result)
+    except BindingError as exc:
+        result.update(assurance="invalid evidence", reason=str(exc))
     except (ValueError, OSError, KeyError, subprocess.SubprocessError) as exc:
         result.update(assurance="checker unavailable", reason=str(exc))
     result["times"]["wholeRun"] = time.monotonic() - start
@@ -177,7 +187,7 @@ def check_bound(folder, target, spec, work, selection, supplied_kernel, supplied
     if (primary["sourceKey"] != deployment["sourceKey"] or primary["classpath"] != deployment["classpath"] or
             {k: v["sha256"] for k, v in primary["classes"].items()} != deployment["classes"] or
             primary["jdk"] != deployment["jdk"] or primary["preparation"] != deployment["preparation"]):
-        raise ValueError("the two preparations select different inputs")
+        raise BindingError("the two preparations select different inputs")
     result.update(request=request.read_text(), requestSha256=digest(request), deployment=deployment)
     result["times"]["independentPreparation"] = time.monotonic() - clock
     clock = time.monotonic()
