@@ -2,7 +2,8 @@
 
 Mechanical setup for [`organic-java-pr-product-behaviour-20-additional-cases.md`](organic-java-pr-product-behaviour-20-additional-cases.md),
 done on 2026-11-24 by a setup session (Claude Opus 5.5) and four forks of it, before the domain work starts. Four
-upstream builds were queued as verification jobs; their results are added under [Jobs](#jobs) when they have run.
+upstream builds ran as verification jobs (see [Jobs](#jobs)): POI, Lucene and Eclipse Collections passed; Calcite's was
+resubmitted after a first failure and is pending.
 
 The session writes no claims, examples, sidecars, adapters, observers or checker code, and allocates no example ids. It
 runs neither the project verifier nor JBMC. Everything fetched or built is outside the checkout.
@@ -128,19 +129,19 @@ the release itself. "Landed test" is fix / parent's own / fix's test on the pare
 | J02 jsoup | source build | — | 6/6, 5/5, **1 fails** | — | inline |
 | J03 JFreeChart | source build (`maven/pom-1.6.xml`, 1.0.20) | — | none (no test changed) | matches | inline |
 | J04 ical4j | overlay over 4.4.0 | parent | 94/94, 91/91, **3 fail** | — | inline (Gradle 8.5) |
-| J05 POI | overlay over 6.0.0 (+ `ArrayFormulaRanges`) | **fix** (6.0.0 behaves like the fix) | job | matches | job |
+| J05 POI | overlay over 6.0.0 (+ `ArrayFormulaRanges`) | **fix** (6.0.0 behaves like the fix) | 30/30, 26/26, **5 fail** | matches | job, passed |
 | J06 Zip4j | source build | — | none | matches | inline |
 | J07 Commons Compress | overlay over 1.26.0, and source build | **fix** | 25/25, 24/24, **1 fails** | matches | inline |
 | J08 Parquet | overlay over 1.18.2 (+ unshaded fastutil) | **fix** | overlay run: 24/24, 22/22, **2 fail** | — | not possible (`thrift` 0.23.0 binary) |
 | J09 SQLite JDBC | release pair 3.8.11.2 / 3.14.2; native rebuilt at both pins | — | rebuilt native: 10/10, 7/7, **1 error** | matches (releases and pins) | inline |
 | J10 Kryo | overlay over 4.0.2, and source build | **fix** | 23/23, 23/23, **1 error** | — | inline |
 | J11 H2 | overlay over 2.5.252, and source build | parent | pass, pass, **fails** (`main` run) | matches | inline |
-| J12 Calcite | release pair 1.18.0 / 1.19.0; PR pair by job | (1.19.0 has the PR) | job | matches (releases) | job |
+| J12 Calcite | release pair 1.18.0 / 1.19.0; PR pair by job | (1.19.0 has the PR) | job pending | matches (releases) | job pending (first try failed) |
 | J13 Maven | overlay over 3.9.12 (two variants), and `maven-artifact` build | parent | 57/57, 44/44, **11 failures, 1 error** | matches | inline |
-| J14 Lucene | overlay over 10.4.0 | parent | overlay run: 7/7, 4/4, fix tests don't compile on the parent | matches | job |
+| J14 Lucene | overlay over 10.4.0 | parent | 7/7, 4/4 (upstream and overlay); fix tests don't compile on the parent | matches | job, passed |
 | J15 Spring Batch | overlay over 3.0.7.RELEASE | neither (3.0.7 predates the PR) | none | matches | not possible (repo.spring.io 401) |
 | J16 JGraphT | overlay over 1.5.1 | fix (copyright and formatting differ) | none | matches, both assertion profiles | not attempted (none needed) |
-| J17 Eclipse Collections | overlay over 10.2.0 | **fix** | overlay run: 960 pass in every combination (preservation) | — | job |
+| J17 Eclipse Collections | overlay over 10.2.0 | **fix** | 960 pass in every combination, upstream and overlay (preservation) | — | job, passed |
 | J18 Caffeine | overlay over jcache 2.6.1 + cache-api 1.0.0 | neither | overlay run: 2/2, (new test), **`expiry` fails** | — | not possible (repo.spring.io 405, TestNG 6.12 gone) |
 | J19 Resilience4j | overlay over 1.3.1 | neither | overlay run: 27/27, 25/25, **3 fail** | — | not possible (plugin deps gone) |
 | J20 Micrometer | overlay over 1.10.0 | **fix** | overlay run: 20/20, 12/12, **2 fail** | — | not possible (repo.spring.io 401) |
@@ -400,7 +401,20 @@ checkout changed), and the same resolution then ran `--offline` at the fix (`$O/
 `$O/scripts/submit_B.py poi`). `:poi-ooxml:test` needs `:poi`, `:poi-ooxml-full` (the XMLBeans schema build),
 `:poi-scratchpad` and the ooxml-lite agent jar, which is over the inline limit. Steps: fix online (`:poi-ooxml:jar`,
 test), parent offline, the fix's test transplanted onto the parent (expected to fail), the fix again offline, clean.
-Results: pending.
+It **passed** (5/5 steps in 2m28s, peak 3.8 GiB; result committed in `7a5a81c460e8`):
+
+| Step | `TestXSSFHyperlink` |
+|---|---|
+| fix, online | 30/30 pass |
+| parent's own, offline | 26/26 pass |
+| fix's file transplanted onto the parent, offline | **5 of 30 fail**: `testAddRemovedLoadedHyperlinkAgain`, `testCloneSheetWithLoadedHyperlinkKeepsWorkbookRelationships`, `testMoveLoadedHyperlinkToAnotherSheet`, `testRemoveSharedHyperlinkFromOneCell`, `testSetAddressOfRemovedHyperlink` |
+| fix again, offline | 30/30 pass |
+
+Built `poi-ooxml-6.1.0-SNAPSHOT.jar`s:
+- `$O/artifacts/J05-poi-fix-poi-ooxml.jar`: `9d0ae6180b304856edec2a728baa561e063e31da1a128b510051cb0d4da077e9`
+- `$O/artifacts/J05-poi-parent-poi-ooxml.jar`: `f41126458a52fe68421ba0a47276781750306296699fbd9da033f31d2e77ffc8`
+
+Logs: `$O/logs/J05-poi-*.TestXSSFHyperlink.{gradle-log,junit}.txt`. The offline form below works.
 
 The command the job runs (from the worktree):
 
@@ -833,9 +847,16 @@ with identical output; `$O/logs/J12-probe-releases.txt`):
 This is the brief's statement (empty unordered bags on 1.18.0 only in the mixed query; the ordered column the same on both).
 The unordered bag prints in input order here; the brief compares it as a multiset.
 
-**Exact PR pair: job `20261124-203257-setup-build-apache-calcite-core-at-both`**
+**Exact PR pair.** The first job, `20261124-203257-setup-build-apache-calcite-core-at-both`, **failed** in every step
+within seconds (result committed in `9ef62f20d4a5`): the root project's `generate-git-id` profile runs
+`git-commit-id-plugin` 2.1.9, whose JGit cannot read the commit in a worktree of the shallow mirror ("Missing unknown
+f992e6c8fbc3712c6bd70096fb6b05da448b2cab"). The linq4j precheck had not built the root project, so it did not meet this.
+The plugin only writes `target/git.properties` (build metadata copied into each jar's `META-INF`). The resubmitted job,
+**`20261124-210513-setup-build-apache-calcite-core-at-both`** (pending), switches the profile off on the command line,
+`-P '!generate-git-id'`, with build files unchanged. An inline online `-pl core -am generate-resources` with that flag got past
+the root project; `$O/scripts/submit_D.py` now passes it. The job as first written: `20261124-203257-setup-build-apache-calcite-core-at-both`
 (`verification/jobs/2026/11/24/20261124-203257-setup-build-apache-calcite-core-at-both.json`, written by `$O/scripts/submit_D.py`;
-results pending). Steps: fix `-pl core -am -Dtest=CoreQuidemTest package` online; parent's own, offline; the fix's `agg.iq`
+it failed, as above; the resubmission has the same steps). Steps: fix `-pl core -am -Dtest=CoreQuidemTest package` online; parent's own, offline; the fix's `agg.iq`
 transplanted onto the parent, offline (expected to fail); fix again offline; remove build trees. It copies
 `$O/artifacts/J12-calcite-{parent,fix}-{core,linq4j}.jar` with sha256 and writes `$O/logs/J12-calcite-*.core.runtime-classpath.txt`
 and JUnit summaries `$O/logs/J12-calcite-*.CoreQuidemTest.junit.txt`. `--stop-on-failure no`, so a failing own run does
@@ -866,7 +887,7 @@ parameterized over every `sql/*.iq`, not only `agg.iq`.
 **For the domain agent**
 - The release pair also changes Jackson, SnakeYAML and Janino; Janino compiles the generated accumulator code, so it is part
   of what "bind the generated accumulator" depends on.
-- The job's results (and whether the offline form worked) are to be recorded when it has run.
+- The resubmitted job's results (and whether the offline form worked) are to be recorded when it has run.
 
 ### J13 · Apache Maven #13102
 
@@ -971,7 +992,7 @@ For the domain agent:
   They behave the same in the probe.
 - The 3.9.12 release behaves like the parent.
 
-### J14 · Apache Lucene #15727 — missing child values in ToParentBlockJoinSortField (overlay over Lucene 10.4.0; upstream build queued)
+### J14 · Apache Lucene #15727 — missing child values in ToParentBlockJoinSortField (overlay over Lucene 10.4.0; upstream build by job, passed)
 
 **Pins.** Parent `182ee9c4cc3bc52ace12e699248b750377a3aa2f`, fix `167503f6d84d8e43db4ec6ae3baf17337290393f` (squash, parent = the brief's).
 The pins are Lucene **11.0.0-SNAPSHOT** on `main` (`build-options.properties` `version.base=11.0.0`), with `minJava = "25"`
@@ -1057,6 +1078,17 @@ This is the brief's statement. The fix-only numeric overload and the 5/50 replac
 written by `$O/scripts/submit_C.py`). It runs the upstream `./gradlew` on JDK 25.0.5: `:lucene:core:jar :lucene:join:jar` and the two landed test
 classes (`-Ptests.seed=DEADBEEF -Ptests.jvms=4 --max-workers=4`) on the fix online, then on the parent (its own tests) offline, then the fix offline
 again; jars to `$O/artifacts/J14-lucene-{fix,parent}-{core,join}.jar`; build trees removed. No transplant step (it cannot compile).
+It **passed** (4/4 steps in 56 s, peak 1.3 GiB; result committed in `7a5a81c460e8`): the fix's landed tests 7/7 online and
+7/7 again offline, the parent's own 4/4 offline, as in the overlay run. Built `11.0.0-SNAPSHOT` jars:
+
+| Jar | sha256 |
+|---|---|
+| `$O/artifacts/J14-lucene-fix-core.jar` | `8b9ffdb814889600e2fc11f40bd2123570eed05d938ac5f23f6176a57a90b7b2` |
+| `$O/artifacts/J14-lucene-fix-join.jar` | `a6b588f917be51515eb65f9b530be8d0a627fd30d10d087f31a78ef9d6f62e4a` |
+| `$O/artifacts/J14-lucene-parent-core.jar` | `2178ad5cc66d63da8686eb29c024fc443fe2edff8dcbeda98dfa93e8d8586de6` |
+| `$O/artifacts/J14-lucene-parent-join.jar` | `de89cbce23adf3a614f7955c019a21c60e66d0ec7d50d5124890cd3271fb46b7` |
+
+The offline form (`./gradlew --offline` on JDK 25.0.5, from the worktree) works.
 Before it, the setup ran `./gradlew :lucene:join:dependencies --configuration testRuntimeClasspath` online inline (8 s), which compiled
 `build-infra` and resolved the test runtime graph (randomizedtesting-runner 2.8.4, junit 4.13.2, hamcrest 3.0). `versions.lock` is the same
 at both pins.
@@ -1219,7 +1251,19 @@ As the brief says, this is a preservation case: the landed collision assertions 
 `-pl unit-tests-java8 -am` builds the code generator, its Maven plugin, api and impl (generated primitive collections),
 testutils and the trait runner, which is over the inline limit. Maven 3.10.0 on JDK 8 (upstream CI used JDK 8; the
 reactor was validated online inline), `install` into `$O/m2` as upstream CI does; first step online, the rest offline;
-the transplant step expects a pass. Results: pending.
+the transplant step expects a pass. It **passed** (5/5 steps in 2m15s, peak 1.9 GiB; result committed in `7a5a81c460e8`):
+the ten classes ran **960 tests, 0 failures** on the fix online, on the parent's own tree offline, with the fix's
+`MutableMapIterableTestCase.java` transplanted onto the parent, and on the fix again offline. So the upstream build
+agrees with the overlay run: preservation. Built `10.2.0-SNAPSHOT` jars:
+
+| Jar | sha256 |
+|---|---|
+| `$O/artifacts/J17-eclipse-collections-fix-eclipse-collections.jar` | `454cc94d654861b560b53238ad6ca68b91c67218e409263ca90d6ee5b779af29` |
+| `$O/artifacts/J17-eclipse-collections-fix-eclipse-collections-api.jar` | `f436d48ee3f82a40c004ff77cf1e9db308987797018b7f1ddfd7981a80a15ca7` |
+| `$O/artifacts/J17-eclipse-collections-parent-eclipse-collections.jar` | `05a50c461a41beee4fb1162483542713148bb41f31ee7739607374c839ac7441` |
+| `$O/artifacts/J17-eclipse-collections-parent-eclipse-collections-api.jar` | `4e7641105fe40949e732586e7c7d66567d3bb1841ed3b78dfe308cd1ab62098b` |
+
+The offline form below works.
 
 ```bash
 O=~/.cache/in-the-loop/organic-pr-20; export TMPDIR=$O/tmp
@@ -1472,14 +1516,15 @@ is the published 7.5.1 one) on JDK 17 fails in `settings.gradle`: the settings p
 
 Written by `$O/scripts/submit_{B,C,D}.py` and committed with this record. Each builds the upstream project at both pins and
 runs the landed test: fix online, then the parent's own, the fix's test transplanted onto the parent (where it compiles),
-and the fix again, offline; then removes the build trees.
+and the fix again, offline; then removes the build trees. Results are under `verification/results/2026/11/24/`.
 
 | Job | Case | Status |
 |---|---|---|
-| `20261124-203257-setup-build-apache-calcite-core-at-both` | J12: Calcite `-pl core -am`, `CoreQuidemTest` (Maven 3.5.4, JDK 8) | pending |
-| `20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo` | J05: POI `:poi-ooxml:jar`, `TestXSSFHyperlink` (Gradle 9.9.1, JDK 17) | pending |
-| `20261124-203508-setup-build-eclipse-collections-at-both` | J17: `-pl unit-tests-java8 -am install`, the ten `MutableMapIterableTestCase` classes (JDK 8) | pending |
-| `20261124-203513-setup-build-lucene-core-and-join-at-both` | J14: `:lucene:core:jar :lucene:join:jar`, `TestBlockJoinSorting` and `TestBlockJoinSelector` (Gradle 9.3.1, JDK 25); no transplant step (the fix's tests do not compile on the parent) | pending |
+| `20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo` | J05: POI `:poi-ooxml:jar`, `TestXSSFHyperlink` (Gradle 9.9.1, JDK 17) | **passed**, 5/5 steps in 2m28s, peak 3.8 GiB: 30/30, 26/26, **5 of 30 fail** transplanted, 30/30 offline |
+| `20261124-203508-setup-build-eclipse-collections-at-both` | J17: `-pl unit-tests-java8 -am install`, the ten `MutableMapIterableTestCase` classes (JDK 8) | **passed**, 5/5 steps in 2m15s, peak 1.9 GiB: 960 tests pass in all four runs (preservation) |
+| `20261124-203513-setup-build-lucene-core-and-join-at-both` | J14: `:lucene:core:jar :lucene:join:jar`, `TestBlockJoinSorting` and `TestBlockJoinSelector` (Gradle 9.3.1, JDK 25); no transplant step | **passed**, 4/4 steps in 56 s, peak 1.3 GiB: 7/7, 4/4, 7/7 offline |
+| `20261124-203257-setup-build-apache-calcite-core-at-both` | J12: Calcite `-pl core -am`, `CoreQuidemTest` (Maven 3.5.4, JDK 8) | **failed** in seconds: `git-commit-id-plugin` cannot read the shallow worktree (see J12) |
+| `20261124-210513-setup-build-apache-calcite-core-at-both` | J12: the same with `-P '!generate-git-id'` | pending |
 
 ## Signatures
 
@@ -1575,14 +1620,15 @@ at the end.
 
 - **Landed tests**: each passes on the fix and on the parent's own copy, and fails when the fix's test is transplanted
   onto the parent.
-  - Upstream builds: J01 (1 failure), J02 (1), J04 (3), J07 (1), J10 (1 error), J11 (`main` run fails),
+  - Upstream builds: J01 (1 failure), J02 (1), J04 (3), J05 (5, by job), J07 (1), J10 (1 error), J11 (`main` run fails),
     J13 (11 failures, 1 error), and J09 with the rebuilt native library (1 error, `emptyBlob`).
   - Over the overlays with JUnit or TestNG, not the upstream build: J08 (2), J18 (`expiry`; the test is new, so the
     parent has no own copy), J19 (3), J20 (2).
-- **J17 is preservation**: the landed collision assertions pass everywhere. That is 960 tests per run over the overlays,
-  including the fix's tests on the parent overlay.
+- **J17 is preservation**: the landed collision assertions pass everywhere. That is 960 tests per run, in the upstream
+  build (by job) and over the overlays, including the fix's tests on the parent.
 - **J14**: the fix's landed tests do not compile on the parent, because they use fix-only constructors and a fix-only
-  `wrap` overload. The setup probe with the five-argument constructor is the discriminator.
+  `wrap` overload. The upstream build (by job) and the overlay run agree: 7/7 on the fix, 4/4 on the parent's own.
+  The setup probe with the five-argument constructor is the discriminator.
 - **The brief's preflight observations reproduced as stated** by setup probes on JDK 21.0.13:
   - J03: the second axis pans to `[-1,9]` on the parent and `[1,11]` on the fix.
   - J05: plain URL `IllegalStateException`, and `section` only, against the full target.
@@ -1647,8 +1693,10 @@ at the end.
   second commit alone.
 - **Unstable inputs**: built jars carry build timestamps (bind `$O/artifacts/` or the class digests); the overlay jars
   rebuild identically. No outside SNAPSHOT dependencies were used. J17's job installs `10.2.0-SNAPSHOT` modules into `$O/m2`.
-- **Jobs pending at the time of writing**: J05 POI, J12 Calcite, J14 Lucene and J17 Eclipse Collections upstream builds
-  (see [Jobs](#jobs)). Until they are recorded, J05's and J12's landed tests have not run on a JVM.
+- **J12's exact PR pair is still a pending job**, `20261124-210513-setup-build-apache-calcite-core-at-both` (see [Jobs](#jobs));
+  until it is recorded, J12's landed `agg.iq` has not run on a JVM. The first try failed on `git-commit-id-plugin`, so the
+  Calcite build takes `-P '!generate-git-id'`. The POI, Lucene and Eclipse Collections jobs passed. Their built jars are in
+  `$O/artifacts/` (`J05-poi-*-poi-ooxml.jar`, `J14-lucene-*-{core,join}.jar`, `J17-eclipse-collections-*.jar`).
 - H2's `TestBigResult` is not JUnit: run its `main` from a scratch folder, since it writes `./data`.
 
 ### What is left for the domain work on purpose

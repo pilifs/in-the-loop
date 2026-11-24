@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-24T20:11:11.511Z",
-  "ended": "2026-11-24T20:53:02.243Z",
-  "duration_seconds": 2511,
+  "ended": "2026-11-24T21:06:56.386Z",
+  "duration_seconds": 3345,
   "stats": {
     "turns": 7,
-    "api_calls": 71,
-    "tool_calls": 68,
-    "tool_errors": 3,
+    "api_calls": 97,
+    "tool_calls": 94,
+    "tool_errors": 4,
     "compactions": 0,
-    "peak_context_tokens": 242439,
+    "peak_context_tokens": 272884,
     "usage": {
-      "input_tokens": 154,
-      "output_tokens": 55418,
-      "cache_read_input_tokens": 10395975,
-      "cache_creation_input_tokens": 230711
+      "input_tokens": 206,
+      "output_tokens": 71595,
+      "cache_read_input_tokens": 17053399,
+      "cache_creation_input_tokens": 261156
     }
   },
   "tools": {
-    "Bash": 62,
+    "Bash": 88,
     "Agent": 4,
     "Read": 1,
     "Write": 1
@@ -41,24 +41,24 @@
     {
       "index": 0,
       "started": "2026-11-24T20:11:11.511Z",
-      "ended": "2026-11-24T20:53:02.243Z",
+      "ended": "2026-11-24T21:06:56.386Z",
       "turns": 7,
-      "api_calls": 71,
+      "api_calls": 97,
       "usage": {
-        "input_tokens": 154,
-        "output_tokens": 55418,
-        "cache_read_input_tokens": 10395975,
-        "cache_creation_input_tokens": 230711
+        "input_tokens": 206,
+        "output_tokens": 71595,
+        "cache_read_input_tokens": 17053399,
+        "cache_creation_input_tokens": 261156
       },
-      "peak_context_tokens": 242439
+      "peak_context_tokens": 272884
     }
   ],
   "log": {
-    "sha256": "4159c0b6f3e1125212a042af3a01462b9b0649c71f66ed6d1735096867849c4e",
-    "bytes": 1744435,
-    "lines": 732,
-    "gzip_bytes": 315462,
-    "path": "llm-dlc/traces/9c1d1c59-e947-449f-97e1-6ebf7cc523bb/logs/4159c0b6f3e1125212a042af3a01462b9b0649c71f66ed6d1735096867849c4e.jsonl.gz"
+    "sha256": "45325c69f6f4625827c500bd5c078568533d12c830640511292d195462338443",
+    "bytes": 2076487,
+    "lines": 889,
+    "gzip_bytes": 356249,
+    "path": "llm-dlc/traces/9c1d1c59-e947-449f-97e1-6ebf7cc523bb/logs/45325c69f6f4625827c500bd5c078568533d12c830640511292d195462338443.jsonl.gz"
   },
   "subagents": [
     {
@@ -202,6 +202,14 @@
       "summary": "Finish the twenty-case setup record with signatures and notes for the domain agent",
       "body": "Every one of the 264 release jars the setup resolved matches Central's sha1; 256 carry a valid PGP signature checked in the setup's own keyring (19 by keys revoked after the release, among them Spring's buildmaster key, revoked in 2023 as a precaution) and 8 old ones have no signature on Central. The record ends with the Setup Agent Notes for the domain agent: where each case's built, overlay or release artifacts are, what was verified on a JVM, which release already equals which side of each PR, the substitutions and unbuildable upstreams, and what is left on purpose. Four upstream-build jobs (POI, Calcite, Eclipse Collections, Lucene) are still pending. Five false-positive findings from this session's logs (version numbers read as IP addresses, a long test name) are proposed for the allow list.",
       "log_sha256": "4159c0b6f3e1125212a042af3a01462b9b0649c71f66ed6d1735096867849c4e"
+    },
+    {
+      "change_id": "lpvzruvmnwlmkpuwumwkvxtrqwpmqmkk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup jobs and resubmit the Calcite build (verification pending)",
+      "body": "Three upstream-build jobs of the twenty-case setup passed. POI poi-ooxml (J05): TestXSSFHyperlink 30/30 on the fix, 26/26 on the parent, 5 failures with the fix's test on the parent. Lucene core and join (J14): the landed tests 7/7 and 4/4. Eclipse Collections (J17): 960 map tests pass in all four runs, a preservation case. Their jars and digests are in the record. The Calcite job (J12) failed at once because git-commit-id-plugin cannot read a worktree of the shallow mirror; it is resubmitted as 20261124-210513-setup-build-apache-calcite-core-at-both with the generate-git-id profile switched off on the command line (the plugin only writes build metadata), checked inline to get past the root project.",
+      "log_sha256": "45325c69f6f4625827c500bd5c078568533d12c830640511292d195462338443"
     }
   ],
   "logs": {
@@ -215,6 +223,12 @@
       "bytes": 1744435,
       "lines": 732,
       "gzip_bytes": 315462,
+      "url": null
+    },
+    "45325c69f6f4625827c500bd5c078568533d12c830640511292d195462338443": {
+      "bytes": 2076487,
+      "lines": 889,
+      "gzip_bytes": 356249,
       "url": null
     },
     "75af0402e60cefbce3e6adae885e51df801a3c97631a0f2eff476d8c552a5674": {
