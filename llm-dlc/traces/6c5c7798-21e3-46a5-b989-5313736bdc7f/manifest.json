@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "open",
+  "status": "ended",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-24T06:11:25.670Z",
-  "duration_seconds": 737039,
+  "ended": "2026-11-24T06:41:05.748Z",
+  "duration_seconds": 738819,
   "stats": {
-    "turns": 1133,
-    "api_calls": 5020,
-    "tool_calls": 4547,
+    "turns": 1135,
+    "api_calls": 5026,
+    "tool_calls": 4553,
     "tool_errors": 57,
     "compactions": 13,
     "peak_context_tokens": 626480,
     "usage": {
-      "input_tokens": 12320,
-      "output_tokens": 2234787,
-      "cache_read_input_tokens": 1530019307,
-      "cache_creation_input_tokens": 7381845
+      "input_tokens": 12336,
+      "output_tokens": 2237365,
+      "cache_read_input_tokens": 1533600737,
+      "cache_creation_input_tokens": 7386548
     }
   },
   "tools": {
-    "Bash": 4361,
-    "SendMessage": 53,
+    "Bash": 4366,
+    "SendMessage": 54,
     "Edit": 33,
     "ToolSearch": 23,
     "Write": 18,
@@ -261,24 +261,24 @@
     {
       "index": 13,
       "started": "2026-11-23T13:16:11.056Z",
-      "ended": "2026-11-24T06:11:25.670Z",
-      "turns": 126,
-      "api_calls": 548,
+      "ended": "2026-11-24T06:41:05.748Z",
+      "turns": 128,
+      "api_calls": 554,
       "usage": {
-        "input_tokens": 1376,
-        "output_tokens": 241046,
-        "cache_read_input_tokens": 194528447,
-        "cache_creation_input_tokens": 557142
+        "input_tokens": 1392,
+        "output_tokens": 243624,
+        "cache_read_input_tokens": 198109877,
+        "cache_creation_input_tokens": 561845
       },
-      "peak_context_tokens": 594179
+      "peak_context_tokens": 599388
     }
   ],
   "log": {
-    "sha256": "6ef2f626d51a0d945378776227a6b8b47310b4da3d1bec37892f41f71489fa8b",
-    "bytes": 80326543,
-    "lines": 43304,
-    "gzip_bytes": 12566619,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/6ef2f626d51a0d945378776227a6b8b47310b4da3d1bec37892f41f71489fa8b.jsonl.gz"
+    "sha256": "a9b84b2ff3e40df32ecfe6b770a67246ffc11bb61fe0fb7bbfc15dcb17e13138",
+    "bytes": 80411863,
+    "lines": 43369,
+    "gzip_bytes": 12577293,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/a9b84b2ff3e40df32ecfe6b770a67246ffc11bb61fe0fb7bbfc15dcb17e13138.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -10515,6 +10515,30 @@
       "log_sha256": "ae4e97547f246780b51942508736319ba01275caaef763fe395eb8e1937ef152"
     },
     {
+      "change_id": "tmpsuwsrzlruowxllsmlxuspmpmsmtnx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the beyond-JBMC campaign setup so far",
+      "body": "Setup record for llm-dlc/loops/beyond-jbmc-java-change-verification-campaign.md: starting commit, checker binary, JDKs and JBMC packages; the 187 historical benchmark IDs matched to the case catalog at this head, with what changed in their inputs since c9995ae1; 42 release graphs resolved from Maven Central into ~/.cache/in-the-loop/beyond-jbmc and checked against Central's sha1/sha512 and signatures (all match; JTS 1.18.2's key expired after signing); the brief's seven digests match; Commons Codec, protobuf and SV-Benchmarks pinned; the 12 SV-Benchmarks tasks replayed with choice streams on JDK 21 and 25, and the Spring/reflection observations reproduced on four Spring versions. W/N and H/C JVM checks still running.",
+      "log_sha256": "52d3dfc54c73fd3c5cd82280ac2195890b6460acb5144317a8ca5ff0561fd701"
+    },
+    {
+      "change_id": "zzywyusotymyzvrwtlnpmpwnuvntwpzs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Finish the beyond-JBMC campaign setup",
+      "body": "Completes the setup record for llm-dlc/loops/beyond-jbmc-java-change-verification-campaign.md with the JVM reproductions of the W/N and H/C families and the Setup Agent Notes for the domain agent. Every JVM-checkable statement of W01-W07 and N01-N11 reproduced on Temurin 21.0.13, several over all 2^32 ints (W01, W04, W05, W06 UInt32, N07 pairs); the WirePair four-cell table was rerun by this session. H01, H03-H06, H08-H10, C01-C06, C08-C10 reproduced. Three exceptions are recorded for the domain agent: H07 does not reproduce with contains(long,long) and only appears with bitmap-container superset contains(RoaringBitmap); H08 depends on appendElement vs append(html); H02's detector is undefined. First changed RoaringBitmap jars are 1.6.17 (iterator clone) and 1.6.27 (containment). No claims, examples, adapters or checker runs; no verification job was needed.",
+      "log_sha256": "52d3dfc54c73fd3c5cd82280ac2195890b6460acb5144317a8ca5ff0561fd701"
+    },
+    {
+      "change_id": "zmtuttluymxmnnlwwytxzulyxpwtxtzw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose five setup-log false positives for the allow list",
+      "body": "The beyond-JBMC setup session's log contains an SV-Benchmarks assertion literal (three long-token findings) and two version strings (jackson-databind 2.13.2.2, a semver4j test input 1.2.3.4) flagged as public IPs. Checked with masked review output; proposed, awaiting a person's allow approve.",
+      "log_sha256": "52d3dfc54c73fd3c5cd82280ac2195890b6460acb5144317a8ca5ff0561fd701"
+    },
+    {
       "change_id": "kttmsxuzozsvvzynuxklqzstwsvrtvsu",
       "commit_id": null,
       "immutable": false,
@@ -10571,30 +10595,6 @@
       "log_sha256": "52d3dfc54c73fd3c5cd82280ac2195890b6460acb5144317a8ca5ff0561fd701"
     },
     {
-      "change_id": "tmpsuwsrzlruowxllsmlxuspmpmsmtnx",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the beyond-JBMC campaign setup so far",
-      "body": "Setup record for llm-dlc/loops/beyond-jbmc-java-change-verification-campaign.md: starting commit, checker binary, JDKs and JBMC packages; the 187 historical benchmark IDs matched to the case catalog at this head, with what changed in their inputs since c9995ae1; 42 release graphs resolved from Maven Central into ~/.cache/in-the-loop/beyond-jbmc and checked against Central's sha1/sha512 and signatures (all match; JTS 1.18.2's key expired after signing); the brief's seven digests match; Commons Codec, protobuf and SV-Benchmarks pinned; the 12 SV-Benchmarks tasks replayed with choice streams on JDK 21 and 25, and the Spring/reflection observations reproduced on four Spring versions. W/N and H/C JVM checks still running.",
-      "log_sha256": "52d3dfc54c73fd3c5cd82280ac2195890b6460acb5144317a8ca5ff0561fd701"
-    },
-    {
-      "change_id": "zzywyusotymyzvrwtlnpmpwnuvntwpzs",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Finish the beyond-JBMC campaign setup",
-      "body": "Completes the setup record for llm-dlc/loops/beyond-jbmc-java-change-verification-campaign.md with the JVM reproductions of the W/N and H/C families and the Setup Agent Notes for the domain agent. Every JVM-checkable statement of W01-W07 and N01-N11 reproduced on Temurin 21.0.13, several over all 2^32 ints (W01, W04, W05, W06 UInt32, N07 pairs); the WirePair four-cell table was rerun by this session. H01, H03-H06, H08-H10, C01-C06, C08-C10 reproduced. Three exceptions are recorded for the domain agent: H07 does not reproduce with contains(long,long) and only appears with bitmap-container superset contains(RoaringBitmap); H08 depends on appendElement vs append(html); H02's detector is undefined. First changed RoaringBitmap jars are 1.6.17 (iterator clone) and 1.6.27 (containment). No claims, examples, adapters or checker runs; no verification job was needed.",
-      "log_sha256": "52d3dfc54c73fd3c5cd82280ac2195890b6460acb5144317a8ca5ff0561fd701"
-    },
-    {
-      "change_id": "zmtuttluymxmnnlwwytxzulyxpwtxtzw",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Propose five setup-log false positives for the allow list",
-      "body": "The beyond-JBMC setup session's log contains an SV-Benchmarks assertion literal (three long-token findings) and two version strings (jackson-databind 2.13.2.2, a semver4j test input 1.2.3.4) flagged as public IPs. Checked with masked review output; proposed, awaiting a person's allow approve.",
-      "log_sha256": "52d3dfc54c73fd3c5cd82280ac2195890b6460acb5144317a8ca5ff0561fd701"
-    },
-    {
       "change_id": "twrlvlzwstpunnzwrrvkrxqwuzsmmpry",
       "commit_id": null,
       "immutable": false,
@@ -10625,6 +10625,14 @@
       "summary": "Allow list: The watcher of spring-java-data approved 934f9742",
       "body": "The watcher of spring-java-data approved 1 value(s) under the delegation a person granted, each with evidence in the record; the command committed the decision itself.\n\n934f9742  public-ip  2.…2: Maven version string 2.13.2.2 of jackson-databind (a published release on Maven Central), read as an IP address by the public-ip rule; not an address",
       "log_sha256": "6ef2f626d51a0d945378776227a6b8b47310b4da3d1bec37892f41f71489fa8b"
+    },
+    {
+      "change_id": "uqszpnszvzkuvnypnxkkwqrnllxtmvvy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-061625-remeasure-all-187-historical-claims-befo: passed: 1 passed step(s) in 15m21s, peak 8.6 GiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the beyond-jbmc-java-change-verification-cam run, which keeps the queue while the run is under way.",
+      "log_sha256": "a9b84b2ff3e40df32ecfe6b770a67246ffc11bb61fe0fb7bbfc15dcb17e13138"
     }
   ],
   "logs": {
@@ -13285,6 +13293,12 @@
       "lines": 39363,
       "gzip_bytes": 11616403,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/a988354b9f55d05a8db550e769acc67cc27dafddc5bca9f52f3217f5d8d4ec5d.jsonl.gz"
+    },
+    "a9b84b2ff3e40df32ecfe6b770a67246ffc11bb61fe0fb7bbfc15dcb17e13138": {
+      "bytes": 80411863,
+      "lines": 43369,
+      "gzip_bytes": 12577293,
+      "url": null
     },
     "a9bddebe1e361474efe38d162b505dd0db3b59dacf7d1f75e6a39f123483609f": {
       "bytes": 65961582,

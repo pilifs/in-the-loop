@@ -1,0 +1,264 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-061625-remeasure-all-187-historical-claims-befo",
+  "title": "Remeasure all 187 historical claims before the beyond-JBMC campaign",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 15m21s, peak 8.6 GiB (estimated 20m00s, 6.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-061625-remeasure-all-187-historical-claims-befo.json",
+    "sha256": "95ad582eab03c2ff9e79246a5fe35b9efbeb7312d1642efd550d1ac600d2ed19",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-061625-remeasure-all-187-historical-claims-befo",
+      "title": "Remeasure all 187 historical claims before the beyond-JBMC campaign",
+      "description": "Compile the original Java programs and JVM oracles on Temurin 25.0.5. Run all 187 archive IDs in original order with strict native and integrated staged JBMC 6.11.0. Preserve each command, both output streams, harnesses, physical replay and costs. Standalone stock JBMC is scored separately.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvmcontract:equivalence",
+        "jbmc:staged"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/historical/manifest.json"
+        ]
+      },
+      "expected": "187 exact statements and 374 ordered results with 25 independent JVM checks. Unknowns and incorrect outcomes remain in the measured population.",
+      "submitted": {
+        "at": "2026-11-24T06:16:25+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 21,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "20m",
+        "timeout": "70m"
+      },
+      "steps": [
+        {
+          "name": "Historical full population",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/history.py opening",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/opening/historical"
+      ]
+    }
+  },
+  "sourceCommit": "7e7841378c182c1c600e5237ebddec8fba79e36f",
+  "startedAt": "2026-11-24T06:29:37+00:00",
+  "finishedAt": "2026-11-24T06:48:43+00:00",
+  "wallSeconds": 1146.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1574326,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 4200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1200.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 9246392320,
+    "wallSeconds": 921.6,
+    "cpuSeconds": 918.6,
+    "memoryOfEstimate": 1.44,
+    "durationOfEstimate": 0.77
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 217.97,
+      "cpuSeconds": 218.311,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2369314816,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "0b2ae70ddb7d3875d89095629fd5c7e9df59812b75f7c533d386cedbf7d4fca6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-061625-remeasure-all-187-historical-claims-befo/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 37s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Historical full population",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/history.py opening",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4200.0,
+      "cancelled": false,
+      "wallSeconds": 921.597,
+      "cpuSeconds": 918.566,
+      "cpuThrottledSeconds": 1.953,
+      "peakMemoryBytes": 9246392320,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-historical-full-population.log",
+        "lines": 375,
+        "bytes": 47998,
+        "sha256": "2b2ad30a910a60d331636381edb3d87c6b862a7d452b95a2c643ee80e775f732",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "real/oddity/broken-property                  jbmc   strict  staged     violation    correct                   0.20 s    52.5 MB",
+        "real/oddity/fixed-property                   native strict             verified     correct                   0.02 s    52.5 MB",
+        "real/oddity/fixed-property                   jbmc   strict  staged     verified     correct                   0.25 s    52.5 MB",
+        "real/oddity/fix-confined                     native strict             verified     correct                   0.03 s    52.5 MB",
+        "real/oddity/fix-confined                     jbmc   strict  staged     verified     correct                   0.26 s    52.5 MB",
+        "real/checksum/broken-property                native strict             violation    correct                   0.06 s    52.5 MB",
+        "real/checksum/broken-property                jbmc   strict  staged     violation    correct                   0.43 s    52.5 MB",
+        "real/checksum/fixed-property                 native strict             verified     correct                   0.03 s    52.5 MB",
+        "real/checksum/fixed-property                 jbmc   strict  staged     verified     correct                   0.41 s    52.5 MB",
+        "real/checksum/fix-confined                   native strict             verified     correct                   0.45 s    52.5 MB",
+        "real/checksum/fix-confined                   jbmc   strict  staged     verified     correct                  17.73 s   369.6 MB",
+        "held/saturating                              native strict             verified     correct                   0.02 s    52.5 MB",
+        "held/saturating                              jbmc   strict  staged     verified     correct                   0.25 s    52.5 MB",
+        "held/average/bits                            native strict             verified     correct                   0.02 s    52.5 MB",
+        "held/average/bits                            jbmc   strict  staged     verified     correct                   0.25 s    52.5 MB",
+        "held/average/unsigned-shift                  native strict             violation    correct                   0.03 s    52.5 MB",
+        "held/average/unsigned-shift                  jbmc   strict  staged     violation    correct                   0.20 s    52.5 MB",
+        "held/floor-mod/wide-modulus                  native strict             violation    correct                   0.60 s    52.5 MB",
+        "held/floor-mod/wide-modulus                  jbmc   strict  staged     violation    correct                  15.46 s    52.5 MB",
+        "held/floor-mod/jdk                           native strict             verified     correct                   0.03 s    52.5 MB",
+        "held/floor-mod/jdk                           jbmc   strict  staged     unverifiable unsupported             120.15 s    52.5 MB",
+        "held/ceil-div                                native strict             verified     correct                   0.03 s    52.5 MB",
+        "held/ceil-div                                jbmc   strict  staged     unverifiable unsupported             120.15 s    52.5 MB",
+        "held/lower-bound                             native strict             verified     correct                   0.34 s    52.5 MB",
+        "held/lower-bound                             jbmc   strict  staged     verified     correct                   7.70 s   188.2 MB",
+        "held/utf8-length                             native strict             verified     correct                   0.52 s    52.5 MB",
+        "held/utf8-length                             jbmc   strict  staged     verified     correct                   1.60 s    81.4 MB",
+        "held/reverse                                 native strict             verified     correct                   0.26 s    52.5 MB",
+        "held/reverse                                 jbmc   strict  staged     unverifiable unsupported             121.22 s  6965.1 MB",
+        "held/prefix-sums                             native strict             verified     correct                   0.03 s    52.5 MB",
+        "held/prefix-sums                             jbmc   strict  staged     verified     correct                   3.75 s   396.6 MB",
+        "held/overlap/meets                           native strict             verified     correct                   0.03 s    52.5 MB",
+        "held/overlap/meets                           jbmc   strict  staged     verified     correct                   0.37 s    52.5 MB",
+        "held/overlap/length                          native strict             violation    correct                   0.06 s    52.5 MB",
+        "held/overlap/length                          jbmc   strict  staged     violation    correct                   0.51 s    52.5 MB",
+        "example/141                                  native strict             verified     correct                   1.47 s    53.7 MB",
+        "example/141                                  jbmc   strict  staged     verified     correct                  68.14 s  2059.4 MB",
+        "example/142                                  native strict             verified     correct                   4.99 s    78.2 MB",
+        "example/142                                  jbmc   strict  staged     unverifiable unsupported              27.92 s  8248.5 MB",
+        "opening 187 {('native', 'unsupported'): 8, ('jbmc', 'unsupported'): 40, ('native', 'correct'): 179, ('jbmc', 'correct'): 147}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/opening/historical/executions.zip",
+      "change": "added",
+      "bytes": 1549736,
+      "sha256": "9b5c4fd8be78db91113396f107dc3b37c8764f19b5f49d8fc72ec933f2ffc849",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/historical/results.json.gz",
+      "change": "added",
+      "bytes": 45308,
+      "sha256": "b164a7b356dd227d3c22b03cc4568f1e7440bc4246bffc87c9bf64861d1760f2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T06:49:16+00:00",
+    "applied": [
+      "verification/beyond-jbmc/opening/historical/executions.zip",
+      "verification/beyond-jbmc/opening/historical/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4877e351b9c5c6b6d9395244bd0c9c9cb18e2f58",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4877e351b9c5c6b6d9395244bd0c9c9cb18e2f58/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T064843Z-9415843d0b98f8df",
+      "outputs": "20261124T064843Z-97255888a00e53cd",
+      "diff": "20261124T064843Z-992072ce4b51fb6e"
+    }
+  }
+}
