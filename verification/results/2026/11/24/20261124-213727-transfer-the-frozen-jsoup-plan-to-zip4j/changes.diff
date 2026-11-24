@@ -1,0 +1,896 @@
+Binary file verification/product-behaviour/results/J06/first/plans.zip changed
+--- /dev/null
++++ b/verification/product-behaviour/results/J06/first/summary.json
+@@ -0,0 +1,892 @@
++{
++  "case": "J06",
++  "change": "Zip4j #541, reopen names and payloads after file and directory renames",
++  "label": "first",
++  "frozenSource": "d92dea060ce873e0a64cec67c27e9dadea448efc",
++  "comparatorSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
++  "bindingsSha256": "06b5f9f185ac7f524ddc564a249aa51685290d7ac1050932983953a4e14f84b9",
++  "archiveSha256": "b646955847db96345c36c29efbc658795dfa1cbda8c5e033d9f1f6cf829fc222",
++  "runs": {
++    "cold": {
++      "wallSeconds": 15.598,
++      "claims": [
++        {
++          "id": "file-neighbor",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "3f5ee17eb11e5bf577e54caa3260dcef5259870e8e129c742277121237c1bdeb",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "2054cad298e3b9620be64cfcd6ec102afa885ed4cecebff8879db6f9c358cde5"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "executed",
++              "key": "8c8121a81c570fe62fc30919f76dfaadb7a22f088286fed5f427a86002bb2fcd"
++            }
++          },
++          "receipt": {
++            "path": "receipts/f2937f22e4136d3db7d56163257c832964b4f0bf075ca4fe99647dc6f8826f27.json",
++            "sha256": "b9a873c21d283534e8b32bca1844b98f4170900c2420497c3fc203fe5e9231d4"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "d28c403e3473c80ff00a6def9c602a68faec7f8a01356a0eac729d767aeb677a",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "ec52c37134dc6df1954ee3f704e290a762deb6b467e3ac9aedfc5d935f04401d"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "20f15ab778442b0c50b6832ffd4a25112bd699e9e62652f083eb7df4e223e7f7"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "executed",
++              "key": "51a3d3e71bf0a19d601175728f640026e1bba2aaea8760bbf62201bad084f56b"
++            }
++          },
++          "receipt": {
++            "path": "receipts/e2c29522a8f43f81a65f60c8aa15c75d97ee77df1b4c22c11d1481b4d6c73bfe.json",
++            "sha256": "294e55ef12b9d8e56b010c7df7df611d25c1f2133cb9d377a9fb344f7d434f2d"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "file-neighbor",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "6a60ab749bc6ea9371708cfa515c8cc7e362c96c880dd419d3c4e6078116acbe",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "refuted",
++              "id": "156a3ca3c0cbc7b4baf6f2bec79a0192ec719ae84aaa398edf48cbf1e9136730"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "executed",
++              "key": "eb49c24ecd03f1e1a838bf7b9d4eaa3c8e7627fae749a0ef272a9d710093accd"
++            }
++          },
++          "receipt": {
++            "path": "receipts/5f60764597ecce6228208904415dd6c380844917334ace900c4a739f658054c8.json",
++            "sha256": "0939eb8089383a1a56dcea55c096316e7ee86c9f59e72b4df410d31d663c9b59"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "358e86152cda1a7ef35dc91c3b113f2adafbee799728f4630420cf406e2dabb7",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "83c2322c74cad1bd039f5c4ea9a8c0688007d084e5d3ccd29cde6e9d69d40d1c"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "40bf49f504754411935c8e3b76b790ef8412a459c7c43de5fbbafee63540a91a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "executed",
++              "key": "9663aea21cb059a51a3605bf0a78b58c04f1ba8f8a6ed2fc50055ff2032980e4"
++            }
++          },
++          "receipt": {
++            "path": "receipts/d44d718d767ad44d0688be65dca895b0d14dee9414c42244ac12cd4b50498db6.json",
++            "sha256": "1beae0889cf817beae75d4e8673c1b0d224793bb479bf4b0833b09aa9e817149"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ]
++    },
++    "warm": {
++      "wallSeconds": 6.109,
++      "claims": [
++        {
++          "id": "file-neighbor",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "3f5ee17eb11e5bf577e54caa3260dcef5259870e8e129c742277121237c1bdeb",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "2054cad298e3b9620be64cfcd6ec102afa885ed4cecebff8879db6f9c358cde5"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "executed",
++              "key": "8c8121a81c570fe62fc30919f76dfaadb7a22f088286fed5f427a86002bb2fcd"
++            }
++          },
++          "receipt": {
++            "path": "receipts/5f69d1c9184527b1ff2bae00cb63cd09ff1e7118dd2e879f0ad0a1943e85a827.json",
++            "sha256": "0c089d4beea6c033525584a3b841375bcefcaa91616959aa321a34fb7c85f2e7"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "d28c403e3473c80ff00a6def9c602a68faec7f8a01356a0eac729d767aeb677a",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "ec52c37134dc6df1954ee3f704e290a762deb6b467e3ac9aedfc5d935f04401d"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "20f15ab778442b0c50b6832ffd4a25112bd699e9e62652f083eb7df4e223e7f7"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "51a3d3e71bf0a19d601175728f640026e1bba2aaea8760bbf62201bad084f56b"
++            }
++          },
++          "receipt": {
++            "path": "receipts/543341108a5bc27feff1b69c1b5f1e4c828d3069b9a334b40d30eaef4e081c1e.json",
++            "sha256": "95a20e16e70314b3370486fcc0ee15c2b8d998fc246d3d61fc752cac643bc07b"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "file-neighbor",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "6a60ab749bc6ea9371708cfa515c8cc7e362c96c880dd419d3c4e6078116acbe",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "refuted",
++              "id": "156a3ca3c0cbc7b4baf6f2bec79a0192ec719ae84aaa398edf48cbf1e9136730"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "eb49c24ecd03f1e1a838bf7b9d4eaa3c8e7627fae749a0ef272a9d710093accd"
++            }
++          },
++          "receipt": {
++            "path": "receipts/7e863bd886a17654e766b78d194ddaea7e42978025d4f28f9bdcbfa94204656f.json",
++            "sha256": "13076bf7ecdafab95e81fc67ccfb3ab061962f2f5eeda82ae863f7f7859d3f70"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 4
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "358e86152cda1a7ef35dc91c3b113f2adafbee799728f4630420cf406e2dabb7",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "83c2322c74cad1bd039f5c4ea9a8c0688007d084e5d3ccd29cde6e9d69d40d1c"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "40bf49f504754411935c8e3b76b790ef8412a459c7c43de5fbbafee63540a91a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "exact reuse",
++              "key": "9663aea21cb059a51a3605bf0a78b58c04f1ba8f8a6ed2fc50055ff2032980e4"
++            }
++          },
++          "receipt": {
++            "path": "receipts/f203fa4ba489159d2b93f37511cdf3b322d7700f1bf6e917169b2b89954ed3c5.json",
++            "sha256": "d6d8be8d9b6a239ad0189b456519659fbc97ecea75516326cf84c14894e5da10"
++          },
++          "freshQualifiedEntries": 0,
++          "reusedQualifiedEntries": 8
++        }
++      ]
++    },
++    "clean": {
++      "wallSeconds": 15.406,
++      "claims": [
++        {
++          "id": "file-neighbor",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "3f5ee17eb11e5bf577e54caa3260dcef5259870e8e129c742277121237c1bdeb",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "2054cad298e3b9620be64cfcd6ec102afa885ed4cecebff8879db6f9c358cde5"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "executed",
++              "key": "8c8121a81c570fe62fc30919f76dfaadb7a22f088286fed5f427a86002bb2fcd"
++            }
++          },
++          "receipt": {
++            "path": "receipts/b2d52df411d1c78300afbd6a6d69b67d9325d672a4430401038f965c1b6bcaab.json",
++            "sha256": "dd1a5857d66744c3cd4dd4f53c73a6724115a425e991f4e8c28d0ef4f3d95cb2"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "d28c403e3473c80ff00a6def9c602a68faec7f8a01356a0eac729d767aeb677a",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "ec52c37134dc6df1954ee3f704e290a762deb6b467e3ac9aedfc5d935f04401d"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "20f15ab778442b0c50b6832ffd4a25112bd699e9e62652f083eb7df4e223e7f7"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "executed",
++              "key": "51a3d3e71bf0a19d601175728f640026e1bba2aaea8760bbf62201bad084f56b"
++            }
++          },
++          "receipt": {
++            "path": "receipts/dc9bb51f26ad315e63e1e29cb03646484a310810f62b383cd809c87d0f5f3dda.json",
++            "sha256": "111415553a61c761a19e5288066d7b4e5f7d633a08dad42d498d4cb3eb1d7e44"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": [
++        {
++          "id": "file-neighbor",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "6a60ab749bc6ea9371708cfa515c8cc7e362c96c880dd419d3c4e6078116acbe",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "refuted",
++              "id": "156a3ca3c0cbc7b4baf6f2bec79a0192ec719ae84aaa398edf48cbf1e9136730"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "executed",
++              "key": "eb49c24ecd03f1e1a838bf7b9d4eaa3c8e7627fae749a0ef272a9d710093accd"
++            }
++          },
++          "receipt": {
++            "path": "receipts/0bd5d6fcd90b9d8fa934cbf9a16721061b384592fabaf593f309d4ca217dfa51.json",
++            "sha256": "1db1cc1a482a0e1f2aed5404c11516e695da2124687b8e4ffdf3b47257c1c511"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "358e86152cda1a7ef35dc91c3b113f2adafbee799728f4630420cf406e2dabb7",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "83c2322c74cad1bd039f5c4ea9a8c0688007d084e5d3ccd29cde6e9d69d40d1c"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "40bf49f504754411935c8e3b76b790ef8412a459c7c43de5fbbafee63540a91a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "executed",
++              "key": "9663aea21cb059a51a3605bf0a78b58c04f1ba8f8a6ed2fc50055ff2032980e4"
++            }
++          },
++          "receipt": {
++            "path": "receipts/ce1e0f400bce59c75442a65f6a0026a501888a9e19d601b2ce0e2dd80965e69f.json",
++            "sha256": "76afb12c9a784276b889d732c67991bd99ec4e73dadf23b6b59a50e727bf5ef1"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ]
++    },
++    "replacement": {
++      "wallSeconds": 6.016,
++      "claims": [
++        {
++          "id": "file-neighbor",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "4a168aec6b6394106011b42413a33545a0ffd76211f10999513d95d33dbabda1",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "refuted",
++              "id": "df5a243c63d5efbff140fa524349190e7bfe16aea858b776bba2db9f7ab2ad5a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "executed",
++              "key": "cd40ea254270da94083938fab24dbe7f1629157e148288d629fab19b3f641efe"
++            }
++          },
++          "receipt": {
++            "path": "receipts/cf72b259ff5e49a3ff135024f584c26d0b04f0cfc94ca6e251b2b3fbedba41a1.json",
++            "sha256": "fa70c568453995dec3fd1a07e072a8919279923b6f0933849af02e9d3249a3e5"
++          },
++          "freshQualifiedEntries": 2,
++          "reusedQualifiedEntries": 2
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "1ab562af1046c4affcf2158785f3ca1707cc561d53251d2eec12d129d7c94e8e",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "a1ea93ddac6bb7eb6596af7e07103b559863786ce20c900ba277d36f6a3cb300"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "b8eb1958a042552da453643a9ab5da02e3bf63c4c09f570609dc6e896269bc2c"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "exact reuse",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "executed",
++              "key": "7bdb65432eabdadf6dcc3adc844fdb30c07f66a0cb337d5c99e74445134abc58"
++            }
++          },
++          "receipt": {
++            "path": "receipts/a6021e66ee9e871ebc7de8cb2eca58673ab7ce2c4fcc2093f09d71e601b0f0f1.json",
++            "sha256": "2d6badd83c24ef5daf85008d3e4139f8490099e7d19729ec977a4b30de90d967"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 4
++        }
++      ],
++      "originalBinaryClaims": []
++    },
++    "replacement-clean": {
++      "wallSeconds": 9.614,
++      "claims": [
++        {
++          "id": "file-neighbor",
++          "status": "refuted",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "58a2961e8f650603154a1d28ac49023341439e6354de03302939b430cafa13c6",
++          "executionKey": "4a168aec6b6394106011b42413a33545a0ffd76211f10999513d95d33dbabda1",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "neighbor"
++              ],
++              "expected": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "dog=file:0121,dogalog=file:0222,other=file:0323|hound=file:0121,houndalog=file:0222,other=file:0323"
++              },
++              "intendedChange": {
++                "return": "catalog=file:0222,dog=file:0121,other=file:0323|catalog=file:0222,hound=file:0121,other=file:0323"
++              },
++              "status": "refuted",
++              "id": "df5a243c63d5efbff140fa524349190e7bfe16aea858b776bba2db9f7ab2ad5a"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "540af713cc97d5837c89e112fccb19b9af37a84755590e1fecd6c2195be264b8"
++            },
++            "new": {
++              "action": "executed",
++              "key": "cd40ea254270da94083938fab24dbe7f1629157e148288d629fab19b3f641efe"
++            }
++          },
++          "receipt": {
++            "path": "receipts/995ebaed5730e82930ac7ca16cf523a708dbf1d5778d24691cbec89fe18e1215.json",
++            "sha256": "516123879d5363a1c9ee37d39b3eaba5b861d1300f6508af991b7d063a14c17b"
++          },
++          "freshQualifiedEntries": 4,
++          "reusedQualifiedEntries": 0
++        },
++        {
++          "id": "directory-and-isolated",
++          "status": "established",
++          "firstOpenDependency": null,
++          "reason": null,
++          "claimKey": "4b742504dfef22ba0d7eb5f73ed57af49591da75e53a91ed4d89bad0bab46fc8",
++          "executionKey": "1ab562af1046c4affcf2158785f3ca1707cc561d53251d2eec12d129d7c94e8e",
++          "children": [
++            {
++              "input": 0,
++              "arguments": [
++                "directory"
++              ],
++              "expected": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "old": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "new": {
++                "return": "catalog=file:0222,dog/=dir:,dog/a=file:0121,other=file:0323|catalog=file:0222,hound/=dir:,hound/a=file:0121,other=file:0323"
++              },
++              "status": "established",
++              "id": "a1ea93ddac6bb7eb6596af7e07103b559863786ce20c900ba277d36f6a3cb300"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "isolated"
++              ],
++              "expected": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "old": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "new": {
++                "return": "cat=file:0121,dog=file:0222,other=file:0323|cat=file:0121,hound=file:0222,other=file:0323"
++              },
++              "status": "established",
++              "id": "b8eb1958a042552da453643a9ab5da02e3bf63c4c09f570609dc6e896269bc2c"
++            }
++          ],
++          "execution": {
++            "old": {
++              "action": "executed",
++              "key": "50ac7c1436c8aa4da772a3493a8688c59e775fe5849d6f07a1a734c9ad882436"
++            },
++            "new": {
++              "action": "executed",
++              "key": "7bdb65432eabdadf6dcc3adc844fdb30c07f66a0cb337d5c99e74445134abc58"
++            }
++          },
++          "receipt": {
++            "path": "receipts/9e5d34006b73d991ed8322e3a51f49026aed4ad62de79965c6638d76f17baaf7.json",
++            "sha256": "fd222eb47c198d36c3cd4a9abe4bf4c3a7d6f068d0854efa2cc3632f6f220896"
++          },
++          "freshQualifiedEntries": 8,
++          "reusedQualifiedEntries": 0
++        }
++      ],
++      "originalBinaryClaims": []
++    }
++  }
++}
