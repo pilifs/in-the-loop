@@ -18,6 +18,22 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-060: a job can be exported from a conflicted revision and run on jj's conflict layout
+
+- **Status**: open.
+- **Raised**: 2026-11-24 by the watcher, from a disk alert by the advisor, during the queued run trusted-kernel-and-receiver-recovery.
+- **Found**:
+  - **What happened:** at about 03:31–03:39 UTC the agent's scoped commit split job files from their sources and left a conflict, which it resolved at about 03:47. Six jobs submitted in that window (`20261124-033119` to `-033937`) were exported from the conflicted revision.
+  - **What a conflicted export looks like:** each work folder held jj's Git-compatibility layout for a conflicted commit: `JJ-CONFLICT-README` plus whole-tree copies `.jjconflict-base-0`, `.jjconflict-side-0` and `.jjconflict-side-1`, about 1.9 GB each. That made each folder 7.3 GB against about 1.8 GB normally, and free disk fell from 94 to 49 GB in 30 minutes.
+  - **What became of the six jobs:**
+    - Two failed for missing sources.
+    - The agent resubmitted five on the repaired revision.
+    - The JavaParser recheck (`20261124-033119`) ran on the conflicted export, so its result says nothing reliable about the intended sources.
+  - **Cleanup:** the watcher removed the archived (`remote_verified`) work folders.
+- **Needs**: `pipeline.py`'s export (and `submit`) should refuse a source revision that has conflicts, or at least fail the job at once with a clear reason, instead of materialising the conflict layout and running on it.
+- **Tracked in**: this finding.
+- **Closes when**: a job whose source revision is conflicted is refused before it runs, and a test shows it.
+
 ### VF-059: nothing picks a brief up from the queue while no run is going
 
 - **Status**: open. The user decided on 2026-11-24 to record the intent and build it later.
