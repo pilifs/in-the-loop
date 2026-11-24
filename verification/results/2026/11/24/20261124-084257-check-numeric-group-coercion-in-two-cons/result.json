@@ -1,0 +1,210 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084257-check-numeric-group-coercion-in-two-cons",
+  "title": "Check numeric group coercion in two consecutive Semver4j releases",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7m05s, peak 7.1 GiB (estimated 18m00s, 5.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084257-check-numeric-group-coercion-in-two-cons.json",
+    "sha256": "8d33c380bd52e00d644bfd7c9bbe1a6f34650e3b0bdb65e857a19a34022c96e2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084257-check-numeric-group-coercion-in-two-cons",
+      "title": "Check numeric group coercion in two consecutive Semver4j releases",
+      "description": "Quantify a bounded grammar of decimal groups with missing groups, leading zeros and unchanged controls, compiling the same caller before the change.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:42:57+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 11,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "18m",
+        "timeout": "72m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified C08-5.6.0 C08-5.7.0",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/C08-5.6.0",
+        "verification/beyond-jbmc/qualified/C08-5.7.0"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T09:15:00+00:00",
+  "finishedAt": "2026-11-24T09:22:16+00:00",
+  "wallSeconds": 436.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 4320.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1080.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 7627419648,
+    "wallSeconds": 425.8,
+    "cpuSeconds": 429.3,
+    "memoryOfEstimate": 1.42,
+    "durationOfEstimate": 0.39
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified C08-5.6.0 C08-5.7.0",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4320.0,
+      "cancelled": false,
+      "wallSeconds": 425.8,
+      "cpuSeconds": 429.252,
+      "cpuThrottledSeconds": 0.326,
+      "peakMemoryBytes": 7627419648,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 8,
+        "bytes": 438,
+        "sha256": "63da35c778eb5171fe941b31b4f8c6d935cd5fc74c5631e578ba320514d213b2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "C08-5.6.0 9 original checks passed",
+        "C08-5.6.0 newGrammar unverifiable unverifiable SUCCESS SUCCESS",
+        "C08-5.6.0 oldGrammar unverifiable unverifiable SUCCESS SUCCESS",
+        "C08-5.6.0 plain unverifiable unverifiable SUCCESS SUCCESS",
+        "C08-5.7.0 9 original checks passed",
+        "C08-5.7.0 newGrammar unverifiable unverifiable SUCCESS SUCCESS",
+        "C08-5.7.0 oldGrammar unverifiable unverifiable SUCCESS SUCCESS",
+        "C08-5.7.0 plain unverifiable unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/C08-5.6.0/executions.zip",
+      "change": "added",
+      "bytes": 46456,
+      "sha256": "8ceee1f4527a715bfc0021c5c8eb58adeebaf1528d260a99855442c29fdc5c4c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C08-5.6.0/results.json.gz",
+      "change": "added",
+      "bytes": 2563,
+      "sha256": "53591e4a4bdf9f589c204e8dd86867747e04d5075c5d7baf554675b69fc5374a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C08-5.7.0/executions.zip",
+      "change": "added",
+      "bytes": 46475,
+      "sha256": "18cec7d12cbaf6d2a9d86eb0dbc5ebd5f5d066edca728b9b9cf85f0dceb4b393",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/C08-5.7.0/results.json.gz",
+      "change": "added",
+      "bytes": 2567,
+      "sha256": "d8f054280b288f186e7b6c5875095a46cb638bd441add39402b2179283d0c95b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:22:48+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/C08-5.6.0/executions.zip",
+      "verification/beyond-jbmc/qualified/C08-5.6.0/results.json.gz",
+      "verification/beyond-jbmc/qualified/C08-5.7.0/executions.zip",
+      "verification/beyond-jbmc/qualified/C08-5.7.0/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T092216Z-4253127c50d75e41",
+      "outputs": "20261124T092216Z-447171e6d07d0106",
+      "diff": "20261124T092216Z-46246335a5f405ea"
+    }
+  }
+}
