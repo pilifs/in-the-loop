@@ -1,0 +1,225 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-100249-save-original-raw-engine-records-for-all",
+  "title": "Save original raw engine records for all 49 follow-up controls",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7m43s, peak 2.9 GiB (estimated 22m00s, 5.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-100249-save-original-raw-engine-records-for-all.json",
+    "sha256": "a53dad5c7426eefb4587cd6c18ad26af7ee6b042fbcefe10935ee263d6a8522c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-100249-save-original-raw-engine-records-for-all",
+      "title": "Save original raw engine records for all 49 follow-up controls",
+      "description": "Repeat the five frozen follow-up families with the original producer on the stored checker. Archive every integrated and native command, raw result and original JVM replay along with the producer's separately identified packaged stock profile.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/README.md"
+        ]
+      },
+      "expected": "Bind each result to the exact caller, artifacts, profile and validation controls.",
+      "submitted": {
+        "at": "2026-11-24T10:02:49+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 25,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "22m",
+        "timeout": "110m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/control_archive.py 49",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/control-evidence/49"
+      ]
+    }
+  },
+  "sourceCommit": "2bff5d7bba98e71c3c914bee71a0ee938c096ecd",
+  "startedAt": "2026-11-24T10:16:44+00:00",
+  "finishedAt": "2026-11-24T10:28:06+00:00",
+  "wallSeconds": 682.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3567885,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 6600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1320.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3097808896,
+    "wallSeconds": 463.8,
+    "cpuSeconds": 525.1,
+    "memoryOfEstimate": 0.58,
+    "durationOfEstimate": 0.35
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/control_archive.py 49",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6600.0,
+      "cancelled": false,
+      "wallSeconds": 463.817,
+      "cpuSeconds": 525.084,
+      "cpuThrottledSeconds": 11.411,
+      "peakMemoryBytes": 3097808896,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 148,
+        "bytes": 5321,
+        "sha256": "269fbe075ca35686b239e8edc339f123e84d5c4cd039aa40ae79cfce7e082ed2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Chain#wrong packaged SUCCESS",
+        "Chain#skipsNull packaged SUCCESS",
+        "Chain#rejectsNull packaged SUCCESS",
+        "NodeChecks#direct packaged SUCCESS",
+        "NodeChecks#same packaged FAILURE",
+        "NodeChecks#publicSubnormal packaged SUCCESS",
+        "NodeChecks#wrongSubnormal packaged FAILURE",
+        "NodeChecks#commons packaged SUCCESS",
+        "ConversionEquivalence#classified packaged SUCCESS",
+        "NodeChecks#intrinsicSubnormal packaged SUCCESS",
+        "NodeChecks#mantissaSubnormal packaged FAILURE",
+        "RaggedProof#reversed packaged SUCCESS",
+        "RaggedProof#wrong packaged FAILURE",
+        "RaggedProof#iter packaged SUCCESS",
+        "RaggedProof#snapshot packaged FAILURE",
+        "RaggedProof#distinct packaged SUCCESS",
+        "RowIdentities#nonNullOuter packaged FAILURE",
+        "RowIdentities#noEmptyOuter packaged FAILURE",
+        "RowIdentities#noDistinctEqualRows packaged FAILURE",
+        "MadeRows#reverse packaged SUCCESS",
+        "MadeRows#iterator packaged SUCCESS",
+        "MadeRows#alwaysDistinct packaged FAILURE",
+        "MatrixRows#rectangular packaged SUCCESS",
+        "MatrixRows#singleShape packaged SUCCESS",
+        "MatrixRows#shape packaged SUCCESS",
+        "MatrixRows#same packaged FAILURE",
+        "MatrixRows#noNull packaged FAILURE",
+        "ExactOrder#commons packaged SUCCESS",
+        "ExactOrder#onlySign packaged FAILURE",
+        "ExactOrder#guava packaged SUCCESS",
+        "ExactOrder#firstOnTie packaged SUCCESS",
+        "ExactOrder#secondOnTie packaged FAILURE",
+        "ExactOrder#direct packaged SUCCESS",
+        "ExactOrder#sameReference packaged SUCCESS",
+        "QueueFill#queue packaged SUCCESS",
+        "QueueFill#fullMeansOccupied packaged FAILURE",
+        "QueueFill#fill packaged FAILURE",
+        "QueueFill#staleSurvives packaged SUCCESS",
+        "QueueFill#covariant packaged FAILURE",
+        "49 20 original evidence files retained"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/control-evidence/49/executions.zip",
+      "change": "added",
+      "bytes": 5161429,
+      "sha256": "9b770c38dff7eafc7e5e1f8722d0cb23b535930ef6f792b16913897a731e34e7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/control-evidence/49/index.json.gz",
+      "change": "added",
+      "bytes": 10293,
+      "sha256": "273bf5e595c1b577963717330d0e3c3e111083cd1828419050d90ee11b562e69",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T10:28:09+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/control-evidence/49/executions.zip",
+      "verification/beyond-jbmc/closing/control-evidence/49/index.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/85a7c490a0a474ee2b68d5e5edf0b4c6b8c7d73b/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T102806Z-292646c61020adc4",
+      "outputs": "20261124T102806Z-336197183c1ba40d",
+      "diff": "20261124T102806Z-3504506e893e7d5e"
+    }
+  }
+}
