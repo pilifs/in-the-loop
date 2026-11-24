@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-221934-bind-the-two-release-pairs-to-the-actual",
+  "title": "Bind the two release pairs to the actual native and SQL consumers",
+  "description": "Run the same registered SQLite and Calcite public observers on both published release pairs and on the pinned PR pairs. Hash the actually mapped Linux JNI library. Capture each Java aggregate program from the JDBC connection that returned its rows and check the two projected accumulator fields, sorters and adders.",
+  "kind": "real-world",
+  "capabilities": [
+    "original-jvm-replay",
+    "source:provenance"
+  ],
+  "links": {},
+  "expected": "Every admitted original consumer and deployment matches the registered public observation, with source-bound corroborating outputs and explicit controls.",
+  "submitted": {
+    "at": "2026-11-24T22:19:34+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B verification/product-behaviour/release_pairs.py J",
+      "run": "python3 -B verification/product-behaviour/release_pairs.py J09",
+      "cwd": "."
+    },
+    {
+      "name": "python3 -B verification/product-behaviour/release_pairs.py J",
+      "run": "python3 -B verification/product-behaviour/release_pairs.py J12",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/product-behaviour/results/J09/release-and-pr.json.gz",
+    "verification/product-behaviour/results/J12/release-and-pr.json.gz"
+  ]
+}

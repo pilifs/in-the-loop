@@ -66,6 +66,7 @@ def run(case_id, label):
         product_files = [*case["artifacts"], *case.get("archivedClasspathEntries", {}).values()]
         replacements = [(fixed_artifacts[str(SETUP / name.format(side="fix"))],
                          old_artifacts[str(SETUP / name.format(side="parent"))]) for name in product_files]
+        changed_provider = any(fix["sha256"] != parent["sha256"] for fix, parent in replacements)
         for i, (artifact, _) in enumerate(replacements):
             source = Path(artifact["file"])
             target = work / f"provider-{i}" / source.name
@@ -130,9 +131,7 @@ def run(case_id, label):
             if row["status"] != "open" and row["status"] != ("refuted" if changed else "established"):
                 raise ValueError(f"unexpected same-path result: {row['id']}")
             actions = row["execution"] or {}
-            if actions.get("new", {}).get("action") == "exact reuse" and any(
-                    a["sha256"] != b["sha256"] for a, b in zip(read(folder / "bindings.json")["old"]["classpath"],
-                                                               read(folder / "bindings.json")["new"]["classpath"])):
+            if changed_provider and actions.get("new", {}).get("action") == "exact reuse":
                 raise ValueError("changed provider reused its previous evidence")
         write(result / "summary.json", {"case": case_id, "change": case["change"], "label": label,
               "frozenSource": frozen_source, "comparatorSha256": upgrade_replay.sha(checker),

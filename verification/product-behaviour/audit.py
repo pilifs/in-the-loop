@@ -1,6 +1,7 @@
 """Import only source-bound collector outputs and independently audit each public plan and receipt."""
 import argparse
 from collections import Counter
+import gzip
 import hashlib
 import io
 import json
@@ -9,7 +10,7 @@ import shutil
 import tempfile
 import zipfile
 
-from register import HERE, ROOT, read, upgrade_replay, write
+from register import HERE, ROOT, manifests, read, upgrade_replay, write
 from targets import change_evidence
 
 
@@ -152,6 +153,40 @@ def audit_first(folder, summary_path):
             "firstOpenDependencies":{r["id"]: r["reason"] or r["firstOpenDependency"] for r in claims if r["status"] == "open"}}
 
 
+def audit_checked(folder):
+    from checked import check_trace, expected_count
+    from predicate_proof import prove
+    path = HERE/"results"/folder.name/"checked.json.gz"
+    doc = json.loads(gzip.decompress(path.read_bytes()))
+    physical = {(r["side"],tuple(r["args"])):{"return":r["return"]} for r in read(folder/"physical.json")["observations"]}
+    graphs = manifests(folder)
+    require(doc["coldArchiveSha256"] == upgrade_replay.sha(path.parent/"first/plans.zip"), "different cold plan")
+    for side, proof in doc["proofs"].items():
+        require(prove(folder.name,Path(graphs[side]["classpath"][0]["file"]),side) == proof, "different original method proof")
+    seen = set()
+    applied = 0
+    for trial in doc["trials"]:
+        side,args = trial["side"],trial["args"]
+        reference = physical[side,tuple(args)]
+        seen.add((side,tuple(args)))
+        proof = doc["proofs"][side]
+        for mode,name in (("original","untouched"),("apply","substituted")):
+            repeats = trial[name]
+            require(len(repeats) == 2 and repeats[0] == repeats[1], "different or missing live repeat")
+            for rep in repeats:
+                require(rep["public"] == reference and rep["proof"] == proof["key"], "different public result or proof key")
+                check_trace(folder.name,args,side,mode,proof,Path(graphs[side]["classpath"][0]["file"]),rep["events"],reference)
+                if mode == "apply": applied += len(rep["events"])
+        require([e[1:] for e in trial["untouched"][0]["events"]] == [e[1:] for e in trial["substituted"][0]["events"]],
+                "different live arguments or effects")
+    require(seen == set(physical) and len(seen) == len(doc["trials"]), "incomplete checked domain")
+    omitted = {(r["side"],tuple(r["args"])) for r in doc["controls"] if r.get("withheldApplication") == "refused"}
+    require(omitted == {k for k in physical if expected_count(folder.name,list(k[1]))} and
+            {r["side"] for r in doc["controls"] if r.get("staleCode") == "refused"} == {"old","new"}, "missing negative controls")
+    return {"originalHistories":2*len(seen),"substitutedHistories":2*len(seen),"applications":applied,
+            "omittedApplications":len(omitted),"staleMethods":2,"sha256":upgrade_replay.sha(path)}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--collect", type=Path, help="collector checkout containing the official results")
@@ -162,8 +197,9 @@ def main():
         for output in job["outputs"]:
             require(upgrade_replay.sha(ROOT/output["path"]) == output["sha256"], "recorded output differs")
     records = [audit_first(HERE/"cases"/p.parents[1].name,p) for p in sorted((HERE/"results").glob("*/first/summary.json"))]
+    checked = {p.parent.name:audit_checked(HERE/"cases"/p.parent.name) for p in sorted((HERE/"results").glob("*/checked.json.gz"))}
     result = {"jobs":dict(Counter(j["status"] for j in jobs)), "outputDigests":sum(len(j["outputs"]) for j in jobs),
-              "cases":records}
+              "cases":records,"checkedContinuations":checked}
     if args.write:
         write(HERE/"audit.json",result)
     elif (HERE/"audit.json").exists():
