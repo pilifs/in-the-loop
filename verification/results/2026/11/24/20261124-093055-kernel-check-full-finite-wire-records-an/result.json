@@ -1,0 +1,215 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-093055-kernel-check-full-finite-wire-records-an",
+  "title": "Kernel-check full finite wire records and the two field orders",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 2.0s, peak 145.0 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/induction_cases.py wire) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-093055-kernel-check-full-finite-wire-records-an.json",
+    "sha256": "912fd517c985c6ce80615baa9486d01dbd4e6c6beeb5e7372f9cda436a139011",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-093055-kernel-check-full-finite-wire-records-an",
+      "title": "Kernel-check full finite wire records and the two field orders",
+      "description": "Check unconditional arbitrary-suffix decoding for every 32-bit VInt and fixed header, both endian directions and both field orders. Prove finite sequence composition, one-record progress and valid Java cursor bounds. Bind the theorem to the original release identities and reject a false all-input byte-order identity.",
+      "kind": "library",
+      "capabilities": [
+        "assurance:induction"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/wire/FrameInduction.lean"
+        ]
+      },
+      "expected": "Every named claim elaborates with printed axioms and the false mixed-endian identity is rejected.",
+      "submitted": {
+        "at": "2026-11-24T09:30:55+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 31,
+      "requires": [
+        "lean"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m",
+        "timeout": "6m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py wire",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py wire",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/assurance/wire-sequence"
+      ]
+    }
+  },
+  "sourceCommit": "f312702115c4e25f1140da49ba51c1d7bf3339fe",
+  "startedAt": "2026-11-24T09:54:58+00:00",
+  "finishedAt": "2026-11-24T09:55:24+00:00",
+  "wallSeconds": 26.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3401695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 360.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 152027136,
+    "wallSeconds": 2.0,
+    "cpuSeconds": 1.4,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py wire",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py wire",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 360.0,
+      "cancelled": false,
+      "wallSeconds": 2.006,
+      "cpuSeconds": 1.354,
+      "cpuThrottledSeconds": 0.819,
+      "peakMemoryBytes": 152027136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 48,
+        "bytes": 2299,
+        "sha256": "92cda226a2472a4b81e151c221b9813cb0d43a47c13ec0ed238f5051ac0bcea1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "  a - b - e ≤ -1",
+        "where",
+        " a := ↑cap",
+        " b := ↑pos",
+        " c := ↑(List.map (fun a => (emit w ordering a).length) pre).sum",
+        " d := ↑(List.map (fun a => (emit w ordering a).length) rest).sum",
+        " e := ↑(List.flatMap (emit w ordering) pre).length",
+        "'FrameInduction.full_word' depends on axioms: [propext,",
+        " Classical.choice,",
+        " Quot.sound,",
+        " full_word._native.bv_decide.ax_1_10,",
+        " full_word._native.bv_decide.ax_1_15,",
+        " full_word._native.bv_decide.ax_1_20,",
+        " full_word._native.bv_decide.ax_1_25]",
+        "'FrameInduction.parse_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'FrameInduction.word_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]",
+        "'FrameInduction.record_suffix' depends on axioms: [propext,",
+        " Classical.choice,",
+        " Quot.sound,",
+        " full_word._native.bv_decide.ax_1_10,",
+        " full_word._native.bv_decide.ax_1_15,",
+        " full_word._native.bv_decide.ax_1_20,",
+        " full_word._native.bv_decide.ax_1_25]",
+        "'FrameInduction.entire_sequence' depends on axioms: [propext,",
+        " Classical.choice,",
+        " Quot.sound,",
+        " full_word._native.bv_decide.ax_1_10,",
+        " full_word._native.bv_decide.ax_1_15,",
+        " full_word._native.bv_decide.ax_1_20,",
+        " full_word._native.bv_decide.ax_1_25]",
+        "'FrameInduction.record_progress' depends on axioms: [propext, Quot.sound]",
+        "'FrameInduction.prefix_capacity' depends on axioms: [propext, sorryAx, Quot.sound]",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-full-finite-wire-records-an/lib/benchmark/beyond-jbmc/induction_cases.py\", line 60, in <module>",
+        "    for name in ap.parse_args().models:run(name)",
+        "                                       ~~~^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-full-finite-wire-records-an/lib/benchmark/beyond-jbmc/induction_cases.py\", line 37, in run",
+        "    raise ValueError(\"independent kernel did not establish every named claim\")",
+        "ValueError: independent kernel did not establish every named claim"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/assurance/wire-sequence/kernel.log",
+      "change": "added",
+      "bytes": 1650,
+      "sha256": "c4064f75148051702fa856c05db1730695d6447860b96e2e109621d9863cf3de",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:56:10+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/beyond-jbmc/assurance/wire-sequence/kernel.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T095524Z-223620e99260a925",
+      "outputs": "20261124T095524Z-249606e80544b273",
+      "diff": "20261124T095524Z-2930379478a15571",
+      "workdir": "20261124T095538Z-22417278764773e8"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-full-finite-wire-records-an"
+}

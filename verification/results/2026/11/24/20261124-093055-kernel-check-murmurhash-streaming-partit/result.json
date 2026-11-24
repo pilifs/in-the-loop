@@ -1,0 +1,192 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-093055-kernel-check-murmurhash-streaming-partit",
+  "title": "Kernel-check MurmurHash streaming partitions and partial reset",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 1.6s, peak 155.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/induction_cases.py code) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-093055-kernel-check-murmurhash-streaming-partit.json",
+    "sha256": "20948805fa64e2c0ca04189e114b5bb410367bc2848a5702afacf0036522a361",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-093055-kernel-check-murmurhash-streaming-partit",
+      "title": "Kernel-check MurmurHash streaming partitions and partial reset",
+      "description": "Induct over complete four-byte blocks and zero to three pending bytes in an executable bit-vector model. Compare arbitrary finite partitions with the independent block traversal, length modulo 32 bits, reset and final mixing. Bind release class bytes and disprove the old signed-tail result on ff.",
+      "kind": "library",
+      "capabilities": [
+        "assurance:induction"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/extended/StreamHash.lean"
+        ]
+      },
+      "expected": "The Lean kernel checks the partition and reset theorems and rejects the false digest.",
+      "submitted": {
+        "at": "2026-11-24T09:30:55+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 31,
+      "requires": [
+        "lean"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "1m",
+        "timeout": "6m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py code",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py codec",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/assurance/codec-sequence"
+      ]
+    }
+  },
+  "sourceCommit": "f312702115c4e25f1140da49ba51c1d7bf3339fe",
+  "startedAt": "2026-11-24T09:54:58+00:00",
+  "finishedAt": "2026-11-24T09:55:23+00:00",
+  "wallSeconds": 25.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3401695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 360.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 163504128,
+    "wallSeconds": 1.6,
+    "cpuSeconds": 0.7,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.03
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py code",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py codec",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 360.0,
+      "cancelled": false,
+      "wallSeconds": 1.626,
+      "cpuSeconds": 0.719,
+      "cpuThrottledSeconds": 0.048,
+      "peakMemoryBytes": 163504128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 17,
+        "bytes": 1580,
+        "sha256": "c3d6f03edfa395e44233d219d29e91feece11386a26b6caceb9554e35b08796f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-murmurhash-streaming-partit/lib/benchmark/beyond-jbmc/extended/StreamHash.lean:36:0: error: maximum recursion depth has been reached",
+        "use `set_option maxRecDepth <num>` to increase limit",
+        "use `set_option diagnostics true` to get diagnostic information",
+        "/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-murmurhash-streaming-partit/lib/benchmark/beyond-jbmc/extended/StreamHash.lean:76:8: error: (kernel) unknown constant 'StreamHash.fold_blocks'",
+        "'StreamHash.fold_blocks' does not depend on any axioms",
+        "'StreamHash.all_partitions' depends on axioms: [propext, Quot.sound]",
+        "'StreamHash.arbitrary_stream' depends on axioms: [propext, Quot.sound, arbitrary_stream]",
+        "'StreamHash.reset_stream' depends on axioms: [propext, Quot.sound, arbitrary_stream]",
+        "'StreamHash.empty_negative_byte' depends on axioms: [propext, Quot.sound]",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-murmurhash-streaming-partit/lib/benchmark/beyond-jbmc/induction_cases.py\", line 60, in <module>",
+        "    for name in ap.parse_args().models:run(name)",
+        "                                       ~~~^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-murmurhash-streaming-partit/lib/benchmark/beyond-jbmc/induction_cases.py\", line 37, in run",
+        "    raise ValueError(\"independent kernel did not establish every named claim\")",
+        "ValueError: independent kernel did not establish every named claim"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/assurance/codec-sequence/kernel.log",
+      "change": "added",
+      "bytes": 931,
+      "sha256": "4eee6cc0860566d2fd769f1667434bb917885693b5dbd05adbeaefc5283ed59c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T09:56:10+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/beyond-jbmc/assurance/codec-sequence/kernel.log"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T095523Z-6249655a7c825c6b",
+      "outputs": "20261124T095523Z-664811b44859e8cc",
+      "diff": "20261124T095523Z-708537993306fddf",
+      "workdir": "20261124T095537Z-7132735ff0e8320f"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-murmurhash-streaming-partit"
+}

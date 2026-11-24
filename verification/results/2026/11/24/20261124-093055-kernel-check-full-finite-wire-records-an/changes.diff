@@ -1,0 +1,43 @@
+--- /dev/null
++++ b/verification/beyond-jbmc/assurance/wire-sequence/kernel.log
+@@ -0,0 +1,40 @@
++/home/filip/code/in-the-loop/verification/.state/work/20261124-093055-kernel-check-full-finite-wire-records-an/lib/benchmark/beyond-jbmc/wire/FrameInduction.lean:148:2: error: omega could not prove the goal:
++a possible counterexample may satisfy the constraints
++  e ≥ 0
++  d ≥ 0
++  c ≥ 0
++  b ≥ 0
++  0 ≤ a ≤ 2147483647
++  a - b - c - d ≥ 0
++  a - b - e ≤ -1
++where
++ a := ↑cap
++ b := ↑pos
++ c := ↑(List.map (fun a => (emit w ordering a).length) pre).sum
++ d := ↑(List.map (fun a => (emit w ordering a).length) rest).sum
++ e := ↑(List.flatMap (emit w ordering) pre).length
++'FrameInduction.full_word' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound,
++ full_word._native.bv_decide.ax_1_10,
++ full_word._native.bv_decide.ax_1_15,
++ full_word._native.bv_decide.ax_1_20,
++ full_word._native.bv_decide.ax_1_25]
++'FrameInduction.parse_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]
++'FrameInduction.word_suffix' depends on axioms: [propext, Classical.choice, Quot.sound]
++'FrameInduction.record_suffix' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound,
++ full_word._native.bv_decide.ax_1_10,
++ full_word._native.bv_decide.ax_1_15,
++ full_word._native.bv_decide.ax_1_20,
++ full_word._native.bv_decide.ax_1_25]
++'FrameInduction.entire_sequence' depends on axioms: [propext,
++ Classical.choice,
++ Quot.sound,
++ full_word._native.bv_decide.ax_1_10,
++ full_word._native.bv_decide.ax_1_15,
++ full_word._native.bv_decide.ax_1_20,
++ full_word._native.bv_decide.ax_1_25]
++'FrameInduction.record_progress' depends on axioms: [propext, Quot.sound]
++'FrameInduction.prefix_capacity' depends on axioms: [propext, sorryAx, Quot.sound]
