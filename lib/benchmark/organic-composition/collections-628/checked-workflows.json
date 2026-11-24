@@ -1,0 +1,55 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "Commons Collections PR 628, nested IteratorChain state and backing-list frame",
+  "workflows": [
+    {
+      "id": "stateful",
+      "cohort": "registered",
+      "scope": "stateful.json",
+      "probe": "../collections/UpgradeProbe.java",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "a/true/d/UnsupportedOperationException/[e]/[a, b, c]/[d, e]/LL"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "UU/UU/true/LU/[a, b, c]/accepted"
+            }
+          },
+          {
+            "input": 2,
+            "expectedNew": {
+              "return": "unadvanced/true/a/ok/[b, c, d, e]/[b, c]/[d, e]/LU"
+            }
+          },
+          {
+            "input": 3,
+            "expectedNew": {
+              "return": "unadvanced/true/a/UnsupportedOperationException/[b, c, d, e]/[a, b, c]/[d, e]/LU"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh original JVM; finite caller-owned iterators and lists, fixed public construction history and no concurrent access."
+      ]
+    },
+    {
+      "id": "flat",
+      "cohort": "registered",
+      "scope": "flat.json",
+      "probe": "../collections/UpgradeProbe.java",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh original JVM; finite caller-owned iterators and lists, fixed public construction history and no concurrent access."
+      ]
+    }
+  ]
+}

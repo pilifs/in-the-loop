@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-160258-qualify-both-commons-collections-iterato",
+  "title": "Qualify both Commons Collections iterator PRs and their four endpoints",
+  "description": "Use the unchanged change-plan implementation and one public observer for the original #628 optimization and #755 repair. Check parent and child locks, next and remove provenance, late attachment, overrides, unmodifiable boundaries and both backing lists; compare each pair cold, warm and clean. Run the upstream depth-150 workload in three fresh JVMs per endpoint and distinguish bounded timing from a traversal invariant.",
+  "kind": "real-world",
+  "capabilities": [
+    "application:change-plan",
+    "original-jvm-replay",
+    "checked-proof-reuse"
+  ],
+  "links": {},
+  "submitted": {
+    "at": "2026-11-24T16:02:58+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "9m"
+  },
+  "steps": [
+    {
+      "name": "Verify frozen shared implementation",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": "."
+    },
+    {
+      "name": "Check the optimization on its own original pair",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py collections-628 first && python3 -B lib/benchmark/organic-composition/audit.py collections-628 first",
+      "cwd": "."
+    },
+    {
+      "name": "Check the repair on its own original pair",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py collections-755 first && python3 -B lib/benchmark/organic-composition/audit.py collections-755 first",
+      "cwd": "."
+    },
+    {
+      "name": "Relate all endpoints and measure the depth control",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/history.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/organic-composition/collections-628/first",
+    "verification/organic-composition/collections-755/first",
+    "verification/organic-composition/collections/history.json"
+  ]
+}
