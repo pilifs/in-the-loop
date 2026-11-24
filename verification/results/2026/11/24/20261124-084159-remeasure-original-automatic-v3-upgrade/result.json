@@ -1,0 +1,287 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084159-remeasure-original-automatic-v3-upgrade",
+  "title": "Remeasure original automatic V3 upgrade groups 01 and 02",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.2s, peak 360.5 MiB (estimated 23m00s, 5.0 GiB); 13 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084159-remeasure-original-automatic-v3-upgrade.json",
+    "sha256": "70a4737b770151b42c7250381c427c7836e692e0387de7c2dc5bbd72a1a6ccf0",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084159-remeasure-original-automatic-v3-upgrade",
+      "title": "Remeasure original automatic V3 upgrade groups 01 and 02",
+      "description": "Use the registered V3 primary caller, original assistance, exact source and ordered dependencies for these historical shadow pairs. Keep the original first blocker and compare the frozen strict checker with the historical 0/32.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:41:59+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 25,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "23m",
+        "timeout": "92m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/shadow.py 01 02",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/shadow/01",
+        "verification/beyond-jbmc/closing/shadow/02"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:55:40+00:00",
+  "finishedAt": "2026-11-24T08:59:04+00:00",
+  "wallSeconds": 204.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 5520.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1380.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 377999360,
+    "wallSeconds": 5.2,
+    "cpuSeconds": 4.8,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/shadow.py 01 02",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5520.0,
+      "cancelled": false,
+      "wallSeconds": 5.214,
+      "cpuSeconds": 4.773,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 377999360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 13,
+        "bytes": 3465,
+        "sha256": "53acf4149ab5e8a94f07b03a4d6ec1bcfc8fa57e5f63862916db32905e31b013",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-38 current open parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "compsuite-i-1 current open convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponse",
+        "compsuite-i-70 current open getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lan",
+        "compsuite-i-4 current open getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's con",
+        "compsuite-i-81 current open parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet",
+        "compsuite-i-10 current open review the recorded exact overloads",
+        "compsuite-i-39 current open review the recorded exact overloads",
+        "compsuite-i-29 current open runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
+        "compsuite-i-36 current open parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are co",
+        "compsuite-i-103 current open postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibab",
+        "compsuite-i-37 current open review the recorded exact overloads",
+        "01 5 historical primary rows",
+        "02 6 historical primary rows"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/01/comparison.json",
+      "change": "added",
+      "bytes": 5010,
+      "sha256": "8a010189d1c8119c74f91caeac7caa3038f61444067a436273e35bcfe5c616cd",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-1.json",
+      "change": "added",
+      "bytes": 7868,
+      "sha256": "7aedb3be77826cba21d7f732d6ce689eca9fe82712527c2a80417fc186f744d6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-38.json",
+      "change": "added",
+      "bytes": 6070,
+      "sha256": "5534ea9f7e3e2a6b4051b321e646679e3f69356375e50c6ba5b1256e7905c274",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-4.json",
+      "change": "added",
+      "bytes": 9860,
+      "sha256": "532f268b5ab98a898b2ceadb907beec547690293af5057b2b30260568f409389",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-70.json",
+      "change": "added",
+      "bytes": 8529,
+      "sha256": "698990fa03d7fa307fcec5fdcd107a8a83437e8075f383146d164336218e1bd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-81.json",
+      "change": "added",
+      "bytes": 7541,
+      "sha256": "ed5c1a5a44fde9735d05ae24f3af35280e7bc532f8a02880d2972e72637f482f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/02/comparison.json",
+      "change": "added",
+      "bytes": 4548,
+      "sha256": "583c2d1f8939938b3526eaa6c4f271f83dc4306e20f7ab136eb16838c0a1299d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-10.json",
+      "change": "added",
+      "bytes": 21319,
+      "sha256": "d08fdeeb1220973f2b976708259ebe45a8b44259955834d4107c805b459cf987",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-103.json",
+      "change": "added",
+      "bytes": 10847,
+      "sha256": "9f2e90b558efd6aca15084aac7765843bd6d22d5d2103794772c87ad77b3096a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-29.json",
+      "change": "added",
+      "bytes": 7512,
+      "sha256": "5886546780b3f644c6eb770254a0cff5fb79cb27df8112b7df4eff4d167659db",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-36.json",
+      "change": "added",
+      "bytes": 7524,
+      "sha256": "ed495629202fe09a09f23a07e0fab0a96f86a99859cd26734b3b085e6cb29829",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-37.json",
+      "change": "added",
+      "bytes": 11322,
+      "sha256": "c3ca06e4b98279e2178875a19c64e9318799e5f7f16948f59c4358b18c3b5d95",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-39.json",
+      "change": "added",
+      "bytes": 13487,
+      "sha256": "e2e37a1e51b59956c60425e18a76276f546749c04221e339aec7c56618a03b1c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:59:29+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/shadow/01/comparison.json",
+      "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-1.json",
+      "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-38.json",
+      "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-4.json",
+      "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-70.json",
+      "verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-81.json",
+      "verification/beyond-jbmc/closing/shadow/02/comparison.json",
+      "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-10.json",
+      "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-103.json",
+      "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-29.json",
+      "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-36.json",
+      "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-37.json",
+      "verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-39.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T085904Z-114181175aabda59",
+      "outputs": "20261124T085904Z-15206264f370f662",
+      "diff": "20261124T085904Z-175514c187ebdcff"
+    }
+  }
+}

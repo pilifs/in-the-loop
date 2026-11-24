@@ -1,0 +1,294 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084235-remeasure-original-automatic-v3-upgrade",
+  "title": "Remeasure original automatic V3 upgrade groups 05 and 06",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2.4s, peak 145.1 MiB (estimated 23m00s, 5.0 GiB); 10 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084235-remeasure-original-automatic-v3-upgrade.json",
+    "sha256": "cac9c8f788af141e119757fb353da73ce7d6d7eb1a15bd1201cdbfc1f3586ece",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084235-remeasure-original-automatic-v3-upgrade",
+      "title": "Remeasure original automatic V3 upgrade groups 05 and 06",
+      "description": "Use the registered V3 primary caller, original assistance, exact source and ordered dependencies for these historical shadow pairs. Keep the original first blocker and compare the frozen strict checker with the historical 0/32.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:42:35+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 25,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "23m",
+        "timeout": "92m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/shadow.py 05 06",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/shadow/05",
+        "verification/beyond-jbmc/closing/shadow/06"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:55:40+00:00",
+  "finishedAt": "2026-11-24T08:59:00+00:00",
+  "wallSeconds": 200.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 5520.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1380.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 152162304,
+    "wallSeconds": 2.4,
+    "cpuSeconds": 2.2,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 177.637,
+      "cpuSeconds": 177.737,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2380247040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "006edf567d02bf3e61b4e0117dc6fa1ddaf58f97e481ab852a9d48ef5b5ea930",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 57s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/shadow.py 05 06",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5520.0,
+      "cancelled": false,
+      "wallSeconds": 2.398,
+      "cpuSeconds": 2.17,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 152162304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 10,
+        "bytes": 3143,
+        "sha256": "a7215327c3fce489e36f64c7f2d8120b2dc85b6cc99cb94ed564c4fd75ecd072",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-94 current open validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.vali",
+        "cucumber-reporting-1198 current open parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their c",
+        "commons-beanutils-440 current open parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans",
+        "commons-csv-8993be87 current open nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of sever",
+        "reflector-35 current open newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassG",
+        "commons-fileupload-377 current open readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no con",
+        "commons-vfs-55c96cfd current open doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.pro",
+        "commons-validator-86e32931 current open parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, boo",
+        "05 6 historical primary rows",
+        "06 2 historical primary rows"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/05/comparison.json",
+      "change": "added",
+      "bytes": 5487,
+      "sha256": "13dfcd61c715eb4c6ef4496d6b7bf6543ebe4d5090f6cdd1068e84f5fc8ad3bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/05/current/commons-beanutils-440.json",
+      "change": "added",
+      "bytes": 6179,
+      "sha256": "942d296a9cddf797a6deb1760b016d28a5dfb201b178c39e0bbd4fbdcf39735c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/05/current/commons-csv-8993be87.json",
+      "change": "added",
+      "bytes": 5325,
+      "sha256": "3bf5e5507de231a4e14e8219591b17efd42b7e8a6a9efbc61463dd3230d2789e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/05/current/commons-fileupload-377.json",
+      "change": "added",
+      "bytes": 5169,
+      "sha256": "9f2378ae394c03abab30c9611621fc845baae3f7621e3648811f3c7e2aea6901",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/05/current/compsuite-i-94.json",
+      "change": "added",
+      "bytes": 15329,
+      "sha256": "3fd1aa9a346e4ed4b6ed33426b201211e9f72311f069ef0559d122917a7ab57e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/05/current/cucumber-reporting-1198.json",
+      "change": "added",
+      "bytes": 10599,
+      "sha256": "3379b3d685b9adb406d37176df68ca4f8ac26e4aa9fead9f35a8298e45f0738b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/05/current/reflector-35.json",
+      "change": "added",
+      "bytes": 8393,
+      "sha256": "dc85a86590026d95e97e6f8843cec8beb9ddb176448aaa90a6ff3d7e9d79daeb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/06/comparison.json",
+      "change": "added",
+      "bytes": 2756,
+      "sha256": "3d27d503bce336dbab3f24eadd2853ecad2da297dfef57a028005589e2f448c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/06/current/commons-validator-86e32931.json",
+      "change": "added",
+      "bytes": 7701,
+      "sha256": "ad6cc9c015d40b6536495da4b23786dd010df387fde1864c367660f3b8dfcf89",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/06/current/commons-vfs-55c96cfd.json",
+      "change": "added",
+      "bytes": 9008,
+      "sha256": "4b7c53130186efe9831bd94cfd3167d72bab36b4a5444ec1d12f329a9db4d173",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:59:30+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/shadow/05/comparison.json",
+      "verification/beyond-jbmc/closing/shadow/05/current/commons-beanutils-440.json",
+      "verification/beyond-jbmc/closing/shadow/05/current/commons-csv-8993be87.json",
+      "verification/beyond-jbmc/closing/shadow/05/current/commons-fileupload-377.json",
+      "verification/beyond-jbmc/closing/shadow/05/current/compsuite-i-94.json",
+      "verification/beyond-jbmc/closing/shadow/05/current/cucumber-reporting-1198.json",
+      "verification/beyond-jbmc/closing/shadow/05/current/reflector-35.json",
+      "verification/beyond-jbmc/closing/shadow/06/comparison.json",
+      "verification/beyond-jbmc/closing/shadow/06/current/commons-validator-86e32931.json",
+      "verification/beyond-jbmc/closing/shadow/06/current/commons-vfs-55c96cfd.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T085900Z-773298c43f33f720",
+      "outputs": "20261124T085900Z-804395180ab63355",
+      "diff": "20261124T085900Z-846846bda5722891"
+    }
+  }
+}

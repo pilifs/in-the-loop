@@ -1,0 +1,54 @@
+{
+ "argv": [
+  "/usr/bin/python3",
+  "-B",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
+  "--build",
+  "current",
+  "--checker",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
+  "--repositories",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-p0msnlzy/data/sources/repos.json",
+  "--work",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-p0msnlzy/data/slices",
+  "--complete",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-p0msnlzy/data/modules",
+  "--maven-cache",
+  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
+  "--maven8",
+  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
+  "--output",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/06",
+  "--case",
+  "commons-validator-86e32931",
+  "--case",
+  "commons-vfs-55c96cfd"
+ ],
+ "cases": [
+  {
+   "id": "commons-validator-86e32931",
+   "v3Result": "open",
+   "v3Sha256": "f90c338e99e475eae5324dee821d86eb984aa909f6095656c6b6a5c50375c1c7",
+   "currentSha256": "ad6cc9c015d40b6536495da4b23786dd010df387fde1864c367660f3b8dfcf89",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+  },
+  {
+   "id": "commons-vfs-55c96cfd",
+   "v3Result": "open",
+   "v3Sha256": "5d837c9af24611ce98b2125af9adbb38a25ae8bc7d294670385542b99b7db8c1",
+   "currentSha256": "4b7c53130186efe9831bd94cfd3167d72bab36b4a5444ec1d12f329a9db4d173",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+  }
+ ],
+ "job": "20261124-084235-remeasure-original-automatic-v3-upgrade"
+}

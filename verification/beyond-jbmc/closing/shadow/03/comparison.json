@@ -1,0 +1,110 @@
+{
+ "argv": [
+  "/usr/bin/python3",
+  "-B",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084234-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
+  "--build",
+  "current",
+  "--checker",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
+  "--repositories",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-1rw62o37/data/sources/repos.json",
+  "--work",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-1rw62o37/data/slices",
+  "--complete",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-1rw62o37/data/modules",
+  "--maven-cache",
+  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
+  "--maven8",
+  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
+  "--output",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084234-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/03",
+  "--case",
+  "commons-text-775",
+  "--case",
+  "compsuite-i-62",
+  "--case",
+  "compsuite-i-80",
+  "--case",
+  "ea-async-27",
+  "--case",
+  "incremental-analysis-28",
+  "--case",
+  "whatjdk-12"
+ ],
+ "cases": [
+  {
+   "id": "commons-text-775",
+   "v3Result": "open",
+   "v3Sha256": "a0ee664d8b4ab8601223c03f78daa8cfcdb3ae4651a034d2f88b75a63837456b",
+   "currentSha256": "8f7b0b1e20c5a9b17c880d6187c7336b50dd17b025c3c6ae0bc889852a40bf19",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "review the recorded exact overloads"
+  },
+  {
+   "id": "compsuite-i-62",
+   "v3Result": "open",
+   "v3Sha256": "a71a132eb272a811efdbb8d57b6b5f914676a19c4dea275bd4e09a704f5af4a9",
+   "currentSha256": "f0ca82e2ef052845c3aea1a284c105531503aa1789d6011bff78493756e33fc3",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.ClassLoader.getResources(Ljava/lang/String;)Ljava/util/Enumeration;@jdk-21.0.13 (java.lang.ClassLoader.getResources(java.lang.String) at org.slf4j.LoggerFactory.findPossibleStaticLoggerBinderPathSet:227). With --gaps assume it assumes instead that java.lang.ClassLoader.getResources(java.lang.String) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption"
+  },
+  {
+   "id": "compsuite-i-80",
+   "v3Result": "open",
+   "v3Sha256": "ee336cd035dd95989a81ac446bf2bf4ea67d1808bfc4ed107003abaa9902ff1c",
+   "currentSha256": "208c2f73fab6c81cf8563254fcd76ca9516ca6f8eebf9f7fe910bd1a4625edd7",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "review the recorded exact overloads"
+  },
+  {
+   "id": "ea-async-27",
+   "v3Result": "open",
+   "v3Sha256": "b253a994276c7cd241e19efd38c809d1d03fd851575dffe3f85da9efafe88dce",
+   "currentSha256": "84c80e175ca465fb597d70ee1d701fada1081ea9220f8262e9d4384b9ed00149",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "review the recorded exact overloads"
+  },
+  {
+   "id": "incremental-analysis-28",
+   "v3Result": "open",
+   "v3Sha256": "689db65d56dce08af191f6ac97038b0bff005498bc59957525ff5f7d0faa3ed4",
+   "currentSha256": "9a0aa5c6a98e8925a563c50afbe413fbffbcc636ac1557a39f6437f0c5998834",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "review the recorded exact overloads"
+  },
+  {
+   "id": "whatjdk-12",
+   "v3Result": "open",
+   "v3Sha256": "43395fab0756f0c116e6d50fd45dd1bef3b0c2ce579e6929b25af016002c8074",
+   "currentSha256": "345bdfa9b6af10e5d16e2e5df971d0d9196042de7770314a0834d59c5fcff775",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of several is not supported yet"
+  }
+ ],
+ "job": "20261124-084234-remeasure-original-automatic-v3-upgrade"
+}

@@ -1,0 +1,2049 @@
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/01/comparison.json
+@@ -0,0 +1,96 @@
++{
++ "argv": [
++  "/usr/bin/python3",
++  "-B",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084159-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
++  "--build",
++  "current",
++  "--checker",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
++  "--repositories",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-rrgrwuox/data/sources/repos.json",
++  "--work",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-rrgrwuox/data/slices",
++  "--complete",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-rrgrwuox/data/modules",
++  "--maven-cache",
++  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
++  "--maven8",
++  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
++  "--output",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084159-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/01",
++  "--case",
++  "compsuite-i-1",
++  "--case",
++  "compsuite-i-38",
++  "--case",
++  "compsuite-i-4",
++  "--case",
++  "compsuite-i-70",
++  "--case",
++  "compsuite-i-81"
++ ],
++ "cases": [
++  {
++   "id": "compsuite-i-1",
++   "v3Result": "open",
++   "v3Sha256": "5c890854ccf74e98ddbde29ac5ffd150d0248c77da52d76795e3ca45544a4fb9",
++   "currentSha256": "7aedb3be77826cba21d7f732d6ce689eca9fe82712527c2a80417fc186f744d6",
++   "sameOrderedArtifacts": {
++    "old": false,
++    "new": false
++   },
++   "result": "open",
++   "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++  },
++  {
++   "id": "compsuite-i-38",
++   "v3Result": "open",
++   "v3Sha256": "c3198fc7ff69f9ad80324d3900aba9181dce664cb1889738da6e3a4797ef0ee2",
++   "currentSha256": "5534ea9f7e3e2a6b4051b321e646679e3f69356375e50c6ba5b1256e7905c274",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  {
++   "id": "compsuite-i-4",
++   "v3Result": "open",
++   "v3Sha256": "4ec98e26e15c6cf1c8349498c73298fbf0f47578c4372c586f34f04936146a69",
++   "currentSha256": "532f268b5ab98a898b2ceadb907beec547690293af5057b2b30260568f409389",
++   "sameOrderedArtifacts": {
++    "old": false,
++    "new": false
++   },
++   "result": "open",
++   "firstBlocker": "getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it"
++  },
++  {
++   "id": "compsuite-i-70",
++   "v3Result": "open",
++   "v3Sha256": "de2cb85fc174a939d363e657eebc0c093b1ab2072a2ee0d2d5e8d4b43c441bfc",
++   "currentSha256": "698990fa03d7fa307fcec5fdcd107a8a83437e8075f383146d164336218e1bd3",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  {
++   "id": "compsuite-i-81",
++   "v3Result": "open",
++   "v3Sha256": "d3822332b9ef31edbd62c8d5f128faf7be972efacef2955533c851279b3afb6a",
++   "currentSha256": "ed5c1a5a44fde9735d05ae24f3af35280e7bc532f8a02880d2972e72637f482f",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet"
++  }
++ ],
++ "job": "20261124-084159-remeasure-original-automatic-v3-upgrade"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-1.json
+@@ -0,0 +1,135 @@
++{
++  "id": "compsuite-i-1",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert",
++  "observer": "Deserialize a serialized phone response and read the phone number.",
++  "revisions": {
++    "old": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++    "new": "577716be23b960fe24b31b1edcdf6b01e88a692e"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "scope": "complete original Maven production module",
++      "module": "retrofit-converters/wire/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "c88d4a81170ec1081a6afb113bf2bea9688e0a04492b36dc9bb68513234f9559",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "retrofit-converters/wire",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 4,
++      "resources": 0,
++      "seconds": 22.49,
++      "orderedSha256": [
++        "07b9bf04112b72c3a377663481a00844ed0799430dc0acacfd7c616e07d38341",
++        "089c70bcd04f356618f5ca2b4af17d43a50a577dbc17cffd795a604fc21b5048",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++      ],
++      "callerClassSha256": "fc653bbcf688b463a060defa0842f08ca12983722dfd41b4f2892a37a5dfa90b",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    },
++    "new": {
++      "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++      "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962",
++      "scope": "complete original Maven production module",
++      "module": "retrofit-converters/wire/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "c88d4a81170ec1081a6afb113bf2bea9688e0a04492b36dc9bb68513234f9559",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "retrofit-converters/wire",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 4,
++      "resources": 0,
++      "seconds": 21.49,
++      "orderedSha256": [
++        "07b9bf04112b72c3a377663481a00844ed0799430dc0acacfd7c616e07d38341",
++        "684e4c43d0bf9c606b4458873c02322f577c5cbe723abb6270b536e2b55e4a40",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++      ],
++      "callerClassSha256": "fc653bbcf688b463a060defa0842f08ca12983722dfd41b4f2892a37a5dfa90b",
++      "descriptors": [
++        "(Ljava/lang/Object;)Ljava/lang/Object;",
++        "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "retrofit2.converter.wire.WireResponseBodyConverter#convert(okhttp3.ResponseBody)",
++    "exit": 1,
++    "seconds": 0.032,
++    "outputSha256": "ad77537bea20f535ce08684353f77cf61d6c96359e0695c511fac826a7f079ed",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "retrofit2.converter.wire.WireResponseBodyConverter#convert(okhttp3.ResponseBody)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "retrofit2.converter.wire.WireResponseBodyConverter#convert(okhttp3.ResponseBody) cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++          "uri": null,
++          "line": 34
++        }
++      ],
++      "output": "\u2717 retrofit2.converter.wire.WireResponseBodyConverter#convert(okhttp3.ResponseBody) cannot be verified: convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++      "work": "$WORK/checker-vvdudhij/overload-0"
++    },
++    "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++  },
++  "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++  "elapsedSeconds": 0.078,
++  "sourceSha256": "f41b57609dc513114bfbda22095bfb3b78a45f10260b578d2c9ec7ee60f6c962"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-38.json
+@@ -0,0 +1,118 @@
++{
++  "id": "compsuite-i-38",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.esotericsoftware.reflectasm.MethodAccess#get",
++  "observer": "Construct an interface method accessor and invoke replace on a populated concurrent map.",
++  "revisions": {
++    "old": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
++    "new": "5c636af1a65b92fa570582628a27aa1e7d29f24b"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "7cab65bb46ccd17b07ad05dd6b83d92a695477fc",
++      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "05d9e23b42ae6295045f32eaaa3505a4c24b9a73afb23d4d3eee7799361e0571",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 5,
++      "resources": 0,
++      "seconds": 5.82,
++      "orderedSha256": [
++        "f1096718f17cb745076a8ecd170eb2aaeafe60820b8c095d1e087606d6c3a980",
++        "d2da399a9967c69f0a21739256fa79d284222c223082cacadc17372244764b54"
++      ],
++      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
++      ]
++    },
++    "new": {
++      "commit": "5c636af1a65b92fa570582628a27aa1e7d29f24b",
++      "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "522183c18105ec2f25fa9e7dc804c9cf92d04dbea1b167f28eb529208d305e00",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 5,
++      "resources": 0,
++      "seconds": 5.65,
++      "orderedSha256": [
++        "f1096718f17cb745076a8ecd170eb2aaeafe60820b8c095d1e087606d6c3a980",
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672"
++      ],
++      "callerClassSha256": "0c119cffb1287f9fe7f6793a241cafd2e15dea30b18e5c9fd2927179b4dce246",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Class;)Lcom/esotericsoftware/reflectasm/MethodAccess;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
++    "exit": 1,
++    "seconds": 0.004,
++    "outputSha256": "d83c139203b2c08bc17a0daa7cf754581ea1c463252f6a4b6645a772521a30f7",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class) cannot be verified: parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 84
++        }
++      ],
++      "output": "\u2717 com.esotericsoftware.reflectasm.MethodAccess#get(java.lang.Class) cannot be verified: parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-uzi2vrpq/overload-0"
++    },
++    "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 0.089,
++  "sourceSha256": "df0125452beef03b13f64e04343051afc2938670e95fdefceeab82950a6dee80"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-4.json
+@@ -0,0 +1,154 @@
++{
++  "id": "compsuite-i-4",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory",
++  "observer": "Resolve the factory for an explicitly registered configuration namespace.",
++  "revisions": {
++    "old": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
++    "new": "b494d596132961f8f6dc7f229a1d0e4919da151b"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "6b0a06a4682e8171cc17f5f61ccc8d87f6871b6d",
++      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
++      "scope": "complete original Maven production module",
++      "module": "apollo-client/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "8612a2b97c32b2d22411529db6d0cb96099f48da83dc9288b801de0fde0be263",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "apollo-client",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 117,
++      "resources": 7,
++      "seconds": 11.66,
++      "orderedSha256": [
++        "2418a7e45917c40843b41e80ddc7d0a102b9579297664a7d37f9057363133505",
++        "9fbdaaf97d172398adf95102389e5acbfe823bde30254023ee2c53752527425e",
++        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "9b9df27a5b8c7864112b4137fd92b36c3f1395bfe57be42fedf2f520ead1a93e",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
++        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
++        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
++        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
++        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
++        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
++        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
++        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
++      ],
++      "callerClassSha256": "59d18ed04833c751ea25e3466c3dc47ec2b7fefe894cb241c4162bf1f46f141e",
++      "descriptors": [
++        "(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;"
++      ]
++    },
++    "new": {
++      "commit": "b494d596132961f8f6dc7f229a1d0e4919da151b",
++      "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5",
++      "scope": "complete original Maven production module",
++      "module": "apollo-client/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "8612a2b97c32b2d22411529db6d0cb96099f48da83dc9288b801de0fde0be263",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "apollo-client",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 117,
++      "resources": 7,
++      "seconds": 11.49,
++      "orderedSha256": [
++        "f101f2637a051c4a118d52a74323764d997945a14e0e6bc9f0c1b75fb2da9912",
++        "b2c04891ecab072573f5fa7eb28ae6f8a52e52ffbf79406c32189d4ba6c5500e",
++        "c6221763bd79c4f1c3dc7f750b5f29a0bb38b367b81314c4f71896e340c40825",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "d258ff1bd9b8b527872f8402648226658ad3149f1f40e74b0566d69e7e042fbc",
++        "91c77044a50c481636c32d916fd89c9118a72195390452c81065080f957de7ff",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "1d5aeb6bd98b0fdd151269eae941c05f6468a791ea0f1e68d8e7fe518af3e7df",
++        "5666b36f9db46f06dd5a19d73bbff3b588d5969c0f4b8848fde0f5ec849430a5",
++        "1047f472714896535b9e8ca1f39ed4f2137e3a27aec4c2956a686b4d94a550cb",
++        "831882a70b701e527d03cc3fd6796598347e1415024fb103fb2da9bcf6b03d81",
++        "88785cd6d433df6d69224622f52cedfc29d1e7a38c61d7dac29c75965cb93fcd",
++        "0c2e0f3df6ea22558546dac4900094df815acf5ec17ef869969816de6a100a34",
++        "daddea1ea0be0f56978ab3006b8ac92834afeefbd9b7e4e6316fca57df0fa636",
++        "88998e5bbab12a965f304815159670238b24d272b24339a9a8545b3913eb640a",
++        "e72b76416888c0a7fa2cd98e155a5981c7fe021b78777091d83da7c82992ae92",
++        "a67f9c8b8f0ae92f458b5d685e135574254e1712cc2b04db99511086ae1b57d3"
++      ],
++      "callerClassSha256": "59d18ed04833c751ea25e3466c3dc47ec2b7fefe894cb241c4162bf1f46f141e",
++      "descriptors": [
++        "(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/String;)Lcom/ctrip/framework/apollo/spi/ConfigFactory;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(java.lang.String)",
++    "exit": 1,
++    "seconds": 0.236,
++    "outputSha256": "580cd82d391115301847f4046d07368767d5854231434470bf649ef7c0a102e2",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(java.lang.String)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(java.lang.String) cannot be verified: getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it",
++          "uri": null,
++          "line": 23
++        }
++      ],
++      "output": "\u2717 com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager#getFactory(java.lang.String) cannot be verified: getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it\n",
++      "work": "$WORK/checker-8po6c09c/overload-0"
++    },
++    "firstBlocker": "getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it"
++  },
++  "firstBlocker": "getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it",
++  "elapsedSeconds": 0.374,
++  "sourceSha256": "d786db06dbb9686c6ec55c28fa8292af558b56317cc88b059bb4161f5675d2c5"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-70.json
+@@ -0,0 +1,146 @@
++{
++  "id": "compsuite-i-70",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle",
++  "observer": "Read the style of an unformatted cell from the original spreadsheet.",
++  "revisions": {
++    "old": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++    "new": "eed036e11b5aecaeb5889fae26505e9409bdc438"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "3188aa5ed02b43aee8732c9027728d47f10a4e03",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "c1f347c185e227f8de5bdba2e61916a51cd56fdc3068309dca131f2adf9bc5fc",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 26,
++      "resources": 0,
++      "seconds": 11.22,
++      "orderedSha256": [
++        "60e1cf1dd74d9a612a3de9f7d2a7fa23298c45780d14f0aaf397e4b1b20bd1d1",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "584159c02c776a8c8e35801c7fe3cbf0276c5b12a2feed770c12174ed8418cfb",
++        "5f2df1e467825e4cac5996d44890c4201c000b43c0b23cffc0782d28a0beb9b0",
++        "ff71bd27b36816889324de58ecf642532e5c9934c1dca2cfea0cbb2f393ec2cb",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "0e5c59cc501c4e13315b8cc49d19e5c380ca3725face6d4d5175ace764002d85",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    },
++    "new": {
++      "commit": "eed036e11b5aecaeb5889fae26505e9409bdc438",
++      "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "3b26f97a5f0d13cc7bd87303e498439edb6ef16b53430b6b38998cdd7b05b647",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 26,
++      "resources": 0,
++      "seconds": 7.93,
++      "orderedSha256": [
++        "60e1cf1dd74d9a612a3de9f7d2a7fa23298c45780d14f0aaf397e4b1b20bd1d1",
++        "f6574162cf94b1cafcb0c49f1d4da0246e2cfd479d2f31904cc37d715e756c6c",
++        "4241dfa94e711d435f29a4604a3e2de5c4aa3c165e23bd066be6fc1fc4309569",
++        "6a594721d51444fd97b3eaefc998a77f606dedb03def494f74755aead3c9df3e",
++        "3c8fc87be30f4992ca9e2d5743515e781ebf97696d270bbec0f51ee6f8543e9c",
++        "ff2d59fad74e867630fbc7daab14c432654712ac624dbee468d220677b124dd5",
++        "38bb45c99e6153260c19b97b99b6a7370a067de63344de6d1ea11922acaed86b",
++        "029ab12cf1f2303091f7f93ea694a4a66d6b397d970447677479a84caf2dc18e",
++        "ec7b2aa7e1352753d18ac2daa7a68880f160a26087ede464ed329807238c0922",
++        "505e797d1140876ec848d729715a2c409b7fa00a8d538ab9b5a393ff5f9bd9ea",
++        "a7a73a0a668d0a9b9effb046d20076e33f18ae4c02d418b56721ef57b216ed79",
++        "15894fad0a81611e351b5200bbc3bd21359fc6aed53af54a48998390e4b2700d",
++        "b7efe223de080eb29fd9f341777cd85bfa4c770469a7fea9b0c2d27108893673",
++        "47dcde8986019314ef78ae7280a94973a21d2ed95075a40a000b42da956429e1",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79"
++      ],
++      "callerClassSha256": "0e5c59cc501c4e13315b8cc49d19e5c380ca3725face6d4d5175ace764002d85",
++      "descriptors": [
++        "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "()Lorg/apache/poi/ss/usermodel/CellStyle;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle()",
++    "exit": 1,
++    "seconds": 0.433,
++    "outputSha256": "7d13ec83badca1e5fb79c522f7965107afdf1c07946a2bd500514e60d5e79430",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle()",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle() cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 266
++        }
++      ],
++      "output": "\u2717 com.monitorjbl.xlsx.impl.StreamingCell#getCellStyle() cannot be verified: getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-uwjjmym7/overload-0"
++    },
++    "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 0.61,
++  "sourceSha256": "6fd80684308a4ce565fc2fbd8d185fc06b458c1c99e14838a1847e94d7fbef2e"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/01/current/compsuite-i-81.json
+@@ -0,0 +1,150 @@
++{
++  "id": "compsuite-i-81",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue",
++  "observer": "Read a configured feature flag and observe whether the caller activates the feature.",
++  "revisions": {
++    "old": "3418531ea79f1c858f008d5ec4fa83d0251601db",
++    "new": "f74b56a98f000d3ab3913e90f3f47b2746809356"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "3418531ea79f1c858f008d5ec4fa83d0251601db",
++      "sourceSha256": "1c9b4b626b3f6cb02384d0bc8f5c5ae64208331d655ed3cedd75dd396f4ea740",
++      "scope": "original production module and runtime with the declared container-provided artifacts",
++      "module": "deltaspike/pom.xml",
++      "declaredDependencyScope": "provided",
++      "modulePomSha256": "db0fd1df9e2512e3bf64666911c61b20d1867586a3059d5c5ecb82eaf89fd0bd",
++      "operandScope": "provided",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "deltaspike",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [
++        "https://repository.jboss.org/nexus/repository/public-jboss/"
++      ],
++      "providedGoals": [
++        "-pl",
++        "deltaspike",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=provided",
++        "-Dmdep.outputFile=target/upgrade-provided.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "stage": "artifacts ready",
++      "compiledClasses": 2,
++      "resources": 2,
++      "seconds": 10.98,
++      "orderedSha256": [
++        "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
++        "d48a78f769fc776487a240a62043f17e2230b551768e7e15a6eed44beb9e001c",
++        "4b1081fe2682263b73561c543da1c83e308850060bb48649dc3370f9fb6795d5"
++      ],
++      "callerClassSha256": "e5c534e88abfeeeeceba82b5b8e78f1886b81d81d6117dce42bd0acb3733c8b3",
++      "descriptors": [
++        "(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "f74b56a98f000d3ab3913e90f3f47b2746809356",
++      "sourceSha256": "1c9b4b626b3f6cb02384d0bc8f5c5ae64208331d655ed3cedd75dd396f4ea740",
++      "scope": "original production module and runtime with the declared container-provided artifacts",
++      "module": "deltaspike/pom.xml",
++      "declaredDependencyScope": "provided",
++      "modulePomSha256": "abb5991a5bcfda0f2089b48d3acc9f7bdfea8252a373490951a8ed41588eb64e",
++      "operandScope": "provided",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "deltaspike",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [
++        "https://repository.jboss.org/nexus/repository/public-jboss/"
++      ],
++      "providedGoals": [
++        "-pl",
++        "deltaspike",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=provided",
++        "-Dmdep.outputFile=target/upgrade-provided.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "stage": "artifacts ready",
++      "compiledClasses": 2,
++      "resources": 2,
++      "seconds": 10.24,
++      "orderedSha256": [
++        "afafe522eb097fae91582510a13b807bf6cf0774db9f2523a48a816ad1eee340",
++        "d48a78f769fc776487a240a62043f17e2230b551768e7e15a6eed44beb9e001c",
++        "5a0076a79a742c5b919610e266bd0ac43eb664f3f0cf9e6e4699ea369622ea76"
++      ],
++      "callerClassSha256": "e5c534e88abfeeeeceba82b5b8e78f1886b81d81d6117dce42bd0acb3733c8b3",
++      "descriptors": [
++        "(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Lorg/togglz/core/repository/FeatureState;Lorg/togglz/core/user/FeatureUser;Ljava/lang/String;)Ljava/lang/String;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(org.togglz.core.repository.FeatureState, org.togglz.core.user.FeatureUser, java.lang.String)",
++    "exit": 1,
++    "seconds": 0.007,
++    "outputSha256": "0454dda095d88cf63d3a273e34c3357e907fda4fcd1f2ac3c2ba7e682b06ee78",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(org.togglz.core.repository.FeatureState, org.togglz.core.user.FeatureUser, java.lang.String)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(org.togglz.core.repository.FeatureState, org.togglz.core.user.FeatureUser, java.lang.String) cannot be verified: parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet",
++          "uri": null,
++          "line": 37
++        }
++      ],
++      "output": "\u2717 org.togglz.deltaspike.activation.DeltaSpikePropertyActivationStrategy#getPropertyValue(org.togglz.core.repository.FeatureState, org.togglz.core.user.FeatureUser, java.lang.String) cannot be verified: parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet\n",
++      "work": "$WORK/checker-yhfhdxx_/overload-0"
++    },
++    "firstBlocker": "parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet"
++  },
++  "firstBlocker": "parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet",
++  "elapsedSeconds": 0.06,
++  "sourceSha256": "1c9b4b626b3f6cb02384d0bc8f5c5ae64208331d655ed3cedd75dd396f4ea740"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/02/comparison.json
+@@ -0,0 +1,110 @@
++{
++ "argv": [
++  "/usr/bin/python3",
++  "-B",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084159-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
++  "--build",
++  "current",
++  "--checker",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
++  "--repositories",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-8xuxrzt3/data/sources/repos.json",
++  "--work",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-8xuxrzt3/data/slices",
++  "--complete",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-8xuxrzt3/data/modules",
++  "--maven-cache",
++  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
++  "--maven8",
++  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
++  "--output",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084159-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/02",
++  "--case",
++  "compsuite-i-10",
++  "--case",
++  "compsuite-i-103",
++  "--case",
++  "compsuite-i-29",
++  "--case",
++  "compsuite-i-36",
++  "--case",
++  "compsuite-i-37",
++  "--case",
++  "compsuite-i-39"
++ ],
++ "cases": [
++  {
++   "id": "compsuite-i-10",
++   "v3Result": "open",
++   "v3Sha256": "ed703c048b7358679adec537fd69489d12e98f100d8d3719fb43d95d38ef845a",
++   "currentSha256": "d08fdeeb1220973f2b976708259ebe45a8b44259955834d4107c805b459cf987",
++   "sameOrderedArtifacts": {
++    "old": false,
++    "new": false
++   },
++   "result": "open",
++   "firstBlocker": "review the recorded exact overloads"
++  },
++  {
++   "id": "compsuite-i-103",
++   "v3Result": "open",
++   "v3Sha256": "0b49942e71dec4af188268c8312af1266bfe53f4ed74cec477fe4b341c07d2fe",
++   "currentSha256": "9f2e90b558efd6aca15084aac7765843bd6d22d5d2103794772c87ad77b3096a",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  {
++   "id": "compsuite-i-29",
++   "v3Result": "open",
++   "v3Sha256": "43af3e9a82139026fdb84470c3640ae273182a026451e3a3f61de6f331472657",
++   "currentSha256": "5886546780b3f644c6eb770254a0cff5fb79cb27df8112b7df4eff4d167659db",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use"
++  },
++  {
++   "id": "compsuite-i-36",
++   "v3Result": "open",
++   "v3Sha256": "4a46bc03e1004917e32907ae8c4ff744fb60b0b14ae33232e4f43f5207f92792",
++   "currentSha256": "ed495629202fe09a09f23a07e0fab0a96f86a99859cd26734b3b085e6cb29829",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  {
++   "id": "compsuite-i-37",
++   "v3Result": "open",
++   "v3Sha256": "65cb1f2476fbc1194605ef8a5686fb57730aeec06ed2dcc85db7f2192d6c2255",
++   "currentSha256": "c3ca06e4b98279e2178875a19c64e9318799e5f7f16948f59c4358b18c3b5d95",
++   "sameOrderedArtifacts": {
++    "old": false,
++    "new": false
++   },
++   "result": "open",
++   "firstBlocker": "review the recorded exact overloads"
++  },
++  {
++   "id": "compsuite-i-39",
++   "v3Result": "open",
++   "v3Sha256": "e655c43ef3a662a62fc7b3f0a10810571dbcf85c6270b579fb687693e2bfebe5",
++   "currentSha256": "e2e37a1e51b59956c60425e18a76276f546749c04221e339aec7c56618a03b1c",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "review the recorded exact overloads"
++  }
++ ],
++ "job": "20261124-084159-remeasure-original-automatic-v3-upgrade"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-10.json
+@@ -0,0 +1,283 @@
++{
++  "id": "compsuite-i-10",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.languagetool.languagemodel.LuceneLanguageModel#getCount",
++  "observer": "Look up a unigram and an adjacent token pair in the original language index.",
++  "revisions": {
++    "old": "fe77e85a2f7b472ba71564821e7545025eeda242",
++    "new": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "fe77e85a2f7b472ba71564821e7545025eeda242",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "scope": "complete original Maven production module",
++      "module": "languagetool-core/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "663906ea99d9c7bd0f1d4eec79b2add325fe294fd30f39761ceb06ce41f66e4b",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "languagetool-core",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [
++        "https://repo1.maven.org/maven2/"
++      ],
++      "stage": "artifacts ready",
++      "compiledClasses": 335,
++      "resources": 18,
++      "seconds": 18.13,
++      "orderedSha256": [
++        "354ba64df38e4e3b12f383808db496674e1e867187f6badf61f076a275b3934d",
++        "de2e1dcdcf3ef917a8ce858661a06726a9a944f28e33ad7f9e08bea44dc3c230",
++        "df45e56549b63e0fe716953c9d43cc158f8bf008baf60498e7c17f3faa00a70b",
++        "972139718abc8a4893fa78cba8cf7b2c903f35c97aaf44fa3031b0669948b480",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "86a199d206fc1a462d97a3fcd4fc03825dd7f75e4fb441bfe0f4eb7388869d93",
++        "1caab6adc345299ce86a993d9ebc01032622cdbd274b5d3a414905b5e5440c54",
++        "a2f741b2536a919f396447dd6771ddc6bb8d92bf3407f7af46d1260e7c43fd40",
++        "d5721847b0ccc3c687f7fb5c25e8da3bfe8a9924e2c37af50a35e756bc387b4c",
++        "7b3dd6661e83e313d70b4aa82c5180bb39535e536a3435fa741fff9727433b6a",
++        "e8c64ecc494b6683d2df7749150d06af6b95eec9821abbf91b8dd2e15e680d87",
++        "ce6f913cad1f0db3aad70186d65c5bc7ffcc9a99e3fe8e0b137312819f7c362f",
++        "f53ecc3d71da9ebc82edd10fb35638d32e8b9d849273dd717a021eca02f2278d",
++        "76a787944faab6c9bea64dc78400949027ed6fb686fe9b328d18f949852bc89f",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
++        "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5",
++        "16771a79414738cbb37560dd4311a39e597d46adedc45f9b4289ea0cb448488f",
++        "912e6d8bf817dd4bba0d5c5174a903bc90f8a22869e74d24dfe5533efaeae356",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "35da65fdbd3f9c1fe79cfc8399db975fd97660d8a219febfda9fd1a5fc058f10",
++        "0ce6c067fc776be1dc5ca32de65943a19b1a878037eb9ce453f0ee9a191b8856",
++        "4add5fbcb7f548b79230ed7e01cb9fd4f9e2524bd1598dbcbfd8150563fe27f7",
++        "883007989d373d19f352ba9792b25dec21dc7d0e205a710a93a3815101bb3d03",
++        "da804c5e0d11414529caa39e83cb17c10f89b872fbfefee7c826bd117693dd49",
++        "055d062b049eb3195331c7822c71b86532883535bab87bb2f899a266097db493",
++        "a30888c85399f9e472ead38c495a21a425ba61412a14084493c090360c40e3f0",
++        "f19ac45cfbbe12fa952be1e691eae80a74c9c7f4ac46ab3f760ca9cfa3bc694b",
++        "66a8b44e63c47a088ba1953875ea5b2b0eb0769a23906405789b3bb01c9cf8dd",
++        "27a77db909f3c2833c0b1a37c55af1db06045118ad2eed96ce567b6632bce038",
++        "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "1e3de0e229972422204e634614c00859e7c568e9eb55092833ff13e9133a5905",
++        "a248cca2a09916eb0cb8180c30a35606a485ffc5cfefde6dc351d543e77edadf",
++        "eb19f3ce42ca0257162f779e63c19bdd86b5c53e5181ef4a50b745e5ced54300",
++        "4a9ae963f1ae7c464d490b5480a3375f70c114292e3dd340f545fe6c494937d1",
++        "c160fbd78f51a0c2375a794e435ce2112524a6871f64d0331895e9e26ee8b9ee",
++        "14ea54ec9ff2bb51a0583c1d0d7ebd22ec78a5dad47cdd205dca54706b474743",
++        "08a70eadb4b274edaefc1194c1f7570621a51b0a9aa036aa15dcdb7b927e7c76",
++        "fb2dde9020a47bb024c43d9de0a94e73abef793bf08f01354cc97cb2d2e2a957",
++        "a678cb1aa8f5d03d901c992c75741841d98a9bc3d55dad02e84d65315c4e60f2",
++        "3e892546b72ab547cb77de4d840bcfd05c853e73390fed7370a8f19acb0735a0",
++        "767e11f33eddcd506980f0ff213f9d553a6a21802e3be1330345f62f7ee3d50f",
++        "0dfaafce29a9a245b0a9180ec2c1073d2bd8f0330f03a9f1f6a74d1bc83f62d6",
++        "6ba385b450a6311a15c918cf8688b9af9327c6104f0ecbd35933cfcd3095fe04",
++        "0b3d6fd42958ee98715ba2ec5fe221f4ca1e694d7c981b0ae0cd68e97baf6dce",
++        "7d1560fe2c3564128f2ff3f7c0fc9f0666738aa0e704f3d78b8954f9e0ec3adf",
++        "e2d6f4084f8a180de66c7700343fe8ad3a0aa84f2cb0561edb417fe1fd41aa15",
++        "5e168368fbc250af3c79aa5fef0c3467a2d64e5a7bd74005f25d8399aeb0708d"
++      ],
++      "callerClassSha256": "c7f6f8c8aad8be9fb4370f436283bbfae6e5868bb58bef29304676dd7955d328",
++      "descriptors": [
++        "(Ljava/lang/String;)J",
++        "(Ljava/util/List;)J"
++      ]
++    },
++    "new": {
++      "commit": "d1263f08d7ad45e836e3169d0bdee01cbbebd90e",
++      "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84",
++      "scope": "complete original Maven production module",
++      "module": "languagetool-core/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "96928ffe9b56da8a0ae8f39feae9ae55fe48f1ee1e4938108956033e098c6888",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "languagetool-core",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [
++        "https://repo1.maven.org/maven2/"
++      ],
++      "stage": "artifacts ready",
++      "compiledClasses": 335,
++      "resources": 18,
++      "seconds": 17.41,
++      "orderedSha256": [
++        "f21cb8a8defa22513e1663cc04b8bf048d2494af28d4ec82d2d2853cf4750b67",
++        "de2e1dcdcf3ef917a8ce858661a06726a9a944f28e33ad7f9e08bea44dc3c230",
++        "df45e56549b63e0fe716953c9d43cc158f8bf008baf60498e7c17f3faa00a70b",
++        "972139718abc8a4893fa78cba8cf7b2c903f35c97aaf44fa3031b0669948b480",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "86a199d206fc1a462d97a3fcd4fc03825dd7f75e4fb441bfe0f4eb7388869d93",
++        "1caab6adc345299ce86a993d9ebc01032622cdbd274b5d3a414905b5e5440c54",
++        "a2f741b2536a919f396447dd6771ddc6bb8d92bf3407f7af46d1260e7c43fd40",
++        "d5721847b0ccc3c687f7fb5c25e8da3bfe8a9924e2c37af50a35e756bc387b4c",
++        "7b3dd6661e83e313d70b4aa82c5180bb39535e536a3435fa741fff9727433b6a",
++        "e8c64ecc494b6683d2df7749150d06af6b95eec9821abbf91b8dd2e15e680d87",
++        "ce6f913cad1f0db3aad70186d65c5bc7ffcc9a99e3fe8e0b137312819f7c362f",
++        "f53ecc3d71da9ebc82edd10fb35638d32e8b9d849273dd717a021eca02f2278d",
++        "76a787944faab6c9bea64dc78400949027ed6fb686fe9b328d18f949852bc89f",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
++        "1b68bb0efb444885a64c9529e0978bcf3e189a7f51f8a306bc62efbf885ab6e5",
++        "391a6664649fb1eb6fe623bf3a7b12a60dfd4b6f77e1a159308f5cab198e9530",
++        "912e6d8bf817dd4bba0d5c5174a903bc90f8a22869e74d24dfe5533efaeae356",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "35da65fdbd3f9c1fe79cfc8399db975fd97660d8a219febfda9fd1a5fc058f10",
++        "0ce6c067fc776be1dc5ca32de65943a19b1a878037eb9ce453f0ee9a191b8856",
++        "4add5fbcb7f548b79230ed7e01cb9fd4f9e2524bd1598dbcbfd8150563fe27f7",
++        "883007989d373d19f352ba9792b25dec21dc7d0e205a710a93a3815101bb3d03",
++        "da804c5e0d11414529caa39e83cb17c10f89b872fbfefee7c826bd117693dd49",
++        "055d062b049eb3195331c7822c71b86532883535bab87bb2f899a266097db493",
++        "a30888c85399f9e472ead38c495a21a425ba61412a14084493c090360c40e3f0",
++        "f19ac45cfbbe12fa952be1e691eae80a74c9c7f4ac46ab3f760ca9cfa3bc694b",
++        "66a8b44e63c47a088ba1953875ea5b2b0eb0769a23906405789b3bb01c9cf8dd",
++        "27a77db909f3c2833c0b1a37c55af1db06045118ad2eed96ce567b6632bce038",
++        "43fdef0b5b6ceb31b0424b208b930c74ab58fac2ceeb7b3f6fd3aeb8b5ca4393",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "1e3de0e229972422204e634614c00859e7c568e9eb55092833ff13e9133a5905",
++        "a248cca2a09916eb0cb8180c30a35606a485ffc5cfefde6dc351d543e77edadf",
++        "eb19f3ce42ca0257162f779e63c19bdd86b5c53e5181ef4a50b745e5ced54300",
++        "4a9ae963f1ae7c464d490b5480a3375f70c114292e3dd340f545fe6c494937d1",
++        "c160fbd78f51a0c2375a794e435ce2112524a6871f64d0331895e9e26ee8b9ee",
++        "14ea54ec9ff2bb51a0583c1d0d7ebd22ec78a5dad47cdd205dca54706b474743",
++        "08a70eadb4b274edaefc1194c1f7570621a51b0a9aa036aa15dcdb7b927e7c76",
++        "fb2dde9020a47bb024c43d9de0a94e73abef793bf08f01354cc97cb2d2e2a957",
++        "a678cb1aa8f5d03d901c992c75741841d98a9bc3d55dad02e84d65315c4e60f2",
++        "3e892546b72ab547cb77de4d840bcfd05c853e73390fed7370a8f19acb0735a0",
++        "767e11f33eddcd506980f0ff213f9d553a6a21802e3be1330345f62f7ee3d50f",
++        "0dfaafce29a9a245b0a9180ec2c1073d2bd8f0330f03a9f1f6a74d1bc83f62d6",
++        "6ba385b450a6311a15c918cf8688b9af9327c6104f0ecbd35933cfcd3095fe04",
++        "0b3d6fd42958ee98715ba2ec5fe221f4ca1e694d7c981b0ae0cd68e97baf6dce",
++        "7d1560fe2c3564128f2ff3f7c0fc9f0666738aa0e704f3d78b8954f9e0ec3adf",
++        "e2d6f4084f8a180de66c7700343fe8ad3a0aa84f2cb0561edb417fe1fd41aa15",
++        "5e168368fbc250af3c79aa5fef0c3467a2d64e5a7bd74005f25d8399aeb0708d"
++      ],
++      "callerClassSha256": "c7f6f8c8aad8be9fb4370f436283bbfae6e5868bb58bef29304676dd7955d328",
++      "descriptors": [
++        "(Ljava/lang/String;)J",
++        "(Ljava/util/List;)J"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/String;)J",
++      "(Ljava/util/List;)J"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String)",
++    "exit": 1,
++    "seconds": 0.819,
++    "outputSha256": "0eff9065bb0fdbaa7e7f574f823801b51676f9472d3f34219437e5c666b018d7",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String) cannot be verified: getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++          "uri": null,
++          "line": 76
++        }
++      ],
++      "output": "\u2717 org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String) cannot be verified: getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++      "work": "$WORK/checker-x9f98_qi/overload-0"
++    },
++    "firstBlocker": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String)",
++      "exit": 1,
++      "seconds": 0.819,
++      "outputSha256": "0eff9065bb0fdbaa7e7f574f823801b51676f9472d3f34219437e5c666b018d7",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String) cannot be verified: getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++            "uri": null,
++            "line": 76
++          }
++        ],
++        "output": "\u2717 org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.lang.String) cannot be verified: getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++        "work": "$WORK/checker-x9f98_qi/overload-0"
++      },
++      "firstBlocker": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++    },
++    {
++      "target": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.util.List)",
++      "exit": 1,
++      "seconds": 0.682,
++      "outputSha256": "0916db3221f8e926e9c7a9ea176cc65d8c1ec230d88d06ab5fd551da0adc2f2b",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.util.List)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.util.List) cannot be verified: getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++            "uri": null,
++            "line": 71
++          }
++        ],
++        "output": "\u2717 org.languagetool.languagemodel.LuceneLanguageModel#getCount(java.util.List) cannot be verified: getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++        "work": "$WORK/checker-x9f98_qi/overload-1"
++      },
++      "firstBlocker": "getCount is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.languagetool.languagemodel.LuceneLanguageModel made by its constructor, whose the argument topIndexDir of org.languagetool.languagemodel.LuceneLanguageModel's constructor has type java.io.File; a constructor's arguments must be primitives, arrays of integral or boolean elements, Strings, objects made by their constructors, or dependencies of an application interface, passed null: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++    }
++  ],
++  "elapsedSeconds": 1.942,
++  "sourceSha256": "eeb418192a794b560e905ae24c36cb303226327e458905051c953492a60c7a84"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-103.json
+@@ -0,0 +1,168 @@
++{
++  "id": "compsuite-i-103",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory",
++  "observer": "Register a property source and inspect its precedence and returned property.",
++  "revisions": {
++    "old": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++    "new": "67693f18a9427f1d46b6769fd4da3282207a37c7"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "5e1d24dc64bb058ea0984a137de7ecb23c27a27a",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "scope": "complete original Maven production module",
++      "module": "nacos-spring-context/pom.xml",
++      "declaredDependencyScope": null,
++      "modulePomSha256": "45ad3a6c2abd61d17e2c36c2b8cc02a7c76c2ee2014c1d77a173832bdbb9cc9f",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "nacos-spring-context",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 82,
++      "resources": 3,
++      "seconds": 13.84,
++      "orderedSha256": [
++        "3c3fc343031172787035b4950b77c9b38a12bf5d59b1ee3cf9aa0a1a4c6fe0e4",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "5c7ab868509a6b1214ebe557bfcf489cfac6e1ae4c4a39181b0fe66621fbe32e",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1f5801c2fb830ff042e5d5e0d558eb056b6b7de9a20c8785d7c0eead36c82fb7",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    },
++    "new": {
++      "commit": "67693f18a9427f1d46b6769fd4da3282207a37c7",
++      "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4",
++      "scope": "complete original Maven production module",
++      "module": "nacos-spring-context/pom.xml",
++      "declaredDependencyScope": null,
++      "modulePomSha256": "45ad3a6c2abd61d17e2c36c2b8cc02a7c76c2ee2014c1d77a173832bdbb9cc9f",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "nacos-spring-context",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 82,
++      "resources": 3,
++      "seconds": 13.13,
++      "orderedSha256": [
++        "3c3fc343031172787035b4950b77c9b38a12bf5d59b1ee3cf9aa0a1a4c6fe0e4",
++        "e04ba5195bcd555dc95650f7cc614d151e4bcd52d29a10b8aa2197f3ab89ab9b",
++        "e508214692bd92d52761677d80e12d5c46742258f38969662a9ccc61b2a6040c",
++        "f7449190fc6f498bdd069fe0c943573adc03d35011926ab950f9e992c2110255",
++        "69980c038ca1b131926561591617d9c25fabfc7b29828af91597ca8570cf35fe",
++        "675f60bd11a82d481736591fe4054c66471fa5463d45616652fd71585792ba87",
++        "734c8356420cc8e30c795d64fd1fcd5d44ea9d90342a2cc3262c5158fbc6d98b",
++        "388f61ffb26f22a838235b479759b779a18350b46c0a89f03c89f948b8a739be",
++        "a56d6baee62b36822879d60a961c37cb10cc06814aead115cf65a67917032ccf",
++        "58d4cc2e05ebb012bbac568b032f75623be1cb6fb096f3c60c72a86f7f057de4",
++        "e599d5318e97aa48f42136a2927e6dfa4e8881dff0e6c8e3109ddbbff51d7b7d",
++        "3083079be6088db2ed0a0c6ff92204e0aa48fa1de9db5b59c468f35acf882c2c",
++        "5cbbf429d9e32e3881f0a1438a1f666912219327e9e68b5dcaef6d8e5c5f6b28",
++        "45d32ac61ef8a744b464c54c2b3414be571016dd46bfc2bec226761cf7ae457a",
++        "68e20a01ec974f382553b763f58594416c3c652b7067d8aeccf1a5ea6c8b1d0d",
++        "0a7b1063fcaeb806b40b728d01b9361d38e1ed8deb93f945994fec7c1761dad1",
++        "41f1e205169af8a7e8e8581ede75ddb01b0bf6f29359ced7fe77bd26e01c4e1b",
++        "e8ecaea84ec5b6436b8b2562687bee81530ebb5224df816b78d658d3ceb8f2e5",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "3ca7e8e3a2a053229fef927a315f038ee94a79368c396e50727eeedce9aef2c9",
++        "94459936895f669c8bdd794be79850b73a9b980cc01a4aec88f373f150002b70",
++        "db6ec0aa5330ab84a78933fd2c27db83581e3f0adbc1a562013c8647b3935dbd",
++        "cde7eda6cc2270ab726f963aeb546c3f4db76746c661c247fbfb5d2a4d2f4411",
++        "0f74864b088898db6d5226c92d4cbc1325761b618712b7a551e8c360d1e94149"
++      ],
++      "callerClassSha256": "1f5801c2fb830ff042e5d5e0d558eb056b6b7de9a20c8785d7c0eead36c82fb7",
++      "descriptors": [
++        "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Lorg/springframework/beans/factory/config/ConfigurableListableBeanFactory;)V"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)",
++    "exit": 1,
++    "seconds": 0.136,
++    "outputSha256": "45de6e909e52d4dff9d776d222021eebc84ba071b1e76593c431bb8a38eef702",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory) cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 98
++        }
++      ],
++      "output": "\u2717 com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor#postProcessBeanFactory(org.springframework.beans.factory.config.ConfigurableListableBeanFactory) cannot be verified: postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-l_k4r7rf/overload-0"
++    },
++    "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  "firstBlocker": "postProcessBeanFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor made by its constructor: the field processedBeanNames of com.alibaba.nacos.spring.core.env.NacosPropertySourcePostProcessor has type java.util.Set; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 0.276,
++  "sourceSha256": "c9c7fc56e7f2d6dcb001e583ab6c6a0805d56e839aebb63203f2122c59cbdaf4"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-29.json
+@@ -0,0 +1,144 @@
++{
++  "id": "compsuite-i-29",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.uber.profiling.Arguments#runConfigProvider",
++  "observer": "Apply a configuration provider and read the resulting interval and tag.",
++  "revisions": {
++    "old": "03a21825f87a95b1d1291c035b9f885066dca9d0",
++    "new": "279ece31518ff797eb149c57df01093cdd376daf"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "03a21825f87a95b1d1291c035b9f885066dca9d0",
++      "sourceSha256": "8421ad7ad0c7d9f401939cbe2b14ba21b1752376096124f5b6b17fc5cda1c473",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "a0bcc53895bb4bcad99a7474861eef9d2f4872718f20d344c1a04ee2753f7d53",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 55,
++      "resources": 0,
++      "seconds": 9.32,
++      "orderedSha256": [
++        "9d730670194406eb5c93275810011f83d1cae56fa48b108d5e1104e24ec289c0",
++        "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
++        "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
++        "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
++        "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
++        "737c1165a617eac7275431f76615fd18447b001c0dc4f4f4db4e24b3b3cce0f9",
++        "c876f2e85d0f108a34cdd11ccc9d8d7875697367efc75bf10a89c2c26aee994c",
++        "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
++        "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
++        "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
++        "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
++      ],
++      "callerClassSha256": "10dc097a22099cde220a856409fe6c6500de85cc13c83f502aeedc4fe657f784",
++      "descriptors": [
++        "()V"
++      ]
++    },
++    "new": {
++      "commit": "279ece31518ff797eb149c57df01093cdd376daf",
++      "sourceSha256": "8421ad7ad0c7d9f401939cbe2b14ba21b1752376096124f5b6b17fc5cda1c473",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "5359f94f00f807394898214fbb13a714e2d209e31687d77f19c729b18c2c08a5",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 55,
++      "resources": 0,
++      "seconds": 11.45,
++      "orderedSha256": [
++        "9d730670194406eb5c93275810011f83d1cae56fa48b108d5e1104e24ec289c0",
++        "d3fa64afcb23bcc4c588108294109533185a274f91c1ea7caf14a497b7e3b722",
++        "b877a4d4a3a0140486d3d0f83d9058e7c0ff6ca80b00d2f7b77145935b385b56",
++        "61f7bc4076be0320ab4ef076fb6d83e3f649c3caf9ffb6031654a73f9c23732f",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "8ac96fc686512d777fca85e144f196cd7cfe0c0aec23127229497d1a38ff651c",
++        "b51bf33caa83a10b67a30fceb3111a58df1089cc1b59c23f0442661ecbef7f22",
++        "2d23f47001492233565adf5a34f225f2ae89564cee08024873ec36b7842ede46",
++        "673f8ae16becea4fa937404b3a851417faf42df3bbc592028bbe2bfe0cc9d8cb",
++        "7aa59e031f941984af07dacc6ca85e6dc9bd3a485e9aa2494cbc034efa1225d0",
++        "81bf4c29d0275dace75fadb5febf5384553422816256023efa83b2b15a9ced60",
++        "79838d9eaef73d4f852c63a480830c3a2d4b590f0ab3ae815a489463e4714004",
++        "5285de80af1651c489313b91a9f40c65a4cdcb6b3bde716fcc028d16869a5a93",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "54b34e941b8e1414bd3e40d736efd3481772dc26db3296f6aa45cec9f6203d86"
++      ],
++      "callerClassSha256": "10dc097a22099cde220a856409fe6c6500de85cc13c83f502aeedc4fe657f784",
++      "descriptors": [
++        "()V"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "()V"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.uber.profiling.Arguments#runConfigProvider()",
++    "exit": 1,
++    "seconds": 0.245,
++    "outputSha256": "3e2a4999f75bc21d9eaa47b371dd5700b3c4f468b41bad3c6d21c71bb5c7b4af",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.uber.profiling.Arguments#runConfigProvider()",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.uber.profiling.Arguments#runConfigProvider() cannot be verified: runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
++          "uri": null,
++          "line": 233
++        }
++      ],
++      "output": "\u2717 com.uber.profiling.Arguments#runConfigProvider() cannot be verified: runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use\n",
++      "work": "$WORK/checker-i0k4wm26/overload-0"
++    },
++    "firstBlocker": "runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use"
++  },
++  "firstBlocker": "runConfigProvider is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.uber.profiling.Arguments made by its constructor: com.uber.profiling.Arguments has no constructor a caller can use",
++  "elapsedSeconds": 0.403,
++  "sourceSha256": "8421ad7ad0c7d9f401939cbe2b14ba21b1752376096124f5b6b17fc5cda1c473"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-36.json
+@@ -0,0 +1,122 @@
++{
++  "id": "compsuite-i-36",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.jupiter.common.util.Reflects#fastInvoke",
++  "observer": "Choose and invoke an overloaded service method on the supplied arguments.",
++  "revisions": {
++    "old": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
++    "new": "9c5a614e5875c5cf03434510c25b9f2b3505342a"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "2b16d7aba2137a57c0d84665cfda2a2b82df6be9",
++      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 58,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
++        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91"
++      ],
++      "orderedSha256": [
++        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
++        "dd8971c74a4e697899a8e95caae4ea8760ea6c486dc6b97b1795e75760420461",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
++      ],
++      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
++      ]
++    },
++    "new": {
++      "commit": "9c5a614e5875c5cf03434510c25b9f2b3505342a",
++      "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 58,
++      "compilerSha256": "8bd3ede84ea7d8b32391e32ae5b0e55644b7c71ec2b7630139b1ad59ea48d33f",
++      "compilerClasspathSha256": [
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d",
++        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91"
++      ],
++      "orderedSha256": [
++        "6d857773762e6e583555efe748f0fc9eddc7d5bb109204bd77bc8ce86d2f5715",
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++        "2936debc4d7b6c534848d361412e2d0f8bd06f7f27a6f4e728a20e97648d2bf3",
++        "d5135e76ee238c2f3a5da905115de15ca4c1f1338a3c8869d6947cf108acdb9c",
++        "1d9055bf1b06a092c4df3c2b314881bab059d074dda1c36c5d6fe362d0143034",
++        "c4dadeeecaa90c8847902082aee5eb107fcf59c5d0e63a17fcaf273c0e2d2bd1",
++        "e9dda9e884fc107eb6367710540789a12dfa8ad28be9326b22ca6e352e325499",
++        "f8ab13b14be080fe2f617f90e55599760e4a1b4deeea5c595df63d0d6375ed6d"
++      ],
++      "callerClassSha256": "bd1c521b9c0abe54fc99998df91f87b661a4f7635a844cc6ad594587bf50afb8",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Object;Ljava/lang/String;[Ljava/lang/Class;[Ljava/lang/Object;)Ljava/lang/Object;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[])",
++    "exit": 1,
++    "seconds": 0.024,
++    "outputSha256": "2ee03a91f86b4d31fa3e8131299d4e50bbf43072d13198dd303d0325fcb8cd20",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[])",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[]) cannot be verified: parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 89
++        }
++      ],
++      "output": "\u2717 org.jupiter.common.util.Reflects#fastInvoke(java.lang.Object, java.lang.String, java.lang.Class[], java.lang.Object[]) cannot be verified: parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-61_az_lf/overload-0"
++    },
++    "firstBlocker": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "parameter obj has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 0.146,
++  "sourceSha256": "89985d9c2c34f796ee9895589a588e362bd485be9497be69d0109b297cf21ee4"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-37.json
+@@ -0,0 +1,191 @@
++{
++  "id": "compsuite-i-37",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "net.glxn.qrgen.javase.QRCode#file",
++  "observer": "Produce a QR image file from ordinary text with the default Java SE encoder.",
++  "revisions": {
++    "old": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++    "new": "da2fc8cfba0e8ec28967256689a799b14babb04b"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "5d75d78080f7209e4ea15d3a08def04198741c7a",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "scope": "complete original Maven production module",
++      "module": "javase/pom.xml",
++      "declaredDependencyScope": null,
++      "modulePomSha256": "4b36bfd4e5bdfd136179a0ec6f9a1fa2443e6b9f4913f7552f10365ae7901d60",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "javase",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 1,
++      "resources": 0,
++      "seconds": 9.01,
++      "orderedSha256": [
++        "ffa99deee8bac51ec003fe6648fdac7e84c3e8df4c3e2d01f6fd2ea17f9c3a80",
++        "ad4bebeb63befff39f2c0b71822226537ab280a48517f95b085b30cc52581799",
++        "bba7724e02a997cec38213af77133ee8e24b0d5cf5fa7ecbc16a4fa93f11ee0d",
++        "a7313fcfde070930e40ec79edf3c5948cf34e4f0d25cb3a09f9963d8bdd84113",
++        "a973dab80558a288d9ee55e0d1a509cc3962cc9fadea82dc073ff007223fa35d",
++        "c6591a4e04e58c82f6d56556f376492edf1448231e52463008ebff9b7d87977d"
++      ],
++      "callerClassSha256": "c0338a5c9bd29404178f00e5d068ca2c6b08a32ad44eb16787bacde27af96fcf",
++      "descriptors": [
++        "()Ljava/io/File;",
++        "(Ljava/lang/String;)Ljava/io/File;"
++      ]
++    },
++    "new": {
++      "commit": "da2fc8cfba0e8ec28967256689a799b14babb04b",
++      "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917",
++      "scope": "complete original Maven production module",
++      "module": "javase/pom.xml",
++      "declaredDependencyScope": null,
++      "modulePomSha256": "4b36bfd4e5bdfd136179a0ec6f9a1fa2443e6b9f4913f7552f10365ae7901d60",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "javase",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 1,
++      "resources": 0,
++      "seconds": 9.07,
++      "orderedSha256": [
++        "ffa99deee8bac51ec003fe6648fdac7e84c3e8df4c3e2d01f6fd2ea17f9c3a80",
++        "ad4bebeb63befff39f2c0b71822226537ab280a48517f95b085b30cc52581799",
++        "65004806a669234c698fbe0755258100375fb01fe93b538455f3903713d4a50d",
++        "a7313fcfde070930e40ec79edf3c5948cf34e4f0d25cb3a09f9963d8bdd84113",
++        "a973dab80558a288d9ee55e0d1a509cc3962cc9fadea82dc073ff007223fa35d",
++        "072bd8533224694812906cbeec1fe8be147e48030281af19357afa06118e2f2a"
++      ],
++      "callerClassSha256": "c0338a5c9bd29404178f00e5d068ca2c6b08a32ad44eb16787bacde27af96fcf",
++      "descriptors": [
++        "()Ljava/io/File;",
++        "(Ljava/lang/String;)Ljava/io/File;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "()Ljava/io/File;",
++      "(Ljava/lang/String;)Ljava/io/File;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "net.glxn.qrgen.javase.QRCode#file()",
++    "exit": 1,
++    "seconds": 0.011,
++    "outputSha256": "6c27bc435f13115fba74bd2f6a4f41c70494916b49af20ee084fc584c5b94793",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "net.glxn.qrgen.javase.QRCode#file()",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "net.glxn.qrgen.javase.QRCode#file() cannot be verified: file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 126
++        }
++      ],
++      "output": "\u2717 net.glxn.qrgen.javase.QRCode#file() cannot be verified: file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-nck4eljq/overload-0"
++    },
++    "firstBlocker": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "net.glxn.qrgen.javase.QRCode#file()",
++      "exit": 1,
++      "seconds": 0.011,
++      "outputSha256": "6c27bc435f13115fba74bd2f6a4f41c70494916b49af20ee084fc584c5b94793",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "net.glxn.qrgen.javase.QRCode#file()",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "net.glxn.qrgen.javase.QRCode#file() cannot be verified: file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++            "uri": null,
++            "line": 126
++          }
++        ],
++        "output": "\u2717 net.glxn.qrgen.javase.QRCode#file() cannot be verified: file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++        "work": "$WORK/checker-nck4eljq/overload-0"
++      },
++      "firstBlocker": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++    },
++    {
++      "target": "net.glxn.qrgen.javase.QRCode#file(java.lang.String)",
++      "exit": 1,
++      "seconds": 0.008,
++      "outputSha256": "06a9b384f261c5eb5da69e3403290656dd0efd1a561ec174d73137433d647016",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "net.glxn.qrgen.javase.QRCode#file(java.lang.String)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "net.glxn.qrgen.javase.QRCode#file(java.lang.String) cannot be verified: file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++            "uri": null,
++            "line": 139
++          }
++        ],
++        "output": "\u2717 net.glxn.qrgen.javase.QRCode#file(java.lang.String) cannot be verified: file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++        "work": "$WORK/checker-nck4eljq/overload-1"
++      },
++      "firstBlocker": "file is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of net.glxn.qrgen.javase.QRCode made by its constructor: the field hints of net.glxn.qrgen.javase.QRCode has type java.util.HashMap; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++    }
++  ],
++  "elapsedSeconds": 0.069,
++  "sourceSha256": "004d46d6bcc35103ff5e81371de09f497a943140bded29126c69818852f01917"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/02/current/compsuite-i-39.json
+@@ -0,0 +1,193 @@
++{
++  "id": "compsuite-i-39",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.ea.async.instrumentation.Transformer#transform",
++  "observer": "Transform and execute an asynchronous method and read its eventual result.",
++  "revisions": {
++    "old": "3a60b3ceb9ddd8647aa5ea5f6c72c7c99d85eefb",
++    "new": "af90a83ddee0489e2fb4f3f8bf7b300d578fa1fc"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "3a60b3ceb9ddd8647aa5ea5f6c72c7c99d85eefb",
++      "sourceSha256": "6f67f62d60cfed87ac0398391d4e20f732d977e74de91484543b8d46236b2478",
++      "scope": "complete original Maven production module",
++      "module": "async/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "dcedca940dc508edc8a468d164c1a513a7c4d436627a211580083161c4c0401a",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "async",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 24,
++      "resources": 1,
++      "seconds": 6.4,
++      "orderedSha256": [
++        "e05741302abb8c0d52a56fd317ed28b00772c705598212c9bade7df3410ac6eb",
++        "1460db6c33cc99c84e5cb30e46b017e4d1cc9a7fbc174101d6f84829bb64c085",
++        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
++        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
++        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "callerClassSha256": "b62d20499b1eb5f9689ac5638e8cf2a9b107394d60c28374a80e6834121d14b7",
++      "descriptors": [
++        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++      ]
++    },
++    "new": {
++      "commit": "af90a83ddee0489e2fb4f3f8bf7b300d578fa1fc",
++      "sourceSha256": "6f67f62d60cfed87ac0398391d4e20f732d977e74de91484543b8d46236b2478",
++      "scope": "complete original Maven production module",
++      "module": "async/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "e25344604544a76e809b2d9c79da2ff78d305f6e0ebd14c4977d5869c1543569",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "async",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "package",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 24,
++      "resources": 1,
++      "seconds": 6.3,
++      "orderedSha256": [
++        "e05741302abb8c0d52a56fd317ed28b00772c705598212c9bade7df3410ac6eb",
++        "7e6cc9e92eb94d04e39356c6d8144ca058cda961c344a7f62166a405f3206672",
++        "f747f70912e918872c0fe07ef227ff03b2b38fde94778502df7af133f8c8fcc6",
++        "4c9342c98e746e9c2d7f2cdc6896f7348317e9b1e5a6c591047fc8969def4b23",
++        "a520b54c7be4e07e533db8420ddf936fe8341ff56a5df255bab584478dd90aab",
++        "18c4a0095d5c1da6b817592e767bb23d29dd2f560ad74df75ff3961dbde25b79",
++        "ff25361f9f468a400c91976b13cf1acda7f62eb435b7c5a2aef708b32db52953"
++      ],
++      "callerClassSha256": "b62d20499b1eb5f9689ac5638e8cf2a9b107394d60c28374a80e6834121d14b7",
++      "descriptors": [
++        "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++        "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/ClassLoader;Ljava/lang/String;Ljava/lang/Class;Ljava/security/ProtectionDomain;[B)[B",
++      "(Ljava/lang/ClassLoader;Lorg/objectweb/asm/ClassReader;)[B"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++    "exit": 1,
++    "seconds": 0.014,
++    "outputSha256": "d11cfeae959567c1cb3c34424ff05ee376d8eb8e28c3f7c552d31bdd3ab72cbd",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 146
++        }
++      ],
++      "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-1_hme61u/overload-0"
++    },
++    "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  "firstBlocker": "review the recorded exact overloads",
++  "nativeOverloads": [
++    {
++      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++      "exit": 1,
++      "seconds": 0.014,
++      "outputSha256": "d11cfeae959567c1cb3c34424ff05ee376d8eb8e28c3f7c552d31bdd3ab72cbd",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[])",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++            "uri": null,
++            "line": 146
++          }
++        ],
++        "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, java.lang.String, java.lang.Class, java.security.ProtectionDomain, byte[]) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++        "work": "$WORK/checker-1_hme61u/overload-0"
++      },
++      "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++    },
++    {
++      "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)",
++      "exit": 1,
++      "seconds": 0.021,
++      "outputSha256": "08b09b9630effa778dc2a19f57fd52cd4e03b84953ae858d11a5398d2690d5fe",
++      "outcome": {
++        "wire_version": 1,
++        "verdict": "unverifiable",
++        "target": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader)",
++        "domain": null,
++        "counterexample": null,
++        "proof": null,
++        "problem": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++        "statement": null,
++        "findings": [
++          {
++            "rule_id": "unverifiable",
++            "message": "com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++            "uri": null,
++            "line": 226
++          }
++        ],
++        "output": "\u2717 com.ea.async.instrumentation.Transformer#transform(java.lang.ClassLoader, org.objectweb.asm.ClassReader) cannot be verified: transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++        "work": "$WORK/checker-1_hme61u/overload-1"
++      },
++      "firstBlocker": "transform is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ea.async.instrumentation.Transformer made by its constructor: the field errorListener of com.ea.async.instrumentation.Transformer has type java.util.function.Consumer; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++    }
++  ],
++  "elapsedSeconds": 0.127,
++  "sourceSha256": "6f67f62d60cfed87ac0398391d4e20f732d977e74de91484543b8d46236b2478"
++}

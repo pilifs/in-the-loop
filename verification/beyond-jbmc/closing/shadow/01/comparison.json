@@ -1,0 +1,96 @@
+{
+ "argv": [
+  "/usr/bin/python3",
+  "-B",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084159-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
+  "--build",
+  "current",
+  "--checker",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
+  "--repositories",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-rrgrwuox/data/sources/repos.json",
+  "--work",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-rrgrwuox/data/slices",
+  "--complete",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-rrgrwuox/data/modules",
+  "--maven-cache",
+  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
+  "--maven8",
+  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
+  "--output",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084159-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/01",
+  "--case",
+  "compsuite-i-1",
+  "--case",
+  "compsuite-i-38",
+  "--case",
+  "compsuite-i-4",
+  "--case",
+  "compsuite-i-70",
+  "--case",
+  "compsuite-i-81"
+ ],
+ "cases": [
+  {
+   "id": "compsuite-i-1",
+   "v3Result": "open",
+   "v3Sha256": "5c890854ccf74e98ddbde29ac5ffd150d0248c77da52d76795e3ca45544a4fb9",
+   "currentSha256": "7aedb3be77826cba21d7f732d6ce689eca9fe82712527c2a80417fc186f744d6",
+   "sameOrderedArtifacts": {
+    "old": false,
+    "new": false
+   },
+   "result": "open",
+   "firstBlocker": "convert is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of retrofit2.converter.wire.WireResponseBodyConverter made by its constructor, whose the argument adapter of retrofit2.converter.wire.WireResponseBodyConverter's constructor: com.squareup.wire.ProtoAdapter is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
+  },
+  {
+   "id": "compsuite-i-38",
+   "v3Result": "open",
+   "v3Sha256": "c3198fc7ff69f9ad80324d3900aba9181dce664cb1889738da6e3a4797ef0ee2",
+   "currentSha256": "5534ea9f7e3e2a6b4051b321e646679e3f69356375e50c6ba5b1256e7905c274",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "parameter type has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+  },
+  {
+   "id": "compsuite-i-4",
+   "v3Result": "open",
+   "v3Sha256": "4ec98e26e15c6cf1c8349498c73298fbf0f47578c4372c586f34f04936146a69",
+   "currentSha256": "532f268b5ab98a898b2ceadb907beec547690293af5057b2b30260568f409389",
+   "sameOrderedArtifacts": {
+    "old": false,
+    "new": false
+   },
+   "result": "open",
+   "firstBlocker": "getFactory is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager made by its constructor: com.ctrip.framework.apollo.spi.DefaultConfigFactoryManager's constructor has a side effect outside the object it makes, which is not supported: com.ctrip.framework.apollo.build.ApolloInjector.getInjector writes the static field com.ctrip.framework.apollo.build.ApolloInjector.s_injector, so each object it makes would depend on those made before it"
+  },
+  {
+   "id": "compsuite-i-70",
+   "v3Result": "open",
+   "v3Sha256": "de2cb85fc174a939d363e657eebc0c093b1ab2072a2ee0d2d5e8d4b43c441bfc",
+   "currentSha256": "698990fa03d7fa307fcec5fdcd107a8a83437e8075f383146d164336218e1bd3",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "getCellStyle is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.monitorjbl.xlsx.impl.StreamingCell made by its constructor: the field rawContents of com.monitorjbl.xlsx.impl.StreamingCell has type java.lang.Object; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+  },
+  {
+   "id": "compsuite-i-81",
+   "v3Result": "open",
+   "v3Sha256": "d3822332b9ef31edbd62c8d5f128faf7be972efacef2955533c851279b3afb6a",
+   "currentSha256": "ed5c1a5a44fde9735d05ae24f3af35280e7bc532f8a02880d2972e72637f482f",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "parameter featureState has type org.togglz.core.repository.FeatureState, which is outside the objects a regression check makes: org.togglz.core.repository.FeatureState has 3 constructors; an object made by one of several is not supported yet"
+  }
+ ],
+ "job": "20261124-084159-remeasure-original-automatic-v3-upgrade"
+}

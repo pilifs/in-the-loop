@@ -1,0 +1,296 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-084234-remeasure-original-automatic-v3-upgrade",
+  "title": "Remeasure original automatic V3 upgrade groups 03 and 04",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.8s, peak 166.6 MiB (estimated 23m00s, 5.0 GiB); 14 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-084234-remeasure-original-automatic-v3-upgrade.json",
+    "sha256": "09d75a45ba101b07f6c771e4396715ed4624c2ba09c75877de2191d184d7b983",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-084234-remeasure-original-automatic-v3-upgrade",
+      "title": "Remeasure original automatic V3 upgrade groups 03 and 04",
+      "description": "Use the registered V3 primary caller, original assistance, exact source and ordered dependencies for these historical shadow pairs. Keep the original first blocker and compare the frozen strict checker with the historical 0/32.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/freeze.json"
+        ]
+      },
+      "expected": "Preserve each registered input, record literal verdicts and costs, and keep incomplete or scope-mismatched results in the denominator.",
+      "submitted": {
+        "at": "2026-11-24T08:42:34+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 25,
+      "requires": [
+        "jvmcontract",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "23m",
+        "timeout": "92m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/shadow.py 03 04",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/closing/shadow/03",
+        "verification/beyond-jbmc/closing/shadow/04"
+      ]
+    }
+  },
+  "sourceCommit": "0646fc7c85dcd75fdc34ed8d2a47904b52a81ffd",
+  "startedAt": "2026-11-24T08:55:40+00:00",
+  "finishedAt": "2026-11-24T08:59:04+00:00",
+  "wallSeconds": 204.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2891252,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 5520.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1380.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 174739456,
+    "wallSeconds": 5.8,
+    "cpuSeconds": 5.4,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/freeze_product.py run -- python3 -B lib/benchmark/beyond-jbmc/shadow.py 03 04",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 5520.0,
+      "cancelled": false,
+      "wallSeconds": 5.81,
+      "cpuSeconds": 5.352,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 174739456,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 14,
+        "bytes": 2500,
+        "sha256": "355551168e737322a8aa15b94b379fc81bf9647648df564cb5e0b147ebba5ada",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "compsuite-i-62 current open the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.ClassLoader.getResources(Ljava/lang/String;)Ljava/util/Enumeration;@jdk-21.0.13 (java.lang.ClassLoader.getResources(java.lan",
+        "compsuite-i-80 current open review the recorded exact overloads",
+        "ea-async-27 current open review the recorded exact overloads",
+        "whatjdk-12 current open next is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.iodesystems.whatjdk.ClassEntryExtractor made by its constructor: com.iodesystems.whatjdk.ClassEntryExtractor has 2 constructors; an object made by one of",
+        "incremental-analysis-28 current open review the recorded exact overloads",
+        "commons-text-775 current open review the recorded exact overloads",
+        "compsuite-i-85 current open parameter orderId has type pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId, which is outside the objects a regression check makes: pl.com.bottega.ecommerce.canonicalmodel.publishedlanguage.AggregateId has 2 constructors; an object made by one of seve",
+        "commons-compress-767 current open review the recorded exact overloads",
+        "commons-compress-822 current open review the recorded exact overloads",
+        "commons-configuration-565 current open review the recorded exact overloads",
+        "commons-configuration-601 current open review the recorded exact overloads",
+        "cucumber-reporting-1220 current open generateReports is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of net.masterthought.cucumber.ReportBuilder made by its constructor, whose the argument jsonFiles of net.masterthought.cucumber.",
+        "03 6 historical primary rows",
+        "04 6 historical primary rows"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/03/comparison.json",
+      "change": "added",
+      "bytes": 4460,
+      "sha256": "811116105e4919cc682bac584d99b02e4b365eec619d4e2321732db4fa33e292",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/03/current/commons-text-775.json",
+      "change": "added",
+      "bytes": 39408,
+      "sha256": "8f7b0b1e20c5a9b17c880d6187c7336b50dd17b025c3c6ae0bc889852a40bf19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/03/current/compsuite-i-62.json",
+      "change": "added",
+      "bytes": 23096,
+      "sha256": "f0ca82e2ef052845c3aea1a284c105531503aa1789d6011bff78493756e33fc3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/03/current/compsuite-i-80.json",
+      "change": "added",
+      "bytes": 27912,
+      "sha256": "208c2f73fab6c81cf8563254fcd76ca9516ca6f8eebf9f7fe910bd1a4625edd7",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/03/current/ea-async-27.json",
+      "change": "added",
+      "bytes": 13511,
+      "sha256": "84c80e175ca465fb597d70ee1d701fada1081ea9220f8262e9d4384b9ed00149",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/03/current/incremental-analysis-28.json",
+      "change": "added",
+      "bytes": 22183,
+      "sha256": "9a0aa5c6a98e8925a563c50afbe413fbffbcc636ac1557a39f6437f0c5998834",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/03/current/whatjdk-12.json",
+      "change": "added",
+      "bytes": 5796,
+      "sha256": "345bdfa9b6af10e5d16e2e5df971d0d9196042de7770314a0834d59c5fcff775",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/04/comparison.json",
+      "change": "added",
+      "bytes": 4517,
+      "sha256": "c5806e83ec073328625fac1be9d0768371dc88b34b7581e22751accf4fc74b33",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/04/current/commons-compress-767.json",
+      "change": "added",
+      "bytes": 11861,
+      "sha256": "2d52eb5630850433d6154396645c019dcea536d96f2918c223ce107ca5cbf711",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/04/current/commons-compress-822.json",
+      "change": "added",
+      "bytes": 12173,
+      "sha256": "8d79935f15a35273d7f7018bb83a362a650a107ab0b3680d99a997eab638f088",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/04/current/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 16424,
+      "sha256": "a1203c4f9dd8cc86bbc2859b505f00285c53e2a1921e53b1d7b1a03986b7b680",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/04/current/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 21712,
+      "sha256": "642dace50ec1bc8ed26c7eae37e106ccf331b136507f84636a231e87f6148259",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/04/current/compsuite-i-85.json",
+      "change": "added",
+      "bytes": 15783,
+      "sha256": "57a22ff8a3ffbdeb1388073a25207b529f34e5c77addab44c7fbc843b780f6ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/closing/shadow/04/current/cucumber-reporting-1220.json",
+      "change": "added",
+      "bytes": 9633,
+      "sha256": "ac1c31f1b8b291a9ab2504a4cb3e85df08ddd13e7f506d8944c5c7988ccbc420",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T08:59:30+00:00",
+    "applied": [
+      "verification/beyond-jbmc/closing/shadow/03/comparison.json",
+      "verification/beyond-jbmc/closing/shadow/03/current/commons-text-775.json",
+      "verification/beyond-jbmc/closing/shadow/03/current/compsuite-i-62.json",
+      "verification/beyond-jbmc/closing/shadow/03/current/compsuite-i-80.json",
+      "verification/beyond-jbmc/closing/shadow/03/current/ea-async-27.json",
+      "verification/beyond-jbmc/closing/shadow/03/current/incremental-analysis-28.json",
+      "verification/beyond-jbmc/closing/shadow/03/current/whatjdk-12.json",
+      "verification/beyond-jbmc/closing/shadow/04/comparison.json",
+      "verification/beyond-jbmc/closing/shadow/04/current/commons-compress-767.json",
+      "verification/beyond-jbmc/closing/shadow/04/current/commons-compress-822.json",
+      "verification/beyond-jbmc/closing/shadow/04/current/commons-configuration-565.json",
+      "verification/beyond-jbmc/closing/shadow/04/current/commons-configuration-601.json",
+      "verification/beyond-jbmc/closing/shadow/04/current/compsuite-i-85.json",
+      "verification/beyond-jbmc/closing/shadow/04/current/cucumber-reporting-1220.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "4997b05a77741f1f937bd9f47dda6b27c3371750",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/4997b05a77741f1f937bd9f47dda6b27c3371750/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T085904Z-7239300259b0c598",
+      "outputs": "20261124T085904Z-7626096f9d047523",
+      "diff": "20261124T085904Z-7874110702219a9f"
+    }
+  }
+}

@@ -1,0 +1,1314 @@
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/05/comparison.json
+@@ -0,0 +1,110 @@
++{
++ "argv": [
++  "/usr/bin/python3",
++  "-B",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
++  "--build",
++  "current",
++  "--checker",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
++  "--repositories",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-079hp8jm/data/sources/repos.json",
++  "--work",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-079hp8jm/data/slices",
++  "--complete",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-079hp8jm/data/modules",
++  "--maven-cache",
++  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
++  "--maven8",
++  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
++  "--output",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/05",
++  "--case",
++  "commons-beanutils-440",
++  "--case",
++  "commons-csv-8993be87",
++  "--case",
++  "commons-fileupload-377",
++  "--case",
++  "compsuite-i-94",
++  "--case",
++  "cucumber-reporting-1198",
++  "--case",
++  "reflector-35"
++ ],
++ "cases": [
++  {
++   "id": "commons-beanutils-440",
++   "v3Result": "open",
++   "v3Sha256": "342273608a2b5083931c2f9fc45ce4999843310b913702692fb6c00a698540f8",
++   "currentSha256": "942d296a9cddf797a6deb1760b016d28a5dfb201b178c39e0bbd4fbdcf39735c",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  {
++   "id": "commons-csv-8993be87",
++   "v3Result": "open",
++   "v3Sha256": "33200f4b30997e47fa934cd834c483290c85c405df16d35fdba6d8924a1e0f00",
++   "currentSha256": "3bf5e5507de231a4e14e8219591b17efd42b7e8a6a9efbc61463dd3230d2789e",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet"
++  },
++  {
++   "id": "commons-fileupload-377",
++   "v3Result": "open",
++   "v3Sha256": "2eaef2d5299739b61d5007e650f0489c63c1600f0fe35bca8afe27106514c762",
++   "currentSha256": "9f2378ae394c03abab30c9611621fc845baae3f7621e3648811f3c7e2aea6901",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use"
++  },
++  {
++   "id": "compsuite-i-94",
++   "v3Result": "open",
++   "v3Sha256": "e114950f21dd3ffe743793627efb955ac3daa27fce39bbda30f470146850f03e",
++   "currentSha256": "3fd1aa9a346e4ed4b6ed33426b201211e9f72311f069ef0559d122917a7ab57e",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  {
++   "id": "cucumber-reporting-1198",
++   "v3Result": "open",
++   "v3Sha256": "1b99b475f177b6fb66d3f0cc384d7c129ca083d7143d7436dc87c8ae9f3a1f7a",
++   "currentSha256": "3379b3d685b9adb406d37176df68ca4f8ac26e4aa9fead9f35a8298e45f0738b",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  {
++   "id": "reflector-35",
++   "v3Result": "open",
++   "v3Sha256": "50a8a318b4a48a3be62c8945fda3dac6ae93c277cab083c049ee3d0b63e7746c",
++   "currentSha256": "dc85a86590026d95e97e6f8843cec8beb9ddb176448aaa90a6ff3d7e9d79daeb",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet"
++  }
++ ],
++ "job": "20261124-084235-remeasure-original-automatic-v3-upgrade"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/05/current/commons-beanutils-440.json
+@@ -0,0 +1,104 @@
++{
++  "id": "commons-beanutils-440",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod",
++  "observer": "Resolve an overloaded public method and observe the selected declaration.",
++  "revisions": {
++    "old": "389264ff96c9e361ecb830a9813eae3f86f38d3a",
++    "new": "5dc228566038283964a4f665c147282d462babdd"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "389264ff96c9e361ecb830a9813eae3f86f38d3a",
++      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 80,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "orderedSha256": [
++        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
++      "descriptors": [
++        "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;"
++      ]
++    },
++    "new": {
++      "commit": "5dc228566038283964a4f665c147282d462babdd",
++      "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 80,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "orderedSha256": [
++        "51b4ddd2f12410716d80513b6f8fed73689f1f87915821b782ff60b4efc23103",
++        "d175dbd751dd782a63bde28c7a039520e971f25e84b79c19b8435edc3603e0dc",
++        "a2af247ec4db6eb8947e18e23e0433e4871a7c5d0a40e1f92e46ede54ae1defe",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845"
++      ],
++      "callerClassSha256": "2dc9d226e39da6b615b13ada741d55943f92e16c787bb0e31d3057c636ad1223",
++      "descriptors": [
++        "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Class;Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(java.lang.Class, java.lang.String, java.lang.Class[])",
++    "exit": 1,
++    "seconds": 0.024,
++    "outputSha256": "003d0cb45e68e10ca36cf394eaeb3e1caf6bfbfdf997fe807b2500f3622c1ac9",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(java.lang.Class, java.lang.String, java.lang.Class[])",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(java.lang.Class, java.lang.String, java.lang.Class[]) cannot be verified: parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 230
++        }
++      ],
++      "output": "\u2717 org.apache.commons.beanutils2.MethodUtils#getMatchingAccessibleMethod(java.lang.Class, java.lang.String, java.lang.Class[]) cannot be verified: parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-a4za9n7q/overload-0"
++    },
++    "firstBlocker": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 0.083,
++  "sourceSha256": "8e3333a280a338defa54a1204b66734388d05bf1bff9993ecd810b1efd18d681"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/05/current/commons-csv-8993be87.json
+@@ -0,0 +1,100 @@
++{
++  "id": "commons-csv-8993be87",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.csv.CSVParser#nextRecord",
++  "observer": "Read CSV records containing quoted separators and embedded line endings.",
++  "revisions": {
++    "old": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
++    "new": "8993be875a32fdc336780b1610a2e002d320571e"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "f7d8d7e7bd9780423a0088a9b18b755ec714c5ab",
++      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 19,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
++        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
++      ],
++      "orderedSha256": [
++        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b",
++        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
++      ],
++      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
++      "descriptors": [
++        "()Lorg/apache/commons/csv/CSVRecord;"
++      ]
++    },
++    "new": {
++      "commit": "8993be875a32fdc336780b1610a2e002d320571e",
++      "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 19,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
++        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
++      ],
++      "orderedSha256": [
++        "4d9264c1812d7f00f9b59dad766e918cc3b1717b1527ec27f213cc29394f3ec6",
++        "824268919b4b62f9f40f08c54381de5993b078f58667e332d17348ae019d72b9",
++        "ba005f304cef92a3dede24a38ad5ac9b8afccf0d8f75839d6c1338634cf7f6e4"
++      ],
++      "callerClassSha256": "ce569a556df56742312d34e98a9cdb4b9760d17f7bf3ee61a66f1c47fd98e3b4",
++      "descriptors": [
++        "()Lorg/apache/commons/csv/CSVRecord;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "()Lorg/apache/commons/csv/CSVRecord;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.csv.CSVParser#nextRecord()",
++    "exit": 1,
++    "seconds": 0.015,
++    "outputSha256": "149872ae6f15e767042a4bd5bc86ec1970acfa71e39b99536996168ab23f9484",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.csv.CSVParser#nextRecord()",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.csv.CSVParser#nextRecord() cannot be verified: nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet",
++          "uri": null,
++          "line": 885
++        }
++      ],
++      "output": "\u2717 org.apache.commons.csv.CSVParser#nextRecord() cannot be verified: nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet\n",
++      "work": "$WORK/checker-ft4kvu35/overload-0"
++    },
++    "firstBlocker": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet"
++  },
++  "firstBlocker": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet",
++  "elapsedSeconds": 0.065,
++  "sourceSha256": "4fb7f703994503990166a100ea6168ade2c7acfbd3e3365e9417ed151ea6995c"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/05/current/commons-fileupload-377.json
+@@ -0,0 +1,96 @@
++{
++  "id": "commons-fileupload-377",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData",
++  "observer": "Read a multipart body up to its boundary and observe the exact payload.",
++  "revisions": {
++    "old": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++    "new": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "b958432b728f99c2f1142a896c8634fd1fc5b38c",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "4aa4ca48f3dfd30b78220b7881d8cb93eac4093ec94361b6befa9487998a550b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    },
++    "new": {
++      "commit": "9f9216c02d2176a678a8a51d68d6c8c03dbdbfcf",
++      "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 13,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "orderedSha256": [
++        "620210f2711a21bf3b6825ec0130e909ec104985f996ed4187b385be636443ab",
++        "f3ca0f8d63c40e23a56d54101c60d5edee136b42d84bfb85bc7963093109cf8b"
++      ],
++      "callerClassSha256": "002209f045cccce82eb6c1a29ae9c694ec0ffeb5812043a2226518b79c44f21d",
++      "descriptors": [
++        "(Ljava/io/OutputStream;)J"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/io/OutputStream;)J"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream)",
++    "exit": 1,
++    "seconds": 0.014,
++    "outputSha256": "137a4519744557b67239e2f6d1c16f80c8a233dda5c6d504e73eea8adf0980c2",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream) cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++          "uri": null,
++          "line": 796
++        }
++      ],
++      "output": "\u2717 org.apache.commons.fileupload2.core.MultipartInput#readBodyData(java.io.OutputStream) cannot be verified: readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use\n",
++      "work": "$WORK/checker-0ts2bhuj/overload-0"
++    },
++    "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use"
++  },
++  "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use",
++  "elapsedSeconds": 0.072,
++  "sourceSha256": "f9bb83dc97519b731885eca2519a8c98c2c80787f06b924453236d2986905934"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/05/current/compsuite-i-94.json
+@@ -0,0 +1,246 @@
++{
++  "id": "compsuite-i-94",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate",
++  "observer": "Validate dates on either side of the configured minimum and read the field state.",
++  "revisions": {
++    "old": "f728a4f1995343460ffb6df027775d61553d7c7e",
++    "new": "0b844ff015dc31a24e3d85e1f66ee50fdc7f39f9"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "f728a4f1995343460ffb6df027775d61553d7c7e",
++      "sourceSha256": "928c9c139602c9bc9ad0515da40d9223a980d92bb501a49d110a7857d775eae3",
++      "scope": "original production runtime followed by original Maven test classes, resources and companions",
++      "module": "service/form/pom.xml",
++      "declaredDependencyScope": null,
++      "modulePomSha256": "2becbcf2e69b257ed588eb6a504dcb2d8dc08b83a3032aca56530b1d57e3c123",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "service/form",
++        "-am",
++        "-DskipTests",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "test-compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "testGoals": [
++        "-pl",
++        "service/form",
++        "-am",
++        "-DskipTests",
++        "-DincludeScope=test",
++        "-Dmdep.outputFile=target/upgrade-test.cp",
++        "test-compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "frameworkFixtures": {
++        "runtimeCount": 33,
++        "testClassesSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
++      },
++      "stage": "artifacts ready",
++      "compiledClasses": 122,
++      "resources": 28,
++      "seconds": 22.64,
++      "orderedSha256": [
++        "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
++        "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
++        "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
++        "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
++        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
++        "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
++        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
++        "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
++        "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
++        "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
++        "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
++        "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
++        "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
++        "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
++        "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
++        "48da368bc3b457e6e7e08c71c36bddb208f5fcdd028848c85c4867ec4927abf5",
++        "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
++        "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
++        "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
++        "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
++        "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
++        "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
++        "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
++        "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
++        "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
++        "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
++        "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
++        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
++        "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
++        "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
++        "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
++        "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
++        "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
++        "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
++        "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
++        "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
++        "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
++        "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
++        "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
++        "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
++        "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
++      ],
++      "callerClassSha256": "c0cb143359d146b906eb134409d32c53712268f5d99f870d29433049c550e287",
++      "descriptors": [
++        "(Lcom/alibaba/citrus/service/form/Validator$Context;Ljava/lang/String;)Z"
++      ]
++    },
++    "new": {
++      "commit": "0b844ff015dc31a24e3d85e1f66ee50fdc7f39f9",
++      "sourceSha256": "928c9c139602c9bc9ad0515da40d9223a980d92bb501a49d110a7857d775eae3",
++      "scope": "original production runtime followed by original Maven test classes, resources and companions",
++      "module": "service/form/pom.xml",
++      "declaredDependencyScope": null,
++      "modulePomSha256": "2cab6031d5d224cf6f0632d26a80d3adc3034b9abd19267d7962f7ab0006f720",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-pl",
++        "service/form",
++        "-am",
++        "-DskipTests",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "test-compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "testGoals": [
++        "-pl",
++        "service/form",
++        "-am",
++        "-DskipTests",
++        "-DincludeScope=test",
++        "-Dmdep.outputFile=target/upgrade-test.cp",
++        "test-compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "frameworkFixtures": {
++        "runtimeCount": 33,
++        "testClassesSha256": "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce"
++      },
++      "stage": "artifacts ready",
++      "compiledClasses": 122,
++      "resources": 28,
++      "seconds": 21.47,
++      "orderedSha256": [
++        "6b7ad287ab90ba7400460d64b4bc58f13a3809143b544c55c28b9677c90d3a8b",
++        "b7140e42af61601390a44bd80da35fd847e2363bfeaeccdd568ef9f2cd40f91c",
++        "599b40b94b4a39c2550a4b5106df071aa03199b71ad5423207e2e7356aa4f8bb",
++        "8697530f6ba064a37b5333d3d60b3c23c8ed8a848b29407f697bd8ab754cee25",
++        "03c9a9fae5da78ce52c0bf24467cc37355b7e23196dff4839e2c0ff018a01306",
++        "055030a6fe9da15c55c808bae0ba4362f6f759c41012f7c85075effff150b041",
++        "e78c7792e59554ed8a23d18a12e3a0d2f7a244217ecf89621477f63aec074f15",
++        "e2dd7fe04dce9bd21fdde195c89246187ca7f600799accc060107d74d287146b",
++        "af456b2dd41c4e82cf54f3e743bc678973d9fe35bd4d3071fa05c7e5333b8482",
++        "93e9d1c2440a0d49bc021cd09b97c96eb220177cf37a48e0395fdafeaa2d5f97",
++        "c9ccdfc5f6a01233bea4b30c0bf9aacc240828efbed917cb16399f11443d68dd",
++        "593552ffea3c5823c6602478b5002a7c525fd904a3c44f1abe4065c22edfac73",
++        "125d5c63c4f49c411efdb03ac4b8b19c76f30638d233479f858729693a9bc596",
++        "f0c462cf982bdc64e0c0b4c885e0581873addde91b0352d18da8522b714b1226",
++        "387025a34350812978f39c5cd89484379702d617712f23f567f0dd61952aa573",
++        "13f8138670ec2f0dd163119b7128a16fc26818fae98b991b0c094c3f49abbd71",
++        "0addec670fedcd3f113c5c8091d783280d23f75e3acb841b61a9cdb079376a08",
++        "5d51d11f02d2458ee690ef619daa6795f5e72d0e3e83b11962df69e76ff6b837",
++        "25cdba8a2e2a9289305e33868a026fcb7b88ff56adb92c0bce1b0d3f2e53d2f4",
++        "b99203146edecf0c28d0c930f91526e1237cd4048ad5022cabaeab5ac4e4bb83",
++        "893611b626aa64a7ddee1a72a1d336b97516fc856d4cadc066d7341291d1df73",
++        "8b2a7db579f76d61d93167c3c7ab835be783611a4f72963c756b4ea0c431473e",
++        "a2d27625aff65f47393f9330bd3a89409024e52715202a4965099537b02a76b6",
++        "73e0695e9ea5deb54cd6623cf002ae40f2970cc5100a2a4467a6288229231102",
++        "bcea3f830ff3867c6700c1fc12282c219ecf77ae6b36cea445b8e9dc751449fe",
++        "cc6a41dc3eaacc9e440a6bd0d2890b20d36b4ee408fe2d67122f328bb6e01581",
++        "270530da8ebddb5a54118d04dd4988716d7028cb9f5daa97eae612d346188d75",
++        "a108396feac7569a5af61be98cf7e9e31c6915513826309af707aab6519b0c8f",
++        "5dcdf0ab539ea09960bb4c25125ddc6f6a44e31774391aae1b7d8dfe1eddc9cf",
++        "12c1930ca91653422ac49fea33fce8be1b1fcd2d2220cea383c4794976c7418f",
++        "ecd8f24f9b2941284e98f154ff3343e720cb31c8f47b67554b145745f596f3b8",
++        "fe30825245d2336c859dc38d60c0fc5f3668dbf29cd586828d2b5667ec355b91",
++        "cac1c89ca24766564333cd165b6a3a285c703df467f01b1d426a5cd9473d6703",
++        "21a686c825067cd41d871b94b06e5ad5df0c0868661fc38ee2ff45ac2fc643ce",
++        "70903f6fc82e9908c8da9f20443f61d90f0870a312642991fe8462a0b9391784",
++        "02cf7f8bc9ffae4e276062d3aa4f3d64808445e93d8d9cb6d25500e46ec189d1",
++        "36a747ca1e0b86f6ea88055b8723bb87030d627766da6288bf077afdeeb0f75a",
++        "0361d1493ff0d94f861359efea91200720635072134792efb7217f6e09d5cffb",
++        "157b0d09e661d25dc5495f1ffb092165b22b6bcc63b228261aec889566985001",
++        "ed3bd769cd520790e77922cbcfb2c80899851335c2db45fdd90e286300ed1273",
++        "27bd29f36b9b483b64bc7e113c7990f3561d117206e25eac17aa00fb8ceb3551",
++        "fdff6cfa9ed9cc911c842a5d2395f209ec621ef1239d46810e9e495809d3ae09",
++        "175bbbd9def7a22a30e05f9c8db629c88fa5bdfc57d5658791901b54222abe1c",
++        "a840968176645684bb01aed376e067ab39614885f9eee44abe35a5f20ebe7fad",
++        "55a2e95144acf1abe44fea91c2948525c9b1f00fcaa1d10e753e92872ffbdd1e",
++        "a15078d243d4a20b6b4e8ae2f61ed4655e352054e121aada6f7441f1ed445a3c",
++        "e2aeb3ecec87d859b2f3072985d4b15873558bcf6410f422db0c0c5194c76c87",
++        "b3dd1cf5019f942d8cc2afad0aa6aef4b21532446fe90a6b68d567e3389763dd",
++        "dd4ef3d3091063a4fec578cbb2bbe6c1f921c00091ba2993dcd9afd25ff9444a"
++      ],
++      "callerClassSha256": "c0cb143359d146b906eb134409d32c53712268f5d99f870d29433049c550e287",
++      "descriptors": [
++        "(Lcom/alibaba/citrus/service/form/Validator$Context;Ljava/lang/String;)Z"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Lcom/alibaba/citrus/service/form/Validator$Context;Ljava/lang/String;)Z"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(com.alibaba.citrus.service.form.Validator$Context, java.lang.String)",
++    "exit": 1,
++    "seconds": 0.13,
++    "outputSha256": "57e89ba9a00a3261fb6a3b94183fb781d50f7338e66b54fd3ec5660b871fc896",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(com.alibaba.citrus.service.form.Validator$Context, java.lang.String)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(com.alibaba.citrus.service.form.Validator$Context, java.lang.String) cannot be verified: validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++          "uri": null,
++          "line": 109
++        }
++      ],
++      "output": "\u2717 com.alibaba.citrus.service.form.impl.validation.DateValidator#validate(com.alibaba.citrus.service.form.Validator$Context, java.lang.String) cannot be verified: validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes\n",
++      "work": "$WORK/checker-0olv2_y7/overload-0"
++    },
++    "firstBlocker": "validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
++  },
++  "firstBlocker": "validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes",
++  "elapsedSeconds": 0.312,
++  "sourceSha256": "928c9c139602c9bc9ad0515da40d9223a980d92bb501a49d110a7857d775eae3"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/05/current/cucumber-reporting-1198.json
+@@ -0,0 +1,156 @@
++{
++  "id": "cucumber-reporting-1198",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "net.masterthought.cucumber.util.StepNameFormatter#format",
++  "observer": "Render argument spans in a step name and preserve surrounding characters.",
++  "revisions": {
++    "old": "b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d",
++    "new": "bf97b9ef1d60f9959a61379c3b3a682350e8e583"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "b0ec5fc9ea2dbd5ab980f69234a0dd66fa93504d",
++      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 3,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "orderedSha256": [
++        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "7b96bf3ee68949abb5bc465559ac270e0551596fa34523fddf890ec418dde13c",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
++      "descriptors": [
++        "(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "bf97b9ef1d60f9959a61379c3b3a682350e8e583",
++      "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 3,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "orderedSha256": [
++        "c6f9b4ffbfbd8117df0d991a8ecc57c695c0a1920f430a57a3c345830d46e4a0",
++        "d0ed5b54cb1b0bbb0828e24ce752a43a006dc188b34e3a4ae3238acc7b637418",
++        "8562569a001d46e84ea23802257e33c8f68b24eb47c1e0efd133a0372c512959",
++        "55be130f6a68038088a261856c4e383ce79957a0fc1a29ecb213a9efd6ef4389",
++        "94ea2f224e36632c02db1e668127c3018cacb859afc15ddf6f4c585917a93396",
++        "b086cee8fd8183e240b4afcf54fe38ec33dd8eb0da414636e5bf7aa4d9856629",
++        "385282b005818cfaccdbe8bd2429811e7e641782f2b88932a6b8ff51d668f616",
++        "d5642131fbd7d85e9a4b824c52711528a1dde0a7866dfbd22a8711dbabd9eabc",
++        "4905090022def3809e97963832fc8b2421fda800853c94d3cdbf1ad3011d9756",
++        "f41f7baacd716896447ace9758621f62c1c6b0a91d89acee488da26fc477c84f",
++        "2acf30a070b19163d5a480eae411a281341e870020e3534c6d5d4c8472739e30",
++        "f60b33b38e9d7ac93eaaa68a6c70f706bb99036494b2e2add2bfee11d09ac6f5",
++        "f67d865cbd32d0ec7e2ee0ffa97f8b5c71e3f0f8e0a7e822254737c108f13579",
++        "11f5a6c345d5c48a9d47703b6552fce150c2af266a9915eb20c20ac6d87507fa",
++        "e4637fb9d825c23677d4526ab1ff58117702e54c30d260a047cea10a93be1a92",
++        "e7c2a48e8515ba1f49fa637d57b4e2f590b3f5bd97407ac699c3aa5efb1204a9",
++        "c53560fa3a0837964207dd1f7835d0e6cea0835bd110e94696f2dc65f27e6f5a"
++      ],
++      "callerClassSha256": "87063a826022ad2009c7c70f313b76ff17aa3074d5df58914d62eed1ff67a831",
++      "descriptors": [
++        "(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/String;[Lnet/masterthought/cucumber/json/support/Argument;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "net.masterthought.cucumber.util.StepNameFormatter#format(java.lang.String, net.masterthought.cucumber.json.support.Argument[], java.lang.String, java.lang.String)",
++    "exit": 1,
++    "seconds": 0.027,
++    "outputSha256": "9903dd6c8a519fcecfad8fc13ef0921bda94655c41955574ae3ca68676421307",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "net.masterthought.cucumber.util.StepNameFormatter#format(java.lang.String, net.masterthought.cucumber.json.support.Argument[], java.lang.String, java.lang.String)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "net.masterthought.cucumber.util.StepNameFormatter#format(java.lang.String, net.masterthought.cucumber.json.support.Argument[], java.lang.String, java.lang.String) cannot be verified: parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 14
++        }
++      ],
++      "output": "\u2717 net.masterthought.cucumber.util.StepNameFormatter#format(java.lang.String, net.masterthought.cucumber.json.support.Argument[], java.lang.String, java.lang.String) cannot be verified: parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-2s9rs469/overload-0"
++    },
++    "firstBlocker": "parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 0.11,
++  "sourceSha256": "4e9cd56bddbd5f6df390cff126ac1746edce3599ff426d244708b130e8acad48"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/05/current/reflector-35.json
+@@ -0,0 +1,142 @@
++{
++  "id": "reflector-35",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator",
++  "observer": "Generate the original reflection adapter and inspect the resulting callable class.",
++  "revisions": {
++    "old": "a7421542ac2b34670c7c261539fc253d77526afc",
++    "new": "b8a65d35911580a469964aa722f4cd989c1a5382"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "a7421542ac2b34670c7c261539fc253d77526afc",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "0a79648e8047a78b589e226fe1a3bb55113de63987ced9d6ca7e0ae1b5fae880",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 65,
++      "resources": 0,
++      "seconds": 9.4,
++      "orderedSha256": [
++        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
++        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
++        "71c4f78e437b8fdcd9cc0dfd2abea8c089eb677005a6a5cff320206cc52b46cc",
++        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
++        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
++        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
++      ],
++      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;"
++      ]
++    },
++    "new": {
++      "commit": "b8a65d35911580a469964aa722f4cd989c1a5382",
++      "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0",
++      "scope": "complete original Maven production module",
++      "module": "pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "a691fcb106d7da9532cec061f88a06a6eb085fc89fdd404323960f3c7e416833",
++      "operandScope": "runtime",
++      "subjectJdk": "8.0.512.0+9-tem",
++      "jdkReleaseSha256": "b965ee876a40eb8b76e7146403b3efc54e309ebd573064a18c7b87665ce4d89e",
++      "goals": [
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 65,
++      "resources": 0,
++      "seconds": 9.6,
++      "orderedSha256": [
++        "00b99687beaa1fe2732c7f3070f776f8e12493a737c31b9e23913a6a4eb76a1e",
++        "4a5aa70cc968a4d137e599ad37553e5cfeed2265e8c193476d7119036c536fe7",
++        "a171ee4c734dd2da837e4b16be9df4661afab72a41adaf31eb84dfdaf936ca26",
++        "b372a037d4230aa57fbeffdef30fd6123f9c0c2db85d0aced00c91b974f33f99",
++        "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7",
++        "64b02691c8b9d4e7700f8ee2e742dce7ea2c6e81e662b7522c9ee3bf568c040a",
++        "6ebd22ca1b9d8ec06d41de8d64e0596981d9607b42035f9ed374f9de271a481a",
++        "2994a7eb78f2710bd3d3bfb639b2c94e219cedac0d4d084d516e78c16dddecf6",
++        "92654f493ecfec52082e76354f0ebf87648dc3d5cec2e3c3cdb947c016747a53",
++        "5d57ea5b0ec8cb46143dfe521f888b208028be126f274cc4f852e641755f1553",
++        "4ab2fa2b6d2cc9ccb1eaa05ea329c407b47b13ed2915f62f8c4b8cc96258d4de",
++        "79aecd73ffb5d95d88b1ac36b505fa30ae3e83788e936838e2be9a51074fd2dd",
++        "3fcfbe3203c2ea521bf7640484fd35d6303186ea2e08e72f032d640ca067ffda",
++        "6268a9a0ea3e769fc493a21446664c0ef668e48c93d126791f6f3f757978fee2"
++      ],
++      "callerClassSha256": "9eeac3725ca84f22c557bb3ff67fb62cfb80d884429ff929fb31cdfd8ef0fee8",
++      "descriptors": [
++        "(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Class;)Lru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class)",
++    "exit": 1,
++    "seconds": 0.122,
++    "outputSha256": "d2ad642c15ad3ecbfaf3dc5cad23aeb67abcde8e5507597c5c537298654d171a",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class) cannot be verified: newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet",
++          "uri": null,
++          "line": 30
++        }
++      ],
++      "output": "\u2717 ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator#newClassInstanceManipulator(java.lang.Class) cannot be verified: newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet\n",
++      "work": "$WORK/checker-p07rpjm6/overload-0"
++    },
++    "firstBlocker": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet"
++  },
++  "firstBlocker": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet",
++  "elapsedSeconds": 0.204,
++  "sourceSha256": "bb7f5cac50d4adeaa074b3a446d8bc627f107f36a3c6b426c62974fe0b9e00b0"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/06/comparison.json
+@@ -0,0 +1,54 @@
++{
++ "argv": [
++  "/usr/bin/python3",
++  "-B",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
++  "--build",
++  "current",
++  "--checker",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
++  "--repositories",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-p0msnlzy/data/sources/repos.json",
++  "--work",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-p0msnlzy/data/slices",
++  "--complete",
++  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-p0msnlzy/data/modules",
++  "--maven-cache",
++  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
++  "--maven8",
++  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
++  "--output",
++  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/06",
++  "--case",
++  "commons-validator-86e32931",
++  "--case",
++  "commons-vfs-55c96cfd"
++ ],
++ "cases": [
++  {
++   "id": "commons-validator-86e32931",
++   "v3Result": "open",
++   "v3Sha256": "f90c338e99e475eae5324dee821d86eb984aa909f6095656c6b6a5c50375c1c7",
++   "currentSha256": "ad6cc9c015d40b6536495da4b23786dd010df387fde1864c367660f3b8dfcf89",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  {
++   "id": "commons-vfs-55c96cfd",
++   "v3Result": "open",
++   "v3Sha256": "5d837c9af24611ce98b2125af9adbb38a25ae8bc7d294670385542b99b7db8c1",
++   "currentSha256": "4b7c53130186efe9831bd94cfd3167d72bab36b4a5444ec1d12f329a9db4d173",
++   "sameOrderedArtifacts": {
++    "old": true,
++    "new": true
++   },
++   "result": "open",
++   "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++  }
++ ],
++ "job": "20261124-084235-remeasure-original-automatic-v3-upgrade"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/06/current/commons-validator-86e32931.json
+@@ -0,0 +1,126 @@
++{
++  "id": "commons-validator-86e32931",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString",
++  "observer": "Read a named property from a bean and observe the exact string or missing-value result.",
++  "revisions": {
++    "old": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++    "new": "86e32931594e3437cd8614311f5da7bc0c62613c"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "a952e2fbe2b2226c72083f74cf66562a3118225f",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "7d938c81789028045c08c065e94be75fc280527620d5bd62b519d5838532368a",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    },
++    "new": {
++      "commit": "86e32931594e3437cd8614311f5da7bc0c62613c",
++      "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "stage": "artifacts ready",
++      "scope": "original caller and javac-discovered source dependencies",
++      "compiledClasses": 4,
++      "compilerSha256": "2cc288a26beebc50ca7cd924847dffbfb38ef3314e105bba6d4ebce03a0bcb6b",
++      "compilerClasspathSha256": [
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230"
++      ],
++      "orderedSha256": [
++        "45b5f12fe5e2d4750abe204771b7112bc6bb038e4679fd818ab1cab3f95afc67",
++        "b6e8dbf5d4a7fd66edbc7106886909c097dc7e0768ca78cc1055955d6ff877a1",
++        "e0b2b980a84fc6533c5ce291f1917b32c507f62bcad64198fff44368c2196a3d",
++        "bc2dfe32f1ef06509e6a065144c1adf7b420eabf11a87f30bd127f8faa332016",
++        "eeeae917917144a68a741d4c0dff66aa5c5c5fd85593ff217bced3fc8ca783b8",
++        "0a68106f390138230c1639b87f1ff854c680113ba4876997cb0483f53457fb5c",
++        "48e2df636cab6563ced64dcdff8abb2355627cb236ef0bf37598682ddf742f1b",
++        "03ce3c6054c011a26953a065da6a48489d1fbc1995e4ca3c6d700293e71b5800",
++        "b509448ac506d607319f182537f0b35d71007582ec741832a1f111e5b5b70b38",
++        "57e03be4509cc2afceeb0dd7529485a3b3d09d0ff5554cab4b1347df01d21478",
++        "4e625500397631304726da32f7ae599ce3bfc71d4ea11947de69dbbdf0fc4409",
++        "0a62be4447e4066d628705e298e91d557b5f01c1f3f143501dc3eac36da59230",
++        "fd933e1e2029bb6c749dd94f63830c0973c30b89ed71cfd5e7f4684368d2e629"
++      ],
++      "callerClassSha256": "829992518969dda07b8ecc6ae12c7a6df6355a13fc51e0afd172905ca8a15025",
++      "descriptors": [
++        "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "(Ljava/lang/Object;Ljava/lang/String;)Ljava/lang/String;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String)",
++    "exit": 1,
++    "seconds": 0.018,
++    "outputSha256": "e311aeaf866a94a1d598e8469ef9ca13a2b6a1fee7b9980d44266ce35637a555",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String)",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String) cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++          "uri": null,
++          "line": 116
++        }
++      ],
++      "output": "\u2717 org.apache.commons.validator.util.ValidatorUtils#getValueAsString(java.lang.Object, java.lang.String) cannot be verified: parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.\n",
++      "work": "$WORK/checker-f9lydojv/overload-0"
++    },
++    "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
++  },
++  "firstBlocker": "parameter bean has type java.lang.Object; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts.",
++  "elapsedSeconds": 0.081,
++  "sourceSha256": "88c803b7bbab182c28c17b85e91877af46866ec92e283e770f5f056b61193cb8"
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/closing/shadow/06/current/commons-vfs-55c96cfd.json
+@@ -0,0 +1,150 @@
++{
++  "id": "commons-vfs-55c96cfd",
++  "build": "current",
++  "operator": {
++    "model": "gpt-6.2-astra",
++    "effort": "high"
++  },
++  "entry": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType",
++  "observer": "Classify the remote entry from its parsed FTP file type.",
++  "revisions": {
++    "old": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++    "new": "55c96cfd2bdabe455058826ad86788f120b1425d"
++  },
++  "result": "open",
++  "readerSha256": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
++  "checkerSha256": "f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6",
++  "sides": {
++    "old": {
++      "commit": "8ac9ec3cb4f7116e6809ef4d146736ac637939c7",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "scope": "complete original Maven production module",
++      "module": "commons-vfs2/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "f47ef83b1923fc5b052d13c6e95f65f7bf259daea6f596d03a2e01661d78c543",
++      "operandScope": "runtime",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
++      "goals": [
++        "-pl",
++        "commons-vfs2",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 361,
++      "resources": 6,
++      "seconds": 19.02,
++      "orderedSha256": [
++        "bfd7c51763d0d156a80183e0e681bb5ccee4bac899450b507a285ab93b4516b7",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "8f6a541c47ac169761c1004e00a82ab4d3ebb1746553dd43d4625f20da288faf",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "56e3fe517109be83901bf58f67aa716564d59d5b71484f4dd531ba8979561462",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    },
++    "new": {
++      "commit": "55c96cfd2bdabe455058826ad86788f120b1425d",
++      "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68",
++      "scope": "complete original Maven production module",
++      "module": "commons-vfs2/pom.xml",
++      "declaredDependencyScope": "compile",
++      "modulePomSha256": "f47ef83b1923fc5b052d13c6e95f65f7bf259daea6f596d03a2e01661d78c543",
++      "operandScope": "runtime",
++      "subjectJdk": "21.0.13.0+9-tem",
++      "jdkReleaseSha256": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
++      "goals": [
++        "-pl",
++        "commons-vfs2",
++        "-am",
++        "-Dmaven.test.skip=true",
++        "-DincludeScope=runtime",
++        "-Dmdep.outputFile=target/upgrade-runtime.cp",
++        "compile",
++        "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"
++      ],
++      "declaredReleaseRepositories": [],
++      "stage": "artifacts ready",
++      "compiledClasses": 361,
++      "resources": 6,
++      "seconds": 18.5,
++      "orderedSha256": [
++        "bfd7c51763d0d156a80183e0e681bb5ccee4bac899450b507a285ab93b4516b7",
++        "f8ead8943401081dea0aa824b5b1ba40a0e4ed297a572a0f02258150a0b62357",
++        "9e88444afadc9467f0bf3d328f93b9538da35a9be05cdee430766e64fddbd6c5",
++        "e1522945218456f3649a39bc4afd70ce4bd466221519dba7d378f2141a4642ca",
++        "4da851cb6abfb98bfe9eb77c5e5fc47f5414fa28b94e21b7fd9a646705dc167f",
++        "00f93263c267be201b8ae521b44a7137271b16688435340bf629db1bac0a5845",
++        "dbd4953d013e10e7c1cc3701a3e6ccd8c950c892f08d804fabfac21705930443",
++        "c8bc7e1c51a6d4ce72f40d2ebbabf1c4b68bfe76e732104b04381b493478e9d6",
++        "6c9b3dd142a09dc468e23ad39aad6f75a0f2b85125104469f026e52a474e464f",
++        "7c34a25506e7207b6748cef9e91163ed03081bee805cef930d82e1d8761d62f1",
++        "0992b7dd57fbfc8334df2201e1788a2752ff11b6a638f5ce521915bef72ca4ad",
++        "2e0f4ace15db2d1609c2b06eca6012e7582afe4a99ad8d15073f62dd8edb3460",
++        "d492b15a6d2ea3f1cc39c422c953c40c12289073dbe8360d98c0f6f9ec74fc44",
++        "69e5c9fa35da7a51a5fd2099dfe56a2d8d32cf233e2f6d770e796146440263f4",
++        "7d643a2afea8b058b762aa6fb90e5b256f6c729739f8b3784c3370ddc609e88d"
++      ],
++      "callerClassSha256": "56e3fe517109be83901bf58f67aa716564d59d5b71484f4dd531ba8979561462",
++      "descriptors": [
++        "()Lorg/apache/commons/vfs2/FileType;"
++      ]
++    }
++  },
++  "declarations": {
++    "common": [
++      "()Lorg/apache/commons/vfs2/FileType;"
++    ],
++    "removed": [],
++    "added": []
++  },
++  "native": {
++    "target": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()",
++    "exit": 1,
++    "seconds": 0.203,
++    "outputSha256": "054c8374af151fc00dc9bb9840a3056ec2bedabfc63949d45a7dde5ad05f80ae",
++    "outcome": {
++      "wire_version": 1,
++      "verdict": "unverifiable",
++      "target": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType()",
++      "domain": null,
++      "counterexample": null,
++      "proof": null,
++      "problem": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++      "statement": null,
++      "findings": [
++        {
++          "rule_id": "unverifiable",
++          "message": "org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType() cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++          "uri": null,
++          "line": 368
++        }
++      ],
++      "output": "\u2717 org.apache.commons.vfs2.provider.ftp.FtpFileObject#doGetType() cannot be verified: doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)\n",
++      "work": "$WORK/checker-8bz5s3f3/overload-0"
++    },
++    "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)"
++  },
++  "firstBlocker": "doGetType is an instance method, whose receiver is outside the objects a regression check makes: an ordinary receiver, an object of org.apache.commons.vfs2.provider.ftp.FtpFileObject made by its constructor, whose the argument fileName of org.apache.commons.vfs2.provider.ftp.FtpFileObject's constructor: org.apache.commons.vfs2.provider.AbstractFileName is abstract; only a concrete class made by its constructor is: the objects stream builds it (llm-dlc/loops/application-core-objects.md)",
++  "elapsedSeconds": 0.378,
++  "sourceSha256": "669dfc875e72041e43fb362a31faded3b8476b7b192a223717195972c71b8a68"
++}
