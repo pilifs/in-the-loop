@@ -1,0 +1,337 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-160258-qualify-both-commons-collections-iterato",
+  "title": "Qualify both Commons Collections iterator PRs and their four endpoints",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 1m55s, peak 191.4 MiB (estimated 9m00s, 4.0 GiB); 5 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-160258-qualify-both-commons-collections-iterato.json",
+    "sha256": "1ea970a9c4543324fc41f4c5e1754e3bce41e338f857549679cb382175993aed",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-160258-qualify-both-commons-collections-iterato",
+      "title": "Qualify both Commons Collections iterator PRs and their four endpoints",
+      "description": "Use the unchanged change-plan implementation and one public observer for the original #628 optimization and #755 repair. Check parent and child locks, next and remove provenance, late attachment, overrides, unmodifiable boundaries and both backing lists; compare each pair cold, warm and clean. Run the upstream depth-150 workload in three fresh JVMs per endpoint and distinguish bounded timing from a traversal invariant.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-proof-reuse"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T16:02:58+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "9m"
+      },
+      "steps": [
+        {
+          "name": "Verify frozen shared implementation",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+          "cwd": "."
+        },
+        {
+          "name": "Check the optimization on its own original pair",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py collections-628 first && python3 -B lib/benchmark/organic-composition/audit.py collections-628 first",
+          "cwd": "."
+        },
+        {
+          "name": "Check the repair on its own original pair",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py collections-755 first && python3 -B lib/benchmark/organic-composition/audit.py collections-755 first",
+          "cwd": "."
+        },
+        {
+          "name": "Relate all endpoints and measure the depth control",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/history.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/collections-628/first",
+        "verification/organic-composition/collections-755/first",
+        "verification/organic-composition/collections/history.json"
+      ]
+    }
+  },
+  "sourceCommit": "951621b2ec0e3d9099fc8a156487dbd6c0bc1f51",
+  "startedAt": "2026-11-24T16:16:16+00:00",
+  "finishedAt": "2026-11-24T16:22:06+00:00",
+  "wallSeconds": 350.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3019320,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2160.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 200654848,
+    "wallSeconds": 115.7,
+    "cpuSeconds": 130.1,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Verify frozen shared implementation",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.263,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 35229696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-verify-frozen-shared-implement.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check the optimization on its own original pair",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py collections-628 first && python3 -B lib/benchmark/organic-composition/audit.py collections-628 first",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 55.314,
+      "cpuSeconds": 61.192,
+      "cpuThrottledSeconds": 7.129,
+      "peakMemoryBytes": 198656000,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-the-optimization-on-its.log",
+        "lines": 5,
+        "bytes": 355,
+        "sha256": "49082b801d9fc67d16da7690395c0d27908c976463a7f9feece46f2e5b492183",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/organic-matrix-i1a47zyy/planned.json",
+        "2 claims in /tmp/organic-matrix-i1a47zyy/cold.json",
+        "2 claims in /tmp/organic-matrix-i1a47zyy/warm.json",
+        "2 claims in /tmp/organic-matrix-i1a47zyy/clean.json",
+        "collections-628 first matched original observations, proof identities, applied values and startup witnesses: [['cold', 'warm'], ['cold', 'clean']]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check the repair on its own original pair",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py collections-755 first && python3 -B lib/benchmark/organic-composition/audit.py collections-755 first",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 56.745,
+      "cpuSeconds": 63.333,
+      "cpuThrottledSeconds": 8.452,
+      "peakMemoryBytes": 200654848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-the-repair-on-its-own-or.log",
+        "lines": 5,
+        "bytes": 355,
+        "sha256": "8c5a8f0ccc5ee7e8203568e4971027c46959dfc316c4b8e992a1303d1f4445f2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/organic-matrix-h1imyu_q/planned.json",
+        "2 claims in /tmp/organic-matrix-h1imyu_q/cold.json",
+        "2 claims in /tmp/organic-matrix-h1imyu_q/warm.json",
+        "2 claims in /tmp/organic-matrix-h1imyu_q/clean.json",
+        "collections-755 first matched original observations, proof identities, applied values and startup witnesses: [['cold', 'warm'], ['cold', 'clean']]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Relate all endpoints and measure the depth control",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/history.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 3.208,
+      "cpuSeconds": 5.345,
+      "cpuThrottledSeconds": 0.431,
+      "peakMemoryBytes": 98308096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-relate-all-endpoints-and-measu.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/collections-628/first/plans.zip",
+      "change": "added",
+      "bytes": 490739,
+      "sha256": "c500be14e19a94ee3adac277b02eeeba85bca35d862cf6a3abff2238388d2ff2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/collections-628/first/summary.json",
+      "change": "added",
+      "bytes": 8156,
+      "sha256": "c4f1f467d57f184fe98d956007de3347ddbb722b0cd478fefb8e471d07864b05",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/collections-755/first/plans.zip",
+      "change": "added",
+      "bytes": 508593,
+      "sha256": "071725f742d88ed6840b810180c79790d1c0755e22e0dc07c0c7f2b068e8b786",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/collections-755/first/summary.json",
+      "change": "added",
+      "bytes": 8157,
+      "sha256": "651f4c70fe5a26e1413f746f5160384c01e0e20ded23abb9a9479138e2a4a8a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/collections/history.json",
+      "change": "added",
+      "bytes": 8175,
+      "sha256": "decd2c5af95d93ca24701de84ebf2fb2fc7a154840badcd88f90ffa69f87ab4f",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T16:25:25+00:00",
+    "applied": [
+      "verification/organic-composition/collections-628/first/plans.zip",
+      "verification/organic-composition/collections-628/first/summary.json",
+      "verification/organic-composition/collections-755/first/plans.zip",
+      "verification/organic-composition/collections-755/first/summary.json",
+      "verification/organic-composition/collections/history.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "de768cc095080ffde27313de67837822da9bc6a5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/de768cc095080ffde27313de67837822da9bc6a5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T162206Z-9916162d9ef3681f",
+      "outputs": "20261124T162207Z-07236370bd1b62d9",
+      "diff": "20261124T162207Z-1177752025a0cc49"
+    }
+  }
+}
