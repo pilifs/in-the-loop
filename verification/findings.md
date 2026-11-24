@@ -286,6 +286,15 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
     was refused with the same message after 20 seconds and 0 steps. So a session that has been flagged cannot be
     continued, and neither can a fork of it, which carries the same history. A run that is to go on from it needs a
     new session.
+- **New occurrences, 2026-11-23 to 24, on ordinary verification work** (single-agent run `receiver-construction`, Astra 6.2 at max effort, session `3394e768-9d57-4a38-9c2b-54011210333d`; the user asked for them to be recorded here):
+  - **Stop 1:** 2026-11-23 23:32:55 UTC, in cycle 1, after 88.2 minutes and 596 steps. The error was `error_during_execution`, "flagged for possible cybersecurity risk", with 0 tokens reported, so the spend is unknown again. It was not CVE work. The agent was writing a small Rust program to probe JVM startup, and its messages just before were about a three-worker schedule search and a JBMC comparator problem.
+  - **The same session continued after a restart.** The watcher restarted it at 23:33, and cycle 1 ran to its end and published its results (`yossmzzo`, 00:48, clean tree). Nothing was lost: the uncommitted example 399 was committed after the restart (`lumssozs`, 23:45), and the one failing XZ job was replaced and passed.
+  - **Stop 2:** 2026-11-24 00:54:17 UTC, 2.8 minutes and 63 steps into cycle 2, again with 0 tokens reported. Cycle 2 had committed nothing.
+  - **What this changes above.** Two of this entry's conclusions are too strong:
+    - Ordinary verification work can trip the filter, not only turns that read deeply into the CVE examples.
+    - The flag is not consistently sticky. On 2026-11-19 a continued session was refused at once. Tonight the session continued for 81 minutes and finished a cycle, then was refused 3 minutes into the next one.
+  - **Rate:** two stops in about 15 hours of Astra work on 2026-11-23, all on briefs prepared by an Opus setup pass. On 2026-11-22, three stops came in 36 minutes when Astra fetched its own sources. That supports the setup pass as a mitigation, but it does not remove the risk.
+  - **What the watcher did:** restarted once in the same session. After the second stop it handed the brief over as finished after cycle 1 (merged as `oqmtltol`) rather than retry in a fresh session. The fallback order for later runs is: restart once in the same session, then use a fresh session.
 - **Needs**: a choice by the user, one or more of:
   - Apply for Daybreak access for the OpenAI organization. That is an account matter, and the user's alone.
   - Send CVE-centred work (reproducing or controlling for a historical vulnerability's behaviour) to Claude Code
