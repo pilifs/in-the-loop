@@ -1,0 +1,236 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-064322-measure-mixed-lucene-wire-claims-on-both",
+  "title": "Measure mixed Lucene wire claims on both strict engines and stock JBMC",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m10s, peak 369.9 MiB (estimated 10m00s, 5.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-064322-measure-mixed-lucene-wire-claims-on-both.json",
+    "sha256": "1b760178b1170318135ae6c67f7136e165a6e0ec3948ca2e374ebf5714258bd4",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-064322-measure-mixed-lucene-wire-claims-on-both",
+      "title": "Measure mixed Lucene wire claims on both strict engines and stock JBMC",
+      "description": "Ask the before-change verifier about both original round trips, both mixed byte-order characterizations, a false identity claim, the Lucene 9 slice read and write frame, and both directions of VInt preservation. Compile the caller once, bind old and new definitions independently, reproduce the four observations in separate unmodified JVMs and run post-call false controls in standalone JBMC.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jbmc:standalone",
+        "jvm:wire-compatibility"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/wire_campaign.py"
+        ]
+      },
+      "expected": "Four separate-process cells, nine symbolic claim rows with literal results and nine stock reach controls. Preserve every refusal and unreproduced counterexample.",
+      "submitted": {
+        "at": "2026-11-24T06:43:22+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 22,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "10m",
+        "timeout": "45m"
+      },
+      "steps": [
+        {
+          "name": "Two-copy Lucene claims",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/wire_campaign.py opening",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/opening/wire"
+      ]
+    }
+  },
+  "sourceCommit": "758d391ef7b2d8f8313d171520ef2f437c858ab8",
+  "startedAt": "2026-11-24T06:46:57+00:00",
+  "finishedAt": "2026-11-24T06:51:37+00:00",
+  "wallSeconds": 280.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1574326,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 2700.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 600.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 387911680,
+    "wallSeconds": 70.2,
+    "cpuSeconds": 71.6,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.12
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 202.13,
+      "cpuSeconds": 202.496,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2295136256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "e98e204951b31750982f4deeee5024e17d973299c3f97bee7264392ea6bdeea0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-064322-measure-mixed-lucene-wire-claims-on-both/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 22s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Two-copy Lucene claims",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_campaign.py opening",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2700.0,
+      "cancelled": false,
+      "wallSeconds": 70.172,
+      "cpuSeconds": 71.644,
+      "cpuThrottledSeconds": 0.321,
+      "peakMemoryBytes": 387911680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-two-copy-lucene-claims.log",
+        "lines": 13,
+        "bytes": 570,
+        "sha256": "26b0619eb092a8a1b3af2f09fed712e5898b22d00fc3f3acb726c370eeae80bf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "8.11.0 8.11.0 33 01 02 03 04 55 01020304",
+        "8.11.0 9.0.0 33 01 02 03 04 55 04030201",
+        "9.0.0 8.11.0 33 04 03 02 01 55 04030201",
+        "9.0.0 9.0.0 33 04 03 02 01 55 01020304",
+        "W01 oldOld verified unverifiable SUCCESS",
+        "W01 oldNew unverifiable unverifiable FAILURE",
+        "W01 newOld unverifiable unverifiable FAILURE",
+        "W01 newNew unverifiable unverifiable FAILURE",
+        "W01 wrongIdentity unverifiable violation FAILURE",
+        "W02 writeFrame unverifiable unverifiable FAILURE",
+        "W02 readFrame unverifiable unverifiable FAILURE",
+        "W04 varOldNew verified unverifiable SUCCESS",
+        "W04 varNewOld verified unverifiable SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/opening/wire/executions.zip",
+      "change": "added",
+      "bytes": 645671,
+      "sha256": "d86fd52f2f915ac40248ad1f7969826d688d206a925aab8c4a553ed2f21fff6e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/wire/results.json.gz",
+      "change": "added",
+      "bytes": 5766,
+      "sha256": "78817245b554e67d3ffb98696446c4eda4464eb32b04a055924e5198f0296812",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T06:54:17+00:00",
+    "applied": [
+      "verification/beyond-jbmc/opening/wire/executions.zip",
+      "verification/beyond-jbmc/opening/wire/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "5ca0769a15b47ea7550b07e456b54fdcb0e09935",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/5ca0769a15b47ea7550b07e456b54fdcb0e09935/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T065137Z-482091da1d769c35",
+      "outputs": "20261124T065137Z-527147034c3733ca",
+      "diff": "20261124T065137Z-55455823c694d064"
+    }
+  }
+}

@@ -1,0 +1,226 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-063606-measure-standalone-stock-jbmc-on-the-exa",
+  "title": "Measure standalone stock JBMC on the exact 187 historical claims",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11m56s, peak 7.5 GiB (estimated 15m00s, 5.0 GiB); 2 output file(s) changed",
+  "attention": [
+    "step 1 (Historical stock targets and false controls) passed, but the kernel killed 3 process(es) in it at the memory limit"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-063606-measure-standalone-stock-jbmc-on-the-exa.json",
+    "sha256": "2eb40562e81f9f4873cff870f7b51278836b7fae0411e3a5b02dfac6d0145dfb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-063606-measure-standalone-stock-jbmc-on-the-exa",
+      "title": "Measure standalone stock JBMC on the exact 187 historical claims",
+      "description": "Run the 187 exception-aware standalone Java targets and their 187 post-call false controls on the original pinned programs. Relocate all classes of the old side on relational claims. Capture every property and replay each reconstructed target failure on a real Temurin JVM, independently against Reference.java where available. Use stock Ubuntu 24.04 JBMC 6.11.0, its packaged core models, full array bound 8, unwind 16 and the 120-second limit.",
+      "kind": "library",
+      "capabilities": [
+        "jbmc:standalone",
+        "jbmc:reachability",
+        "jvm:replay"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/stock_history.py"
+        ]
+      },
+      "expected": "187 rows with raw commands, assertion IDs, reach controls, costs and replay disposition. Solver refusal, incomplete unwinding or timeout is a measured outcome.",
+      "submitted": {
+        "at": "2026-11-24T06:36:06+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 21,
+      "requires": [
+        "java",
+        "javac",
+        "jbmc",
+        "patch"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "15m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "Historical stock targets and false controls",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/stock_history.py opening",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/opening/stock"
+      ]
+    }
+  },
+  "sourceCommit": "859d8c13e787d73c4edda6f7233101a55ddba16d",
+  "startedAt": "2026-11-24T06:40:28+00:00",
+  "finishedAt": "2026-11-24T06:52:32+00:00",
+  "wallSeconds": 724.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1574326,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 900.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 8053063680,
+    "wallSeconds": 716.8,
+    "cpuSeconds": 734.7,
+    "memoryOfEstimate": 1.5,
+    "durationOfEstimate": 0.8
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Historical stock targets and false controls",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/stock_history.py opening",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 716.796,
+      "cpuSeconds": 734.739,
+      "cpuThrottledSeconds": 2.605,
+      "peakMemoryBytes": 8053063680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 3,
+      "memoryHighEvents": 123,
+      "log": {
+        "path": "logs/1-historical-stock-targets-and-f.log",
+        "lines": 187,
+        "bytes": 7525,
+        "sha256": "7005cd2f053271689676323f15785a0d0148c89eb8e98f923a4ed0bd3e39209d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "conformance/toShort/1 SUCCESS FAILURE",
+        "conformance/fromLong/1 FAILURE FAILURE",
+        "conformance/nextChar/1 SUCCESS FAILURE",
+        "conformance/nextChar/2 FAILURE FAILURE",
+        "conformance/absolute/1 FAILURE FAILURE",
+        "conformance/increment/1 SUCCESS FAILURE",
+        "conformance/byteSum/1 SUCCESS FAILURE",
+        "conformance/byteSum/2 FAILURE FAILURE",
+        "conformance/leadingZeros/1 SUCCESS FAILURE",
+        "conformance/leadingZeros/2 FAILURE FAILURE",
+        "conformance/leadingZeros/3 FAILURE FAILURE",
+        "conformance/leadingZerosLong/1 SUCCESS FAILURE",
+        "conformance/leadingZerosLong/2 FAILURE FAILURE",
+        "real/midpoint/broken-property FAILURE FAILURE",
+        "real/bucket/broken-property FAILURE FAILURE",
+        "real/oddity/broken-property FAILURE FAILURE",
+        "real/checksum/broken-property FAILURE FAILURE",
+        "real/midpoint/fixed-property SUCCESS FAILURE",
+        "real/bucket/fixed-property SUCCESS FAILURE",
+        "real/oddity/fixed-property SUCCESS FAILURE",
+        "real/checksum/fixed-property SUCCESS FAILURE",
+        "real/midpoint/fix-confined SUCCESS FAILURE",
+        "real/midpoint/search-within-bound SUCCESS FAILURE",
+        "real/bucket/fix-confined FAILURE FAILURE",
+        "real/oddity/fix-confined SUCCESS FAILURE",
+        "real/checksum/fix-confined FAILURE FAILURE",
+        "held/saturating SUCCESS FAILURE",
+        "held/average/bits SUCCESS FAILURE",
+        "held/floor-mod/wide-modulus FAILURE FAILURE",
+        "held/ceil-div timeout FAILURE",
+        "held/lower-bound SUCCESS FAILURE",
+        "held/utf8-length SUCCESS FAILURE",
+        "held/reverse no property report FAILURE",
+        "held/prefix-sums SUCCESS FAILURE",
+        "held/overlap/meets SUCCESS FAILURE",
+        "held/overlap/length FAILURE FAILURE",
+        "held/average/unsigned-shift FAILURE FAILURE",
+        "held/floor-mod/jdk FAILURE FAILURE",
+        "example/141 SUCCESS FAILURE",
+        "example/142 no property report no property report"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/opening/stock/executions.zip",
+      "change": "added",
+      "bytes": 2490516,
+      "sha256": "a60a72c83cf03e1e4e23737078fc7300b1ecbe94ecca064434447533a75173e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/opening/stock/results.json.gz",
+      "change": "added",
+      "bytes": 34572,
+      "sha256": "30c853bb25da6e38f4aa84a9578c3da0a177a8a2d3f47d772bcf2b966c4493d6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T06:54:16+00:00",
+    "applied": [
+      "verification/beyond-jbmc/opening/stock/executions.zip",
+      "verification/beyond-jbmc/opening/stock/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T065232Z-164101cc948560ca",
+      "outputs": "20261124T065232Z-20519047af5daaa0",
+      "diff": "20261124T065232Z-2220917ac1f6a78a"
+    }
+  }
+}
