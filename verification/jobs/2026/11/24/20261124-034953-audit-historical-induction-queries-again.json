@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-034953-audit-historical-induction-queries-again",
+  "title": "Audit historical induction queries against both original Guava controls",
+  "description": "Replay the unmodified historical producer, Z3 and isolated Rust checker on the pinned release and the two registered faulty Java classes. Recover the exact frame experiment already archived, compare the missing return-query inventory with the pristine inventory, and check five fresh original JVM observations including equal stores and the empty release array.",
+  "kind": "library",
+  "capabilities": [
+    "array-induction",
+    "independent-java-proof"
+  ],
+  "links": {
+    "examples": [
+      "336"
+    ]
+  },
+  "expected": "The release is established. The two incorrect classes have checked original-entry witnesses and the comparison identifies the first missing or changed obligation.",
+  "submitted": {
+    "at": "2026-11-24T03:49:53+00:00",
+    "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "javap",
+    "python3",
+    "rustc",
+    "z3",
+    "setpriv"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Compare the original release through the normal adapter",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 336 --array-induction first-any-length --compare",
+      "cwd": "."
+    },
+    {
+      "name": "Check the frozen controls and compare the submitted queries",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_audit.py --output verification/kernel-recovery/historical.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/kernel-recovery/historical.json"
+  ],
+  "supersedes": "20261124-033453-audit-historical-induction-queries-again",
+  "revision": "b23efef26a97"
+}

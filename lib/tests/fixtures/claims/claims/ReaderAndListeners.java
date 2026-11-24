@@ -3,6 +3,9 @@ package claims;
 import java.beans.PropertyChangeSupport;
 import java.beans.VetoableChangeSupport;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -135,6 +138,18 @@ public final class ReaderAndListeners {
     }
 
     public static boolean wrong() throws IOException { return new StringReader("ab").read() == 'b'; }
+    public static boolean dataInput() throws IOException {
+        DataInputStream stream = new DataInputStream(new ByteArrayInputStream(new byte[]{-1, 7}));
+        byte[] frame = new byte[2];
+        stream.readFully(frame);
+        if (frame[0] != -1 || frame[1] != 7) return false;
+        try {
+            stream.readFully(frame);
+            return false;
+        } catch (EOFException expected) {
+            return frame[0] == -1 && frame[1] == 7;
+        }
+    }
     public static boolean propertyChanges(boolean choose) {
         String key = "test.reader.paper";
         System.clearProperty(key);
@@ -172,6 +187,7 @@ public final class ReaderAndListeners {
     public static boolean unknownProperty() { return System.getProperty("test.reader.initial") == null; }
     public static boolean invalidRange() { "ab".getChars(0, 2, new char[1], 0); return true; }
     public static void main(String[] args) throws IOException {
+        if (!dataInput()) throw new AssertionError();
         if (!queueConstruction(false) || !queueConstruction(true) || !propertyEquality()) throw new AssertionError();
         if (!outputSlices(false) || !outputSlices(true) || wrongSnapshot()) throw new AssertionError();
         if (!chars(true) || !chars(false) || !buffered() || !listeners(true) || !listeners(false) || !mirrors() || !beans() || !cursor() || !propertyChanges(true) || !propertyChanges(false) || !nestedLock() || wrong()) throw new AssertionError();

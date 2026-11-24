@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-033703-certify-ordinary-native-verdicts-and-rep",
+  "title": "Certify ordinary native verdicts and replay their SAT evidence",
+  "description": "Run Guava 336, both Jackson 393 claims, and UTF-16 395 on the normal example route with certification off and on. Recheck the held prefix-sums result on its pinned class files. Bind every native pass and attempt, validate the actual SAT models, check LRAT for every UNSAT in fresh processes, and withhold assurance for missing, duplicated, swapped and transplanted evidence. Measure wall time, generation, checking and retained size.",
+  "kind": "library",
+  "capabilities": [
+    "sat-certificate",
+    "jvmcontract:transcript",
+    "jvmcontract:prove",
+    "jvm:counterexample"
+  ],
+  "links": {
+    "examples": [
+      "336",
+      "393",
+      "395"
+    ]
+  },
+  "expected": "The Guava and prefix-sums runs recheck 8 and 10 UNSAT calls, Jackson retains the classified positive and original JVM counterexample, and UTF-16 records its solver-free proof. All pass-level attempts reconcile, all negative controls withhold assurance, and both ordinary and certified receipts are retained.",
+  "submitted": {
+    "at": "2026-11-24T03:37:03+00:00",
+    "session": "01a20b98-bfb6-7981-b527-1699b229ddce"
+  },
+  "requires": [
+    "jvmcontract",
+    "python3",
+    "java",
+    "javac",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Run and challenge five complete native verdicts",
+      "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --output verification/trusted-kernel-recovery/lrat",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/trusted-kernel-recovery/lrat"
+  ]
+}

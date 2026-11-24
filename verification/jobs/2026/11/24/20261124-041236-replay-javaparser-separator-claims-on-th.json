@@ -1,0 +1,48 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-041236-replay-javaparser-separator-claims-on-th",
+  "title": "Replay JavaParser separator claims on the clean recovery revision",
+  "description": "VF-060 identified a conflicted source export used by the previous JavaParser run. Repeat the eight original roots, the separator read and subsequent erroneous class behavior, and the bounded UTF-16 separator family on the recorded conflict-free revision; retain the old result separately.",
+  "kind": "real-world",
+  "capabilities": [
+    "receiver-construction",
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "expected": "Source-bound ordinary and conditional verdicts with original JVM outcomes, including all registered caller inputs.",
+  "submitted": {
+    "at": "2026-11-24T04:12:36+00:00",
+    "session": "01a20bbf-66e7-7ad0-9353-1fdb338d0b28"
+  },
+  "revision": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "13m",
+    "timeout": "32m",
+    "notes": "The earlier transfer took thirteen minutes and 390 MiB on the conflicted export."
+  },
+  "steps": [
+    {
+      "name": "Check the original parent and fix",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py javaparser --output verification/receiver-discovery/recovery/javaparser/clean-ordinary",
+      "cwd": "."
+    },
+    {
+      "name": "Check missing, fixed and arbitrary bounded separators",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py javaparser --output verification/receiver-discovery/recovery/javaparser/clean-profiles",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/recovery/javaparser/clean-ordinary",
+    "verification/receiver-discovery/recovery/javaparser/clean-profiles"
+  ]
+}

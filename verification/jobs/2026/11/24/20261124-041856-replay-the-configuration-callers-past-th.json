@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-041856-replay-the-configuration-callers-past-th",
+  "title": "Replay the Configuration callers past the lookup delimiter",
+  "description": "On the prior checker an explicitly installed table reached DefaultPrefixLookupsHolder.parseLookups in the original JSON deployment and stopped at String.split, PC 11. Run JSON and then YAML on the same new checker over the four registered inputs. Compare an invalid own name, a list containing only delimiters, an inherited name, and an empty table. Retain original JVM and native results, and bind the actual selector and dependency classes.",
+  "kind": "real-world",
+  "capabilities": [
+    "receiver-construction",
+    "jvmcontract:prove",
+    "original-jvm-replay"
+  ],
+  "links": {},
+  "expected": "Each side returns four input observations per setting, and any native positive agrees with every original JVM observation; each open case records its first outstanding operation.",
+  "submitted": {
+    "at": "2026-11-24T04:18:56+00:00",
+    "session": "01a20bbf-66e7-7ad0-9353-1fdb338d0b28"
+  },
+  "requires": [
+    "jvmcontract",
+    "javac",
+    "java"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "2m",
+    "timeout": "16m"
+  },
+  "steps": [
+    {
+      "name": "Check commons-configuration-565",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-565 --output verification/receiver-discovery/recovery/parsed-property",
+      "cwd": "."
+    },
+    {
+      "name": "Check commons-configuration-601",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-601 --output verification/receiver-discovery/recovery/parsed-property",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/recovery/parsed-property"
+  ]
+}

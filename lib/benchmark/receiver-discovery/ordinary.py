@@ -63,7 +63,7 @@ def run_one(checker, cp, target, guard, predicate, bounds, tmp):
     return row
 
 
-def measure(family):
+def measure(family, out=None):
     frozen = read(RESULTS / "scope.json")
     checker = Path(os.environ["JVMCONTRACT"]).resolve()
     result = {
@@ -113,7 +113,7 @@ def measure(family):
                 measured[label] = data
                 print(side, label, row["verdict"], flush=True)
             result["sides"][side] = measured
-    out = RESULTS / "transfer" / (family + "-ordinary-native")
+    out = out or RESULTS / "transfer" / (family + "-ordinary-native")
     out.mkdir(parents=True, exist_ok=True)
     write(out / "measurement.json", result)
 
@@ -121,4 +121,6 @@ def measure(family):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("family", choices=["javaparser", "xz"])
-    measure(p.parse_args().family)
+    p.add_argument("--output", type=Path, help="write this repeat to a separate receipt directory")
+    args = p.parse_args()
+    measure(args.family, args.output)

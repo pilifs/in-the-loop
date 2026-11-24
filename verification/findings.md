@@ -63,69 +63,6 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Closes when**: a brief added while no run is going starts without anyone being asked to, and the arrangement
  is described in the skill and tested.
 
-### VF-058: receiver-construction's second cycle was stopped by the filter, and its named frontiers are open
-
-- **Status**: open. The work was stopped by OpenAI's cybersecurity filter, not by a plateau and not by a decision that it was done.
-- **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the single-agent run `receiver-construction` (Astra 6.2 at max effort, session `3394e768`).
-- **Found**:
-  - **Why it is open:**
-    - At 00:49 UTC the watcher decided to continue (decision single-receiver-construction-D001), for "one more cycle" on the frontiers below.
-    - The filter refused cycle 2 at 00:54, 2.8 minutes in, with nothing committed. This is the second stop in VF-046.
-    - The watcher then handed the run over as finished after cycle 1, merged as `oqmtltol`, rather than retry in a fresh session.
-  - **What cycle 1 decided:**
-    - JavaParser: 2 of 8 (the empty-root counterexamples).
-    - Guava: 8 of 8, including the complete 137,257-string client language.
-    - Commons Lang: 6 of 6.
-    - JGraphT: its 25-graph, 150-transition audit.
-    - The three-worker schedule enumeration.
-    - Commons CSV: kept 4 of 4.
-    - Native kept 57/60 and integrated JBMC 24/60 on the preceding comparison.
-  - **The named frontiers** (from the decision and "Comparator coverage and next investigation" in `llm-dlc/loops/receiver-construction-and-property-discovery-results.md`):
-    1. **Commons Configuration #565 and #601:** both upgrades stop at `System.getProperties()`. The page names the next experiment:
-       - start at the actual `Properties` object it returns;
-       - check consistent per-key presence, value and identity through a public caller;
-       - rerun JSON and YAML at their four frozen observations, and isolate the two live trees.
-
-       The frontier's measurement is `verification/receiver-discovery/qualification/commons-configuration-565/measurement.json`.
-    2. **JavaParser:** 6 of its 8 ordinary strict-native claims are open. The page names the controls that separate a property-state witness from a proof over every process state: JavaParser's missing and arbitrary separator values, and XZ's cache-selection states.
-    3. **The historical receiver cohort:** all 34 unrestricted overloads are open. Two caller pairs were proved on both versions.
-    4. **Native scheduling:** the first remaining instruction is the worker's `Thread` constructor. That is VF-056's gap, tracked there.
-- **A hazard found on 2026-11-24.** The receiver campaign's Maven cache lives under an old Codex session's scratch folder, `~/.cache/in-the-loop/agent-tmp/0cea9d0e-…/external-upgrade-shared-maven/repository`. The area's `prepared.json` files name it by absolute path. On 2026-11-23 the watcher deleted most of that folder as a cleanup, judging by its top-level date, and 1,025 classpath entries went missing. The trusted-kernel-and-receiver-recovery setup restored it by hard links from the receiver setup's snapshot (586 files, 0 missing, no new disk). Until it moves, no `agent-tmp` folder may be cleaned without first checking that nothing names it, for example `rg -l 'agent-tmp/<id>' examples verification lib llm-dlc`. The lasting fix is to move the cache to a stable path under `~/.cache/in-the-loop/` and update the references.
-- **Needs**: a follow-up Astra run in a fresh Codex session (VF-046's rule): either this brief continued with its continue message, or a short fast-follow brief from the user. The setup is done and its caches are under `~/.cache/in-the-loop/receiver-construction`, so no new setup pass is needed unless they are cleaned.
-- **Progress, 2026-11-24 (trusted-kernel-and-receiver-recovery, one cycle):**
-  - All 16 stock Configuration observations matched, and an admitted property prestate refuted all four JSON and YAML caller-side guarantees.
-  - With JVM witnesses, coverage rose from 6/46 to 10/46 sides and from 3/23 to 5/23 pairs.
-  - Strict native is unchanged, at 4/46 sides, 2/23 pairs and 0/34 unrestricted overloads. That remainder is still open. See `lib/benchmark/receiver-discovery/recovery.md`.
-- **Tracked in**: this finding. Evidence: the results page above, `verification/receiver-discovery/results.json` (check with `python3 -B lib/benchmark/receiver-discovery/results.py --check`), and the decision record `llm-dlc/decisions/single-receiver-construction.jsonl`.
-- **Closes when**: each frontier is decided, or is shown to need something out of scope and recorded as such. Frontier 4 closes with VF-056.
-
-### VF-057: the trusted-kernel investment decision still lacks its corrupted-producer control
-
-- **Status**: closed 2026-11-24. The queued run trusted-kernel-and-receiver-recovery (`-2`, session `fbbe8930`, decision single-trusted-kernel-and-receiver-recovery-2-D001) built its rollout decision on this control. It recommends expanding the opt-in Rust checker for array methods, because the checker caught the false heap-frame theorem that the historical producer accepted, named the store at PC 25, and predicted the JVM's `[7]` to `[0]` change. The decision record is `llm-dlc/loops/trusted-kernel-and-receiver-recovery-results.md`. Its own caveat: only the frame trial used a source-mutated producer. In the wrong-miss experiment, the omitted exit was tested in the SMT inventory.
-- **Measured on 2026-11-24 by change-verification:** job `20261124-014943-replay-the-guava-change-plan-nodes-and-i`, step 6 (`lib/benchmark/trusted-kernel/historical_frame_control.py`), record `lib/benchmark/trusted-kernel/historical-frame-control.json`. The job injected one wrong conclusion into a private copy of the recorded historical Python/Z3 rule, with the rule digests checked against `baseline/336.json`, and ran it on the heap-writing Guava `indexOf` control:
-  - **The genuine historical producer** leaves the frame obligation "preserve the input heap" `unresolved` (sat where unsat was expected).
-  - **The faulted producer** marks it `established`: a false acceptance.
-  - **The independent checker** `refuted` the faulted result with a checked witness: on `[7]` with target 7, the method returns 0 and leaves `[0]`, and the original JVM reproduces it.
-
-  So a producer error that causes acceptance in the historical route has lost that ability at the independent checker, which is the brief's criterion. trusted-kernel-and-receiver-recovery should start from this receipt.
-- **Raised**: 2026-11-23 by the watcher, at the end of the trusted-kernel run (Astra, 2 cycles; decision single-trusted-kernel-D001; the run's second cycle ended on a stale working copy after its turn had finished, with its work committed and landed as `kpkqomum`).
-- **Found**:
-  - **What the run established, all checked from original class bytes by the independent Rust checker in a fresh process:**
-    - Guava `Ints.indexOf` and `Longs.indexOf`, for every legal length and signed target: each terminates, returns the first match or -1, and preserves the heap. Certificates are about 1.1 KB, with a median check of about 1.2 ms. The `Longs` transfer took 49 net lines on the frozen int checker.
-    - Temurin 21 `Arrays.fill` writes exactly the requested interval for every valid `int[]` range (37 obligations, 1,197 bytes, 1.24 ms).
-    - Example 337's caller is correct under aliasing (51 obligations).
-  - **What else held:**
-    - The extra-write caller is refuted (shared `[11]`, empty range: it returns 7), and the JVM confirms it.
-    - All six behavioural mutants gave checked counterexamples.
-    - Lean proved the scalar identity.
-    - LRAT certified all 18 observed UNSAT calls.
-    - Both genuine historical solver failures reproduced at their witnessed inputs.
-  - **The gap.** The brief makes "advance the semantic checker" conditional on, among other things, "the team can identify a producer error that has lost the ability to cause acceptance". Fault injection was run only on the experimental issuer. How the historical producer and its replay respond to a deliberately corrupted producer was never measured, and the run's own report names it as the one open experiment.
-  - **The run's recommendation:** advance the semantic checker, measuring reuse next on the JDK `long[]` overload of `Arrays.fill`. Because of the gap, that recommendation rests on the issuer's fault injection, not on the historical producer.
-- **Needs**: the corrupted-producer control. Inject a fault into the historical producer, for example a wrong loop invariant, a dropped obligation or a flipped bound, and show that the independent checker refuses the resulting certificate where the producer's own replay would accept it. Record this in `lib/benchmark/trusted-kernel/evidence/cases.json`. Only then is the investment decision complete as the brief defines it.
-- **Tracked in**: this finding. Evidence: `lib/benchmark/trusted-kernel/README.md` (decision, assumptions, replay commands), `lib/benchmark/trusted-kernel/evidence/cases.json` (111-case table), `llm-dlc/loops/in-the-loop-trusted-kernel-experiment-brief.md`.
-- **Closes when**: the control has run, and the decision record says whether a producer error has lost the ability to cause acceptance.
-
 ### VF-056: three ordinary monitor claims stop at the platform `Thread` constructor, left by jbmc-java-semantics-gap
 
 - **Status**: open. Deferred by the user to pick up later; nothing in the queue waits on it.
@@ -1207,6 +1144,65 @@ that did not execute can also cause refusal.
   through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
 
 ## Decided and closed
+
+### VF-058: ordinary Configuration startup and the remaining receiver frontiers
+
+- **Status**: decided for this campaign on 2026-11-24. A physical JVM refuted all four original JSON and YAML caller-side guarantees at a permitted process prestate. The recovery report assigns the remaining strict-native and unrestricted-overload questions to their respective models. [Receiver evidence](../lib/benchmark/receiver-discovery/recovery.md)
+- **Raised**: 2026-11-24 by the watcher, at the user's request (relayed by the advisor), after the single-agent run `receiver-construction` (Astra 6.2 at max effort, session `3394e768`).
+- **Found**:
+  - **Why it is open:**
+    - At 00:49 UTC the watcher decided to continue (decision single-receiver-construction-D001), for "one more cycle" on the frontiers below.
+    - The filter refused cycle 2 at 00:54, 2.8 minutes in, with nothing committed. This is the second stop in VF-046.
+    - The watcher then handed the run over as finished after cycle 1, merged as `oqmtltol`, rather than retry in a fresh session.
+  - **What cycle 1 decided:**
+    - JavaParser: 2 of 8 (the empty-root counterexamples).
+    - Guava: 8 of 8, including the complete 137,257-string client language.
+    - Commons Lang: 6 of 6.
+    - JGraphT: its 25-graph, 150-transition audit.
+    - The three-worker schedule enumeration.
+    - Commons CSV: kept 4 of 4.
+    - Native kept 57/60 and integrated JBMC 24/60 on the preceding comparison.
+  - **The named frontiers** (from the decision and "Comparator coverage and next investigation" in `llm-dlc/loops/receiver-construction-and-property-discovery-results.md`):
+    1. **Commons Configuration #565 and #601:** both upgrades stop at `System.getProperties()`. The page names the next experiment:
+       - start at the actual `Properties` object it returns;
+       - check consistent per-key presence, value and identity through a public caller;
+       - rerun JSON and YAML at their four frozen observations, and isolate the two live trees.
+
+       The frontier's measurement is `verification/receiver-discovery/qualification/commons-configuration-565/measurement.json`.
+    2. **JavaParser:** 6 of its 8 ordinary strict-native claims are open. The page names the controls that separate a property-state witness from a proof over every process state: JavaParser's missing and arbitrary separator values, and XZ's cache-selection states.
+    3. **The historical receiver cohort:** all 34 unrestricted overloads are open. Two caller pairs were proved on both versions.
+    4. **Native scheduling:** the first remaining instruction is the worker's `Thread` constructor. That is VF-056's gap, tracked there.
+- **A hazard found on 2026-11-24.** The receiver campaign's Maven cache lives under an old Codex session's scratch folder, `~/.cache/in-the-loop/agent-tmp/0cea9d0e-…/external-upgrade-shared-maven/repository`. The area's `prepared.json` files name it by absolute path. On 2026-11-23 the watcher deleted most of that folder as a cleanup, judging by its top-level date, and 1,025 classpath entries went missing. The trusted-kernel-and-receiver-recovery setup restored it by hard links from the receiver setup's snapshot (586 files, 0 missing, no new disk). Until it moves, no `agent-tmp` folder may be cleaned without first checking that nothing names it, for example `rg -l 'agent-tmp/<id>' examples verification lib llm-dlc`. The lasting fix is to move the cache to a stable path under `~/.cache/in-the-loop/` and update the references.
+- **Configuration decision**: the ordinary predicate admits setting a property before first use. An invalid name on the installed table made selector 0 return false on all four deployments. The stock setting produced all sixteen expected values, and two fresh configuration trees remained independent in both read orders. Strict native proved the explicit install, replace, inherit and remove sequence. Its ordinary caller still needs a model for the pre-existing system table. [Original caller measurements and clean-source jobs](receiver-discovery/recovery/results.json)
+- **Remaining owners**: the native JVM startup model owns arbitrary separator values and their exceptional initialization in JavaParser. The XZ frame path needs the security-provider lookup in `MessageDigest.getInstance` after the stream and map constructors. The receiver campaign owns the validated domains for the 34 unrestricted overload pairs. The three ordinary thread claims remain with VF-056.
+- **Cohort**: strict native decides 4/46 sides and 2/23 pairs. Adding original JVM witnesses at admitted process states raises the count to 10/46 and 5/23, including the earlier XZ pair. All 34 unrestricted paired overloads remain open. [Recovery report](../llm-dlc/loops/trusted-kernel-and-receiver-recovery-results.md)
+
+### VF-057: historical induction can accept a false heap frame
+
+- **Status**: decided. Advance the opt-in independent check for the qualified first-match family. The historical producer's choice of the frame formula has lost the power to establish that theorem at the independent entry. The Rust bytecode semantics, initialized-class execution model and caller's artifact and theorem binding remain trusted.
+- **Measured on 2026-11-24 by change-verification:** job `20261124-014943-replay-the-guava-change-plan-nodes-and-i`, step 6 (`lib/benchmark/trusted-kernel/historical_frame_control.py`), record `lib/benchmark/trusted-kernel/historical-frame-control.json`. The job injected one wrong conclusion into a private copy of the recorded historical Python/Z3 rule, with the rule digests checked against `baseline/336.json`, and ran it on the heap-writing Guava `indexOf` control:
+  - **The genuine historical producer** leaves the frame obligation "preserve the input heap" `unresolved` (sat where unsat was expected).
+  - **The faulted producer** marks it `established`: a false acceptance.
+  - **The independent checker** `refuted` the faulted result with a checked witness: on `[7]` with target 7, the method returns 0 and leaves `[0]`, and the original JVM reproduces it.
+
+  So a producer error that causes acceptance in the historical route has lost that ability at the independent checker, which is the brief's criterion. trusted-kernel-and-receiver-recovery should start from this receipt.
+- **Raised**: 2026-11-23 by the watcher, at the end of the trusted-kernel run (Astra, 2 cycles; decision single-trusted-kernel-D001; the run's second cycle ended on a stale working copy after its turn had finished, with its work committed and landed as `kpkqomum`).
+- **Found**:
+  - **What the run established, all checked from original class bytes by the independent Rust checker in a fresh process:**
+    - Guava `Ints.indexOf` and `Longs.indexOf`, for every legal length and signed target: each terminates, returns the first match or -1, and preserves the heap. Certificates are about 1.1 KB, with a median check of about 1.2 ms. The `Longs` transfer took 49 net lines on the frozen int checker.
+    - Temurin 21 `Arrays.fill` writes exactly the requested interval for every valid `int[]` range (37 obligations, 1,197 bytes, 1.24 ms).
+    - Example 337's caller is correct under aliasing (51 obligations).
+  - **What else held:**
+    - The extra-write caller is refuted (shared `[11]`, empty range: it returns 7), and the JVM confirms it.
+    - All six behavioural mutants gave checked counterexamples.
+    - Lean proved the scalar identity.
+    - LRAT certified all 18 observed UNSAT calls.
+    - Both genuine historical solver failures reproduced at their witnessed inputs.
+  - **The gap.** The brief makes "advance the semantic checker" conditional on, among other things, "the team can identify a producer error that has lost the ability to cause acceptance". Fault injection was run only on the experimental issuer. How the historical producer and its replay respond to a deliberately corrupted producer was never measured, and the run's own report names it as the one open experiment.
+  - **The run's recommendation:** advance the semantic checker, measuring reuse next on the JDK `long[]` overload of `Arrays.fill`. Because of the gap, that recommendation rests on the issuer's fault injection, not on the historical producer.
+- **Decision evidence**: the case table now includes the historical false acceptance and the independent refutation as two routes for the same external request. Z3 correctly answered the submitted formula. A retained pristine receipt detected drift in the status, obligations and formula digest. Regeneration under the same producer repeated the erroneous result. The independent detector was the frame rule at helper store PC 25, corroborated by a physical JVM. [Managed comparison](../lib/benchmark/trusted-kernel/historical-frame-control.json) · [Case table](../lib/benchmark/trusted-kernel/evidence/cases.json)
+- **Tracked in**: this finding and the [kernel decision and replay commands](../lib/benchmark/trusted-kernel/README.md).
+- **Resolution**: the decision and the fresh original-adapter comparisons are recorded in the [recovery report](../llm-dlc/loops/trusted-kernel-and-receiver-recovery-results.md). The omitted-exit experiment has a separate evidence scope in that report.
 
 ### VF-034: the default test run at `xunroyyopkuq` (the prove-setup merge) failed three Rust tests, twice
 

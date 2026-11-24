@@ -9,6 +9,7 @@ import tarfile
 from prepare import HERE, digest
 from recheck_saved import snapshot_sources
 from frame_witness import FILL, Z3, guava_record, original_scope, witness_query
+from frozen_range import historical_files, historical_manifest
 
 EV = HERE / "evidence"
 
@@ -26,6 +27,40 @@ def core_version():
     full = read(EV / "baseline/336.json")["freshResult"]["rules"]["files"]
     core = {k: v for k, v in full.items() if k.startswith("lib/python/")}
     return digest(json.dumps(core, sort_keys=True, separators=(",", ":")).encode())
+
+
+def historical_frame_fault(case):
+    """Retain the result of the fixed historical trial alongside the original comparison rows."""
+    path = HERE / "historical-frame-control.json"
+    job = "20261124-014943-replay-the-guava-change-plan-nodes-and-i"
+    root = HERE.parents[2]
+    receipt = read(root / "verification/results/2026/11/24" / job / "result.json")
+    output, = (o for o in receipt["outputs"] if o["path"] == path.relative_to(root).as_posix())
+    require(receipt["status"] == "passed" and output["sha256"] == digest(path.read_bytes()), job)
+    r = read(path)
+    original = guava_record()
+    independent = r["independent"]
+    genuine, trial = r["genuine"], r["faulty"]
+    require(r["classSha256"] == original["classSha256"] and r["requestSha256"] == original["requestSha256"]
+            and genuine["formulaSha256"] == original["unchangedProducer"]["formulaSha256"]
+            and r["solver"]["sha256"] == Z3 and genuine["frame"]["obtained"] == "sat"
+            and trial["frame"] == {**genuine["frame"], "obtained": "unsat"}
+            and independent["checkerSha256"] == original["checkerVersion"]
+            and independent["certificateSha256"] == original["certificateSha256"]
+            and independent["witness"] == original["outcome"]
+            and independent["originalJvm"] == original["originalJvm"], "historical frame comparison")
+    require(r["replay"]["againstGenuineProof"] == ["status", "obligations", "certificateSha256"]
+            and r["replay"]["againstRegeneratedFaultyProof"] == [], "historical frame receipt comparison")
+    for route, version, expected, actual, reason in [
+        ("Historical Python/Z3 with frame fault", r["producerSource"]["faulty"], "established",
+         trial["disposition"], {"interpretation": "false acceptance", "solver": trial["frame"],
+                                "smtSha256": trial["formulaSha256"], "comparison": r["replay"]}),
+        ("Rust on historical frame control", independent["checkerSha256"], "refuted",
+         independent["disposition"], {"witness": independent["witness"], "jvm": independent["originalJvm"],
+                                      "certificateSha256": independent["certificateSha256"]}),
+    ]:
+        case(route, r["classSha256"], r["requestSha256"], "historical-producer-frame", version,
+             expected, actual, reason, "../historical-frame-control.json")
 
 
 def job_ledger():
@@ -305,8 +340,9 @@ def report():
     transfer = read(EV / rel)
     version = transfer["checker"]["binarySha256"]
     require(transfer["previousGuavaCasesReplayed"] == 18, "range checker Guava regressions")
+    frozen_sources = historical_files()
     for name, sha in transfer["consumerSources"].items():
-        require(digest((HERE / name).read_bytes()) == sha, "range checker source " + name)
+        require(digest(frozen_sources[name]) == sha, "range checker source " + name)
     rows = {r["control"]: r for r in transfer["cases"]}
     require(len(rows) == len(transfer["cases"]) == 14, "range case inventory")
     for control, r in rows.items():
@@ -426,6 +462,7 @@ def report():
                 {"obligation": name, "scope": idx, "historicalStatus": r["historicalStatus"]},
                 rel,
             )
+    historical_frame_fault(case)
     keys = {
         (
             r["route"],
@@ -447,21 +484,11 @@ def report():
         ),
         "native counters",
     )
-    files = [
-        p
-        for folder in (HERE / "inputs", HERE / "requests", EV)
-        for p in folder.rglob("*")
-        if p.is_file() and p != EV / "cases.json"
-    ]
-    files.extend(sorted(HERE.rglob("*.rs")))
-    files.extend([HERE / "Scalar.lean", HERE / "protocol.md", HERE / "meter.c"])
-    files.extend(
-        HERE / name for name in ("replay.py", "range_qualification.py", "range_certificate.py", "frame_witness.py")
-    )
-    manifest = {
-        p.relative_to(HERE).as_posix(): {"sha256": digest(p.read_bytes()), "bytes": p.stat().st_size}
-        for p in sorted(files)
-    }
+    manifest = {}
+    for name, expected in sorted(historical_manifest().items(), key=lambda item: Path(item[0])):
+        data = frozen_sources[name] if name in frozen_sources else (HERE / name).read_bytes()
+        manifest[name] = {"sha256": digest(data), "bytes": len(data)}
+        require(manifest[name] == expected, "historical evidence " + name)
     return {
         "schema": "trusted-kernel-cases/v1",
         "bundle": manifest,

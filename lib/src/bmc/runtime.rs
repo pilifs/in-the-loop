@@ -182,7 +182,22 @@ pub fn property_call(owner: &str, name: &str, descriptor: &str) -> bool {
     const ONE: &str = "(Ljava/lang/String;)Ljava/lang/String;";
     const TWO: &str = "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;";
     owner == "java/lang/System" && matches!((name, descriptor),
-        ("getProperty" | "clearProperty", ONE) | ("getProperty" | "setProperty", TWO))
+        ("getProperty" | "clearProperty", ONE) | ("getProperty" | "setProperty", TWO)
+        | ("getProperties", "()Ljava/util/Properties;") | ("setProperties", "(Ljava/util/Properties;)V"))
+}
+
+pub(crate) const LIVE_TABLE: &str = "<JVM.installedProperties>";
+
+/// On the qualified image System checks the key and permissions, then invokes one of
+/// these methods on the installed table. The two writes cast the returned Object to String.
+pub(crate) fn properties_delegate(name: &str, arity: usize) -> Option<(&'static str, &'static str, bool)> {
+    Some(match (name, arity) {
+        ("getProperty", 1) => ("getProperty", "(Ljava/lang/String;)Ljava/lang/String;", false),
+        ("getProperty", 2) => ("getProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", false),
+        ("setProperty", 2) => ("setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;", true),
+        ("clearProperty", 1) => ("remove", "(Ljava/lang/Object;)Ljava/lang/Object;", true),
+        _ => return None,
+    })
 }
 
 pub const REENTRANT_LOCK: &str = "java/util/concurrent/locks/ReentrantLock";
@@ -444,10 +459,47 @@ impl Engine<'_> {
     /// (possibly null). Application code may ignore the old value on its first
     /// write. An unobserved initial setting never becomes an invented String.
     fn property_call(&mut self, path: &mut Path, name: &str, args: &[Val]) -> Option<Step> {
+        let table_slot = (LIVE_TABLE.to_owned(), "current".to_owned());
+        if name == "setProperties" {
+            let [Val::R(Some(table))] = args else { return None };
+            let object = &path.objects[*table];
+            if object.class != "java/util/Properties" || !object.fields.contains_key(super::map_views::PROPERTIES_IMAGE)
+                || !self.cp.system_properties_image() { return None; }
+            if let Err(stop) = self.keeps(path, None, "replaces the JVM system properties") { return Some(Err(stop)); }
+            path.statics.insert(table_slot, Val::R(Some(*table)));
+            self.assumed.insert("the single-threaded JVM has no active SecurityManager during system property access".into());
+            self.advance(path);
+            return Some(Ok(None));
+        }
+        if name == "getProperties" {
+            // An ambient table can have arbitrary entries, aliases, defaults, and an overriding class.
+            let table = path.statics.get(&table_slot)?.clone();
+            if let Err(stop) = self.reads(path, || "reads the installed JVM properties object".into()) { return Some(Err(stop)); }
+            self.push(path, table);
+            self.advance(path);
+            return Some(Ok(None));
+        }
         let Val::R(key) = args.first()? else { return None };
         let key = (*key)?;
         let units = self.constant_units(path, key)?;
         if units.is_empty() { return None; }
+        if let Some(table) = path.statics.get(&table_slot) {
+            let Val::R(Some(table)) = table else { return None };
+            let table = *table;
+            let (member, descriptor, write) = properties_delegate(name, args.len())?;
+            let permission = if write { self.keeps(path, None, "changes the installed JVM properties") }
+                else { self.reads(path, || "reads the installed JVM properties".into()) };
+            if let Err(stop) = permission { return Some(Err(stop)); }
+            let (class, method) = self.cp.properties_method("java/util/Properties", "java/util/Properties", member, descriptor, false)?;
+            if write {
+                let caller = path.frames.last_mut()?;
+                if caller.lambda_return != LambdaReturn::Pass { return None; }
+                caller.lambda_return = LambdaReturn::Adapt(Type::object("java/lang/Object"), Type::object(STRING));
+            }
+            let mut full = vec![Val::R(Some(table))];
+            full.extend_from_slice(args);
+            return Some(self.enter_method(path, "java/util/Properties", class, method, full));
+        }
         let slot = ("<JVM.systemProperties>".to_owned(), String::from_utf16(&units).ok()?);
         let previous = path.statics.get(&slot).cloned();
         let result = if name == "getProperty" {
@@ -1046,7 +1098,7 @@ impl Engine<'_> {
     /// `Class.forName(name, false, loader)` and `Logger.getLogger(name)`: see the module's notes. `None` where
     /// the call stays the JDK's.
     pub(super) fn runtime_static(&mut self, path: &mut Path, owner: &str, name: &str, args: &[Val]) -> Option<Step> {
-        if owner == "java/lang/System" && matches!(name, "getProperty" | "setProperty" | "clearProperty") {
+        if owner == "java/lang/System" && matches!(name, "getProperty" | "setProperty" | "clearProperty" | "getProperties" | "setProperties") {
             return self.property_call(path, name, args);
         }
         match (owner, name, args) {

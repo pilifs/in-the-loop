@@ -7,7 +7,7 @@ use super::*;
 pub(super) const IMAGE: &str = "<JDK.HashMap>";
 const MAP: &str = "java/util/HashMap";
 pub(super) const CONCURRENT_IMAGE: &str = "<JDK.ConcurrentHashMap>";
-const PROPERTIES_IMAGE: &str = "<JDK.Properties>";
+pub(super) const PROPERTIES_IMAGE: &str = "<JDK.Properties>";
 
 impl Engine<'_> {
     /// In a single-threaded JDK map with no counter cells the first baseCount CAS
@@ -99,6 +99,13 @@ impl Engine<'_> {
             && ((image_caller && descriptor == "(IF)V" && path.frames.last()?.class.name == "java/util/HashSet")
                 || (descriptor == "()V" && self.gap_mode == GapMode::Strict && self.previous.is_none()
                     && self.contracts.is_empty() && self.cp.linked_map_image()));
+        // A fieldless direct subclass uses the same JDK map layout. Its virtual overrides
+        // still dispatch on the original application class, including removeEldestEntry.
+        let linked_subclass = constructor && owner == "java/util/LinkedHashMap" && descriptor == "(IFZ)V"
+            && self.gap_mode == GapMode::Strict && self.previous.is_none() && self.contracts.is_empty()
+            && !path.objects[o].given && !path.objects[o].assumed && !path.objects[o].unknown
+            && self.cp.application(class).ok().flatten().is_some_and(|cf| cf.super_class.as_deref() == Some(owner)
+                && cf.fields.iter().all(|f| f.is_static())) && self.cp.linked_map_image();
         let new_set = constructor && !path.objects[o].given && !path.objects[o].assumed && !path.objects[o].unknown
             && self.gap_mode == GapMode::Strict && matches!(class.as_str(), "java/util/HashSet" | "java/util/LinkedHashSet")
             && owner == class && matches!(descriptor, "()V" | "(I)V" | "(Ljava/util/Collection;)V");
@@ -106,8 +113,16 @@ impl Engine<'_> {
         // The Commons Collections view itself extends AbstractSet. These two JDK constructors
         // just chain to Object; their actual bodies run on the application's receiver as well.
         let base = constructor && descriptor == "()V" && matches!(owner, "java/util/AbstractCollection" | "java/util/AbstractSet" | "java/util/AbstractMap");
-        if !(marked || new_map || new_linked_map || new_set || nested || base) { return None; }
-        let lookup = if special { owner } else { class.as_str() };
+        if !(marked || new_map || new_linked_map || linked_subclass || new_set || nested || base) { return None; }
+        let implementation;
+        let lookup = if special { owner } else if marked && self.cp.is_application(class) {
+            let Some((cf, _)) = self.cp.find_method(class, name, descriptor) else {
+                return Some(unsupported(format!("unresolved virtual map method {class}.{name}{descriptor}")));
+            };
+            if self.cp.is_application(&cf.name) { return None; }
+            implementation = cf;
+            implementation.name.as_str()
+        } else { class.as_str() };
         let Some((cf, method)) = self.cp.map_image_method(lookup, name, descriptor) else {
             // A method only in the old model cannot read or mutate these real JDK fields.
             if marked && self.cp.checker_method(lookup, name, descriptor).is_some_and(|(cf, _)| matches!(cf.name.as_str(), MAP | "java/util/HashMap$Node" | "java/util/LinkedHashMap")) {
@@ -116,7 +131,7 @@ impl Engine<'_> {
             return None;
         };
         if method.is_static() { return None; }
-        if new_map || new_linked_map || new_set || nested { path.objects[o].fields.insert(IMAGE.into(), Val::I(self.b.constant(1, 32))); }
+        if new_map || new_linked_map || linked_subclass || new_set || nested { path.objects[o].fields.insert(IMAGE.into(), Val::I(self.b.constant(1, 32))); }
         let mut full = vec![Val::R(Some(o))];
         full.extend_from_slice(args);
         Some(self.enter_method(path, owner, cf, method, full))

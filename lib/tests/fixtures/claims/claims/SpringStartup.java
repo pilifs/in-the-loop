@@ -106,11 +106,17 @@ public final class SpringStartup {
         String[] miss = input.split("\n");
         String[] parts = " > a\t> \u000bb  >  c > ".split("\\s+>\\s+");
         String[] adjacent = "a > > b".split("\\s+>\\s+");
+        String separators = "[\\s,]+";
+        String[] names = " ,first,\t\n\u000b\f\r second\u00a0,\ud83d\ude00,, ".split(separators);
         return miss.length == 1 && miss[0] == input && "".split("\n").length == 1
             && "\n\n".split("\n").length == 0 && parts.length == 4 && parts[0].isEmpty()
             && "a".equals(parts[1]) && "b".equals(parts[2]) && "c".equals(parts[3])
             && adjacent.length == 2 && "> b".equals(adjacent[1])
-            && "a\u00a0>\u00a0b".split("\\s+>\\s+").length == 1;
+            && "a\u00a0>\u00a0b".split("\\s+>\\s+").length == 1
+            && names.length == 4 && names[0].isEmpty() && "first".equals(names[1])
+            && "second\u00a0".equals(names[2]) && "\ud83d\ude00".equals(names[3])
+            && input.split(separators)[0] == input && "".split(separators).length == 1
+            && ", \n,".split(separators).length == 0;
     }
 
     static final class ConstantHash {

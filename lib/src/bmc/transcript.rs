@@ -34,6 +34,8 @@ use super::bits::Lit;
 
 /// The environment variable naming a directory to write every check's transcript into.
 pub const ENV: &str = "JVMCONTRACT_TRANSCRIPTS";
+/// Capture the SAT assignment actually returned to the encoder in a certified run.
+pub const MODEL_ENV: &str = "JVMCONTRACT_LRAT_MODELS";
 
 /// The checks of this process that wrote a transcript into [`ENV`]'s directory, for their file names.
 static WRITTEN: AtomicU64 = AtomicU64::new(0);
@@ -55,6 +57,7 @@ pub struct Transcript {
     path: PathBuf,
     calls: u64,
     clauses: u64,
+    capture_models: bool,
     error: Option<io::Error>,
 }
 
@@ -77,7 +80,8 @@ impl Transcript {
             }
         }
         writeln!(out, "p inccnf")?;
-        Ok(Transcript { out, path: path.to_path_buf(), calls: 0, clauses: 0, error: None })
+        let capture_models = std::env::var(MODEL_ENV).as_deref() == Ok("1");
+        Ok(Transcript { out, path: path.to_path_buf(), calls: 0, clauses: 0, capture_models, error: None })
     }
 
     pub fn path(&self) -> &Path {
@@ -132,6 +136,17 @@ impl Transcript {
             }
             Ok(())
         });
+    }
+
+    /// Save the current SAT valuation before a later call can replace it. A free variable may be
+    /// set to false. The consumer checks every active clause and assumption against this valuation.
+    pub fn model(&mut self, solver: &dyn super::sat::Sat) {
+        if self.capture_models {
+            let bits: String = (1..=solver.variables())
+                .map(|i| if solver.value(i).unwrap_or(false) { '1' } else { '0' }).collect();
+            let index = self.calls;
+            self.write(|out| writeln!(out, "c model {index} {bits}"));
+        }
     }
 
     /// Ends the transcript with `last` as a comment, and says where it is, or what went wrong writing it.

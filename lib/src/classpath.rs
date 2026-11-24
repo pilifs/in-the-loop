@@ -385,6 +385,7 @@ pub struct ClassPath {
     class_table_image: std::cell::OnceCell<bool>,
     jar_resource_image: std::cell::OnceCell<bool>,
     properties_reader_image: std::cell::OnceCell<bool>,
+    system_properties_image: std::cell::OnceCell<bool>,
     linked_map_image: std::cell::OnceCell<bool>,
     soft_queue_image: std::cell::OnceCell<bool>,
     generic_interface_image: std::cell::OnceCell<bool>,
@@ -417,7 +418,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -503,6 +504,7 @@ impl ClassPath {
         self.class_table_image.take();
         self.jar_resource_image.take();
         self.properties_reader_image.take();
+        self.system_properties_image.take();
         self.linked_map_image.take();
         self.soft_queue_image.take();
         self.explicit_utc.take();
@@ -1128,9 +1130,9 @@ impl ClassPath {
             && field.is_static() && field.descriptor == desc).then_some(f.name)
     }
 
-    /// Follow the read-only UTF-8 decoder callback to the JavaLangAccess
-    /// implementation installed by System during VM startup in this image.
-    pub(crate) fn utf8_language_access(&self) -> Option<String> {
+    /// Check that the JDK holder's final JLA field receives the fieldless provider
+    /// installed by System during bootstrap, through the actual SharedSecrets getter.
+    pub(crate) fn language_access_provider(&self, holder: &str) -> Option<String> {
         use crate::classfile::{Insn::*, Kind};
         let image = |owner: &str| match self.load(owner).ok()?? {
             Loaded { class, origin: Origin::Jdk } => Some(class), _ => None,
@@ -1157,22 +1159,30 @@ impl ClassPath {
         if ctor.owner != provider || ctor.name != "<init>" || ctor.descriptor != "()V"
             || assign.owner != shared.name || assign.name != "setJavaLangAccess" || assign.descriptor != "(Ljdk/internal/access/JavaLangAccess;)V" { return None; }
         let implementation = image(provider)?;
-        if !implementation.interfaces.iter().any(|i| i == access) || implementation.fields.iter().any(|f| !f.is_static()) { return None; }
+        if implementation.super_class.as_deref() != Some("java/lang/Object") || !implementation.interfaces.iter().any(|i| i == access)
+            || implementation.fields.iter().any(|f| !f.is_static()) { return None; }
         let bootstrap = system.method("initPhase1", "()V")?.code.as_ref()?.instructions().ok()?;
         if !matches!(bootstrap.first(), Some((_,InvokeStatic(i))) if system.pool.member(*i)
             .is_ok_and(|m| m.owner == system.name && m.name == "setJavaLangAccess" && m.descriptor == "()V")) { return None; }
-        let utf = image("sun/nio/cs/UTF_8")?;
-        let init = code(&utf, "<clinit>", "()V")?;
-        let final_field = utf.field("JLA")?;
+        let holder = image(holder)?;
+        let init = code(&holder, "<clinit>", "()V")?;
+        let final_field = holder.field("JLA")?;
         if !final_field.is_static() || !final_field.is_final() || final_field.descriptor != field.descriptor
             || !matches!(init.last(), Some((_, Return(None)))) || init[..init.len()-1].iter().any(|(_, op)| !op.targets().is_empty() || matches!(op, Return(_) | Ret(_))) { return None; }
-        let mut writes = init.iter().enumerate().filter(|(_,(_,op))| matches!(op, PutStatic(i) if utf.pool.member(*i)
-            .is_ok_and(|m| m.owner == utf.name && m.name == "JLA" && m.descriptor == field.descriptor)));
+        let mut writes = init.iter().enumerate().filter(|(_,(_,op))| matches!(op, PutStatic(i) if holder.pool.member(*i)
+            .is_ok_and(|m| m.owner == holder.name && m.name == "JLA" && m.descriptor == field.descriptor)));
         let (at, _) = writes.next()?;
         let InvokeStatic(index) = init[at.checked_sub(1)?].1 else { return None };
-        let get = utf.pool.member(index).ok()?;
+        let get = holder.pool.member(index).ok()?;
         (writes.next().is_none() && get.owner == shared.name && get.name == "getJavaLangAccess"
             && get.descriptor == "()Ljdk/internal/access/JavaLangAccess;").then(|| provider.to_owned())
+    }
+
+    /// The Java 25 DataInputStream initializer caches the VM's existing provider for readUTF.
+    pub(crate) fn data_input_access(&self, caller: &str, method: &str, member: &crate::classfile::MemberRef) -> Option<String> {
+        if caller != "java/io/DataInputStream" || method != "<clinit>" || member.owner != "jdk/internal/access/SharedSecrets"
+            || member.name != "getJavaLangAccess" || member.descriptor != "()Ljdk/internal/access/JavaLangAccess;" { return None; }
+        self.language_access_provider(caller)
     }
 
     /// JDK array operations and the character and collection methods used by their callers.
@@ -1352,6 +1362,15 @@ impl ClassPath {
         *self.properties_reader_image.get_or_init(|| self.matches_jdk_classes(
             &["java/util/Properties", "java/util/Properties$LineReader"],
             &["5557162135c0a12b872b1c44af1171fe8e91a104ef7495da7777c47ea6a614fa"]))
+    }
+
+    /// The getters of this System image return its installed Properties object and delegate
+    /// to that exact receiver. Its non-null setter replaces the reference after permission checks.
+    pub(crate) fn system_properties_image(&self) -> bool {
+        *self.system_properties_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/System", "java/util/Properties"],
+            &["9febf1a065577810a10eb907d79a2ab8fde138615693bb5507337db7bd59a395", // Temurin 21.0.13
+              "27e7d13f69f2156f51aaa168af3d88d267217c7e0a2932bece82852dfed1b51f"])) // Temurin 25.0.5
     }
 
     pub(crate) fn linked_map_image(&self) -> bool {
@@ -1655,9 +1674,10 @@ impl ClassPath {
     pub(crate) fn concurrent_map_method(&self, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
         if self.runs_model(crate::models::CONCURRENT_MAP) || !matches!((name, desc),
             ("<init>", "()V" | "(I)V" | "(IFI)V") | ("isEmpty", "()Z") | ("size", "()I") | ("sumCount", "()J")
-            | ("get", "(Ljava/lang/Object;)Ljava/lang/Object;") | ("containsKey", "(Ljava/lang/Object;)Z")
+            | ("get" | "remove", "(Ljava/lang/Object;)Ljava/lang/Object;") | ("containsKey", "(Ljava/lang/Object;)Z")
             | ("put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | ("putVal", "(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;")
+            | ("replaceNode", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | ("initTable", "()[Ljava/util/concurrent/ConcurrentHashMap$Node;")
             | ("forEach", "(Ljava/util/function/BiConsumer;)V")
             | ("putAll", "(Ljava/util/Map;)V") | ("tryPresize", "(I)V") | ("entrySet", "()Ljava/util/Set;")
@@ -1679,7 +1699,7 @@ impl ClassPath {
             | (PROPS, "loadConvert", "([CIILjava/lang/StringBuilder;)Ljava/lang/String;")
             | ("java/util/Hashtable", "<init>", "(Ljava/lang/Void;)V") | ("java/util/Dictionary", "<init>", "()V")
             | (PROPS, "size", "()I") | (PROPS, "isEmpty", "()Z") | (PROPS, "containsKey", "(Ljava/lang/Object;)Z")
-            | (PROPS, "get", "(Ljava/lang/Object;)Ljava/lang/Object;")
+            | (PROPS, "get" | "remove", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
             | (PROPS, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "forEach", "(Ljava/util/function/BiConsumer;)V")
@@ -2040,7 +2060,7 @@ impl ClassPath {
             | "java/io/Reader" | "java/io/StringReader" | "java/io/Reader$2" | "java/io/BufferedReader" | "java/io/ObjectStreamField"
             | "java/io/Writer" | "java/io/StringWriter" | "java/io/PrintWriter" | "java/lang/StringBuffer"
             | "java/lang/CharacterData" | "java/lang/CharacterDataLatin1"
-            | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream"
+            | "java/io/InputStream" | "java/io/ByteArrayInputStream" | "java/io/FilterInputStream" | "java/io/DataInputStream"
             | "java/io/OutputStream" | "java/io/ByteArrayOutputStream" | "java/io/FilterOutputStream"
             | "java/io/InputStreamReader" | "sun/nio/cs/StreamDecoder" | "jdk/internal/misc/InternalLock" | "java/nio/charset/CodingErrorAction" | "java/nio/ByteOrder"
             | "java/nio/charset/CharsetDecoder" | "java/nio/charset/CoderResult" | "sun/nio/cs/UTF_8$Decoder"

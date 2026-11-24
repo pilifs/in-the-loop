@@ -8,54 +8,17 @@ from pathlib import Path
 import shutil
 import statistics
 import tempfile
+import sys
 
 from prepare import HERE, digest
 from replay import measured
 
+sys.path.insert(0, str(HERE.parents[1] / "python"))
+from jvmcontract_lrat import dimacs, queries
+
 CACHE = Path.home() / ".cache/in-the-loop/trusted-kernel/src"
 CADICAL = Path(os.environ.get("KERNEL_CADICAL", CACHE / "cadical-1.9.5/build/cadical"))
 CAKE = Path(os.environ.get("KERNEL_CAKE", CACHE / "cake_lpr-033aad53/cake_lpr"))
-
-
-def queries(raw):
-    clauses = []
-    called = None
-    header = False
-    for line in raw.decode("ascii").splitlines():
-        if line.startswith("c answer "):
-            if called is None:
-                raise ValueError("answer without a solve")
-            answer = line.split()[2]
-            if answer not in {"sat", "unsat", "unknown"}:
-                raise ValueError("unknown answer token")
-            yield tuple(clauses), called, answer
-            called = None
-        elif line.startswith("c") or not line:
-            continue
-        elif line == "p inccnf" and not header:
-            header = True
-        else:
-            if not header or called is not None:
-                raise ValueError("interleaved or headerless formula")
-            fields = line.split()
-            solve = fields[0] == "a"
-            lits = [int(s) for s in fields[int(solve) :]]
-            if not lits or lits[-1] != 0 or 0 in lits[:-1]:
-                raise ValueError("unterminated clause or assumption")
-            if solve:
-                called = tuple(lits[:-1])
-            else:
-                clauses.append(tuple(lits[:-1]))
-    if called is not None or not header:
-        raise ValueError("incomplete transcript")
-
-
-def dimacs(clauses, assumptions):
-    rows = (*clauses, *((a,) for a in assumptions))
-    maximum = max((abs(v) for row in rows for v in row), default=0)
-    return (
-        f"p cnf {maximum} {len(rows)}\n" + "".join(" ".join(map(str, (*row, 0))) + "\n" for row in rows)
-    ).encode()
 
 
 def checked(cnf, proof, want, directory):

@@ -16,7 +16,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REPO = HERE.parents[2]
 sys.path.insert(0, str(HERE.parent))
-from targets import array_induction, monitor_histories, schedule_reduction, synchronized_map  # noqa: E402
+from targets import array_induction, monitor_histories, schedule_reduction, second_opinion, synchronized_map  # noqa: E402
 import jvm_array_induction  # noqa: E402
 import jvm_disassembly  # noqa: E402
 
@@ -33,6 +33,17 @@ class Adapter(unittest.TestCase):
         for client in (monitor_histories, schedule_reduction, synchronized_map):
             self.assertIs(client.jvm_disassembly, jvm_disassembly, client.__name__)
             self.assertFalse(hasattr(client, "array_induction"), client.__name__)
+
+    def test_second_opinion_distinguishes_bad_hints_from_semantic_evidence(self):
+        classify = lambda code, line: second_opinion.classify({"exit": code, "stdout": line}, "", {})
+        self.assertEqual(classify(2, "rejected invalid range cut PC"), "invalid evidence")
+        self.assertEqual(classify(2, "rejected missing written-prefix cut"), "invalid evidence")
+        self.assertEqual(classify(3, "unsupported cut point or cursor local"), "invalid evidence")
+        self.assertEqual(classify(3, "unsupported range-fill descriptors"), "unsupported scope")
+        self.assertEqual(classify(2, "rejected checked witness [] target 7: returned 0"), "checked counterexample")
+        self.assertEqual(classify(127, "checker not found"), "checker unavailable")
+        self.assertEqual(second_opinion.conclusion("established", "checked counterexample"), "contradicted")
+        self.assertEqual(second_opinion.conclusion("refuted", "independently established"), "contradicted")
 
     def test_a_record_of_either_format_names_its_rule_implementation(self):
         old = json.loads(STORED.read_text())

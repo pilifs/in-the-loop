@@ -111,7 +111,9 @@ class BuildHooksTest(StubExamples):
         for argv, fragment in [(("285", "--task", "nothing"), "has no task 'nothing'"),
                                (("285", "105", "--task", "fixed-security"), "exactly one example id"),
                                (("--render-only", "285", "--task", "fixed-security"), "not --render-only"),
-                               (("285", "--task"), "not an example id")]:
+                               (("285", "--task"), "not an example id"),
+                               (("285", "--certify-lrat"), "requires one executing native"),
+                               (("--plan", "285", "--task", "fixed-security", "--certify-lrat"), "requires one executing native")]:
             code, _, err = self.build(*argv)
             self.assertEqual(code, 2, argv)
             self.assertIn(fragment, err, argv)
@@ -137,6 +139,17 @@ class BuildHooksTest(StubExamples):
             self.assertEqual(code, code_wanted, (task, matches))
             self.assertIn(said, out, (task, matches))
             self.assertEqual(read, [self.folder / receipt.path])
+        # A caller requesting LRAT must see a failed certification even if the ordinary verdict matched.
+        evidence = (self.folder / receipt.path).with_name("lrat")
+        evidence.mkdir(parents=True)
+        with mock.patch.object(build.target_route, "run", return_value=receipt) as run, \
+             mock.patch.object(build.result_format, "load", return_value={"matchesExpected": True}):
+            for assurance, expected_code in (("withheld", 1), ("checked", 0)):
+                (evidence / "assurance.json").write_text(json.dumps({"status": assurance}))
+                code, out, _ = self.build("285", "--task", "fixed-security", "--certify-lrat")
+                self.assertEqual(code, expected_code)
+                self.assertIn("LRAT assurance: " + assurance, out)
+                self.assertTrue(run.call_args.kwargs["certify_lrat"])
 
     def test_an_invalid_sidecar_stops_the_example_being_read(self):
         (self.folder / "target.json").write_text(json.dumps({**TARGET, "extra": 1}))

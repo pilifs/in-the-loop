@@ -419,6 +419,9 @@ pub struct Outcome {
     pub calls_as_written: bool,
     /// Where the run's solver calls were written, when they were ([`Options::transcript`]).
     pub transcript: Option<std::path::PathBuf>,
+    /// The decisions at the call boundary for this particular run. S/U/? are solver answers;
+    /// F is a false assumption folded before the call. The empty string records zero attempts.
+    pub call_boundary: Option<String>,
 }
 
 impl Outcome {
@@ -503,6 +506,7 @@ impl Outcome {
             }
         };
         format!("{:?}: {} paths, {} merged at joins, {} solver calls ({:.2} s), {} gates evaluated in path models ({:.2} s), {} of {} divisions and {} of {} multiplications built in full, {}{} variables, {} clauses, {:.2} s{gaps}{}", self.verdict, self.paths, self.merges, self.solves, self.solving, self.evaluated, self.evaluating, self.refined, self.divisions, self.refined_multiplications, self.multiplications, if self.word_operations > 0 { format!("{} word-level operations given as terms, ", self.word_operations) } else { String::new() }, self.variables, self.clauses, self.seconds, self.problem.as_deref().map(|p| format!("; {p}")).unwrap_or_default())
+            + &self.call_boundary.as_ref().map(|calls| format!("; solver boundary [{calls}]")).unwrap_or_default()
             + &self.transcript.as_ref().map(|t| format!("; solver calls written to {}", t.display())).unwrap_or_default()
     }
 }
@@ -1047,6 +1051,7 @@ enum Literal {
     CollectionsEmptyList,
     CollectionsEmptySet,
     HashSetPresent,
+    JavaLangAccess(String),
     BasicBase64Decoder,
     BasicBase64Encoder,
     EmptySuppressedArray,
@@ -1697,6 +1702,7 @@ fn check_once(cp: &ClassPath, class: &str, method: &str, options: &Options) -> R
         calls_as_one_function: engine.ties.calls,
         calls_related: engine.ties.calls_related,
         calls_as_written: false,
+        call_boundary: engine.b.call_boundary.clone(),
         transcript: engine.b.transcript_path().map(std::path::Path::to_path_buf),
     };
 
@@ -2604,6 +2610,7 @@ impl<'a> Engine<'a> {
                         Literal::BasicBase64Encoder => "java/util/Base64$Encoder",
                         Literal::EmptySuppressedArray => throwables::THROWABLE_ARRAY,
                         Literal::ListEmptyStorage(_) => array_list::OBJECT_ARRAY,
+                        Literal::JavaLangAccess(provider) => provider.as_str(),
                         Literal::AsciiBoxes => "[Ljava/lang/Character;",
                         Literal::LineSeparator => STRING,
                         Literal::Truth(_) => runtime::BOOLEAN,
@@ -4215,8 +4222,8 @@ impl<'a> Engine<'a> {
                         self.advance(path);
                         return Ok(None);
                     }
-                    if let Some(provider) = self.cp.utf8_language_access() {
-                        let object = self.alloc(path, &provider);
+                    if let Some(provider) = self.cp.language_access_provider(&declaring) {
+                        let object = self.literal(path, Literal::JavaLangAccess(provider.clone()), &provider);
                         let value = Val::R(Some(object));
                         path.statics.insert(slot, value.clone());
                         self.push(path, value);
@@ -5108,7 +5115,7 @@ impl<'a> Engine<'a> {
                 path.objects[o].fields.insert("value".into(), Val::I(self.b.constant(i64::from(*truth), 32)));
                 o
             }
-            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::BasicBase64Decoder | Literal::BasicBase64Encoder => self.alloc(path, class),
+            Literal::CollectionsEmptyList | Literal::CollectionsEmptySet | Literal::HashSetPresent | Literal::JavaLangAccess(_) | Literal::BasicBase64Decoder | Literal::BasicBase64Encoder => self.alloc(path, class),
             Literal::LineSeparator => {
                 let o = self.alloc(path, STRING);
                 path.objects[o].limit = Some(runtime::LINE_SEPARATOR.into());
@@ -5255,10 +5262,34 @@ impl<'a> Engine<'a> {
     /// a model's is called, a JDK method the engine models is computed, and any other is a gap or refused. A
     /// lambda's call of the method it stands for comes here too ([`Engine::lambda_call`]).
     fn invoke_static(&mut self, path: &mut Path, caller: &str, member: &crate::classfile::MemberRef) -> Step {
+        if let Some(provider) = self.cp.data_input_access(caller, &path.frames.last().expect("a frame").method, member) {
+            let access = self.literal(path, Literal::JavaLangAccess(provider.clone()), &provider);
+            self.push(path, Val::R(Some(access)));
+            self.advance(path);
+            return Ok(None);
+        }
         if caller == crate::models::CONCURRENT_MAP && member.owner == caller && member.name == "casTabAt"
             && member.descriptor == "([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;Ljava/util/concurrent/ConcurrentHashMap$Node;)Z"
             && !self.cp.runs_model(caller) && self.cp.known_concurrent_table() {
             return self.concurrent_slot_cas(path);
+        }
+        // The selected single-threaded image stores the reference with release ordering.
+        // Its offset calculation is an ordinary array index only on this typed, in-bounds path.
+        if caller == crate::models::CONCURRENT_MAP && member.owner == caller && member.name == "setTabAt"
+            && member.descriptor == "([Ljava/util/concurrent/ConcurrentHashMap$Node;ILjava/util/concurrent/ConcurrentHashMap$Node;)V"
+            && !self.cp.runs_model(caller) && self.cp.known_concurrent_table() {
+            let stack = &path.frames.last().expect("a frame").stack;
+            if let [.., Val::R(Some(o)), Val::I(index), Val::R(update)] = stack.as_slice() {
+                let target = &path.objects[*o];
+                let node = "java/util/concurrent/ConcurrentHashMap$Node";
+                if target.class == "[Ljava/util/concurrent/ConcurrentHashMap$Node;"
+                    && update.is_none_or(|r| self.cp.is_subtype(&path.objects[r].class, node))
+                    && target.as_array().is_some_and(|a| matches!(
+                        (self.b.constant_value(index), self.b.constant_value(&a.length)), (Some(i), Some(n)) if i >= 0 && i < n)) {
+                    return self.array_insn(path, &Insn::ArrayStore(ArrayKind::Ref));
+                }
+            }
+            return unsupported("ConcurrentHashMap.setTabAt requires an in-bounds Node array slot and a compatible value");
         }
         if self.cp.concurrent_table_read(&member.owner, &member.name, &member.descriptor) {
             let stack = &path.frames.last().expect("a frame").stack;
@@ -7607,6 +7638,12 @@ mod tests {
         assert!(text.contains(&format!("\nc solver: {}\n", solver_signature())), "{text}");
         assert!(text.contains("\nc check: Check.check(II)V\nc options: unwind 16, max array length 8, max paths 200000, merge after 512, timeout 600.000 s, gaps strict\np inccnf\n1 0\n"), "{text}");
         let replay = transcript::replay(&path, None).unwrap();
+        let boundary = recorded.call_boundary.as_ref().unwrap();
+        assert_eq!(boundary.len() as u64, recorded.solves);
+        let issued: String = replay.calls.iter().map(|call| match call.recorded {
+            "sat" => 'S', "unsat" => 'U', _ => '?',
+        }).collect();
+        assert_eq!(boundary.replace('F', ""), issued);
         assert!(replay.calls.len() >= 2 && replay.calls.len() as u64 <= recorded.solves, "{} calls of {}", replay.calls.len(), recorded.solves);
         assert_eq!(replay.clauses, recorded.clauses);
         assert_eq!(replay.variables, recorded.variables);

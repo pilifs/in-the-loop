@@ -2491,6 +2491,64 @@
         "historicalStatus": "unresolved"
       },
       "evidence": "frame-witness/results.json"
+    },
+    {
+      "route": "Historical Python/Z3 with frame fault",
+      "classSha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
+      "requestedClaim": "eb9ed325938200c9de24c467629139ac4adff7bfda38eaa62c5c6041952c6813",
+      "control": "historical-producer-frame",
+      "checkerVersion": "16635739cab32a8b18a1b60e0406b879e8ed9cdba09b4df7ffba3d49224e8853",
+      "expected": "established",
+      "actual": "established",
+      "reason": {
+        "interpretation": "false acceptance",
+        "solver": {
+          "name": "preserve the input heap",
+          "expected": "unsat",
+          "obtained": "unsat"
+        },
+        "smtSha256": "847b232a28b3b7163cfa8d728d56195e76126e6081b0db65d0081ef7ac313980",
+        "comparison": {
+          "comparedBy": "examples/tools/targets/array_induction.py:differences",
+          "againstGenuineProof": [
+            "status",
+            "obligations",
+            "certificateSha256"
+          ],
+          "againstRegeneratedFaultyProof": []
+        }
+      },
+      "evidence": "../historical-frame-control.json"
+    },
+    {
+      "route": "Rust on historical frame control",
+      "classSha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
+      "requestedClaim": "eb9ed325938200c9de24c467629139ac4adff7bfda38eaa62c5c6041952c6813",
+      "control": "historical-producer-frame",
+      "checkerVersion": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b",
+      "expected": "refuted",
+      "actual": "refuted",
+      "reason": {
+        "witness": "rejected checked witness [7] target 7: frame changed, return 0, after [0]; first rule: heap frame at store 25",
+        "jvm": {
+          "input": [
+            7
+          ],
+          "target": 7,
+          "stdout": [
+            "entered 7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
+            "return 0",
+            "heap [0]"
+          ],
+          "timedOut": false,
+          "return": 0,
+          "heapAtReturn": [
+            0
+          ]
+        },
+        "certificateSha256": "2399558842cafec8eeba576efc314c0949167096d1ade42e6e9866d6903bb899"
+      },
+      "evidence": "../historical-frame-control.json"
     }
   ],
   "coverage": {

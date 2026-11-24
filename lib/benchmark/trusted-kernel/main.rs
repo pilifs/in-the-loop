@@ -58,7 +58,7 @@ fn parse_request(text: &str) -> Result<Request<'_>> {
     let (support, callee) = match rows.get(6).map(Vec::as_slice) {
         None => (None, None),
         Some(["support", n, h]) => (Some((*n, *h)), None),
-        Some(["callee", n, h]) if theorem == range::CALLER => (None, Some((*n, *h))),
+        Some(["callee", n, h]) if matches!(theorem, range::CALLER | range::DIRECT) => (None, Some((*n, *h))),
         _ => return Err(reject("bad support")),
     };
     Ok(Request {

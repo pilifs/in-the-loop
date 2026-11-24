@@ -92,13 +92,15 @@ def prepare_revision(plan, revision, directory, shared):
     return prepared
 
 
-def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_after_candidate=False, shared=None, checker_seconds=None):
+def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_after_candidate=False, shared=None, checker_seconds=None, certify_lrat=False):
     """One attempt at the task: plan, prepare each revision, run the controls and the verifier, ingest. Returns the
     Receipt, or the first Unsupported (a preparation that fails is returned as one, with its stage and diagnostic)."""
     result = resolve(folder, example, target, task)
     if isinstance(result, Unsupported):
         return result
     p = result
+    if certify_lrat and (p.kind not in {"prove", "equivalence"} or p.engine != "native" or p.gaps != "strict"):
+        return Unsupported("run-verifier", interfaces.RUNTIME, "LRAT certification requires a strict native proof or equivalence task", stage="plan")
     out = Path(folder) / p.outputs.get("receipts", f"receipts/{task}")
     timeout = runtime.VERIFIER_TIMEOUT if checker_seconds is None else checker_seconds
     if not isinstance(timeout, int) or timeout <= 0:
@@ -137,7 +139,13 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
             return execution.refuse(Unsupported("run-controls", interfaces.RUNTIME, problem, stage="adapter-correspondence"))
         execution.stage("adapter-correspondence", correspondenceEvidence="correspondence.json")
     if p.kind != "replay":
-        verifier = runtime.run_verifier(p, prepared, workdir / "verifier", before_launch=execution.launching, timeout=timeout)
+        launch = execution.launching
+        run_verifier = runtime.run_verifier
+        if certify_lrat:
+            from targets import lrat_verdict
+            launch = lrat_verdict.bind(p, execution)
+            run_verifier = runtime.run_verifier_with_lrat
+        verifier = run_verifier(p, prepared, workdir / "verifier", before_launch=launch, timeout=timeout)
         if isinstance(verifier, Unsupported):
             return execution.refuse(verifier)
         candidate = execution.checked(verifier)
@@ -165,6 +173,8 @@ def run(folder, example, target, task, workdir, *, retry_of=None, interrupt_afte
     if isinstance(receipt, Unsupported):
         return execution.refuse(receipt)
     execution.finish(receipt)
+    if certify_lrat:
+        lrat_verdict.certify(p, execution, prepared, verifier, receipt, workdir / "verifier")
     return receipt
 
 

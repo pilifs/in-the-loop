@@ -42,6 +42,7 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
                                                            and examples/gap-inventory.md
        python3 examples/tools/build.py --plan ID --task T  the plan of one task of a real-world example with a target sidecar
        python3 examples/tools/build.py ID --task T         one attempt at that task (examples/tools/targets/route.py)
+       python3 examples/tools/build.py ID --task T --certify-lrat   check every SAT/UNSAT call of a strict native verdict
        python3 examples/tools/build.py --upgrade-claims --help  find original consumer call sites for a changed dependency
        python3 examples/tools/build.py --change-plan --help  plan and resume one application change across caller claims
        python3 examples/tools/build.py --inspect-jdbc-driver --help  check URL selection on a locked original driver classpath
@@ -230,6 +231,9 @@ def main(argv):
         return upgrade_replay.main(argv[1:])
     folders = sorted(p for p in EXAMPLES.iterdir() if p.is_dir() and re.match(r"^\d{3}-", p.name))
     if len(argv) >= 2 and argv[1] == "--array-induction":
+        if "--second-opinion" in argv[2:]:
+            from targets import second_opinion
+            return second_opinion.main([argv[0], *argv[2:]])
         from targets import array_induction
         return array_induction.main([argv[0], *argv[2:]])
     if len(argv) >= 2 and argv[1] == "--original-witness":
@@ -276,6 +280,12 @@ def main(argv):
         results = [run_task(folder, name, shared=shared, retry_of=retry, checker_seconds=checker_seconds) for name, retry in tasks]
         return max(results)
     argv, task = task_argument(argv)
+    certify_lrat = "--certify-lrat" in argv
+    if certify_lrat:
+        if not task or argv.count("--certify-lrat") != 1 or any(opt in argv for opt in ("--plan", "--replay-witness")):
+            print("--certify-lrat requires one executing native --task", file=sys.stderr)
+            return 2
+        argv = [arg for arg in argv if arg != "--certify-lrat"]
     witness = None
     if task and "--replay-witness" in argv:
         i = argv.index("--replay-witness")
@@ -303,7 +313,9 @@ def main(argv):
         return 2  # nothing has run
     wanted = set(ids)
     if task:
-        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan", retry_of=retry_of, interrupt=interrupt, checker_seconds=checker_seconds, witness=witness)
+        return run_task(next(f for f in folders if f.name[:3] == ids[0]), task, plan_only=mode == "--plan",
+                        retry_of=retry_of, interrupt=interrupt, checker_seconds=checker_seconds,
+                        witness=witness, certify_lrat=certify_lrat)
     if mode == "--plan":
         # What each run would take, as JSON, running nothing: every constructed example's by default.
         plans = [plan(load_example(f)) for f in folders if (f.name[:3] in wanted if wanted else True)]
@@ -424,7 +436,7 @@ def task_problem(mode, ids, task, folders):
     return None
 
 
-def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, shared=None, checker_seconds=None, witness=None):
+def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, shared=None, checker_seconds=None, witness=None, certify_lrat=False):
     """`--plan ID --task T` prints the task's plan; `ID --task T` makes one attempt at it through the target route
     (examples/tools/targets/route.py). An attempt that stops at an Unsupported result prints a not-executed line
     naming it and exits 1, as an unexecuted example does; one that gives a receipt prints its conclusion and exits 0
@@ -446,6 +458,8 @@ def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, s
         return 0 if review["status"] == "witness-reproduced" else 1
     print(f"{folder.name}: running task {task} (target route)", flush=True)
     policy = {}
+    if certify_lrat:
+        policy["certify_lrat"] = True
     if checker_seconds is not None:
         policy["checker_seconds"] = checker_seconds
     if shared is not None:
@@ -471,6 +485,10 @@ def run_task(folder, task, plan_only=False, *, retry_of=None, interrupt=False, s
     wanted = expected or "the outcomes its pair's kind expects"
     print(f"{folder.name}: task {task}: {receipt.status or 'none'} ({receipt.execution}; "
           f"{'as expected' if matches else f'NOT AS EXPECTED ({wanted})'}), receipt {receipt.path}")
+    if certify_lrat:
+        assurance = json.loads((folder / receipt.path).with_name("lrat").joinpath("assurance.json").read_text())
+        print("LRAT assurance:", assurance.get("reason") or assurance["status"])
+        matches = matches and assurance["status"] == "checked"
     return 0 if matches else 1
 
 

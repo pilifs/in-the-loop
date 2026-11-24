@@ -472,8 +472,36 @@ impl<'a> Machine<'a> {
     }
 
     fn system_property(&mut self, name: &str, args: &[Value], old_discarded: bool) -> Exec<Option<Value>> {
+        use crate::bmc::runtime::{properties_delegate, LIVE_TABLE};
+        if name == "setProperties" {
+            let [Value::Ref(table)] = args else {
+                return Err(Fault::Unsupported("resetting the platform's system properties".into()));
+            };
+            if self.class_of(*table) != "java/util/Properties" || !self.cp.system_properties_image() {
+                return Err(Fault::Unsupported("an unbound system Properties implementation".into()));
+            }
+            if self.monitor && self.clinit_depth == 0 { return Err(Fault::Impure("replaces the JVM system properties".into())); }
+            self.statics.entry(LIVE_TABLE.into()).or_default().insert("current".into(), Value::Ref(*table));
+            return Ok(None);
+        }
+        let table = self.statics.get(LIVE_TABLE).and_then(|slots| slots.get("current")).copied();
+        if name == "getProperties" {
+            return table.map(Some).ok_or_else(|| Fault::Unsupported("the initial JVM Properties object is unknown".into()));
+        }
         let key = self.units_of(args[0]).and_then(|u| u.text())
             .filter(|key| !key.is_empty()).ok_or_else(|| Fault::Unsupported("system property requires a nonempty text key".into()))?;
+        if let Some(table) = table {
+            let (member, desc, write) = properties_delegate(name, args.len())
+                .ok_or_else(|| Fault::Unsupported("an unknown system property accessor".into()))?;
+            if write && self.monitor && self.clinit_depth == 0 {
+                return Err(Fault::Impure("changes the installed JVM properties".into()));
+            }
+            let result = self.call_virtual(table, "java/util/Properties", member, desc, args.to_vec())?;
+            if write && result.and_then(Value::as_ref).is_some_and(|r| self.class_of(r) != "java/lang/String") {
+                return Err(self.throw("java/lang/ClassCastException", None));
+            }
+            return Ok(result);
+        }
         const OWNER: &str = "<JVM.systemProperties>";
         let old = self.statics.get(OWNER).and_then(|table| table.get(&key)).copied();
         if name == "getProperty" {
@@ -1185,6 +1213,16 @@ impl<'a> Machine<'a> {
                     self.statics.retain(|c, _| c == crate::pairing::CLASS);
                     self.init.retain(|c, _| c == crate::pairing::CLASS);
                     None
+                } else if let Some(provider) = self.cp.data_input_access(&class.name, &method.name, &member) {
+                    let value = match self.statics.get("<JVM.languageAccess>").and_then(|fields| fields.get("object")).copied() {
+                        Some(value) => value,
+                        None => {
+                            let value = Value::Ref(self.alloc(Object::Instance { class: provider, fields: BTreeMap::new(), base: Base::Object }));
+                            self.statics.entry("<JVM.languageAccess>".into()).or_default().insert("object".into(), value);
+                            value
+                        }
+                    };
+                    Some(value)
                 } else if crate::bmc::runtime::property_call(&member.owner, &member.name, &member.descriptor) {
                     self.system_property(&member.name, &args, matches!(code.insns.get(*i + 1), Some(Insn::Pop)))?
                 } else if self.cp.is_application(&member.owner) || self.cp.state_image_class(&member.owner).is_some() || self.cp.map_image_class(&member.owner).is_some() {

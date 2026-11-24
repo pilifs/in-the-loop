@@ -12,36 +12,37 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T01:30:07.923Z",
-  "ended": "2026-11-24T02:47:22.670Z",
-  "duration_seconds": 4635,
+  "ended": "2026-11-24T03:51:29.794Z",
+  "duration_seconds": 8482,
   "stats": {
-    "turns": 2,
-    "api_calls": 246,
-    "tool_calls": 805,
-    "tool_errors": 26,
+    "turns": 3,
+    "api_calls": 374,
+    "tool_calls": 1108,
+    "tool_errors": 37,
     "compactions": 1,
     "peak_context_tokens": 389206,
     "usage": {
-      "input_tokens": 471525,
-      "output_tokens": 142114,
-      "cache_read_input_tokens": 59693440,
+      "input_tokens": 695001,
+      "output_tokens": 197741,
+      "cache_read_input_tokens": 84887552,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 538,
-    "exec": 217,
-    "apply_patch": 32,
-    "send_message": 8,
+    "Bash": 727,
+    "exec": 300,
+    "apply_patch": 43,
+    "send_message": 23,
     "wait": 8,
-    "list_agents": 1,
-    "spawn_agent": 1
+    "spawn_agent": 5,
+    "list_agents": 2
   },
   "files_touched": [
     "examples/tools/build.py",
     "examples/tools/targets/change_evidence.py",
     "examples/tools/targets/change_inventory.py",
     "examples/tools/targets/change_plan.py",
+    "examples/tools/targets/second_opinion.py",
     "examples/tools/targets/test_change_plan.py",
     "examples/tools/targets/upgrade_replay.py",
     "lib/benchmark/change-verification/README.md",
@@ -55,8 +56,13 @@
     "lib/benchmark/organic-java/README.md",
     "lib/benchmark/organic-java/receipt-set.json",
     "lib/benchmark/organic-java/report.py",
+    "lib/benchmark/trusted-kernel/decision_evidence.py",
+    "lib/benchmark/trusted-kernel/historical_audit.py",
+    "lib/benchmark/trusted-kernel/pilot.py",
+    "lib/benchmark/trusted-kernel/release_fill.py",
     "llm-dlc/loops/in-the-loop-change-verification-strategy-results.md",
-    "verification/jobs/2026/11/24/20261124-015127-evaluate-the-registered-petclinic-2-7-to.json"
+    "verification/jobs/2026/11/24/20261124-015127-evaluate-the-registered-petclinic-2-7-to.json",
+    "~/.cache/in-the-loop/agent-tmp/461ff7e6-17a8-4a6c-949e-c7077ff34fb9/reverse-lean/Reverse.lean"
   ],
   "context_windows": [
     {
@@ -76,24 +82,24 @@
     {
       "index": 1,
       "started": "2026-11-24T02:44:46.177Z",
-      "ended": "2026-11-24T02:47:22.670Z",
-      "turns": 1,
-      "api_calls": 7,
+      "ended": "2026-11-24T03:51:29.794Z",
+      "turns": 2,
+      "api_calls": 135,
       "usage": {
-        "input_tokens": 59975,
-        "output_tokens": 6416,
-        "cache_read_input_tokens": 291328,
+        "input_tokens": 283451,
+        "output_tokens": 62043,
+        "cache_read_input_tokens": 25485440,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 67004
+      "peak_context_tokens": 280557
     }
   ],
   "log": {
-    "sha256": "4fc601ff9a34c3a2738802ab8d69f1562cf61d6cdfd7ccdd1279d5badc424cb5",
-    "bytes": 4894353,
-    "lines": 2186,
-    "gzip_bytes": 979466,
-    "path": "llm-dlc/traces/01a20b2c-ad98-7b23-a000-99b528bbfe82/logs/4fc601ff9a34c3a2738802ab8d69f1562cf61d6cdfd7ccdd1279d5badc424cb5.jsonl.gz"
+    "sha256": "d1f023188cfe4daf713e1c8b4bfb9db23a24ccc3e1a1ff01555a220ee45e912d",
+    "bytes": 6982234,
+    "lines": 3226,
+    "gzip_bytes": 1419700,
+    "path": "llm-dlc/traces/01a20b2c-ad98-7b23-a000-99b528bbfe82/logs/d1f023188cfe4daf713e1c8b4bfb9db23a24ccc3e1a1ff01555a220ee45e912d.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -200,6 +206,86 @@
       "summary": "Record the clean-equivalent application migration results",
       "body": "Merge the solver and original-target Petclinic receipts, bind the Maven-built application classes and both runtime graphs back to their observed HTTP workflows, and publish the digest-checked evaluation. On a common JDK 17 the adapted client and original client each passed the three registered workflows on their intended graph. The original binary failed during startup on the new graph and unchanged source did not compile. The full exact pass took 13.526 s versus 28.908 s clean, with both including resolution and compilation. The cold pass took 39.526 s.\n\nAll six Wire configurations matched clean recomputation. The equal-scope word encoding improved both measured Eclipse attempts, including original JVM witness handling, and both encodings left the monolithic importer open. Six successful verification jobs and the superseded HTTP-driver failure are accounted for. The machine-readable evaluation and the qualified portfolio both pass their recounts, the published organic scorecard reproduces byte for byte, the changed-test selections passed, and the local evidence links resolve.",
       "log_sha256": "d6e20bcbb3b48867844db99ffe337e837b4df89753d6d2e55a491f6e8c99c3e7"
+    },
+    {
+      "change_id": "qyozrlzmrzywtrrumvnlswvxrpsnqpww",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Refresh the queued brief beyond-jbmc-java-change-verification-cam from the user's revised original",
+      "body": "The user revised ~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md at 03:20 UTC, after the queue had copied it. The brief has no run yet, so its repository copy, which the setup and domain runs read, is replaced with the revised original, byte for byte (diff confirms identical). The queue entry already points at that original. Brief text only.",
+      "log_sha256": "f5c7fde4eb938fdcb1294fe16434765b6198fbbb1da3e68e1da8bb2bff225136"
+    },
+    {
+      "change_id": "wvyoszqwuvzloylpvsvvuyoqkrtmvxms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on trusted-kernel-and-receiver-recovery-setup",
+      "body": "The watcher's verdicts on the single-agent run trusted-kernel-and-receiver-recovery-setup (llm-dlc/decisions/single-trusted-kernel-and-receiver-recovery-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "f5c7fde4eb938fdcb1294fe16434765b6198fbbb1da3e68e1da8bb2bff225136"
+    },
+    {
+      "change_id": "rrxummqrtmwvzykqnvrwzkvzzzmswrms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Set up the trusted-kernel and receiver-recovery brief",
+      "body": "Mechanical setup for llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief.md, recorded in llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief-setup.md. The pinned JDK, Z3, CaDiCaL, cake_lpr, Lean 4.36.0 (file by file), rustc and the jvmcontract binary still match the earlier setup records and the committed evidence. The brief's five inventory checks pass at this head. Guava 31.1-jre, Beam's vendored Guava 32.1.2 and fastutil 8.5.15 were resolved from Maven Central, checked against Central's checksums (16 of 16) and their signatures in a private keyring (16 of 16 valid; fastutil's signature postdates its key's published expiry, recorded). Their sources were pinned to the release tags. Every class the brief names was extracted, hashed and disassembled; the JDK Arrays.class and Lang ArrayUtils.class equal the brief's digests. The trusted-kernel consumer built at this head is byte-identical to the recorded range-capable checker.\n\nOn Temurin 21.0.13, throwaway probes reproduced every count the brief gives: the long range fill (245/80/140), the Guava 31.1 and Beam indexOf grids (780 and 1,554 calls), fastutil (7,745 = 2,735 + 5,010), Shorts/Chars (33 of 216), Lang reverse (44,165 = 40,525 + 3,640), the live System-properties sequence, and the two historical incorrect Guava variants, rebuilt to their recorded digests. The receiver campaign's Maven cache, which a scratch cleanup had removed, was restored by hard links from the earlier snapshot (586 classpath files, 0 missing), and the Configuration, Compress, XZ and JavaParser observations were rerun as recorded. No claim, example, adapter or checker code was written, no verifier run was made, and no verification job was needed.",
+      "log_sha256": "f5c7fde4eb938fdcb1294fe16434765b6198fbbb1da3e68e1da8bb2bff225136"
+    },
+    {
+      "change_id": "vqluqkxnysvmtvtqskotvsxlqrszltxs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run trusted-kernel-and-receiver-recovery-setup into the line",
+      "body": "The single-agent run trusted-kernel-and-receiver-recovery-setup (session 029d6ffd-7f50-45f4-8e24-9e04dfc875a6) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "f5c7fde4eb938fdcb1294fe16434765b6198fbbb1da3e68e1da8bb2bff225136"
+    },
+    {
+      "change_id": "qrolnwotnqunwxsyruvmkvspzsptvzxs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of trusted-kernel-and-receiver-recovery into its brief",
+      "body": "The setup run trusted-kernel-and-receiver-recovery-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief.md and ~/code/scripts/analysis/trusted-kernel-and-receiver-recovery-brief.md, for the domain agent.",
+      "log_sha256": "f5c7fde4eb938fdcb1294fe16434765b6198fbbb1da3e68e1da8bb2bff225136"
+    },
+    {
+      "change_id": "tlrsxqwkpnzyopzkmqsxzqkqzvkkxnrn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Repeat original startup claims and controls (verification pending)",
+      "body": "Keep the original receiver campaign receipts and put each fresh JavaParser and XZ run in a separate output directory. The unchanged default destinations still serve the original reproduction commands. All three driver entry points loaded, the earlier receiver scorecard verified, and the changed test selection passed.\n\nJob 20261124-033119-recheck-javaparser-traversal-across-live compares eight ordinary JavaParser roots and their missing, fixed and bounded arbitrary separators. Job 20261124-033120-recheck-xz-ordinary-frame-witnesses-and compares both XZ roots, four frame observations and the admitted nondefault cache witness.",
+      "log_sha256": "f5c7fde4eb938fdcb1294fe16434765b6198fbbb1da3e68e1da8bb2bff225136"
+    },
+    {
+      "change_id": "uwuytsrnvoxzmqwruqmtspkmvqklrsps",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Work in progress left by session 461ff7e6 when OpenAI's filter stopped it (unverified)",
+      "body": "The queued run trusted-kernel-and-receiver-recovery was refused by OpenAI's cybersecurity filter at 03:57 UTC, 30 minutes into cycle 1 (VF-046). The watcher commits what the agent had not yet committed, unchanged and unverified, so that the fresh session continuing the brief finds it in the log rather than as unexplained working-copy changes. It contains range-fill checker work (RangeRule.lean, Reverse.lean, range/export.rs, range/fastutil.rs, fastutil_certificate.py, lean_range.py, release_fill.py and edits to the trusted-kernel bytecode, classfile, main and range modules), receiver-discovery installed_table.py, and edits to lib/src/bmc/map_views.rs, runtime.rs, classpath.rs and the claims tests and fixtures. None of it has been compiled, tested or verified by a job; the next session reviews it before relying on any of it.",
+      "log_sha256": "d1f023188cfe4daf713e1c8b4bfb9db23a24ccc3e1a1ff01555a220ee45e912d"
+    },
+    {
+      "change_id": "tlqopkxnlsvzzospulrzkvqzmuwnusmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "d1f023188cfe4daf713e1c8b4bfb9db23a24ccc3e1a1ff01555a220ee45e912d"
+    },
+    {
+      "change_id": "tuppllptypzurwssmrsnpqxmmrxryswn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-058: the receiver campaign's Maven cache lives in an old session's scratch folder",
+      "body": "The watcher's 2026-11-23 cleanup of ~/.cache/in-the-loop/agent-tmp/0cea9d0e-… removed the receiver campaign's Maven cache, which prepared.json files name by absolute path. The trusted-kernel-and-receiver-recovery setup restored it from a hard-link snapshot. VF-058 records the hazard, the check to run before cleaning any agent-tmp folder, and the lasting fix of a stable path. Documentation only.",
+      "log_sha256": "d1f023188cfe4daf713e1c8b4bfb9db23a24ccc3e1a1ff01555a220ee45e912d"
+    },
+    {
+      "change_id": "qyzskpnkqqkwvoookvuqklvmswxqzryq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261124-033410-qualify-long-range-fill-and-portable-gua: failed: 1 failed step(s) in 0.2s, peak 3.9 MiB (estimated 1m00s, 1.0 GiB) 20261124-033453-audit-historical-induction-queries-again: failed: 1 passed, 1 failed step(s) in 1.7s, peak 119.0 MiB (estimated 1m00s, 1.0 GiB) 20261124-033937-check-five-original-array-contracts-thro: failed: 1 failed step(s) in 0.2s, peak 11.8 MiB (estimated 2m00s, 1.0 GiB) Collected by the watcher of the trusted-kernel-and-receiver-recovery run, which keeps the queue while the run is under way.",
+      "log_sha256": "d1f023188cfe4daf713e1c8b4bfb9db23a24ccc3e1a1ff01555a220ee45e912d"
     }
   ],
   "logs": {
@@ -215,12 +301,6 @@
       "gzip_bytes": 629877,
       "url": null
     },
-    "4fc601ff9a34c3a2738802ab8d69f1562cf61d6cdfd7ccdd1279d5badc424cb5": {
-      "bytes": 4894353,
-      "lines": 2186,
-      "gzip_bytes": 979466,
-      "url": null
-    },
     "561e8e63f0b058a7a2c419f3a3923b4904389f7cb94bd165663a67c6bce0847b": {
       "bytes": 2777265,
       "lines": 1067,
@@ -233,6 +313,12 @@
       "gzip_bytes": 447201,
       "url": null
     },
+    "d1f023188cfe4daf713e1c8b4bfb9db23a24ccc3e1a1ff01555a220ee45e912d": {
+      "bytes": 6982234,
+      "lines": 3226,
+      "gzip_bytes": 1419700,
+      "url": null
+    },
     "d6e20bcbb3b48867844db99ffe337e837b4df89753d6d2e55a491f6e8c99c3e7": {
       "bytes": 4131031,
       "lines": 2083,
@@ -243,6 +329,12 @@
       "bytes": 3852329,
       "lines": 1817,
       "gzip_bytes": 767253,
+      "url": null
+    },
+    "f5c7fde4eb938fdcb1294fe16434765b6198fbbb1da3e68e1da8bb2bff225136": {
+      "bytes": 6180294,
+      "lines": 2734,
+      "gzip_bytes": 1275734,
       "url": null
     },
     "fa9f686cbf3f293f3864e089124b3bcd0007352e47d935295e0df518a4baa2e7": {

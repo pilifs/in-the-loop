@@ -1947,6 +1947,16 @@ def _probe(exe, sides, target, env, workdir, attempt, paths=None):
 
 
 def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
+    """Run the ordinary verifier through its frozen runtime interface."""
+    return _run_verifier(plan, prepared, workdir, before_launch=before_launch, timeout=timeout, certify_lrat=False)
+
+
+def run_verifier_with_lrat(plan, prepared, workdir, *, before_launch, timeout):
+    """Run the same invocation with a private clause transcript and SAT model capture."""
+    return _run_verifier(plan, prepared, workdir, before_launch=before_launch, timeout=timeout, certify_lrat=True)
+
+
+def _run_verifier(plan, prepared, workdir, *, before_launch, timeout, certify_lrat):
     """The verifier on the prepared artifacts, with the plan's engine, gaps and bounds: one raw ExecutionRecord
     (kind `verifier`; revision None for a pair), or Unsupported.
 
@@ -2015,6 +2025,9 @@ def run_verifier(plan, prepared, workdir, *, before_launch=None, timeout=None):
             argv = (*argv[:at], rel(local_lemmas), *argv[at+1:])
             identities["checkedLemmas"] = dict(plan.checkedLemmas)
         env = _verifier_env(jdk)
+        if certify_lrat:
+            env["JVMCONTRACT_TRANSCRIPTS"] = str((workdir / "solver-traces").resolve())
+            env["JVMCONTRACT_LRAT_MODELS"] = "1"
         logical = None
         if plan.engine == "native":
             env["JVMCONTRACT_JAR_RELEASE"] = jdk["feature"]

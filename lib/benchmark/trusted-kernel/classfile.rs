@@ -46,6 +46,7 @@ enum Cp<'a> {
     Class(u16),
     NameType(u16, u16),
     Method(u16, u16),
+    Field(u16, u16),
 }
 
 pub struct Code<'a> {
@@ -63,6 +64,7 @@ pub struct Class<'a> {
     pub owner: &'a str,
     pub parent: &'a str,
     methods: Vec<Code<'a>>,
+    fields: Vec<(u16, &'a str, &'a str)>,
 }
 
 impl<'a> Class<'a> {
@@ -94,7 +96,8 @@ impl<'a> Class<'a> {
                     r.take(2)?;
                     Cp::Other
                 }
-                9 | 11 | 17 | 18 => {
+                9 => Cp::Field(r.u2()?, r.u2()?),
+                11 | 17 | 18 => {
                     r.take(4)?;
                     Cp::Other
                 }
@@ -121,6 +124,7 @@ impl<'a> Class<'a> {
             owner: "",
             parent: "",
             methods: vec![],
+            fields: vec![],
         };
         file.owner = file.class_name(r.u2()?)?;
         let parent = r.u2()?;
@@ -130,7 +134,10 @@ impl<'a> Class<'a> {
         let interfaces = r.u2()? as usize;
         r.take(2 * interfaces)?;
         for _ in 0..r.u2()? {
-            r.take(6)?;
+            let flags = r.u2()?;
+            let name = file.utf(r.u2()?)?;
+            let desc = file.utf(r.u2()?)?;
+            file.fields.push((flags, name, desc));
             r.attributes()?;
         }
         for _ in 0..r.u2()? {
@@ -177,6 +184,18 @@ impl<'a> Class<'a> {
             Some(Cp::Class(name)) => self.utf(*name),
             _ => Err(reject("invalid CONSTANT_Class reference")),
         }
+    }
+    pub fn local_static_bool(&self, index: u16) -> Result<bool> {
+        let Some(Cp::Field(owner, nt)) = self.cp.get(index as usize) else {
+            return Err(reject("getstatic requires a field reference"));
+        };
+        let Some(Cp::NameType(name, desc)) = self.cp.get(*nt as usize) else {
+            return Err(reject("invalid field NameAndType"));
+        };
+        let name = self.utf(*name)?;
+        let desc = self.utf(*desc)?;
+        Ok(self.class_name(*owner)? == self.owner && desc == "Z"
+            && self.fields.iter().any(|(flags, n, d)| flags & 8 != 0 && *n == name && *d == desc))
     }
     pub fn method_ref(&self, i: u16) -> Result<(&'a str, &'a str, &'a str)> {
         let Some(Cp::Method(class, pair)) = self.cp.get(i as usize) else {

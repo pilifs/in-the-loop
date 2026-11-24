@@ -61,7 +61,7 @@ def collect(table, spec, role, head, keys):
             if role == "caller" and ins.op == "iaload":
                 kinds.extend(["shared-in-range", "shared-outside-range", "distinct-root"])
             if role == "fill":
-                if ins.op == "iastore":
+                if ins.op in ("iastore", "lastore"):
                     kinds.append("in-bounds-prefix-store")
                 if ins.op == "iinc":
                     kinds.append("no-signed-overflow")
