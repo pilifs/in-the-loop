@@ -8,10 +8,9 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
-import tempfile
 import zipfile
 
-from history import HERE, ROOT, OUTPUT, JBMC, MODELS, benchmark, digest, encoded
+from history import scratch, HERE, ROOT, OUTPUT, JBMC, MODELS, benchmark, digest, encoded
 from stock_history import RELOCATOR, classpath, stock_run
 
 sys.path.insert(0, str(ROOT / "examples/tools"))
@@ -179,7 +178,7 @@ def main():
     args = p.parse_args()
     out = args.output or OUTPUT / args.phase / "wire"
     out.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix="lucene-wire-") as tmp:
+    with scratch(prefix="lucene-wire-") as tmp:
         work = Path(tmp)
         env, jars, cp, record = prepare(work)
         os.environ.update({k: env[k] for k in ("JAVA_HOME", "PATH", "JVMCONTRACT_JAR_RELEASE")})

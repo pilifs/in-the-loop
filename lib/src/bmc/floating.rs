@@ -1,12 +1,14 @@
 //! JVM comparisons over IEEE 754 interchange bits. The stack carries the raw word until an
 //! opcode or a method descriptor supplies its interpretation. Primitive conversions and comparisons use
 //! bit-vector circuits. Addition and subtraction over a proved band of normal exponents use a
-//! rounded fixed-point circuit. The remaining arithmetic enumerates exhaustively covered operand tuples.
+//! rounded fixed-point circuit. Multiplication on fixed normal exponents rounds the complete
+//! significand product. Other arithmetic enumerates exhaustively covered operand tuples.
 
 use super::{unsupported, ArithOp, Bits, Blaster, Engine, Kind, Lit, Model, Narrow, Path, Step, Stop, Val, FALSE, TRUE};
 use crate::interp::Value;
 
 mod binade;
+mod product;
 
 fn fraction_width(bits: &Bits) -> usize {
     match bits.len() {
@@ -450,6 +452,13 @@ impl Engine<'_> {
             let x = self.pop_word(path, kind)?;
             if matches!(op, ArithOp::Add | ArithOp::Sub) {
                 if let Some(word) = self.bounded_binade_sum(path, &x, &y, op == ArithOp::Sub)? {
+                    self.push(path, if kind == Kind::Double { Val::J(word) } else { Val::I(word) });
+                    self.advance(path);
+                    return Ok(None);
+                }
+            }
+            if op == ArithOp::Mul {
+                if let Some(word) = self.fixed_exponent_product(path, &x, &y)? {
                     self.push(path, if kind == Kind::Double { Val::J(word) } else { Val::I(word) });
                     self.advance(path);
                     return Ok(None);

@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-071530-check-exact-rounded-products-on-public-v",
+  "title": "Check exact rounded products on public vecmath and Commons Math callers",
+  "description": "Use the native fixed-exponent significand product on the vecmath normal and underflow slice, replay the positivity and unrounded-product negative controls, then transfer the frozen arithmetic to the independent binary64 Commons Math scalarMultiply caller. Keep all integrated and stock target and reachability outcomes on the original domains.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "jvm:floating-point",
+    "jbmc:standalone"
+  ],
+  "links": {
+    "paths": [
+      "lib/src/bmc/floating/product.rs"
+    ]
+  },
+  "expected": "Five emitted rows and ten physical JVM controls. For each retain native and comparator verdicts, whether the reach control failed, and actual replay of a reported counterexample.",
+  "submitted": {
+    "at": "2026-11-24T07:15:30+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 23,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "7m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "Public normal, gradual underflow, and binary64 transfer",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified N01-N02 N10",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/N01-N02",
+    "verification/beyond-jbmc/qualified/N10"
+  ]
+}

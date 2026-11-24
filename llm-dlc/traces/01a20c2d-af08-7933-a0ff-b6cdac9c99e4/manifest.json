@@ -12,29 +12,30 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T07:11:54.417Z",
-  "duration_seconds": 3664,
+  "ended": "2026-11-24T07:19:52.157Z",
+  "duration_seconds": 4141,
   "stats": {
     "turns": 1,
-    "api_calls": 230,
-    "tool_calls": 628,
+    "api_calls": 266,
+    "tool_calls": 697,
     "tool_errors": 16,
     "compactions": 0,
-    "peak_context_tokens": 367964,
+    "peak_context_tokens": 393751,
     "usage": {
-      "input_tokens": 534675,
-      "output_tokens": 105901,
-      "cache_read_input_tokens": 56232704,
+      "input_tokens": 550131,
+      "output_tokens": 118383,
+      "cache_read_input_tokens": 69881984,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 385,
-    "exec": 229,
-    "apply_patch": 13,
+    "Bash": 417,
+    "exec": 265,
+    "apply_patch": 14,
     "send_message_to_user_async": 1
   },
   "files_touched": [
+    "lib/benchmark/beyond-jbmc/history_report.py",
     "lib/benchmark/beyond-jbmc/seal_panel.py",
     "lib/benchmark/beyond-jbmc/stock_history.py",
     "lib/benchmark/beyond-jbmc/wire_campaign.py",
@@ -48,24 +49,24 @@
     {
       "index": 0,
       "started": "2026-11-24T06:10:50.814Z",
-      "ended": "2026-11-24T07:11:54.417Z",
+      "ended": "2026-11-24T07:19:52.157Z",
       "turns": 1,
-      "api_calls": 230,
+      "api_calls": 266,
       "usage": {
-        "input_tokens": 534675,
-        "output_tokens": 105901,
-        "cache_read_input_tokens": 56232704,
+        "input_tokens": 550131,
+        "output_tokens": 118383,
+        "cache_read_input_tokens": 69881984,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 367964
+      "peak_context_tokens": 393751
     }
   ],
   "log": {
-    "sha256": "98f7b2a99164f8cbe7167ef829224a3c9d5e9df78b5281dbd068b34e52ca90e9",
-    "bytes": 4160647,
-    "lines": 1811,
-    "gzip_bytes": 827312,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/98f7b2a99164f8cbe7167ef829224a3c9d5e9df78b5281dbd068b34e52ca90e9.jsonl.gz"
+    "sha256": "4781ad79d6234e37ad2e7fb125d5386a399482ac6e5e13eaf81aff4c42eac5c6",
+    "bytes": 4506926,
+    "lines": 2066,
+    "gzip_bytes": 878201,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/4781ad79d6234e37ad2e7fb125d5386a399482ac6e5e13eaf81aff4c42eac5c6.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -108,6 +109,22 @@
       "summary": "Verify plain byte-array views on released callers (verification pending)",
       "body": "Bind the OpenJDK 21 byte-array VarHandle factory, singleton byte order and exact plain integral access descriptors. Check the complete width before updating original array storage. Keep handle identity, non-plain access and unbound images outside the supported scope. Allow the qualified bootstrap VarHandle presence lookup that Guava uses to select the implementation.\n\nStrict probes verified both all-int Lucene 8 to 9 byte reversal and the independent Guava public FarmHash caller over every long. Public controls passed on the original JVM. The changed Rust and Python tests passed, as did 24 pairing tests after the reflective lookup change. Job 20261124-065441-qualify-released-lucene-varhandle-reads compares the full wire controls. Job 20261124-065453-freeze-vecmath-and-commons-math-multipli records the public floating-point opening before arithmetic changes.",
       "log_sha256": "98f7b2a99164f8cbe7167ef829224a3c9d5e9df78b5281dbd068b34e52ca90e9"
+    },
+    {
+      "change_id": "lvkxtzsomwvnkpmtxlouqlvuuzxnryux",
+      "commit_id": null,
+      "immutable": false,
+      "summary": null,
+      "body": "",
+      "log_sha256": "4781ad79d6234e37ad2e7fb125d5386a399482ac6e5e13eaf81aff4c42eac5c6"
+    },
+    {
+      "change_id": "xwxmuoysuzxsxvuomupxwszwlxwptpvp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Round wide symbolic floating products exactly (verification pending)",
+      "body": "Prove the two input exponents fixed before multiplying their complete binary32 or binary64 significands. Round once with the guard, sticky and retained bits, including gradual underflow, overflow and signed zero. The least-subnormal tie is characterized from both significands. Other operand domains retain the existing fallback.\n\nNative proved the vecmath range and sign relation on all 2^46 admitted float pairs and transferred unchanged to the Commons Math zero boundary on all 2^104 admitted double pairs. The in-process rounding regression passed on both precisions and the changed-file test run and cost lint passed. Job 20261124-071530-check-exact-rounded-products-on-public-v checks both engines, stock and physical controls. Campaign measurements now keep job scratch under the machine cache.",
+      "log_sha256": "4781ad79d6234e37ad2e7fb125d5386a399482ac6e5e13eaf81aff4c42eac5c6"
     }
   ],
   "logs": {
@@ -115,6 +132,12 @@
       "bytes": 3142529,
       "lines": 1115,
       "gzip_bytes": 676753,
+      "url": null
+    },
+    "4781ad79d6234e37ad2e7fb125d5386a399482ac6e5e13eaf81aff4c42eac5c6": {
+      "bytes": 4506926,
+      "lines": 2066,
+      "gzip_bytes": 878201,
       "url": null
     },
     "4a9613a91f08b31805b7f97d1695035cec13c1d4168b5c1bb7f4569fad27382b": {

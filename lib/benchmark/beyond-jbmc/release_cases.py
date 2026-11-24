@@ -3,10 +3,9 @@ import argparse
 import gzip
 import os
 from pathlib import Path
-import tempfile
 import zipfile
 
-from history import HERE, ROOT, OUTPUT, JBMC, MODELS, benchmark, digest, encoded
+from history import scratch, HERE, ROOT, OUTPUT, JBMC, MODELS, benchmark, digest, encoded
 from stock_history import classpath, stock_run
 from campaign import JDK, compile_java, javaenv, jvm_controls, replay_witness
 from subjects import Claim, Subject
@@ -63,7 +62,7 @@ def run(key, phase, out, physical_only):
     checker = str(Path(os.environ.get("JVMCONTRACT", ROOT/"lib/target/release/jvmcontract")).resolve())
     if digest(JDK/"lib/modules") != "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c":
         raise ValueError("subject JDK differs")
-    with tempfile.TemporaryDirectory(prefix="released-java-") as tmp:
+    with scratch(prefix="released-java-") as tmp:
         work = Path(tmp)
         classes = work / "claims"
         # The controls also call the Guava public transfer.

@@ -7,10 +7,9 @@ import os
 from pathlib import Path
 import re
 import subprocess
-import tempfile
 import zipfile
 
-from history import HERE, JDK, JBMC, MODELS, OUTPUT, ROOT, benchmark, check_pin, digest, encoded, input_files, population
+from history import scratch, HERE, JDK, JBMC, MODELS, OUTPUT, ROOT, benchmark, check_pin, digest, encoded, input_files, population
 from standalone import decode  # the existing JBMC JSON property reader
 
 RELOCATOR = ROOT / "examples/tools/contracts/src/main/java/net/terminalvalue/contracts/Relocate.java"
@@ -257,7 +256,7 @@ def replay(name, row, cp, helpers):
 def run(phase, out, prepare_only):
     os.environ.update(JAVA_HOME=str(JDK), PATH=str(JDK / "bin") + os.pathsep + os.environ["PATH"])
     cases, _ = population()
-    with tempfile.TemporaryDirectory(prefix="stock-history-") as tmp:
+    with scratch(prefix="stock-history-") as tmp:
         build = Path(tmp)
         pin, source = check_pin(build)
         subjects, classes, helpers = adapters(build, cases, source)

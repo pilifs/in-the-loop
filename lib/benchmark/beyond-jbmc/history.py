@@ -25,6 +25,16 @@ MODELS = Path("/usr/lib/core-models.jar")
 JBMC = Path("/usr/bin/jbmc")
 
 
+def scratch(**kwargs):
+    cache = Path.home() / ".cache/in-the-loop"
+    current = Path(os.environ.get("TMPDIR", "/tmp")).resolve()
+    if not current.is_relative_to(cache):
+        current = cache / "beyond-jbmc/tmp"
+        current.mkdir(parents=True, exist_ok=True)
+        os.environ["TMPDIR"] = str(current)
+    return tempfile.TemporaryDirectory(dir=current, **kwargs)
+
+
 def encoded(obj):
     return (json.dumps(obj, indent=1, ensure_ascii=False) + "\n").encode()
 
@@ -93,7 +103,7 @@ def make_pin():
     checker = ROOT / "lib/target/release/jvmcontract"
     if subprocess.check_output(["git", "rev-parse", START + ":lib/src"], cwd=ROOT).strip() != b"61ade3dd4715d99f6fbc88223b50418d6a44ae8a":
         raise ValueError("unexpected opening checker tree")
-    PIN.write_bytes(encoded({
+    data = encoded({
         "format": "beyond-jbmc-historical/v1", "openingCommit": START, "historicalCommit": ORIGINAL,
         "archive": {"file": relative(FROZEN), "sha256": FROZEN_SHA},
         "openingBinaries": {p.name: digest(p) for p in (checker, java, JDK / "bin/javac", JDK / "lib/modules", JBMC, MODELS)},
@@ -101,7 +111,12 @@ def make_pin():
                      "engines": ["native", "jbmc"], "modes": ["strict"], "jbmcStaging": ["staged"],
                      "timeout": 120, "maxArrayLength": 8, "unwind": 16, "referenceSearch": 200000},
         "sourceGraphs": {k: [relative(p) for p in v] for k, v in sources.items()}, "filesSha256": files, "cases": rows,
-    }))
+    })
+    if PIN.exists() and PIN.read_bytes() != data:
+        raise ValueError("the historical manifest is already pinned")
+    if not PIN.exists():
+        with PIN.open("xb") as output:
+            output.write(data)
 
 
 def check_pin(folder):
@@ -131,7 +146,7 @@ def run(phase, out):
     out.mkdir(parents=True, exist_ok=True)
     checker = Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")).resolve()
     os.environ.update(JAVA_HOME=str(JDK), JVMCONTRACT_JAR_RELEASE="25", PATH=str(JDK / "bin") + os.pathsep + os.environ["PATH"])
-    with tempfile.TemporaryDirectory(prefix="beyond-jbmc-history-") as tmp:
+    with scratch(prefix="beyond-jbmc-history-") as tmp:
         build = Path(tmp)
         pin, source = check_pin(build)
         ids = [r["id"] for r in pin["cases"]]
@@ -172,7 +187,7 @@ if __name__ == "__main__":
     if args.action == "pin":
         make_pin()
     elif args.action == "check":
-        with tempfile.TemporaryDirectory() as tmp:
+        with scratch() as tmp:
             pin, _ = check_pin(Path(tmp))
             print(len(pin["cases"]), "original statements;", len(pin["filesSha256"]), "original source and oracle files verified")
     else:
