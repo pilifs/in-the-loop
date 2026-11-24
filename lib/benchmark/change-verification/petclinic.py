@@ -190,6 +190,40 @@ def check_deployment(name, classes, deps, registration, work, env):
         "childRssHighWaterKiB": usage.ru_maxrss}}
 
 
+def framework_plan(checker, subjects, measured, registration):
+    paths = {"old": [subjects["before"][1], *subjects["before"][2]],
+             "new": [subjects["after"][1], *subjects["after"][2]]}
+    inventory = change_inventory.framework_inventory(checker, paths, {"old": JDK, "new": JDK})
+    required = {"startup": ["GET /owners/new"], "reject-owner": ["POST /owners/new", "GET /owners"],
+                "create-and-read-owner": ["POST /owners/new", "GET /owners/{ownerId}", "GET /owners"]}
+    declared = {r["id"]: r for r in registration["productionWorkflows"]}
+    if required.keys() != declared.keys():
+        raise ValueError("registered Petclinic workflow denominator changed")
+    entries = {}
+    for side in ("old", "new"):
+        entries[side] = {entry["id"]: entry["handler"] for entry in inventory[side]}
+    claims = []
+    for name, deployment in measured["deployments"].items():
+        for workflow, spec in declared.items():
+            status = deployment["claims"][workflow]
+            claims.append({"id": f"{name}/{workflow}", "claimKey": change_inventory.digest([spec, registration["independentExamples"]]),
+                           "executionKey": deployment["executionKey"], "scope": spec, "status": status,
+                           "source": "two original HTTP trials, compared against separate clean launches",
+                           "firstOpenDependency": f"{name}/startup" if status == "open" and workflow != "startup" else None,
+                           "dependsOn": [] if workflow == "startup" else [{"id": f"{name}/startup",
+                                           "reason": "requires a live container and the actual owner repository",
+                                           "rule": "startup enables the observation; its HTTP and database effects require their own trials"}]})
+    by_entry = {entry: [w for w, routes in required.items() if entry in routes]
+                for entry in entries["old"].keys() | entries["new"].keys()}
+    return {"schema": "java-change-plan/v1", "change": "Spring Petclinic on Spring Boot 2.7.3 and 3.0.0",
+            "claims": claims, "comparatorSha256": upgrade_replay.sha(checker),
+            "entryInventory": [{"id": entry, "old": entries["old"].get(entry), "new": entries["new"].get(entry),
+                                "workflows": by_entry[entry], "disposition": "in registered workflows" if by_entry[entry]
+                                else "open: outside the frozen acceptance examples"} for entry in sorted(by_entry)],
+            "discoveryMisses": {s: sorted({r for routes in required.values() for r in routes} - e.keys()) for s, e in entries.items()},
+            "obligations": inventory["obligations"]}
+
+
 def run(args, work):
     registration = json.loads((HERE / "petclinic.json").read_text())
     env = {**os.environ, "JAVA_HOME": str(JDK), "PATH": str(JDK / "bin") + ":" + os.environ["PATH"],
@@ -212,6 +246,16 @@ def run(args, work):
             report["builds"][side] = {"status": "open", "reason": str(error)}
     if len(subjects) != 2:
         return report
+    if args.rebind:
+        measured = json.loads(args.rebind.read_bytes())
+        if measured["registrationSha256"] != report["registrationSha256"] or measured["jdk"] != report["jdk"]:
+            raise ValueError("the held-back registration or runtime image changed")
+        for side, rebuilt in report["builds"].items():
+            if any(rebuilt[k] != measured["builds"][side][k] for k in ("commit", "pom", "runtime", "classes")):
+                raise ValueError(f"{side}: built client or runtime graph differs from the measured deployment")
+        result = framework_plan(args.checker, subjects, measured, registration)
+        result["measurementSha256"] = upgrade_replay.sha(args.rebind)
+        return result
     old, before, old_deps = subjects["before"]
     _, after, new_deps = subjects["after"]
     _, report["unchangedSourceBuild"] = compile_source(old, new_deps, work / "unchanged-classes", env)
@@ -246,10 +290,15 @@ if __name__ == "__main__":
     ap.add_argument("--output", required=True, type=Path)
     ap.add_argument("--mirror", type=Path, help="optional local bare clone containing the registered commits")
     ap.add_argument("--maven-cache", type=Path, help="writable cache for the original runtime dependency graphs")
+    ap.add_argument("--rebind", type=Path, help="bind an existing measured migration to both application observation inventories")
+    ap.add_argument("--checker", type=Path, default=Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")))
     args = ap.parse_args()
     with tempfile.TemporaryDirectory(prefix="held-back-petclinic-") as temp:
         result = run(args, Path(temp).resolve())
     change_evidence.write_json(args.output, result)
+    if args.rebind and "claims" in result:
+        print(f"{len(result['claims'])} deployment/workflow obligations, discovery misses {result['discoveryMisses']}")
+        sys.exit(0)
     if not result["deployments"]:
         sys.exit("held-back preparation open: see the build diagnoses")
     if not all(d["cleanEquivalent"] for d in result["deployments"].values()):

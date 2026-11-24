@@ -13,6 +13,8 @@ python3 examples/tools/targets/workflow_handoff.py handoff 353 --markdown
 
 The `records` folder in each example contains original Maven build and Surefire records, plus the first native and finite attempts and later reruns. Receipts record original JAR hashes, production-class bytes, the ordered runtime classpath, the JDK and the verifier. For Avro, that classpath includes the Hadoop client supplied by the host. The same target recipes support this repository's ordinary `build.py NNN --task replay` and queued native, native-selector and finite-domain jobs.
 
+The published recount reads the grader, receipts and selector archives from the local Git revision in [receipt-set.json](receipt-set.json). To include subsequent attempts, run `python3 lib/benchmark/organic-java/report.py --current --output PATH`.
+
 A receipt retains the size and SHA-256 of a large JVM stream plus its first 512 KiB. For a public finite grid that exceeds it, `public_observations.py NNN` repeats the same original JVM controls, checks every byte against that receipt and retains whole JSON rows in small text files. The scorecard joins and validates these files before counting a grid.
 
 The scorecard links the latest fixed-side Commons Lang and Eclipse selector proofs directly to the collector archives. The normal selector evidence reader checks the archive manifest and the raw results for all 1,515 windows and 2,865 insertions.
