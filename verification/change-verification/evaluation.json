@@ -1,0 +1,315 @@
+{
+  "schema": "change-verification-evaluation/v1",
+  "receipts": [
+    {
+      "path": "verification/change-verification/importer.json",
+      "sha256": "69adf1ccdaaa0684d7b28ca79d385b6d3895b69e62eaa3dbaff701382024a218"
+    },
+    {
+      "path": "verification/change-verification/wire/summary.json",
+      "sha256": "25fa82b820dd1050f03b91e641a171c29f60f70b2993404ffd7fe184bf30c62b"
+    },
+    {
+      "path": "verification/change-verification/portfolio.json",
+      "sha256": "099a4e5fe9e2047e88035e65391c6c1a74b98aa5d0c6d526a042b0259b6d2403"
+    },
+    {
+      "path": "verification/change-verification/petclinic-cost.json",
+      "sha256": "7e1b46c1d60ae5de61792c114f15359f44a6c1bd2248918e0bdd0cc2a832d577"
+    },
+    {
+      "path": "verification/change-verification/petclinic-plan.json",
+      "sha256": "f924611c244a5b98360ee75467e4cff3bad1460627e9c6b58f4069559133dc8e"
+    },
+    {
+      "path": "verification/change-verification/solvers/summary.json",
+      "sha256": "08b9b7522b6abf966f9abd3f88670a03a51c911145a030d7da5c94521d7bd4d2"
+    },
+    {
+      "path": "verification/results/2026/11/24/20261124-015038-compare-six-wire-change-plans-against-in/result.json",
+      "sha256": "3548c49be26ba2ff3f9995d9b64b9f9257aeaed109aa6f602b33317ebc7033b0"
+    },
+    {
+      "path": "verification/results/2026/11/24/20261124-020655-evaluate-the-registered-petclinic-2-7-to/result.json",
+      "sha256": "14b0e2d47f5d4ac6574731aa3347bc30f38919ddfdb191be8fc58b46e54596f2"
+    },
+    {
+      "path": "verification/results/2026/11/24/20261124-022228-measure-petclinic-cold-and-exact-reruns/result.json",
+      "sha256": "60accba18367ec7a1ca19554bfdddc2fd40d02ef1c71c3feae03a0c42a322ffb"
+    },
+    {
+      "path": "verification/results/2026/11/24/20261124-020146-retry-java-semantics-callers-before-rece/result.json",
+      "sha256": "315f7b29f397cd523c4ef779cdc3d157e4845dbf7a501454920884d84a63098b"
+    },
+    {
+      "path": "verification/results/2026/11/24/20261124-014943-replay-the-guava-change-plan-nodes-and-i/result.json",
+      "sha256": "412417bc5319f615665c64bced923cb89bd30fd2f6ed22d7a0cb2fcca4e40466"
+    },
+    {
+      "path": "verification/results/2026/11/24/20261124-021637-compare-bounded-solvers-on-eclipse-inser/result.json",
+      "sha256": "1db234718efad840da3a5ba36c9ba83672918f60ca03e9cf7fd9745e2e102dc0"
+    }
+  ],
+  "importer": {
+    "primary": {
+      "established": 5,
+      "refuted": 7
+    },
+    "control": {
+      "established": 4,
+      "refuted": 0
+    }
+  },
+  "wire": {
+    "claims": {
+      "response": {
+        "cohort": "registered",
+        "inputs": 2,
+        "status": "established",
+        "outcomes": [
+          {
+            "old": {
+              "return": "(519) 867-5309"
+            },
+            "new": {
+              "return": "(519) 867-5309"
+            }
+          },
+          {
+            "old": {
+              "return": "123"
+            },
+            "new": {
+              "return": "123"
+            }
+          }
+        ]
+      },
+      "request": {
+        "cohort": "additional",
+        "inputs": 2,
+        "status": "refuted",
+        "outcomes": [
+          {
+            "old": {
+              "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
+            },
+            "new": {
+              "throws": "java.lang.NoSuchMethodError"
+            }
+          },
+          {
+            "old": {
+              "return": "CgMxMjM="
+            },
+            "new": {
+              "throws": "java.lang.NoSuchMethodError"
+            }
+          }
+        ]
+      }
+    },
+    "configurations": 6,
+    "exact": {
+      "wallSeconds": 7.682,
+      "cpuSeconds": 10.0285,
+      "peakRssBytes": 106528768,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    },
+    "clean": {
+      "wallSeconds": 16.991,
+      "cpuSeconds": 20.5809,
+      "peakRssBytes": 106606592,
+      "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+    },
+    "sideActions": {
+      "response": {
+        "old": "exact reuse",
+        "new": "exact reuse"
+      },
+      "request": {
+        "old": "exact reuse",
+        "new": "executed"
+      }
+    }
+  },
+  "semanticFamilies": 15,
+  "native": {
+    "proved": 33,
+    "refuted": 24,
+    "open": 3
+  },
+  "jbmc": {
+    "proved": 7,
+    "open": 34,
+    "refuted": 17,
+    "JVM-contradicted proof": 2
+  },
+  "receiverSites": 9,
+  "sharedSpringBlockers": [
+    {
+      "key": "a88fe343bff495cb4d3b6c8bb2143ab6a79f3436739807c208a0383bbebb0a37",
+      "roots": [
+        "368/beans-release",
+        "368/ledger-release"
+      ],
+      "count": 2,
+      "rule": "retry each ordinary caller after the missing semantics is supplied"
+    },
+    {
+      "key": "04179fca2baa328beb57798f3805781f476a1f4b27638c64c0f2fed29b13090f",
+      "roots": [
+        "370/fluent-names-landed",
+        "370/fluent-decision-landed"
+      ],
+      "count": 2,
+      "rule": "retry each ordinary caller after the missing semantics is supplied"
+    },
+    {
+      "key": "f1a1fe69053cfcdf9dcae0f44f53113cb90160806e50d059cd9d4be36c60f134",
+      "roots": [
+        "374/annotated-landed",
+        "374/preservation-landed"
+      ],
+      "count": 2,
+      "rule": "retry each ordinary caller after the missing semantics is supplied"
+    },
+    {
+      "key": "ec787c33e951d36cac643aa86768e321c08dc4d8462a5cb2b3cdb2fb58276e71",
+      "roots": [
+        "374/annotated-parent",
+        "374/preservation-parent"
+      ],
+      "count": 2,
+      "rule": "retry each ordinary caller after the missing semantics is supplied"
+    }
+  ],
+  "petclinic": {
+    "sourceBuild": {
+      "status": "failed",
+      "diagnoses": [
+        "package javax.persistence does not exist",
+        "cannot find symbol",
+        "package javax.validation.constraints does not exist",
+        "package javax.validation does not exist"
+      ]
+    },
+    "denominator": [
+      "create-and-read-owner",
+      "reject-owner",
+      "startup"
+    ],
+    "deployments": {
+      "old": {
+        "startup": "established",
+        "reject-owner": "established",
+        "create-and-read-owner": "established"
+      },
+      "oldBinaryNewRuntime": {
+        "startup": "refuted",
+        "reject-owner": "open",
+        "create-and-read-owner": "open"
+      },
+      "adapted": {
+        "startup": "established",
+        "reject-owner": "established",
+        "create-and-read-owner": "established"
+      }
+    },
+    "discoveryMisses": {
+      "old": [],
+      "new": []
+    },
+    "fullCost": {
+      "cold": {
+        "wallSeconds": 39.526,
+        "cpuSeconds": 63.8243,
+        "peakRssBytes": 334602240,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children",
+        "actions": {
+          "old": "executed",
+          "oldBinaryNewRuntime": "executed",
+          "adapted": "executed"
+        },
+        "preparationSeconds": 15.812199999999999
+      },
+      "exact": {
+        "wallSeconds": 13.526,
+        "cpuSeconds": 23.0027,
+        "peakRssBytes": 252563456,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children",
+        "actions": {
+          "old": "exact reuse",
+          "oldBinaryNewRuntime": "executed",
+          "adapted": "exact reuse"
+        },
+        "preparationSeconds": 5.462899999999999
+      },
+      "clean": {
+        "wallSeconds": 28.908,
+        "cpuSeconds": 54.2049,
+        "peakRssBytes": 325226496,
+        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children",
+        "actions": {
+          "old": "executed",
+          "oldBinaryNewRuntime": "executed",
+          "adapted": "executed"
+        },
+        "preparationSeconds": 5.2982
+      }
+    }
+  },
+  "solverComparison": [
+    {
+      "task": "returns-fix",
+      "claimKey": "466c06144aecd2b8",
+      "routes": {
+        "cadical": {
+          "status": "established",
+          "checkerSeconds": 17.129,
+          "wallSeconds": 17.7566
+        },
+        "bitwuzla-words:preprocess=0": {
+          "status": "established",
+          "checkerSeconds": 11.005,
+          "wallSeconds": 11.6032
+        }
+      },
+      "disputed": false
+    },
+    {
+      "task": "contents-parent",
+      "claimKey": "c5dc7698b71289a5",
+      "routes": {
+        "cadical": {
+          "status": "refuted",
+          "checkerSeconds": 5.882,
+          "wallSeconds": 6.9397
+        },
+        "bitwuzla-words:preprocess=0": {
+          "status": "refuted",
+          "checkerSeconds": 1.975,
+          "wallSeconds": 3.0648
+        }
+      },
+      "disputed": false
+    },
+    {
+      "task": "page-fix-fix",
+      "claimKey": "a355823352dfdc1f",
+      "routes": {
+        "cadical": {
+          "status": "unresolved",
+          "checkerSeconds": 60.587,
+          "wallSeconds": 61.0094
+        },
+        "bitwuzla-words:preprocess=0": {
+          "status": "unresolved",
+          "checkerSeconds": 67.617,
+          "wallSeconds": 68.1576
+        }
+      },
+      "disputed": false
+    }
+  ]
+}

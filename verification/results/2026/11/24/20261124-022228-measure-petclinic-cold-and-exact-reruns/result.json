@@ -1,0 +1,172 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-022228-measure-petclinic-cold-and-exact-reruns",
+  "title": "Measure Petclinic cold and exact reruns from original sources",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m22s, peak 510.4 MiB (estimated 3m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-022228-measure-petclinic-cold-and-exact-reruns.json",
+    "sha256": "866732aea493e7a636eaf61a09ad6550f374c161ee989b0d1e7987c8c322cd74",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-022228-measure-petclinic-cold-and-exact-reruns",
+      "title": "Measure Petclinic cold and exact reruns from original sources",
+      "description": "Run the three frozen JDK 17 deployments in fresh verifier processes for a cold baseline, exact rerun and clean comparison. Resolve the original Maven graph and compile all sources even on a hit. Re-execute failed startup and compare all observed effects, intents, execution bindings and input scopes to clean, including the unchanged-source compiler outcome.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "target:replay"
+      ],
+      "links": {},
+      "expected": "All deployment outcomes match at unchanged scope, and exact positive reuse and repeated failed starts have measured total CPU, RSS and wall cost.",
+      "submitted": {
+        "at": "2026-11-24T02:22:28+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "maven",
+        "javac",
+        "java",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "memoryLimit": "4G",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Rebuild and compare all three whole-workflow passes",
+          "run": "python3 -B lib/benchmark/change-verification/petclinic.py --compare-passes --output verification/change-verification/petclinic-cost.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/change-verification/petclinic-cost.json"
+      ]
+    }
+  },
+  "sourceCommit": "9bae5fb66cafca944acd9278873a088f47e5a185",
+  "startedAt": "2026-11-24T02:31:48+00:00",
+  "finishedAt": "2026-11-24T02:33:17+00:00",
+  "wallSeconds": 89.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2665347,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 535212032,
+    "wallSeconds": 82.2,
+    "cpuSeconds": 141.7,
+    "memoryOfEstimate": 0.17,
+    "durationOfEstimate": 0.46
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Rebuild and compare all three whole-workflow passes",
+      "run": "python3 -B lib/benchmark/change-verification/petclinic.py --compare-passes --output verification/change-verification/petclinic-cost.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 82.187,
+      "cpuSeconds": 141.673,
+      "cpuThrottledSeconds": 36.451,
+      "peakMemoryBytes": 535212032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-rebuild-and-compare-all-three.log",
+        "lines": 1,
+        "bytes": 51,
+        "sha256": "612719f0f3503f87650615733bd2363672093096c07b081bcfc1840119696caf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'cold': 39.526, 'exact': 13.526, 'clean': 28.908}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/change-verification/petclinic-cost.json",
+      "change": "added",
+      "bytes": 39120,
+      "sha256": "7e1b46c1d60ae5de61792c114f15359f44a6c1bd2248918e0bdd0cc2a832d577",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T02:33:27+00:00",
+    "applied": [
+      "verification/change-verification/petclinic-cost.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T023317Z-7579808a772abc5e",
+      "outputs": "20261124T023317Z-779083f2e21c05ac",
+      "diff": "20261124T023317Z-796673f26903a901"
+    }
+  }
+}
