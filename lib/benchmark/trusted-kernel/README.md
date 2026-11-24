@@ -13,7 +13,9 @@
 | Truncated long comparison | Unsupported operation | `[0,4294967296]`, target 4294967296, returned 0 instead of 1 |
 | Extra wrapper local / same-value store | Unsupported / established | Both proved on their rebound bytes |
 
-An experimental issuer given a false frame premise supplied all the expected obligation keys and the mutant's correct digest. The consumer caught the store at PC 25 and replayed its effect. Omitting one exit's frame or substituting the other exit's frame also failed. The consumer was denied reads of the existing producer, verdict and cache. The historical producer was exercised in its original form. The behavior of a deliberately faulted historical producer remains unmeasured. [Issuer, controls and access checks](evidence/transfer/results.json)
+An experimental issuer given a false frame premise supplied all the expected obligation keys and the mutant's correct digest. The consumer caught the store at PC 25 and replayed its effect. Omitting one exit's frame or substituting the other exit's frame also failed. The consumer was denied reads of the existing producer, verdict and cache. [Issuer, controls and access checks](evidence/transfer/results.json)
+
+The change-plan run repeated this test with a private copy of the historical Python producer. On the heap-writing control its genuine frame query returned SAT. Giving that return edge a tautological frame premise made Z3 return UNSAT and the producer report the method established. Its own replay reproduced the error. Comparing with the genuine run detected differences in status, obligations and formula digest. The independent Rust consumer checked the freshly issued certificate and refuted the frame at store PC 25. The public call returned 0 and changed the singleton array from `[7]` to `[0]`. The seven-step replay passed in 15.8 seconds with a 2.3 GiB peak. [Bound control and witness](historical-frame-control.json) · [Verification receipt](../../../verification/results/2026/11/24/20261124-014943-replay-the-guava-change-plan-nodes-and-i/result.json)
 
 Lean 4.36.0 independently checked the scalar class from its complete 256 bytes. The `(I)I` bodies for multiply, add and shifted add are `05 1a 68 ac`, `1a 1a 60 ac` and `1a 1a 60 04 60 ac`. For every 32-bit input, multiply and add return `x+x` with the same heap. The shifted version differs at zero. Both theorems use `propext`, `Classical.choice` and `Quot.sound`. A Lean Guava proof would also require the larger constant pool, branching, private calls and loop induction. [Kernel source](Scalar.lean) · [Axiom output and checkpoint](evidence/scalar/measurements.json)
 
@@ -76,7 +78,7 @@ The next reuse measurement is the JDK `long[]` range-fill overload. Its disassem
 
 ## Replay
 
-The change planner can read two public-method results and eight individually certified Guava solver queries. Each node binds its frozen claim, artifacts, evidence, independent checker and assumptions. The query nodes retain their exact clause prefix and assumption units. Run `python3 -B lib/benchmark/trusted-kernel/change_nodes.py --check` to verify the projection against the experiment's frozen case table. [Change-plan evidence](change-nodes.json)
+Run `python3 examples/tools/build.py --change-plan example 336 --output plan.json` or substitute 346 for the long-array transfer. The plans expose the independently checked any-length contract when the current source lock matches. On 336 the bounded task links to the eight individually certified queries from its recorded native claim. Each one retains its exact clause prefix and assumption units. A changed binding moves the receipt into the historical list. Run `python3 -B lib/benchmark/trusted-kernel/change_nodes.py --check` to verify the projection against the experiment's frozen case table. [Change-plan evidence](change-nodes.json)
 
 From the repository root on the pinned Linux toolchain:
 
@@ -87,6 +89,7 @@ python3 -B "$K/consumer.py" rust "$K/requests/Longs.request" "$K/evidence/transf
 python3 -B "$K/consumer.py" lean "$K/requests/add.request" "$K/evidence/scalar/add.cert" "$K/inputs/Scalar.bin"
 python3 -B "$K/range_qualification.py" --check
 python3 -B "$K/frame_witness.py" --check
+python3 -B "$K/historical_frame_control.py" --check "$K/historical-frame-control.json"
 python3 -B "$K/bounded_sat.py" --check
 python3 -B "$K/decision_evidence.py" --check
 ```

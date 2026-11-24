@@ -14,11 +14,12 @@ import tarfile
 import tempfile
 import time
 from urllib.parse import urlencode, urlsplit
+from xml.etree import ElementTree
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "examples/tools"))
-from targets import change_evidence, change_inventory, upgrade_replay
+from targets import change_evidence, change_inventory, runtime, upgrade_replay
 
 JDK = Path.home() / ".sdkman/candidates/java/17.0.21.0+9-tem"
 MAIN = "org.springframework.samples.petclinic.PetClinicApplication"
@@ -123,7 +124,12 @@ def application(classes, jars, registration, work, env):
                 process.wait()
 
 
-def build_subject(mirror, side, registration, work, maven, env):
+def target_release(source):
+    version = ElementTree.parse(source / "pom.xml").findtext("{*}properties/{*}java.version")
+    return int(version.removeprefix("1."))
+
+
+def build_subject(mirror, side, registration, work, maven, env, historical=False):
     source = work / side
     source.mkdir()
     rev = registration[side]
@@ -133,8 +139,11 @@ def build_subject(mirror, side, registration, work, maven, env):
         contents.extractall(source, filter="data")
     classpath = source / "runtime.cp"
     argv = ["mvn", "-B", "-ntp", "-s", str(work / "settings.xml"), "-Dmaven.repo.local=" + str(maven),
+            "-Dmaven.artifact.threads=1",
             "-DincludeScope=runtime", "-Dmdep.outputFile=" + str(classpath),
             "org.apache.maven.plugins:maven-dependency-plugin:3.6.1:build-classpath"]
+    if not historical:
+        argv += ["resources:resources", "compiler:compile"]
     clock = time.monotonic()
     log = work / (side + "-resolve.log")
     with log.open("w") as out:
@@ -143,19 +152,29 @@ def build_subject(mirror, side, registration, work, maven, env):
         errors = [s for s in log.read_text(errors="replace").splitlines() if s.startswith("[ERROR]")]
         raise ValueError("Maven could not resolve the original runtime: " + next(iter(errors), str(proc.returncode))[:500])
     deps = [Path(p) for p in classpath.read_text().strip().split(os.pathsep)]
-    classes, build = compile_source(source, deps, source / "classes", env)
-    if classes is None:
-        raise ValueError("building the intended application: " + str(build))
+    if historical:
+        classes, build = compile_source(source, deps, source / "classes", env, release=17)
+        if classes is None:
+            raise ValueError("building the intended application: " + str(build))
+    else:
+        classes = source / "target/classes"
+        classfiles = list(classes.rglob("*.class"))
+        majors = {int.from_bytes(f.read_bytes()[6:8], "big") for f in classfiles}
+        release = target_release(source)
+        if not (classes / (MAIN.replace(".", "/") + ".class")).is_file() or majors != {release + 44}:
+            raise ValueError(f"{side}: Maven emitted class versions {majors} for target {release}")
+        build = {"status": "compiled", "goals": ["resources:resources", "compiler:compile"],
+                 "targetRelease": release, "classMajor": majors.pop(), "classFiles": len(classfiles)}
     return source, classes, deps, {"commit": rev, "pom": upgrade_replay.sha(source / "pom.xml"),
                                    "classes": change_inventory.file_digest(classes), "runtime": [
                                        {"name": j.name, "sha256": upgrade_replay.sha(j)} for j in deps],
                                    "compile": build, "seconds": round(time.monotonic() - clock, 4)}
 
 
-def compile_source(source, deps, dest, env):
+def compile_source(source, deps, dest, env, *, release):
     dest.mkdir()
     files = sorted((source / "src/main/java").rglob("*.java"))
-    result = subprocess.run([JDK / "bin/javac", "--release", "17", "-proc:none", "-parameters", "-g", "-encoding", "UTF-8",
+    result = subprocess.run([JDK / "bin/javac", "--release", str(release), "-proc:none", "-parameters", "-g", "-encoding", "UTF-8",
                              "-cp", os.pathsep.join(map(str, deps)), "-d", dest, *files], env=env,
                             text=True, capture_output=True, timeout=90)
     if result.returncode:
@@ -188,6 +207,22 @@ def check_deployment(name, classes, deps, registration, work, env):
         "wallSeconds": round(time.monotonic() - started, 4),
         "cpuSeconds": round(usage.ru_utime + usage.ru_stime - prior.ru_utime - prior.ru_stime, 4),
         "childRssHighWaterKiB": usage.ru_maxrss}}
+
+
+def positive_receipt(cache, key):
+    if cache and cache.is_file():
+        try:
+            stored = json.loads(cache.read_bytes())
+            evidence = stored["result"]
+            if (stored["key"] == key and stored["sha256"] == change_inventory.digest(evidence)
+                    and evidence["consistent"] and len(evidence["trials"]) == 2
+                    and evidence["trials"][0]["observations"] == evidence["trials"][1]["observations"]
+                    and set(evidence["claims"]) == {"startup", "reject-owner", "create-and-read-owner"}
+                    and all(v == "established" for v in evidence["claims"].values())):
+                return evidence
+        except (ValueError, KeyError, TypeError):
+            pass
+    return None
 
 
 def framework_plan(checker, subjects, measured, registration):
@@ -238,16 +273,19 @@ def run(args, work):
     report = {"schema": "held-back-change-result/v1", "registrationSha256": upgrade_replay.sha(HERE / "petclinic.json"),
               "jdk": change_inventory.jdk_binding(JDK), "builds": {}, "deployments": {}}
     subjects = {}
+    measured = json.loads(args.rebind.read_bytes()) if args.rebind else None
+    if measured and "measurement" in measured:
+        measured = measured["measurement"]
+    historical = measured is not None and "targetRelease" not in measured["builds"]["before"]["compile"]
     for side in ("before", "after"):
         try:
-            source, classes, deps, report["builds"][side] = build_subject(mirror, side, registration, work, maven, env)
+            source, classes, deps, report["builds"][side] = build_subject(mirror, side, registration, work, maven, env, historical)
             subjects[side] = source, classes, deps
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             report["builds"][side] = {"status": "open", "reason": str(error)}
     if len(subjects) != 2:
         return report
     if args.rebind:
-        measured = json.loads(args.rebind.read_bytes())
         if measured["registrationSha256"] != report["registrationSha256"] or measured["jdk"] != report["jdk"]:
             raise ValueError("the held-back registration or runtime image changed")
         for side, rebuilt in report["builds"].items():
@@ -258,23 +296,27 @@ def run(args, work):
         return result
     old, before, old_deps = subjects["before"]
     _, after, new_deps = subjects["after"]
-    _, report["unchangedSourceBuild"] = compile_source(old, new_deps, work / "unchanged-classes", env)
+    _, report["unchangedSourceBuild"] = compile_source(old, new_deps, work / "unchanged-classes", env, release=target_release(old))
     for name, classes, deps in (("old", before, old_deps), ("oldBinaryNewRuntime", before, new_deps), ("adapted", after, new_deps)):
         def binding():
             return change_inventory.digest({"registration": report["registrationSha256"], "jdk": report["jdk"],
                 "runner": upgrade_replay.sha(Path(__file__)), "classes": change_inventory.file_digest(classes),
                 "runtime": [upgrade_replay.sha(file) for file in deps], "launch": name})
         key = binding()
-        first = check_deployment(name, classes, deps, registration, work, env)
+        cache = (args.cache or work / "accepted") / (key + ".json")
+        hit = positive_receipt(cache, key) if args.single_pass and args.cache else None
+        first = hit or check_deployment(name, classes, deps, registration, work, env)
         eligible = all(v == "established" for v in first["claims"].values())
-        cache = work / "accepted" / (key + ".json")
-        if eligible:
+        if eligible and hit is None and (args.cache or not args.single_pass):
             change_evidence.write_json(cache, {"key": key, "sha256": change_inventory.digest(first), "result": first})
+        if args.single_pass:
+            report["deployments"][name] = {**first, "executionKey": key, "action": "exact reuse" if hit else "executed"}
+            continue
         clock = time.monotonic()
         rebound = binding()
-        stored = json.loads(cache.read_text()) if cache.exists() and rebound == key else None
-        reused = bool(stored and stored["key"] == rebound and change_inventory.digest(stored["result"]) == stored["sha256"])
-        resumed = stored["result"] if reused else check_deployment(name + "-retry", classes, deps, registration, work, env)
+        stored = positive_receipt(cache, rebound)
+        reused = stored is not None
+        resumed = stored or check_deployment(name + "-retry", classes, deps, registration, work, env)
         warm = time.monotonic() - clock
         clean = check_deployment(name + "-clean", classes, deps, registration, work, env)
         same = (resumed["claims"] == clean["claims"] and resumed["consistent"] and clean["consistent"]
@@ -285,6 +327,47 @@ def run(args, work):
     return report
 
 
+def compare_passes(args, work):
+    """Start three fresh verifier processes. Each resolves, rebuilds, binds, and answers every deployment question."""
+    results, scope, measured = {}, None, None
+    for label in ("cold", "exact", "clean"):
+        output = work / (label + ".json")
+        argv = [sys.executable, "-B", str(Path(__file__).resolve()), "--single-pass", "--output", str(output),
+                "--maven-cache", str(args.maven_cache or work / "m2")]
+        if args.mirror:
+            argv += ["--mirror", str(args.mirror)]
+        if label != "clean":
+            argv += ["--cache", str(work / "proofs")]
+        metrics = {}
+        err = work / (label + ".err")
+        state, code, wall = runtime._run_one(argv, ROOT, work / (label + ".out"), err, 900, env=os.environ, usage=metrics)
+        if state != "exited" or code:
+            raise ValueError(f"{label} deployment pass: {state} {code}, {err.read_text()[-700:]}")
+        data = json.loads(output.read_bytes())
+        if label == "cold":
+            measured = data
+        outputs = {n: {"executionKey": d["executionKey"], "claims": d["claims"],
+                       "launch": d["trials"][0]["launch"], "reason": d["trials"][0].get("reason"),
+                       "observations": d["trials"][0]["observations"]} for n, d in data["deployments"].items()}
+        stable = {"registration": data["registrationSha256"], "unchangedSource": data["unchangedSourceBuild"],
+                  "jdk": data["jdk"], "deployments": outputs}
+        if scope is not None and stable != scope:
+            raise ValueError(f"{label}: deployment, invocation, caller outcome or scope differs")
+        if not all(d["consistent"] for d in data["deployments"].values()):
+            raise ValueError(f"{label}: different observations across fresh trials")
+        scope = stable
+        actions = {n: d["action"] for n, d in data["deployments"].items()}
+        expected = {n: "exact reuse" if label == "exact" and all(v == "established" for v in d["claims"].values())
+                    else "executed" for n, d in data["deployments"].items()}
+        if actions != expected:
+            raise ValueError(f"{label}: different actual reuse from the qualified deployment evidence")
+        results[label] = {"wallSeconds": wall, **metrics, "actions": actions,
+                          "preparationSeconds": sum(d["seconds"] for d in data["builds"].values())}
+    return {"schema": "held-back-full-cost/v1", "scope": scope, "passes": results, "measurement": measured,
+            "costScope": "Fresh processes, source retrieval, Maven resolution, compilation, input binding, cache reads and writes, original HTTP execution and witness handling. Exact and clean share a populated Maven download cache.",
+            "cleanEquivalent": True}
+
+
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--output", required=True, type=Path)
@@ -292,15 +375,21 @@ if __name__ == "__main__":
     ap.add_argument("--maven-cache", type=Path, help="writable cache for the original runtime dependency graphs")
     ap.add_argument("--rebind", type=Path, help="bind an existing measured migration to both application observation inventories")
     ap.add_argument("--checker", type=Path, default=Path(os.environ.get("JVMCONTRACT", ROOT / "lib/target/release/jvmcontract")))
+    ap.add_argument("--compare-passes", action="store_true", help="measure full cold, exact and clean application runs")
+    ap.add_argument("--single-pass", action="store_true", help="resolve, rebuild and evaluate each deployment once")
+    ap.add_argument("--cache", type=Path, help="persistent exact positive receipts for a deployment pass")
     args = ap.parse_args()
     with tempfile.TemporaryDirectory(prefix="held-back-petclinic-") as temp:
-        result = run(args, Path(temp).resolve())
+        result = compare_passes(args, Path(temp).resolve()) if args.compare_passes else run(args, Path(temp).resolve())
     change_evidence.write_json(args.output, result)
+    if args.compare_passes:
+        print({k: v["wallSeconds"] for k, v in result["passes"].items()})
+        sys.exit(0)
     if args.rebind and "claims" in result:
         print(f"{len(result['claims'])} deployment/workflow obligations, discovery misses {result['discoveryMisses']}")
         sys.exit(0)
     if not result["deployments"]:
         sys.exit("held-back preparation open: see the build diagnoses")
-    if not all(d["cleanEquivalent"] for d in result["deployments"].values()):
+    if not args.single_pass and not all(d["cleanEquivalent"] for d in result["deployments"].values()):
         sys.exit("held-back incremental results differ from clean recomputation")
     print(json.dumps({k: v["claims"] for k, v in result["deployments"].items()}))

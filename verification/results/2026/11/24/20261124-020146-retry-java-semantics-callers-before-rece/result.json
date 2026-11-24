@@ -1,0 +1,841 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-020146-retry-java-semantics-callers-before-rece",
+  "title": "Retry Java semantics callers before receiver and check-site controls",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 4m12s, peak 660.3 MiB (estimated 7m00s, 4.0 GiB); 62 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-020146-retry-java-semantics-callers-before-rece.json",
+    "sha256": "5bc421a6b1acd472fec5b02e70a0bd86fb3aeb904538adfcee322f8d30dabe47",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-020146-retry-java-semantics-callers-before-rece",
+      "title": "Retry Java semantics callers before receiver and check-site controls",
+      "description": "Execute the 60 original-scope statements in the 15 semantic families on the same class graphs with both strict engines. Then retry real receiver construction and generated check-site reachability and failure at the original entries. Store this evaluation separately from the frozen predecessor.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "receiver:construction",
+        "property:discovery"
+      ],
+      "links": {},
+      "expected": "All prior correct decisions agree on the original Java graphs, and each receiver or site returns its independently checked scope.",
+      "submitted": {
+        "at": "2026-11-24T02:01:46+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "7m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Retry all 60 original Java statements at fixed scope",
+          "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers --output verification/change-verification/semantics",
+          "cwd": "."
+        },
+        {
+          "name": "Retry stock receiver construction",
+          "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py stock --output verification/change-verification/receiver/stock",
+          "cwd": "."
+        },
+        {
+          "name": "Check physical-site reachability and failure independently",
+          "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py sites --output verification/change-verification/receiver/sites",
+          "cwd": "."
+        },
+        {
+          "name": "Check changed CSV observations through the original receiver",
+          "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py csv --output verification/change-verification/receiver/csv",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/change-verification/semantics",
+        "verification/change-verification/receiver"
+      ]
+    }
+  },
+  "sourceCommit": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+  "startedAt": "2026-11-24T02:03:01+00:00",
+  "finishedAt": "2026-11-24T02:10:44+00:00",
+  "wallSeconds": 463.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2277093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 420.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 692342784,
+    "wallSeconds": 252.4,
+    "cpuSeconds": 288.1,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.6
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Retry all 60 original Java statements at fixed scope",
+      "run": "python3 -B lib/benchmark/jbmc-fast-follow/predecessor.py callers --output verification/change-verification/semantics",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 164.578,
+      "cpuSeconds": 187.394,
+      "cpuThrottledSeconds": 2.501,
+      "peakMemoryBytes": 692342784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-retry-all-60-original-java-sta.log",
+        "lines": 122,
+        "bytes": 5060,
+        "sha256": "81f691a43c90138d03cec80b912b53dcad2dcc50195d25c59a0d1d082b96ea4c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "nibble nibble-native correct 3.595",
+        "nibble nibble-jbmc unsupported 1.021",
+        "nibble left-native correct 0.033",
+        "nibble left-jbmc correct 0.831",
+        "nibble acceptsNegative-native correct 0.032",
+        "nibble acceptsNegative-jbmc correct 0.95",
+        "enum lookup-native correct 0.025",
+        "enum lookup-jbmc unsupported 0.239",
+        "enum ordinal-native correct 0.019",
+        "enum ordinal-jbmc correct 0.137",
+        "enum alwaysZero-native correct 0.026",
+        "enum alwaysZero-jbmc correct 0.154",
+        "locals kernel-native correct 0.022",
+        "locals kernel-jbmc unsupported 0.542",
+        "locals spring-native correct 0.024",
+        "locals spring-jbmc unsupported 0.663",
+        "locals nullInitializes-native correct 0.11",
+        "locals nullInitializes-jbmc correct 0.549",
+        "monitors matched-native unsupported 0.015",
+        "monitors matched-jbmc unsupported 0.254",
+        "monitors mixed-native unsupported 0.015",
+        "monitors mixed-jbmc unsupported 0.258",
+        "monitors synchronizedMethod-native unsupported 0.021",
+        "monitors synchronizedMethod-jbmc unsupported 0.257",
+        "gson-parent compatible-native correct 7.233",
+        "gson-parent compatible-jbmc unsupported 16.189",
+        "gson-parent syntax-native correct 9.411",
+        "gson-parent syntax-jbmc unsupported 16.716",
+        "guava-parent retained-native correct 0.032",
+        "guava-parent retained-jbmc correct 1.237",
+        "guava-parent parentBehavior-native correct 0.02",
+        "guava-parent parentBehavior-jbmc unsupported 1.19",
+        "gson-fix compatible-native correct 7.074",
+        "gson-fix compatible-jbmc unsupported 15.712",
+        "gson-fix syntax-native correct 0.115",
+        "gson-fix syntax-jbmc unsupported 16.065",
+        "guava-fix retained-native correct 0.027",
+        "guava-fix retained-jbmc unsupported 1.229",
+        "guava-fix parentBehavior-native correct 0.029",
+        "guava-fix parentBehavior-jbmc correct 1.219"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Retry stock receiver construction",
+      "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py stock --output verification/change-verification/receiver/stock",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 4.009,
+      "cpuSeconds": 5.372,
+      "cpuThrottledSeconds": 0.639,
+      "peakMemoryBytes": 105648128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-retry-stock-receiver-construct.log",
+        "lines": 1,
+        "bytes": 51,
+        "sha256": "e2d35b3eb024336d640715f83ea517fbdadf299505006ef70bc650f54ce93344",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Checkout$Stock#take 4 branch taken reached refuted"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check physical-site reachability and failure independently",
+      "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py sites --output verification/change-verification/receiver/sites",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 14.831,
+      "cpuSeconds": 19.462,
+      "cpuThrottledSeconds": 1.326,
+      "peakMemoryBytes": 102944768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-physical-site-reachabili.log",
+        "lines": 9,
+        "bytes": 521,
+        "sha256": "de75d9134f7b07c0d82894a4a64ab835ca4496b63e9babddb7fb925b108570e7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "SafetySites#run 19 division-by-zero occurrence reached refuted",
+        "SafetySites#run 19 division-by-zero escape reached established",
+        "SafetySites#run 44 bounds escape reached refuted",
+        "SafetySites#run 54 null occurrence unreachable unreachable",
+        "SafetySites#run 54 null occurrence reached refuted",
+        "SafetySites#run 77 return return-equals unknown incomplete",
+        "SafetySites#run 77 return return-equals reached established",
+        "SafetySites#run 77 return return-equals reached refuted",
+        "SafetySites#divide 3 division-by-zero escape reached refuted"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Check changed CSV observations through the original receiver",
+      "run": "python3 -B lib/benchmark/receiver-discovery/qualification.py csv --output verification/change-verification/receiver/csv",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 68.945,
+      "cpuSeconds": 75.891,
+      "cpuThrottledSeconds": 13.664,
+      "peakMemoryBytes": 111828992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-check-changed-csv-observations.log",
+        "lines": 6,
+        "bytes": 450,
+        "sha256": "671feb2fd6c5a4646601a02dcce7f4595dfa7634a4c0c44463f9851badbc9db8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "campaign.DelimitedFields#matches 62 branch fallthrough reached refuted",
+        "campaign.DelimitedFields#matches 103 branch fallthrough reached established",
+        "campaign.DelimitedFields#matches 133 branch fallthrough reached established",
+        "campaign.DelimitedFields#matches 62 branch fallthrough reached established",
+        "campaign.DelimitedFields#matches 103 branch fallthrough reached established",
+        "campaign.DelimitedFields#matches 133 branch fallthrough reached established"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/change-verification/semantics/callers/arrays/measurement.json",
+      "change": "added",
+      "bytes": 25248,
+      "sha256": "cbbf2283cce64f2260874d7562f60eae867f479297059e971e4308b142ef78f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/arrays/raw.tar.gz",
+      "change": "added",
+      "bytes": 6079,
+      "sha256": "15f5e4d0a443e1d7060bd175323e94fe47c2c16be556db0f822800c27590509f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/construction/measurement.json",
+      "change": "added",
+      "bytes": 18375,
+      "sha256": "9d71c95d79a57a8c0eaf3a52b95a632a654d5d58c7eec77fdba835905f1ea055",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/construction/raw.tar.gz",
+      "change": "added",
+      "bytes": 5434,
+      "sha256": "76b64322d95bbb45bd28d5c759890cffb2998e597c231af13092280be77e924b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/deque/measurement.json",
+      "change": "added",
+      "bytes": 18813,
+      "sha256": "df46613853e6f65d31dbcca395d16b43a5ac06eb76f0ae1d8f915adfc21bf3e3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/deque/raw.tar.gz",
+      "change": "added",
+      "bytes": 6369,
+      "sha256": "7cd462cf9dc01a03c7ea36bd5d92ec67a381982f604e890c25208d092176540e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/dispatch/measurement.json",
+      "change": "added",
+      "bytes": 13399,
+      "sha256": "a1fec2af0e19160b1fccb05e2d293d886aa7f3cb94ff47a4bf1afac85f344b36",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/dispatch/raw.tar.gz",
+      "change": "added",
+      "bytes": 3777,
+      "sha256": "18d4575339d6c824a15c52a601522e8e7a8d97c720de45a22b9059d80aec5143",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/endian/measurement.json",
+      "change": "added",
+      "bytes": 24957,
+      "sha256": "8c3a9ccc2dc92f4034b13f1d519dee24e52de65610e6310563bd4abff950fc80",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/endian/raw.tar.gz",
+      "change": "added",
+      "bytes": 4824,
+      "sha256": "53a5b1a01b118f8906d83289428858c220b1fbb52b596fbdd140d53b5e464cf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/enum/measurement.json",
+      "change": "added",
+      "bytes": 17514,
+      "sha256": "afcebc2b3775ce77b3f899246632ef2cd28311f16224b1bd206f199de222d953",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/enum/raw.tar.gz",
+      "change": "added",
+      "bytes": 4743,
+      "sha256": "1d702b53d6c1bd7006c032053e69f25e5f1f64f63950b2d12ed7a66369d36e0b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/gson-fix/measurement.json",
+      "change": "added",
+      "bytes": 10396,
+      "sha256": "c2efc76a5af939872e2b92c1a3704733bfe60dcf2af1f1d074a1459ebcfa4956",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/gson-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 13268,
+      "sha256": "0668b94e6b90a18e393a29340390521195773cb5181c92dd261954193643f9c8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/gson-parent/measurement.json",
+      "change": "added",
+      "bytes": 10490,
+      "sha256": "65d522ab301e88ea9507293b34a278d4cfe7b4110b77cea0c1c3bed10a80fa0a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/gson-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 13490,
+      "sha256": "430f9a5dcab1a3dc5060389cce40eb66c4998ca22e6ab88803a8fe7346761dbf",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/guava-fix/measurement.json",
+      "change": "added",
+      "bytes": 13864,
+      "sha256": "8eb65b22645b3d608b268ab420c263c4748a1a2726ce48560a08d3e676f61b30",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/guava-fix/raw.tar.gz",
+      "change": "added",
+      "bytes": 5930,
+      "sha256": "e47bd2d2ba0ee5419f7bdb8a2f5cb7bcbe2946f01cac985f53fd5c97e1dcdbd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/guava-parent/measurement.json",
+      "change": "added",
+      "bytes": 13877,
+      "sha256": "43f151130ed9ad135aa271ebd77f088880b00d57389e328d96203ed392d0c945",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/guava-parent/raw.tar.gz",
+      "change": "added",
+      "bytes": 5178,
+      "sha256": "669ec4b69c01a5fb2067a573afd3f07c26ec97608a3e8fa19daca5b99674e8fb",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/lists/measurement.json",
+      "change": "added",
+      "bytes": 17765,
+      "sha256": "688308c29bd740fcbb1c64f7b758b90a7150591c92d119662fbf02e2efd1d2e1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/lists/raw.tar.gz",
+      "change": "added",
+      "bytes": 4742,
+      "sha256": "91424a0239c197ca6c557c42629abed0fd2d073aa3ebb2b874dace15c3c34f32",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/locals/measurement.json",
+      "change": "added",
+      "bytes": 17712,
+      "sha256": "7a2a0c8ac963fe53f65f04cea079df86ae6e9f5f4812145b227888aa3b2fbde9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/locals/raw.tar.gz",
+      "change": "added",
+      "bytes": 5798,
+      "sha256": "635e51596ca51c0fab269d237d4c5fa9c6c0bd1017ba4a1bd128d31dff242cff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/monitors/measurement.json",
+      "change": "added",
+      "bytes": 8858,
+      "sha256": "ce2f5214188cc8260fae0e907bc2f79e14b1bd1331c9b6ee637f1a5b90485900",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/monitors/raw.tar.gz",
+      "change": "added",
+      "bytes": 4086,
+      "sha256": "0c120a3e58a9dc1d013553f96cc67da6874d1ce12670d2d326e755b616a3242d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/nibble/measurement.json",
+      "change": "added",
+      "bytes": 19629,
+      "sha256": "d0ff98bafe5c7bc27ddae198deabafb3f506b585daac715ce253cccff4a73eec",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/nibble/raw.tar.gz",
+      "change": "added",
+      "bytes": 6211,
+      "sha256": "ef2998e4672b9da0edcf75e5d22333800dbf6f1d88b9ace4b4d513a0f5c9f53b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/numbers/measurement.json",
+      "change": "added",
+      "bytes": 30984,
+      "sha256": "a58797668bef9eb7f569f960f084114faaa9b853fec3ee484a9315cb3c10bec4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/numbers/raw.tar.gz",
+      "change": "added",
+      "bytes": 7330,
+      "sha256": "542175467d31245b50448a217fab8668072c3dc4d49731f929f461487944b027",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/prefix/measurement.json",
+      "change": "added",
+      "bytes": 21036,
+      "sha256": "7d15df7c8fcde655a49bc13202f99c3ac018ede2ec653f8025937805c2f60f9a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/prefix/raw.tar.gz",
+      "change": "added",
+      "bytes": 6182,
+      "sha256": "eeffa63a68f729c841b60e94fd6df3c14da1e913fc471fc443231177b1e818fa",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/radix/measurement.json",
+      "change": "added",
+      "bytes": 12522,
+      "sha256": "ac2d240039978f139dae0633542be78919082053a242ef4cd8d1db071934889c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/radix/raw.tar.gz",
+      "change": "added",
+      "bytes": 4536,
+      "sha256": "66a80e150ae90e6cab56a0bc36df7e0b329b20334a15bdeee3532383c7e769a5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/receiver/measurement.json",
+      "change": "added",
+      "bytes": 13969,
+      "sha256": "33600fbb124c65c7f319715b7f5c8e0eeee23b1a831708119388d19eb0b61463",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/receiver/raw.tar.gz",
+      "change": "added",
+      "bytes": 3520,
+      "sha256": "4f8d1227da5e4f241fb4ab227ebfa8997d0833ef4f1889c8a1f5aa2cb25f2499",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/store-iterator/measurement.json",
+      "change": "added",
+      "bytes": 8214,
+      "sha256": "bbee3510441010a575834663f50a1d0a98ea0726326f3d76a7c95c9f7049252c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/store-iterator/raw.tar.gz",
+      "change": "added",
+      "bytes": 3105,
+      "sha256": "bb5c597987e0308f1aaf4b6c0bf9161df080c7cafcdcf0e5ecb868fb5635114d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/stores/measurement.json",
+      "change": "added",
+      "bytes": 12874,
+      "sha256": "7fe5787c9d3b59f4b88b012e3bf56924b7b50ce9f32ced9ff87f794118848fc5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/stores/raw.tar.gz",
+      "change": "added",
+      "bytes": 3636,
+      "sha256": "3538e05349748431ed233bfc2b7b36a2e5835a45a450b4f3f43bcde6e572dd5e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/surrogates/measurement.json",
+      "change": "added",
+      "bytes": 12471,
+      "sha256": "d6481167588121980b8be0a3e4a7c9dfcbaba9d2c2bfee07592666495cabb495",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/semantics/callers/surrogates/raw.tar.gz",
+      "change": "added",
+      "bytes": 4232,
+      "sha256": "7a9a8e76e272afb7421b4b19801f76ff7cde5a0c20164f6da09dd962871d4920",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/csv/fix-count/result.json",
+      "change": "added",
+      "bytes": 20205,
+      "sha256": "367acd04cfb665af6ddd144134cdabbb237c30267624e3fcfeac6ca760db88f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/csv/fix-exhaustion/result.json",
+      "change": "added",
+      "bytes": 20237,
+      "sha256": "17bee6475678fdb916c1fe035768bb6a135198c97f3edc3b79f60965d021e2f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/csv/fix-field/result.json",
+      "change": "added",
+      "bytes": 20649,
+      "sha256": "4fa56fe5bce895d5c5809945ad196fea382cedd63bbd6d8a1e8009e4b605bc41",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/csv/measurement.json",
+      "change": "added",
+      "bytes": 38315,
+      "sha256": "64581b13bfdd2a4eeda6fe5d4bdc71b629a4b98e2bc352d4b6cb4dcd0a3ae7c5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/csv/parent-count/result.json",
+      "change": "added",
+      "bytes": 21133,
+      "sha256": "863d8f78afac21a9d593df1c39d8eacf8b7926283d49485f38a5645d1272712b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/csv/parent-exhaustion/result.json",
+      "change": "added",
+      "bytes": 20283,
+      "sha256": "e941d6f44ba18f816c87be80cd01368a0c4f8eb7d52ab4438457ed18a7d5f38b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/csv/parent-field/result.json",
+      "change": "added",
+      "bytes": 20691,
+      "sha256": "d43e149f11587318792e72e46657241211fc4c4209af8f26f6c076a5ca2b1d3b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/array-escapes/result.json",
+      "change": "added",
+      "bytes": 20795,
+      "sha256": "ed26abfd27ee343ee7b457a59cbd9b06b7acf64c543a850dd4e1f355c30a352d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/checks.json",
+      "change": "added",
+      "bytes": 1442,
+      "sha256": "4a8a109dd1d92cb77fb4cd01b12d3411e883b59b5b15236ef166d1fe7a878e5a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/dead/result.json",
+      "change": "added",
+      "bytes": 15626,
+      "sha256": "5aa6e0c1e77375883e147fae0c6ff8732a5eb309c16f6831382a5587794fdc68",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/divide-escapes/result.json",
+      "change": "added",
+      "bytes": 17821,
+      "sha256": "aa416654a1806680b6f284768f720516078c95bcf5010823828b782987250ba0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/divide-occurs/result.json",
+      "change": "added",
+      "bytes": 19209,
+      "sha256": "0746d6b9c3839c75e0084f45c7e394c5a651d1437841d332e1c16a120446b574",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/helper-escapes/result.json",
+      "change": "added",
+      "bytes": 19114,
+      "sha256": "34b9898ba6a99bbc47e7a789ed5e7a5a253bce8e757593102af893094a3c2c29",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/measurement.json",
+      "change": "added",
+      "bytes": 1805,
+      "sha256": "07b5c5d261b9d0c436dfba408344a99bac2292303152defe4cdb4f42be3ea358",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/short-sum/result.json",
+      "change": "added",
+      "bytes": 16110,
+      "sha256": "f391c24ab3522f6d2981e803654935a67e9e4679b47eaa57c234e3ff45310d4e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/sum/result.json",
+      "change": "added",
+      "bytes": 16650,
+      "sha256": "364df557a40b2a95e4b1e7831518dc225cc77c6f91e0a4459bf91e66d9110a44",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/widened/result.json",
+      "change": "added",
+      "bytes": 18000,
+      "sha256": "4646d50c23b1160435ad32f80133a92981732413960f1140c56eb87f73ae5094",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/sites/wrong-sum/result.json",
+      "change": "added",
+      "bytes": 17691,
+      "sha256": "31cf1e443a803fc7741f8e758b7ae9355ed58a00273f04ef9ccac1d12fa61fd3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/stock/measurement.json",
+      "change": "added",
+      "bytes": 81564,
+      "sha256": "51ac07465ddbd16ceb38159275712df3861ad6f697a1f3f10fe9fdb3321c60a3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/receiver/stock/selected/result.json",
+      "change": "added",
+      "bytes": 21409,
+      "sha256": "b909f713568bc4a5069a012b66e507c601ffc6c947b1b1692f8c9c75ae4a7d18",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T02:10:48+00:00",
+    "applied": [
+      "verification/change-verification/semantics/callers/arrays/measurement.json",
+      "verification/change-verification/semantics/callers/arrays/raw.tar.gz",
+      "verification/change-verification/semantics/callers/construction/measurement.json",
+      "verification/change-verification/semantics/callers/construction/raw.tar.gz",
+      "verification/change-verification/semantics/callers/deque/measurement.json",
+      "verification/change-verification/semantics/callers/deque/raw.tar.gz",
+      "verification/change-verification/semantics/callers/dispatch/measurement.json",
+      "verification/change-verification/semantics/callers/dispatch/raw.tar.gz",
+      "verification/change-verification/semantics/callers/endian/measurement.json",
+      "verification/change-verification/semantics/callers/endian/raw.tar.gz",
+      "verification/change-verification/semantics/callers/enum/measurement.json",
+      "verification/change-verification/semantics/callers/enum/raw.tar.gz",
+      "verification/change-verification/semantics/callers/gson-fix/measurement.json",
+      "verification/change-verification/semantics/callers/gson-fix/raw.tar.gz",
+      "verification/change-verification/semantics/callers/gson-parent/measurement.json",
+      "verification/change-verification/semantics/callers/gson-parent/raw.tar.gz",
+      "verification/change-verification/semantics/callers/guava-fix/measurement.json",
+      "verification/change-verification/semantics/callers/guava-fix/raw.tar.gz",
+      "verification/change-verification/semantics/callers/guava-parent/measurement.json",
+      "verification/change-verification/semantics/callers/guava-parent/raw.tar.gz",
+      "verification/change-verification/semantics/callers/lists/measurement.json",
+      "verification/change-verification/semantics/callers/lists/raw.tar.gz",
+      "verification/change-verification/semantics/callers/locals/measurement.json",
+      "verification/change-verification/semantics/callers/locals/raw.tar.gz",
+      "verification/change-verification/semantics/callers/monitors/measurement.json",
+      "verification/change-verification/semantics/callers/monitors/raw.tar.gz",
+      "verification/change-verification/semantics/callers/nibble/measurement.json",
+      "verification/change-verification/semantics/callers/nibble/raw.tar.gz",
+      "verification/change-verification/semantics/callers/numbers/measurement.json",
+      "verification/change-verification/semantics/callers/numbers/raw.tar.gz",
+      "verification/change-verification/semantics/callers/prefix/measurement.json",
+      "verification/change-verification/semantics/callers/prefix/raw.tar.gz",
+      "verification/change-verification/semantics/callers/radix/measurement.json",
+      "verification/change-verification/semantics/callers/radix/raw.tar.gz",
+      "verification/change-verification/semantics/callers/receiver/measurement.json",
+      "verification/change-verification/semantics/callers/receiver/raw.tar.gz",
+      "verification/change-verification/semantics/callers/store-iterator/measurement.json",
+      "verification/change-verification/semantics/callers/store-iterator/raw.tar.gz",
+      "verification/change-verification/semantics/callers/stores/measurement.json",
+      "verification/change-verification/semantics/callers/stores/raw.tar.gz",
+      "verification/change-verification/semantics/callers/surrogates/measurement.json",
+      "verification/change-verification/semantics/callers/surrogates/raw.tar.gz",
+      "verification/change-verification/receiver/csv/fix-count/result.json",
+      "verification/change-verification/receiver/csv/fix-exhaustion/result.json",
+      "verification/change-verification/receiver/csv/fix-field/result.json",
+      "verification/change-verification/receiver/csv/measurement.json",
+      "verification/change-verification/receiver/csv/parent-count/result.json",
+      "verification/change-verification/receiver/csv/parent-exhaustion/result.json",
+      "verification/change-verification/receiver/csv/parent-field/result.json",
+      "verification/change-verification/receiver/sites/array-escapes/result.json",
+      "verification/change-verification/receiver/sites/checks.json",
+      "verification/change-verification/receiver/sites/dead/result.json",
+      "verification/change-verification/receiver/sites/divide-escapes/result.json",
+      "verification/change-verification/receiver/sites/divide-occurs/result.json",
+      "verification/change-verification/receiver/sites/helper-escapes/result.json",
+      "verification/change-verification/receiver/sites/measurement.json",
+      "verification/change-verification/receiver/sites/short-sum/result.json",
+      "verification/change-verification/receiver/sites/sum/result.json",
+      "verification/change-verification/receiver/sites/widened/result.json",
+      "verification/change-verification/receiver/sites/wrong-sum/result.json",
+      "verification/change-verification/receiver/stock/measurement.json",
+      "verification/change-verification/receiver/stock/selected/result.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7945f66a54de9a135c2f91a5ea2830561eedb728",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7945f66a54de9a135c2f91a5ea2830561eedb728/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T021044Z-851797ceb1e4aa2f",
+      "outputs": "20261124T021044Z-885703df57beffec",
+      "diff": "20261124T021044Z-9095242a032202f7"
+    }
+  }
+}

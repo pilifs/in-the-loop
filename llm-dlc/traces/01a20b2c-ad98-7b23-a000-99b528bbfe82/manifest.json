@@ -12,26 +12,26 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T01:30:07.923Z",
-  "ended": "2026-11-24T02:19:15.091Z",
-  "duration_seconds": 2947,
+  "ended": "2026-11-24T02:30:22.435Z",
+  "duration_seconds": 3615,
   "stats": {
     "turns": 1,
-    "api_calls": 171,
-    "tool_calls": 603,
-    "tool_errors": 21,
+    "api_calls": 201,
+    "tool_calls": 694,
+    "tool_errors": 24,
     "compactions": 0,
-    "peak_context_tokens": 320895,
+    "peak_context_tokens": 357328,
     "usage": {
-      "input_tokens": 328499,
-      "output_tokens": 95704,
-      "cache_read_input_tokens": 35041536,
+      "input_tokens": 365893,
+      "output_tokens": 117852,
+      "cache_read_input_tokens": 45227904,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 419,
-    "exec": 153,
-    "apply_patch": 21,
+    "Bash": 470,
+    "exec": 183,
+    "apply_patch": 31,
     "send_message": 8,
     "list_agents": 1,
     "spawn_agent": 1
@@ -43,11 +43,14 @@
     "examples/tools/targets/change_plan.py",
     "examples/tools/targets/test_change_plan.py",
     "examples/tools/targets/upgrade_replay.py",
+    "lib/benchmark/change-verification/README.md",
     "lib/benchmark/change-verification/petclinic.json",
     "lib/benchmark/change-verification/petclinic.py",
     "lib/benchmark/change-verification/portfolio.py",
+    "lib/benchmark/change-verification/report.py",
     "lib/benchmark/change-verification/solver_trial.py",
     "lib/benchmark/change-verification/wire_matrix.py",
+    "lib/benchmark/java-semantics-gap/scorecard.py",
     "lib/benchmark/organic-java/README.md",
     "lib/benchmark/organic-java/receipt-set.json",
     "lib/benchmark/organic-java/report.py",
@@ -57,24 +60,24 @@
     {
       "index": 0,
       "started": "2026-11-24T01:30:07.923Z",
-      "ended": "2026-11-24T02:19:15.091Z",
+      "ended": "2026-11-24T02:30:22.435Z",
       "turns": 1,
-      "api_calls": 171,
+      "api_calls": 201,
       "usage": {
-        "input_tokens": 328499,
-        "output_tokens": 95704,
-        "cache_read_input_tokens": 35041536,
+        "input_tokens": 365893,
+        "output_tokens": 117852,
+        "cache_read_input_tokens": 45227904,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 320895
+      "peak_context_tokens": 357328
     }
   ],
   "log": {
-    "sha256": "2e5b812dc22cc1c734ff623d4c8f15eeb6f1661167e916b9c5c6c4b450704759",
-    "bytes": 3488557,
-    "lines": 1553,
-    "gzip_bytes": 709159,
-    "path": "llm-dlc/traces/01a20b2c-ad98-7b23-a000-99b528bbfe82/logs/2e5b812dc22cc1c734ff623d4c8f15eeb6f1661167e916b9c5c6c4b450704759.jsonl.gz"
+    "sha256": "dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20",
+    "bytes": 3852329,
+    "lines": 1817,
+    "gzip_bytes": 767253,
+    "path": "llm-dlc/traces/01a20b2c-ad98-7b23-a000-99b528bbfe82/logs/dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -111,20 +114,52 @@
       "log_sha256": "452418ca5d6b470a7587c8fc4249e7f174bcd9491e2fa26affb83e4921e594fd"
     },
     {
-      "change_id": "zuksyltnxsxxnounvoylukxwwyxnysqq",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "2e5b812dc22cc1c734ff623d4c8f15eeb6f1661167e916b9c5c6c4b450704759"
-    },
-    {
       "change_id": "qrvtrtormltkywrqkrkysmwkunqtswuw",
       "commit_id": null,
       "immutable": false,
       "summary": "Pin the organic campaign grader and its receipt set",
       "body": "Recompute the published six-PR scorecard from its original code, eight example trees and the two collector archives it used. A separate current report includes additional attempts without overwriting the historical denominator. The published scorecard now reproduces byte for byte. The current recount includes the later JavaParser startup receipt, with the same 39 of 46 strict native and 46 of 46 finite primary decisions. All five organic campaign tests passed.",
       "log_sha256": "2e5b812dc22cc1c734ff623d4c8f15eeb6f1661167e916b9c5c6c4b450704759"
+    },
+    {
+      "change_id": "utxvlvpvtoloxxsxvqlyyqtlxrntqttz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 declared or produced none. 20261124-014943-replay-the-guava-change-plan-nodes-and-i: passed: 7 passed step(s) in 15.8s, peak 2.3 GiB (estimated 1m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-015127-evaluate-the-registered-petclinic-2-7-to: failed: 1 failed step(s) in 22.0s, peak 419.2 MiB (estimated 8m00s, 3.0 GiB) Collected by the watcher of the change-verification run, which keeps the queue while the run is under way.",
+      "log_sha256": "dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20"
+    },
+    {
+      "change_id": "kpwzsrvprvnuvtkqkssooprpzznqrptn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-020655-evaluate-the-registered-petclinic-2-7-to: passed: 1 passed step(s) in 1m14s, peak 496.4 MiB (estimated 8m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the change-verification run, which keeps the queue while the run is under way.",
+      "log_sha256": "dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20"
+    },
+    {
+      "change_id": "knuoyyvrkttymmszrvzxrlupvyuxsmsw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-015038-compare-six-wire-change-plans-against-in: passed: 1 passed step(s) in 2m40s, peak 152.5 MiB (estimated 4m00s, 1.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the change-verification run, which keeps the queue while the run is under way.",
+      "log_sha256": "dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20"
+    },
+    {
+      "change_id": "ukovsvusztztxsxtywpxwpxtkoksuswm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-020146-retry-java-semantics-callers-before-rece: passed: 4 passed step(s) in 4m12s, peak 660.3 MiB (estimated 7m00s, 4.0 GiB); 62 output file(s) changed Applied 62 output(s). Collected by the watcher of the change-verification run, which keeps the queue while the run is under way.",
+      "log_sha256": "dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20"
+    },
+    {
+      "change_id": "zkxmwrmuoxoxpumpzwqotkrouqlszsvl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify change-plan receipts and reruns (verification pending)",
+      "body": "Join the collector's results to the change planner. Freeze the full inventory before execution and checkpoint individual receipts. Explain classpath, environment and tool changes on resume. Recheck the original client binary separately when its replacement has different bytes. A changed-client control refuted the adapted result and established the original binary on the same new graph. The five composition and exact-reuse controls pass.\n\nThe fresh importer matrix reproduces every caller verdict and all four controls. Across the exact rerun, test-only edit, runtime resource and Okio precedence controls, all six Wire results match clean JVM executions. The 60 original Java statements and both engines were rerun before the stock, site and CSV receiver controls. The portfolio qualifies the raw receipts, including two JVM-contradicted JBMC answers and the shared Spring blockers. The independent checker detected the historical producer fault on the original Guava caller.\n\nPetclinic's three registered HTTP workflows passed on the old and adapted deployments. The mixed binary failed during startup. Against the published POMs, Maven now emits the original Java 8 and Java 17 classfile targets while both run on JDK 17. Verification pending in job 20261124-022228-measure-petclinic-cold-and-exact-reruns for three independent whole-process passes including compilation and source retrieval. Job 20261124-021637-compare-bounded-solvers-on-eclipse-inser measures two Eclipse claims and the expensive monolithic importer at equal scope.",
+      "log_sha256": "dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20"
     }
   ],
   "logs": {
@@ -150,6 +185,12 @@
       "bytes": 1854565,
       "lines": 532,
       "gzip_bytes": 447201,
+      "url": null
+    },
+    "dc355bae74caea502a39e4bd26f50cd93364401c6b8c89f210ed8ef38cf92a20": {
+      "bytes": 3852329,
+      "lines": 1817,
+      "gzip_bytes": 767253,
       "url": null
     },
     "fa9f686cbf3f293f3864e089124b3bcd0007352e47d935295e0df518a4baa2e7": {

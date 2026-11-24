@@ -1,0 +1,3198 @@
+--- /dev/null
++++ b/verification/change-verification/wire/request.json
+@@ -0,0 +1,305 @@
++{
++  "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++  "observer": "Serialize a real Phone through the other half of the registered request/response test and read the outbound protobuf bytes.",
++  "domainBasis": "The original schema uses tag one as a length-delimited string. The expected wire records encode the ASCII phone strings independently.",
++  "cases": [
++    {
++      "args": [
++        "(519) 867-5309"
++      ],
++      "expected": {
++        "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++      }
++    },
++    {
++      "args": [
++        "123"
++      ],
++      "expected": {
++        "return": "CgMxMjM="
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "7daa36eec9e3e724e022b4d94f9e4290638d52a7f3e4d9ff1be1d44b5511556d",
++  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
++  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
++  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++      "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++      "callerClassSha256": "24a3b0e5fef9b4a561d43a3ec94037ace31a3dc8eeaea28d3c2399ceebbf8e99",
++      "classpath": [
++        "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++        "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++      ],
++      "dependency": "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa",
++      "preparation": "complete Maven wire converter module",
++      "compiledClasses": null,
++      "resources": null,
++      "operandScope": "runtime",
++      "modulePomSha256": "c88d4a81170ec1081a6afb113bf2bea9688e0a04492b36dc9bb68513234f9559",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++            },
++            {
++              "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "CgMxMjM="
++            },
++            {
++              "return": "CgMxMjM="
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.squareup.wire.FieldEncoding",
++        "com.squareup.wire.Message",
++        "com.squareup.wire.Message$Builder",
++        "com.squareup.wire.Preconditions",
++        "com.squareup.wire.ProtoAdapter",
++        "com.squareup.wire.ProtoAdapter$1",
++        "com.squareup.wire.ProtoAdapter$10",
++        "com.squareup.wire.ProtoAdapter$11",
++        "com.squareup.wire.ProtoAdapter$12",
++        "com.squareup.wire.ProtoAdapter$13",
++        "com.squareup.wire.ProtoAdapter$14",
++        "com.squareup.wire.ProtoAdapter$15",
++        "com.squareup.wire.ProtoAdapter$2",
++        "com.squareup.wire.ProtoAdapter$3",
++        "com.squareup.wire.ProtoAdapter$4",
++        "com.squareup.wire.ProtoAdapter$5",
++        "com.squareup.wire.ProtoAdapter$6",
++        "com.squareup.wire.ProtoAdapter$7",
++        "com.squareup.wire.ProtoAdapter$8",
++        "com.squareup.wire.ProtoAdapter$9",
++        "com.squareup.wire.ProtoAdapter$MapProtoAdapter",
++        "com.squareup.wire.ProtoWriter",
++        "com.squareup.wire.RuntimeMessageAdapter"
++      ]
++    },
++    "new": {
++      "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++      "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++      "callerClassSha256": "24a3b0e5fef9b4a561d43a3ec94037ace31a3dc8eeaea28d3c2399ceebbf8e99",
++      "classpath": [
++        "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++        "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++      ],
++      "dependency": "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++      "preparation": "complete Maven wire converter module",
++      "compiledClasses": null,
++      "resources": null,
++      "operandScope": "runtime",
++      "modulePomSha256": "c88d4a81170ec1081a6afb113bf2bea9688e0a04492b36dc9bb68513234f9559",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "throws": "java.lang.NoSuchMethodError"
++            },
++            {
++              "throws": "java.lang.NoSuchMethodError"
++            }
++          ],
++          "escapingExceptions": [
++            {
++              "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++              "codeIndex": 14,
++              "sourceLine": 37,
++              "artifact": "client",
++              "classpathIndex": 0,
++              "jarSha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++              "observerCodeIndex": 47,
++              "throws": "java.lang.NoSuchMethodError"
++            },
++            {
++              "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++              "codeIndex": 14,
++              "sourceLine": 37,
++              "artifact": "client",
++              "classpathIndex": 0,
++              "jarSha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++              "observerCodeIndex": 47,
++              "throws": "java.lang.NoSuchMethodError"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "throws": "java.lang.NoSuchMethodError"
++            },
++            {
++              "throws": "java.lang.NoSuchMethodError"
++            }
++          ],
++          "escapingExceptions": [
++            {
++              "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++              "codeIndex": 14,
++              "sourceLine": 37,
++              "artifact": "client",
++              "classpathIndex": 0,
++              "jarSha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++              "observerCodeIndex": 47,
++              "throws": "java.lang.NoSuchMethodError"
++            },
++            {
++              "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++              "codeIndex": 14,
++              "sourceLine": 37,
++              "artifact": "client",
++              "classpathIndex": 0,
++              "jarSha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++              "observerCodeIndex": 47,
++              "throws": "java.lang.NoSuchMethodError"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 47,
++              "dispatchedTo": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.squareup.wire.FieldEncoding",
++        "com.squareup.wire.FieldEncoding$Companion",
++        "com.squareup.wire.Message",
++        "com.squareup.wire.Message$Builder",
++        "com.squareup.wire.Message$Companion",
++        "com.squareup.wire.PackedProtoAdapter",
++        "com.squareup.wire.ProtoAdapter",
++        "com.squareup.wire.ProtoAdapter$Companion",
++        "com.squareup.wire.ProtoAdapterKt",
++        "com.squareup.wire.ProtoAdapterKt$commonBool$1",
++        "com.squareup.wire.ProtoAdapterKt$commonBytes$1",
++        "com.squareup.wire.ProtoAdapterKt$commonDouble$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFixed32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFixed64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFloat$1",
++        "com.squareup.wire.ProtoAdapterKt$commonInt32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonInt64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonSint32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonSint64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonString$1",
++        "com.squareup.wire.ProtoAdapterKt$commonUint32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonUint64$1",
++        "com.squareup.wire.ProtoWriter",
++        "com.squareup.wire.ProtoWriter$Companion",
++        "com.squareup.wire.RepeatedProtoAdapter"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalCallerSource": {
++    "path": "retrofit-converters/wire/src/main/java/retrofit2/converter/wire/WireRequestBodyConverter.java",
++    "sha256": "8965334b9699a2db35718b3300949a9654399ac544705d7eec78f1c5969d33dd"
++  },
++  "originalFixtures": [
++    {
++      "kind": "java",
++      "file": "Phone.java",
++      "source": "retrofit-converters/wire/src/test/java/retrofit2/converter/wire/Phone.java",
++      "sha256": "1666f5317a58c0507f121d65da1469efe33df538157ed79fe3da9aaba5dd416e",
++      "class": "retrofit2.converter.wire.Phone"
++    }
++  ],
++  "runtimeCompanions": [],
++  "observerInvocation": {
++    "declaration": "retrofit2.Converter#convert(Ljava/lang/Object;)Ljava/lang/Object;",
++    "codeIndices": [
++      47
++    ]
++  },
++  "workingDirectory": ".",
++  "originalInvocation": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++  "invocationVia": "retrofit2.Converter#convert(Ljava/lang/Object;)Ljava/lang/Object;",
++  "probeClasses": {
++    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
++    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
++    "UpgradeTrace": "bd0cf2e9519310ef6edfbcded4927ae58f877b0e508794f6ca46e27da1348fa0",
++    "retrofit2/converter/wire/Phone$Builder": "8451b9e39010e8d6cc2829ae91b086f9561a3f8aa4ce6f44eff4e40e5932f06e",
++    "retrofit2/converter/wire/Phone$ProtoAdapter_Phone": "38b290db8860e9055de3f5927ea9b6f1c1bb55e4e2cf962bafae65fc2402b2fa",
++    "retrofit2/converter/wire/Phone": "aeebb56a4f0c53cdd99c3b94924495ddabe40f900e12dcf1ec388a2d5fdd3157",
++    "retrofit2/converter/wire/UpgradeProbe": "e07ac3cdcbc09dfe6db71ec403d838da59a25c08e0ca8192c9681e8878b7753d"
++  },
++  "differences": [
++    0,
++    1
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 8.108
++}
+--- /dev/null
++++ b/verification/change-verification/wire/response.json
+@@ -0,0 +1,254 @@
++{
++  "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++  "observer": "The original Wire response converter decodes the developer fixture and returns the phone-number field.",
++  "domainBasis": "The checked-in generated Phone message has a length-delimited string in protobuf field 1. The first body is byte-for-byte the historical developer test. The short-string companion uses the same wire rule.",
++  "cases": [
++    {
++      "args": [
++        "Cg4oNTE5KSA4NjctNTMwOQ=="
++      ],
++      "expected": {
++        "return": "(519) 867-5309"
++      }
++    },
++    {
++      "args": [
++        "CgMxMjM="
++      ],
++      "expected": {
++        "return": "123"
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "3f81d4953bfc2a1b7244111bb10410592a174f84e45047a5d2cb195ec53e554d",
++  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
++  "tracerSha256": "abc56b0a004720445738b4dcea411ffe2d82ecb70a3553a6cce604b24237c5b8",
++  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
++  "jdk": {
++    "JAVA_VERSION": "1.8.0_512",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "OS_ARCH": "amd64"
++  },
++  "sides": {
++    "old": {
++      "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++      "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++      "callerClassSha256": "fc653bbcf688b463a060defa0842f08ca12983722dfd41b4f2892a37a5dfa90b",
++      "classpath": [
++        "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++        "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++      ],
++      "dependency": "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa",
++      "preparation": "complete Maven wire converter module",
++      "compiledClasses": null,
++      "resources": null,
++      "operandScope": "runtime",
++      "modulePomSha256": "c88d4a81170ec1081a6afb113bf2bea9688e0a04492b36dc9bb68513234f9559",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "(519) 867-5309"
++            },
++            {
++              "return": "(519) 867-5309"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "123"
++            },
++            {
++              "return": "123"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.squareup.wire.FieldEncoding",
++        "com.squareup.wire.Message",
++        "com.squareup.wire.Message$Builder",
++        "com.squareup.wire.Preconditions",
++        "com.squareup.wire.ProtoAdapter",
++        "com.squareup.wire.ProtoAdapter$1",
++        "com.squareup.wire.ProtoAdapter$10",
++        "com.squareup.wire.ProtoAdapter$11",
++        "com.squareup.wire.ProtoAdapter$12",
++        "com.squareup.wire.ProtoAdapter$13",
++        "com.squareup.wire.ProtoAdapter$14",
++        "com.squareup.wire.ProtoAdapter$15",
++        "com.squareup.wire.ProtoAdapter$2",
++        "com.squareup.wire.ProtoAdapter$3",
++        "com.squareup.wire.ProtoAdapter$4",
++        "com.squareup.wire.ProtoAdapter$5",
++        "com.squareup.wire.ProtoAdapter$6",
++        "com.squareup.wire.ProtoAdapter$7",
++        "com.squareup.wire.ProtoAdapter$8",
++        "com.squareup.wire.ProtoAdapter$9",
++        "com.squareup.wire.ProtoAdapter$MapProtoAdapter",
++        "com.squareup.wire.ProtoReader",
++        "com.squareup.wire.RuntimeMessageAdapter"
++      ]
++    },
++    "new": {
++      "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++      "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++      "callerClassSha256": "fc653bbcf688b463a060defa0842f08ca12983722dfd41b4f2892a37a5dfa90b",
++      "classpath": [
++        "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2",
++        "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132",
++        "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35",
++        "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2",
++        "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++        "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969",
++        "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478",
++        "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++      ],
++      "dependency": "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721",
++      "preparation": "complete Maven wire converter module",
++      "compiledClasses": null,
++      "resources": null,
++      "operandScope": "runtime",
++      "modulePomSha256": "c88d4a81170ec1081a6afb113bf2bea9688e0a04492b36dc9bb68513234f9559",
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "(519) 867-5309"
++            },
++            {
++              "return": "(519) 867-5309"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "123"
++            },
++            {
++              "return": "123"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            },
++            {
++              "observerCodeIndex": 57,
++              "dispatchedTo": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Ljava/lang/Object;)Ljava/lang/Object;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "com.squareup.wire.FieldEncoding",
++        "com.squareup.wire.FieldEncoding$Companion",
++        "com.squareup.wire.Message",
++        "com.squareup.wire.Message$Builder",
++        "com.squareup.wire.Message$Companion",
++        "com.squareup.wire.PackedProtoAdapter",
++        "com.squareup.wire.ProtoAdapter",
++        "com.squareup.wire.ProtoAdapter$Companion",
++        "com.squareup.wire.ProtoAdapterKt",
++        "com.squareup.wire.ProtoAdapterKt$commonBool$1",
++        "com.squareup.wire.ProtoAdapterKt$commonBytes$1",
++        "com.squareup.wire.ProtoAdapterKt$commonDouble$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFixed32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFixed64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonFloat$1",
++        "com.squareup.wire.ProtoAdapterKt$commonInt32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonInt64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonSint32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonSint64$1",
++        "com.squareup.wire.ProtoAdapterKt$commonString$1",
++        "com.squareup.wire.ProtoAdapterKt$commonUint32$1",
++        "com.squareup.wire.ProtoAdapterKt$commonUint64$1",
++        "com.squareup.wire.ProtoReader",
++        "com.squareup.wire.ProtoReader$Companion",
++        "com.squareup.wire.RepeatedProtoAdapter"
++      ]
++    }
++  },
++  "status": "preserved",
++  "originalFixtures": [
++    {
++      "kind": "java",
++      "file": "Phone.java",
++      "source": "retrofit-converters/wire/src/test/java/retrofit2/converter/wire/Phone.java",
++      "sha256": "1666f5317a58c0507f121d65da1469efe33df538157ed79fe3da9aaba5dd416e",
++      "class": "retrofit2.converter.wire.Phone"
++    }
++  ],
++  "runtimeCompanions": [],
++  "observerInvocation": {
++    "declaration": "retrofit2.Converter#convert(Ljava/lang/Object;)Ljava/lang/Object;",
++    "codeIndices": [
++      57
++    ]
++  },
++  "workingDirectory": ".",
++  "originalInvocation": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++  "invocationVia": "retrofit2.Converter#convert(Ljava/lang/Object;)Ljava/lang/Object;",
++  "probeClasses": {
++    "UpgradeClassLookup": "5798bc3abba0faa9f4ea37eecf63bfbf49201c10e1d63cb40d21f05f6c7f0e66",
++    "UpgradeObservation": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46",
++    "UpgradeTrace": "bd0cf2e9519310ef6edfbcded4927ae58f877b0e508794f6ca46e27da1348fa0",
++    "retrofit2/converter/wire/Phone$Builder": "8451b9e39010e8d6cc2829ae91b086f9561a3f8aa4ce6f44eff4e40e5932f06e",
++    "retrofit2/converter/wire/Phone$ProtoAdapter_Phone": "38b290db8860e9055de3f5927ea9b6f1c1bb55e4e2cf962bafae65fc2402b2fa",
++    "retrofit2/converter/wire/Phone": "aeebb56a4f0c53cdd99c3b94924495ddabe40f900e12dcf1ec388a2d5fdd3157",
++    "retrofit2/converter/wire/UpgradeProbe": "b870a4363fcce835ef96cbfc7fbbef31e3e9c27fcbd2876071891aab6c685698"
++  },
++  "differences": [],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 6.666
++}
+--- /dev/null
++++ b/verification/change-verification/wire/summary.json
+@@ -0,0 +1,2630 @@
++{
++  "schema": "wire-change-evaluation/v1",
++  "change": "Retrofit 2.6.0 upgrades Wire 2.2.0 to 3.0.2",
++  "cohorts": {
++    "registered": {
++      "established": 1
++    },
++    "additional": {
++      "refuted": 1
++    },
++    "control": {}
++  },
++  "scope": "Two registered phone values per direction on each JDK 8 deployment. Alternate Okio precedence is an attribution control.",
++  "inventory": {
++    "method": "Public operations and transitive calls within each compiled client, on either deployment.",
++    "unknownEdges": "Virtual dispatch, initialization, reflection, resources and calls through dependencies can reach other code. Exact reuse binds the whole declared launch.",
++    "changedClasses": [
++      "com/squareup/wire/AndroidMessage",
++      "com/squareup/wire/AndroidMessage$Companion",
++      "com/squareup/wire/AndroidMessage$ProtoAdapterCreator",
++      "com/squareup/wire/EnumAdapter",
++      "com/squareup/wire/EnumAdapterKt",
++      "com/squareup/wire/FieldBinding",
++      "com/squareup/wire/FieldEncoding",
++      "com/squareup/wire/FieldEncoding$1",
++      "com/squareup/wire/FieldEncoding$Companion",
++      "com/squareup/wire/FieldEncoding$WhenMappings",
++      "com/squareup/wire/MapEntryProtoAdapter",
++      "com/squareup/wire/MapProtoAdapter",
++      "com/squareup/wire/Message",
++      "com/squareup/wire/Message$Builder",
++      "com/squareup/wire/Message$Companion",
++      "com/squareup/wire/MessageSerializedForm",
++      "com/squareup/wire/MessageSerializedForm$Companion",
++      "com/squareup/wire/MessageSink",
++      "com/squareup/wire/MessageSource",
++      "com/squareup/wire/PackedProtoAdapter",
++      "com/squareup/wire/Preconditions",
++      "com/squareup/wire/ProtoAdapter",
++      "com/squareup/wire/ProtoAdapter$1",
++      "com/squareup/wire/ProtoAdapter$10",
++      "com/squareup/wire/ProtoAdapter$11",
++      "com/squareup/wire/ProtoAdapter$12",
++      "com/squareup/wire/ProtoAdapter$13",
++      "com/squareup/wire/ProtoAdapter$14",
++      "com/squareup/wire/ProtoAdapter$15",
++      "com/squareup/wire/ProtoAdapter$2",
++      "com/squareup/wire/ProtoAdapter$3",
++      "com/squareup/wire/ProtoAdapter$4",
++      "com/squareup/wire/ProtoAdapter$5",
++      "com/squareup/wire/ProtoAdapter$6",
++      "com/squareup/wire/ProtoAdapter$7",
++      "com/squareup/wire/ProtoAdapter$8",
++      "com/squareup/wire/ProtoAdapter$9",
++      "com/squareup/wire/ProtoAdapter$Companion",
++      "com/squareup/wire/ProtoAdapter$EnumConstantNotFoundException",
++      "com/squareup/wire/ProtoAdapter$MapEntryProtoAdapter",
++      "com/squareup/wire/ProtoAdapter$MapProtoAdapter",
++      "com/squareup/wire/ProtoAdapterKt",
++      "com/squareup/wire/ProtoAdapterKt$commonBool$1",
++      "com/squareup/wire/ProtoAdapterKt$commonBytes$1",
++      "com/squareup/wire/ProtoAdapterKt$commonDouble$1",
++      "com/squareup/wire/ProtoAdapterKt$commonFixed32$1",
++      "com/squareup/wire/ProtoAdapterKt$commonFixed64$1",
++      "com/squareup/wire/ProtoAdapterKt$commonFloat$1",
++      "com/squareup/wire/ProtoAdapterKt$commonInt32$1",
++      "com/squareup/wire/ProtoAdapterKt$commonInt64$1",
++      "com/squareup/wire/ProtoAdapterKt$commonSint32$1",
++      "com/squareup/wire/ProtoAdapterKt$commonSint64$1",
++      "com/squareup/wire/ProtoAdapterKt$commonString$1",
++      "com/squareup/wire/ProtoAdapterKt$commonUint32$1",
++      "com/squareup/wire/ProtoAdapterKt$commonUint64$1",
++      "com/squareup/wire/ProtoReader",
++      "com/squareup/wire/ProtoReader$Companion",
++      "com/squareup/wire/ProtoWriter",
++      "com/squareup/wire/ProtoWriter$Companion",
++      "com/squareup/wire/RepeatedProtoAdapter",
++      "com/squareup/wire/RuntimeEnumAdapter",
++      "com/squareup/wire/RuntimeMessageAdapter",
++      "com/squareup/wire/Service",
++      "com/squareup/wire/Wire",
++      "com/squareup/wire/WireEnum",
++      "com/squareup/wire/WireField",
++      "com/squareup/wire/WireField$Label",
++      "com/squareup/wire/WireRpc",
++      "com/squareup/wire/internal/FieldBinding",
++      "com/squareup/wire/internal/ImmutableList",
++      "com/squareup/wire/internal/Internal",
++      "com/squareup/wire/internal/Internal__InternalJvmKt",
++      "com/squareup/wire/internal/Internal__InternalKt",
++      "com/squareup/wire/internal/MutableOnWriteList",
++      "com/squareup/wire/internal/RuntimeMessageAdapter",
++      "com/squareup/wire/internal/RuntimeMessageAdapter$Companion",
++      "com/squareup/wire/internal/RuntimeUtils",
++      "com/squareup/wire/internal/_PlatformKt",
++      "kotlin/ArrayIntrinsicsKt",
++      "kotlin/BuilderInference",
++      "kotlin/Deprecated",
++      "kotlin/DeprecationLevel",
++      "kotlin/DslMarker",
++      "kotlin/ExceptionsKt",
++      "kotlin/ExceptionsKt__ExceptionsKt",
++      "kotlin/Experimental",
++      "kotlin/Experimental$Level",
++      "kotlin/ExperimentalMultiplatform",
++      "kotlin/ExperimentalUnsignedTypes",
++      "kotlin/ExtensionFunctionType",
++      "kotlin/Function",
++      "kotlin/HashCodeKt",
++      "kotlin/InitializedLazyImpl",
++      "kotlin/KotlinNullPointerException",
++      "kotlin/KotlinVersion",
++      "kotlin/KotlinVersion$Companion",
++      "kotlin/LateinitKt",
++      "kotlin/Lazy",
++      "kotlin/LazyKt",
++      "kotlin/LazyKt$WhenMappings",
++      "kotlin/LazyKt__LazyJVMKt",
++      "kotlin/LazyKt__LazyKt",
++      "kotlin/LazyThreadSafetyMode",
++      "kotlin/MathKt",
++      "kotlin/MathKt__BigDecimalsKt",
++      "kotlin/MathKt__BigIntegersKt",
++      "kotlin/MathKt__NumbersKt",
++      "kotlin/Metadata",
++      "kotlin/NoWhenBranchMatchedException",
++      "kotlin/NotImplementedError",
++      "kotlin/OptionalExpectation",
++      "kotlin/Pair",
++      "kotlin/ParameterName",
++      "kotlin/PreconditionsKt",
++      "kotlin/PreconditionsKt__AssertionsJVMKt",
++      "kotlin/PreconditionsKt__PreconditionsKt",
++      "kotlin/PublishedApi",
++      "kotlin/ReplaceWith",
++      "kotlin/Result",
++      "kotlin/Result$Companion",
++      "kotlin/Result$Failure",
++      "kotlin/ResultKt",
++      "kotlin/SafePublicationLazyImpl",
++      "kotlin/SafePublicationLazyImpl$Companion",
++      "kotlin/SinceKotlin",
++      "kotlin/StandardKt",
++      "kotlin/StandardKt__StandardKt",
++      "kotlin/StandardKt__SynchronizedKt",
++      "kotlin/SuccessOrFailureKt",
++      "kotlin/Suppress",
++      "kotlin/SuspendKt",
++      "kotlin/SynchronizedLazyImpl",
++      "kotlin/Triple",
++      "kotlin/TuplesKt",
++      "kotlin/TypeAliasesKt",
++      "kotlin/TypeCastException",
++      "kotlin/UByte",
++      "kotlin/UByte$Companion",
++      "kotlin/UByteArray",
++      "kotlin/UByteArray$Iterator",
++      "kotlin/UByteArrayKt",
++      "kotlin/UByteKt",
++      "kotlin/UInt",
++      "kotlin/UInt$Companion",
++      "kotlin/UIntArray",
++      "kotlin/UIntArray$Iterator",
++      "kotlin/UIntArrayKt",
++      "kotlin/UIntKt",
++      "kotlin/ULong",
++      "kotlin/ULong$Companion",
++      "kotlin/ULongArray",
++      "kotlin/ULongArray$Iterator",
++      "kotlin/ULongArrayKt",
++      "kotlin/ULongKt",
++      "kotlin/UNINITIALIZED_VALUE",
++      "kotlin/UShort",
++      "kotlin/UShort$Companion",
++      "kotlin/UShortArray",
++      "kotlin/UShortArray$Iterator",
++      "kotlin/UShortArrayKt",
++      "kotlin/UShortKt",
++      "kotlin/UninitializedPropertyAccessException",
++      "kotlin/Unit",
++      "kotlin/UnsafeLazyImpl",
++      "kotlin/UnsafeVariance",
++      "kotlin/UnsignedKt",
++      "kotlin/UseExperimental",
++      "kotlin/WasExperimental",
++      "kotlin/_Assertions",
++      "kotlin/annotation/AnnotationRetention",
++      "kotlin/annotation/AnnotationTarget",
++      "kotlin/annotation/MustBeDocumented",
++      "kotlin/annotation/Repeatable",
++      "kotlin/annotation/Retention",
++      "kotlin/annotation/Target",
++      "kotlin/collections/AbstractCollection",
++      "kotlin/collections/AbstractCollection$toString$1",
++      "kotlin/collections/AbstractIterator",
++      "kotlin/collections/AbstractIterator$WhenMappings",
++      "kotlin/collections/AbstractList",
++      "kotlin/collections/AbstractList$Companion",
++      "kotlin/collections/AbstractList$IteratorImpl",
++      "kotlin/collections/AbstractList$ListIteratorImpl",
++      "kotlin/collections/AbstractList$SubList",
++      "kotlin/collections/AbstractMap",
++      "kotlin/collections/AbstractMap$Companion",
++      "kotlin/collections/AbstractMap$keys$1",
++      "kotlin/collections/AbstractMap$keys$1$iterator$1",
++      "kotlin/collections/AbstractMap$toString$1",
++      "kotlin/collections/AbstractMap$values$1",
++      "kotlin/collections/AbstractMap$values$1$iterator$1",
++      "kotlin/collections/AbstractMutableCollection",
++      "kotlin/collections/AbstractMutableList",
++      "kotlin/collections/AbstractMutableMap",
++      "kotlin/collections/AbstractMutableSet",
++      "kotlin/collections/AbstractSet",
++      "kotlin/collections/AbstractSet$Companion",
++      "kotlin/collections/ArrayAsCollection",
++      "kotlin/collections/ArraysKt",
++      "kotlin/collections/ArraysKt__ArraysJVMKt",
++      "kotlin/collections/ArraysKt__ArraysKt",
++      "kotlin/collections/ArraysKt___ArraysJvmKt",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$1",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$2",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$3",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$4",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$5",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$6",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$7",
++      "kotlin/collections/ArraysKt___ArraysJvmKt$asList$8",
++      "kotlin/collections/ArraysKt___ArraysKt",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$1",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$2",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$3",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$4",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$5",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$6",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$7",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$8",
++      "kotlin/collections/ArraysKt___ArraysKt$asIterable$$inlined$Iterable$9",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$1",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$2",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$3",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$4",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$5",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$6",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$7",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$8",
++      "kotlin/collections/ArraysKt___ArraysKt$asSequence$$inlined$Sequence$9",
++      "kotlin/collections/ArraysKt___ArraysKt$groupingBy$1",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$1",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$2",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$3",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$4",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$5",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$6",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$7",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$8",
++      "kotlin/collections/ArraysKt___ArraysKt$withIndex$9",
++      "kotlin/collections/ArraysUtilJVM",
++      "kotlin/collections/BooleanIterator",
++      "kotlin/collections/ByteIterator",
++      "kotlin/collections/CharIterator",
++      "kotlin/collections/CollectionsKt",
++      "kotlin/collections/CollectionsKt__CollectionsJVMKt",
++      "kotlin/collections/CollectionsKt__CollectionsKt",
++      "kotlin/collections/CollectionsKt__CollectionsKt$binarySearchBy$1",
++      "kotlin/collections/CollectionsKt__IterablesKt",
++      "kotlin/collections/CollectionsKt__IterablesKt$Iterable$1",
++      "kotlin/collections/CollectionsKt__IteratorsJVMKt",
++      "kotlin/collections/CollectionsKt__IteratorsJVMKt$iterator$1",
++      "kotlin/collections/CollectionsKt__IteratorsKt",
++      "kotlin/collections/CollectionsKt__MutableCollectionsJVMKt",
++      "kotlin/collections/CollectionsKt__MutableCollectionsKt",
++      "kotlin/collections/CollectionsKt__ReversedViewsKt",
++      "kotlin/collections/CollectionsKt___CollectionsJvmKt",
++      "kotlin/collections/CollectionsKt___CollectionsKt",
++      "kotlin/collections/CollectionsKt___CollectionsKt$asSequence$$inlined$Sequence$1",
++      "kotlin/collections/CollectionsKt___CollectionsKt$elementAt$1",
++      "kotlin/collections/CollectionsKt___CollectionsKt$groupingBy$1",
++      "kotlin/collections/CollectionsKt___CollectionsKt$withIndex$1",
++      "kotlin/collections/DoubleIterator",
++      "kotlin/collections/EmptyIterator",
++      "kotlin/collections/EmptyList",
++      "kotlin/collections/EmptyMap",
++      "kotlin/collections/EmptySet",
++      "kotlin/collections/FloatIterator",
++      "kotlin/collections/Grouping",
++      "kotlin/collections/GroupingKt",
++      "kotlin/collections/GroupingKt__GroupingJVMKt",
++      "kotlin/collections/GroupingKt__GroupingKt",
++      "kotlin/collections/IndexedValue",
++      "kotlin/collections/IndexingIterable",
++      "kotlin/collections/IndexingIterator",
++      "kotlin/collections/IntIterator",
++      "kotlin/collections/LongIterator",
++      "kotlin/collections/MapAccessorsKt",
++      "kotlin/collections/MapWithDefault",
++      "kotlin/collections/MapWithDefaultImpl",
++      "kotlin/collections/MapsKt",
++      "kotlin/collections/MapsKt__MapWithDefaultKt",
++      "kotlin/collections/MapsKt__MapsJVMKt",
++      "kotlin/collections/MapsKt__MapsKt",
++      "kotlin/collections/MapsKt___MapsKt",
++      "kotlin/collections/MovingSubList",
++      "kotlin/collections/MutableMapWithDefault",
++      "kotlin/collections/MutableMapWithDefaultImpl",
++      "kotlin/collections/ReversedList",
++      "kotlin/collections/ReversedListReadOnly",
++      "kotlin/collections/RingBuffer",
++      "kotlin/collections/RingBuffer$iterator$1",
++      "kotlin/collections/SetsKt",
++      "kotlin/collections/SetsKt__SetsJVMKt",
++      "kotlin/collections/SetsKt__SetsKt",
++      "kotlin/collections/SetsKt___SetsKt",
++      "kotlin/collections/ShortIterator",
++      "kotlin/collections/SlidingWindowKt",
++      "kotlin/collections/SlidingWindowKt$windowedIterator$1",
++      "kotlin/collections/SlidingWindowKt$windowedSequence$$inlined$Sequence$1",
++      "kotlin/collections/State",
++      "kotlin/collections/TypeAliasesKt",
++      "kotlin/collections/UArraysKt",
++      "kotlin/collections/UArraysKt___UArraysKt",
++      "kotlin/collections/UByteIterator",
++      "kotlin/collections/UIntIterator",
++      "kotlin/collections/ULongIterator",
++      "kotlin/collections/UShortIterator",
++      "kotlin/comparisons/ComparisonsKt",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$compareBy$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$compareBy$2",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$compareBy$3",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$compareByDescending$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$compareByDescending$2",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$nullsFirst$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$nullsLast$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$then$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$thenBy$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$thenBy$2",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$thenByDescending$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$thenByDescending$2",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$thenComparator$1",
++      "kotlin/comparisons/ComparisonsKt__ComparisonsKt$thenDescending$1",
++      "kotlin/comparisons/ComparisonsKt___ComparisonsJvmKt",
++      "kotlin/comparisons/ComparisonsKt___ComparisonsKt",
++      "kotlin/comparisons/NaturalOrderComparator",
++      "kotlin/comparisons/ReverseOrderComparator",
++      "kotlin/comparisons/ReversedComparator",
++      "kotlin/concurrent/LocksKt",
++      "kotlin/concurrent/ThreadsKt",
++      "kotlin/concurrent/ThreadsKt$thread$thread$1",
++      "kotlin/concurrent/TimersKt",
++      "kotlin/concurrent/TimersKt$timerTask$1",
++      "kotlin/contracts/CallsInPlace",
++      "kotlin/contracts/ConditionalEffect",
++      "kotlin/contracts/ContractBuilder",
++      "kotlin/contracts/ContractBuilder$DefaultImpls",
++      "kotlin/contracts/ContractBuilderKt",
++      "kotlin/contracts/Effect",
++      "kotlin/contracts/ExperimentalContracts",
++      "kotlin/contracts/InvocationKind",
++      "kotlin/contracts/Returns",
++      "kotlin/contracts/ReturnsNotNull",
++      "kotlin/contracts/SimpleEffect",
++      "kotlin/coroutines/AbstractCoroutineContextElement",
++      "kotlin/coroutines/CombinedContext",
++      "kotlin/coroutines/CombinedContext$Serialized",
++      "kotlin/coroutines/CombinedContext$Serialized$Companion",
++      "kotlin/coroutines/CombinedContext$toString$1",
++      "kotlin/coroutines/CombinedContext$writeReplace$1",
++      "kotlin/coroutines/Continuation",
++      "kotlin/coroutines/ContinuationInterceptor",
++      "kotlin/coroutines/ContinuationInterceptor$DefaultImpls",
++      "kotlin/coroutines/ContinuationInterceptor$Key",
++      "kotlin/coroutines/ContinuationKt",
++      "kotlin/coroutines/ContinuationKt$Continuation$1",
++      "kotlin/coroutines/CoroutineContext",
++      "kotlin/coroutines/CoroutineContext$DefaultImpls",
++      "kotlin/coroutines/CoroutineContext$Element",
++      "kotlin/coroutines/CoroutineContext$Element$DefaultImpls",
++      "kotlin/coroutines/CoroutineContext$Key",
++      "kotlin/coroutines/CoroutineContext$plus$1",
++      "kotlin/coroutines/EmptyCoroutineContext",
++      "kotlin/coroutines/RestrictsSuspension",
++      "kotlin/coroutines/SafeContinuation",
++      "kotlin/coroutines/SafeContinuation$Companion",
++      "kotlin/coroutines/experimental/AbstractCoroutineContextElement",
++      "kotlin/coroutines/experimental/CombinedContext",
++      "kotlin/coroutines/experimental/CombinedContext$toString$1",
++      "kotlin/coroutines/experimental/Continuation",
++      "kotlin/coroutines/experimental/ContinuationInterceptor",
++      "kotlin/coroutines/experimental/ContinuationInterceptor$DefaultImpls",
++      "kotlin/coroutines/experimental/ContinuationInterceptor$Key",
++      "kotlin/coroutines/experimental/CoroutineContext",
++      "kotlin/coroutines/experimental/CoroutineContext$DefaultImpls",
++      "kotlin/coroutines/experimental/CoroutineContext$Element",
++      "kotlin/coroutines/experimental/CoroutineContext$Element$DefaultImpls",
++      "kotlin/coroutines/experimental/CoroutineContext$Key",
++      "kotlin/coroutines/experimental/CoroutineContext$plus$1",
++      "kotlin/coroutines/experimental/CoroutinesKt",
++      "kotlin/coroutines/experimental/EmptyCoroutineContext",
++      "kotlin/coroutines/experimental/RestrictsSuspension",
++      "kotlin/coroutines/experimental/SafeContinuation",
++      "kotlin/coroutines/experimental/SafeContinuation$Companion",
++      "kotlin/coroutines/experimental/SafeContinuation$Fail",
++      "kotlin/coroutines/experimental/SequenceBuilder",
++      "kotlin/coroutines/experimental/SequenceBuilderIterator",
++      "kotlin/coroutines/experimental/SequenceBuilderKt",
++      "kotlin/coroutines/experimental/SequenceBuilderKt__SequenceBuilderKt",
++      "kotlin/coroutines/experimental/SequenceBuilderKt__SequenceBuilderKt$buildSequence$$inlined$Sequence$1",
++      "kotlin/coroutines/experimental/intrinsics/IntrinsicsKt",
++      "kotlin/coroutines/experimental/intrinsics/IntrinsicsKt__IntrinsicsJvmKt",
++      "kotlin/coroutines/experimental/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$buildContinuationByInvokeCall$continuation$1",
++      "kotlin/coroutines/experimental/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineUnchecked$$inlined$buildContinuationByInvokeCall$IntrinsicsKt__IntrinsicsJvmKt$1",
++      "kotlin/coroutines/experimental/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineUnchecked$$inlined$buildContinuationByInvokeCall$IntrinsicsKt__IntrinsicsJvmKt$2",
++      "kotlin/coroutines/experimental/intrinsics/IntrinsicsKt__IntrinsicsKt",
++      "kotlin/coroutines/experimental/jvm/internal/CoroutineImpl",
++      "kotlin/coroutines/experimental/jvm/internal/CoroutineIntrinsics",
++      "kotlin/coroutines/experimental/migration/ContextMigration",
++      "kotlin/coroutines/experimental/migration/ContextMigration$Key",
++      "kotlin/coroutines/experimental/migration/ContinuationInterceptorMigration",
++      "kotlin/coroutines/experimental/migration/ContinuationMigration",
++      "kotlin/coroutines/experimental/migration/CoroutinesMigrationKt",
++      "kotlin/coroutines/experimental/migration/ExperimentalContextMigration",
++      "kotlin/coroutines/experimental/migration/ExperimentalContextMigration$Key",
++      "kotlin/coroutines/experimental/migration/ExperimentalContinuationInterceptorMigration",
++      "kotlin/coroutines/experimental/migration/ExperimentalContinuationMigration",
++      "kotlin/coroutines/experimental/migration/ExperimentalSuspendFunction0Migration",
++      "kotlin/coroutines/experimental/migration/ExperimentalSuspendFunction1Migration",
++      "kotlin/coroutines/experimental/migration/ExperimentalSuspendFunction2Migration",
++      "kotlin/coroutines/intrinsics/CoroutineSingletons",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsJvmKt",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineFromSuspendFunction$1",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineFromSuspendFunction$2",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineUnintercepted$$inlined$createCoroutineFromSuspendFunction$IntrinsicsKt__IntrinsicsJvmKt$1",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineUnintercepted$$inlined$createCoroutineFromSuspendFunction$IntrinsicsKt__IntrinsicsJvmKt$2",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineUnintercepted$$inlined$createCoroutineFromSuspendFunction$IntrinsicsKt__IntrinsicsJvmKt$3",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsJvmKt$createCoroutineUnintercepted$$inlined$createCoroutineFromSuspendFunction$IntrinsicsKt__IntrinsicsJvmKt$4",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt__IntrinsicsKt",
++      "kotlin/coroutines/jvm/internal/BaseContinuationImpl",
++      "kotlin/coroutines/jvm/internal/Boxing",
++      "kotlin/coroutines/jvm/internal/CompletedContinuation",
++      "kotlin/coroutines/jvm/internal/ContinuationImpl",
++      "kotlin/coroutines/jvm/internal/CoroutineStackFrame",
++      "kotlin/coroutines/jvm/internal/DebugMetadata",
++      "kotlin/coroutines/jvm/internal/DebugMetadataKt",
++      "kotlin/coroutines/jvm/internal/DebugProbesKt",
++      "kotlin/coroutines/jvm/internal/RestrictedContinuationImpl",
++      "kotlin/coroutines/jvm/internal/RestrictedSuspendLambda",
++      "kotlin/coroutines/jvm/internal/RunSuspend",
++      "kotlin/coroutines/jvm/internal/RunSuspendKt",
++      "kotlin/coroutines/jvm/internal/SuspendFunction",
++      "kotlin/coroutines/jvm/internal/SuspendLambda",
++      "kotlin/experimental/BitwiseOperationsKt",
++      "kotlin/experimental/ExperimentalTypeInference",
++      "kotlin/internal/AccessibleLateinitPropertyLiteral",
++      "kotlin/internal/ContractsDsl",
++      "kotlin/internal/DynamicExtension",
++      "kotlin/internal/Exact",
++      "kotlin/internal/HidesMembers",
++      "kotlin/internal/InlineOnly",
++      "kotlin/internal/LowPriorityInOverloadResolution",
++      "kotlin/internal/NoInfer",
++      "kotlin/internal/OnlyInputTypes",
++      "kotlin/internal/PlatformDependent",
++      "kotlin/internal/PlatformImplementations",
++      "kotlin/internal/PlatformImplementationsKt",
++      "kotlin/internal/ProgressionUtilKt",
++      "kotlin/internal/PureReifiable",
++      "kotlin/internal/RequireKotlin",
++      "kotlin/internal/RequireKotlinVersionKind",
++      "kotlin/internal/UProgressionUtilKt",
++      "kotlin/io/AccessDeniedException",
++      "kotlin/io/ByteStreamsKt",
++      "kotlin/io/ByteStreamsKt$iterator$1",
++      "kotlin/io/CloseableKt",
++      "kotlin/io/ConsoleKt",
++      "kotlin/io/ConsoleKt$decoder$2",
++      "kotlin/io/ConstantsKt",
++      "kotlin/io/ExceptionsKt",
++      "kotlin/io/FileAlreadyExistsException",
++      "kotlin/io/FilePathComponents",
++      "kotlin/io/FileSystemException",
++      "kotlin/io/FileTreeWalk",
++      "kotlin/io/FileTreeWalk$DirectoryState",
++      "kotlin/io/FileTreeWalk$FileTreeWalkIterator",
++      "kotlin/io/FileTreeWalk$FileTreeWalkIterator$BottomUpDirectoryState",
++      "kotlin/io/FileTreeWalk$FileTreeWalkIterator$SingleFileState",
++      "kotlin/io/FileTreeWalk$FileTreeWalkIterator$TopDownDirectoryState",
++      "kotlin/io/FileTreeWalk$FileTreeWalkIterator$WhenMappings",
++      "kotlin/io/FileTreeWalk$WalkState",
++      "kotlin/io/FileWalkDirection",
++      "kotlin/io/FilesKt",
++      "kotlin/io/FilesKt__FilePathComponentsKt",
++      "kotlin/io/FilesKt__FileReadWriteKt",
++      "kotlin/io/FilesKt__FileReadWriteKt$readLines$1",
++      "kotlin/io/FilesKt__FileTreeWalkKt",
++      "kotlin/io/FilesKt__UtilsKt",
++      "kotlin/io/FilesKt__UtilsKt$copyRecursively$1",
++      "kotlin/io/FilesKt__UtilsKt$copyRecursively$2",
++      "kotlin/io/LinesSequence",
++      "kotlin/io/LinesSequence$iterator$1",
++      "kotlin/io/NoSuchFileException",
++      "kotlin/io/OnErrorAction",
++      "kotlin/io/SerializableKt",
++      "kotlin/io/TerminateException",
++      "kotlin/io/TextStreamsKt",
++      "kotlin/io/TextStreamsKt$readLines$1",
++      "kotlin/js/JsName",
++      "kotlin/jvm/JvmClassMappingKt",
++      "kotlin/jvm/JvmDefault",
++      "kotlin/jvm/JvmField",
++      "kotlin/jvm/JvmMultifileClass",
++      "kotlin/jvm/JvmName",
++      "kotlin/jvm/JvmOverloads",
++      "kotlin/jvm/JvmPackageName",
++      "kotlin/jvm/JvmStatic",
++      "kotlin/jvm/JvmSuppressWildcards",
++      "kotlin/jvm/JvmSynthetic",
++      "kotlin/jvm/JvmWildcard",
++      "kotlin/jvm/KotlinReflectionNotSupportedError",
++      "kotlin/jvm/PurelyImplements",
++      "kotlin/jvm/Strictfp",
++      "kotlin/jvm/Synchronized",
++      "kotlin/jvm/Throws",
++      "kotlin/jvm/Transient",
++      "kotlin/jvm/Volatile",
++      "kotlin/jvm/functions/Function0",
++      "kotlin/jvm/functions/Function1",
++      "kotlin/jvm/functions/Function10",
++      "kotlin/jvm/functions/Function11",
++      "kotlin/jvm/functions/Function12",
++      "kotlin/jvm/functions/Function13",
++      "kotlin/jvm/functions/Function14",
++      "kotlin/jvm/functions/Function15",
++      "kotlin/jvm/functions/Function16",
++      "kotlin/jvm/functions/Function17",
++      "kotlin/jvm/functions/Function18",
++      "kotlin/jvm/functions/Function19",
++      "kotlin/jvm/functions/Function2",
++      "kotlin/jvm/functions/Function20",
++      "kotlin/jvm/functions/Function21",
++      "kotlin/jvm/functions/Function22",
++      "kotlin/jvm/functions/Function3",
++      "kotlin/jvm/functions/Function4",
++      "kotlin/jvm/functions/Function5",
++      "kotlin/jvm/functions/Function6",
++      "kotlin/jvm/functions/Function7",
++      "kotlin/jvm/functions/Function8",
++      "kotlin/jvm/functions/Function9",
++      "kotlin/jvm/functions/FunctionN",
++      "kotlin/jvm/internal/ArrayBooleanIterator",
++      "kotlin/jvm/internal/ArrayByteIterator",
++      "kotlin/jvm/internal/ArrayCharIterator",
++      "kotlin/jvm/internal/ArrayDoubleIterator",
++      "kotlin/jvm/internal/ArrayFloatIterator",
++      "kotlin/jvm/internal/ArrayIntIterator",
++      "kotlin/jvm/internal/ArrayIterator",
++      "kotlin/jvm/internal/ArrayIteratorKt",
++      "kotlin/jvm/internal/ArrayIteratorsKt",
++      "kotlin/jvm/internal/ArrayLongIterator",
++      "kotlin/jvm/internal/ArrayShortIterator",
++      "kotlin/jvm/internal/BooleanCompanionObject",
++      "kotlin/jvm/internal/BooleanSpreadBuilder",
++      "kotlin/jvm/internal/ByteCompanionObject",
++      "kotlin/jvm/internal/ByteSpreadBuilder",
++      "kotlin/jvm/internal/CallableReference",
++      "kotlin/jvm/internal/CallableReference$NoReceiver",
++      "kotlin/jvm/internal/CharCompanionObject",
++      "kotlin/jvm/internal/CharSpreadBuilder",
++      "kotlin/jvm/internal/ClassBasedDeclarationContainer",
++      "kotlin/jvm/internal/ClassReference",
++      "kotlin/jvm/internal/CollectionToArray",
++      "kotlin/jvm/internal/DefaultConstructorMarker",
++      "kotlin/jvm/internal/DoubleCompanionObject",
++      "kotlin/jvm/internal/DoubleSpreadBuilder",
++      "kotlin/jvm/internal/EnumCompanionObject",
++      "kotlin/jvm/internal/FloatCompanionObject",
++      "kotlin/jvm/internal/FloatSpreadBuilder",
++      "kotlin/jvm/internal/FunctionBase",
++      "kotlin/jvm/internal/FunctionImpl",
++      "kotlin/jvm/internal/FunctionReference",
++      "kotlin/jvm/internal/FunctionReferenceImpl",
++      "kotlin/jvm/internal/InlineMarker",
++      "kotlin/jvm/internal/IntCompanionObject",
++      "kotlin/jvm/internal/IntSpreadBuilder",
++      "kotlin/jvm/internal/Intrinsics",
++      "kotlin/jvm/internal/Lambda",
++      "kotlin/jvm/internal/LocalVariableReference",
++      "kotlin/jvm/internal/LocalVariableReferencesKt",
++      "kotlin/jvm/internal/LongCompanionObject",
++      "kotlin/jvm/internal/LongSpreadBuilder",
++      "kotlin/jvm/internal/MagicApiIntrinsics",
++      "kotlin/jvm/internal/MutableLocalVariableReference",
++      "kotlin/jvm/internal/MutablePropertyReference",
++      "kotlin/jvm/internal/MutablePropertyReference0",
++      "kotlin/jvm/internal/MutablePropertyReference0Impl",
++      "kotlin/jvm/internal/MutablePropertyReference1",
++      "kotlin/jvm/internal/MutablePropertyReference1Impl",
++      "kotlin/jvm/internal/MutablePropertyReference2",
++      "kotlin/jvm/internal/MutablePropertyReference2Impl",
++      "kotlin/jvm/internal/PackageReference",
++      "kotlin/jvm/internal/PrimitiveSpreadBuilder",
++      "kotlin/jvm/internal/PropertyReference",
++      "kotlin/jvm/internal/PropertyReference0",
++      "kotlin/jvm/internal/PropertyReference0Impl",
++      "kotlin/jvm/internal/PropertyReference1",
++      "kotlin/jvm/internal/PropertyReference1Impl",
++      "kotlin/jvm/internal/PropertyReference2",
++      "kotlin/jvm/internal/PropertyReference2Impl",
++      "kotlin/jvm/internal/Ref",
++      "kotlin/jvm/internal/Ref$BooleanRef",
++      "kotlin/jvm/internal/Ref$ByteRef",
++      "kotlin/jvm/internal/Ref$CharRef",
++      "kotlin/jvm/internal/Ref$DoubleRef",
++      "kotlin/jvm/internal/Ref$FloatRef",
++      "kotlin/jvm/internal/Ref$IntRef",
++      "kotlin/jvm/internal/Ref$LongRef",
++      "kotlin/jvm/internal/Ref$ObjectRef",
++      "kotlin/jvm/internal/Ref$ShortRef",
++      "kotlin/jvm/internal/Reflection",
++      "kotlin/jvm/internal/ReflectionFactory",
++      "kotlin/jvm/internal/ShortCompanionObject",
++      "kotlin/jvm/internal/ShortSpreadBuilder",
++      "kotlin/jvm/internal/SpreadBuilder",
++      "kotlin/jvm/internal/StringCompanionObject",
++      "kotlin/jvm/internal/TypeIntrinsics",
++      "kotlin/jvm/internal/markers/KMappedMarker",
++      "kotlin/jvm/internal/markers/KMutableCollection",
++      "kotlin/jvm/internal/markers/KMutableIterable",
++      "kotlin/jvm/internal/markers/KMutableIterator",
++      "kotlin/jvm/internal/markers/KMutableList",
++      "kotlin/jvm/internal/markers/KMutableListIterator",
++      "kotlin/jvm/internal/markers/KMutableMap",
++      "kotlin/jvm/internal/markers/KMutableMap$Entry",
++      "kotlin/jvm/internal/markers/KMutableSet",
++      "kotlin/jvm/internal/unsafe/MonitorKt",
++      "kotlin/math/Constants",
++      "kotlin/math/MathKt",
++      "kotlin/math/MathKt__MathHKt",
++      "kotlin/math/MathKt__MathJVMKt",
++      "kotlin/properties/Delegates",
++      "kotlin/properties/Delegates$observable$1",
++      "kotlin/properties/Delegates$vetoable$1",
++      "kotlin/properties/NotNullVar",
++      "kotlin/properties/ObservableProperty",
++      "kotlin/properties/ReadOnlyProperty",
++      "kotlin/properties/ReadWriteProperty",
++      "kotlin/random/AbstractPlatformRandom",
++      "kotlin/random/FallbackThreadLocalRandom",
++      "kotlin/random/FallbackThreadLocalRandom$implStorage$1",
++      "kotlin/random/KotlinRandom",
++      "kotlin/random/PlatformRandom",
++      "kotlin/random/PlatformRandomKt",
++      "kotlin/random/Random",
++      "kotlin/random/Random$Companion",
++      "kotlin/random/Random$Default",
++      "kotlin/random/RandomKt",
++      "kotlin/random/URandomKt",
++      "kotlin/random/XorWowRandom",
++      "kotlin/ranges/CharProgression",
++      "kotlin/ranges/CharProgression$Companion",
++      "kotlin/ranges/CharProgressionIterator",
++      "kotlin/ranges/CharRange",
++      "kotlin/ranges/CharRange$Companion",
++      "kotlin/ranges/ClosedDoubleRange",
++      "kotlin/ranges/ClosedFloatRange",
++      "kotlin/ranges/ClosedFloatingPointRange",
++      "kotlin/ranges/ClosedFloatingPointRange$DefaultImpls",
++      "kotlin/ranges/ClosedRange",
++      "kotlin/ranges/ClosedRange$DefaultImpls",
++      "kotlin/ranges/ComparableRange",
++      "kotlin/ranges/IntProgression",
++      "kotlin/ranges/IntProgression$Companion",
++      "kotlin/ranges/IntProgressionIterator",
++      "kotlin/ranges/IntRange",
++      "kotlin/ranges/IntRange$Companion",
++      "kotlin/ranges/LongProgression",
++      "kotlin/ranges/LongProgression$Companion",
++      "kotlin/ranges/LongProgressionIterator",
++      "kotlin/ranges/LongRange",
++      "kotlin/ranges/LongRange$Companion",
++      "kotlin/ranges/RangesKt",
++      "kotlin/ranges/RangesKt__RangesJVMKt",
++      "kotlin/ranges/RangesKt__RangesKt",
++      "kotlin/ranges/RangesKt___RangesKt",
++      "kotlin/ranges/UIntProgression",
++      "kotlin/ranges/UIntProgression$Companion",
++      "kotlin/ranges/UIntProgressionIterator",
++      "kotlin/ranges/UIntRange",
++      "kotlin/ranges/UIntRange$Companion",
++      "kotlin/ranges/ULongProgression",
++      "kotlin/ranges/ULongProgression$Companion",
++      "kotlin/ranges/ULongProgressionIterator",
++      "kotlin/ranges/ULongRange",
++      "kotlin/ranges/ULongRange$Companion",
++      "kotlin/ranges/URangesKt",
++      "kotlin/ranges/URangesKt___URangesKt",
++      "kotlin/reflect/KAnnotatedElement",
++      "kotlin/reflect/KCallable",
++      "kotlin/reflect/KCallable$DefaultImpls",
++      "kotlin/reflect/KClass",
++      "kotlin/reflect/KClass$DefaultImpls",
++      "kotlin/reflect/KClassifier",
++      "kotlin/reflect/KDeclarationContainer",
++      "kotlin/reflect/KFunction",
++      "kotlin/reflect/KFunction$DefaultImpls",
++      "kotlin/reflect/KMutableProperty",
++      "kotlin/reflect/KMutableProperty$Setter",
++      "kotlin/reflect/KMutableProperty0",
++      "kotlin/reflect/KMutableProperty0$Setter",
++      "kotlin/reflect/KMutableProperty1",
++      "kotlin/reflect/KMutableProperty1$Setter",
++      "kotlin/reflect/KMutableProperty2",
++      "kotlin/reflect/KMutableProperty2$Setter",
++      "kotlin/reflect/KParameter",
++      "kotlin/reflect/KParameter$DefaultImpls",
++      "kotlin/reflect/KParameter$Kind",
++      "kotlin/reflect/KProperty",
++      "kotlin/reflect/KProperty$Accessor",
++      "kotlin/reflect/KProperty$DefaultImpls",
++      "kotlin/reflect/KProperty$Getter",
++      "kotlin/reflect/KProperty0",
++      "kotlin/reflect/KProperty0$Getter",
++      "kotlin/reflect/KProperty1",
++      "kotlin/reflect/KProperty1$Getter",
++      "kotlin/reflect/KProperty2",
++      "kotlin/reflect/KProperty2$Getter",
++      "kotlin/reflect/KType",
++      "kotlin/reflect/KType$DefaultImpls",
++      "kotlin/reflect/KTypeParameter",
++      "kotlin/reflect/KTypeProjection",
++      "kotlin/reflect/KTypeProjection$Companion",
++      "kotlin/reflect/KVariance",
++      "kotlin/reflect/KVisibility",
++      "kotlin/sequences/ConstrainedOnceSequence",
++      "kotlin/sequences/DistinctIterator",
++      "kotlin/sequences/DistinctSequence",
++      "kotlin/sequences/DropSequence",
++      "kotlin/sequences/DropSequence$iterator$1",
++      "kotlin/sequences/DropTakeSequence",
++      "kotlin/sequences/DropWhileSequence",
++      "kotlin/sequences/DropWhileSequence$iterator$1",
++      "kotlin/sequences/EmptySequence",
++      "kotlin/sequences/FilteringSequence",
++      "kotlin/sequences/FilteringSequence$iterator$1",
++      "kotlin/sequences/FlatteningSequence",
++      "kotlin/sequences/FlatteningSequence$iterator$1",
++      "kotlin/sequences/GeneratorSequence",
++      "kotlin/sequences/GeneratorSequence$iterator$1",
++      "kotlin/sequences/IndexingSequence",
++      "kotlin/sequences/IndexingSequence$iterator$1",
++      "kotlin/sequences/MergingSequence",
++      "kotlin/sequences/MergingSequence$iterator$1",
++      "kotlin/sequences/Sequence",
++      "kotlin/sequences/SequenceBuilderIterator",
++      "kotlin/sequences/SequenceScope",
++      "kotlin/sequences/SequencesKt",
++      "kotlin/sequences/SequencesKt__SequenceBuilderKt",
++      "kotlin/sequences/SequencesKt__SequenceBuilderKt$buildSequence$$inlined$Sequence$1",
++      "kotlin/sequences/SequencesKt__SequenceBuilderKt$sequence$$inlined$Sequence$1",
++      "kotlin/sequences/SequencesKt__SequencesJVMKt",
++      "kotlin/sequences/SequencesKt__SequencesKt",
++      "kotlin/sequences/SequencesKt__SequencesKt$Sequence$1",
++      "kotlin/sequences/SequencesKt__SequencesKt$asSequence$$inlined$Sequence$1",
++      "kotlin/sequences/SequencesKt__SequencesKt$flatten$1",
++      "kotlin/sequences/SequencesKt__SequencesKt$flatten$2",
++      "kotlin/sequences/SequencesKt__SequencesKt$flatten$3",
++      "kotlin/sequences/SequencesKt__SequencesKt$generateSequence$1",
++      "kotlin/sequences/SequencesKt__SequencesKt$generateSequence$2",
++      "kotlin/sequences/SequencesKt__SequencesKt$ifEmpty$1",
++      "kotlin/sequences/SequencesKt___SequencesJvmKt",
++      "kotlin/sequences/SequencesKt___SequencesJvmKt$filterIsInstance$1",
++      "kotlin/sequences/SequencesKt___SequencesKt",
++      "kotlin/sequences/SequencesKt___SequencesKt$asIterable$$inlined$Iterable$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$distinct$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$elementAt$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$filterIndexed$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$filterIndexed$2",
++      "kotlin/sequences/SequencesKt___SequencesKt$filterIsInstance$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$filterNotNull$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$flatMap$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$groupingBy$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$1$iterator$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$2",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$2$iterator$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$3",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$3$iterator$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$4",
++      "kotlin/sequences/SequencesKt___SequencesKt$minus$4$iterator$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$onEach$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$requireNoNulls$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$sorted$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$sortedWith$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$zip$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$zipWithNext$1",
++      "kotlin/sequences/SequencesKt___SequencesKt$zipWithNext$2",
++      "kotlin/sequences/SubSequence",
++      "kotlin/sequences/SubSequence$iterator$1",
++      "kotlin/sequences/TakeSequence",
++      "kotlin/sequences/TakeSequence$iterator$1",
++      "kotlin/sequences/TakeWhileSequence",
++      "kotlin/sequences/TakeWhileSequence$iterator$1",
++      "kotlin/sequences/TransformingIndexedSequence",
++      "kotlin/sequences/TransformingIndexedSequence$iterator$1",
++      "kotlin/sequences/TransformingSequence",
++      "kotlin/sequences/TransformingSequence$iterator$1",
++      "kotlin/system/ProcessKt",
++      "kotlin/system/TimingKt",
++      "kotlin/text/CharCategory",
++      "kotlin/text/CharCategory$Companion",
++      "kotlin/text/CharCategory$Companion$categoryMap$2",
++      "kotlin/text/CharDirectionality",
++      "kotlin/text/CharDirectionality$Companion",
++      "kotlin/text/CharDirectionality$Companion$directionalityMap$2",
++      "kotlin/text/CharsKt",
++      "kotlin/text/CharsKt__CharJVMKt",
++      "kotlin/text/CharsKt__CharKt",
++      "kotlin/text/Charsets",
++      "kotlin/text/CharsetsKt",
++      "kotlin/text/DelimitedRangesSequence",
++      "kotlin/text/DelimitedRangesSequence$iterator$1",
++      "kotlin/text/FlagEnum",
++      "kotlin/text/MatchGroup",
++      "kotlin/text/MatchGroupCollection",
++      "kotlin/text/MatchNamedGroupCollection",
++      "kotlin/text/MatchResult",
++      "kotlin/text/MatchResult$DefaultImpls",
++      "kotlin/text/MatchResult$Destructured",
++      "kotlin/text/MatcherMatchResult",
++      "kotlin/text/MatcherMatchResult$groupValues$1",
++      "kotlin/text/MatcherMatchResult$groups$1",
++      "kotlin/text/MatcherMatchResult$groups$1$iterator$1",
++      "kotlin/text/Regex",
++      "kotlin/text/Regex$Companion",
++      "kotlin/text/Regex$Serialized",
++      "kotlin/text/Regex$Serialized$Companion",
++      "kotlin/text/Regex$findAll$1",
++      "kotlin/text/Regex$findAll$2",
++      "kotlin/text/Regex$fromInt$$inlined$apply$lambda$1",
++      "kotlin/text/RegexKt",
++      "kotlin/text/RegexKt$fromInt$$inlined$apply$lambda$1",
++      "kotlin/text/RegexOption",
++      "kotlin/text/ScreenFloatValueRegEx",
++      "kotlin/text/StringsKt",
++      "kotlin/text/StringsKt__IndentKt",
++      "kotlin/text/StringsKt__IndentKt$getIndentFunction$1",
++      "kotlin/text/StringsKt__IndentKt$getIndentFunction$2",
++      "kotlin/text/StringsKt__IndentKt$prependIndent$1",
++      "kotlin/text/StringsKt__RegexExtensionsJVMKt",
++      "kotlin/text/StringsKt__RegexExtensionsKt",
++      "kotlin/text/StringsKt__StringBuilderJVMKt",
++      "kotlin/text/StringsKt__StringBuilderKt",
++      "kotlin/text/StringsKt__StringNumberConversionsJVMKt",
++      "kotlin/text/StringsKt__StringNumberConversionsKt",
++      "kotlin/text/StringsKt__StringsJVMKt",
++      "kotlin/text/StringsKt__StringsKt",
++      "kotlin/text/StringsKt__StringsKt$iterator$1",
++      "kotlin/text/StringsKt__StringsKt$rangesDelimitedBy$2",
++      "kotlin/text/StringsKt__StringsKt$rangesDelimitedBy$4",
++      "kotlin/text/StringsKt__StringsKt$splitToSequence$1",
++      "kotlin/text/StringsKt__StringsKt$splitToSequence$2",
++      "kotlin/text/StringsKt___StringsJvmKt",
++      "kotlin/text/StringsKt___StringsKt",
++      "kotlin/text/StringsKt___StringsKt$asIterable$$inlined$Iterable$1",
++      "kotlin/text/StringsKt___StringsKt$asSequence$$inlined$Sequence$1",
++      "kotlin/text/StringsKt___StringsKt$chunkedSequence$1",
++      "kotlin/text/StringsKt___StringsKt$groupingBy$1",
++      "kotlin/text/StringsKt___StringsKt$windowed$1",
++      "kotlin/text/StringsKt___StringsKt$windowedSequence$1",
++      "kotlin/text/StringsKt___StringsKt$windowedSequence$2",
++      "kotlin/text/StringsKt___StringsKt$withIndex$1",
++      "kotlin/text/SystemProperties",
++      "kotlin/text/TypeAliasesKt",
++      "kotlin/text/Typography",
++      "kotlin/text/UStringsKt",
++      "org/intellij/lang/annotations/Flow",
++      "org/intellij/lang/annotations/Identifier",
++      "org/intellij/lang/annotations/JdkConstants",
++      "org/intellij/lang/annotations/JdkConstants$AdjustableOrientation",
++      "org/intellij/lang/annotations/JdkConstants$BoxLayoutAxis",
++      "org/intellij/lang/annotations/JdkConstants$CalendarMonth",
++      "org/intellij/lang/annotations/JdkConstants$CursorType",
++      "org/intellij/lang/annotations/JdkConstants$FlowLayoutAlignment",
++      "org/intellij/lang/annotations/JdkConstants$FontStyle",
++      "org/intellij/lang/annotations/JdkConstants$HorizontalAlignment",
++      "org/intellij/lang/annotations/JdkConstants$InputEventMask",
++      "org/intellij/lang/annotations/JdkConstants$ListSelectionMode",
++      "org/intellij/lang/annotations/JdkConstants$PatternFlags",
++      "org/intellij/lang/annotations/JdkConstants$TabLayoutPolicy",
++      "org/intellij/lang/annotations/JdkConstants$TabPlacement",
++      "org/intellij/lang/annotations/JdkConstants$TitledBorderJustification",
++      "org/intellij/lang/annotations/JdkConstants$TitledBorderTitlePosition",
++      "org/intellij/lang/annotations/JdkConstants$TreeSelectionMode",
++      "org/intellij/lang/annotations/Language",
++      "org/intellij/lang/annotations/MagicConstant",
++      "org/intellij/lang/annotations/Pattern",
++      "org/intellij/lang/annotations/PrintFormat",
++      "org/intellij/lang/annotations/PrintFormatPattern",
++      "org/intellij/lang/annotations/RegExp",
++      "org/intellij/lang/annotations/Subst",
++      "org/jetbrains/annotations/Contract",
++      "org/jetbrains/annotations/Nls",
++      "org/jetbrains/annotations/NonNls",
++      "org/jetbrains/annotations/NotNull",
++      "org/jetbrains/annotations/Nullable",
++      "org/jetbrains/annotations/PropertyKey",
++      "org/jetbrains/annotations/TestOnly"
++    ],
++    "changedResources": [
++      "META-INF/MANIFEST.MF",
++      "META-INF/kotlin-stdlib-common-coroutines.kotlin_module",
++      "META-INF/kotlin-stdlib-common.kotlin_module",
++      "META-INF/kotlin-stdlib.kotlin_module",
++      "META-INF/kotlin-stdlib_coroutines.kotlin_module",
++      "META-INF/maven/com.squareup.wire/wire-runtime/pom.properties",
++      "META-INF/maven/com.squareup.wire/wire-runtime/pom.xml",
++      "META-INF/maven/org.jetbrains/annotations/pom.properties",
++      "META-INF/maven/org.jetbrains/annotations/pom.xml",
++      "META-INF/wire-runtime.kotlin_module",
++      "kotlin/ArithmeticException.kotlin_metadata",
++      "kotlin/AssertionError.kotlin_metadata",
++      "kotlin/BuilderInference.kotlin_metadata",
++      "kotlin/ClassCastException.kotlin_metadata",
++      "kotlin/Comparator.kotlin_metadata",
++      "kotlin/ConcurrentModificationException.kotlin_metadata",
++      "kotlin/Error.kotlin_metadata",
++      "kotlin/Exception.kotlin_metadata",
++      "kotlin/Experimental.kotlin_metadata",
++      "kotlin/ExperimentalMultiplatform.kotlin_metadata",
++      "kotlin/ExperimentalStdlibApi.kotlin_metadata",
++      "kotlin/ExperimentalUnsignedTypes.kotlin_metadata",
++      "kotlin/HashCodeKt.kotlin_metadata",
++      "kotlin/IllegalArgumentException.kotlin_metadata",
++      "kotlin/IllegalStateException.kotlin_metadata",
++      "kotlin/IndexOutOfBoundsException.kotlin_metadata",
++      "kotlin/InitializedLazyImpl.kotlin_metadata",
++      "kotlin/KotlinHKt.kotlin_metadata",
++      "kotlin/KotlinVersion.kotlin_metadata",
++      "kotlin/LateinitKt.kotlin_metadata",
++      "kotlin/Lazy.kotlin_metadata",
++      "kotlin/LazyKt.kotlin_metadata",
++      "kotlin/LazyThreadSafetyMode.kotlin_metadata",
++      "kotlin/NoSuchElementException.kotlin_metadata",
++      "kotlin/NoWhenBranchMatchedException.kotlin_metadata",
++      "kotlin/NotImplementedError.kotlin_metadata",
++      "kotlin/NullPointerException.kotlin_metadata",
++      "kotlin/NumberFormatException.kotlin_metadata",
++      "kotlin/NumbersKt.kotlin_metadata",
++      "kotlin/OptionalExpectation.kotlin_metadata",
++      "kotlin/Pair.kotlin_metadata",
++      "kotlin/PreconditionsKt.kotlin_metadata",
++      "kotlin/Result.kotlin_metadata",
++      "kotlin/ResultKt.kotlin_metadata",
++      "kotlin/RuntimeException.kotlin_metadata",
++      "kotlin/StandardKt.kotlin_metadata",
++      "kotlin/SuccessOrFailureKt.kotlin_metadata",
++      "kotlin/SuspendKt.kotlin_metadata",
++      "kotlin/Triple.kotlin_metadata",
++      "kotlin/TuplesKt.kotlin_metadata",
++      "kotlin/UByte.kotlin_metadata",
++      "kotlin/UByteArray.kotlin_metadata",
++      "kotlin/UByteArrayKt.kotlin_metadata",
++      "kotlin/UByteKt.kotlin_metadata",
++      "kotlin/UInt.kotlin_metadata",
++      "kotlin/UIntArray.kotlin_metadata",
++      "kotlin/UIntArrayKt.kotlin_metadata",
++      "kotlin/UIntKt.kotlin_metadata",
++      "kotlin/ULong.kotlin_metadata",
++      "kotlin/ULongArray.kotlin_metadata",
++      "kotlin/ULongArrayKt.kotlin_metadata",
++      "kotlin/ULongKt.kotlin_metadata",
++      "kotlin/UNINITIALIZED_VALUE.kotlin_metadata",
++      "kotlin/UNumbersKt.kotlin_metadata",
++      "kotlin/UShort.kotlin_metadata",
++      "kotlin/UShortArray.kotlin_metadata",
++      "kotlin/UShortArrayKt.kotlin_metadata",
++      "kotlin/UShortKt.kotlin_metadata",
++      "kotlin/UninitializedPropertyAccessException.kotlin_metadata",
++      "kotlin/UnsafeLazyImpl.kotlin_metadata",
++      "kotlin/UnsignedUtilsKt.kotlin_metadata",
++      "kotlin/UnsupportedOperationException.kotlin_metadata",
++      "kotlin/UseExperimental.kotlin_metadata",
++      "kotlin/WasExperimental.kotlin_metadata",
++      "kotlin/annotation/annotation.kotlin_builtins",
++      "kotlin/collections/AbstractCollection.kotlin_metadata",
++      "kotlin/collections/AbstractIterator.kotlin_metadata",
++      "kotlin/collections/AbstractList.kotlin_metadata",
++      "kotlin/collections/AbstractMap.kotlin_metadata",
++      "kotlin/collections/AbstractMutableCollection.kotlin_metadata",
++      "kotlin/collections/AbstractMutableList.kotlin_metadata",
++      "kotlin/collections/AbstractMutableMap.kotlin_metadata",
++      "kotlin/collections/AbstractMutableSet.kotlin_metadata",
++      "kotlin/collections/AbstractSet.kotlin_metadata",
++      "kotlin/collections/ArrayAsCollection.kotlin_metadata",
++      "kotlin/collections/ArrayList.kotlin_metadata",
++      "kotlin/collections/ArraysKt.kotlin_metadata",
++      "kotlin/collections/CollectionsHKt.kotlin_metadata",
++      "kotlin/collections/CollectionsKt.kotlin_metadata",
++      "kotlin/collections/EmptyIterator.kotlin_metadata",
++      "kotlin/collections/EmptyList.kotlin_metadata",
++      "kotlin/collections/EmptyMap.kotlin_metadata",
++      "kotlin/collections/EmptySet.kotlin_metadata",
++      "kotlin/collections/Grouping.kotlin_metadata",
++      "kotlin/collections/GroupingKt.kotlin_metadata",
++      "kotlin/collections/HashMap.kotlin_metadata",
++      "kotlin/collections/HashSet.kotlin_metadata",
++      "kotlin/collections/IndexedValue.kotlin_metadata",
++      "kotlin/collections/IndexingIterable.kotlin_metadata",
++      "kotlin/collections/IndexingIterator.kotlin_metadata",
++      "kotlin/collections/IterablesKt.kotlin_metadata",
++      "kotlin/collections/IteratorsKt.kotlin_metadata",
++      "kotlin/collections/LinkedHashMap.kotlin_metadata",
++      "kotlin/collections/LinkedHashSet.kotlin_metadata",
++      "kotlin/collections/MapAccessorsKt.kotlin_metadata",
++      "kotlin/collections/MapWithDefault.kotlin_metadata",
++      "kotlin/collections/MapWithDefaultImpl.kotlin_metadata",
++      "kotlin/collections/MapWithDefaultKt.kotlin_metadata",
++      "kotlin/collections/MapsKt.kotlin_metadata",
++      "kotlin/collections/MovingSubList.kotlin_metadata",
++      "kotlin/collections/MutableCollectionsKt.kotlin_metadata",
++      "kotlin/collections/MutableMapWithDefault.kotlin_metadata",
++      "kotlin/collections/MutableMapWithDefaultImpl.kotlin_metadata",
++      "kotlin/collections/RandomAccess.kotlin_metadata",
++      "kotlin/collections/ReversedList.kotlin_metadata",
++      "kotlin/collections/ReversedListReadOnly.kotlin_metadata",
++      "kotlin/collections/ReversedViewsKt.kotlin_metadata",
++      "kotlin/collections/RingBuffer.kotlin_metadata",
++      "kotlin/collections/SetsKt.kotlin_metadata",
++      "kotlin/collections/SlidingWindowKt.kotlin_metadata",
++      "kotlin/collections/State.kotlin_metadata",
++      "kotlin/collections/UArraySortingKt.kotlin_metadata",
++      "kotlin/collections/UByteIterator.kotlin_metadata",
++      "kotlin/collections/UIntIterator.kotlin_metadata",
++      "kotlin/collections/ULongIterator.kotlin_metadata",
++      "kotlin/collections/UShortIterator.kotlin_metadata",
++      "kotlin/collections/_ArraysKt.kotlin_metadata",
++      "kotlin/collections/_CollectionsKt.kotlin_metadata",
++      "kotlin/collections/_MapsKt.kotlin_metadata",
++      "kotlin/collections/_SetsKt.kotlin_metadata",
++      "kotlin/collections/_UArraysKt.kotlin_metadata",
++      "kotlin/collections/_UCollectionsKt.kotlin_metadata",
++      "kotlin/collections/collections.kotlin_builtins",
++      "kotlin/comparisons/ComparisonsKt.kotlin_metadata",
++      "kotlin/comparisons/NaturalOrderComparator.kotlin_metadata",
++      "kotlin/comparisons/ReverseOrderComparator.kotlin_metadata",
++      "kotlin/comparisons/ReversedComparator.kotlin_metadata",
++      "kotlin/comparisons/_ComparisonsKt.kotlin_metadata",
++      "kotlin/comparisons/_UComparisonsKt.kotlin_metadata",
++      "kotlin/contracts/CallsInPlace.kotlin_metadata",
++      "kotlin/contracts/ConditionalEffect.kotlin_metadata",
++      "kotlin/contracts/ContractBuilder.kotlin_metadata",
++      "kotlin/contracts/ContractBuilderKt.kotlin_metadata",
++      "kotlin/contracts/Effect.kotlin_metadata",
++      "kotlin/contracts/ExperimentalContracts.kotlin_metadata",
++      "kotlin/contracts/InvocationKind.kotlin_metadata",
++      "kotlin/contracts/Returns.kotlin_metadata",
++      "kotlin/contracts/ReturnsNotNull.kotlin_metadata",
++      "kotlin/contracts/SimpleEffect.kotlin_metadata",
++      "kotlin/coroutines/AbstractCoroutineContextElement.kotlin_metadata",
++      "kotlin/coroutines/CombinedContext.kotlin_metadata",
++      "kotlin/coroutines/Continuation.kotlin_metadata",
++      "kotlin/coroutines/ContinuationInterceptor.kotlin_metadata",
++      "kotlin/coroutines/ContinuationKt.kotlin_metadata",
++      "kotlin/coroutines/CoroutineContext.kotlin_metadata",
++      "kotlin/coroutines/EmptyCoroutineContext.kotlin_metadata",
++      "kotlin/coroutines/RestrictsSuspension.kotlin_metadata",
++      "kotlin/coroutines/SafeContinuation.kotlin_metadata",
++      "kotlin/coroutines/coroutines.kotlin_builtins",
++      "kotlin/coroutines/experimental/AbstractCoroutineContextElement.kotlin_metadata",
++      "kotlin/coroutines/experimental/CombinedContext.kotlin_metadata",
++      "kotlin/coroutines/experimental/Continuation.kotlin_metadata",
++      "kotlin/coroutines/experimental/ContinuationInterceptor.kotlin_metadata",
++      "kotlin/coroutines/experimental/CoroutineContext.kotlin_metadata",
++      "kotlin/coroutines/experimental/CoroutinesLibraryKt.kotlin_metadata",
++      "kotlin/coroutines/experimental/EmptyCoroutineContext.kotlin_metadata",
++      "kotlin/coroutines/experimental/RestrictsSuspension.kotlin_metadata",
++      "kotlin/coroutines/experimental/SafeContinuation.kotlin_metadata",
++      "kotlin/coroutines/experimental/SequenceBuilder.kotlin_metadata",
++      "kotlin/coroutines/experimental/SequenceBuilderIterator.kotlin_metadata",
++      "kotlin/coroutines/experimental/SequenceBuilderKt.kotlin_metadata",
++      "kotlin/coroutines/experimental/intrinsics/CoroutinesIntrinsicsExperimentalHKt.kotlin_metadata",
++      "kotlin/coroutines/experimental/intrinsics/IntrinsicsKt.kotlin_metadata",
++      "kotlin/coroutines/intrinsics/CoroutineSingletons.kotlin_metadata",
++      "kotlin/coroutines/intrinsics/CoroutinesIntrinsicsHKt.kotlin_metadata",
++      "kotlin/coroutines/intrinsics/IntrinsicsKt.kotlin_metadata",
++      "kotlin/experimental/BitwiseOperationsKt.kotlin_metadata",
++      "kotlin/experimental/ExperimentalTypeInference.kotlin_metadata",
++      "kotlin/internal/AccessibleLateinitPropertyLiteral.kotlin_metadata",
++      "kotlin/internal/ContractsDsl.kotlin_metadata",
++      "kotlin/internal/DynamicExtension.kotlin_metadata",
++      "kotlin/internal/Exact.kotlin_metadata",
++      "kotlin/internal/HidesMembers.kotlin_metadata",
++      "kotlin/internal/InlineOnly.kotlin_metadata",
++      "kotlin/internal/LowPriorityInOverloadResolution.kotlin_metadata",
++      "kotlin/internal/NoInfer.kotlin_metadata",
++      "kotlin/internal/OnlyInputTypes.kotlin_metadata",
++      "kotlin/internal/RequireKotlin.kotlin_metadata",
++      "kotlin/internal/RequireKotlinVersionKind.kotlin_metadata",
++      "kotlin/internal/UProgressionUtilKt.kotlin_metadata",
++      "kotlin/internal/internal.kotlin_builtins",
++      "kotlin/io/IoHKt.kotlin_metadata",
++      "kotlin/io/Serializable.kotlin_metadata",
++      "kotlin/js/JsName.kotlin_metadata",
++      "kotlin/jvm/JvmField.kotlin_metadata",
++      "kotlin/jvm/JvmMultifileClass.kotlin_metadata",
++      "kotlin/jvm/JvmName.kotlin_metadata",
++      "kotlin/jvm/JvmOverloads.kotlin_metadata",
++      "kotlin/jvm/JvmPackageName.kotlin_metadata",
++      "kotlin/jvm/JvmStatic.kotlin_metadata",
++      "kotlin/jvm/JvmSuppressWildcards.kotlin_metadata",
++      "kotlin/jvm/JvmSynthetic.kotlin_metadata",
++      "kotlin/jvm/JvmWildcard.kotlin_metadata",
++      "kotlin/jvm/Strictfp.kotlin_metadata",
++      "kotlin/jvm/Synchronized.kotlin_metadata",
++      "kotlin/jvm/Transient.kotlin_metadata",
++      "kotlin/jvm/Volatile.kotlin_metadata",
++      "kotlin/kotlin.kotlin_builtins",
++      "kotlin/math/MathHKt.kotlin_metadata",
++      "kotlin/math/UMathKt.kotlin_metadata",
++      "kotlin/native/concurrent/SharedImmutable.kotlin_metadata",
++      "kotlin/native/concurrent/ThreadLocal.kotlin_metadata",
++      "kotlin/properties/Delegates.kotlin_metadata",
++      "kotlin/properties/NotNullVar.kotlin_metadata",
++      "kotlin/properties/ObservableProperty.kotlin_metadata",
++      "kotlin/properties/ReadOnlyProperty.kotlin_metadata",
++      "kotlin/properties/ReadWriteProperty.kotlin_metadata",
++      "kotlin/random/Random.kotlin_metadata",
++      "kotlin/random/RandomKt.kotlin_metadata",
++      "kotlin/random/URandomKt.kotlin_metadata",
++      "kotlin/random/XorWowRandom.kotlin_metadata",
++      "kotlin/ranges/ClosedDoubleRange.kotlin_metadata",
++      "kotlin/ranges/ClosedFloatingPointRange.kotlin_metadata",
++      "kotlin/ranges/ComparableRange.kotlin_metadata",
++      "kotlin/ranges/RangesKt.kotlin_metadata",
++      "kotlin/ranges/UIntProgression.kotlin_metadata",
++      "kotlin/ranges/UIntProgressionIterator.kotlin_metadata",
++      "kotlin/ranges/UIntRange.kotlin_metadata",
++      "kotlin/ranges/ULongProgression.kotlin_metadata",
++      "kotlin/ranges/ULongProgressionIterator.kotlin_metadata",
++      "kotlin/ranges/ULongRange.kotlin_metadata",
++      "kotlin/ranges/_RangesKt.kotlin_metadata",
++      "kotlin/ranges/_URangesKt.kotlin_metadata",
++      "kotlin/ranges/ranges.kotlin_builtins",
++      "kotlin/reflect/KCallable.kotlin_metadata",
++      "kotlin/reflect/KClass.kotlin_metadata",
++      "kotlin/reflect/KMutableProperty.kotlin_metadata",
++      "kotlin/reflect/KMutableProperty0.kotlin_metadata",
++      "kotlin/reflect/KMutableProperty1.kotlin_metadata",
++      "kotlin/reflect/KMutableProperty2.kotlin_metadata",
++      "kotlin/reflect/KProperty.kotlin_metadata",
++      "kotlin/reflect/KProperty0.kotlin_metadata",
++      "kotlin/reflect/KProperty1.kotlin_metadata",
++      "kotlin/reflect/KProperty2.kotlin_metadata",
++      "kotlin/reflect/TypeOfKt.kotlin_metadata",
++      "kotlin/reflect/reflect.kotlin_builtins",
++      "kotlin/sequences/ConstrainedOnceSequence.kotlin_metadata",
++      "kotlin/sequences/DistinctIterator.kotlin_metadata",
++      "kotlin/sequences/DistinctSequence.kotlin_metadata",
++      "kotlin/sequences/DropSequence.kotlin_metadata",
++      "kotlin/sequences/DropTakeSequence.kotlin_metadata",
++      "kotlin/sequences/DropWhileSequence.kotlin_metadata",
++      "kotlin/sequences/EmptySequence.kotlin_metadata",
++      "kotlin/sequences/FilteringSequence.kotlin_metadata",
++      "kotlin/sequences/FlatteningSequence.kotlin_metadata",
++      "kotlin/sequences/GeneratorSequence.kotlin_metadata",
++      "kotlin/sequences/IndexingSequence.kotlin_metadata",
++      "kotlin/sequences/MergingSequence.kotlin_metadata",
++      "kotlin/sequences/Sequence.kotlin_metadata",
++      "kotlin/sequences/SequenceBuilderIterator.kotlin_metadata",
++      "kotlin/sequences/SequenceBuilderKt.kotlin_metadata",
++      "kotlin/sequences/SequenceScope.kotlin_metadata",
++      "kotlin/sequences/SequencesKt.kotlin_metadata",
++      "kotlin/sequences/SubSequence.kotlin_metadata",
++      "kotlin/sequences/TakeSequence.kotlin_metadata",
++      "kotlin/sequences/TakeWhileSequence.kotlin_metadata",
++      "kotlin/sequences/TransformingIndexedSequence.kotlin_metadata",
++      "kotlin/sequences/TransformingSequence.kotlin_metadata",
++      "kotlin/sequences/_SequencesKt.kotlin_metadata",
++      "kotlin/sequences/_USequencesKt.kotlin_metadata",
++      "kotlin/text/Appendable.kotlin_metadata",
++      "kotlin/text/CharKt.kotlin_metadata",
++      "kotlin/text/CharacterCodingException.kotlin_metadata",
++      "kotlin/text/DelimitedRangesSequence.kotlin_metadata",
++      "kotlin/text/IndentKt.kotlin_metadata",
++      "kotlin/text/MatchGroup.kotlin_metadata",
++      "kotlin/text/MatchGroupCollection.kotlin_metadata",
++      "kotlin/text/MatchNamedGroupCollection.kotlin_metadata",
++      "kotlin/text/MatchResult.kotlin_metadata",
++      "kotlin/text/Regex.kotlin_metadata",
++      "kotlin/text/RegexExtensionsKt.kotlin_metadata",
++      "kotlin/text/RegexOption.kotlin_metadata",
++      "kotlin/text/StringBuilder.kotlin_metadata",
++      "kotlin/text/StringBuilderKt.kotlin_metadata",
++      "kotlin/text/StringNumberConversionsKt.kotlin_metadata",
++      "kotlin/text/StringsKt.kotlin_metadata",
++      "kotlin/text/TextHKt.kotlin_metadata",
++      "kotlin/text/Typography.kotlin_metadata",
++      "kotlin/text/UStringsKt.kotlin_metadata",
++      "kotlin/text/_StringsKt.kotlin_metadata",
++      "kotlin/time/AbstractDoubleClock.kotlin_metadata",
++      "kotlin/time/AbstractLongClock.kotlin_metadata",
++      "kotlin/time/AdjustedClockMark.kotlin_metadata",
++      "kotlin/time/Clock.kotlin_metadata",
++      "kotlin/time/ClockKt.kotlin_metadata",
++      "kotlin/time/ClockMark.kotlin_metadata",
++      "kotlin/time/Duration.kotlin_metadata",
++      "kotlin/time/DurationKt.kotlin_metadata",
++      "kotlin/time/DurationUnit.kotlin_metadata",
++      "kotlin/time/DurationUnitKt.kotlin_metadata",
++      "kotlin/time/ExperimentalTime.kotlin_metadata",
++      "kotlin/time/MeasureTimeKt.kotlin_metadata",
++      "kotlin/time/MonoClock.kotlin_metadata",
++      "kotlin/time/TestClock.kotlin_metadata",
++      "kotlin/time/TimedValue.kotlin_metadata"
++    ],
++    "implicitClasspaths": {
++      "old": [],
++      "new": []
++    },
++    "candidates": [
++      {
++        "entry": "retrofit2.converter.wire.WireConverterFactory#create()Lretrofit2/converter/wire/WireConverterFactory;",
++        "basis": [
++          "consumer reaches a runtime dependency",
++          "public or protected consumer operation"
++        ],
++        "independentlyDiscovered": true,
++        "sides": {
++          "old": {
++            "callerClassSha256": "b090cf95a08fd51d6295bcae99b7c5ac278123d75ebb393950de178d4e9491e7",
++            "changedBoundaryCalls": [],
++            "dependencyCalls": [
++              "retrofit2.converter.wire.WireConverterFactory#<init>()V"
++            ]
++          },
++          "new": {
++            "callerClassSha256": "b090cf95a08fd51d6295bcae99b7c5ac278123d75ebb393950de178d4e9491e7",
++            "changedBoundaryCalls": [],
++            "dependencyCalls": [
++              "retrofit2.converter.wire.WireConverterFactory#<init>()V"
++            ]
++          }
++        },
++        "disposition": "open",
++        "reason": "receiver, domain and intended observation have not been supplied"
++      },
++      {
++        "entry": "retrofit2.converter.wire.WireConverterFactory#requestBodyConverter(Ljava/lang/reflect/Type;[Ljava/lang/annotation/Annotation;[Ljava/lang/annotation/Annotation;Lretrofit2/Retrofit;)Lretrofit2/Converter;",
++        "basis": [
++          "consumer reaches a runtime dependency",
++          "public or protected consumer operation",
++          "reachable changed class"
++        ],
++        "independentlyDiscovered": true,
++        "sides": {
++          "old": {
++            "callerClassSha256": "b090cf95a08fd51d6295bcae99b7c5ac278123d75ebb393950de178d4e9491e7",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;",
++              "retrofit2.converter.wire.WireRequestBodyConverter#<init>(Lcom/squareup/wire/ProtoAdapter;)V"
++            ]
++          },
++          "new": {
++            "callerClassSha256": "b090cf95a08fd51d6295bcae99b7c5ac278123d75ebb393950de178d4e9491e7",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;",
++              "retrofit2.converter.wire.WireRequestBodyConverter#<init>(Lcom/squareup/wire/ProtoAdapter;)V"
++            ]
++          }
++        },
++        "disposition": "open",
++        "reason": "receiver, domain and intended observation have not been supplied"
++      },
++      {
++        "entry": "retrofit2.converter.wire.WireConverterFactory#responseBodyConverter(Ljava/lang/reflect/Type;[Ljava/lang/annotation/Annotation;Lretrofit2/Retrofit;)Lretrofit2/Converter;",
++        "basis": [
++          "consumer reaches a runtime dependency",
++          "public or protected consumer operation",
++          "reachable changed class"
++        ],
++        "independentlyDiscovered": true,
++        "sides": {
++          "old": {
++            "callerClassSha256": "b090cf95a08fd51d6295bcae99b7c5ac278123d75ebb393950de178d4e9491e7",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;",
++              "retrofit2.converter.wire.WireResponseBodyConverter#<init>(Lcom/squareup/wire/ProtoAdapter;)V"
++            ]
++          },
++          "new": {
++            "callerClassSha256": "b090cf95a08fd51d6295bcae99b7c5ac278123d75ebb393950de178d4e9491e7",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#get(Ljava/lang/Class;)Lcom/squareup/wire/ProtoAdapter;",
++              "retrofit2.converter.wire.WireResponseBodyConverter#<init>(Lcom/squareup/wire/ProtoAdapter;)V"
++            ]
++          }
++        },
++        "disposition": "open",
++        "reason": "receiver, domain and intended observation have not been supplied"
++      },
++      {
++        "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++        "basis": [
++          "consumer reaches a runtime dependency",
++          "declared workflow",
++          "public or protected consumer operation",
++          "reachable changed class"
++        ],
++        "independentlyDiscovered": true,
++        "sides": {
++          "old": {
++            "callerClassSha256": "24a3b0e5fef9b4a561d43a3ec94037ace31a3dc8eeaea28d3c2399ceebbf8e99",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#encode(Lokio/BufferedSink;Ljava/lang/Object;)V"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#encode(Lokio/BufferedSink;Ljava/lang/Object;)V",
++              "okhttp3.RequestBody#create(Lokhttp3/MediaType;Lokio/ByteString;)Lokhttp3/RequestBody;",
++              "okio.Buffer#<init>()V",
++              "okio.Buffer#snapshot()Lokio/ByteString;"
++            ]
++          },
++          "new": {
++            "callerClassSha256": "24a3b0e5fef9b4a561d43a3ec94037ace31a3dc8eeaea28d3c2399ceebbf8e99",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#encode(Lokio/BufferedSink;Ljava/lang/Object;)V"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#encode(Lokio/BufferedSink;Ljava/lang/Object;)V",
++              "okhttp3.RequestBody#create(Lokhttp3/MediaType;Lokio/ByteString;)Lokhttp3/RequestBody;",
++              "okio.Buffer#<init>()V",
++              "okio.Buffer#snapshot()Lokio/ByteString;"
++            ]
++          }
++        },
++        "disposition": "planned",
++        "reason": "finite caller observation supplied"
++      },
++      {
++        "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++        "basis": [
++          "consumer reaches a runtime dependency",
++          "declared workflow",
++          "public or protected consumer operation",
++          "reachable changed class"
++        ],
++        "independentlyDiscovered": true,
++        "sides": {
++          "old": {
++            "callerClassSha256": "fc653bbcf688b463a060defa0842f08ca12983722dfd41b4f2892a37a5dfa90b",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#decode(Lokio/BufferedSource;)Ljava/lang/Object;"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#decode(Lokio/BufferedSource;)Ljava/lang/Object;",
++              "okhttp3.ResponseBody#close()V",
++              "okhttp3.ResponseBody#source()Lokio/BufferedSource;"
++            ]
++          },
++          "new": {
++            "callerClassSha256": "fc653bbcf688b463a060defa0842f08ca12983722dfd41b4f2892a37a5dfa90b",
++            "changedBoundaryCalls": [
++              "com.squareup.wire.ProtoAdapter#decode(Lokio/BufferedSource;)Ljava/lang/Object;"
++            ],
++            "dependencyCalls": [
++              "com.squareup.wire.ProtoAdapter#decode(Lokio/BufferedSource;)Ljava/lang/Object;",
++              "okhttp3.ResponseBody#close()V",
++              "okhttp3.ResponseBody#source()Lokio/BufferedSource;"
++            ]
++          }
++        },
++        "disposition": "planned",
++        "reason": "finite caller observation supplied"
++      }
++    ],
++    "discoveryMisses": [],
++    "applicationEntries": {
++      "old": [],
++      "new": [],
++      "obligations": []
++    }
++  },
++  "launches": {
++    "old": {
++      "production": {
++        "kind": "production",
++        "jdk": {
++          "release": {
++            "JAVA_VERSION": "1.8.0_512",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "OS_ARCH": "amd64"
++          },
++          "image": "05545e3dfb59228ac1d472d8fdf0d41ae51290a3abd7c0062e496ee791d4ff1e"
++        },
++        "classpath": [
++          {
++            "name": "converter-wire-2.6.0.jar",
++            "sha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2"
++          },
++          {
++            "name": "retrofit-2.6.0.jar",
++            "sha256": "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132"
++          },
++          {
++            "name": "okhttp-3.12.0.jar",
++            "sha256": "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35"
++          },
++          {
++            "name": "okio-1.15.0.jar",
++            "sha256": "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2"
++          },
++          {
++            "name": "wire-runtime-2.2.0.jar",
++            "sha256": "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++          }
++        ],
++        "environment": {
++          "locale": "C.UTF-8",
++          "timezone": "UTC",
++          "home": "fresh trial",
++          "inputs": [
++            "fresh JVM per call",
++            "no network requests",
++            "fixed English locale and UTC"
++          ]
++        },
++        "key": "90316b99f541575b0ab28748f44ceb6cf9d178128b7a7251d5bf6c2d3b90dcb7",
++        "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++        "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++        "preparation": "complete Maven wire converter module"
++      },
++      "test": {
++        "kind": "test",
++        "jdk": {
++          "release": {
++            "JAVA_VERSION": "1.8.0_512",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "OS_ARCH": "amd64"
++          },
++          "image": "05545e3dfb59228ac1d472d8fdf0d41ae51290a3abd7c0062e496ee791d4ff1e"
++        },
++        "classpath": [
++          {
++            "name": "converter-wire-2.6.0.jar",
++            "sha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2"
++          },
++          {
++            "name": "test-classes",
++            "sha256": "467c852124c24b4219118fa46367c2ada0627154b44136a8fa6df97f6b782761"
++          },
++          {
++            "name": "retrofit-2.6.0.jar",
++            "sha256": "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132"
++          },
++          {
++            "name": "okhttp-3.12.0.jar",
++            "sha256": "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35"
++          },
++          {
++            "name": "okio-1.15.0.jar",
++            "sha256": "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2"
++          },
++          {
++            "name": "wire-runtime-2.2.0.jar",
++            "sha256": "893aabd78a9959361aee74c4ce8bea0b1865c00215903fb9dd1c656de5436efa"
++          },
++          {
++            "name": "jsr305-3.0.2.jar",
++            "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++          },
++          {
++            "name": "junit-4.12.jar",
++            "sha256": "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a"
++          },
++          {
++            "name": "hamcrest-core-1.3.jar",
++            "sha256": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
++          },
++          {
++            "name": "mockwebserver-3.12.0.jar",
++            "sha256": "c00a54a8a09528df83df745d815f7a6f968cf84a0d53fd12c50621e12edc985b"
++          },
++          {
++            "name": "assertj-core-1.7.0.jar",
++            "sha256": "032ed2fb9bac56a0b5deccc2bd987ba6edd02d77f68f228cf71c7cc7b48e159e"
++          }
++        ],
++        "environment": {
++          "locale": "C.UTF-8",
++          "timezone": "UTC",
++          "home": "fresh trial",
++          "inputs": [
++            "fresh JVM per call",
++            "no network requests",
++            "fixed English locale and UTC"
++          ]
++        },
++        "key": "fb855013324a97811ac0877fb672568324d9c6a835910125f38ef79fe64cbe67",
++        "commit": "b8d593cf029652eb682434c0217ad92b5cbb005e",
++        "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++        "preparation": "complete Maven wire converter module"
++      }
++    },
++    "new": {
++      "production": {
++        "kind": "production",
++        "jdk": {
++          "release": {
++            "JAVA_VERSION": "1.8.0_512",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "OS_ARCH": "amd64"
++          },
++          "image": "05545e3dfb59228ac1d472d8fdf0d41ae51290a3abd7c0062e496ee791d4ff1e"
++        },
++        "classpath": [
++          {
++            "name": "converter-wire-2.6.0.jar",
++            "sha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2"
++          },
++          {
++            "name": "retrofit-2.6.0.jar",
++            "sha256": "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132"
++          },
++          {
++            "name": "okhttp-3.12.0.jar",
++            "sha256": "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35"
++          },
++          {
++            "name": "okio-1.15.0.jar",
++            "sha256": "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2"
++          },
++          {
++            "name": "wire-runtime-3.0.2.jar",
++            "sha256": "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721"
++          },
++          {
++            "name": "kotlin-stdlib-1.3.10.jar",
++            "sha256": "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969"
++          },
++          {
++            "name": "annotations-13.0.jar",
++            "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
++          },
++          {
++            "name": "kotlin-stdlib-common-1.3.50.jar",
++            "sha256": "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++          }
++        ],
++        "environment": {
++          "locale": "C.UTF-8",
++          "timezone": "UTC",
++          "home": "fresh trial",
++          "inputs": [
++            "fresh JVM per call",
++            "no network requests",
++            "fixed English locale and UTC"
++          ]
++        },
++        "key": "6cf5c07209da42a3e5242bc13acbd49b28eb1d977a2eb47dc708f52b4c80ab54",
++        "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++        "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++        "preparation": "complete Maven wire converter module"
++      },
++      "test": {
++        "kind": "test",
++        "jdk": {
++          "release": {
++            "JAVA_VERSION": "1.8.0_512",
++            "IMPLEMENTOR": "Eclipse Adoptium",
++            "OS_ARCH": "amd64"
++          },
++          "image": "05545e3dfb59228ac1d472d8fdf0d41ae51290a3abd7c0062e496ee791d4ff1e"
++        },
++        "classpath": [
++          {
++            "name": "converter-wire-2.6.0.jar",
++            "sha256": "93b1383e8c1803a0b80dc09f9db2337dc55b47074232d5921016702e1db006f2"
++          },
++          {
++            "name": "test-classes",
++            "sha256": "467c852124c24b4219118fa46367c2ada0627154b44136a8fa6df97f6b782761"
++          },
++          {
++            "name": "retrofit-2.6.0.jar",
++            "sha256": "d1ca389c68d9f6a14b1c504b72f679bb101095706ab67905da6b450b99ad0132"
++          },
++          {
++            "name": "okhttp-3.12.0.jar",
++            "sha256": "71787f2c599e0441c7a4413983bfdd93d40b56e1badc5e0413d6a4c485ba3f35"
++          },
++          {
++            "name": "okio-1.15.0.jar",
++            "sha256": "693fa319a7e8843300602b204023b7674f106ebcb577f2dd5807212b66118bd2"
++          },
++          {
++            "name": "wire-runtime-3.0.2.jar",
++            "sha256": "a31e28f8fd113b20d6d763dd65110165af0e4779ffb45a1b986bcc78eba10721"
++          },
++          {
++            "name": "kotlin-stdlib-1.3.10.jar",
++            "sha256": "9b9650550fac559f7db64d988123399ea3da7cb776bfb13b9a3ed818eef26969"
++          },
++          {
++            "name": "annotations-13.0.jar",
++            "sha256": "ace2a10dc8e2d5fd34925ecac03e4988b2c0f851650c94b8cef49ba1bd111478"
++          },
++          {
++            "name": "kotlin-stdlib-common-1.3.50.jar",
++            "sha256": "8ce678e88e4ba018b66dacecf952471e4d7dfee156a8a819760a5a5ff29d323c"
++          },
++          {
++            "name": "jsr305-3.0.2.jar",
++            "sha256": "766ad2a0783f2687962c8ad74ceecc38a28b9f72a2d085ee438b7813e928d0c7"
++          },
++          {
++            "name": "junit-4.12.jar",
++            "sha256": "59721f0805e223d84b90677887d9ff567dc534d7c502ca903c0c2b17f05c116a"
++          },
++          {
++            "name": "hamcrest-core-1.3.jar",
++            "sha256": "66fdef91e9739348df7a096aa384a5685f4e875584cce89386a7a47251c4d8e9"
++          },
++          {
++            "name": "mockwebserver-3.12.0.jar",
++            "sha256": "c00a54a8a09528df83df745d815f7a6f968cf84a0d53fd12c50621e12edc985b"
++          },
++          {
++            "name": "assertj-core-1.7.0.jar",
++            "sha256": "032ed2fb9bac56a0b5deccc2bd987ba6edd02d77f68f228cf71c7cc7b48e159e"
++          }
++        ],
++        "environment": {
++          "locale": "C.UTF-8",
++          "timezone": "UTC",
++          "home": "fresh trial",
++          "inputs": [
++            "fresh JVM per call",
++            "no network requests",
++            "fixed English locale and UTC"
++          ]
++        },
++        "key": "bb637e4913a5a4ddf70fe904cefc8d73ed322eb810905ddbfb8c69a919887529",
++        "commit": "577716be23b960fe24b31b1edcdf6b01e88a692e",
++        "sourceSha256": "d7df6b7c0fa0fac4ec1ba8a3397afd54ae3b78af239c206475b31bb03aef0dc4",
++        "preparation": "complete Maven wire converter module"
++      }
++    }
++  },
++  "claims": [
++    {
++      "id": "response",
++      "cohort": "registered",
++      "claimKey": "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++      "statement": "The original Wire response converter decodes the developer fixture and returns the phone-number field.",
++      "domain": [
++        {
++          "args": [
++            "Cg4oNTE5KSA4NjctNTMwOQ=="
++          ],
++          "expected": {
++            "return": "(519) 867-5309"
++          }
++        },
++        {
++          "args": [
++            "CgMxMjM="
++          ],
++          "expected": {
++            "return": "123"
++          }
++        }
++      ],
++      "assumptions": [
++        "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++      ]
++    },
++    {
++      "id": "request",
++      "cohort": "additional",
++      "claimKey": "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++      "statement": "Serialize a real Phone through the other half of the registered request/response test and read the outbound protobuf bytes.",
++      "domain": [
++        {
++          "args": [
++            "(519) 867-5309"
++          ],
++          "expected": {
++            "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++          }
++        },
++        {
++          "args": [
++            "123"
++          ],
++          "expected": {
++            "return": "CgMxMjM="
++          }
++        }
++      ],
++      "assumptions": [
++        "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++      ]
++    }
++  ],
++  "grading": {
++    "response": {
++      "independentlyDiscovered": true,
++      "record": "verification/external-upgrades/corpus-runs/v3-final-finite/01/compsuite-i-1.json",
++      "sha256": "5b52a5c847f1e2f68944f57fc033d4b807eb18b2d0d68850e3e3e8975225dbb7",
++      "matchesHistoricalInputs": true
++    },
++    "request": {
++      "independentlyDiscovered": true,
++      "record": "verification/external-upgrades/corpus-runs/operational/01/compsuite-i-1.json",
++      "sha256": "b2c040109992ade3d759efbb18696f2b1eef29222b426e86d6fc2709153e6a90",
++      "matchesHistoricalInputs": true
++    }
++  },
++  "receipts": {
++    "response": {
++      "path": "response.json",
++      "sha256": "db565a74718a9d3510dc284008474380e70b60ce4398d65518dd83ea4dcb45e5"
++    },
++    "request": {
++      "path": "request.json",
++      "sha256": "6f35cfe250aa9723868e0b075ef7d3a342cf2d4b2b54b841024de6fbe88d3c7c"
++    }
++  },
++  "matrix": [
++    {
++      "scenario": "cold",
++      "actions": {
++        "response": {
++          "old": "executed",
++          "new": "executed"
++        },
++        "request": {
++          "old": "executed",
++          "new": "executed"
++        }
++      },
++      "outcomes": {
++        "response": {
++          "claimKey": "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++          "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++          "status": "established",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "Cg4oNTE5KSA4NjctNTMwOQ=="
++              ],
++              "expected": {
++                "return": "(519) 867-5309"
++              },
++              "old": {
++                "return": "(519) 867-5309"
++              },
++              "new": {
++                "return": "(519) 867-5309"
++              },
++              "status": "established",
++              "id": "7529c8e3e7a2b575d4e645dfd65a769499276cc94b45a0c9d14884117bad7dee"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "CgMxMjM="
++              ],
++              "expected": {
++                "return": "123"
++              },
++              "old": {
++                "return": "123"
++              },
++              "new": {
++                "return": "123"
++              },
++              "status": "established",
++              "id": "cd9309bfae95a68d91b975db260d163f17fb963be794b116a1021f6a2f1abaf7"
++            }
++          ]
++        },
++        "request": {
++          "claimKey": "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++          "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++          "status": "refuted",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "(519) 867-5309"
++              ],
++              "expected": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "old": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "9735d902e66213b8a87f469258b92190c1ab83f12f78e967c0aa05d662cfe097"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "123"
++              ],
++              "expected": {
++                "return": "CgMxMjM="
++              },
++              "old": {
++                "return": "CgMxMjM="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "670cf467fd7a7e9155b40d3be25a08d8164131862908f92fc8259df9ccd85bd5"
++            }
++          ]
++        }
++      },
++      "incremental": {
++        "wallSeconds": 16.491,
++        "cpuSeconds": 19.5959,
++        "peakRssBytes": 106455040,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "clean": {
++        "wallSeconds": 16.319,
++        "cpuSeconds": 19.4494,
++        "peakRssBytes": 106692608,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "cleanEquivalent": true,
++      "launches": {
++        "old": {
++          "production": "90316b99f541575b0ab28748f44ceb6cf9d178128b7a7251d5bf6c2d3b90dcb7",
++          "test": "fb855013324a97811ac0877fb672568324d9c6a835910125f38ef79fe64cbe67"
++        },
++        "new": {
++          "production": "6cf5c07209da42a3e5242bc13acbd49b28eb1d977a2eb47dc708f52b4c80ab54",
++          "test": "bb637e4913a5a4ddf70fe904cefc8d73ed322eb810905ddbfb8c69a919887529"
++        }
++      },
++      "preparationSeconds": 1.5627,
++      "delta": null
++    },
++    {
++      "scenario": "exact",
++      "actions": {
++        "response": {
++          "old": "exact reuse",
++          "new": "exact reuse"
++        },
++        "request": {
++          "old": "exact reuse",
++          "new": "executed"
++        }
++      },
++      "outcomes": {
++        "response": {
++          "claimKey": "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++          "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++          "status": "established",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "Cg4oNTE5KSA4NjctNTMwOQ=="
++              ],
++              "expected": {
++                "return": "(519) 867-5309"
++              },
++              "old": {
++                "return": "(519) 867-5309"
++              },
++              "new": {
++                "return": "(519) 867-5309"
++              },
++              "status": "established",
++              "id": "7529c8e3e7a2b575d4e645dfd65a769499276cc94b45a0c9d14884117bad7dee"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "CgMxMjM="
++              ],
++              "expected": {
++                "return": "123"
++              },
++              "old": {
++                "return": "123"
++              },
++              "new": {
++                "return": "123"
++              },
++              "status": "established",
++              "id": "cd9309bfae95a68d91b975db260d163f17fb963be794b116a1021f6a2f1abaf7"
++            }
++          ]
++        },
++        "request": {
++          "claimKey": "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++          "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++          "status": "refuted",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "(519) 867-5309"
++              ],
++              "expected": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "old": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "9735d902e66213b8a87f469258b92190c1ab83f12f78e967c0aa05d662cfe097"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "123"
++              ],
++              "expected": {
++                "return": "CgMxMjM="
++              },
++              "old": {
++                "return": "CgMxMjM="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "670cf467fd7a7e9155b40d3be25a08d8164131862908f92fc8259df9ccd85bd5"
++            }
++          ]
++        }
++      },
++      "incremental": {
++        "wallSeconds": 7.682,
++        "cpuSeconds": 10.0285,
++        "peakRssBytes": 106528768,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "clean": {
++        "wallSeconds": 16.991,
++        "cpuSeconds": 20.5809,
++        "peakRssBytes": 106606592,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "cleanEquivalent": true,
++      "launches": {
++        "old": {
++          "production": "90316b99f541575b0ab28748f44ceb6cf9d178128b7a7251d5bf6c2d3b90dcb7",
++          "test": "fb855013324a97811ac0877fb672568324d9c6a835910125f38ef79fe64cbe67"
++        },
++        "new": {
++          "production": "6cf5c07209da42a3e5242bc13acbd49b28eb1d977a2eb47dc708f52b4c80ab54",
++          "test": "bb637e4913a5a4ddf70fe904cefc8d73ed322eb810905ddbfb8c69a919887529"
++        }
++      },
++      "preparationSeconds": 1.5795,
++      "delta": {
++        "added": [],
++        "removed": [],
++        "changed": {}
++      }
++    },
++    {
++      "scenario": "test-only edit",
++      "actions": {
++        "response": {
++          "old": "exact reuse",
++          "new": "exact reuse"
++        },
++        "request": {
++          "old": "exact reuse",
++          "new": "executed"
++        }
++      },
++      "outcomes": {
++        "response": {
++          "claimKey": "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++          "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++          "status": "established",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "Cg4oNTE5KSA4NjctNTMwOQ=="
++              ],
++              "expected": {
++                "return": "(519) 867-5309"
++              },
++              "old": {
++                "return": "(519) 867-5309"
++              },
++              "new": {
++                "return": "(519) 867-5309"
++              },
++              "status": "established",
++              "id": "7529c8e3e7a2b575d4e645dfd65a769499276cc94b45a0c9d14884117bad7dee"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "CgMxMjM="
++              ],
++              "expected": {
++                "return": "123"
++              },
++              "old": {
++                "return": "123"
++              },
++              "new": {
++                "return": "123"
++              },
++              "status": "established",
++              "id": "cd9309bfae95a68d91b975db260d163f17fb963be794b116a1021f6a2f1abaf7"
++            }
++          ]
++        },
++        "request": {
++          "claimKey": "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++          "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++          "status": "refuted",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "(519) 867-5309"
++              ],
++              "expected": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "old": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "9735d902e66213b8a87f469258b92190c1ab83f12f78e967c0aa05d662cfe097"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "123"
++              ],
++              "expected": {
++                "return": "CgMxMjM="
++              },
++              "old": {
++                "return": "CgMxMjM="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "670cf467fd7a7e9155b40d3be25a08d8164131862908f92fc8259df9ccd85bd5"
++            }
++          ]
++        }
++      },
++      "incremental": {
++        "wallSeconds": 7.517,
++        "cpuSeconds": 9.7509,
++        "peakRssBytes": 106369024,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "clean": {
++        "wallSeconds": 16.647,
++        "cpuSeconds": 20.0494,
++        "peakRssBytes": 106356736,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "cleanEquivalent": true,
++      "launches": {
++        "old": {
++          "production": "90316b99f541575b0ab28748f44ceb6cf9d178128b7a7251d5bf6c2d3b90dcb7",
++          "test": "fb855013324a97811ac0877fb672568324d9c6a835910125f38ef79fe64cbe67"
++        },
++        "new": {
++          "production": "6cf5c07209da42a3e5242bc13acbd49b28eb1d977a2eb47dc708f52b4c80ab54",
++          "test": "ef60e0eeb9a60f4c00fb8f25c193b56de88da32f286cd1c6669059082cb4bec2"
++        }
++      },
++      "preparationSeconds": 1.5655,
++      "delta": {
++        "added": [],
++        "removed": [],
++        "changed": {}
++      }
++    },
++    {
++      "scenario": "runtime resource",
++      "actions": {
++        "response": {
++          "old": "exact reuse",
++          "new": "executed"
++        },
++        "request": {
++          "old": "exact reuse",
++          "new": "executed"
++        }
++      },
++      "outcomes": {
++        "response": {
++          "claimKey": "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++          "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++          "status": "established",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "Cg4oNTE5KSA4NjctNTMwOQ=="
++              ],
++              "expected": {
++                "return": "(519) 867-5309"
++              },
++              "old": {
++                "return": "(519) 867-5309"
++              },
++              "new": {
++                "return": "(519) 867-5309"
++              },
++              "status": "established",
++              "id": "9e9844aeacdf248d79bfbe32ed0313e1006f6eab41b99256d9242430d6b803b4"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "CgMxMjM="
++              ],
++              "expected": {
++                "return": "123"
++              },
++              "old": {
++                "return": "123"
++              },
++              "new": {
++                "return": "123"
++              },
++              "status": "established",
++              "id": "668667b1331a824a9c703016e62cca10b7e3be77333049749688f8f1be499165"
++            }
++          ]
++        },
++        "request": {
++          "claimKey": "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++          "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++          "status": "refuted",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "(519) 867-5309"
++              ],
++              "expected": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "old": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "f2c5581d6d6ed9719f38673d9b92d7881fa43620166da2ee744121a81bb058e6"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "123"
++              ],
++              "expected": {
++                "return": "CgMxMjM="
++              },
++              "old": {
++                "return": "CgMxMjM="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "45aaf27b6f18fd2b3084711bce2e2d3ffefb76b19563762cb1fe03b424945362"
++            }
++          ]
++        }
++      },
++      "incremental": {
++        "wallSeconds": 10.938,
++        "cpuSeconds": 13.7216,
++        "peakRssBytes": 106438656,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "clean": {
++        "wallSeconds": 16.812,
++        "cpuSeconds": 20.3873,
++        "peakRssBytes": 106102784,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "cleanEquivalent": true,
++      "launches": {
++        "old": {
++          "production": "90316b99f541575b0ab28748f44ceb6cf9d178128b7a7251d5bf6c2d3b90dcb7",
++          "test": "fb855013324a97811ac0877fb672568324d9c6a835910125f38ef79fe64cbe67"
++        },
++        "new": {
++          "production": "62db24d3011378589fea285cbbda9ad90f732803602fb0aadfe799b6b067a3b6",
++          "test": "bb637e4913a5a4ddf70fe904cefc8d73ed322eb810905ddbfb8c69a919887529"
++        }
++      },
++      "preparationSeconds": 1.6351,
++      "delta": {
++        "added": [],
++        "removed": [],
++        "changed": {
++          "request": {
++            "before": [
++              "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++              "8cb33cd788589f350a8dcbd4982dd96dd2dd34cfb2accd2e47162ba97a3360f8",
++              "refuted"
++            ],
++            "after": [
++              "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++              "109368034fb1e1e9e59dce5c0f8166df405e1ad975afc366e9eb70cd117fc521",
++              "refuted"
++            ]
++          },
++          "response": {
++            "before": [
++              "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++              "970a3400cbf9e906e4c3406d72744c93b766d73c87eaf2ec3eaf13dfa9e1069a",
++              "established"
++            ],
++            "after": [
++              "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++              "0136967ecbc04c30218bf1bd033a535de9493889a0ab2f2f0fc49a0c8a8b28a3",
++              "established"
++            ]
++          }
++        }
++      }
++    },
++    {
++      "scenario": "old provider first",
++      "actions": {
++        "response": {
++          "old": "exact reuse",
++          "new": "executed"
++        },
++        "request": {
++          "old": "exact reuse",
++          "new": "executed"
++        }
++      },
++      "outcomes": {
++        "response": {
++          "claimKey": "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++          "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++          "status": "established",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "Cg4oNTE5KSA4NjctNTMwOQ=="
++              ],
++              "expected": {
++                "return": "(519) 867-5309"
++              },
++              "old": {
++                "return": "(519) 867-5309"
++              },
++              "new": {
++                "return": "(519) 867-5309"
++              },
++              "status": "established",
++              "id": "20b047541f54157aa5c54326d330e67cf2396f470c295927bec6470846d85a51"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "CgMxMjM="
++              ],
++              "expected": {
++                "return": "123"
++              },
++              "old": {
++                "return": "123"
++              },
++              "new": {
++                "return": "123"
++              },
++              "status": "established",
++              "id": "83349760e0f7203b5e9f85f981a42607b3a284b031a72da7ef6c00542028493b"
++            }
++          ]
++        },
++        "request": {
++          "claimKey": "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++          "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++          "status": "refuted",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "(519) 867-5309"
++              ],
++              "expected": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "old": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "1253e838e3949dd37efe0b52dba249d21ed011761b90a9368fec65ff2078dec9"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "123"
++              ],
++              "expected": {
++                "return": "CgMxMjM="
++              },
++              "old": {
++                "return": "CgMxMjM="
++              },
++              "new": {
++                "throws": "java.lang.NoSuchMethodError"
++              },
++              "status": "refuted",
++              "id": "a0523a0f49cd176671753d9d8494c003d5bdb1a7f4538cab1c0c5cdb5509d75a"
++            }
++          ]
++        }
++      },
++      "incremental": {
++        "wallSeconds": 10.392,
++        "cpuSeconds": 12.8919,
++        "peakRssBytes": 107864064,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "clean": {
++        "wallSeconds": 16.594,
++        "cpuSeconds": 19.9723,
++        "peakRssBytes": 107950080,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "cleanEquivalent": true,
++      "launches": {
++        "old": {
++          "production": "90316b99f541575b0ab28748f44ceb6cf9d178128b7a7251d5bf6c2d3b90dcb7",
++          "test": "fb855013324a97811ac0877fb672568324d9c6a835910125f38ef79fe64cbe67"
++        },
++        "new": {
++          "production": "d8cee37d44cb9132b5e0722adf59f1bef3b5033b9de8ce7257e29aa2003c0c89",
++          "test": "bb637e4913a5a4ddf70fe904cefc8d73ed322eb810905ddbfb8c69a919887529"
++        }
++      },
++      "preparationSeconds": 1.5428,
++      "delta": {
++        "added": [],
++        "removed": [],
++        "changed": {
++          "request": {
++            "before": [
++              "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++              "8cb33cd788589f350a8dcbd4982dd96dd2dd34cfb2accd2e47162ba97a3360f8",
++              "refuted"
++            ],
++            "after": [
++              "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++              "24cbb59f43dca199142ddf2cc796edf0a38c7b9ed42fe93613d1d971c1804b08",
++              "refuted"
++            ]
++          },
++          "response": {
++            "before": [
++              "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++              "970a3400cbf9e906e4c3406d72744c93b766d73c87eaf2ec3eaf13dfa9e1069a",
++              "established"
++            ],
++            "after": [
++              "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++              "cad750834deb70de841edcb856bbda50c8ef3dccdcbe40331b1e2e9c82f1a25c",
++              "established"
++            ]
++          }
++        }
++      }
++    },
++    {
++      "scenario": "new provider first",
++      "actions": {
++        "response": {
++          "old": "exact reuse",
++          "new": "executed"
++        },
++        "request": {
++          "old": "exact reuse",
++          "new": "executed"
++        }
++      },
++      "outcomes": {
++        "response": {
++          "claimKey": "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++          "entry": "retrofit2.converter.wire.WireResponseBodyConverter#convert(Lokhttp3/ResponseBody;)Lcom/squareup/wire/Message;",
++          "status": "established",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "Cg4oNTE5KSA4NjctNTMwOQ=="
++              ],
++              "expected": {
++                "return": "(519) 867-5309"
++              },
++              "old": {
++                "return": "(519) 867-5309"
++              },
++              "new": {
++                "return": "(519) 867-5309"
++              },
++              "status": "established",
++              "id": "6ebac29ff53b2f3d2336bd1aec1f882b04c3a87572e91d2b2574ad58c75e483e"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "CgMxMjM="
++              ],
++              "expected": {
++                "return": "123"
++              },
++              "old": {
++                "return": "123"
++              },
++              "new": {
++                "return": "123"
++              },
++              "status": "established",
++              "id": "bbddfdb9e178136fe77e5846b9b11aeb17a662ff956beff2e3b9138e882eb645"
++            }
++          ]
++        },
++        "request": {
++          "claimKey": "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++          "entry": "retrofit2.converter.wire.WireRequestBodyConverter#convert(Lcom/squareup/wire/Message;)Lokhttp3/RequestBody;",
++          "status": "established",
++          "inputs": 2,
++          "covered": 2,
++          "assumptions": [
++            "The factory and generated Phone are constructed afresh. The converter observes only its supplied value and pinned classpath. No external service, clock, entropy or concurrent application mutation contributes to the observed bytes or exception."
++          ],
++          "observations": [
++            {
++              "input": 0,
++              "arguments": [
++                "(519) 867-5309"
++              ],
++              "expected": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "old": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "new": {
++                "return": "Cg4oNTE5KSA4NjctNTMwOQ=="
++              },
++              "status": "established",
++              "id": "fbd5a984283dac1bf8c05af250724558878166ef06dc3b33813adc2efe5c39ff"
++            },
++            {
++              "input": 1,
++              "arguments": [
++                "123"
++              ],
++              "expected": {
++                "return": "CgMxMjM="
++              },
++              "old": {
++                "return": "CgMxMjM="
++              },
++              "new": {
++                "return": "CgMxMjM="
++              },
++              "status": "established",
++              "id": "4183d8fa0933d2239069415e649acb4f902e6116b0d7e638339f6304285464f0"
++            }
++          ]
++        }
++      },
++      "incremental": {
++        "wallSeconds": 8.886,
++        "cpuSeconds": 11.2427,
++        "peakRssBytes": 108638208,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "clean": {
++        "wallSeconds": 15.424,
++        "cpuSeconds": 18.8369,
++        "peakRssBytes": 107732992,
++        "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
++      },
++      "cleanEquivalent": true,
++      "launches": {
++        "old": {
++          "production": "90316b99f541575b0ab28748f44ceb6cf9d178128b7a7251d5bf6c2d3b90dcb7",
++          "test": "fb855013324a97811ac0877fb672568324d9c6a835910125f38ef79fe64cbe67"
++        },
++        "new": {
++          "production": "fd36d082b54e112c2655088be293f754364ddd8afa20e4390ee0f75998c1952c",
++          "test": "bb637e4913a5a4ddf70fe904cefc8d73ed322eb810905ddbfb8c69a919887529"
++        }
++      },
++      "preparationSeconds": 1.5471,
++      "delta": {
++        "added": [],
++        "removed": [],
++        "changed": {
++          "request": {
++            "before": [
++              "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++              "8cb33cd788589f350a8dcbd4982dd96dd2dd34cfb2accd2e47162ba97a3360f8",
++              "refuted"
++            ],
++            "after": [
++              "cc18fd519e7ce92b7ef2aaa444e28ea23153d38692026ada194f8828dd5cafcb",
++              "2f77d5e7b743320882eac1e2b1a7afbfc697c59229d0a27ef07a062ad2bb1858",
++              "established"
++            ]
++          },
++          "response": {
++            "before": [
++              "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++              "970a3400cbf9e906e4c3406d72744c93b766d73c87eaf2ec3eaf13dfa9e1069a",
++              "established"
++            ],
++            "after": [
++              "76ce35943d4a8b5b5b06b1628c6998c616db032781b19a413f5fe77f12b9c95b",
++              "6cb2f7a95d10c6d2e0f5f9fe6724fbe3e87be54f3c955ac49d152698bcbd94ab",
++              "established"
++            ]
++          }
++        }
++      }
++    }
++  ]
++}

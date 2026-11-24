@@ -1,0 +1,174 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-020655-evaluate-the-registered-petclinic-2-7-to",
+  "title": "Evaluate the registered Petclinic 2.7 to 3.0 migration",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1m14s, peak 496.4 MiB (estimated 8m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-020655-evaluate-the-registered-petclinic-2-7-to.json",
+    "sha256": "cd1fcb8b21cbc502acb8c643f2535a66720da0e7bbc9f19e61f8fc95364bf227",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-020655-evaluate-the-registered-petclinic-2-7-to",
+      "title": "Evaluate the registered Petclinic 2.7 to 3.0 migration",
+      "description": "Resolve both original Maven graphs, compile all production code and exercise the three sealed HTTP workflows on shared JDK 17. Try the old binary and unchanged source on the new graph, compare both intended applications, and independently recompute the same caller results from fresh H2 databases.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "target:replay"
+      ],
+      "links": {},
+      "expected": "All registered deployments retain separate linkage, source and caller observations and all incremental scopes agree with clean HTTP recomputation.",
+      "submitted": {
+        "at": "2026-11-24T02:06:55+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "memoryLimit": "4G",
+        "duration": "8m",
+        "timeout": "35m",
+        "notes": "Both exact application builds succeeded in the first run. The retry fixes the Python HTTP client name and exercises the pre-registered form and persistence assertions."
+      },
+      "steps": [
+        {
+          "name": "Build and check the original and migrated applications",
+          "run": "python3 lib/benchmark/change-verification/petclinic.py --output verification/change-verification/petclinic.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/change-verification/petclinic.json"
+      ],
+      "supersedes": "20261124-015127-evaluate-the-registered-petclinic-2-7-to"
+    }
+  },
+  "sourceCommit": "4bbde631ff12401fa6bb138197bd895a5fd26256",
+  "startedAt": "2026-11-24T02:07:46+00:00",
+  "finishedAt": "2026-11-24T02:09:07+00:00",
+  "wallSeconds": 81.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2277093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": "Both exact application builds succeeded in the first run. The retry fixes the Python HTTP client name and exercises the pre-registered form and persistence assertions."
+  },
+  "usage": {
+    "peakMemoryBytes": 520515584,
+    "wallSeconds": 74.3,
+    "cpuSeconds": 127.2,
+    "memoryOfEstimate": 0.16,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and check the original and migrated applications",
+      "run": "python3 lib/benchmark/change-verification/petclinic.py --output verification/change-verification/petclinic.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 74.349,
+      "cpuSeconds": 127.208,
+      "cpuThrottledSeconds": 24.562,
+      "peakMemoryBytes": 520515584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-check-the-original-a.log",
+        "lines": 1,
+        "bytes": 321,
+        "sha256": "988b6135c023af1b201817c6bb755ddfa9a0e035f2da08fac28a05b7208e1d29",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{\"old\": {\"startup\": \"established\", \"reject-owner\": \"established\", \"create-and-read-owner\": \"established\"}, \"oldBinaryNewRuntime\": {\"startup\": \"refuted\", \"reject-owner\": \"open\", \"create-and-read-owner\": \"open\"}, \"adapted\": {\"startup\": \"established\", \"reject-owner\": \"established\", \"create-and-read-own"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/change-verification/petclinic.json",
+      "change": "added",
+      "bytes": 33822,
+      "sha256": "2c45e88e8e367fd3f392de84548100d607cc40e4eb3c19d9b53f03fa0f0f2ddb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T02:09:11+00:00",
+    "applied": [
+      "verification/change-verification/petclinic.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T020907Z-9313811862a82750",
+      "outputs": "20261124T020907Z-952875d5937ceda9",
+      "diff": "20261124T020907Z-96983847d9782294"
+    }
+  }
+}

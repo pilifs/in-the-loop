@@ -8,6 +8,7 @@ from pathlib import Path
 import platform
 import subprocess
 import sys
+import tempfile
 import time
 
 from targets import change_evidence, change_inventory, class_binding, runtime_jar, runtime_jdk, upgrade_replay
@@ -22,7 +23,20 @@ def delta(previous, current):
     def subjects(report):
         return {n["id"]: (n["claimKey"], n["executionKey"], n["status"]) for n in report["claims"]}
     old, new = subjects(previous), subjects(current)
+    launches = {}
+    for side in ("old", "new"):
+        for kind in ("production", "test"):
+            before = previous["launches"][side].get(kind) or {}
+            after = current["launches"][side].get(kind) or {}
+            changed = {k: {"before": before.get(k), "after": after.get(k)} for k in
+                       ("classpath", "jdk", "environment", "environmentFiles") if before.get(k) != after.get(k)}
+            if changed:
+                launches[f"{side}/{kind}"] = changed
+    before_entries = {c["entry"] for c in previous["inventory"]["candidates"]}
+    after_entries = {c["entry"] for c in current["inventory"]["candidates"]}
     return {"added": sorted(new.keys() - old.keys()), "removed": sorted(old.keys() - new.keys()),
+            "launchChanges": launches, "toolIdentityChanged": previous["tools"] != current["tools"],
+            "addedEntries": sorted(after_entries - before_entries), "removedEntries": sorted(before_entries - after_entries),
             "changed": {k: {"before": old[k], "after": new[k]} for k in sorted(old.keys() & new.keys())
                         if old[k] != new[k]}}
 
@@ -34,8 +48,11 @@ def frozen_workflows(path):
     workflows = {}
     for row in doc["workflows"]:
         name = row["id"]
-        if name in workflows or row["cohort"] not in {"registered", "additional", "control"}:
+        if not isinstance(name, str) or not name or name in workflows or row["cohort"] not in {"registered", "additional", "control"}:
             raise ValueError(f"duplicate workflow or unknown cohort for {name}")
+        assumptions = row.get("assumptions", [])
+        if not isinstance(assumptions, list) or any(not isinstance(a, str) or not a.strip() for a in assumptions):
+            raise ValueError(f"{name}: assumptions must name the conditions of the observation")
         specfile = (path.parent / row["scope"]).resolve()
         probe = (path.parent / row["probe"]).resolve()
         spec = json.loads(specfile.read_text())
@@ -65,7 +82,7 @@ def runner_identity():
                    "python": sys.version, "host": list(platform.uname())})
 
 
-def compare(args):
+def compare(args, *, original_binary=True):
     started = time.monotonic()
     doc, workflows = frozen_workflows(args.workflows)
     jdks = {"old": args.jdk.resolve(), "new": (args.after_jdk or args.jdk).resolve()}
@@ -123,6 +140,10 @@ def compare(args):
                                         else "open for unchanged source",
                 "adaptedApplication": "compare the supplied client and runtime on each side"},
             "claims": [], "preparationSeconds": round(time.monotonic() - started, 4)}
+    previous = json.loads(args.previous.read_text()) if args.previous else None
+    if previous is not None and (previous.get("schema") != SCHEMA or previous.get("change") != plan["change"]):
+        raise ValueError("previous report belongs to a different change")
+    pending = []
     for name, (row, scope, probe, spec) in workflows.items():
         assumptions = row.get("assumptions", [])
         claim_key = digest({"scope": spec, "intent": row["intent"], "assumptions": assumptions})
@@ -138,11 +159,17 @@ def compare(args):
         if spec["entry"] in problems:
             node["firstOpenDependency"] = problems[spec["entry"]]
             continue
-        if not args.run:
-            continue
-        closed = row.get("deterministicUnderAssumptions") is True and assumptions and not any(inventory["implicitClasspaths"].values())
+        if args.run:
+            pending.append((node, basis, row, scope, probe, spec))
+    plan["executionState"] = "running" if args.run else "planned"
+    if args.run and original_binary:
+        change_evidence.write_json(args.output, plan)
+    for node, basis, row, scope, probe, spec in pending:
+        closed = row.get("deterministicUnderAssumptions") is True and node["assumptions"] and not any(inventory["implicitClasspaths"].values())
         use_cache = args.cache is not None and closed
-        cache = change_evidence.SideCache(args.cache, basis, {s: images[j] for s, j in jdks.items()}) if use_cache else None
+        side_inputs = {s: {"jdk": images[j], "environmentFiles": launches[s]["production"].get("environmentFiles", [])}
+                       for s, j in jdks.items()}
+        cache = change_evidence.SideCache(args.cache, basis, side_inputs) if use_cache else None
         evidence = {}
         try:
             upgrade_replay.evaluate(scope, args.before, args.after, probe, jdks["old"], operands, args.seconds,
@@ -153,13 +180,11 @@ def compare(args):
         if evidence.get("cases") == spec["cases"]:
             node.update(change_evidence.compose(spec, evidence, row["intent"]))
             for c in node["children"]:
-                c["id"] = digest([claim_key, execution_key, c["input"]])
+                c["id"] = digest([node["claimKey"], node["executionKey"], c["input"]])
             node["dependsOn"] = [{"id": c["id"], "reason": "original entry on both sides of this admitted input"}
                                  for c in node["children"]]
             if node["status"] == "established" and not closed:
                 node.update(status="open", firstOpenDependency="bind all runtime inputs and justify deterministic observations")
-        if node["status"] == "open" and evidence.get("reason"):
-            node["reason"] = evidence["reason"]
         for key in ("stoppedAt", "beforeEntryComparison", "linkage", "reason"):
             if key in evidence:
                 node[key] = evidence[key]
@@ -168,41 +193,81 @@ def compare(args):
         receipt = args.output.parent / "receipts" / (receipt_hash + ".json")
         change_evidence.write_json(receipt, evidence)
         node["receipt"] = {"path": os.path.relpath(receipt, args.output.parent), "sha256": upgrade_replay.sha(receipt)}
+        node["observerAndReplaySeconds"] = evidence.get("elapsedSeconds")
+        if original_binary:
+            change_evidence.write_json(args.output, plan)
     plan["counts"] = {cohort: dict(Counter(n["status"] for n in plan["claims"] if n["cohort"] == cohort))
                       for cohort in ("registered", "additional", "control")}
+    if original_binary and old["classpath"][0]["sha256"] != new["classpath"][0]["sha256"]:
+        # Keep every new deploy-time provider in its original position. The client alone comes from the old build.
+        manifest = json.loads(args.after.read_text())
+        for item in manifest.get("environmentFiles", []):
+            item["file"] = str((args.after.parent / item["file"]).resolve())
+        files = [paths["old"][0], *paths["new"][1:]]
+        hashes = [old["classpath"][0]["sha256"], *(r["sha256"] for r in new["classpath"][1:])]
+        manifest.update(sourceSha256=old["sourceSha256"], scope="original binary on the new runtime",
+                        classpath=[{"file": str(f), "sha256": h} for f, h in zip(files, hashes, strict=True)])
+        with tempfile.TemporaryDirectory(prefix="change-binary-") as work:
+            path = Path(work) / "prepared.json"
+            change_evidence.write_json(path, manifest)
+            alternate = argparse.Namespace(**vars(args))
+            alternate.after, alternate.after_test, alternate.previous = path, None, None
+            if args.new_dependency == new["classpath"][0]["sha256"]:
+                alternate.new_dependency = hashes[0]
+            binary = compare(alternate, original_binary=False)
+        plan["deploymentQuestions"]["originalBinary"] = {"launch": binary["launches"]["new"]["production"],
+                                                        "claims": binary["claims"], "counts": binary["counts"]}
     plan["wallSeconds"] = round(time.monotonic() - started, 4)
-    if args.previous:
-        previous = json.loads(args.previous.read_text())
-        if previous.get("schema") != SCHEMA or previous["change"] != plan["change"]:
-            raise ValueError("previous report belongs to a different change")
+    if args.run:
+        plan["executionState"] = "complete"
+    if previous is not None:
         plan["delta"] = delta(previous, plan)
     return plan
 
 
 def example_plan(number):
     import build
-    from targets import claim_history, sidecar
+    from targets import claim_history, sidecar, workflow
     folder, = build.EXAMPLES.glob(f"{number:03d}-*")
     example = build.load_example(folder)
     target = sidecar.load(folder, example)
     history = claim_history.inventory(folder, example, target)
     claims = []
+    tasks = {t["id"]: t for t in target["tasks"]}
     for group in history["claims"]:
         for subject in group["subjects"]:
             if subject.get("historical"):
                 continue
-            task = next(t for t in target["tasks"] if t["id"] == subject["task"])
+            task = tasks[subject["task"]]
             key = group["claimKey"]
+            frozen = workflow.plan_task(folder, example, target, task["id"])
+            source = getattr(frozen, "claim", {})
             status = subject.get("overallConclusion", subject["conclusion"])
             claims.append({"id": task["id"], "claimKey": key, "entry": task["target"],
-                           "statement": group["file"], "launches": subject["revisions"],
+                           "claimFile": group["file"], "statement": source.get("statement"),
+                           "scope": {"guard": source.get("assume"), "bounds": source.get("bounds"),
+                                     "observations": source.get("observations"), "assumptions": source.get("assumptions", [])},
+                           "launches": subject["revisions"],
                            "status": status, "monolithic": subject["conclusion"],
                            "attempt": subject["latestAttempt"], "ordinary": subject["evidence"],
                            "finiteJvm": subject.get("finiteJvm", []), "nativeSelectors": subject.get("nativeSelectors", []),
                            "originalWitnesses": subject.get("originalWitnesses", []),
-                           "dependencies": [{"task": p, "reason": "calibrate the original JVM entry"} for p in task.get("requires", [])]})
-    return {"schema": SCHEMA, "example": number, "change": target["identity"]["case"], "claims": claims,
-            "coverage": history["coverage"], "replays": [r["task"] for r in history["replays"]]}
+                           "dependencies": [{"task": p, "reason": "calibrate the original JVM entry" if tasks[p]["kind"] == "replay"
+                                              else "declared prerequisite of the frozen task"} for p in task.get("requires", [])]})
+    report = {"schema": SCHEMA, "example": number, "change": target["identity"]["case"], "claims": claims,
+              "coverage": history["coverage"], "replays": [r["task"] for r in history["replays"]]}
+    if number in (336, 346):
+        reader = ROOT / "lib/benchmark/trusted-kernel/change_nodes.py"
+        checked = subprocess.run([sys.executable, "-B", reader, "--for-plan", folder], input=json.dumps(claims),
+                                 capture_output=True, text=True)
+        assurance = (json.loads(checked.stdout) if checked.returncode == 0 else
+                     {"nodes": [], "reason": checked.stderr.strip() or "Independent evidence could not be read."})
+        report["independentEvidence"] = assurance
+        by_task = {claim["id"]: claim for claim in claims}
+        for node in assurance["nodes"]:
+            if node["kind"] == "solver-query":
+                by_task[node["task"]].setdefault("independentSubclaims", []).append(node["id"])
+    return report
 
 
 def main(argv=None):

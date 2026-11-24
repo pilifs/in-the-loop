@@ -2,6 +2,8 @@
 
 import argparse
 import json
+from pathlib import Path
+import sys
 
 from decision_evidence import EV, read, report as recount, require
 from prepare import HERE, digest
@@ -109,15 +111,65 @@ def manifest():
     }
 
 
+def for_plan(folder, claims, data):
+    """Match a method contract or a captured invocation's query to a currently planned subject."""
+    sys.path.insert(0, str(ROOT / "examples/tools"))
+    from targets import array_induction
+
+    number = int(read(folder / "example.json")["id"])
+    target = read(folder / "target.json")
+    methods = {s["id"]: s for s in target.get("arrayContracts", [])}
+    prepared = {
+        (c["id"], e["preparedClaim"]): c["claimKey"]
+        for c in claims for e in c.get("ordinary", [])
+        if e.get("route") == "ordinary" and e.get("preparedClaim")
+    }
+    current, historical = [], []
+    for node in data["nodes"]:
+        if node["example"] != number:
+            continue
+        task = node["task"]
+        if node["kind"] == "java-method":
+            spec = methods.get(task)
+            try:
+                applies = spec is not None and node["claimKey"] == array_induction.record_key(folder, target, spec)[1]
+            except (KeyError, OSError, ValueError):
+                applies = False
+            binding = {"kind": "array-contract", "task": task, "claimKey": node["claimKey"]}
+            reason = "The current array contract or its source lock differs from the frozen contract."
+        else:
+            key = prepared.get((task, node["parentNativeClaimId"]))
+            applies = key is not None
+            binding = {
+                "kind": "captured-solver-query", "task": task, "claimKey": key,
+                "preparedClaim": node["parentNativeClaimId"], "cnfSha256": node["claimKey"],
+            }
+            reason = "The current ordinary task has no eligible receipt for the captured prepared claim."
+        if applies:
+            current.append({**node, "boundTo": binding})
+        else:
+            historical.append({"id": node["id"], "claimKey": node["claimKey"], "recordedDisposition": node["disposition"],
+                               "receipt": node["receipt"], "reason": reason})
+    return {"manifest": pin(MANIFEST), "evaluation": data["evaluation"], "nodes": current, "historical": historical}
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--check", action="store_true", help="compare the manifest with its frozen inputs")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--check", action="store_true", help="compare the manifest with its frozen inputs")
+    mode.add_argument("--for-plan", type=Path, metavar="EXAMPLE", help="read current claim subjects from stdin")
     args = ap.parse_args()
-    data = manifest()
-    if args.check:
-        require(read(MANIFEST) == data, "change-plan manifest differs")
-    else:
-        MANIFEST.write_text(json.dumps(data, indent=2) + "\n")
+    try:
+        data = manifest()
+        if args.check or args.for_plan:
+            require(read(MANIFEST) == data, "change-plan manifest differs")
+            if args.for_plan:
+                print(json.dumps(for_plan(args.for_plan, json.load(sys.stdin), data)))
+                return
+        else:
+            MANIFEST.write_text(json.dumps(data, indent=2) + "\n")
+    except (KeyError, OSError, ValueError) as error:
+        ap.exit(1, f"Guava kernel evidence: {error}\n")
     print(f"{len(data['nodes'])} independently checked nodes from {data['evaluation']['sha256']}")
 
 

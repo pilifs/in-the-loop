@@ -1,0 +1,2683 @@
+{
+  "schema": "change-portfolio/v1",
+  "semantics": {
+    "basis": {
+      "path": "verification/java-semantics-gap/scorecard.json",
+      "sha256": "9bbdc70a9a9d26e494300af498a3939883ce41cd346d280c7a0ed0ba6a70cd9e"
+    },
+    "families": 15,
+    "native": {
+      "proved": 33,
+      "refuted": 24,
+      "open": 3
+    },
+    "jbmc": {
+      "proved": 7,
+      "open": 34,
+      "refuted": 17,
+      "JVM-contradicted proof": 2
+    },
+    "nodes": [
+      {
+        "id": "lists/fromArray",
+        "example": "376",
+        "task": "lists-from-array",
+        "claimKey": "893444427777d4bd",
+        "entry": "ListHistory#fromArray",
+        "guard": "",
+        "bound": 8,
+        "statement": "Replacing a source slot leaves the original elements and their shared mutable state visible through List.of.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/lists/measurement.json",
+          "sha256": "074dacbe5fefd01f97404c53723bf940f2ac0a08ecd8353ebcf1316968bb132d"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "proved",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/lists/measurement.json",
+            "sha256": "688308c29bd740fcbb1c64f7b758b90a7150591c92d119662fbf02e2efd1d2e1"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "proved"
+        }
+      },
+      {
+        "id": "lists/fromCollection",
+        "example": "376",
+        "task": "lists-from-collection",
+        "claimKey": "893fd198e6ebf0d6",
+        "entry": "ListHistory#fromCollection",
+        "guard": "",
+        "bound": 8,
+        "statement": "List.copyOf(Arrays.asList(source)) isolates the slots and preserves the element identities and mutations.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/lists/measurement.json",
+          "sha256": "074dacbe5fefd01f97404c53723bf940f2ac0a08ecd8353ebcf1316968bb132d"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/lists/measurement.json",
+            "sha256": "688308c29bd740fcbb1c64f7b758b90a7150591c92d119662fbf02e2efd1d2e1"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "lists/followsSlot",
+        "example": "376",
+        "task": "lists-follows-slot",
+        "claimKey": "7fb2b49446f61a37",
+        "entry": "ListHistory#followsSlot",
+        "guard": "",
+        "bound": 8,
+        "statement": "The list follows replacement of the first slot in the original caller array.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/lists/measurement.json",
+          "sha256": "074dacbe5fefd01f97404c53723bf940f2ac0a08ecd8353ebcf1316968bb132d"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/lists/measurement.json",
+            "sha256": "688308c29bd740fcbb1c64f7b758b90a7150591c92d119662fbf02e2efd1d2e1"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "numbers/fraction",
+        "example": "377",
+        "task": "numbers-fraction",
+        "claimKey": "60107d5972c97491",
+        "entry": "WideNumbers#fraction",
+        "guard": "n >= 16777216 && n < 33554432",
+        "bound": 8,
+        "statement": "Widening Fraction.getFraction(n, 2).floatValue() gives the independently rounded even neighbor.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+          "sha256": "a24f0c95c01e041abc0609de2f9f3483a6e84516f8f8fb839737fb7734485624"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/numbers/measurement.json",
+            "sha256": "a58797668bef9eb7f569f960f084114faaa9b853fec3ee484a9315cb3c10bec4"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "numbers/fractionOpcode",
+        "example": "377",
+        "task": "numbers-fraction-opcode",
+        "claimKey": "1f7bebba1134a988",
+        "entry": "WideNumbers#fractionOpcode",
+        "guard": "n >= 16777216 && n < 33554432",
+        "bound": 8,
+        "statement": "The direct i2f, fdiv and f2d sequence agrees with the independently rounded even neighbor.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+          "sha256": "a24f0c95c01e041abc0609de2f9f3483a6e84516f8f8fb839737fb7734485624"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "proved",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/numbers/measurement.json",
+            "sha256": "a58797668bef9eb7f569f960f084114faaa9b853fec3ee484a9315cb3c10bec4"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "proved"
+        }
+      },
+      {
+        "id": "numbers/floorOnly",
+        "example": "377",
+        "task": "numbers-floor-only",
+        "claimKey": "605980489927aae7",
+        "entry": "WideNumbers#floorOnly",
+        "guard": "n >= 16777216 && n < 33554432",
+        "bound": 8,
+        "statement": "The widened float value is always the integer floor of n/2.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+          "sha256": "a24f0c95c01e041abc0609de2f9f3483a6e84516f8f8fb839737fb7734485624"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/numbers/measurement.json",
+            "sha256": "a58797668bef9eb7f569f960f084114faaa9b853fec3ee484a9315cb3c10bec4"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "numbers/narrow",
+        "example": "377",
+        "task": "numbers-narrow",
+        "claimKey": "87af3935ed046e3c",
+        "entry": "WideNumbers#narrow",
+        "guard": "",
+        "bound": 8,
+        "statement": "MutableDouble clamps to MAX_VALUE before setValue(-x) and to MIN_VALUE afterwards for every mantissa.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+          "sha256": "a24f0c95c01e041abc0609de2f9f3483a6e84516f8f8fb839737fb7734485624"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/numbers/measurement.json",
+            "sha256": "a58797668bef9eb7f569f960f084114faaa9b853fec3ee484a9315cb3c10bec4"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "numbers/narrowOpcode",
+        "example": "377",
+        "task": "numbers-narrow-opcode",
+        "claimKey": "4066281da075436a",
+        "entry": "WideNumbers#narrowOpcode",
+        "guard": "",
+        "bound": 8,
+        "statement": "The two direct d2i conversions clamp to the appropriate signed extrema.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+          "sha256": "a24f0c95c01e041abc0609de2f9f3483a6e84516f8f8fb839737fb7734485624"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/numbers/measurement.json",
+            "sha256": "a58797668bef9eb7f569f960f084114faaa9b853fec3ee484a9315cb3c10bec4"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "numbers/wraps",
+        "example": "377",
+        "task": "numbers-wraps",
+        "claimKey": "63f046ea6c6eb8fb",
+        "entry": "WideNumbers#wraps",
+        "guard": "",
+        "bound": 8,
+        "statement": "The public intValue result agrees with narrowing through a long.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/numbers/measurement.json",
+          "sha256": "a24f0c95c01e041abc0609de2f9f3483a6e84516f8f8fb839737fb7734485624"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/numbers/measurement.json",
+            "sha256": "a58797668bef9eb7f569f960f084114faaa9b853fec3ee484a9315cb3c10bec4"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "prefix/small",
+        "example": "378",
+        "task": "prefix-small",
+        "claimKey": "76cd8963f4450e31",
+        "entry": "OffsetPrefix#small",
+        "guard": "off >= -1 && off <= 6",
+        "bound": 4,
+        "statement": "Both prefixes give the expected truth value for every offset from -1 through six.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+          "sha256": "e617c5dae9f3a037211394dd211c06d64cc44ef0a41fc0bfbdfc19f47db2e76e"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/prefix/measurement.json",
+            "sha256": "7d15df7c8fcde655a49bc13202f99c3ac018ede2ec653f8025937805c2f60f9a"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "prefix/beforeEnd",
+        "example": "378",
+        "task": "prefix-before-end",
+        "claimKey": "f6fe236d2e4c580e",
+        "entry": "OffsetPrefix#beforeEnd",
+        "guard": "off >= -1 && off <= 6",
+        "bound": 4,
+        "statement": "An empty prefix matches strictly before the final offset.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+          "sha256": "e617c5dae9f3a037211394dd211c06d64cc44ef0a41fc0bfbdfc19f47db2e76e"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/prefix/measurement.json",
+            "sha256": "7d15df7c8fcde655a49bc13202f99c3ac018ede2ec653f8025937805c2f60f9a"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "prefix/wide",
+        "example": "378",
+        "task": "prefix-wide",
+        "claimKey": "58f15ea36dd65e14",
+        "entry": "OffsetPrefix#wide",
+        "guard": "",
+        "bound": 4,
+        "statement": "For independent bounded UTF-16 inputs and any signed offset the public method agrees with the charAt oracle.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+          "sha256": "e617c5dae9f3a037211394dd211c06d64cc44ef0a41fc0bfbdfc19f47db2e76e"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/prefix/measurement.json",
+            "sha256": "7d15df7c8fcde655a49bc13202f99c3ac018ede2ec653f8025937805c2f60f9a"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "prefix/nullPrefix",
+        "example": "378",
+        "task": "prefix-null-prefix",
+        "claimKey": "c8dbbfc90889fbbf",
+        "entry": "OffsetPrefix#nullPrefix",
+        "guard": "off >= 0 && off <= 5",
+        "bound": 4,
+        "statement": "A null prefix raises NullPointerException at a valid offset.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/prefix/measurement.json",
+          "sha256": "e617c5dae9f3a037211394dd211c06d64cc44ef0a41fc0bfbdfc19f47db2e76e"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/prefix/measurement.json",
+            "sha256": "7d15df7c8fcde655a49bc13202f99c3ac018ede2ec653f8025937805c2f60f9a"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "arrays/categories",
+        "example": "379",
+        "task": "arrays-categories",
+        "claimKey": "42a66363960bd9c8",
+        "entry": "ReferenceCells#categories",
+        "guard": "",
+        "bound": 2,
+        "statement": "The range covers the four kinds of nullable Item[] inputs.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+          "sha256": "d20847832f2f7e8ffa525ee5dc4764263655c0cec199ace6b155313b389c6414"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/arrays/measurement.json",
+            "sha256": "cbbf2283cce64f2260874d7562f60eae867f479297059e971e4308b142ef78f3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "arrays/noNullCell",
+        "example": "379",
+        "task": "arrays-no-null-cell",
+        "claimKey": "5b291d88a5b49929",
+        "entry": "ReferenceCells#noNullCell",
+        "guard": "",
+        "bound": 2,
+        "statement": "The first cell can never be null in a nonempty array.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+          "sha256": "d20847832f2f7e8ffa525ee5dc4764263655c0cec199ace6b155313b389c6414"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/arrays/measurement.json",
+            "sha256": "cbbf2283cce64f2260874d7562f60eae867f479297059e971e4308b142ef78f3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "arrays/noItemCell",
+        "example": "379",
+        "task": "arrays-no-item-cell",
+        "claimKey": "08a77ea5e1d94eca",
+        "entry": "ReferenceCells#noItemCell",
+        "guard": "",
+        "bound": 2,
+        "statement": "The first cell can never contain an item in a nonempty array.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+          "sha256": "d20847832f2f7e8ffa525ee5dc4764263655c0cec199ace6b155313b389c6414"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/arrays/measurement.json",
+            "sha256": "cbbf2283cce64f2260874d7562f60eae867f479297059e971e4308b142ef78f3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "arrays/followsAlias",
+        "example": "379",
+        "task": "arrays-follows-alias",
+        "claimKey": "d87cad39749cb87d",
+        "entry": "ReferenceCells#followsAlias",
+        "guard": "",
+        "bound": 2,
+        "statement": "Incrementing through one slot affects the other exactly when the original items were shared, including overflow.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+          "sha256": "d20847832f2f7e8ffa525ee5dc4764263655c0cec199ace6b155313b389c6414"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "proved",
+        "native": "proved",
+        "jbmc": "proved",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/arrays/measurement.json",
+            "sha256": "cbbf2283cce64f2260874d7562f60eae867f479297059e971e4308b142ef78f3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "proved"
+        }
+      },
+      {
+        "id": "arrays/alwaysShares",
+        "example": "379",
+        "task": "arrays-always-shares",
+        "claimKey": "e43b318cb7af923e",
+        "entry": "ReferenceCells#alwaysShares",
+        "guard": "",
+        "bound": 2,
+        "statement": "Equal-valued initial references always share the later field write.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/arrays/measurement.json",
+          "sha256": "d20847832f2f7e8ffa525ee5dc4764263655c0cec199ace6b155313b389c6414"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/arrays/measurement.json",
+            "sha256": "cbbf2283cce64f2260874d7562f60eae867f479297059e971e4308b142ef78f3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "receiver/exact",
+        "example": "379",
+        "task": "receiver-exact",
+        "claimKey": "709763f23dca52c8",
+        "entry": "ReceiverScope#exact",
+        "guard": "",
+        "bound": 8,
+        "statement": "The declared-parent assertion holds for null and an exact parent.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/receiver/measurement.json",
+          "sha256": "a12c900022671d5bcbdf60f4622eefa2873fc0394bfb18db5900c32e990e81bc"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "proved",
+        "native": "proved",
+        "jbmc": "proved",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/receiver/measurement.json",
+            "sha256": "33600fbb124c65c7f319715b7f5c8e0eeee23b1a831708119388d19eb0b61463"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "proved"
+        }
+      },
+      {
+        "id": "receiver/parentOrChild",
+        "example": "379",
+        "task": "receiver-parent-or-child",
+        "claimKey": "64a75d1b081e6fe2",
+        "entry": "ReceiverScope#parentOrChild",
+        "guard": "",
+        "bound": 8,
+        "statement": "The declared-parent assertion holds for null, an exact parent and a legal child.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/receiver/measurement.json",
+          "sha256": "a12c900022671d5bcbdf60f4622eefa2873fc0394bfb18db5900c32e990e81bc"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/receiver/measurement.json",
+            "sha256": "33600fbb124c65c7f319715b7f5c8e0eeee23b1a831708119388d19eb0b61463"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "stores/history",
+        "example": "380",
+        "task": "stores-history",
+        "claimKey": "097ae256f57d352e",
+        "entry": "ArrayStores#history",
+        "guard": "",
+        "bound": 8,
+        "statement": "A single store and a released Commons iterator expose the exception type and the original cell through a retained reference.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/stores/measurement.json",
+          "sha256": "bec1fa9d631c9d315811e4680dc2191284567a25d8d9a95329d3fbaf12ed08c0"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/stores/measurement.json",
+            "sha256": "7fe5787c9d3b59f4b88b012e3bf56924b7b50ce9f32ced9ff87f794118848fc5"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "stores/alwaysSucceeds",
+        "example": "380",
+        "task": "stores-always-succeeds",
+        "claimKey": "cb15d81bc42fbfea",
+        "entry": "ArrayStores#alwaysSucceeds",
+        "guard": "",
+        "bound": 8,
+        "statement": "An incompatible object can be stored in a String array through its Object[] view.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/stores/measurement.json",
+          "sha256": "bec1fa9d631c9d315811e4680dc2191284567a25d8d9a95329d3fbaf12ed08c0"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "JVM-contradicted proof",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/stores/measurement.json",
+            "sha256": "7fe5787c9d3b59f4b88b012e3bf56924b7b50ce9f32ced9ff87f794118848fc5"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "JVM-contradicted proof"
+        }
+      },
+      {
+        "id": "store-iterator/history",
+        "example": "380",
+        "task": "store-iterator-history",
+        "claimKey": "5b78d62803c666b4",
+        "entry": "IteratorStores#history",
+        "guard": "kind >= 0 && kind <= 2",
+        "bound": 8,
+        "statement": "A single store and a released Commons iterator expose the exception type and the original cell through a retained reference.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/store-iterator/measurement.json",
+          "sha256": "07f9570c6a4287d00b0a93e4f45f470c52e234d6d2b625cba6f6270f1c6280c2"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/store-iterator/measurement.json",
+            "sha256": "bbee3510441010a575834663f50a1d0a98ea0726326f3d76a7c95c9f7049252c"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "dispatch/dispatch",
+        "example": "382",
+        "task": "dispatch-dispatch",
+        "claimKey": "8d4be47a40fe5d0d",
+        "entry": "DefaultDispatch#dispatch",
+        "guard": "",
+        "bound": 8,
+        "statement": "Both declaration orders select the refined default and the class override wins, at every int value.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/dispatch/measurement.json",
+          "sha256": "08b91704cef2c9fd467bf77027aedb6ef6a234b2a82290a97275de2892f0cad4"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "JVM-contradicted violation",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/dispatch/measurement.json",
+            "sha256": "a1fec2af0e19160b1fccb05e2d293d886aa7f3cb94ff47a4bf1afac85f344b36"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "dispatch/firstDeclared",
+        "example": "382",
+        "task": "dispatch-first-declared",
+        "claimKey": "5a5077063a9ddb24",
+        "entry": "DefaultDispatch#firstDeclared",
+        "guard": "",
+        "bound": 8,
+        "statement": "The first-listed base interface wins over the more specific default.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/dispatch/measurement.json",
+          "sha256": "08b91704cef2c9fd467bf77027aedb6ef6a234b2a82290a97275de2892f0cad4"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "JVM-contradicted proof",
+        "native": "refuted",
+        "jbmc": "JVM-contradicted proof",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/dispatch/measurement.json",
+            "sha256": "a1fec2af0e19160b1fccb05e2d293d886aa7f3cb94ff47a4bf1afac85f344b36"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "JVM-contradicted proof"
+        }
+      },
+      {
+        "id": "endian/reverseInt",
+        "example": "383",
+        "task": "endian-reverse-int",
+        "claimKey": "a05ba970e66f433f",
+        "entry": "ByteReversal#reverseInt",
+        "guard": "",
+        "bound": 8,
+        "statement": "The original 32-bit swap agrees with JDK byte reversal for every bit pattern.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+          "sha256": "80e874a7581883c80bd2eabf29651673b16d20ac2f260159e02f12ac02f8e0b4"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "proved",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/endian/measurement.json",
+            "sha256": "8c3a9ccc2dc92f4034b13f1d519dee24e52de65610e6310563bd4abff950fc80"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "proved"
+        }
+      },
+      {
+        "id": "endian/reverseLong",
+        "example": "383",
+        "task": "endian-reverse-long",
+        "claimKey": "50d9d23568769dd1",
+        "entry": "ByteReversal#reverseLong",
+        "guard": "",
+        "bound": 8,
+        "statement": "The original 64-bit swap agrees with JDK byte reversal for every bit pattern.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+          "sha256": "80e874a7581883c80bd2eabf29651673b16d20ac2f260159e02f12ac02f8e0b4"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "proved",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/endian/measurement.json",
+            "sha256": "8c3a9ccc2dc92f4034b13f1d519dee24e52de65610e6310563bd4abff950fc80"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "proved"
+        }
+      },
+      {
+        "id": "endian/rotateInt",
+        "example": "383",
+        "task": "endian-rotate-int",
+        "claimKey": "eef437cb087f4f3b",
+        "entry": "ByteReversal#rotateInt",
+        "guard": "",
+        "bound": 8,
+        "statement": "The original 32-bit swap agrees with half-word rotation.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+          "sha256": "80e874a7581883c80bd2eabf29651673b16d20ac2f260159e02f12ac02f8e0b4"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/endian/measurement.json",
+            "sha256": "8c3a9ccc2dc92f4034b13f1d519dee24e52de65610e6310563bd4abff950fc80"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "endian/rotateLong",
+        "example": "383",
+        "task": "endian-rotate-long",
+        "claimKey": "5d290f5e3bdb081b",
+        "entry": "ByteReversal#rotateLong",
+        "guard": "",
+        "bound": 8,
+        "statement": "The original 64-bit swap agrees with half-word rotation.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/endian/measurement.json",
+          "sha256": "80e874a7581883c80bd2eabf29651673b16d20ac2f260159e02f12ac02f8e0b4"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/endian/measurement.json",
+            "sha256": "8c3a9ccc2dc92f4034b13f1d519dee24e52de65610e6310563bd4abff950fc80"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "surrogates/translate",
+        "example": "384",
+        "task": "surrogates-translate",
+        "claimKey": "cbf6baf0da0caf0a",
+        "entry": "SurrogateUnits#translate",
+        "guard": "",
+        "bound": 8,
+        "statement": "The translator consumes exactly the unpaired surrogate at the selected offset and writes no units.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/surrogates/measurement.json",
+          "sha256": "ad4904c6801eb9b53ce3abbfc51b6c7f3939da1fb0b686f0fd3c659c27dcbff1"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/surrogates/measurement.json",
+            "sha256": "d6481167588121980b8be0a3e4a7c9dfcbaba9d2c2bfee07592666495cabb495"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "surrogates/removeEvery",
+        "example": "384",
+        "task": "surrogates-remove-every",
+        "claimKey": "2b3df2540fdd645e",
+        "entry": "SurrogateUnits#removeEvery",
+        "guard": "",
+        "bound": 8,
+        "statement": "The translator consumes every surrogate at the first offset, including the high half of a valid pair.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/surrogates/measurement.json",
+          "sha256": "ad4904c6801eb9b53ce3abbfc51b6c7f3939da1fb0b686f0fd3c659c27dcbff1"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/surrogates/measurement.json",
+            "sha256": "d6481167588121980b8be0a3e4a7c9dfcbaba9d2c2bfee07592666495cabb495"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "deque/history",
+        "example": "385",
+        "task": "deque-history",
+        "claimKey": "6f6e4ef952bdd426",
+        "entry": "DequeRemoval#history",
+        "guard": "",
+        "bound": 8,
+        "statement": "JDK deque iterator removal and released Commons filter iterators are checked through the original owner and element identities.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+          "sha256": "f42698636c5c32038ee0d662c3f5b4d6b62f25a0d48b6833817c47452f96cfd6"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/deque/measurement.json",
+            "sha256": "df46613853e6f65d31dbcca395d16b43a5ac06eb76f0ae1d8f915adfc21bf3e3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "deque/stillReturns",
+        "example": "385",
+        "task": "deque-still-returns",
+        "claimKey": "c6ac666a98ae806b",
+        "entry": "DequeRemoval#stillReturns",
+        "guard": "",
+        "bound": 8,
+        "statement": "The old iterator returns the original next element after its owner removed it.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+          "sha256": "f42698636c5c32038ee0d662c3f5b4d6b62f25a0d48b6833817c47452f96cfd6"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/deque/measurement.json",
+            "sha256": "df46613853e6f65d31dbcca395d16b43a5ac06eb76f0ae1d8f915adfc21bf3e3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "deque/singleton",
+        "example": "385",
+        "task": "deque-singleton",
+        "claimKey": "f1236c1215c70db3",
+        "entry": "DequeRemoval#singleton",
+        "guard": "",
+        "bound": 8,
+        "statement": "Prefetch keeps the element pending and removal after consumption follows the underlying singleton policy.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+          "sha256": "f42698636c5c32038ee0d662c3f5b4d6b62f25a0d48b6833817c47452f96cfd6"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "proved",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/deque/measurement.json",
+            "sha256": "df46613853e6f65d31dbcca395d16b43a5ac06eb76f0ae1d8f915adfc21bf3e3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "deque/filtered",
+        "example": "385",
+        "task": "deque-filtered",
+        "claimKey": "423a0e489fd3ee4a",
+        "entry": "DequeRemoval#filtered",
+        "guard": "",
+        "bound": 8,
+        "statement": "A pending element prevents delegate removal. Removal after consumption updates the correct original deque.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/deque/measurement.json",
+          "sha256": "f42698636c5c32038ee0d662c3f5b4d6b62f25a0d48b6833817c47452f96cfd6"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/deque/measurement.json",
+            "sha256": "df46613853e6f65d31dbcca395d16b43a5ac06eb76f0ae1d8f915adfc21bf3e3"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "construction/history",
+        "example": "386",
+        "task": "construction-history",
+        "claimKey": "e75ab3e9df7ee414",
+        "entry": "ConstructorPhase#history",
+        "guard": "",
+        "bound": 2,
+        "statement": "Commons Lang\u2019s StrBuilder constructor calls the subclass before its field initializer. A second call observes the initialized receiver and contents.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/construction/measurement.json",
+          "sha256": "f034f9d9ba8c380793e4ca11be96fa797a2d737f4624dc7f82bae08735cdf026"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/construction/measurement.json",
+            "sha256": "9d71c95d79a57a8c0eaf3a52b95a632a654d5d58c7eec77fdba835905f1ea055"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "construction/emptySkips",
+        "example": "386",
+        "task": "construction-empty-skips",
+        "claimKey": "37dbac09866d81a1",
+        "entry": "ConstructorPhase#emptySkips",
+        "guard": "",
+        "bound": 2,
+        "statement": "An empty constructor argument skips the append override.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/construction/measurement.json",
+          "sha256": "f034f9d9ba8c380793e4ca11be96fa797a2d737f4624dc7f82bae08735cdf026"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/construction/measurement.json",
+            "sha256": "9d71c95d79a57a8c0eaf3a52b95a632a654d5d58c7eec77fdba835905f1ea055"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "construction/alreadyInitialized",
+        "example": "386",
+        "task": "construction-already-initialized",
+        "claimKey": "41e5aec3f9a264fb",
+        "entry": "ConstructorPhase#alreadyInitialized",
+        "guard": "",
+        "bound": 2,
+        "statement": "The override observes the subclass field initializer during superclass construction.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/construction/measurement.json",
+          "sha256": "f034f9d9ba8c380793e4ca11be96fa797a2d737f4624dc7f82bae08735cdf026"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/construction/measurement.json",
+            "sha256": "9d71c95d79a57a8c0eaf3a52b95a632a654d5d58c7eec77fdba835905f1ea055"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "radix/hex",
+        "example": "387",
+        "task": "radix-hex",
+        "claimKey": "0877b7504f78cb16",
+        "entry": "RadixDigits#hex",
+        "guard": "n >= 16 && n <= 255",
+        "bound": 8,
+        "statement": "The result consists of a minus sign and the two independently computed hexadecimal digits in order.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/radix/measurement.json",
+          "sha256": "67e1bd31897ec6b1ac4007a53e6c0913bfbe2c221a7856a2875edc329b6ce387"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/radix/measurement.json",
+            "sha256": "ac2d240039978f139dae0633542be78919082053a242ef4cd8d1db071934889c"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "radix/lowFirst",
+        "example": "387",
+        "task": "radix-low-first",
+        "claimKey": "cdd7685344a531dd",
+        "entry": "RadixDigits#lowFirst",
+        "guard": "n >= 16 && n <= 255",
+        "bound": 8,
+        "statement": "The low nibble supplies the first digit after the minus sign.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/radix/measurement.json",
+          "sha256": "67e1bd31897ec6b1ac4007a53e6c0913bfbe2c221a7856a2875edc329b6ce387"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/radix/measurement.json",
+            "sha256": "ac2d240039978f139dae0633542be78919082053a242ef4cd8d1db071934889c"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "nibble/nibble",
+        "example": "388",
+        "task": "nibble-nibble",
+        "claimKey": "9b48ec36099748fc",
+        "entry": "UnsignedNibble#nibble",
+        "guard": "m >= 0 && m < 16",
+        "bound": 8,
+        "statement": "For offset zero through three the method returns the right-shifted digit. Other offsets raise exactly IndexOutOfBoundsException.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json",
+          "sha256": "d08a3a51c088f5812b64df42f99cd7a80f5753947254586d2a3c4e893a51129b"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/nibble/measurement.json",
+            "sha256": "d0ff98bafe5c7bc27ddae198deabafb3f506b585daac715ce253cccff4a73eec"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "nibble/left",
+        "example": "388",
+        "task": "nibble-left",
+        "claimKey": "e8d0eba29d069384",
+        "entry": "UnsignedNibble#left",
+        "guard": "m >= 0 && m < 16",
+        "bound": 8,
+        "statement": "Offset one retains the nibble shifted left instead of right.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json",
+          "sha256": "d08a3a51c088f5812b64df42f99cd7a80f5753947254586d2a3c4e893a51129b"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/nibble/measurement.json",
+            "sha256": "d0ff98bafe5c7bc27ddae198deabafb3f506b585daac715ce253cccff4a73eec"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "nibble/acceptsNegative",
+        "example": "388",
+        "task": "nibble-accepts-negative",
+        "claimKey": "3cb0620ac628a85e",
+        "entry": "UnsignedNibble#acceptsNegative",
+        "guard": "",
+        "bound": 8,
+        "statement": "The production method accepts minus one as an offset.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/nibble/measurement.json",
+          "sha256": "d08a3a51c088f5812b64df42f99cd7a80f5753947254586d2a3c4e893a51129b"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/nibble/measurement.json",
+            "sha256": "d0ff98bafe5c7bc27ddae198deabafb3f506b585daac715ce253cccff4a73eec"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "enum/lookup",
+        "example": "389",
+        "task": "enum-lookup",
+        "claimKey": "f5341eb862797b22",
+        "entry": "EnumNames#lookup",
+        "guard": "kind >= 0 && kind < 5",
+        "bound": 8,
+        "statement": "Two separately allocated valid names recover the canonical constants, null raises NPE, and both invalid names raise IAE.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json",
+          "sha256": "98d7aea337d39b91d8a2cf66d4475ca2aa29f490ce03d31230cf91230db9285f"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/enum/measurement.json",
+            "sha256": "afcebc2b3775ce77b3f899246632ef2cd28311f16224b1bd206f199de222d953"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "enum/ordinal",
+        "example": "389",
+        "task": "enum-ordinal",
+        "claimKey": "aab7ef84e04463b1",
+        "entry": "EnumNames#ordinal",
+        "guard": "",
+        "bound": 8,
+        "statement": "Both original constants have the expected ordinal.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json",
+          "sha256": "98d7aea337d39b91d8a2cf66d4475ca2aa29f490ce03d31230cf91230db9285f"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "proved",
+        "native": "proved",
+        "jbmc": "proved",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/enum/measurement.json",
+            "sha256": "afcebc2b3775ce77b3f899246632ef2cd28311f16224b1bd206f199de222d953"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "proved"
+        }
+      },
+      {
+        "id": "enum/alwaysZero",
+        "example": "389",
+        "task": "enum-always-zero",
+        "claimKey": "c3eb23bdcc453266",
+        "entry": "EnumNames#alwaysZero",
+        "guard": "",
+        "bound": 8,
+        "statement": "Both original enum constants have ordinal zero.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/enum/measurement.json",
+          "sha256": "98d7aea337d39b91d8a2cf66d4475ca2aa29f490ce03d31230cf91230db9285f"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/enum/measurement.json",
+            "sha256": "afcebc2b3775ce77b3f899246632ef2cd28311f16224b1bd206f199de222d953"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "locals/kernel",
+        "example": "390",
+        "task": "locals-kernel",
+        "claimKey": "18f698000c524d33",
+        "entry": "ThreadLocalHistory#kernel",
+        "guard": "choice >= 0 && choice < 4",
+        "bound": 8,
+        "statement": "All four histories preserve per-key bindings and supplier counts on ThreadLocal.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/locals/measurement.json",
+          "sha256": "6b8ca290aca9f54448f0435d8de14ede149f67501127ff3e8775739aff0d7cea"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/locals/measurement.json",
+            "sha256": "7a2a0c8ac963fe53f65f04cea079df86ae6e9f5f4812145b227888aa3b2fbde9"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "locals/spring",
+        "example": "390",
+        "task": "locals-spring",
+        "claimKey": "d3a36dec65aebe8e",
+        "entry": "ThreadLocalHistory#spring",
+        "guard": "choice >= 0 && choice < 4",
+        "bound": 8,
+        "statement": "All four histories preserve per-key bindings and supplier counts on NamedThreadLocal.withInitial.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/locals/measurement.json",
+          "sha256": "6b8ca290aca9f54448f0435d8de14ede149f67501127ff3e8775739aff0d7cea"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/locals/measurement.json",
+            "sha256": "7a2a0c8ac963fe53f65f04cea079df86ae6e9f5f4812145b227888aa3b2fbde9"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "locals/nullInitializes",
+        "example": "390",
+        "task": "locals-null-initializes",
+        "claimKey": "aa0afbf2ee93e40e",
+        "entry": "ThreadLocalHistory#nullInitializes",
+        "guard": "",
+        "bound": 8,
+        "statement": "Reading a stored null calls the initializer again.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/locals/measurement.json",
+          "sha256": "6b8ca290aca9f54448f0435d8de14ede149f67501127ff3e8775739aff0d7cea"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "refuted",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/locals/measurement.json",
+            "sha256": "7a2a0c8ac963fe53f65f04cea079df86ae6e9f5f4812145b227888aa3b2fbde9"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "monitors/matched",
+        "example": "391",
+        "task": "monitors-matched",
+        "claimKey": "b9793bc643c8c7be",
+        "entry": "MonitorIdentity#matched",
+        "guard": "",
+        "bound": 8,
+        "statement": "The explicit shared class monitor protects the value until release, and join observes the worker write.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/monitors/measurement.json",
+          "sha256": "08df929cc68a3f9515175cf4b96232a974be314f37d99bad89c4afc727ca7f4d"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "open",
+        "jbmc": "open",
+        "firstOpenDependency": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3)",
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/monitors/measurement.json",
+            "sha256": "ce2f5214188cc8260fae0e907bc2f79e14b1bd1331c9b6ee637f1a5b90485900"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "open",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "monitors/mixed",
+        "example": "391",
+        "task": "monitors-mixed",
+        "claimKey": "bf10f06ba5d150dc",
+        "entry": "MonitorIdentity#mixed",
+        "guard": "",
+        "bound": 8,
+        "statement": "Holding the worker instance also protects the read against the class-locked writer.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/monitors/measurement.json",
+          "sha256": "08df929cc68a3f9515175cf4b96232a974be314f37d99bad89c4afc727ca7f4d"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "open",
+        "jbmc": "open",
+        "firstOpenDependency": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3)",
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/monitors/measurement.json",
+            "sha256": "ce2f5214188cc8260fae0e907bc2f79e14b1bd1331c9b6ee637f1a5b90485900"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "open",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "monitors/synchronizedMethod",
+        "example": "391",
+        "task": "monitors-synchronized-method",
+        "claimKey": "f14600902155ac96",
+        "entry": "MonitorIdentity#synchronizedMethod",
+        "guard": "",
+        "bound": 8,
+        "statement": "The static synchronized worker method uses the declaring class monitor.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/monitors/measurement.json",
+          "sha256": "08df929cc68a3f9515175cf4b96232a974be314f37d99bad89c4afc727ca7f4d"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "open",
+        "jbmc": "open",
+        "firstOpenDependency": "jdk-constructor:java.lang.Thread.<init>()V@jdk-21.0.13 (java.lang.Thread.<init>() at MonitorIdentity$Worker.<init>:3)",
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/monitors/measurement.json",
+            "sha256": "ce2f5214188cc8260fae0e907bc2f79e14b1bd1331c9b6ee637f1a5b90485900"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "open",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "gson-parent/compatible",
+        "example": "379",
+        "task": "gson-parent-compatible",
+        "claimKey": "a04077c53d2375ee",
+        "entry": "GsonRequestedClass#compatible",
+        "guard": "selection >= 0 && selection < 5",
+        "bound": 8,
+        "statement": "Every compatible request returns its expected concrete Gson class.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/gson-parent/measurement.json",
+          "sha256": "5eb13e53fed6136d6e129eab969f830d5247f11ae79a0d646a766c6700256835"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/gson-parent/measurement.json",
+            "sha256": "65d522ab301e88ea9507293b34a278d4cfe7b4110b77cea0c1c3bed10a80fa0a"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "gson-parent/syntax",
+        "example": "379",
+        "task": "gson-parent-syntax",
+        "claimKey": "4b4a70e174434f71",
+        "entry": "GsonRequestedClass#syntax",
+        "guard": "selection >= 0 && selection < 4",
+        "bound": 8,
+        "statement": "Every incompatible request raises exactly JsonSyntaxException.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/gson-parent/measurement.json",
+          "sha256": "5eb13e53fed6136d6e129eab969f830d5247f11ae79a0d646a766c6700256835"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/gson-parent/measurement.json",
+            "sha256": "65d522ab301e88ea9507293b34a278d4cfe7b4110b77cea0c1c3bed10a80fa0a"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "guava-parent/retained",
+        "example": "381",
+        "task": "guava-parent-retained",
+        "claimKey": "8158a35b1b670b78",
+        "entry": "FormatHistory#retained",
+        "guard": "",
+        "bound": 8,
+        "statement": "Both array types produce the requested text while preserving all three slots by reference.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/guava-parent/measurement.json",
+          "sha256": "b5a766377206afaad2480b639dbec29b22d3a9b23bcee9591ca0c85d9b2f76bb"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/guava-parent/measurement.json",
+            "sha256": "43f151130ed9ad135aa271ebd77f088880b00d57389e328d96203ed392d0c945"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      },
+      {
+        "id": "guava-parent/parentBehavior",
+        "example": "381",
+        "task": "guava-parent-parent-behavior",
+        "claimKey": "ab19907b47756bcc",
+        "entry": "FormatHistory#parentBehavior",
+        "guard": "",
+        "bound": 8,
+        "statement": "The typed array throws before any write and the genuine Object[] is filled with the three formatted strings.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/guava-parent/measurement.json",
+          "sha256": "b5a766377206afaad2480b639dbec29b22d3a9b23bcee9591ca0c85d9b2f76bb"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/guava-parent/measurement.json",
+            "sha256": "43f151130ed9ad135aa271ebd77f088880b00d57389e328d96203ed392d0c945"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "gson-fix/compatible",
+        "example": "379",
+        "task": "gson-fix-compatible",
+        "claimKey": "a04077c53d2375ee",
+        "entry": "GsonRequestedClass#compatible",
+        "guard": "selection >= 0 && selection < 5",
+        "bound": 8,
+        "statement": "Every compatible request returns its expected concrete Gson class.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/gson-fix/measurement.json",
+          "sha256": "c710b95cc703ae0551d1dff5d12d1670875a98b06c3fdf3dee49c810c57668ca"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/gson-fix/measurement.json",
+            "sha256": "c2efc76a5af939872e2b92c1a3704733bfe60dcf2af1f1d074a1459ebcfa4956"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "gson-fix/syntax",
+        "example": "379",
+        "task": "gson-fix-syntax",
+        "claimKey": "4b4a70e174434f71",
+        "entry": "GsonRequestedClass#syntax",
+        "guard": "selection >= 0 && selection < 4",
+        "bound": 8,
+        "statement": "Every incompatible request raises exactly JsonSyntaxException.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/gson-fix/measurement.json",
+          "sha256": "c710b95cc703ae0551d1dff5d12d1670875a98b06c3fdf3dee49c810c57668ca"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/gson-fix/measurement.json",
+            "sha256": "c2efc76a5af939872e2b92c1a3704733bfe60dcf2af1f1d074a1459ebcfa4956"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "guava-fix/retained",
+        "example": "381",
+        "task": "guava-fix-retained",
+        "claimKey": "8158a35b1b670b78",
+        "entry": "FormatHistory#retained",
+        "guard": "",
+        "bound": 8,
+        "statement": "Both array types produce the requested text while preserving all three slots by reference.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/guava-fix/measurement.json",
+          "sha256": "3debf01c1f8857be264b2085d3ba1ddfda17385608d15ab45442df62bfead3e2"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "proved",
+        "jbmc": "open",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/guava-fix/measurement.json",
+            "sha256": "8eb65b22645b3d608b268ab420c263c4748a1a2726ce48560a08d3e676f61b30"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "proved",
+          "jbmc": "open"
+        }
+      },
+      {
+        "id": "guava-fix/parentBehavior",
+        "example": "381",
+        "task": "guava-fix-parent-behavior",
+        "claimKey": "ab19907b47756bcc",
+        "entry": "FormatHistory#parentBehavior",
+        "guard": "",
+        "bound": 8,
+        "statement": "The typed array throws before any write and the genuine Object[] is filled with the three formatted strings.",
+        "receipt": {
+          "path": "verification/java-semantics-gap/decimal-transfer/callers/guava-fix/measurement.json",
+          "sha256": "3debf01c1f8857be264b2085d3ba1ddfda17385608d15ab45442df62bfead3e2"
+        },
+        "checker": "e41539fd3d8b935a8165c0e70257e2bd8f898e3e50c2346b473880930b00be65",
+        "opening": "open",
+        "native": "refuted",
+        "jbmc": "refuted",
+        "firstOpenDependency": null,
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/semantics/callers/guava-fix/measurement.json",
+            "sha256": "8eb65b22645b3d608b268ab420c263c4748a1a2726ce48560a08d3e676f61b30"
+          },
+          "source": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+          "native": "refuted",
+          "jbmc": "refuted"
+        }
+      }
+    ]
+  },
+  "receivers": {
+    "basis": {
+      "path": "verification/receiver-discovery/results.json",
+      "sha256": "cc2252ee9d700db2d3bb58ea290e8d100d72f8a65be592b4bbbe9ad27a59ed5e"
+    },
+    "cases": 23,
+    "pairedOverloads": 34,
+    "unrestricted": {
+      "unverifiable": 34
+    },
+    "physical": {
+      "preserved": 14,
+      "open": 7,
+      "changed": 2
+    },
+    "bothNative": [
+      "commons-compress-822",
+      "commons-csv-8993be87"
+    ],
+    "sites": [
+      {
+        "id": "divide-occurs",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "dividing",
+          "descriptor": "(I)I"
+        },
+        "pc": 19,
+        "policy": "occurrence",
+        "reachability": "reached",
+        "failureQuery": "violation",
+        "disposition": "refuted",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/divide-occurs/result.json",
+          "sha256": "e3eac1ad23ea695663e13bfc21a6957f23cdcb1e8bacab7d80091ad855db4b5d"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/divide-occurs/result.json",
+            "sha256": "0746d6b9c3839c75e0084f45c7e394c5a651d1437841d332e1c16a120446b574"
+          },
+          "reachability": "reached",
+          "failureQuery": "violation"
+        }
+      },
+      {
+        "id": "divide-escapes",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "dividing",
+          "descriptor": "(I)I"
+        },
+        "pc": 19,
+        "policy": "escape",
+        "reachability": "reached",
+        "failureQuery": "verified",
+        "disposition": "established",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/divide-escapes/result.json",
+          "sha256": "9f0df91f8da4fe89b64d68be60a45a2b90586e5b9f760038a12c80f8ed52f340"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/divide-escapes/result.json",
+            "sha256": "aa416654a1806680b6f284768f720516078c95bcf5010823828b782987250ba0"
+          },
+          "reachability": "reached",
+          "failureQuery": "verified"
+        }
+      },
+      {
+        "id": "array-escapes",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "indexing",
+          "descriptor": "(I)I"
+        },
+        "pc": 44,
+        "policy": "escape",
+        "reachability": "reached",
+        "failureQuery": "violation",
+        "disposition": "refuted",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/array-escapes/result.json",
+          "sha256": "2e6f5d2cd943ae14c89b8e8c13ec3b656842ebc83e11f2fe6263bcf5c89d6349"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/array-escapes/result.json",
+            "sha256": "ed26abfd27ee343ee7b457a59cbd9b06b7acf64c543a850dd4e1f355c30a352d"
+          },
+          "reachability": "reached",
+          "failureQuery": "violation"
+        }
+      },
+      {
+        "id": "dead",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "guarded",
+          "descriptor": "()I"
+        },
+        "pc": 54,
+        "policy": "occurrence",
+        "reachability": "unreachable",
+        "failureQuery": "verified",
+        "disposition": "unreachable",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/dead/result.json",
+          "sha256": "3798b32903c62a37957a408367f1f79e0f2b4b3a1b7c27081bdbd3f5ddf68755"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/dead/result.json",
+            "sha256": "5aa6e0c1e77375883e147fae0c6ff8732a5eb309c16f6831382a5587794fdc68"
+          },
+          "reachability": "unreachable",
+          "failureQuery": "verified"
+        }
+      },
+      {
+        "id": "widened",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "guarded",
+          "descriptor": "()I"
+        },
+        "pc": 54,
+        "policy": "occurrence",
+        "reachability": "reached",
+        "failureQuery": "violation",
+        "disposition": "refuted",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/widened/result.json",
+          "sha256": "0ba0ff2d04ab652a7029e3990f1f99372453eb0cf07805ed836d2c75e83b31c6"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/widened/result.json",
+            "sha256": "4646d50c23b1160435ad32f80133a92981732413960f1140c56eb87f73ae5094"
+          },
+          "reachability": "reached",
+          "failureQuery": "violation"
+        }
+      },
+      {
+        "id": "short-sum",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "summing",
+          "descriptor": "()I"
+        },
+        "pc": 77,
+        "policy": "return-equals",
+        "reachability": "unknown",
+        "failureQuery": "unverifiable",
+        "disposition": "incomplete",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/short-sum/result.json",
+          "sha256": "7bbb1b9b1d38dc782b04f7a98c9325cc0eb8a1bc0b2876ce69d1835e2a3b7682"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/short-sum/result.json",
+            "sha256": "f391c24ab3522f6d2981e803654935a67e9e4679b47eaa57c234e3ff45310d4e"
+          },
+          "reachability": "unknown",
+          "failureQuery": "unverifiable"
+        }
+      },
+      {
+        "id": "sum",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "summing",
+          "descriptor": "()I"
+        },
+        "pc": 77,
+        "policy": "return-equals",
+        "reachability": "reached",
+        "failureQuery": "verified",
+        "disposition": "established",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/sum/result.json",
+          "sha256": "30ba88cab7aff7d81ccfb08e63f1cda73ebcae96d3d89cf75d4676b11a1d3724"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/sum/result.json",
+            "sha256": "364df557a40b2a95e4b1e7831518dc225cc77c6f91e0a4459bf91e66d9110a44"
+          },
+          "reachability": "reached",
+          "failureQuery": "verified"
+        }
+      },
+      {
+        "id": "wrong-sum",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "summing",
+          "descriptor": "()I"
+        },
+        "pc": 77,
+        "policy": "return-equals",
+        "reachability": "reached",
+        "failureQuery": "violation",
+        "disposition": "refuted",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/wrong-sum/result.json",
+          "sha256": "0ef038ce0810d867de4c0a22d913150b9629d6cfeb476ce61628536934f15665"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/wrong-sum/result.json",
+            "sha256": "31cf1e443a803fc7741f8e758b7ae9355ed58a00273f04ef9ccac1d12fa61fd3"
+          },
+          "reachability": "reached",
+          "failureQuery": "violation"
+        }
+      },
+      {
+        "id": "helper-escapes",
+        "entry": {
+          "owner": "SafetyClaims",
+          "method": "dividing",
+          "descriptor": "(I)I"
+        },
+        "pc": 3,
+        "policy": "escape",
+        "reachability": "reached",
+        "failureQuery": "violation",
+        "disposition": "refuted",
+        "receipt": {
+          "path": "verification/receiver-discovery/qualification/sites/helper-escapes/result.json",
+          "sha256": "7d3aa0cdc566ecb45dfc1cccfd91647ad6f7bb224377ea5902907f7930420b85"
+        },
+        "retry": {
+          "receipt": {
+            "path": "verification/change-verification/receiver/sites/helper-escapes/result.json",
+            "sha256": "34b9898ba6a99bbc47e7a789ed5e7a5a253bce8e757593102af893094a3c2c29"
+          },
+          "reachability": "reached",
+          "failureQuery": "violation"
+        }
+      }
+    ]
+  },
+  "spring": {
+    "basis": {
+      "path": "verification/spring-java-data/spring.json",
+      "sha256": "bc1314d5b35d22c9aa77be2a1d0075eb703b630c15ddd8fe576c6bb6cc26ea52"
+    },
+    "nodes": [
+      {
+        "id": "368/beans-release",
+        "claimKey": "9e965174c9108d8d",
+        "entry": "springwork.BindingChecks#beans(I)I",
+        "guard": "code >= 0 && code < 12",
+        "statement": "Both children retain their identities and expose the independently specified name and count after every edit.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/368-spring-binding-history/records/finite-proofs/20261122T161943Z-9121b24a/beans-release.json",
+          "sha256": "4edc086c1c346b4de041a63af9f2ef4ad1cc48c90a60306de2af2021ca902bf3"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess()Ljdk/internal/access/JavaUtilCollectionAccess;@jdk-21.0.13 (jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess() at java.util.stream.ReferencePipeline.toList:627). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "ordinaryReceipt": {
+          "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T065315Z-af67ecf5/tasks/beans-release/result.json",
+          "sha256": "75e32f81310419a240ca4ed8eeb5974831c06e80dd5ba5a434e61d96d1516c0b"
+        }
+      },
+      {
+        "id": "368/ledger-release",
+        "claimKey": "3dc16102418e1734",
+        "entry": "springwork.BindingChecks#ledger(I)I",
+        "guard": "code >= 0 && code < 12",
+        "statement": "At each prefix the error count, field, rejected value and counts on both children match the ordered edit history.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/368-spring-binding-history/records/finite-proofs/20261122T161943Z-9121b24a/ledger-release.json",
+          "sha256": "e3329d21f50899407e786e1bb50b9b361e95261c6d7cba056319c8768e779c16"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess()Ljdk/internal/access/JavaUtilCollectionAccess;@jdk-21.0.13 (jdk.internal.access.SharedSecrets.getJavaUtilCollectionAccess() at java.util.stream.ReferencePipeline.toList:627). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
+        "ordinaryReceipt": {
+          "path": "examples/368-spring-binding-history/records/native-selectors/release/20261123T065315Z-af67ecf5/tasks/ledger-release/result.json",
+          "sha256": "9b49d53a111ca95ed93fdd7a24a4c328e6bc7f0595238cb1a1b18b252c391449"
+        }
+      },
+      {
+        "id": "370/legacy-names-before",
+        "claimKey": "80faa217ef0e1aed",
+        "entry": "springwork.RoleChecks#legacyNames(I)I",
+        "guard": "code >= 0 && code < 32",
+        "statement": "The exact reachable authority names agree with the graph traversal.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/finite-proofs/20261122T164836Z-ce7c4175/legacy-names-before.json",
+          "sha256": "9d55d0295ed10bf9982156412a659ec5ccc7fa9b6e1971a40dbf0674de31569d"
+        },
+        "ordinary": "established",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-names-before/result.json",
+          "sha256": "b8453f2dddbff40fd7677d2fc34d2ee4a60f4344659287553736a1eaa19f29b7"
+        }
+      },
+      {
+        "id": "370/legacy-names-landed",
+        "claimKey": "80faa217ef0e1aed",
+        "entry": "springwork.RoleChecks#legacyNames(I)I",
+        "guard": "code >= 0 && code < 32",
+        "statement": "The exact reachable authority names agree with the graph traversal.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/finite-proofs/20261122T164836Z-ce7c4175/legacy-names-landed.json",
+          "sha256": "7bfdbdb43a37da7d445511b7071427c3cef92434986a80750d0b54ce4b860bf9"
+        },
+        "ordinary": "established",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-names-landed/result.json",
+          "sha256": "051a77f525afc2ca9f2996850ff14df3ac9c9c97510a29808c212adbdc3f4ab3"
+        }
+      },
+      {
+        "id": "370/legacy-decision-before",
+        "claimKey": "d4338c80d571b69c",
+        "entry": "springwork.RoleChecks#legacyDecision(I)I",
+        "guard": "code >= 0 && code < 32",
+        "statement": "The public manager grants exactly when the selected roles imply the complete D authority.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/finite-proofs/20261122T164836Z-ce7c4175/legacy-decision-before.json",
+          "sha256": "cc64311a958d38cb23d6f241e6e7c2d64691d7d078db24528f57b262751d83e1"
+        },
+        "ordinary": "established",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/native-selectors/before/20261123T014301Z-9219465d/tasks/legacy-decision-before/result.json",
+          "sha256": "78c82cd84d1d27fdfae9c6b4d51df75ef0c3d81fc2db9b09e8c21f48269081dd"
+        }
+      },
+      {
+        "id": "370/legacy-decision-landed",
+        "claimKey": "d4338c80d571b69c",
+        "entry": "springwork.RoleChecks#legacyDecision(I)I",
+        "guard": "code >= 0 && code < 32",
+        "statement": "The public manager grants exactly when the selected roles imply the complete D authority.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/finite-proofs/20261122T164836Z-ce7c4175/legacy-decision-landed.json",
+          "sha256": "0145137c15e3b070a5bc31c6cd9a4ac99ead617dd511fae93f47d1026afde65d"
+        },
+        "ordinary": "established",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T014310Z-8ad43dff/tasks/legacy-decision-landed/result.json",
+          "sha256": "e5804c5d65995de2802f4ea05a0d648a55188b0f271676e85687ba1ac1a0ca53"
+        }
+      },
+      {
+        "id": "370/fluent-names-landed",
+        "claimKey": "acbbca7210cad938",
+        "entry": "springwork.RoleChecks#fluentNames(I)I",
+        "guard": "code >= 0 && code < 32",
+        "statement": "The exact reachable authority names agree with the graph traversal.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/finite-proofs/20261122T164836Z-ce7c4175/fluent-names-landed.json",
+          "sha256": "05591cfbdc642beb0fff4e41d55fc8d2c64eee4359a30e29756e49416421396c"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "outside the fragment: the contents and external string identity of the JVM's initial line separator are not bound",
+        "ordinaryReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T065334Z-66bf6efb/tasks/fluent-names-landed/result.json",
+          "sha256": "6d3e7e4b3efb62cca8032ed972ac389f7400a06965f1fbaf8916114f72e17d8e"
+        }
+      },
+      {
+        "id": "370/fluent-decision-landed",
+        "claimKey": "6192effcca91108a",
+        "entry": "springwork.RoleChecks#fluentDecision(I)I",
+        "guard": "code >= 0 && code < 32",
+        "statement": "The public manager grants exactly when the selected roles imply the complete D authority.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/finite-proofs/20261122T164836Z-ce7c4175/fluent-decision-landed.json",
+          "sha256": "51734d7d2e918ea704b9b759ce0171ef3c8278193928547b7ef42e7ca8487018"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "outside the fragment: the contents and external string identity of the JVM's initial line separator are not bound",
+        "ordinaryReceipt": {
+          "path": "examples/370-spring-role-hierarchy/records/native-selectors/landed/20261123T065334Z-66bf6efb/tasks/fluent-decision-landed/result.json",
+          "sha256": "e22fc9423bcf4c99608efb9b315fca2d2c94532e8ede5792d9d62ad3b522724b"
+        }
+      },
+      {
+        "id": "372/components-parent",
+        "claimKey": "324d82d56393dfa3",
+        "entry": "springwork.Accessors#components(I)I",
+        "guard": "code >= 0 && code < 3",
+        "statement": "The names of record components budget, issue and getWidget match their actual declarations.",
+        "finite": "refuted",
+        "finiteReceipt": {
+          "path": "examples/372-spring-property-accessors/records/finite-proofs/20261122T164639Z-3dc2706d/components-parent.json",
+          "sha256": "49ddc175a0b946e9eb756177f1efd44bab53f4c5347c94de2a946b6c86b40ac8"
+        },
+        "ordinary": "refuted",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/components-parent/result.json",
+          "sha256": "7568317cf7b44e0a493818e62e1d88fb6f9674f4320895c38434ae9fe7debdbc"
+        }
+      },
+      {
+        "id": "372/components-landed",
+        "claimKey": "324d82d56393dfa3",
+        "entry": "springwork.Accessors#components(I)I",
+        "guard": "code >= 0 && code < 3",
+        "statement": "The names of record components budget, issue and getWidget match their actual declarations.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/372-spring-property-accessors/records/finite-proofs/20261122T164639Z-3dc2706d/components-landed.json",
+          "sha256": "210bb58f05e0c0fbffd783131c9d8d7c8b5a9d4c29e92fc3e3fd68e5a93136d1"
+        },
+        "ordinary": "established",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/components-landed/result.json",
+          "sha256": "dcb23e9f8d0536faebb82cfaebc575e28369df7e1bddd3ffb55ba91c82b7f729"
+        }
+      },
+      {
+        "id": "372/getters-parent",
+        "claimKey": "80f521239803aa64",
+        "entry": "springwork.Accessors#getters(I)I",
+        "guard": "code >= 0 && code < 3",
+        "statement": "The plain component, bean getter and additional record getter resolve to name, name and widget respectively.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/372-spring-property-accessors/records/finite-proofs/20261122T164639Z-3dc2706d/getters-parent.json",
+          "sha256": "4ddb0b4a4fdec35fa0b8f008ac51e154ce5b7a628471db4630da3ab2d8627c25"
+        },
+        "ordinary": "established",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/372-spring-property-accessors/records/native-selectors/parent/20261123T042222Z-e8ca11af/tasks/getters-parent/result.json",
+          "sha256": "dfa4c0c3c4d5a79f9b3a40096e0634c7b29f52ce06b4c02cb76c0ce3e432a43f"
+        }
+      },
+      {
+        "id": "372/getters-landed",
+        "claimKey": "80f521239803aa64",
+        "entry": "springwork.Accessors#getters(I)I",
+        "guard": "code >= 0 && code < 3",
+        "statement": "The plain component, bean getter and additional record getter resolve to name, name and widget respectively.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/372-spring-property-accessors/records/finite-proofs/20261122T164639Z-3dc2706d/getters-landed.json",
+          "sha256": "44291f1b31d3cc82dacb31727e222ec55fd5917df2842cf99e61a1948d5a28ae"
+        },
+        "ordinary": "established",
+        "firstOpenDependency": null,
+        "ordinaryReceipt": {
+          "path": "examples/372-spring-property-accessors/records/native-selectors/landed/20261123T042226Z-df962fa4/tasks/getters-landed/result.json",
+          "sha256": "bf79f114727ed70118259466230d403b1c1adb1a71e43f8de3303fc45939b0b9"
+        }
+      },
+      {
+        "id": "374/annotated-parent",
+        "claimKey": "45a0d3a9c8b2ba1f",
+        "entry": "springwork.DateEdits#annotated(I)I",
+        "guard": "code >= 0 && code < 2",
+        "statement": "An annotated date stores the UTC instant, reports the full error count, first field and rejected text, and displays the expected value at each prefix.",
+        "finite": "refuted",
+        "finiteReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/finite-proofs/20261122T164701Z-a435ddcd/annotated-parent.json",
+          "sha256": "5531c40328ac627b647d193fdc87df72cb4213b3c5121bda6e97e3d969f8fd63"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "outside the fragment: Class.getGenericInterfaces on org.springframework.core.convert.support.EnumToStringConverter with Lorg/springframework/core/convert/support/AbstractConditionalEnumConverter;Lorg/springframework/core/convert/converter/Converter<Ljava/lang/Enum<*>;Ljava/lang/String;>; at org.springframework.core.ResolvableType.getInterfaces:492 called by org.springframework.core.ResolvableType.as:450 called by org.springframework.core.convert.support.GenericConversionService.getRequiredTypeInfo:292 called by org.springframework.core.convert.support.GenericConversionService.addConverter:86 called by org.springframework.core.convert.support.DefaultConversionService.addScalarConverters:150 called by org.springframework.core.convert.support.DefaultConversionService.addDefaultConverters:88",
+        "ordinaryReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T065353Z-d385b79e/tasks/annotated-parent/result.json",
+          "sha256": "82b6630039ec53b1168dc6951e696acce4384a955c3ad06682a0426f72a57293"
+        }
+      },
+      {
+        "id": "374/annotated-landed",
+        "claimKey": "45a0d3a9c8b2ba1f",
+        "entry": "springwork.DateEdits#annotated(I)I",
+        "guard": "code >= 0 && code < 2",
+        "statement": "An annotated date stores the UTC instant, reports the full error count, first field and rejected text, and displays the expected value at each prefix.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/finite-proofs/20261122T164701Z-a435ddcd/annotated-landed.json",
+          "sha256": "86893eaa652e8b34c1067c1cf666facb69c371f4f2c8a95d1aee909737cc46a9"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "outside the fragment: Class.getGenericInterfaces on org.springframework.core.convert.support.EnumToStringConverter with Lorg/springframework/core/convert/support/AbstractConditionalEnumConverter;Lorg/springframework/core/convert/converter/Converter<Ljava/lang/Enum<*>;Ljava/lang/String;>; at org.springframework.core.ResolvableType.getInterfaces:492 called by org.springframework.core.ResolvableType.as:450 called by org.springframework.core.convert.support.GenericConversionService.getRequiredTypeInfo:292 called by org.springframework.core.convert.support.GenericConversionService.addConverter:86 called by org.springframework.core.convert.support.DefaultConversionService.addScalarConverters:150 called by org.springframework.core.convert.support.DefaultConversionService.addDefaultConverters:88",
+        "ordinaryReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T065423Z-0e914767/tasks/annotated-landed/result.json",
+          "sha256": "7806cf7f88a7ed83f93dca3f9ce45c8721327102a5cbc3031fd8415d9e69aebc"
+        }
+      },
+      {
+        "id": "374/preservation-parent",
+        "claimKey": "b8694b4815352fdb",
+        "entry": "springwork.DateEdits#preservation(I)I",
+        "guard": "code >= 0 && code < 2",
+        "statement": "The global ISO input stores the expected instant on the unannotated property and malformed local text produces the expected field error.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/finite-proofs/20261122T164701Z-a435ddcd/preservation-parent.json",
+          "sha256": "79e5dd978b5d5f6896d2f5490b10d3a2756a99fae385af8dcc7c5af1f7bd37d3"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "outside the fragment: Class.getGenericInterfaces on org.springframework.core.convert.support.EnumToStringConverter with Lorg/springframework/core/convert/support/AbstractConditionalEnumConverter;Lorg/springframework/core/convert/converter/Converter<Ljava/lang/Enum<*>;Ljava/lang/String;>; at org.springframework.core.ResolvableType.getInterfaces:492 called by org.springframework.core.ResolvableType.as:450 called by org.springframework.core.convert.support.GenericConversionService.getRequiredTypeInfo:292 called by org.springframework.core.convert.support.GenericConversionService.addConverter:86 called by org.springframework.core.convert.support.DefaultConversionService.addScalarConverters:150 called by org.springframework.core.convert.support.DefaultConversionService.addDefaultConverters:88",
+        "ordinaryReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/native-selectors/parent/20261123T065353Z-d385b79e/tasks/preservation-parent/result.json",
+          "sha256": "f03e26a26f3e397d7ff41dcaca169648784910426d28ae63b750fa94663091ad"
+        }
+      },
+      {
+        "id": "374/preservation-landed",
+        "claimKey": "b8694b4815352fdb",
+        "entry": "springwork.DateEdits#preservation(I)I",
+        "guard": "code >= 0 && code < 2",
+        "statement": "The global ISO input stores the expected instant on the unannotated property and malformed local text produces the expected field error.",
+        "finite": "established",
+        "finiteReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/finite-proofs/20261122T164701Z-a435ddcd/preservation-landed.json",
+          "sha256": "522db020199ae4f3e120ee1cbf67fab8ff96a4f9e7049736a167bda3a7e4af53"
+        },
+        "ordinary": "unresolved",
+        "firstOpenDependency": "outside the fragment: Class.getGenericInterfaces on org.springframework.core.convert.support.EnumToStringConverter with Lorg/springframework/core/convert/support/AbstractConditionalEnumConverter;Lorg/springframework/core/convert/converter/Converter<Ljava/lang/Enum<*>;Ljava/lang/String;>; at org.springframework.core.ResolvableType.getInterfaces:492 called by org.springframework.core.ResolvableType.as:450 called by org.springframework.core.convert.support.GenericConversionService.getRequiredTypeInfo:292 called by org.springframework.core.convert.support.GenericConversionService.addConverter:86 called by org.springframework.core.convert.support.DefaultConversionService.addScalarConverters:150 called by org.springframework.core.convert.support.DefaultConversionService.addDefaultConverters:88",
+        "ordinaryReceipt": {
+          "path": "examples/374-spring-formatter-binding/records/native-selectors/landed/20261123T065423Z-0e914767/tasks/preservation-landed/result.json",
+          "sha256": "a533f219bbc5833942eadd778a6cb3aca8303bb518c08120f9d547f8c8c751f7"
+        }
+      }
+    ],
+    "totals": {
+      "opening": {
+        "unresolved": 16
+      },
+      "ordinary": {
+        "unresolved": 8,
+        "established": 7,
+        "refuted": 1
+      },
+      "finite": {
+        "established": 14,
+        "refuted": 2
+      },
+      "ordinaryWithStartupWitnesses": {
+        "unresolved": 6,
+        "established": 7,
+        "refuted": 3
+      }
+    },
+    "sharedBlockers": [
+      {
+        "key": "a88fe343bff495cb4d3b6c8bb2143ab6a79f3436739807c208a0383bbebb0a37",
+        "roots": [
+          "368/beans-release",
+          "368/ledger-release"
+        ],
+        "count": 2,
+        "rule": "retry each ordinary caller after the missing semantics is supplied"
+      },
+      {
+        "key": "04179fca2baa328beb57798f3805781f476a1f4b27638c64c0f2fed29b13090f",
+        "roots": [
+          "370/fluent-names-landed",
+          "370/fluent-decision-landed"
+        ],
+        "count": 2,
+        "rule": "retry each ordinary caller after the missing semantics is supplied"
+      },
+      {
+        "key": "f1a1fe69053cfcdf9dcae0f44f53113cb90160806e50d059cd9d4be36c60f134",
+        "roots": [
+          "374/annotated-landed",
+          "374/preservation-landed"
+        ],
+        "count": 2,
+        "rule": "retry each ordinary caller after the missing semantics is supplied"
+      },
+      {
+        "key": "ec787c33e951d36cac643aa86768e321c08dc4d8462a5cb2b3cdb2fb58276e71",
+        "roots": [
+          "374/annotated-parent",
+          "374/preservation-parent"
+        ],
+        "count": 2,
+        "rule": "retry each ordinary caller after the missing semantics is supplied"
+      }
+    ]
+  },
+  "independent": {
+    "336": [
+      {
+        "id": "336/first-any-length",
+        "task": "first-any-length",
+        "kind": "java-method",
+        "claimKey": "cf77b58842a14dfc5d3c9abb1f063fb7e6d33129c94a541b7ded7de7f86dc9b2",
+        "disposition": "established",
+        "scope": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs.",
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/transfer/results.json",
+          "sha256": "35b476b8f269ed4049dac5b7686f152c4b26818119cafb2fa62e6d2bf42c1cac",
+          "control": "Ints"
+        },
+        "assumptionsRemoved": [
+          "historical Python induction rule",
+          "javap",
+          "Z3",
+          "certificate issuer",
+          "prior verdict and cache"
+        ],
+        "assumptionsRetained": [
+          "Verified class bytes, pinned resolution, successful initialization and single-threaded JVM execution.",
+          "Sufficient VM resources and no asynchronous termination.",
+          "Independent class decoding and induction rules, their correspondence to JVM execution, SHA-256 and the Rust toolchain."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-2",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "1ddd22fc13ea02de1b06363c42ecf8c9556ae8fd5373885f4e61348abc4acb85",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 2,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            442
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-2"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-5",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "ef342086f7245fccfb059da712f770dd0a9e8cca665a25ec46fa9ac4fd2e59ea",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 5,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            -442,
+            -506,
+            567,
+            566
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-5"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-8",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "8dc7bd682e8acc6bd50ab959f5f8563875bd2ab060953a8d01b741e55ce4b482",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 8,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            -442,
+            -506,
+            567,
+            -566,
+            -630,
+            693,
+            692
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-8"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-11",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "3dcd7d115502d1c010d0fdad568c25316d48e0faf354f122bd4b64ac031772cc",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 11,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            -442,
+            -506,
+            567,
+            -566,
+            -630,
+            693,
+            -692,
+            -756,
+            815,
+            814
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-11"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-14",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "2b758f063aacbe1cf15b36a70d9ab1ec721aab07df7c7b132795867c20fefb56",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 14,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            -442,
+            -506,
+            567,
+            -566,
+            -630,
+            693,
+            -692,
+            -756,
+            815,
+            -814,
+            -878,
+            939,
+            938
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-14"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-17",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "7a9723b27fb3f5a5042999673ab853670a71cfffb591573863a307b9aa8666d8",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 17,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            -442,
+            -506,
+            567,
+            -566,
+            -630,
+            693,
+            -692,
+            -756,
+            815,
+            -814,
+            -878,
+            939,
+            -938,
+            -1002,
+            1063,
+            1062
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-17"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-20",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "c7c982b683d651857ed0077f529da02dfb5542b7bf307a3966d5028161409ede",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 20,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            -442,
+            -506,
+            567,
+            -566,
+            -630,
+            693,
+            -692,
+            -756,
+            815,
+            -814,
+            -878,
+            939,
+            -938,
+            -1002,
+            1063,
+            -1062,
+            -1126,
+            1187,
+            1186
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-20"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      },
+      {
+        "id": "336/first-8-release/trace-0-23",
+        "task": "first-8-release",
+        "kind": "solver-query",
+        "claimKey": "f557c1fbabd3a2c84fd4bbacd7e930e6cc83352de1bfc71057a0822a14581d34",
+        "disposition": "established",
+        "scope": {
+          "queryOneBased": 23,
+          "transcriptSha256": "d57291d624b9bbda022ac1ce6896e3c31c6393e2caec5b109d227a4a8721258b",
+          "assumptions": [
+            -33,
+            -97,
+            443,
+            -442,
+            -506,
+            567,
+            -566,
+            -630,
+            693,
+            -692,
+            -756,
+            815,
+            -814,
+            -878,
+            939,
+            -938,
+            -1002,
+            1063,
+            -1062,
+            -1126,
+            1187,
+            -1186,
+            -1250,
+            1307,
+            1306
+          ]
+        },
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/bounded-sat/guava/queries.json",
+          "sha256": "fc929bc1040d088f9be06199e46fdc8bfb889e91a4646496a509972866bc4ed7",
+          "query": "trace-0-23"
+        },
+        "assumptionsRemoved": [
+          "CaDiCaL's UNSAT answer and proof generation"
+        ],
+        "assumptionsRetained": [
+          "Transcript binding, clause-prefix extraction and assumption encoding.",
+          "cake_lpr and its verified checker toolchain.",
+          "A Java verdict also requires sound bytecode modeling, reachability and coverage of every execution."
+        ]
+      }
+    ],
+    "346": [
+      {
+        "id": "346/first-any-length",
+        "task": "first-any-length",
+        "kind": "java-method",
+        "claimKey": "41253a07cc37be4ae7ec8b802a8b22012881dba24bb8e8637c54ffad0f870e48",
+        "disposition": "established",
+        "scope": "Every non-null, already allocated long array of legal Java length and all signed scalar inputs.",
+        "receipt": {
+          "path": "lib/benchmark/trusted-kernel/evidence/transfer/results.json",
+          "sha256": "35b476b8f269ed4049dac5b7686f152c4b26818119cafb2fa62e6d2bf42c1cac",
+          "control": "Longs"
+        },
+        "assumptionsRemoved": [
+          "historical Python induction rule",
+          "javap",
+          "Z3",
+          "certificate issuer",
+          "prior verdict and cache"
+        ],
+        "assumptionsRetained": [
+          "Verified class bytes, pinned resolution, successful initialization and single-threaded JVM execution.",
+          "Sufficient VM resources and no asynchronous termination.",
+          "Independent class decoding and induction rules, their correspondence to JVM execution, SHA-256 and the Rust toolchain."
+        ]
+      }
+    ]
+  }
+}

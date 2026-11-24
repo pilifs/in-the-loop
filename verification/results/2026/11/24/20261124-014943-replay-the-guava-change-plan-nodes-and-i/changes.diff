@@ -1,0 +1,67 @@
+--- /dev/null
++++ b/lib/benchmark/trusted-kernel/historical-frame-control.json
+@@ -0,0 +1,64 @@
++{
++  "schema": "historical-guava-frame-control/v1",
++  "control": "heap-writing Guava indexOf",
++  "classSha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
++  "requestSha256": "eb9ed325938200c9de24c467629139ac4adff7bfda38eaa62c5c6041952c6813",
++  "producerSource": {
++    "genuine": "e5b72cbe1d2df9273c51ac9032805ea3f9f11745d43a5d508783731886fb0708",
++    "faulty": "16635739cab32a8b18a1b60e0406b879e8ed9cdba09b4df7ffba3d49224e8853"
++  },
++  "solver": {
++    "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++    "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++  },
++  "zeroBasedQuery": 10,
++  "genuine": {
++    "disposition": "unresolved",
++    "formulaSha256": "6cfbfef4efd36c3d2d7292c9442b0c73028d02ee589e8d10e1025835b564a61b",
++    "frame": {
++      "name": "preserve the input heap",
++      "expected": "unsat",
++      "obtained": "sat"
++    }
++  },
++  "faulty": {
++    "disposition": "established",
++    "formulaSha256": "847b232a28b3b7163cfa8d728d56195e76126e6081b0db65d0081ef7ac313980",
++    "frame": {
++      "name": "preserve the input heap",
++      "expected": "unsat",
++      "obtained": "unsat"
++    }
++  },
++  "replay": {
++    "comparedBy": "examples/tools/targets/array_induction.py:differences",
++    "againstGenuineProof": [
++      "status",
++      "obligations",
++      "certificateSha256"
++    ],
++    "againstRegeneratedFaultyProof": []
++  },
++  "independent": {
++    "checkerSha256": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b",
++    "certificateSha256": "2399558842cafec8eeba576efc314c0949167096d1ade42e6e9866d6903bb899",
++    "disposition": "refuted",
++    "witness": "rejected checked witness [7] target 7: frame changed, return 0, after [0]; first rule: heap frame at store 25",
++    "originalJvm": {
++      "input": [
++        7
++      ],
++      "target": 7,
++      "stdout": [
++        "entered 7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
++        "return 0",
++        "heap [0]"
++      ],
++      "timedOut": false,
++      "return": 0,
++      "heapAtReturn": [
++        0
++      ]
++    }
++  }
++}

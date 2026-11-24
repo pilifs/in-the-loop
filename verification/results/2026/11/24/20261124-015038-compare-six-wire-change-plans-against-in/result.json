@@ -1,0 +1,224 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-015038-compare-six-wire-change-plans-against-in",
+  "title": "Compare six Wire change plans against independent clean JVM runs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m40s, peak 152.5 MiB (estimated 4m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-015038-compare-six-wire-change-plans-against-in.json",
+    "sha256": "9be49f43e76e85df833c6aa9ef84b13a0ab4382c8eceaad0a0e250cc8df713ea",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-015038-compare-six-wire-change-plans-against-in",
+      "title": "Compare six Wire change plans against independent clean JVM runs",
+      "description": "Discover the Retrofit 2.6.0 public converter operations on both deployments, reach their concrete original methods through the public factory, and compare full finite results after cache, test-resource, deployment-resource and classpath-order changes. Record separate historical and additional denominators and actual work and cost.",
+      "kind": "real-world",
+      "capabilities": [
+        "target:replay",
+        "jvmcontract:observations"
+      ],
+      "links": {},
+      "expected": "All six controls agree with clean original-entry recomputation. Both registered reads survive, and both added writes reproduce NoSuchMethodError on the intended runtime.",
+      "submitted": {
+        "at": "2026-11-24T01:50:38+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Run and validate all incremental and clean controls",
+          "run": "python3 lib/benchmark/change-verification/wire_matrix.py --output verification/change-verification/wire/summary.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/change-verification/wire"
+      ]
+    }
+  },
+  "sourceCommit": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+  "startedAt": "2026-11-24T02:03:01+00:00",
+  "finishedAt": "2026-11-24T02:09:13+00:00",
+  "wallSeconds": 372.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2277093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 159883264,
+    "wallSeconds": 161.0,
+    "cpuSeconds": 197.6,
+    "memoryOfEstimate": 0.15,
+    "durationOfEstimate": 0.67
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 199.089,
+      "cpuSeconds": 199.325,
+      "cpuThrottledSeconds": 0.001,
+      "peakMemoryBytes": 2293862400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "6d501be36b19111ac096375b4d07fccc950cccd1c2ae5807d5e014e4c1060079",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-015038-compare-six-wire-change-plans-against-in/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 18s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run and validate all incremental and clean controls",
+      "run": "python3 lib/benchmark/change-verification/wire_matrix.py --output verification/change-verification/wire/summary.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 160.971,
+      "cpuSeconds": 197.584,
+      "cpuThrottledSeconds": 35.805,
+      "peakMemoryBytes": 159883264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-and-validate-all-increment.log",
+        "lines": 1,
+        "bytes": 40,
+        "sha256": "a616a8948f994f4f27799a2bf9337ab882b7597552e8f37c73b90f276ed11df7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "clean-equivalent Wire configurations: 6"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/change-verification/wire/request.json",
+      "change": "added",
+      "bytes": 12810,
+      "sha256": "6f35cfe250aa9723868e0b075ef7d3a342cf2d4b2b54b841024de6fbe88d3c7c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/wire/response.json",
+      "change": "added",
+      "bytes": 10498,
+      "sha256": "db565a74718a9d3510dc284008474380e70b60ce4398d65518dd83ea4dcb45e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/wire/summary.json",
+      "change": "added",
+      "bytes": 113138,
+      "sha256": "25fa82b820dd1050f03b91e641a171c29f60f70b2993404ffd7fe184bf30c62b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T02:09:45+00:00",
+    "applied": [
+      "verification/change-verification/wire/request.json",
+      "verification/change-verification/wire/response.json",
+      "verification/change-verification/wire/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7945f66a54de9a135c2f91a5ea2830561eedb728",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7945f66a54de9a135c2f91a5ea2830561eedb728/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T020913Z-286461582638b54d",
+      "outputs": "20261124T020913Z-3080093081fd3895",
+      "diff": "20261124T020913Z-327499a6cd298579"
+    }
+  }
+}

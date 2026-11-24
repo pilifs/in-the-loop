@@ -1,0 +1,182 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-015127-evaluate-the-registered-petclinic-2-7-to",
+  "title": "Evaluate the registered Petclinic 2.7 to 3.0 migration",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 22.0s, peak 419.2 MiB (estimated 8m00s, 3.0 GiB)",
+  "attention": [
+    "declared output verification/change-verification/petclinic.json was not produced",
+    "step 1 (Build and check the original and migrated applications) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-015127-evaluate-the-registered-petclinic-2-7-to.json",
+    "sha256": "1c3cbc15f088095430da98895533d5bb6509026f06d07f8dd31d0a51202f613a",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-015127-evaluate-the-registered-petclinic-2-7-to",
+      "title": "Evaluate the registered Petclinic 2.7 to 3.0 migration",
+      "description": "Resolve both original Maven graphs, compile all production code and exercise the three sealed HTTP workflows on shared JDK 17. Try the old binary and unchanged source on the new graph, compare both intended applications, and independently recompute the same caller results from fresh H2 databases.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "target:replay"
+      ],
+      "links": {},
+      "expected": "All registered deployments retain separate linkage, source and caller observations and all incremental scopes agree with clean HTTP recomputation.",
+      "submitted": {
+        "at": "2026-11-24T01:51:27+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "maven",
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "memoryLimit": "4G",
+        "duration": "8m",
+        "timeout": "35m"
+      },
+      "steps": [
+        {
+          "name": "Build and check the original and migrated applications",
+          "run": "python3 lib/benchmark/change-verification/petclinic.py --output verification/change-verification/petclinic.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/change-verification/petclinic.json"
+      ]
+    }
+  },
+  "sourceCommit": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+  "startedAt": "2026-11-24T02:03:01+00:00",
+  "finishedAt": "2026-11-24T02:03:35+00:00",
+  "wallSeconds": 34.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2277093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4294967296,
+    "timeoutSeconds": 2100.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 439525376,
+    "wallSeconds": 22.0,
+    "cpuSeconds": 31.5,
+    "memoryOfEstimate": 0.14,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Build and check the original and migrated applications",
+      "run": "python3 lib/benchmark/change-verification/petclinic.py --output verification/change-verification/petclinic.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2100.0,
+      "cancelled": false,
+      "wallSeconds": 22.044,
+      "cpuSeconds": 31.509,
+      "cpuThrottledSeconds": 4.804,
+      "peakMemoryBytes": 439525376,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-build-and-check-the-original-a.log",
+        "lines": 18,
+        "bytes": 1812,
+        "sha256": "93c6fcd3ebd482d5ced079f3e222fb7e58116ed7a0b2e636651ea53cf17d3ae5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-015127-evaluate-the-registered-petclinic-2-7-to/lib/benchmark/change-verification/petclinic.py\", line 251, in <module>",
+        "    result = run(args, Path(temp).resolve())",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-015127-evaluate-the-registered-petclinic-2-7-to/lib/benchmark/change-verification/petclinic.py\", line 224, in run",
+        "    first = check_deployment(name, classes, deps, registration, work, env)",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-015127-evaluate-the-registered-petclinic-2-7-to/lib/benchmark/change-verification/petclinic.py\", line 175, in check_deployment",
+        "    trials.append(application(classes, deps, registration, directory, env))",
+        "                  ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-015127-evaluate-the-registered-petclinic-2-7-to/lib/benchmark/change-verification/petclinic.py\", line 110, in application",
+        "    \"observations\": workflows(int(port[1]), registration)}",
+        "                    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-015127-evaluate-the-registered-petclinic-2-7-to/lib/benchmark/change-verification/petclinic.py\", line 77, in workflows",
+        "    status, _, page = http(port, \"/owners/new\")",
+        "                      ~~~~^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-015127-evaluate-the-registered-petclinic-2-7-to/lib/benchmark/change-verification/petclinic.py\", line 46, in http",
+        "    conn = http.client.HTTPConnection(\"127.0.0.1\", port, timeout=10)",
+        "           ^^^^^^^^^^^",
+        "AttributeError: 'function' object has no attribute 'client'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T02:03:39+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T020335Z-08876165e3afe055",
+      "outputs": "20261124T020335Z-105296796b6723eb",
+      "workdir": "20261124T020338Z-7031577e5a1bc085"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-015127-evaluate-the-registered-petclinic-2-7-to"
+}

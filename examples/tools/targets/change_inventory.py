@@ -48,7 +48,16 @@ def resolve(path, jdk, image, environment, *, kind):
     if pin := document.get("jdkReleaseSha256"):
         if upgrade_replay.sha(jdk / "release") != pin:
             raise ValueError(f"the JDK differs from the prepared {kind} launch")
+    external = []
+    for item in document.get("environmentFiles", []):
+        file = (path.parent / item["file"]).resolve()
+        actual = file_digest(file)
+        if actual != item["sha256"]:
+            raise ValueError(f"{kind} environment file differs at {file.name}")
+        external.append({"file": str(file), "sha256": actual})
     binding = {"kind": kind, "jdk": image, "classpath": entries, "environment": environment}
+    if external:
+        binding["environmentFiles"] = external
     return files, {**binding, "key": digest(binding), "commit": document.get("commit"),
                    "sourceSha256": document.get("sourceSha256"), "preparation": document.get("scope")}
 

@@ -1,0 +1,437 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-014943-replay-the-guava-change-plan-nodes-and-i",
+  "title": "Replay the Guava change-plan nodes and isolated frame fault",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 15.8s, peak 2.3 GiB (estimated 1m00s, 3.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-014943-replay-the-guava-change-plan-nodes-and-i.json",
+    "sha256": "e03390a56ba950852e2a06839edb9b85a6e9de96a9210f48a641870b21f1d290",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-014943-replay-the-guava-change-plan-nodes-and-i",
+      "title": "Replay the Guava change-plan nodes and isolated frame fault",
+      "description": "Recompute the original 336 and 346 array-induction baselines on Temurin 21. Replay the frozen 32-bit and transferred 64-bit semantic consumers, both scalar routes and each packed Guava and prefix-sums LRAT certificate. On the pinned heap-writing control, regenerate one faulty historical frame obligation, compare fresh honest and faulted records and require the independent public-entry witness. The generated result records the exact assertion and comparison fields that changed.",
+      "kind": "library",
+      "capabilities": [
+        "array-induction",
+        "independent-java-proof",
+        "sat-certificate"
+      ],
+      "links": {
+        "examples": [
+          "336",
+          "346"
+        ],
+        "paths": [
+          "lib/benchmark/trusted-kernel/change-nodes.json"
+        ]
+      },
+      "expected": "The original array contracts compare at established, the frozen checker gives its original 346 refusal and the transferred checker accepts both, all four scalar cases replay and all 18 observed UNSAT queries recheck. A changed historical frame answer is detected against the honest baseline and contradicted by the independent witness.",
+      "submitted": {
+        "at": "2026-11-24T01:49:43+00:00",
+        "session": "01a20b2d-a95c-7ed2-b095-7806cdb53e77"
+      },
+      "requires": [
+        "python3",
+        "javap",
+        "java",
+        "javac",
+        "rustc",
+        "lean",
+        "setpriv",
+        "z3",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "1m",
+        "notes": "The earlier two-CPU replay measured about 1.6 GiB for Lean. Rust and the original array-induction runs each finished in seconds."
+      },
+      "steps": [
+        {
+          "name": "Check the frozen 10-node projection",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/change_nodes.py --check",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the Guava int baseline",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 336 --array-induction first-any-length --compare",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the Guava long baseline",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 346 --array-induction first-any-length --compare",
+          "cwd": "."
+        },
+        {
+          "name": "Rebuild and check saved Rust and Lean evidence",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/recheck_saved.py --check",
+          "cwd": "."
+        },
+        {
+          "name": "Check all saved LRAT queries and negative controls",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --check",
+          "cwd": "."
+        },
+        {
+          "name": "Record the fixed historical producer fault",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_frame_control.py --record lib/benchmark/trusted-kernel/historical-frame-control.json",
+          "cwd": "."
+        },
+        {
+          "name": "Repeat the historical and independent checks from fresh inputs",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_frame_control.py --check lib/benchmark/trusted-kernel/historical-frame-control.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "lib/benchmark/trusted-kernel/historical-frame-control.json"
+      ]
+    }
+  },
+  "sourceCommit": "437f9640cca0c0af816cf1bb2d32ce26987a5b29",
+  "startedAt": "2026-11-24T02:03:01+00:00",
+  "finishedAt": "2026-11-24T02:03:28+00:00",
+  "wallSeconds": 27.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2277093,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 60.0,
+    "notes": "The earlier two-CPU replay measured about 1.6 GiB for Lean. Rust and the original array-induction runs each finished in seconds."
+  },
+  "usage": {
+    "peakMemoryBytes": 2454851584,
+    "wallSeconds": 15.8,
+    "cpuSeconds": 18.5,
+    "memoryOfEstimate": 0.76,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the frozen 10-node projection",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/change_nodes.py --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.069,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 14036992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-frozen-10-node-proje.log",
+        "lines": 1,
+        "bytes": 101,
+        "sha256": "e11508bd4015674e62f16e9ff04d69785146cf973f060c25f9b1565f48a1b860",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "10 independently checked nodes from 4c6529a034cdffd379ab524272edc14f229c1ca82bed99e7029f733e0484d90b"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Compare the Guava int baseline",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 336 --array-induction first-any-length --compare",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 1.202,
+      "cpuSeconds": 1.847,
+      "cpuThrottledSeconds": 0.072,
+      "peakMemoryBytes": 128651264,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-the-guava-int-baseline.log",
+        "lines": 3,
+        "bytes": 487,
+        "sha256": "a71a3a8d566adef10b05c7e50f55fbead39c1febcf784517685c25ca5f13a822",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 10 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmpsw_rp02c/first-any-length/4396f8e89adf63fa0f2a",
+        "first-any-length: established, 10 solver answers, cells 32 bits, indices 32 bits; against records/array-induction/first-any-length/58996c50200b0046ffaa: the same result",
+        "first-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Compare the Guava long baseline",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B examples/tools/build.py 346 --array-induction first-any-length --compare",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 1.404,
+      "cpuSeconds": 1.965,
+      "cpuThrottledSeconds": 0.06,
+      "peakMemoryBytes": 132583424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-compare-the-guava-long-baselin.log",
+        "lines": 4,
+        "bytes": 656,
+        "sha256": "ddb7b9edf0792e16f21f3f5ce722362070a650856294dff774ad4dc1057db025",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 11 solver answers, /home/filip/.cache/in-the-loop/trusted-kernel/tmp/tmphzqfzahz/first-any-length/bd44ba74c9da6a37ad4b",
+        "first-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/0e84bb986daf03cbffef: the same result",
+        "first-any-length: established, 11 solver answers, cells 64 bits, indices 32 bits; against records/array-induction/first-any-length/30437c63909c329614e6: the same result",
+        "first-any-length: rule implementation b08e6069a4c7f537 over examples/tools/targets/array_induction.py, lib/python/jvm_array_induction.py, lib/python/jvm_disassembly.py"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Rebuild and check saved Rust and Lean evidence",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/recheck_saved.py --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 8.012,
+      "cpuSeconds": 7.122,
+      "cpuThrottledSeconds": 0.641,
+      "peakMemoryBytes": 2454851584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-rebuild-and-check-saved-rust-a.log",
+        "lines": 1,
+        "bytes": 406,
+        "sha256": "1edf12e255e410203b7c4f012179c85b99495668b027c583b3a02cfd7131493f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "{'frozenBundlesAndSubstitutions': 15, 'finalBundlesAndSubstitutions': 18, 'scalarRoutes': 4, 'frozenBinary': '8732c7a527559fa4a85408575ce914aedfa56d78fc5aec0ecfb66d5cf72112bc', 'finalBinary': '5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b', 'snapshotSha256': '1a24fe181ae72c0b07183"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "Check all saved LRAT queries and negative controls",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/bounded_sat.py --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.229,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 36884480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-check-all-saved-lrat-queries-a.log",
+        "lines": 2,
+        "bytes": 164,
+        "sha256": "8deb866015e0237a6df5b5c5d29dac61f3c3713231bf2dc49d7bdecc12ac7f1c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "336/first-8-release: certified 8/8 UNSAT, 18 SAT calls, 0 constant-false decisions",
+        "held/prefix-sums: certified 10/10 UNSAT, 8 SAT calls, 0 constant-false decisions"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "Record the fixed historical producer fault",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_frame_control.py --record lib/benchmark/trusted-kernel/historical-frame-control.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 2.405,
+      "cpuSeconds": 3.762,
+      "cpuThrottledSeconds": 0.105,
+      "peakMemoryBytes": 93106176,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-record-the-fixed-historical-pr.log",
+        "lines": 1,
+        "bytes": 105,
+        "sha256": "3d14f550568d1155fcdee0db41d7f9de206876415acb5682788747f0cde35cd5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Historical control reproduced: honest frame SAT, faulted frame UNSAT, independent public witness refuted"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "Repeat the historical and independent checks from fresh inputs",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/trusted-kernel/tmp\" python3 -B lib/benchmark/trusted-kernel/historical_frame_control.py --check lib/benchmark/trusted-kernel/historical-frame-control.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 2.205,
+      "cpuSeconds": 3.493,
+      "cpuThrottledSeconds": 0.106,
+      "peakMemoryBytes": 93626368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-repeat-the-historical-and-inde.log",
+        "lines": 1,
+        "bytes": 105,
+        "sha256": "3d14f550568d1155fcdee0db41d7f9de206876415acb5682788747f0cde35cd5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Historical control reproduced: honest frame SAT, faulted frame UNSAT, independent public witness refuted"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "lib/benchmark/trusted-kernel/historical-frame-control.json",
+      "change": "added",
+      "bytes": 2111,
+      "sha256": "b4a68738421e9998b5f5f133a95c9f3c2805cf3a8f34504a1067ef4475971844",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T02:03:39+00:00",
+    "applied": [
+      "lib/benchmark/trusted-kernel/historical-frame-control.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T020328Z-94179874d5f108d9",
+      "outputs": "20261124T020328Z-96295968cded0ce4",
+      "diff": "20261124T020328Z-9811377e2e7e4163"
+    }
+  }
+}

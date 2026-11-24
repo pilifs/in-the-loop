@@ -7,7 +7,6 @@ import shutil
 import subprocess
 import sys
 import tempfile
-import time
 import zipfile
 
 HERE = Path(__file__).resolve().parent
@@ -151,10 +150,13 @@ def run(setup, dest, work, *, baseline_only=False):
         original = GRADING[node["id"]]
         record = read(original)
         matches = node["entry"] in discovered
+        typed = all(all(record["sides"][s]["trials"][c["input"]]["observations"] == [c[s], c[s]]
+                        for s in ("old", "new")) for c in node["children"])
         grading[node["id"]] = {"independentlyDiscovered": matches, "record": str(original.relative_to(ROOT)),
-                               "sha256": upgrade_replay.sha(original), "matchesHistoricalInputs": record["cases"] == node["domain"]}
-        if not matches or not grading[node["id"]]["matchesHistoricalInputs"]:
-            raise ValueError(f"{node['id']}: discovery miss or changed grading domain")
+                               "sha256": upgrade_replay.sha(original), "matchesHistoricalInputs": record["cases"] == node["domain"],
+                               "matchesHistoricalOutcomes": typed}
+        if not matches or record["entry"] != node["entry"] or not grading[node["id"]]["matchesHistoricalInputs"] or not typed:
+            raise ValueError(f"{node['id']}: discovery miss or different historical caller, domain or typed observation")
     return {"schema": "wire-change-evaluation/v1", "change": cold["change"], "cohorts": cold["counts"],
             "scope": "Two registered phone values per direction on each JDK 8 deployment. Alternate Okio precedence is an attribution control.",
             "inventory": cold["inventory"], "launches": {s: {k: cold["launches"][s][k] for k in ("production", "test")} for s in PINS},
