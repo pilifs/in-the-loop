@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import struct
 import subprocess
 import tempfile
@@ -34,6 +35,70 @@ def jdk_binding(jdk):
     return {"release": runtime_jdk.identity(jdk)["release"], "image": digest(contents)}
 
 
+def manifest_classpath(files, feature):
+    """A manifest may revisit a bound provider or introduce the very next declared one without changing search order."""
+    providers = []
+    missing = set()
+    bound = []
+    unresolved = []
+    positions = {f: i for i, f in reversed(list(enumerate(files)))}
+    for position, file in enumerate(files):
+        if file.is_dir():
+            continue
+        with zipfile.ZipFile(file) as archive:
+            if feature < 21 and "META-INF/INDEX.LIST" in archive.namelist():
+                unresolved.append({"provider": position, "reason": "JAR index can name additional providers"})
+            try:
+                data = archive.read("META-INF/MANIFEST.MF")
+            except KeyError:
+                continue
+        # java.util.jar.Manifest joins continuation lines in the main section.
+        main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
+        declarations = [line.partition(b":")[2].strip() for line in main.split(b"\n")
+                        if line.lower().startswith(b"class-path:")]
+        if not declarations:
+            continue
+        if len(declarations) != 1 or not declarations[0].isascii():
+            unresolved.append({"provider": position, "reason": "ambiguous or non-ASCII manifest Class-Path"})
+            continue
+        tokens = declarations[0].decode("ascii").split()
+        if not tokens:
+            continue
+        providers.append({"provider": position, "entries": tokens})
+        for token in tokens:
+            if (not re.fullmatch(r"/?(?:[A-Za-z0-9_+.-]+/)*[A-Za-z0-9_+.-]+\.jar", token)
+                    or any(part in (".", "..") for part in token.split("/"))):
+                unresolved.append({"provider": position, "entry": token, "reason": "unclassified manifest URL"})
+                continue
+            target = file.parent / token
+            try:
+                target.stat()
+            except (FileNotFoundError, NotADirectoryError):
+                missing.add(str(target))
+            except OSError:
+                unresolved.append({"provider": position, "entry": token, "reason": "cannot establish file absence"})
+            else:
+                index = positions.get(target)
+                if index is not None and index <= position + 1:
+                    bound.append({"provider": position, "entry": token, "classpathIndex": index})
+                else:
+                    reason = "present implicit provider" if index is None else "manifest can change declared search order"
+                    unresolved.append({"provider": position, "entry": token, "reason": reason})
+    return {"declarations": providers, "absent": sorted(missing), "bound": bound, "unresolved": unresolved}
+
+
+def absences_hold(paths):
+    for path in paths:
+        try:
+            os.stat(path)
+        except (FileNotFoundError, NotADirectoryError):
+            continue
+        except OSError:
+            pass
+        return False
+    return True
+
+
 def resolve(path, jdk, image, environment, *, kind):
     document = json.loads(path.read_text())
     files, entries = [], []
@@ -57,6 +122,9 @@ def resolve(path, jdk, image, environment, *, kind):
             raise ValueError(f"{kind} environment file differs at {file.name}")
         external.append({"file": str(file), "sha256": actual})
     binding = {"kind": kind, "jdk": image, "classpath": entries, "environment": environment}
+    manifest_paths = manifest_classpath(files, int(runtime_jdk.identity(jdk)["feature"]))
+    if manifest_paths["declarations"] or manifest_paths["unresolved"]:
+        binding["manifestClassPath"] = manifest_paths
     if external:
         binding["environmentFiles"] = external
     return files, {**binding, "key": digest(binding), "commit": document.get("commit"),

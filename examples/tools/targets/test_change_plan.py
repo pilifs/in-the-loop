@@ -5,6 +5,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from targets import change_evidence, change_helpers, change_inventory
@@ -20,6 +21,36 @@ class ChangePlanTest(unittest.TestCase):
                         "loadedUpgradeOnEachReplay": True} for i, c in enumerate(self.cases)]
         self.binding = {"classpath": ["app", "dep"], "loadedDependencyClasses": ["a.Api"], "trials": self.trials}
         self.report = {**self.scope, "sides": {s: copy.deepcopy(self.binding) for s in ("old", "new")}}
+
+    def test_absent_manifest_providers_bind_the_launch_and_appearance_stops_reuse(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            base = Path(tmp)
+            jar, extra = base / "caller.jar", base / "extra.jar"
+            def manifest(declaration, indexed=False):
+                with zipfile.ZipFile(jar, "w") as archive:
+                    archive.writestr("META-INF/MANIFEST.MF", "Manifest-Version: 1.0\r\n" + declaration + "\r\n\r\n")
+                    if indexed:
+                        archive.writestr("META-INF/INDEX.LIST", "JarIndex-Version: 1.0\n")
+            manifest("Class-Path: ext\r\n ra.jar " + str(extra), indexed=True)
+            found = change_inventory.manifest_classpath([jar], 21)
+            self.assertEqual(found["absent"], [str(extra)])
+            self.assertEqual(found["declarations"][0]["entries"], ["extra.jar", str(extra)])
+            self.assertEqual(found["unresolved"], [])
+            self.assertTrue(change_inventory.absences_hold(found["absent"]))
+            self.assertTrue(change_inventory.manifest_classpath([jar], 17)["unresolved"])
+            with zipfile.ZipFile(extra, "w") as archive:
+                archive.writestr("marker.txt", "local provider")
+            self.assertFalse(change_inventory.absences_hold(found["absent"]))
+            self.assertEqual(change_inventory.manifest_classpath([jar], 21)["unresolved"][0]["reason"], "present implicit provider")
+            paired = change_inventory.manifest_classpath([jar, extra], 21)
+            self.assertEqual(paired["unresolved"], [])
+            self.assertEqual([r["classpathIndex"] for r in paired["bound"]], [1, 1])
+            gap = base / "other.jar"
+            gap.write_bytes(extra.read_bytes())
+            reordered = change_inventory.manifest_classpath([jar, gap, extra], 21)
+            self.assertEqual(reordered["unresolved"][0]["reason"], "manifest can change declared search order")
+            manifest("Class-Path: https://example.invalid/extra.jar a%20b.jar //host/share.jar")
+            self.assertEqual(len(change_inventory.manifest_classpath([jar], 21)["unresolved"]), 3)
 
     def test_missing_partition_and_before_entry_stay_open_but_one_original_witness_refutes(self):
         result = change_evidence.compose(self.scope, self.report)
@@ -81,11 +112,14 @@ class ChangePlanTest(unittest.TestCase):
 
     def test_exact_reuse_binds_order_jdk_observer_and_checked_payload(self):
         with tempfile.TemporaryDirectory() as tmp:
-            cache = change_evidence.SideCache(Path(tmp), {"assumptions": ["fixed inputs"]}, {"old": "image", "new": "image2"})
+            cache = change_evidence.SideCache(Path(tmp), {"assumptions": ["fixed inputs"]},
+                                              {"old": "image", "new": "image2"}, defer_writes=True)
             info = {**self.report, "probeClasses": {"Observer": "bytecode"}, "observerInvocation": {"codeIndices": [4]}}
             files = [Path("application"), Path("provider")]
             self.assertIsNone(cache.lookup("old", files, self.binding, info))
             cache.remember("old", self.binding, info, {0: {"a.Api"}, 1: {"a.Api"}})
+            self.assertIsNone(cache.lookup("old", files, self.binding, info))
+            cache.publish_pending()
             self.assertIsNotNone(cache.lookup("old", files, self.binding, info))
             self.assertIsNone(cache.lookup("new", files, self.binding, info))
             self.assertIsNone(cache.lookup("old", files[::-1], self.binding, info))
