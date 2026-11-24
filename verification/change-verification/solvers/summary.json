@@ -1,0 +1,665 @@
+{
+  "schema": "caller-solver-trial/v1",
+  "checkerSha256": "a61246d28d07c5f63df21694b7ec1484b26a06b79faad7b532579e10c95afa28",
+  "bitwuzlaSha256": "eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99",
+  "machine": "x86_64",
+  "runs": [
+    {
+      "example": 359,
+      "task": "returns-fix",
+      "claimKey": "466c06144aecd2b8",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "budgetSeconds": 60,
+      "preparationSeconds": 1.6343,
+      "routes": {
+        "cadical": {
+          "status": "established",
+          "execution": "completed",
+          "bindingId": "3f4461edfc8321d78b93ed7cdfef0b892dfe557c3ca77bab5c0258450fb8a945",
+          "receipt": "359/returns-fix/cadical/result.json.gz",
+          "receiptSha256": "9891cb87b15d48bf998e9fc25dd106c14fa5aee259f3734b1939da55e6f02acd",
+          "wallSeconds": 17.7566,
+          "checkerSeconds": 17.129,
+          "cpuSeconds": 17.4222,
+          "checkerUsage": {
+            "cpuSeconds": 17.1193,
+            "peakRssBytes": 429277184,
+            "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+          },
+          "solver": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          },
+          "firstBlocker": null,
+          "search": [
+            {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 17.067754901,
+              "properties": 1,
+              "unwind": 96,
+              "max_array_length": 64,
+              "stage": null,
+              "native": {
+                "paths": 973,
+                "merges": 449,
+                "solver_calls": 6233,
+                "solving_seconds": 14.919861421,
+                "gates_evaluated": 2723009,
+                "evaluating_seconds": 0.051252644,
+                "divisions": 9,
+                "divisions_built": 8,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 399244,
+                "clauses": 1371867,
+                "seconds": 16.979485736,
+                "loading_seconds": 0.003039647,
+                "decoding_seconds": 0.000164399,
+                "encoding_seconds": 1.243861668,
+                "witness_seconds": 0.0
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 16.979,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.003,
+                    "lowering": 0.0,
+                    "symbolic": 0.813,
+                    "encoding": 1.244,
+                    "solving": 14.92,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 399244,
+                    "clauses": 1371867
+                  }
+                },
+                {
+                  "checker": "native",
+                  "purpose": "probe",
+                  "stage": null,
+                  "budget_seconds": 42.932,
+                  "seconds": 0.006,
+                  "ended": "violation",
+                  "ending": "counterexample",
+                  "phases": {
+                    "loading": 0.0,
+                    "lowering": 0.0,
+                    "symbolic": 0.006,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 185,
+                    "clauses": 518
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 17.093,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 16.985,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.107
+              }
+            }
+          ],
+          "replay": null
+        },
+        "bitwuzla-words:preprocess=0": {
+          "status": "established",
+          "execution": "completed",
+          "bindingId": "3f4461edfc8321d78b93ed7cdfef0b892dfe557c3ca77bab5c0258450fb8a945",
+          "receipt": "359/returns-fix/bitwuzla-words/result.json.gz",
+          "receiptSha256": "5506e4f55cbe0c9892e942a38cbdae64744202a730ccc8b03fb30245f757a919",
+          "wallSeconds": 11.6032,
+          "checkerSeconds": 11.005,
+          "cpuSeconds": 11.2518,
+          "checkerUsage": {
+            "cpuSeconds": 10.9936,
+            "peakRssBytes": 344297472,
+            "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+          },
+          "solver": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "preprocess=0",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback"
+            ]
+          },
+          "firstBlocker": null,
+          "search": [
+            {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (Bitwuzla)",
+              "seconds": 10.934410409,
+              "properties": 1,
+              "unwind": 96,
+              "max_array_length": 64,
+              "stage": null,
+              "native": {
+                "paths": 972,
+                "merges": 448,
+                "solver_calls": 6600,
+                "solving_seconds": 9.235504195,
+                "gates_evaluated": 88160,
+                "evaluating_seconds": 0.047047811,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "word_operations": 19492,
+                "variables": 359622,
+                "clauses": 1,
+                "seconds": 10.645419354,
+                "loading_seconds": 0.001746761,
+                "decoding_seconds": 0.000159448,
+                "encoding_seconds": 0.877741091,
+                "witness_seconds": 0.0
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 10.645,
+                  "ended": "verified",
+                  "ending": "verified",
+                  "phases": {
+                    "loading": 0.002,
+                    "lowering": 0.0,
+                    "symbolic": 0.53,
+                    "encoding": 0.878,
+                    "solving": 9.236,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 359622,
+                    "clauses": 1
+                  }
+                },
+                {
+                  "checker": "native",
+                  "purpose": "probe",
+                  "stage": null,
+                  "budget_seconds": 49.066,
+                  "seconds": 0.005,
+                  "ended": "violation",
+                  "ending": "counterexample",
+                  "phases": {
+                    "loading": 0.0,
+                    "lowering": 0.0,
+                    "symbolic": 0.004,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 17,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 10.97,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 10.65,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.319
+              }
+            }
+          ],
+          "replay": null
+        }
+      },
+      "disputed": false
+    },
+    {
+      "example": 359,
+      "task": "contents-parent",
+      "claimKey": "c5dc7698b71289a5",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 64
+      },
+      "budgetSeconds": 60,
+      "preparationSeconds": 1.6047,
+      "routes": {
+        "cadical": {
+          "status": "refuted",
+          "execution": "completed",
+          "bindingId": "5afcb64d6dbbb30af4d59481351b76f5a4a78f56cbf8ef4afde17ce3c95a3d6b",
+          "receipt": "359/contents-parent/cadical/result.json.gz",
+          "receiptSha256": "3547ed0be49b256dbd6c0baf6f3f91b65f70a57ac9a3d1e3a720cd5221ad030a",
+          "wallSeconds": 6.9397,
+          "checkerSeconds": 5.882,
+          "cpuSeconds": 6.9323,
+          "checkerUsage": {
+            "cpuSeconds": 5.874,
+            "peakRssBytes": 120061952,
+            "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+          },
+          "solver": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          },
+          "firstBlocker": null,
+          "search": [
+            {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 5.826158797,
+              "properties": 1,
+              "unwind": 96,
+              "max_array_length": 64,
+              "stage": "[-100000:100000]",
+              "native": {
+                "paths": 105,
+                "merges": 0,
+                "solver_calls": 2606,
+                "solving_seconds": 5.253848892,
+                "gates_evaluated": 529940,
+                "evaluating_seconds": 0.013044571,
+                "divisions": 1,
+                "divisions_built": 1,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 90371,
+                "clauses": 305659,
+                "seconds": 5.8029842590000005,
+                "loading_seconds": 0.001460519,
+                "decoding_seconds": 0.000176892,
+                "encoding_seconds": 0.388856023,
+                "witness_seconds": 0.001362958
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 5.803,
+                  "ended": "violation",
+                  "ending": "counterexample",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.157,
+                    "encoding": 0.389,
+                    "solving": 5.254,
+                    "trace": 0.001,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 90371,
+                    "clauses": 305659
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 5.864,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 5.803,
+                "replay": 0.012,
+                "jvm": 0.0,
+                "other": 0.047
+              }
+            }
+          ],
+          "replay": {
+            "by": "jvm",
+            "reproduced": true
+          }
+        },
+        "bitwuzla-words:preprocess=0": {
+          "status": "refuted",
+          "execution": "completed",
+          "bindingId": "5afcb64d6dbbb30af4d59481351b76f5a4a78f56cbf8ef4afde17ce3c95a3d6b",
+          "receipt": "359/contents-parent/bitwuzla-words/result.json.gz",
+          "receiptSha256": "9ac7af64b3c27ad43fc556d5c022ae1fedd5ae6df62aba041fa1e49352f94090",
+          "wallSeconds": 3.0648,
+          "checkerSeconds": 1.975,
+          "cpuSeconds": 3.1633,
+          "checkerUsage": {
+            "cpuSeconds": 1.9725,
+            "peakRssBytes": 108650496,
+            "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+          },
+          "solver": {
+            "solver": "Bitwuzla",
+            "version": "0.8.2",
+            "source": "the shared library libbitwuzla.so.0 (sha256:eac09e6d6f892ae07e5940c4c2e5c6ac2624d7e236c3968703f69b555b6edf99), loaded at run time; lib/solvers/bitwuzla/build.json records version 0.8.2 built from source at commit 61bdc637, linking CaDiCaL 2.1.2 static",
+            "configuration": [
+              "given the engine's terms: word-level operations as bit-vector terms, gates as Boolean terms",
+              "sat-solver cadical",
+              "produce-models",
+              "preprocess=0",
+              "otherwise Bitwuzla's default options",
+              "incremental: one solver per run of the checker, each query solved under assumptions (check_sat_assuming)",
+              "the run's deadline through Bitwuzla's termination callback"
+            ]
+          },
+          "firstBlocker": null,
+          "search": [
+            {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (Bitwuzla)",
+              "seconds": 1.913399696,
+              "properties": 1,
+              "unwind": 96,
+              "max_array_length": 64,
+              "stage": "[-100000:100000]",
+              "native": {
+                "paths": 68,
+                "merges": 0,
+                "solver_calls": 1563,
+                "solving_seconds": 1.6695134600000001,
+                "gates_evaluated": 7847,
+                "evaluating_seconds": 0.00526473,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "word_operations": 4311,
+                "variables": 73946,
+                "clauses": 1,
+                "seconds": 1.867797912,
+                "loading_seconds": 0.001509849,
+                "decoding_seconds": 0.000192356,
+                "encoding_seconds": 0.1147536,
+                "witness_seconds": 0.001321195
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 1.868,
+                  "ended": "violation",
+                  "ending": "counterexample",
+                  "phases": {
+                    "loading": 0.002,
+                    "lowering": 0.0,
+                    "symbolic": 0.081,
+                    "encoding": 0.115,
+                    "solving": 1.67,
+                    "trace": 0.001,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 73946,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 1.965,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 1.868,
+                "replay": 0.01,
+                "jvm": 0.0,
+                "other": 0.085
+              }
+            }
+          ],
+          "replay": {
+            "by": "jvm",
+            "reproduced": true
+          }
+        }
+      },
+      "disputed": false
+    },
+    {
+      "example": 345,
+      "task": "page-fix-fix",
+      "claimKey": "a355823352dfdc1f",
+      "bounds": {
+        "unwind": 96,
+        "maxArrayLength": 96
+      },
+      "budgetSeconds": 60,
+      "preparationSeconds": 1.8256,
+      "routes": {
+        "cadical": {
+          "status": "unresolved",
+          "execution": "completed",
+          "bindingId": "7a999486d16a9089ae8db78aab39b3d549bba387e1ab0a7b8ef2ce7747ac63f3",
+          "receipt": "345/page-fix-fix/cadical/result.json.gz",
+          "receiptSha256": "5357238bfebe897614b4e317ea2ce0585a6a325108915ac7e3b136e443f9c5a7",
+          "wallSeconds": 61.0094,
+          "checkerSeconds": 60.587,
+          "cpuSeconds": 60.9097,
+          "checkerUsage": {
+            "cpuSeconds": 60.57,
+            "peakRssBytes": 1789104128,
+            "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+          },
+          "solver": {},
+          "firstBlocker": "the engine did not finish within the time limit",
+          "search": [
+            {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 60.490319348,
+              "properties": 1,
+              "unwind": 96,
+              "max_array_length": 96,
+              "stage": null,
+              "native": {
+                "paths": 1219,
+                "merges": 644,
+                "solver_calls": 2172,
+                "solving_seconds": 50.733492289,
+                "gates_evaluated": 190743,
+                "evaluating_seconds": 0.007189812,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 2774472,
+                "clauses": 8950444,
+                "seconds": 60.036680768,
+                "loading_seconds": 0.007608199,
+                "decoding_seconds": 0.001937255,
+                "encoding_seconds": 6.905537934,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 60.037,
+                  "ended": "out-of-time",
+                  "ending": "timeout",
+                  "phases": {
+                    "loading": 0.008,
+                    "lowering": 0.002,
+                    "symbolic": 2.388,
+                    "encoding": 6.906,
+                    "solving": 50.733,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 2774472,
+                    "clauses": 8950444
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 60.499,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 60.037,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 0.461
+              }
+            }
+          ],
+          "replay": null
+        },
+        "bitwuzla-words:preprocess=0": {
+          "status": "unresolved",
+          "execution": "completed",
+          "bindingId": "7a999486d16a9089ae8db78aab39b3d549bba387e1ab0a7b8ef2ce7747ac63f3",
+          "receipt": "345/page-fix-fix/bitwuzla-words/result.json.gz",
+          "receiptSha256": "f122f5548e9f18de32fb0e2d6e50ae5ad1265c4e602a2658c476423815f5defb",
+          "wallSeconds": 68.1576,
+          "checkerSeconds": 67.617,
+          "cpuSeconds": 67.9128,
+          "checkerUsage": {
+            "cpuSeconds": 67.5743,
+            "peakRssBytes": 4159746048,
+            "memoryMeasure": "wait4 ru_maxrss, maximum process RSS including waited-for children"
+          },
+          "solver": {},
+          "firstBlocker": "the engine did not finish within the time limit",
+          "search": [
+            {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (Bitwuzla)",
+              "seconds": 67.283685922,
+              "properties": 1,
+              "unwind": 96,
+              "max_array_length": 96,
+              "stage": null,
+              "native": {
+                "paths": 1229,
+                "merges": 655,
+                "solver_calls": 4262,
+                "solving_seconds": 38.184314719,
+                "gates_evaluated": 4541141,
+                "evaluating_seconds": 3.854689941,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "word_operations": 494545,
+                "variables": 4527122,
+                "clauses": 1,
+                "seconds": 60.194518567,
+                "loading_seconds": 0.007337277,
+                "decoding_seconds": 0.001869347,
+                "encoding_seconds": 12.266397577,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "system properties use the standard JVM Properties table and the running JVM permits this property access"
+                ]
+              },
+              "gap_mode": "strict",
+              "deadline_seconds": 60.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 60.0,
+                  "seconds": 60.195,
+                  "ended": "out-of-time",
+                  "ending": "timeout",
+                  "phases": {
+                    "loading": 0.007,
+                    "lowering": 0.002,
+                    "symbolic": 9.735,
+                    "encoding": 12.266,
+                    "solving": 38.184,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 4527122,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 67.314,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 60.195,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 7.118
+              }
+            }
+          ],
+          "replay": null
+        }
+      },
+      "disputed": false
+    }
+  ]
+}

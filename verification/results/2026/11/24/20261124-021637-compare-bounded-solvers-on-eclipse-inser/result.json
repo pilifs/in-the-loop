@@ -1,0 +1,369 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-021637-compare-bounded-solvers-on-eclipse-inser",
+  "title": "Compare bounded solvers on Eclipse insertion and the paged importer",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 2m54s, peak 4.0 GiB (estimated 5m00s, 4.0 GiB); 21 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-021637-compare-bounded-solvers-on-eclipse-inser.json",
+    "sha256": "569d61425441463c2ab879c7bb6e0ab8f1666ca77a73bb7876190a990f255634",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-021637-compare-bounded-solvers-on-eclipse-inser",
+      "title": "Compare bounded solvers on Eclipse insertion and the paged importer",
+      "description": "Share exact preparation for the frozen Eclipse Collections return and content claims and the fixed importer page. Run bundled CaDiCaL and the existing Bitwuzla word encoding at identical guards, bounds and 60-second budgets. Retain open attempts, phase timings, CPU, memory and original JVM witness replays.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "solver:comparison"
+      ],
+      "links": {},
+      "expected": "Every comparison reaches the selected checker with the same source claim and deployment. Report any disagreement and any all-in saving at equal scope.",
+      "submitted": {
+        "at": "2026-11-24T02:16:37+00:00",
+        "session": "01a20b2c-ad98-7b23-a000-99b528bbfe82"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "5m",
+        "timeout": "14m"
+      },
+      "steps": [
+        {
+          "name": "Measure the six original caller attempts",
+          "run": "python3 -B lib/benchmark/change-verification/solver_trial.py --output verification/change-verification/solvers/summary.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/change-verification/solvers"
+      ]
+    }
+  },
+  "sourceCommit": "70dd5ddc109c6952e31cbf8acfda205049f770af",
+  "startedAt": "2026-11-24T02:19:40+00:00",
+  "finishedAt": "2026-11-24T02:25:37+00:00",
+  "wallSeconds": 357.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2422409,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 840.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 4277809152,
+    "wallSeconds": 174.0,
+    "cpuSeconds": 179.9,
+    "memoryOfEstimate": 1.0,
+    "durationOfEstimate": 0.58
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 175.117,
+      "cpuSeconds": 175.452,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2307043328,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "e3ba592b807fde6ee53b4a1ca092d1c1f591ad0d810312206f41829c2d11d0ac",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-021637-compare-bounded-solvers-on-eclipse-inser/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 55s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Measure the six original caller attempts",
+      "run": "python3 -B lib/benchmark/change-verification/solver_trial.py --output verification/change-verification/solvers/summary.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 840.0,
+      "cancelled": false,
+      "wallSeconds": 174.044,
+      "cpuSeconds": 179.868,
+      "cpuThrottledSeconds": 0.915,
+      "peakMemoryBytes": 4277809152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-measure-the-six-original-calle.log",
+        "lines": 1,
+        "bytes": 143,
+        "sha256": "524d45a96cd1767e3719751d9e5af415adf7eb5aefb0768da4e55fb4eb93b1d3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "[('returns-fix', ['established', 'established']), ('contents-parent', ['refuted', 'refuted']), ('page-fix-fix', ['unresolved', 'unresolved'])]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/change-verification/solvers/345/page-fix-fix/bitwuzla-words/attempt.json.gz",
+      "change": "added",
+      "bytes": 8362,
+      "sha256": "227ba63ea88d3d58c42370a11c3dd315fbbb375f1647b010dbadd46a76d531ef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/345/page-fix-fix/bitwuzla-words/checker.json.gz",
+      "change": "added",
+      "bytes": 2203,
+      "sha256": "a6fc8880c812fa1a3e748816a0efbf6924d870682499616076d1a77725617136",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/345/page-fix-fix/bitwuzla-words/result.json.gz",
+      "change": "added",
+      "bytes": 4530,
+      "sha256": "03f2f55d47f9a288b1988f235cfe2757b283b22de17e9003d4a4ddaaba082974",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/345/page-fix-fix/cadical/attempt.json.gz",
+      "change": "added",
+      "bytes": 8352,
+      "sha256": "771619c6d81f555b6b1aa3486a16ca8ffb6461a01311b0567f7afb5fda4b5d06",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/345/page-fix-fix/cadical/checker.json.gz",
+      "change": "added",
+      "bytes": 2021,
+      "sha256": "24406d56f57288ded8bd59c798cd2e013f01615b11def24001ebb33f677c3030",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/345/page-fix-fix/cadical/result.json.gz",
+      "change": "added",
+      "bytes": 4342,
+      "sha256": "c3cadda52b2889dcdb73be38bf90ead916fee288f198cd97eaa568065aa83266",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/attempt.json.gz",
+      "change": "added",
+      "bytes": 3362,
+      "sha256": "a3ce1650aa7a76a76af5ecc6def35e3066d6840f0662ed5708bedbd739ff2fa1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/checker.json.gz",
+      "change": "added",
+      "bytes": 2530,
+      "sha256": "d75a8ab3538086b812751d1c5fabf6d836ee1125def7b339caa477c2b7db0b51",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/replay.json.gz",
+      "change": "added",
+      "bytes": 1025,
+      "sha256": "0e22421a1afeabaaede37f6d44a9691871b5da0c0aa398855e84d4fdee962fbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/result.json.gz",
+      "change": "added",
+      "bytes": 4796,
+      "sha256": "5ad81d00d4e8ad0503be03e8453a85634b4ef75c3b8492f60fd33d3b994d17f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/cadical/attempt.json.gz",
+      "change": "added",
+      "bytes": 3356,
+      "sha256": "83fc15947cecf710fd4d4e117946a7282532d11e0016d526d91f280a05b13dae",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/cadical/checker.json.gz",
+      "change": "added",
+      "bytes": 2354,
+      "sha256": "20f8a582c55777596e2635ba26b9c25a3162608a5021e20372fb6f72954fcbd2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/cadical/replay.json.gz",
+      "change": "added",
+      "bytes": 1025,
+      "sha256": "0e22421a1afeabaaede37f6d44a9691871b5da0c0aa398855e84d4fdee962fbc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/contents-parent/cadical/result.json.gz",
+      "change": "added",
+      "bytes": 4598,
+      "sha256": "8b9db0f1d1735903946b09b9e726e8af9ef4bc7609457b65fc1c2ac7c10a7dd8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/returns-fix/bitwuzla-words/attempt.json.gz",
+      "change": "added",
+      "bytes": 3307,
+      "sha256": "16eab2424c2ba29e67fd1b85ada797fb85718484c4ce5fef417922f7dd067c75",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/returns-fix/bitwuzla-words/checker.json.gz",
+      "change": "added",
+      "bytes": 2315,
+      "sha256": "a9582e7a7b9b8865f956a37ed9f2a0c93fb94d22de394e025b2030d407b16ab2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/returns-fix/bitwuzla-words/result.json.gz",
+      "change": "added",
+      "bytes": 4613,
+      "sha256": "67c5ffb993255c22e0d38c06a2adf670c0ae7a7be3b72d556497ad834e610883",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/returns-fix/cadical/attempt.json.gz",
+      "change": "added",
+      "bytes": 3299,
+      "sha256": "261e89022e4729f169c08b661e16067d8c499ba36751f34def102b1fda13d686",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/returns-fix/cadical/checker.json.gz",
+      "change": "added",
+      "bytes": 2148,
+      "sha256": "0e733ed72b9d52029c85b9eeee8b422ae29b931ba1ff9816bf5ae2a1ccf580f9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/359/returns-fix/cadical/result.json.gz",
+      "change": "added",
+      "bytes": 4424,
+      "sha256": "46ce1d4bc89de747413c64230a9af14d827fdb1f3ebd9377657f7f2487e0575d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/change-verification/solvers/summary.json",
+      "change": "added",
+      "bytes": 24254,
+      "sha256": "08b9b7522b6abf966f9abd3f88670a03a51c911145a030d7da5c94521d7bd4d2",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T02:26:00+00:00",
+    "applied": [
+      "verification/change-verification/solvers/345/page-fix-fix/bitwuzla-words/attempt.json.gz",
+      "verification/change-verification/solvers/345/page-fix-fix/bitwuzla-words/checker.json.gz",
+      "verification/change-verification/solvers/345/page-fix-fix/bitwuzla-words/result.json.gz",
+      "verification/change-verification/solvers/345/page-fix-fix/cadical/attempt.json.gz",
+      "verification/change-verification/solvers/345/page-fix-fix/cadical/checker.json.gz",
+      "verification/change-verification/solvers/345/page-fix-fix/cadical/result.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/attempt.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/checker.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/replay.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/bitwuzla-words/result.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/cadical/attempt.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/cadical/checker.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/cadical/replay.json.gz",
+      "verification/change-verification/solvers/359/contents-parent/cadical/result.json.gz",
+      "verification/change-verification/solvers/359/returns-fix/bitwuzla-words/attempt.json.gz",
+      "verification/change-verification/solvers/359/returns-fix/bitwuzla-words/checker.json.gz",
+      "verification/change-verification/solvers/359/returns-fix/bitwuzla-words/result.json.gz",
+      "verification/change-verification/solvers/359/returns-fix/cadical/attempt.json.gz",
+      "verification/change-verification/solvers/359/returns-fix/cadical/checker.json.gz",
+      "verification/change-verification/solvers/359/returns-fix/cadical/result.json.gz",
+      "verification/change-verification/solvers/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9e83ba945caba0df6831427c3d40a47d2e81cea7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9e83ba945caba0df6831427c3d40a47d2e81cea7/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T022537Z-1845080757a75366",
+      "outputs": "20261124T022537Z-210887dfd15fa10b",
+      "diff": "20261124T022537Z-23064325cceb10dd"
+    }
+  }
+}
