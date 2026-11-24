@@ -371,16 +371,16 @@
     },
     {
       "change_id": "tstrtzupslyzkqnvtwstsrxkmzwttpmt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b82b551804e4a373f752aa213ddb612c355fb4c0",
+      "immutable": true,
       "summary": "Add two setup lessons from 2026-11-23 to the setup agent template",
       "body": "The setup agent template now says to resolve every plugin and dependency an offline command needs online first, before running it offline in a job, and to copy digests, revisions and paths into the Setup Agent Notes in full, or point to the record's row, never shortened. Both come from 2026-11-23's setup runs: jbmc-setup's Guava job failed on a late offline plugin resolution after its build had passed, and trusted-kernel-setup's notes gave Ints.class a shortened digest whose tail belonged to Ints$IntArrayAsList (the domain agent caught it against the full table). Verified with test_costs.py run --changed: test_single_run (21) and test_brief_queue (5) pass.",
       "log_sha256": "6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe"
     },
     {
       "change_id": "zkyyxvkunxvkqnsqmnmzonumyroxnnsx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "66a11552a2d0f0e82714aa142956062bbf3cb652",
+      "immutable": true,
       "summary": "Let a loop recover a working copy another session left stale, instead of ending",
       "body": "feature-loop.sh reads @- (last_change) before and right after each turn, while its agent isn't working. When jj refuses there with \"The working copy is stale\", the loop now runs llm-dlc/tools/unstale.py, as CLAUDE.md tells an agent to, and says so in its log and summary. Then it reads @- again and goes on. If unstale.py can't recover (two copies with edits of their own), the loop stops with status 1 as before, and the log says a person is needed. Before this, the loop ended on the first refusal: on 2026-11-23 21:15 trusted-kernel's second cycle ended that way, before its verdict, after a turn that had gone well. The cause, in the operating notes' section on stale workspaces, is another workspace's sync.py rewriting commits this line is based on. The operating notes now say a loop recovers itself.",
       "log_sha256": "6bf8c5b3fd44dc731c945a58575ebada09bef7b4b854a86c201d580150628cfe"
