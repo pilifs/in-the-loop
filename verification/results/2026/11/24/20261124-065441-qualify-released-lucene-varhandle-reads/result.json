@@ -1,0 +1,318 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-065441-qualify-released-lucene-varhandle-reads",
+  "title": "Qualify released Lucene VarHandle reads and writes and test Guava transfer",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 1m48s, peak 371.1 MiB (estimated 14m00s, 5.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-065441-qualify-released-lucene-varhandle-reads.json",
+    "sha256": "f14398806d6d262db3449275c922775cc643a9621392b3b8b26acbfe76d051f2",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-065441-qualify-released-lucene-varhandle-reads",
+      "title": "Qualify released Lucene VarHandle reads and writes and test Guava transfer",
+      "description": "Rerun both Lucene 8.11.0 and 9.0.0 fixed-width mixed compositions, signed, cursor, alias and VInt controls on identical public callers. Check plain integral view signatures, no-partial-store bounds, and refusals at atomic and object-identity operations. Test the same capability on Guava FarmHash public hashBytes using a separately assembled eight-byte word.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove",
+        "jvm:byte-array-view",
+        "jbmc:standalone"
+      ],
+      "links": {
+        "paths": [
+          "lib/src/bmc/byte_views.rs"
+        ]
+      },
+      "expected": "Nine two-release observations, six independent caller and discriminator rows with all engine outputs, including refusals; the physical checks and exact run counts must pass.",
+      "submitted": {
+        "at": "2026-11-24T06:54:41+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "priority": 23,
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "5G",
+        "duration": "14m",
+        "timeout": "60m"
+      },
+      "steps": [
+        {
+          "name": "Lucene released pair",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/wire_campaign.py closing --output verification/beyond-jbmc/qualified/wire",
+          "cwd": "."
+        },
+        {
+          "name": "Primitive and Guava controls",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified W02-controls W02-transfer",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/qualified/wire",
+        "verification/beyond-jbmc/qualified/W02-controls",
+        "verification/beyond-jbmc/qualified/W02-transfer"
+      ]
+    }
+  },
+  "sourceCommit": "669fc2c7553a4be73baf21328f3e4b51b5e5aca6",
+  "startedAt": "2026-11-24T07:12:45+00:00",
+  "finishedAt": "2026-11-24T07:17:41+00:00",
+  "wallSeconds": 296.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2042315,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 3600.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 840.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 389124096,
+    "wallSeconds": 108.8,
+    "cpuSeconds": 115.8,
+    "memoryOfEstimate": 0.07,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 179.873,
+      "cpuSeconds": 180.045,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2305982464,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "467496465dc016d109f539d7fcbabe3d599661d87fa7cedb6efce38ce10d8c13",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-065441-qualify-released-lucene-varhandle-reads/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 59s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Lucene released pair",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_campaign.py closing --output verification/beyond-jbmc/qualified/wire",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 82.381,
+      "cpuSeconds": 84.996,
+      "cpuThrottledSeconds": 0.574,
+      "peakMemoryBytes": 389124096,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-lucene-released-pair.log",
+        "lines": 13,
+        "bytes": 547,
+        "sha256": "e1ffd6c1132fcac5f82c2b40ba1685fe209f20d60e74d9fc7b6d2daf00969131",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "8.11.0 8.11.0 33 01 02 03 04 55 01020304",
+        "8.11.0 9.0.0 33 01 02 03 04 55 04030201",
+        "9.0.0 8.11.0 33 04 03 02 01 55 04030201",
+        "9.0.0 9.0.0 33 04 03 02 01 55 01020304",
+        "W01 oldOld verified unverifiable SUCCESS",
+        "W01 oldNew verified unverifiable FAILURE",
+        "W01 newOld verified unverifiable FAILURE",
+        "W01 newNew verified unverifiable FAILURE",
+        "W01 wrongIdentity violation violation FAILURE",
+        "W02 writeFrame verified unverifiable FAILURE",
+        "W02 readFrame verified unverifiable FAILURE",
+        "W04 varOldNew verified unverifiable SUCCESS",
+        "W04 varNewOld verified unverifiable SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Primitive and Guava controls",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/release_cases.py qualified W02-controls W02-transfer",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600.0,
+      "cancelled": false,
+      "wallSeconds": 26.46,
+      "cpuSeconds": 30.805,
+      "cpuThrottledSeconds": 0.958,
+      "peakMemoryBytes": 137592832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-primitive-and-guava-controls.log",
+        "lines": 8,
+        "bytes": 449,
+        "sha256": "26e859ce3a229d81497e9ef477d827748f4d3a4e61118c3159d0be74dbe60702",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "W02-controls 7 original checks passed",
+        "W02-controls signed unverifiable unverifiable FAILURE FAILURE",
+        "W02-controls bounds verified unverifiable FAILURE FAILURE",
+        "W02-controls atomic unverifiable unverifiable FAILURE FAILURE",
+        "W02-controls opaqueIdentity unverifiable violation FAILURE FAILURE",
+        "W02-transfer 5 original checks passed",
+        "W02-transfer littleEndian verified unverifiable SUCCESS SUCCESS",
+        "W02-transfer flipped violation unverifiable SUCCESS SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/qualified/wire/executions.zip",
+      "change": "added",
+      "bytes": 644418,
+      "sha256": "7c0adb6c540663c49ebd8ee11ab7c7df21b45637507876581b445d25cea6b435",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/wire/results.json.gz",
+      "change": "added",
+      "bytes": 5942,
+      "sha256": "110b42b7078aa5d593a1c38f41ed9ae559aa38df7aaf4653503660525fd7a1f5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W02-controls/executions.zip",
+      "change": "added",
+      "bytes": 148236,
+      "sha256": "21babdcfa03737bd64f681b86ffb00671d46935257dc80dc5b6e900005fdff6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W02-controls/results.json.gz",
+      "change": "added",
+      "bytes": 3212,
+      "sha256": "561931e0793422f793f45c593364c7cf1bcb2d7377ca8e0630e59a45d2bac845",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W02-transfer/executions.zip",
+      "change": "added",
+      "bytes": 399276,
+      "sha256": "3e46ec73544f4073ef38e0d621a0522fd498cee1d9f752c0aa419c7dcfd35161",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/qualified/W02-transfer/results.json.gz",
+      "change": "added",
+      "bytes": 2614,
+      "sha256": "077e46c532ebbd1099191a209fb4c28a87637d33cbfa12b82277b30fb93fbcbb",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T07:21:51+00:00",
+    "applied": [
+      "verification/beyond-jbmc/qualified/wire/executions.zip",
+      "verification/beyond-jbmc/qualified/wire/results.json.gz",
+      "verification/beyond-jbmc/qualified/W02-controls/executions.zip",
+      "verification/beyond-jbmc/qualified/W02-controls/results.json.gz",
+      "verification/beyond-jbmc/qualified/W02-transfer/executions.zip",
+      "verification/beyond-jbmc/qualified/W02-transfer/results.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b6943f57adc486fe4470c5d77c08b75805c3a64e",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b6943f57adc486fe4470c5d77c08b75805c3a64e/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T071741Z-8736285d8d05a93b",
+      "outputs": "20261124T071741Z-935716c75fb21a78",
+      "diff": "20261124T071741Z-954042edebbf40b5"
+    }
+  }
+}
