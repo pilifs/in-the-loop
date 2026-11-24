@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "6c5c7798-21e3-46a5-b989-5313736bdc7f",
-  "status": "open",
+  "status": "ended",
   "title": "Moonshot loop status",
   "first_prompt": "Inspect the state of the currently running moonshot loop -- share # of turns, tokens used so far, and summarize changes / issues",
   "client": {
@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-24T14:37:51.040Z",
-  "duration_seconds": 767424,
+  "ended": "2026-11-24T14:55:56.871Z",
+  "duration_seconds": 768510,
   "stats": {
-    "turns": 1227,
-    "api_calls": 5343,
-    "tool_calls": 4825,
+    "turns": 1228,
+    "api_calls": 5348,
+    "tool_calls": 4829,
     "tool_errors": 58,
     "compactions": 14,
     "peak_context_tokens": 666720,
     "usage": {
-      "input_tokens": 13160,
-      "output_tokens": 2338136,
-      "cache_read_input_tokens": 1657170056,
-      "cache_creation_input_tokens": 7723441
+      "input_tokens": 13172,
+      "output_tokens": 2339382,
+      "cache_read_input_tokens": 1658681981,
+      "cache_creation_input_tokens": 7726248
     }
   },
   "tools": {
-    "Bash": 4634,
+    "Bash": 4638,
     "SendMessage": 58,
     "Edit": 33,
     "ToolSearch": 23,
@@ -275,24 +275,24 @@
     {
       "index": 14,
       "started": "2026-11-24T09:54:30.041Z",
-      "ended": "2026-11-24T14:37:51.040Z",
-      "turns": 42,
-      "api_calls": 191,
+      "ended": "2026-11-24T14:55:56.871Z",
+      "turns": 43,
+      "api_calls": 196,
       "usage": {
-        "input_tokens": 472,
-        "output_tokens": 69461,
-        "cache_read_input_tokens": 43697002,
-        "cache_creation_input_tokens": 270499
+        "input_tokens": 484,
+        "output_tokens": 70707,
+        "cache_read_input_tokens": 45208927,
+        "cache_creation_input_tokens": 273306
       },
-      "peak_context_tokens": 300993
+      "peak_context_tokens": 303798
     }
   ],
   "log": {
-    "sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc",
-    "bytes": 84841789,
-    "lines": 46453,
-    "gzip_bytes": 13245323,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc.jsonl.gz"
+    "sha256": "b236681d53684c1c1ef41fd79a1449809581a9c705be2512f6970f31a66f5d95",
+    "bytes": 84967364,
+    "lines": 46498,
+    "gzip_bytes": 13275924,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/b236681d53684c1c1ef41fd79a1449809581a9c705be2512f6970f31a66f5d95.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -11281,6 +11281,38 @@
       "log_sha256": "55071ffff0e47fcfc92f185571cc9668c27c09c1d1101ca18d20b6e7c92e564a"
     },
     {
+      "change_id": "lnlprxmtumukyrxuxwnxxvnqxkuvlyrv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the organic-composition fast follow's upstream builds (verification pending)",
+      "body": "Setup for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md. Starts the setup record and queues three build jobs that take over a minute: POI's poi module at both #1420 revisions with TestDataFormatter (20261124-134447-setup-build-apache-poi-s-poi-module-at-b), ICU4J core at both #3249 revisions with the RBBI tests (20261124-134447-setup-build-icu4j-core-at-both-3249-revi), and Log4j core at both #1173 revisions with PatternProcessorTest (20261124-134447-setup-build-log4j-core-at-both-1173-revi). Each runs the landed test on the fix, the parent's own, and the landed one transplanted onto the parent. The setup session already fetched every pinned revision and resolved POI's Gradle configurations online. No claims or examples.",
+      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
+    },
+    {
+      "change_id": "pqwkunuwlkpvmprrusptvnzwnoktlsms",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the fast follow's sources, builds and preflights; rerun the POI build (verification pending)",
+      "body": "Setup record for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md. It covers the 20 pinned revisions (shallow mirrors and worktrees in ~/.cache/in-the-loop), the toolchain (Maven 3.8.4 and Gradle 9.8.1 checked against their publishers' checksums and signatures), and the built jars of cases A, C, E, F, H and I with each PR's landed test run on both sides. The landed test fails on the parent for A, E, F #755, H and I, and does not separate the sides for C and F #628. It also covers the six release graphs (14 jars, all good signatures) and the brief's JVM preflights for A, C, E, F, G (releases), H, I and D (76.1 release), each reproduced as the brief states. The first POI job failed only because the script looked for the jar in the wrong folder; job 20261124-135600-setup-build-apache-poi-s-poi-module-at-b reruns it with the path fixed. No claims or examples.",
+      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
+    },
+    {
+      "change_id": "ntzrqvoysnsrtylkxokwykomznsqvlmm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the POI and ICU builds and notes for the fast follow; retry the Log4j build on JDK 8 (verification pending)",
+      "body": "Setup record for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md, now ending in the Setup Agent Notes. The POI job passed: the landed TestDataFormatter fails twice on the parent, and the brief's US to Kazakh to US preflight reproduces on the built jars. The ICU job passed: the landed RBBI files fail four tests on the parent. The built core jars show en_US xx:yy going from [0,2,3,5] to [0,5], and the fix's word.brk is byte-identical to the parent's word_fi_sv.brk. The Log4j build failed twice for setup reasons (the java9 modules not named, then Maven run on JDK 11 where upstream CI uses JDK 8), each checked inline before the retry. Job 20261124-141323-setup-build-log4j-core-at-both-1173-revi runs it on JDK 8. The earlier job 20261124-140027-setup-build-log4j-core-at-both-1173-revi was committed with the previous record. No claims or examples.",
+      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
+    },
+    {
+      "change_id": "knpznmounolprzpnvzsozywxrsmxsxrp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the Log4j build for the fast follow; setup complete",
+      "body": "The last setup job for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md passed (20261124-141323-setup-build-log4j-core-at-both-1173-revi, Maven on JDK 8 as upstream CI). PatternProcessorTest passes on both sides, and the landed file fails 9 tests on the parent. The built jars reproduce the brief's rollover deadlines, matching the 2.19.0 and 2.20.0 releases side for side. The record now has built jars, landed-test results and preflight reproductions for all nine cases, and its Setup Agent Notes are final. No claims or examples.",
+      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
+    },
+    {
       "change_id": "xmxpoyommtzztorxxpssztvxwxuwrksm",
       "commit_id": null,
       "immutable": false,
@@ -11353,38 +11385,6 @@
       "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
     },
     {
-      "change_id": "lnlprxmtumukyrxuxwnxxvnqxkuvlyrv",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Queue the organic-composition fast follow's upstream builds (verification pending)",
-      "body": "Setup for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md. Starts the setup record and queues three build jobs that take over a minute: POI's poi module at both #1420 revisions with TestDataFormatter (20261124-134447-setup-build-apache-poi-s-poi-module-at-b), ICU4J core at both #3249 revisions with the RBBI tests (20261124-134447-setup-build-icu4j-core-at-both-3249-revi), and Log4j core at both #1173 revisions with PatternProcessorTest (20261124-134447-setup-build-log4j-core-at-both-1173-revi). Each runs the landed test on the fix, the parent's own, and the landed one transplanted onto the parent. The setup session already fetched every pinned revision and resolved POI's Gradle configurations online. No claims or examples.",
-      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
-    },
-    {
-      "change_id": "pqwkunuwlkpvmprrusptvnzwnoktlsms",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the fast follow's sources, builds and preflights; rerun the POI build (verification pending)",
-      "body": "Setup record for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md. It covers the 20 pinned revisions (shallow mirrors and worktrees in ~/.cache/in-the-loop), the toolchain (Maven 3.8.4 and Gradle 9.8.1 checked against their publishers' checksums and signatures), and the built jars of cases A, C, E, F, H and I with each PR's landed test run on both sides. The landed test fails on the parent for A, E, F #755, H and I, and does not separate the sides for C and F #628. It also covers the six release graphs (14 jars, all good signatures) and the brief's JVM preflights for A, C, E, F, G (releases), H, I and D (76.1 release), each reproduced as the brief states. The first POI job failed only because the script looked for the jar in the wrong folder; job 20261124-135600-setup-build-apache-poi-s-poi-module-at-b reruns it with the path fixed. No claims or examples.",
-      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
-    },
-    {
-      "change_id": "ntzrqvoysnsrtylkxokwykomznsqvlmm",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the POI and ICU builds and notes for the fast follow; retry the Log4j build on JDK 8 (verification pending)",
-      "body": "Setup record for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md, now ending in the Setup Agent Notes. The POI job passed: the landed TestDataFormatter fails twice on the parent, and the brief's US to Kazakh to US preflight reproduces on the built jars. The ICU job passed: the landed RBBI files fail four tests on the parent. The built core jars show en_US xx:yy going from [0,2,3,5] to [0,5], and the fix's word.brk is byte-identical to the parent's word_fi_sv.brk. The Log4j build failed twice for setup reasons (the java9 modules not named, then Maven run on JDK 11 where upstream CI uses JDK 8), each checked inline before the retry. Job 20261124-141323-setup-build-log4j-core-at-both-1173-revi runs it on JDK 8. The earlier job 20261124-140027-setup-build-log4j-core-at-both-1173-revi was committed with the previous record. No claims or examples.",
-      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
-    },
-    {
-      "change_id": "knpznmounolprzpnvzsozywxrsmxsxrp",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the Log4j build for the fast follow; setup complete",
-      "body": "The last setup job for llm-dlc/loops/organic-java-pr-capability-composition-fast-follow.md passed (20261124-141323-setup-build-log4j-core-at-both-1173-revi, Maven on JDK 8 as upstream CI). PatternProcessorTest passes on both sides, and the landed file fails 9 tests on the parent. The built jars reproduce the brief's rollover deadlines, matching the 2.19.0 and 2.20.0 releases side for side. The record now has built jars, landed-test results and preflight reproductions for all nine cases, and its Setup Agent Notes are final. No claims or examples.",
-      "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
-    },
-    {
       "change_id": "ntnkyvurqpzzwmquvkytsqptyzmmvmqv",
       "commit_id": null,
       "immutable": false,
@@ -11407,6 +11407,14 @@
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "52619db0ab175bcfad9f95e40c234a98f4f7caf225661c397abd386a0b5a70fc"
+    },
+    {
+      "change_id": "tsxnskkpoqlpwozmnzqllpqzkztwoltq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-144229-measure-threeten-overlap-histories-on-th: passed: 2 passed step(s) in 7m16s, peak 245.6 MiB (estimated 9m00s, 3.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the organic-pr-composition-fast-follow run, which keeps the queue while the run is under way.",
+      "log_sha256": "b236681d53684c1c1ef41fd79a1449809581a9c705be2512f6970f31a66f5d95"
     }
   ],
   "logs": {
@@ -14451,6 +14459,12 @@
       "lines": 11191,
       "gzip_bytes": 4382142,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/b2339544197ad33e7ea0480ed73458bc5bb2305e91ba77296ac71eca75837c21.jsonl.gz"
+    },
+    "b236681d53684c1c1ef41fd79a1449809581a9c705be2512f6970f31a66f5d95": {
+      "bytes": 84967364,
+      "lines": 46498,
+      "gzip_bytes": 13275924,
+      "url": null
     },
     "b249d47ca8a18113c5012c713c6e420ebb3f3f20891fe7999d5117cd1a5025e5": {
       "bytes": 41324008,

@@ -1,0 +1,264 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-144229-measure-threeten-overlap-histories-on-th",
+  "title": "Measure ThreeTen overlap histories on the unmodified change plan",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 7m16s, peak 245.6 MiB (estimated 9m00s, 3.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-144229-measure-threeten-overlap-histories-on-th.json",
+    "sha256": "1b8307aa7c8d9c5af38fb7a948447f560cc415bb56e0d32b5a43875d3603e5bd",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-144229-measure-threeten-overlap-histories-on-th",
+      "title": "Measure ThreeTen overlap histories on the unmodified change plan",
+      "description": "Run the existing application planner as found at the start of the organic campaign. Preserve the plan, finite old/new JVM observations and strict native first refusals at the public history of two parses through one cursor.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T14:42:29+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "9m"
+      },
+      "steps": [
+        {
+          "name": "Capture first strict native results",
+          "run": "python3 -B lib/benchmark/organic-composition/native_open.py threeten overlap",
+          "cwd": "."
+        },
+        {
+          "name": "Plan and execute the original histories",
+          "run": "python3 -B lib/benchmark/organic-composition/plan_run.py threeten opening planned cold",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/threeten"
+      ]
+    }
+  },
+  "sourceCommit": "7700cb962abd7c0db08604fda3a7cb1d9e209fb0",
+  "startedAt": "2026-11-24T14:55:52+00:00",
+  "finishedAt": "2026-11-24T15:06:10+00:00",
+  "wallSeconds": 618.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1455987,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 2160.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 257564672,
+    "wallSeconds": 436.7,
+    "cpuSeconds": 793.8,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.81
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 174.046,
+      "cpuSeconds": 174.301,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2344460288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "006dea141510c085eaa6e088cc79f2c13b43163f4827aa4611c74fb22920a7be",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-144229-measure-threeten-overlap-histories-on-th/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 53s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Capture first strict native results",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py threeten overlap",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 1.003,
+      "cpuSeconds": 1.756,
+      "cpuThrottledSeconds": 0.18,
+      "peakMemoryBytes": 71524352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-capture-first-strict-native-re.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Plan and execute the original histories",
+      "run": "python3 -B lib/benchmark/organic-composition/plan_run.py threeten opening planned cold",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 2160.0,
+      "cancelled": false,
+      "wallSeconds": 435.732,
+      "cpuSeconds": 792.006,
+      "cpuThrottledSeconds": 57.451,
+      "peakMemoryBytes": 257564672,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-plan-and-execute-the-original.log",
+        "lines": 2,
+        "bytes": 103,
+        "sha256": "d27740ffe24f783f3622e083f983b0beaf7aa69930759546490701abbb8b6473",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /tmp/organic-plans-n5u5000a/planned.json",
+        "2 claims in /tmp/organic-plans-n5u5000a/cold.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/threeten/first-native.json",
+      "change": "added",
+      "bytes": 14410,
+      "sha256": "4f0e3bdb332b9a9270d608784c3d4a55a9c4b861e439030abe88b817bc5edc28",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/threeten/opening/plans.zip",
+      "change": "added",
+      "bytes": 159683,
+      "sha256": "91e4f6fa64f0b2b8a685527c5c186b392684f683d440b7107cd6e03eacd6735c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/threeten/opening/summary.json",
+      "change": "added",
+      "bytes": 6880,
+      "sha256": "52443e4ac3d64aa49c87367212abf0221ea858d1752a5a0860c3f5dbd0d9aad7",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T15:06:44+00:00",
+    "applied": [
+      "verification/organic-composition/threeten/first-native.json",
+      "verification/organic-composition/threeten/opening/plans.zip",
+      "verification/organic-composition/threeten/opening/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3efb21c70df9b17beb40cd0800ba8ebb590cb29f",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3efb21c70df9b17beb40cd0800ba8ebb590cb29f/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T150610Z-4168733cd67a9287",
+      "outputs": "20261124T150610Z-456218b0e0755a22",
+      "diff": "20261124T150610Z-4782974124f18cdf"
+    }
+  }
+}

@@ -1,0 +1,259 @@
+--- /dev/null
++++ b/verification/organic-composition/threeten/first-native.json
+@@ -0,0 +1,56 @@
++{
++  "old": {
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3efb21c70df9b17beb40cd0800ba8ebb590cb29f/jvmcontract",
++      "prove",
++      "--classes",
++      "/tmp/organic-opening-6kae2arf",
++      "UpgradeProbe#overlap",
++      "--classpath",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-parent.jar",
++      "--engine",
++      "native",
++      "--assert",
++      "result == true",
++      "--unwind",
++      "16",
++      "--json"
++    ],
++    "exit": 1,
++    "stdout": "[\n  {\n    \"wire_version\": 1,\n    \"verdict\": \"unverifiable\",\n    \"target\": \"UpgradeProbe#overlap\",\n    \"domain\": \"berlin: boolean\",\n    \"assume\": null,\n    \"assert\": \"result == true\",\n    \"throws\": [],\n    \"throws_checked\": [],\n    \"counterexample\": null,\n    \"proof\": null,\n    \"problem\": \"the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V (org.threeten.bp.format.DateTimeFormatter.<clinit>() at UpgradeProbe.observe:11). With --gaps assume it assumes instead that org.threeten.bp.format.DateTimeFormatter.<clinit>() has run already, and threw nothing, and the verdict names the assumption\",\n    \"statement\": \"/tmp/jvmcontract-property-1466776-1795532334146906674-0/harness/PropertyHarness.java\",\n    \"findings\": [\n      {\n        \"rule_id\": \"unverifiable\",\n        \"message\": \"UpgradeProbe#overlap cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V (org.threeten.bp.format.DateTimeFormatter.<clinit>() at UpgradeProbe.observe:11). With --gaps assume it assumes instead that org.threeten.bp.format.DateTimeFormatter.<clinit>() has run already, and threw nothing, and the verdict names the assumption\",\n        \"uri\": null,\n        \"line\": 31\n      }\n    ],\n    \"output\": \"\u2717 UpgradeProbe#overlap cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V (org.threeten.bp.format.DateTimeFormatter.<clinit>() at UpgradeProbe.observe:11). With --gaps assume it assumes instead that org.threeten.bp.format.DateTimeFormatter.<clinit>() has run already, and threw nothing, and the verdict names the assumption\\n\",\n    \"work\": \"/tmp/jvmcontract-property-1466776-1795532334146906674-0\",\n    \"search\": {\n      \"engine\": \"native\",\n      \"checker\": \"jvmcontract's own checker (CaDiCaL)\",\n      \"seconds\": 0.02700879,\n      \"properties\": 1,\n      \"unwind\": 16,\n      \"max_array_length\": 8,\n      \"stage\": null,\n      \"native\": {\n        \"paths\": 2,\n        \"merges\": 0,\n        \"solver_calls\": 1,\n        \"solving_seconds\": 0.000012844,\n        \"gates_evaluated\": 1,\n        \"evaluating_seconds\": 1.163e-6,\n        \"divisions\": 0,\n        \"divisions_built\": 0,\n        \"multiplications\": 0,\n        \"multiplications_built\": 0,\n        \"variables\": 2,\n        \"clauses\": 1,\n        \"seconds\": 0.025617761,\n        \"loading_seconds\": 0.004815164,\n        \"decoding_seconds\": 0.000377856,\n        \"encoding_seconds\": 0.001835773,\n        \"witness_seconds\": 0.0\n      },\n      \"gap_mode\": \"strict\",\n      \"gaps\": [\n        {\n          \"id\": \"class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V\",\n          \"kind\": \"class-initializer\",\n          \"call\": \"org.threeten.bp.format.DateTimeFormatter.<clinit>()\",\n          \"sites\": [\n            \"UpgradeProbe.observe:11\"\n          ],\n          \"approximation\": \"has run already, and threw nothing\",\n          \"treatment\": \"refused\"\n        }\n      ],\n      \"deadline_seconds\": 600.0,\n      \"runs\": [\n        {\n          \"checker\": \"native\",\n          \"purpose\": \"proof\",\n          \"stage\": null,\n          \"budget_seconds\": 600.0,\n          \"seconds\": 0.026,\n          \"ended\": \"no-verdict\",\n          \"ending\": \"no-verdict\",\n          \"phases\": {\n            \"loading\": 0.005,\n            \"lowering\": 0.0,\n            \"symbolic\": 0.019,\n            \"encoding\": 0.002,\n            \"solving\": 0.0,\n            \"trace\": 0.0,\n            \"other\": 0.0\n          },\n          \"formula\": {\n            \"variables\": 2,\n            \"clauses\": 1\n          }\n        }\n      ],\n      \"phases\": {\n        \"seconds\": 0.035,\n        \"setup\": 0.001,\n        \"harness\": 0.0,\n        \"gaps\": 0.0,\n        \"contracts\": 0.0,\n        \"runs\": 0.026,\n        \"replay\": 0.0,\n        \"jvm\": 0.0,\n        \"other\": 0.008\n      }\n    },\n    \"stated\": {\n      \"kind\": \"property\",\n      \"domain\": {\n        \"parameters\": [\n          {\n            \"name\": \"berlin\",\n            \"type\": \"boolean\",\n            \"kind\": \"primitive\",\n            \"null\": false\n          }\n        ],\n        \"shared_arrays\": false,\n        \"text\": \"berlin: boolean\"\n      },\n      \"assumptions\": [\n        {\n          \"kind\": \"initialization\",\n          \"text\": \"every JDK class is initialized already, its static initializer having run and thrown nothing\",\n          \"basis\": \"engine\"\n        }\n      ],\n      \"observations\": {\n        \"result\": \"the result and the parameters, against result == true\",\n        \"exceptions\": \"none may be thrown\"\n      },\n      \"bounds\": {\n        \"unwind\": 16,\n        \"max_array_length\": null,\n        \"complete\": false\n      },\n      \"models\": {\n        \"used\": true,\n        \"digest\": \"sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac\",\n        \"classes\": 40,\n        \"jdk\": \"21.0.13\"\n      },\n      \"checker\": {\n        \"engine\": \"native\",\n        \"name\": \"jvmcontract's own checker (CaDiCaL)\",\n        \"solver\": \"CaDiCaL 1.9.5 (bundled)\",\n        \"fallback\": null,\n        \"sat\": {\n          \"solver\": \"CaDiCaL\",\n          \"version\": \"1.9.5\",\n          \"source\": \"bundled by the Rust crate cadical 0.1.16\",\n          \"configuration\": [\n            \"CaDiCaL's default options\",\n            \"incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions\",\n            \"the run's deadline through CaDiCaL's terminate callback\",\n            \"a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback\"\n          ]\n        }\n      },\n      \"gap_mode\": \"strict\",\n      \"confirmation\": null\n    }\n  }\n]\n",
++    "stderr": "",
++    "artifacts": [
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-parent.jar",
++        "sha256": "f2db710ef43a72dc7987b55f23b9397376f6fc6f090e335df721553dfc2d6ebc"
++      }
++    ]
++  },
++  "new": {
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3efb21c70df9b17beb40cd0800ba8ebb590cb29f/jvmcontract",
++      "prove",
++      "--classes",
++      "/tmp/organic-opening-dxvtkc5r",
++      "UpgradeProbe#overlap",
++      "--classpath",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-fix.jar",
++      "--engine",
++      "native",
++      "--assert",
++      "result == true",
++      "--unwind",
++      "16",
++      "--json"
++    ],
++    "exit": 1,
++    "stdout": "[\n  {\n    \"wire_version\": 1,\n    \"verdict\": \"unverifiable\",\n    \"target\": \"UpgradeProbe#overlap\",\n    \"domain\": \"berlin: boolean\",\n    \"assume\": null,\n    \"assert\": \"result == true\",\n    \"throws\": [],\n    \"throws_checked\": [],\n    \"counterexample\": null,\n    \"proof\": null,\n    \"problem\": \"the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V (org.threeten.bp.format.DateTimeFormatter.<clinit>() at UpgradeProbe.observe:11). With --gaps assume it assumes instead that org.threeten.bp.format.DateTimeFormatter.<clinit>() has run already, and threw nothing, and the verdict names the assumption\",\n    \"statement\": \"/tmp/jvmcontract-property-1466796-1795532334597825221-0/harness/PropertyHarness.java\",\n    \"findings\": [\n      {\n        \"rule_id\": \"unverifiable\",\n        \"message\": \"UpgradeProbe#overlap cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V (org.threeten.bp.format.DateTimeFormatter.<clinit>() at UpgradeProbe.observe:11). With --gaps assume it assumes instead that org.threeten.bp.format.DateTimeFormatter.<clinit>() has run already, and threw nothing, and the verdict names the assumption\",\n        \"uri\": null,\n        \"line\": 31\n      }\n    ],\n    \"output\": \"\u2717 UpgradeProbe#overlap cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V (org.threeten.bp.format.DateTimeFormatter.<clinit>() at UpgradeProbe.observe:11). With --gaps assume it assumes instead that org.threeten.bp.format.DateTimeFormatter.<clinit>() has run already, and threw nothing, and the verdict names the assumption\\n\",\n    \"work\": \"/tmp/jvmcontract-property-1466796-1795532334597825221-0\",\n    \"search\": {\n      \"engine\": \"native\",\n      \"checker\": \"jvmcontract's own checker (CaDiCaL)\",\n      \"seconds\": 0.025759263,\n      \"properties\": 1,\n      \"unwind\": 16,\n      \"max_array_length\": 8,\n      \"stage\": null,\n      \"native\": {\n        \"paths\": 2,\n        \"merges\": 0,\n        \"solver_calls\": 1,\n        \"solving_seconds\": 0.000010259,\n        \"gates_evaluated\": 1,\n        \"evaluating_seconds\": 1.473e-6,\n        \"divisions\": 0,\n        \"divisions_built\": 0,\n        \"multiplications\": 0,\n        \"multiplications_built\": 0,\n        \"variables\": 2,\n        \"clauses\": 1,\n        \"seconds\": 0.024407708,\n        \"loading_seconds\": 0.004289344,\n        \"decoding_seconds\": 0.000382706,\n        \"encoding_seconds\": 0.001816486,\n        \"witness_seconds\": 0.0\n      },\n      \"gap_mode\": \"strict\",\n      \"gaps\": [\n        {\n          \"id\": \"class-initializer:org.threeten.bp.format.DateTimeFormatter.<clinit>()V\",\n          \"kind\": \"class-initializer\",\n          \"call\": \"org.threeten.bp.format.DateTimeFormatter.<clinit>()\",\n          \"sites\": [\n            \"UpgradeProbe.observe:11\"\n          ],\n          \"approximation\": \"has run already, and threw nothing\",\n          \"treatment\": \"refused\"\n        }\n      ],\n      \"deadline_seconds\": 600.0,\n      \"runs\": [\n        {\n          \"checker\": \"native\",\n          \"purpose\": \"proof\",\n          \"stage\": null,\n          \"budget_seconds\": 600.0,\n          \"seconds\": 0.024,\n          \"ended\": \"no-verdict\",\n          \"ending\": \"no-verdict\",\n          \"phases\": {\n            \"loading\": 0.004,\n            \"lowering\": 0.0,\n            \"symbolic\": 0.018,\n            \"encoding\": 0.002,\n            \"solving\": 0.0,\n            \"trace\": 0.0,\n            \"other\": 0.0\n          },\n          \"formula\": {\n            \"variables\": 2,\n            \"clauses\": 1\n          }\n        }\n      ],\n      \"phases\": {\n        \"seconds\": 0.033,\n        \"setup\": 0.001,\n        \"harness\": 0.0,\n        \"gaps\": 0.0,\n        \"contracts\": 0.0,\n        \"runs\": 0.024,\n        \"replay\": 0.0,\n        \"jvm\": 0.0,\n        \"other\": 0.008\n      }\n    },\n    \"stated\": {\n      \"kind\": \"property\",\n      \"domain\": {\n        \"parameters\": [\n          {\n            \"name\": \"berlin\",\n            \"type\": \"boolean\",\n            \"kind\": \"primitive\",\n            \"null\": false\n          }\n        ],\n        \"shared_arrays\": false,\n        \"text\": \"berlin: boolean\"\n      },\n      \"assumptions\": [\n        {\n          \"kind\": \"initialization\",\n          \"text\": \"every JDK class is initialized already, its static initializer having run and thrown nothing\",\n          \"basis\": \"engine\"\n        }\n      ],\n      \"observations\": {\n        \"result\": \"the result and the parameters, against result == true\",\n        \"exceptions\": \"none may be thrown\"\n      },\n      \"bounds\": {\n        \"unwind\": 16,\n        \"max_array_length\": null,\n        \"complete\": false\n      },\n      \"models\": {\n        \"used\": true,\n        \"digest\": \"sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac\",\n        \"classes\": 40,\n        \"jdk\": \"21.0.13\"\n      },\n      \"checker\": {\n        \"engine\": \"native\",\n        \"name\": \"jvmcontract's own checker (CaDiCaL)\",\n        \"solver\": \"CaDiCaL 1.9.5 (bundled)\",\n        \"fallback\": null,\n        \"sat\": {\n          \"solver\": \"CaDiCaL\",\n          \"version\": \"1.9.5\",\n          \"source\": \"bundled by the Rust crate cadical 0.1.16\",\n          \"configuration\": [\n            \"CaDiCaL's default options\",\n            \"incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions\",\n            \"the run's deadline through CaDiCaL's terminate callback\",\n            \"a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback\"\n          ]\n        }\n      },\n      \"gap_mode\": \"strict\",\n      \"confirmation\": null\n    }\n  }\n]\n",
++    "stderr": "",
++    "artifacts": [
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/A-threetenbp-fix.jar",
++        "sha256": "568a09e20cecaec3c5df3e8bcaf3bd35809dc3e329992b7799956d35b535df89"
++      }
++    ]
++  }
++}
+Binary file verification/organic-composition/threeten/opening/plans.zip changed
+--- /dev/null
++++ b/verification/organic-composition/threeten/opening/summary.json
+@@ -0,0 +1,196 @@
++{
++  "wallSeconds": {
++    "planned": 201.59,
++    "cold": 234.033
++  },
++  "plans": {
++    "planned": [
++      {
++        "id": "overlap",
++        "claimKey": "e96221f4e350bcde9e5e966993efa76941b9aead26537298cb0cccf5635634a5",
++        "executionKey": "bb6926b0a01156753f6f09e8dd3d18b028dcc3bda57a92ed2f651d517129f15e",
++        "status": "open",
++        "firstOpenDependency": "original caller executions",
++        "reason": null,
++        "witness": null,
++        "execution": null,
++        "children": null
++      },
++      {
++        "id": "earlier-and-cursor",
++        "claimKey": "69adab93223c22a06ff41f171a448b14624130e23ebe7d58c3f017aa2d2b1926",
++        "executionKey": "24d6acd715e9d3c25b9b2b93b1463d0e24c014962d397f497b62146ffddb55be",
++        "status": "open",
++        "firstOpenDependency": "original caller executions",
++        "reason": null,
++        "witness": null,
++        "execution": null,
++        "children": null
++      }
++    ],
++    "cold": [
++      {
++        "id": "overlap",
++        "claimKey": "e96221f4e350bcde9e5e966993efa76941b9aead26537298cb0cccf5635634a5",
++        "executionKey": "bb6926b0a01156753f6f09e8dd3d18b028dcc3bda57a92ed2f651d517129f15e",
++        "status": "established",
++        "firstOpenDependency": null,
++        "reason": null,
++        "witness": null,
++        "execution": {
++          "old": {
++            "action": "executed",
++            "key": "aee4bb28918ef2aaae8fca9c43c486ad522f6f99e397434b90040a896291626c"
++          },
++          "new": {
++            "action": "executed",
++            "key": "87093e729718979981cd311d46556c1d56bed68280cce601adcc33d0eda189f9"
++          }
++        },
++        "children": [
++          {
++            "input": 0,
++            "arguments": [
++              "instant",
++              "2016-11-06T01:00-04:00[America/New_York]",
++              "2016-11-06T01:00-05:00[America/New_York]"
++            ],
++            "expected": {
++              "return": "2016-11-06T05:00:00Z/40/-1|2016-11-06T05:00:00Z/80/-1|end@80/80/80"
++            },
++            "old": {
++              "return": "2016-11-06T05:00:00Z/40/-1|2016-11-06T05:00:00Z/80/-1|end@80/80/80"
++            },
++            "new": {
++              "return": "2016-11-06T05:00:00Z/40/-1|2016-11-06T06:00:00Z/80/-1|end@80/80/80"
++            },
++            "intendedChange": {
++              "return": "2016-11-06T05:00:00Z/40/-1|2016-11-06T06:00:00Z/80/-1|end@80/80/80"
++            },
++            "status": "established",
++            "id": "a8d9db8303a5df93e047461b7430ce6d000009d47901ce33c6f4f6b792cfe9e4"
++          },
++          {
++            "input": 1,
++            "arguments": [
++              "instant",
++              "2016-10-30T02:00+02:00[Europe/Berlin]",
++              "2016-10-30T02:00+01:00[Europe/Berlin]"
++            ],
++            "expected": {
++              "return": "2016-10-30T00:00:00Z/37/-1|2016-10-30T00:00:00Z/74/-1|end@74/74/74"
++            },
++            "old": {
++              "return": "2016-10-30T00:00:00Z/37/-1|2016-10-30T00:00:00Z/74/-1|end@74/74/74"
++            },
++            "new": {
++              "return": "2016-10-30T00:00:00Z/37/-1|2016-10-30T01:00:00Z/74/-1|end@74/74/74"
++            },
++            "intendedChange": {
++              "return": "2016-10-30T00:00:00Z/37/-1|2016-10-30T01:00:00Z/74/-1|end@74/74/74"
++            },
++            "status": "established",
++            "id": "5e669cbb5adb2d8ae7a036f32815f8a53a60670fbdd6a8bbf255134ab940fcb0"
++          }
++        ]
++      },
++      {
++        "id": "earlier-and-cursor",
++        "claimKey": "69adab93223c22a06ff41f171a448b14624130e23ebe7d58c3f017aa2d2b1926",
++        "executionKey": "24d6acd715e9d3c25b9b2b93b1463d0e24c014962d397f497b62146ffddb55be",
++        "status": "established",
++        "firstOpenDependency": null,
++        "reason": null,
++        "witness": null,
++        "execution": {
++          "old": {
++            "action": "executed",
++            "key": "7eb07e53ff1354bdb2375bf4be955bbb9a206ba0a96c979cdf74bd14e4146135"
++          },
++          "new": {
++            "action": "executed",
++            "key": "bddde751ae2b11b8fd8cc2be0ce47eb38d48f7b54d2bdae708e2c5506f6396b8"
++          }
++        },
++        "children": [
++          {
++            "input": 0,
++            "arguments": [
++              "instant",
++              "2016-11-06T01:00-04:00[America/New_York]",
++              "2016-11-06T01:00-04:00[America/New_York]"
++            ],
++            "expected": {
++              "return": "2016-11-06T05:00:00Z/40/-1|2016-11-06T05:00:00Z/80/-1|end@80/80/80"
++            },
++            "old": {
++              "return": "2016-11-06T05:00:00Z/40/-1|2016-11-06T05:00:00Z/80/-1|end@80/80/80"
++            },
++            "new": {
++              "return": "2016-11-06T05:00:00Z/40/-1|2016-11-06T05:00:00Z/80/-1|end@80/80/80"
++            },
++            "status": "established",
++            "id": "f70367dbcb2e49194eaa6520f36b08e1ad7b7d837024ec32b0e0e39a0cfd6c2e"
++          },
++          {
++            "input": 1,
++            "arguments": [
++              "cursor",
++              "2016-11-06T01:00-04:00[America/New_York]",
++              "2016-11-06T01:00-05:00[America/New_York]"
++            ],
++            "expected": {
++              "return": "/40/-1|/80/-1|end@80/80/80"
++            },
++            "old": {
++              "return": "/40/-1|/80/-1|end@80/80/80"
++            },
++            "new": {
++              "return": "/40/-1|/80/-1|end@80/80/80"
++            },
++            "status": "established",
++            "id": "2da5470d24ff600d710b30540487defce3263b1ab1cb4c28b9acc8ccda967c23"
++          },
++          {
++            "input": 2,
++            "arguments": [
++              "instant",
++              "2016-10-30T02:00+02:00[Europe/Berlin]",
++              "2016-10-30T02:00+02:00[Europe/Berlin]"
++            ],
++            "expected": {
++              "return": "2016-10-30T00:00:00Z/37/-1|2016-10-30T00:00:00Z/74/-1|end@74/74/74"
++            },
++            "old": {
++              "return": "2016-10-30T00:00:00Z/37/-1|2016-10-30T00:00:00Z/74/-1|end@74/74/74"
++            },
++            "new": {
++              "return": "2016-10-30T00:00:00Z/37/-1|2016-10-30T00:00:00Z/74/-1|end@74/74/74"
++            },
++            "status": "established",
++            "id": "bdeb1531138e6b6ec00e363287e6f169c698c0f3b7834c5363f430eb7147db3e"
++          },
++          {
++            "input": 3,
++            "arguments": [
++              "cursor",
++              "2016-10-30T02:00+02:00[Europe/Berlin]",
++              "2016-10-30T02:00+01:00[Europe/Berlin]"
++            ],
++            "expected": {
++              "return": "/37/-1|/74/-1|end@74/74/74"
++            },
++            "old": {
++              "return": "/37/-1|/74/-1|end@74/74/74"
++            },
++            "new": {
++              "return": "/37/-1|/74/-1|end@74/74/74"
++            },
++            "status": "established",
++            "id": "489ef8f16482aff4e7c59a2c22d3b48c8fe632d7018504f029a55a11f9fc7a4f"
++          }
++        ]
++      }
++    ]
++  }
++}
