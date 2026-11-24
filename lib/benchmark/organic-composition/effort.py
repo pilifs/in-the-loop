@@ -25,6 +25,13 @@ def main(end):
     per_job={j["id"]:{"source":j["source"],"status":j["status"],
                       "wallSeconds":j["usage"].get("wallSeconds"),"cpuSeconds":j["usage"].get("cpuSeconds"),
                       "peakMemoryBytes":j["usage"].get("peakMemoryBytes")} for j in jobs}
+    replacements={"20261124-150013-retry-the-threeten-public-caller-after-o":
+                  "20261124-152629-retain-the-original-threeten-startup-obs",
+                  "20261124-153512-locate-the-ordinary-and-observed-poi-for":
+                  "20261124-155203-retain-the-poi-startup-frontier-on-ordin"}
+    superseded={job:success for job,success in replacements.items()
+                if job in per_job and per_job[job]["status"]=="failed" and per_job.get(success,{}).get("status")=="passed"}
+    unresolved=[job for job,row in per_job.items() if row["status"]!="passed" and job not in superseded]
     profiles={}
     for case in ("threeten","poi","phone","icu","collections-628","collections-755","url-only"):
         folder=HERE/case
@@ -37,12 +44,13 @@ def main(end):
             row["measuredPlanSeconds"]={name:{k:runs[name][k] for k in ("wallSeconds","childCpuSeconds")} for name in ("cold","warm","clean") if name in runs}
         profiles[case]=row
     record={"domainCyclesObserved":1,"setup":"Separate setup run, outside the job and inference intervals below.",
-            "aggregateInference":{"session":session,"startSnapshot":START,"endSnapshot":end,"delta":totals,
+            "aggregateInference":{"session":session,"startSnapshot":START,"endSnapshot":end,"startCounters":before,"endCounters":after,"delta":totals,
             "scope":"Published aggregate counters between the initial checkout and the named source checkpoint. Includes work between trace syncs; per-case inference and post-checkpoint reporting cannot be isolated."},
             "jobs":{"firstSubmitted":first.isoformat(),"lastFinished":last.isoformat(),"elapsedSeconds":(last-first).total_seconds(),
                     "sumWallSeconds":round(sum(x["wallSeconds"] or 0 for x in per_job.values()),3),
                     "sumCpuSeconds":round(sum(x["cpuSeconds"] or 0 for x in per_job.values()),3),
-                    "jobsMissingCpu":sum(x["cpuSeconds"] is None for x in per_job.values()),"costs":per_job},
+                    "jobsMissingCpu":sum(x["cpuSeconds"] is None for x in per_job.values()),
+                    "supersededAttempts":superseded,"unresolvedAttempts":unresolved,"costs":per_job},
             "cases":profiles,"caseHelpRequests":sum(p.get("requestsForCaseInput",0) for p in profiles.values())}
     (ROOT/OUTPUT/"effort.json").write_text(json.dumps(record,indent=2)+"\n")
     print(len(per_job),"jobs;",len(profiles),"case records")
