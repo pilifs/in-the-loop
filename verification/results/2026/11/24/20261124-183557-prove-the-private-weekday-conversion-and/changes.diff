@@ -1,0 +1,2889 @@
+--- /dev/null
++++ b/verification/organic-composition/lang/private-conversion.json
+@@ -0,0 +1,2494 @@
++{
++  "proof": {
++    "entry": "org.apache.commons.lang3.time.FastDateParser#toCalendarDayOfWeek(I)I",
++    "rows": [
++      {
++        "args": [
++          0
++        ],
++        "result": 0
++      },
++      {
++        "args": [
++          1
++        ],
++        "result": 2
++      },
++      {
++        "args": [
++          7
++        ],
++        "result": 1
++      },
++      {
++        "args": [
++          8
++        ],
++        "result": 8
++      },
++      {
++        "args": [
++          15
++        ],
++        "result": 15
++      }
++    ],
++    "commit": "f4bdd4e1d2c99cdab12e5177989fc11e1add33d5",
++    "orderedClasspath": [
++      {
++        "file": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-fix.jar",
++        "sha256": "26166ddf56ce976033f286bfc1c30db63531c5dea80132de8040177f45bf4316"
++      }
++    ],
++    "provider": "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-fix.jar",
++    "jdk": {
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      },
++      "image": "a38d365286891db1cf95f1ce9f84a0967700f987339a3adceaab1b56788573d5"
++    },
++    "classSha256": "c31e18e97971cd8550647374afa7dcfb1e8b6bee386bc95adad7e39cbd55c565",
++    "poolSha256": "8c9f9601115625cf6f8f378c358cb60c48a3ac5a5ee0a107aebe7c95bc9e49ad",
++    "codeSha256": "13cec49ccc8eb26f40efde960af28005c749474fa578afbbad7069ab7ce6412c",
++    "bodies": {
++      "isValidDayOfWeek(I)Z": {
++        "access": 10,
++        "code": "1a04a1000d1a1007a3000704a7000403ac",
++        "codeSha256": "85958b51170fbde0b75a5b1bbdf0377af8300d5096f6928b3dc61234e0ba3e0c",
++        "expression": "(ite (bvslt x #x00000001) #x00000000 (ite (bvsgt x #x00000007) #x00000000 #x00000001))",
++        "calls": {}
++      },
++      "toCalendarDayOfWeek(I)I": {
++        "access": 10,
++        "code": "1ab8000a9a00051aac1a1007a0000704a700061a0460ac",
++        "codeSha256": "13cec49ccc8eb26f40efde960af28005c749474fa578afbbad7069ab7ce6412c",
++        "expression": "(ite (distinct (isValidDayOfWeek x) #x00000000) (ite (distinct x #x00000007) (bvadd x #x00000001) #x00000001) x)",
++        "calls": {
++          "1": "isValidDayOfWeek(I)Z"
++        }
++      },
++      "access$800(I)I": {
++        "access": 4104,
++        "code": "1ab80007ac",
++        "codeSha256": "799b52c01d47b9a4fefa08d2db23394c725f5dcf3c53a69cd70d88b29512c563",
++        "expression": "(toCalendarDayOfWeek x)",
++        "calls": {
++          "1": "toCalendarDayOfWeek(I)I"
++        }
++      }
++    },
++    "scope": "Every signed int after successful initialization. All control paths terminate normally, read only the argument and constants, and have no heap or static writes.",
++    "qualificationSha256": "d361c56be6e7effa714da0a05df5dbcc04ae00fffc208e762035ab98c6ef667b",
++    "declaredSpec": {
++      "entry": "org.apache.commons.lang3.time.FastDateParser#toCalendarDayOfWeek(I)I",
++      "callFrom": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++      "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++      "startupWithin": "org.apache.commons.lang3.time.FastDateFormat#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++      "rows": [
++        {
++          "args": [
++            0
++          ],
++          "result": 0
++        },
++        {
++          "args": [
++            1
++          ],
++          "result": 2
++        },
++        {
++          "args": [
++            7
++          ],
++          "result": 1
++        },
++        {
++          "args": [
++            8
++          ],
++          "result": 8
++        },
++        {
++          "args": [
++            15
++          ],
++          "result": 15
++        }
++      ]
++    },
++    "query": "(set-logic QF_BV)\n(define-fun isValidDayOfWeek ((x (_ BitVec 32))) (_ BitVec 32) (ite (bvslt x #x00000001) #x00000000 (ite (bvsgt x #x00000007) #x00000000 #x00000001)))\n(define-fun toCalendarDayOfWeek ((x (_ BitVec 32))) (_ BitVec 32) (ite (distinct (isValidDayOfWeek x) #x00000000) (ite (distinct x #x00000007) (bvadd x #x00000001) #x00000001) x))\n(define-fun access$800 ((x (_ BitVec 32))) (_ BitVec 32) (toCalendarDayOfWeek x))\n(declare-const x (_ BitVec 32))\n(assert (not (and (= (isValidDayOfWeek x) (ite (and (bvsge x #x00000001) (bvsle x #x00000007)) #x00000001 #x00000000)) (= (toCalendarDayOfWeek x) (ite (and (bvsge x #x00000001) (bvsle x #x00000007)) (ite (= x #x00000007) #x00000001 (bvadd x #x00000001)) x)) (= (access$800 x) (toCalendarDayOfWeek x)) (= (toCalendarDayOfWeek #x00000000) #x00000000) (= (toCalendarDayOfWeek #x00000001) #x00000002) (= (toCalendarDayOfWeek #x00000007) #x00000001) (= (toCalendarDayOfWeek #x00000008) #x00000008) (= (toCalendarDayOfWeek #x0000000f) #x0000000f))))\n(check-sat)\n",
++    "solver": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++    "counterexample": "unsat",
++    "key": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca"
++  },
++  "strategyComparison": {
++    "bindings": {
++      "old": {
++        "commit": "390fe4027e331a77bc126d647fee3287c13827a6",
++        "jar": "bebde4555f1cc520baab15d86d29df52d1fdc79623c2d9c027438e374e72d01a",
++        "selected": "org/apache/commons/lang3/time/FastDateParser$3",
++        "strategyClass": "beb13645cfe2149fc2d62e30d91f25d31bb851c1614a623d03b548e4cd3f65df",
++        "parserClass": "17a8dd622da20b7b0970f09cce14b2472a99a16415b0a4bb1a2e60505eea0b2d",
++        "initializerCode": "40640dc59f8ed2fc7d2de2337963ec15a0928ad9dbe38b6edfaad2c7a2d66fde",
++        "putstatic": 120,
++        "body": "1c1007a0000704a700061c0460ac"
++      },
++      "new": {
++        "commit": "f4bdd4e1d2c99cdab12e5177989fc11e1add33d5",
++        "jar": "26166ddf56ce976033f286bfc1c30db63531c5dea80132de8040177f45bf4316",
++        "selected": "org/apache/commons/lang3/time/FastDateParser$3",
++        "strategyClass": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170",
++        "parserClass": "c31e18e97971cd8550647374afa7dcfb1e8b6bee386bc95adad7e39cbd55c565",
++        "initializerCode": "75f7653222288f8ac15888c47041eeba7094e40619927aec03e87945bc4fb025",
++        "putstatic": 120,
++        "body": "1cb80007ac"
++      }
++    },
++    "query": "(set-logic QF_BV)\n(define-fun isValidDayOfWeek ((x (_ BitVec 32))) (_ BitVec 32) (ite (bvslt x #x00000001) #x00000000 (ite (bvsgt x #x00000007) #x00000000 #x00000001)))\n(define-fun toCalendarDayOfWeek ((x (_ BitVec 32))) (_ BitVec 32) (ite (distinct (isValidDayOfWeek x) #x00000000) (ite (distinct x #x00000007) (bvadd x #x00000001) #x00000001) x))\n(define-fun access$800 ((x (_ BitVec 32))) (_ BitVec 32) (toCalendarDayOfWeek x))\n(declare-const x (_ BitVec 32))\n(assert (xor (= (ite (= x #x00000007) #x00000001 (bvadd x #x00000001)) (access$800 x)) (and (bvsge x #x00000001) (bvsle x #x00000007))))\n(check-sat)\n",
++    "counterexample": "unsat",
++    "equalSignedInputs": 7,
++    "differentSignedInputs": 4294967289,
++    "scope": "The installed weekday number strategies agree precisely on ISO days 1 through 7. The public parsing claims cover only their registered histories."
++  },
++  "controls": {
++    "parent": "private weekday conversion absent",
++    "wrongTable": "private bytecode contradicts the declared weekday result",
++    "withheldProof": "missing or stale private proof",
++    "withheldInitialization": "missing live timezone initialization",
++    "withheldApplications": "missing or displaced original conversion",
++    "withheldNormalizationOnly": "missing or displaced original conversion",
++    "fixedProofOnParent": "missing or stale private proof",
++    "wrongLiveBody": "loaded helper differs from the proved static body"
++  },
++  "corruptTableControl": {
++    "arguments": [
++      0
++    ],
++    "declaredResult": 1,
++    "provedResult": 0,
++    "counterexample": "sat"
++  },
++  "ordinaryStartup": {
++    "old": {
++      "commit": "390fe4027e331a77bc126d647fee3287c13827a6",
++      "repetitions": [
++        {
++          "class": "org.apache.commons.lang3.time.TimeZones",
++          "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++          "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++          "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++          "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++          "gmtDelegate": "GMT",
++          "parserZone": "UTC",
++          "java25": false,
++          "availableIds": 632,
++          "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++        },
++        {
++          "class": "org.apache.commons.lang3.time.TimeZones",
++          "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++          "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++          "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++          "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++          "gmtDelegate": "GMT",
++          "parserZone": "UTC",
++          "java25": false,
++          "availableIds": 632,
++          "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++        }
++      ],
++      "args": [
++        "US",
++        "lenient",
++        "mixed"
++      ],
++      "observation": {
++        "return": "0,true,10,-1,131071,1735430400000,1735430400000/7,true,21,-1,131071,1735430400000,1735430400000/8,java.lang.IllegalArgumentException,32,-1,131071,1735516800000,1735516800000/15,java.lang.IllegalArgumentException,44,-1,131071,1735516800000,1735516800000/7,true,55,-1,131071,1735430400000,1735430400000"
++      },
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      }
++    },
++    "new": {
++      "commit": "f4bdd4e1d2c99cdab12e5177989fc11e1add33d5",
++      "repetitions": [
++        {
++          "class": "org.apache.commons.lang3.time.TimeZones",
++          "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++          "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++          "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++          "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++          "gmtDelegate": "GMT",
++          "parserZone": "UTC",
++          "java25": false,
++          "availableIds": 632,
++          "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++        },
++        {
++          "class": "org.apache.commons.lang3.time.TimeZones",
++          "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++          "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++          "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++          "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++          "gmtDelegate": "GMT",
++          "parserZone": "UTC",
++          "java25": false,
++          "availableIds": 632,
++          "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++        }
++      ],
++      "args": [
++        "US",
++        "lenient",
++        "mixed"
++      ],
++      "observation": {
++        "return": "0,true,10,-1,131071,1734825600000,1734825600000/7,true,21,-1,131071,1735430400000,1735430400000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1735430400000,1735430400000"
++      },
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      }
++    }
++  },
++  "trials": [
++    {
++      "args": [
++        "US",
++        "strict",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1735430400000,1735430400000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1735430400000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1735430400000/7,true,55,-1,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "46d7502de717db7504302dcadfb2ff815111790d0b93725b868dcb0b357f0208",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "US",
++        "strict",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1735430400000,1735430400000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1735430400000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1735430400000/7,true,55,-1,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "46d7502de717db7504302dcadfb2ff815111790d0b93725b868dcb0b357f0208",
++      "repetition": 2
++    },
++    {
++      "args": [
++        "US",
++        "lenient",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,true,10,-1,131071,1734825600000,1734825600000/7,true,21,-1,131071,1735430400000,1735430400000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "3d3be98a7c0221add638196b770fdf7bcd2bb0a88151b84f55ccffb8aa46ac77",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "US",
++        "lenient",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,true,10,-1,131071,1734825600000,1734825600000/7,true,21,-1,131071,1735430400000,1735430400000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "3d3be98a7c0221add638196b770fdf7bcd2bb0a88151b84f55ccffb8aa46ac77",
++      "repetition": 2
++    },
++    {
++      "args": [
++        "DE",
++        "strict",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1736035200000,1736035200000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1736035200000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1736035200000/7,true,55,-1,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "68eb5b2fa3eee6718efe0d7e89e88a4201855b3fea3e53e8bd017c47482cddda",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "DE",
++        "strict",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,java.lang.IllegalArgumentException,10,-1,138,invalid,1735948800000/7,true,21,-1,131071,1736035200000,1736035200000/8,java.lang.IllegalArgumentException,32,-1,131071,invalid,1736035200000/15,java.lang.IllegalArgumentException,44,-1,131071,invalid,1736035200000/7,true,55,-1,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "68eb5b2fa3eee6718efe0d7e89e88a4201855b3fea3e53e8bd017c47482cddda",
++      "repetition": 2
++    },
++    {
++      "args": [
++        "DE",
++        "lenient",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,true,10,-1,131071,1735430400000,1735430400000/7,true,21,-1,131071,1736035200000,1736035200000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "33b0f29a9260f0e734484f929eca7b74fee4e79981f90f611fd1685e4afc0d88",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "DE",
++        "lenient",
++        "mixed"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              0
++            ],
++            "result": 0
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              8
++            ],
++            "result": 8
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              15
++            ],
++            "result": 15
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 0,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 21,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 8,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 15,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "normalize",
++          "argument": 1,
++          "cursor": 44,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$WeekDateRecorder#applyWeekDate()V",
++          "bci": 103,
++          "codeSha256": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++          "poolSha256": "924d47f0a79ab2aaf71ef62883e67cb834c1070c963a63f1df18fc8b1e86cba0",
++          "classSha256": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 55,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "0,true,10,-1,131071,1735430400000,1735430400000/7,true,21,-1,131071,1736035200000,1736035200000/8,true,32,-1,131071,1736121600000,1736121600000/15,true,44,-1,131071,1736726400000,1736726400000/7,true,55,-1,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "3e7053a475e18050d34ca13ad1b84ef7bf2fe6d36ee7579a19251c3f54f5b67b",
++      "coldReceipt": {
++        "path": "receipts/585c457ea34686e7ecc45982bfb6e2543ed05473cb8c9cc2c40b8e27466d1135.json",
++        "sha256": "724031e671886b3cbb719023ab998fb1ebdd134fc5dd96a837592fdb1efa1fc9"
++      },
++      "input": "33b0f29a9260f0e734484f929eca7b74fee4e79981f90f611fd1685e4afc0d88",
++      "repetition": 2
++    },
++    {
++      "args": [
++        "US",
++        "strict",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1735430400000,1735430400000/x,false,20,20,131071,invalid,1735430400000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "682f99cc6b592b8019546e267733d50ad0daadf9be7d36bd3b3173a801bf6a3a",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "US",
++        "strict",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1735430400000,1735430400000/x,false,20,20,131071,invalid,1735430400000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "682f99cc6b592b8019546e267733d50ad0daadf9be7d36bd3b3173a801bf6a3a",
++      "repetition": 2
++    },
++    {
++      "args": [
++        "US",
++        "lenient",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1735430400000,1735430400000/x,false,20,20,131071,1735430400000,1735430400000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "7bebe7fef9c745d94ecf51480005aad4e6978fa10bcb070087b671cb302c810c",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "US",
++        "lenient",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1735430400000,1735430400000/x,false,20,20,131071,1735430400000,1735430400000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1735430400000,1735430400000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "7bebe7fef9c745d94ecf51480005aad4e6978fa10bcb070087b671cb302c810c",
++      "repetition": 2
++    },
++    {
++      "args": [
++        "DE",
++        "strict",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1736035200000,1736035200000/x,false,20,20,131071,1736035200000,1736035200000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "1751cfdfd2204c7e917633cf06d0b1c32ed2ec560fbddfcfa43ff5717524fe53",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "DE",
++        "strict",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1736035200000,1736035200000/x,false,20,20,131071,1736035200000,1736035200000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "1751cfdfd2204c7e917633cf06d0b1c32ed2ec560fbddfcfa43ff5717524fe53",
++      "repetition": 2
++    },
++    {
++      "args": [
++        "DE",
++        "lenient",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1736035200000,1736035200000/x,false,20,20,131071,1736035200000,1736035200000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "9e6c1903b215eb0a08af5d97a58d38b95851118fca6766e15606a2d3c446e526",
++      "repetition": 1
++    },
++    {
++      "args": [
++        "DE",
++        "lenient",
++        "preserved"
++      ],
++      "proof": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++      "application": {
++        "proofKey": "e75baeff206238da94fff47a1d182378283343ed2df364002322ae8f241925ca",
++        "applications": [
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              1
++            ],
++            "result": 2
++          },
++          {
++            "caller": "org.apache.commons.lang3.time.FastDateParser#access$800(I)I",
++            "bci": 1,
++            "args": [
++              7
++            ],
++            "result": 1
++          }
++        ],
++        "startupEntry": "org.apache.commons.lang3.time.FastDateParser#<init>(Ljava/lang/String;Ljava/util/TimeZone;Ljava/util/Locale;Ljava/util/Date;)V",
++        "startupArguments": [
++          "YYYY-'W'ww-u"
++        ],
++        "resources": []
++      },
++      "frames": [
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 10,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 1,
++          "cursor": 32,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        },
++        {
++          "role": "parse-digit",
++          "argument": 7,
++          "cursor": 43,
++          "caller": "org.apache.commons.lang3.time.FastDateParser$3#modify(Lorg/apache/commons/lang3/time/FastDateParser;I)I",
++          "bci": 1,
++          "codeSha256": "e2066d92bf30fa66254c83cc26be74ad77ff7fbfeaee785aefd7f61fc44ed454",
++          "poolSha256": "f212d79d6fd4dbcbdce549f4fa96b152bd02838b33e7a55e3536fa348ae62138",
++          "classSha256": "412ee01677ed14cf862381a7aee2a9f71224bfcfd99d81cea72ab8327984f170"
++        }
++      ],
++      "initializedTimeZones": {
++        "class": "org.apache.commons.lang3.time.TimeZones",
++        "classSha256": "a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2",
++        "initializerCode": "e704fbb73fa9abfc1c27c44970e07a0b68b8aa2cfdb80bd06182f73415fed34d",
++        "pool": "8bb203a4e23fff82b5cda111570315a2d6f7e33aa733af0ea82e762dc6cc7da0",
++        "gmtObject": "org.apache.commons.lang3.time.ImmutableTimeZone",
++        "gmtDelegate": "GMT",
++        "parserZone": "UTC",
++        "java25": false,
++        "availableIds": 632,
++        "sortedJdkIdsSha256": "982f9458f38c3af0d373d72134d0e755355800f8691db86930ae02a411605c3c"
++      },
++      "publicSite": {
++        "observerCodeIndex": 205,
++        "dispatchedTo": "org.apache.commons.lang3.time.FastDateFormat#parse(Ljava/lang/String;Ljava/text/ParsePosition;Ljava/util/Calendar;)Z"
++      },
++      "observation": {
++        "return": "7,true,10,-1,131071,1736035200000,1736035200000/x,false,20,20,131071,1736035200000,1736035200000/1,true,32,20,131071,1735516800000,1735516800000/7,true,43,20,131071,1736035200000,1736035200000"
++      },
++      "coldClaim": "4f58c4c8e1176754ddf9a008771f35e624c9f714f617a0508a6df49974762a11",
++      "coldReceipt": {
++        "path": "receipts/14d16d75872a97dad146739baf321bbc9cc35536509d05010267cf4ebda44564.json",
++        "sha256": "bc5c1d016c8c78b8ff9675b817672fc2646c43b9e16ca5090b4cd2f1fee5e393"
++      },
++      "input": "9e6c1903b215eb0a08af5d97a58d38b95851118fca6766e15606a2d3c446e526",
++      "repetition": 2
++    }
++  ],
++  "calendarConsumers": {
++    "org/apache/commons/lang3/time/FastDateParser$NumberStrategy#parse(Lorg/apache/commons/lang3/time/FastDateParser;Ljava/util/Calendar;Ljava/lang/String;Ljava/text/ParsePosition;I)Z": {
++      "class": "110194be16a06e2b863c6b7975046a004e043a5dfc5903cd7182079d415a7a24",
++      "code": "4ccde5d5dd136783fe949c4fd9b6e4cfa9dbbef5c9a225a099f2cb378e1d68b1",
++      "sites": [
++        178,
++        181,
++        184,
++        185
++      ],
++      "instructions": [
++        [
++          182,
++          [
++            "org/apache/commons/lang3/time/FastDateParser$NumberStrategy",
++            "modify",
++            "(Lorg/apache/commons/lang3/time/FastDateParser;I)I"
++          ]
++        ],
++        [
++          182,
++          [
++            "java/util/Calendar",
++            "set",
++            "(II)V"
++          ]
++        ],
++        4,
++        172
++      ]
++    },
++    "org/apache/commons/lang3/time/FastDateParser$WeekDateRecorder#set(II)V": {
++      "class": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58",
++      "code": "07280c302faddf54069899c0d7df9ea980a95a2bb759434a8e254480a0edc9ea",
++      "sites": [
++        87,
++        88,
++        91,
++        92,
++        93,
++        96
++      ],
++      "instructions": [
++        42,
++        [
++          180,
++          [
++            "org/apache/commons/lang3/time/FastDateParser$WeekDateRecorder",
++            "target",
++            "Ljava/util/Calendar;"
++          ]
++        ],
++        27,
++        28,
++        [
++          182,
++          [
++            "java/util/Calendar",
++            "set",
++            "(II)V"
++          ]
++        ],
++        177
++      ]
++    },
++    "org/apache/commons/lang3/time/FastDateParser$WeekDateRecorder#applyWeekDate()V": {
++      "class": "c1bd0d074aa6dec407631ca5bf21f1d13f696df59c3f541be14608c57381bf58",
++      "code": "68927251accff83f73d4167ae6d7763cfa1c31b0ee160f8eff256f4498bd4366",
++      "sites": [
++        103,
++        106,
++        107,
++        108,
++        111,
++        112,
++        115,
++        116,
++        117,
++        120
++      ],
++      "instructions": [
++        [
++          184,
++          [
++            "org/apache/commons/lang3/time/FastDateParser",
++            "access$800",
++            "(I)I"
++          ]
++        ],
++        61,
++        42,
++        [
++          180,
++          [
++            "org/apache/commons/lang3/time/FastDateParser$WeekDateRecorder",
++            "target",
++            "Ljava/util/Calendar;"
++          ]
++        ],
++        42,
++        [
++          180,
++          [
++            "org/apache/commons/lang3/time/FastDateParser$WeekDateRecorder",
++            "weekYearValue",
++            "I"
++          ]
++        ],
++        27,
++        28,
++        [
++          182,
++          [
++            "java/util/Calendar",
++            "setWeekDate",
++            "(III)V"
++          ]
++        ],
++        177
++      ]
++    }
++  },
++  "tracer": {
++    "frozen": "60580c7a8f6cce3e4254e2855016ef92a64812888f34aa9958b5be1c7a5e0f50",
++    "withFrameObserver": "dcb526471d1ed2d4cd4061cca3cf9cc1fb9a957539f46228c91b40529585a5e7",
++    "frameObserver": "f3d4d4361acea297e30d902619f2ebd9b7117a090b6999865efd6c2aef9f9ddd"
++  },
++  "derivationSha256": "b7a8cf8806e3288199945a916bc560d5c17d4b49433a5728165da3e743995e26"
++}
+--- /dev/null
++++ b/verification/organic-composition/lang/observed-frontier.json
+@@ -0,0 +1,389 @@
++{
++  "firstAttempt": "c6fc7c0e07826651c5b9684bbc7fde50ccc3c4a0ec2de4b17004a6e342e2acde",
++  "sides": {
++    "old": {
++      "commit": "390fe4027e331a77bc126d647fee3287c13827a6",
++      "jar": "bebde4555f1cc520baab15d86d29df52d1fdc79623c2d9c027438e374e72d01a",
++      "entry": "UpgradeProbe#parseWeek()Z",
++      "initializer": "org.apache.commons.lang3.time.TimeZones",
++      "runs": [
++        {
++          "process": "ordinary",
++          "runtimeArguments": [],
++          "exit": 2,
++          "stage": "startup observation",
++          "verdict": "refused before native execution",
++          "reason": "jvmcontract: --observed-initializer org.apache.commons.lang3.time.TimeZones: its initialization initialized org.apache.commons.lang3.SystemUtils, whose code reads the environment (java.lang.System.getenv), which the observation cannot bind"
++        },
++        {
++          "process": "controlled",
++          "runtimeArguments": [
++            "--observed-runtime",
++            "{\"emptyEnvironment\":true,\"processors\":2,\"rootWorkingDirectory\":true}"
++          ],
++          "exit": 1,
++          "stage": "native",
++          "verdict": "unverifiable",
++          "reason": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++          "report": {
++            "wire_version": 1,
++            "verdict": "unverifiable",
++            "target": "UpgradeProbe#parseWeek()Z",
++            "domain": "",
++            "assume": null,
++            "assert": "result == true",
++            "throws": [],
++            "throws_checked": [],
++            "counterexample": null,
++            "proof": null,
++            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++            "statement": "/tmp/jvmcontract-property-824050-1795546359399395674-0/harness/PropertyHarness.java",
++            "findings": [
++              {
++                "rule_id": "unverifiable",
++                "message": "UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++                "uri": null,
++                "line": 51
++              }
++            ],
++            "output": "\u2717 UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++            "work": "/tmp/jvmcontract-property-824050-1795546359399395674-0",
++            "search": {
++              "engine": "native",
++              "checker": "jvmcontract's own checker (CaDiCaL)",
++              "seconds": 2.101233065,
++              "properties": 1,
++              "unwind": 16,
++              "max_array_length": 8,
++              "stage": null,
++              "native": {
++                "paths": 1,
++                "merges": 0,
++                "solver_calls": 0,
++                "solving_seconds": 0.0,
++                "gates_evaluated": 0,
++                "evaluating_seconds": 0.0,
++                "divisions": 0,
++                "divisions_built": 0,
++                "multiplications": 0,
++                "multiplications_built": 0,
++                "variables": 1,
++                "clauses": 1,
++                "seconds": 0.008330701,
++                "loading_seconds": 0.001440001,
++                "decoding_seconds": 0.000147095,
++                "encoding_seconds": 7.4068e-05,
++                "witness_seconds": 0.0,
++                "assumed": [
++                  "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824050-1795546359399395674-0/observed:/tmp/jvmcontract-property-824050-1795546359399395674-0/harness:/tmp/week-initializer-aemyepnn:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-parent.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++                  "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier"
++                ]
++              },
++              "gap_mode": "strict",
++              "gaps": [
++                {
++                  "id": "jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13",
++                  "kind": "jdk-reference-method",
++                  "call": "java.util.TimeZone.clone()",
++                  "sites": [
++                    "org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223"
++                  ],
++                  "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++                  "treatment": "refused"
++                }
++              ],
++              "deadline_seconds": 600.0,
++              "runs": [
++                {
++                  "checker": "native",
++                  "purpose": "proof",
++                  "stage": null,
++                  "budget_seconds": 597.909,
++                  "seconds": 0.008,
++                  "ended": "no-verdict",
++                  "ending": "no-verdict",
++                  "phases": {
++                    "loading": 0.001,
++                    "lowering": 0.0,
++                    "symbolic": 0.007,
++                    "encoding": 0.0,
++                    "solving": 0.0,
++                    "trace": 0.0,
++                    "other": 0.0
++                  },
++                  "formula": {
++                    "variables": 1,
++                    "clauses": 1
++                  }
++                }
++              ],
++              "phases": {
++                "seconds": 2.11,
++                "setup": 0.002,
++                "harness": 0.0,
++                "gaps": 0.0,
++                "contracts": 0.0,
++                "runs": 0.008,
++                "replay": 0.0,
++                "jvm": 0.0,
++                "other": 2.101
++              }
++            },
++            "stated": {
++              "kind": "property",
++              "domain": {
++                "parameters": [],
++                "shared_arrays": false,
++                "text": ""
++              },
++              "assumptions": [
++                {
++                  "kind": "initialization",
++                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                  "basis": "engine"
++                },
++                {
++                  "kind": "library",
++                  "text": "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824050-1795546359399395674-0/observed:/tmp/jvmcontract-property-824050-1795546359399395674-0/harness:/tmp/week-initializer-aemyepnn:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-parent.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++                  "basis": "engine",
++                  "id": "observed-initializer:org.apache.commons.lang3.time.TimeZones:a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2:93151d92c11b5523dcb60792869c6cf1b2207ed16c38686412a7b7bc319781be"
++                },
++                {
++                  "kind": "library",
++                  "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
++                  "basis": "engine"
++                }
++              ],
++              "observations": {
++                "result": "the result and the parameters, against result == true",
++                "exceptions": "none may be thrown"
++              },
++              "bounds": {
++                "unwind": 16,
++                "max_array_length": null,
++                "complete": false
++              },
++              "models": {
++                "used": true,
++                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++                "classes": 40,
++                "jdk": "21.0.13"
++              },
++              "checker": {
++                "engine": "native",
++                "name": "jvmcontract's own checker (CaDiCaL)",
++                "solver": "CaDiCaL 1.9.5 (bundled)",
++                "fallback": null,
++                "sat": {
++                  "solver": "CaDiCaL",
++                  "version": "1.9.5",
++                  "source": "bundled by the Rust crate cadical 0.1.16",
++                  "configuration": [
++                    "CaDiCaL's default options",
++                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                    "the run's deadline through CaDiCaL's terminate callback",
++                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                  ]
++                }
++              },
++              "gap_mode": "strict",
++              "confirmation": null
++            }
++          }
++        }
++      ]
++    },
++    "new": {
++      "commit": "f4bdd4e1d2c99cdab12e5177989fc11e1add33d5",
++      "jar": "26166ddf56ce976033f286bfc1c30db63531c5dea80132de8040177f45bf4316",
++      "entry": "UpgradeProbe#parseWeek()Z",
++      "initializer": "org.apache.commons.lang3.time.TimeZones",
++      "runs": [
++        {
++          "process": "ordinary",
++          "runtimeArguments": [],
++          "exit": 2,
++          "stage": "startup observation",
++          "verdict": "refused before native execution",
++          "reason": "jvmcontract: --observed-initializer org.apache.commons.lang3.time.TimeZones: its initialization initialized org.apache.commons.lang3.SystemUtils, whose code reads the environment (java.lang.System.getenv), which the observation cannot bind"
++        },
++        {
++          "process": "controlled",
++          "runtimeArguments": [
++            "--observed-runtime",
++            "{\"emptyEnvironment\":true,\"processors\":2,\"rootWorkingDirectory\":true}"
++          ],
++          "exit": 1,
++          "stage": "native",
++          "verdict": "unverifiable",
++          "reason": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++          "report": {
++            "wire_version": 1,
++            "verdict": "unverifiable",
++            "target": "UpgradeProbe#parseWeek()Z",
++            "domain": "",
++            "assume": null,
++            "assert": "result == true",
++            "throws": [],
++            "throws_checked": [],
++            "counterexample": null,
++            "proof": null,
++            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++            "statement": "/tmp/jvmcontract-property-824503-1795546363031253825-0/harness/PropertyHarness.java",
++            "findings": [
++              {
++                "rule_id": "unverifiable",
++                "message": "UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++                "uri": null,
++                "line": 51
++              }
++            ],
++            "output": "\u2717 UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
++            "work": "/tmp/jvmcontract-property-824503-1795546363031253825-0",
++            "search": {
++              "engine": "native",
++              "checker": "jvmcontract's own checker (CaDiCaL)",
++              "seconds": 2.087211616,
++              "properties": 1,
++              "unwind": 16,
++              "max_array_length": 8,
++              "stage": null,
++              "native": {
++                "paths": 1,
++                "merges": 0,
++                "solver_calls": 0,
++                "solving_seconds": 0.0,
++                "gates_evaluated": 0,
++                "evaluating_seconds": 0.0,
++                "divisions": 0,
++                "divisions_built": 0,
++                "multiplications": 0,
++                "multiplications_built": 0,
++                "variables": 1,
++                "clauses": 1,
++                "seconds": 0.008146112,
++                "loading_seconds": 0.001467188,
++                "decoding_seconds": 0.000134153,
++                "encoding_seconds": 8.8293e-05,
++                "witness_seconds": 0.0,
++                "assumed": [
++                  "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824503-1795546363031253825-0/observed:/tmp/jvmcontract-property-824503-1795546363031253825-0/harness:/tmp/week-initializer-eegsdj_1:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-fix.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++                  "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier"
++                ]
++              },
++              "gap_mode": "strict",
++              "gaps": [
++                {
++                  "id": "jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13",
++                  "kind": "jdk-reference-method",
++                  "call": "java.util.TimeZone.clone()",
++                  "sites": [
++                    "org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223"
++                  ],
++                  "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
++                  "treatment": "refused"
++                }
++              ],
++              "deadline_seconds": 600.0,
++              "runs": [
++                {
++                  "checker": "native",
++                  "purpose": "proof",
++                  "stage": null,
++                  "budget_seconds": 597.923,
++                  "seconds": 0.008,
++                  "ended": "no-verdict",
++                  "ending": "no-verdict",
++                  "phases": {
++                    "loading": 0.001,
++                    "lowering": 0.0,
++                    "symbolic": 0.006,
++                    "encoding": 0.0,
++                    "solving": 0.0,
++                    "trace": 0.0,
++                    "other": 0.0
++                  },
++                  "formula": {
++                    "variables": 1,
++                    "clauses": 1
++                  }
++                }
++              ],
++              "phases": {
++                "seconds": 2.096,
++                "setup": 0.001,
++                "harness": 0.0,
++                "gaps": 0.0,
++                "contracts": 0.0,
++                "runs": 0.008,
++                "replay": 0.0,
++                "jvm": 0.0,
++                "other": 2.087
++              }
++            },
++            "stated": {
++              "kind": "property",
++              "domain": {
++                "parameters": [],
++                "shared_arrays": false,
++                "text": ""
++              },
++              "assumptions": [
++                {
++                  "kind": "initialization",
++                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                  "basis": "engine"
++                },
++                {
++                  "kind": "library",
++                  "text": "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824503-1795546363031253825-0/observed:/tmp/jvmcontract-property-824503-1795546363031253825-0/harness:/tmp/week-initializer-eegsdj_1:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-fix.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
++                  "basis": "engine",
++                  "id": "observed-initializer:org.apache.commons.lang3.time.TimeZones:a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2:93151d92c11b5523dcb60792869c6cf1b2207ed16c38686412a7b7bc319781be"
++                },
++                {
++                  "kind": "library",
++                  "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
++                  "basis": "engine"
++                }
++              ],
++              "observations": {
++                "result": "the result and the parameters, against result == true",
++                "exceptions": "none may be thrown"
++              },
++              "bounds": {
++                "unwind": 16,
++                "max_array_length": null,
++                "complete": false
++              },
++              "models": {
++                "used": true,
++                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++                "classes": 40,
++                "jdk": "21.0.13"
++              },
++              "checker": {
++                "engine": "native",
++                "name": "jvmcontract's own checker (CaDiCaL)",
++                "solver": "CaDiCaL 1.9.5 (bundled)",
++                "fallback": null,
++                "sat": {
++                  "solver": "CaDiCaL",
++                  "version": "1.9.5",
++                  "source": "bundled by the Rust crate cadical 0.1.16",
++                  "configuration": [
++                    "CaDiCaL's default options",
++                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                    "the run's deadline through CaDiCaL's terminate callback",
++                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                  ]
++                }
++              },
++              "gap_mode": "strict",
++              "confirmation": null
++            }
++          }
++        }
++      ]
++    }
++  }
++}
