@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-081513-certify-original-sat-assignments-and-uns",
+  "title": "Certify original SAT assignments and UNSAT proofs on Lucene wire callers",
+  "description": "Bind the original JARs, effective classpaths, checker binary, caller, input domain, bounds and observation before launch. For W01 old-to-new, W02 arbitrary valid slice writes, and W04 old-to-new VInt, retain the ordinary verdict and use the existing independent SAT evidence checker on every pass. Replay actual SAT models and require a checked LRAT proof for each UNSAT answer. Reject the bundle when the public observation is changed. The earlier run correctly withheld assurance because SAT assignments were not captured. This run enables the ordinary recorder for those assignments.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove",
+    "native:lrat"
+  ],
+  "links": {
+    "jobs": [
+      "20261124-074103-check-all-native-sat-answers-for-mixed-l"
+    ]
+  },
+  "expected": "Three fresh-process checked evidence bundles, each bound to its ordinary result, and three rejected wrong-observation controls.",
+  "submitted": {
+    "at": "2026-11-24T08:15:13+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 22,
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cadical-1.9.5/build/cadical",
+    "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "4m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Qualify three wire caller boundaries",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/wire_assurance.py oldNew writeFrame varOldNew",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/assurance/wire"
+  ]
+}

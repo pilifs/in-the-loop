@@ -1911,6 +1911,7 @@ impl ClassPath {
     pub(crate) fn numeric_image_method(&self, owner: &str, name: &str, descriptor: &str) -> Option<(Rc<ClassFile>, Method)> {
         if !Self::surrogate_arithmetic(owner, name, descriptor) && !matches!((owner, name, descriptor),
             ("java/lang/Math" | "java/lang/StrictMath", "hypot", "(DD)D")
+            | ("java/lang/String", "valueOf", "(J)Ljava/lang/String;")
             | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",
                "doubleValue", "()D")
             | ("java/lang/Byte" | "java/lang/Short" | "java/lang/Integer" | "java/lang/Long" | "java/lang/Float" | "java/lang/Double",

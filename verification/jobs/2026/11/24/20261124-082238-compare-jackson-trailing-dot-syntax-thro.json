@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-082238-compare-jackson-trailing-dot-syntax-thro",
+  "title": "Compare Jackson trailing-dot syntax through four public Databind consumers",
+  "description": "Isolate the complete unmodified 2.17.1 and 2.17.2 classpaths for the JVM oracle, compare their symbolic copies, then check the predicate change and typed ObjectMapper partition including raw negative-zero bits, decimal scale and exact exception class. Exhaust all 11,111 small strings physically and retain separate symbolic results.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/jackson_pair.py"
+    ]
+  },
+  "expected": "The two releases and original JVM controls are preserved, the independent grammar accounts for each finite-grid difference, and unsupported proofs remain visible.",
+  "submitted": {
+    "at": "2026-11-24T08:22:38+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 18,
+  "requires": [
+    "jvmcontract",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "5G",
+    "duration": "6m",
+    "timeout": "30m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/jackson_pair.py --grid",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/jackson_pair.py --grid",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/qualified/N11-core",
+    "verification/beyond-jbmc/qualified/N11-quoted",
+    "verification/beyond-jbmc/qualified/N11-grid.json"
+  ]
+}

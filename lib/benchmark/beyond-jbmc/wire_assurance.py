@@ -34,7 +34,8 @@ def certify(name,folder,setup,env,cp,identities,bindings):
              "beforeLaunch":identities,"bindings":bindings,"checkerSha256":digest(checker),
              "sourceCommit":os.environ.get("VERIFY_SOURCE_COMMIT"),"job":os.environ.get("VERIFY_JOB_ID")}
     lrat.save(out/"request.json",request)
-    result=subprocess.run(cmd,env=dict(env,JVMCONTRACT_TRANSCRIPTS=str(solver_dir)),capture_output=True,timeout=175)
+    result=subprocess.run(cmd,env=dict(env,JVMCONTRACT_TRANSCRIPTS=str(solver_dir),JVMCONTRACT_LRAT_MODELS="1"),
+                          capture_output=True,timeout=175)
     (out/"ordinary.json").write_bytes(result.stdout)
     decoded=jvmcontract_io.decode(result.stdout.decode(),"prove")
     if result.returncode!=0 or not decoded.ok or len(decoded.outcomes)!=1:

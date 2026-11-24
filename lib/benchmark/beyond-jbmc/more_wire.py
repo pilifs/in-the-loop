@@ -41,10 +41,10 @@ def bridges(work, sources):
             for ret, method, params, throws in re.findall(signature,src.read_text()):
                 pair=[p.strip().split() for p in params.split(",") if p.strip()]
                 types=", ".join(t+".class" for t,_ in pair)
-                args=", ".join(n for _,n in pair)
+                args="".join(", "+n for _,n in pair)
                 boxed={"long":"Long","int":"Integer"}.get(ret,ret)
                 code += [f'    public static {ret} {method}({params})' + (" throws java.io.IOException" if throws else "") + ' {',
-                         f'        return ({boxed})witness.OriginalGraph.call({side}, "{owner}", "{method}", new Class<?>[]{{{types}}}, {args});','    }']
+                         f'        return ({boxed})witness.OriginalGraph.call({side}, "{owner}", "{method}", new Class<?>[]{{{types}}}{args});','    }']
             if len(code)==2: raise ValueError("no bridged methods in " + owner)
             f=folder/src.name
             f.write_text("\n".join([*code,"}"])+"\n")
@@ -52,13 +52,9 @@ def bridges(work, sources):
     return result
 
 
-def prepare(work):
+def prepare_pair(work, sources, old, new, claims):
     env=javaenv()
     os.environ.update({k:env[k] for k in ("JAVA_HOME","PATH","JVMCONTRACT_JAR_RELEASE")})
-    old=[*jars_for("lucene-core-"+VERSIONS[0]),*jars_for("protobuf-java-3.25.5")]
-    new=[*jars_for("lucene-core-"+VERSIONS[1]),*jars_for("protobuf-java-4.33.0")]
-    src=HERE/"wire-more"
-    sources=[HERE/"wire/WireAPI.java",src/"WireMore.java",src/"ProtoAPI.java"]
     caller=work/"caller"
     compile_java(sources,caller,old,env)
     raw=work/"old-input"
@@ -79,14 +75,21 @@ def prepare(work):
     subprocess.run([JDK/"bin/java","-cp",tools,"net.terminalvalue.contracts.PairClasses",raw,previous],check=True,env=env)
     classes=work/"claims"
     cp=[classes,caller,previous,*new]
-    compile_java([src/"MoreWireClaims.java"],classes,cp[1:],env)
+    compile_java(claims,classes,cp[1:],env)
     original=work/"original"
-    compile_java([*bridges(work,sources),src/"OriginalGraph.java",src/"MoreWireClaims.java"],original,[],env)
+    compile_java([*bridges(work,sources),HERE/"wire-more/OriginalGraph.java",*claims],original,[],env)
     env.update(WIRE_ORIGINAL_BEFORE=classpath([caller,*old]),WIRE_ORIGINAL_AFTER=classpath([caller,*new]))
     return cp,[original],env,{"old":{p.name:digest(p) for p in old},"new":{p.name:digest(p) for p in new},
-                            "thinCallers":{p.name:digest(p) for p in caller.glob("*.class")},"symbolicClaimClass":digest(classes/"MoreWireClaims.class"),
+                            "thinCallers":{p.name:digest(p) for p in caller.glob("*.class")},"symbolicClaimClasses":{p.name:digest(p) for p in classes.glob("*.class")},
                             "oldEntryMapSha256":hashlib.sha256(encoded(entry_map)).hexdigest(),"relocatorSha256":digest(RELOCATOR),
                             "jdkModulesSha256":digest(JDK/"lib/modules"),"jbmcSha256":digest(JBMC),"coreModelsSha256":digest(MODELS)}
+
+
+def prepare(work):
+    old=[*jars_for("lucene-core-"+VERSIONS[0]),*jars_for("protobuf-java-3.25.5")]
+    new=[*jars_for("lucene-core-"+VERSIONS[1]),*jars_for("protobuf-java-4.33.0")]
+    src=HERE/"wire-more"
+    return prepare_pair(work,[HERE/"wire/WireAPI.java",src/"WireMore.java",src/"ProtoAPI.java"],old,new,[src/"MoreWireClaims.java"])
 
 
 if __name__=="__main__":
