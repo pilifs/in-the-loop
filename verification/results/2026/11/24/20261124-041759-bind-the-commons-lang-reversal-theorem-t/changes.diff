@@ -1,0 +1,51 @@
+--- /dev/null
++++ b/verification/kernel-recovery/reverse.json
+@@ -0,0 +1,48 @@
++{
++  "schema": "release-reverse-qualification/v1",
++  "sourceCommit": "8b22979ae0406d3263aa1ec9a473f51fa098468e",
++  "key": "commons-lang3-3.17.0/ArrayUtils.reverse([III)V",
++  "jarSha256": "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4",
++  "classes": {
++    "org/apache/commons/lang3/ArrayUtils": "f21e4f7f69b2d98bed01748bd5b711b47458007ee762d07f1e4c4c32147bc8cc",
++    "java/lang/Math": "f01ef790ce8af52b262c5f717f0e3db201863b9deb834915787ef31ed744d170"
++  },
++  "methods": {
++    "ArrayUtils": "f21e4f7f69b2d98bed01748bd5b711b47458007ee762d07f1e4c4c32147bc8cc",
++    "Math": "f01ef790ce8af52b262c5f717f0e3db201863b9deb834915787ef31ed744d170",
++    "reverse": "2ac70004b11b03b802323e2abe1cb803020464360415041da4001e2a15042e36052a15042a1d2e4f2a1d15054f8404ff840301a7ffe2b1",
++    "call7": "java/lang/Math.max(II)I",
++    "call14": "java/lang/Math.min(II)I",
++    "max": "1a1ba100071aa700041bac",
++    "min": "1a1ba300071aa700041bac",
++    "grid": "40525 3640 6652 2005 1641 121",
++    "witness": "java.lang.ArrayIndexOutOfBoundsException heap=[]",
++    "controls": "MAX,MIN returned with [] and null,0,MIN returned"
++  },
++  "frozenRust": {
++    "request": "request 1\ntheorem range-reverse-mirror-v1\nenvironment initialized-verified-jvm-v1\nclass org/apache/commons/lang3/ArrayUtils f21e4f7f69b2d98bed01748bd5b711b47458007ee762d07f1e4c4c32147bc8cc\nentry reverse ([III)V\ncompanion reverse ([III)V\n",
++    "checkerSha256": "5591785151ac8237e35c3bfdbe8c5eea25e7f5c5df1e5f4206d0e626a6ab65a5",
++    "exit": 3,
++    "stdout": "unsupported external theorem",
++    "wallSeconds": 0.002608,
++    "peakKiB": 25728
++  },
++  "lean": {
++    "sha256": "db7f559d05795e7af52e42bc966c90240a39dcb9712161c54c97afa546e20c00",
++    "sourceSha256": "b88ee7735fb1522aea5f43f903c6ada071ac5fa90a4e468d31bd11af16d3835a",
++    "loadedModuleSha256": "c7c209423d8eea5237ee65f93c4087c6330002c5d6691f8f6b58863cc4f601d2",
++    "exit": 0,
++    "stdout": "'loadedReverse' depends on axioms: [propext, Classical.choice, Quot.sound]",
++    "wallSeconds": 1.511796,
++    "peakKiB": 1637700
++  },
++  "jvm": {
++    "sourceSha256": "dc87fb023779b6a76df292e10286bc2aecb7b74a33ee11ca11e92f454d24f2e0",
++    "observerSha256": "3fd808055e0265fed60e38545f32345cd3dffb40963f1343c8e62282e9e04bc9",
++    "normal": 40525,
++    "exactExceptions": 3640,
++    "valid": 6652
++  },
++  "validRange": "Mirror and unchanged outside frame in the byte-bound two-cursor model, assuming verified initialized classes and the stated JVM instruction semantics.",
++  "allSignedBounds": "Refuted on the original JVM at length zero, start 0, end Integer.MIN_VALUE. The decrement at PC 18 wraps and the load at PC 30 throws before a store."
++}

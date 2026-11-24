@@ -1,0 +1,508 @@
+{
+  "job": "20261124-034422-check-replacement-properties-identity-an",
+  "source": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+  "jdk": {
+    "release": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
+    "java": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
+    "modules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
+  },
+  "checkerSha256": "68ec7777fc46f9a44f66f7a41b1be0e0af3a493fcc20c8473f04b8d87574ad81",
+  "rows": {
+    "old": {
+      "empty": {
+        "jvm": [
+          "returned false",
+          "returned false",
+          "returned false",
+          "returned false"
+        ],
+        "native": {
+          "verdict": "unverifiable",
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.text.lookup.FileStringLookup.<clinit>()V (org.apache.commons.text.lookup.FileStringLookup.<clinit>() at org.apache.commons.text.lookup.StringLookupFactory.fileStringLookup:956). With --gaps assume it assumes instead that org.apache.commons.text.lookup.FileStringLookup.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "assume": "selector >= 0 && selector < 4",
+          "assert": "result",
+          "counterexample": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "selector: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "selector >= 0 && selector < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the single-threaded JVM has no active SecurityManager during system property access",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "target": "InstalledCaller#empty"
+        }
+      },
+      "own": {
+        "jvm": [
+          "returned false",
+          "returned false",
+          "returned false",
+          "returned false"
+        ],
+        "native": {
+          "verdict": "unverifiable",
+          "problem": "outside the fragment: String.split at limit zero requires concrete text and a supported positive-width delimiter",
+          "assume": "selector >= 0 && selector < 4",
+          "assert": "result",
+          "counterexample": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "selector: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "selector >= 0 && selector < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the single-threaded JVM has no active SecurityManager during system property access",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "target": "InstalledCaller#own"
+        }
+      },
+      "inherited": {
+        "jvm": [
+          "returned false",
+          "returned false",
+          "returned false",
+          "returned false"
+        ],
+        "native": {
+          "verdict": "unverifiable",
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.text.lookup.FileStringLookup.<clinit>()V (org.apache.commons.text.lookup.FileStringLookup.<clinit>() at org.apache.commons.text.lookup.StringLookupFactory.fileStringLookup:956). With --gaps assume it assumes instead that org.apache.commons.text.lookup.FileStringLookup.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "assume": "selector >= 0 && selector < 4",
+          "assert": "result",
+          "counterexample": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "selector: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "selector >= 0 && selector < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the single-threaded JVM has no active SecurityManager during system property access",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "target": "InstalledCaller#inherited"
+        }
+      }
+    },
+    "new": {
+      "empty": {
+        "jvm": [
+          "returned false",
+          "returned false",
+          "returned false",
+          "returned false"
+        ],
+        "native": {
+          "verdict": "unverifiable",
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.text.lookup.FileStringLookup.<clinit>()V (org.apache.commons.text.lookup.FileStringLookup.<clinit>() at org.apache.commons.text.lookup.StringLookupFactory.fileStringLookup:956). With --gaps assume it assumes instead that org.apache.commons.text.lookup.FileStringLookup.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "assume": "selector >= 0 && selector < 4",
+          "assert": "result",
+          "counterexample": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "selector: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "selector >= 0 && selector < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the single-threaded JVM has no active SecurityManager during system property access",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "target": "InstalledCaller#empty"
+        }
+      },
+      "own": {
+        "jvm": [
+          "returned false",
+          "returned false",
+          "returned false",
+          "returned false"
+        ],
+        "native": {
+          "verdict": "unverifiable",
+          "problem": "outside the fragment: String.split at limit zero requires concrete text and a supported positive-width delimiter",
+          "assume": "selector >= 0 && selector < 4",
+          "assert": "result",
+          "counterexample": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "selector: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "selector >= 0 && selector < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the single-threaded JVM has no active SecurityManager during system property access",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "target": "InstalledCaller#own"
+        }
+      },
+      "inherited": {
+        "jvm": [
+          "returned false",
+          "returned false",
+          "returned false",
+          "returned false"
+        ],
+        "native": {
+          "verdict": "unverifiable",
+          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): class-initializer:org.apache.commons.text.lookup.FileStringLookup.<clinit>()V (org.apache.commons.text.lookup.FileStringLookup.<clinit>() at org.apache.commons.text.lookup.StringLookupFactory.fileStringLookup:956). With --gaps assume it assumes instead that org.apache.commons.text.lookup.FileStringLookup.<clinit>() has run already, and threw nothing, and the verdict names the assumption",
+          "assume": "selector >= 0 && selector < 4",
+          "assert": "result",
+          "counterexample": null,
+          "stated": {
+            "kind": "property",
+            "domain": {
+              "parameters": [
+                {
+                  "name": "selector",
+                  "type": "int",
+                  "kind": "primitive",
+                  "null": false
+                }
+              ],
+              "shared_arrays": false,
+              "text": "selector: int"
+            },
+            "assumptions": [
+              {
+                "kind": "precondition",
+                "text": "selector >= 0 && selector < 4",
+                "basis": "stated"
+              },
+              {
+                "kind": "initialization",
+                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                "basis": "engine"
+              },
+              {
+                "kind": "library",
+                "text": "the single-threaded JVM has no active SecurityManager during system property access",
+                "basis": "engine"
+              }
+            ],
+            "observations": {
+              "result": "the result and the parameters, against result",
+              "exceptions": "none may be thrown"
+            },
+            "bounds": {
+              "unwind": 64,
+              "max_array_length": null,
+              "complete": false
+            },
+            "models": {
+              "used": true,
+              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+              "classes": 40,
+              "jdk": "21.0.13"
+            },
+            "checker": {
+              "engine": "native",
+              "name": "jvmcontract's own checker (CaDiCaL)",
+              "solver": "CaDiCaL 1.9.5 (bundled)",
+              "fallback": null,
+              "sat": {
+                "solver": "CaDiCaL",
+                "version": "1.9.5",
+                "source": "bundled by the Rust crate cadical 0.1.16",
+                "configuration": [
+                  "CaDiCaL's default options",
+                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                  "the run's deadline through CaDiCaL's terminate callback",
+                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                ]
+              }
+            },
+            "gap_mode": "strict",
+            "confirmation": null
+          },
+          "target": "InstalledCaller#inherited"
+        }
+      }
+    }
+  }
+}

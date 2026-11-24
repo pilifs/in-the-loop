@@ -1,0 +1,386 @@
+--- /dev/null
++++ b/verification/kernel-recovery/historical.json
+@@ -0,0 +1,383 @@
++{
++  "schema": "historical-induction-audit/v1",
++  "rules": {
++    "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
++    "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
++    "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
++  },
++  "checkerSha256": "5e4cb3be8d3531a53702046b185b5bd0f1df3ee7dd07c30d92c318bc72427d2b",
++  "isolation": {
++    "producer": "rejected input: Permission denied (os error 13)",
++    "prior verdict": "rejected input: Permission denied (os error 13)",
++    "cache": "rejected input: Permission denied (os error 13)"
++  },
++  "cases": [
++    {
++      "key": "336/historical/Ints",
++      "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Ints ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb\nentry indexOf ([II)I\ncompanion indexOf ([IIII)I\nsupport com/google/common/primitives/IntsMethodsForWeb a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6\n",
++      "requestSha256": "7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740",
++      "classSha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
++      "supportSha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
++      "genuine": {
++        "producer": "established",
++        "solver": {
++          "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++          "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++        },
++        "answers": [
++          "sat",
++          "sat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat"
++        ],
++        "obligations": [
++          {
++            "name": "nonempty input domain",
++            "expected": "sat",
++            "obtained": "sat"
++          },
++          {
++            "name": "maximal signed length admitted",
++            "expected": "sat",
++            "obtained": "sat"
++          },
++          {
++            "name": "entry establishes invariant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "safe array access at 12",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "return the earliest match or minus one",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "preserve the input heap",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "iteration preserves invariant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "nonnegative strictly decreasing Java-int variant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "return the earliest match or minus one",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "preserve the input heap",
++            "expected": "unsat",
++            "obtained": "unsat"
++          }
++        ],
++        "smtSha256": "090a95bf986ac98a4815dd8138558aaa837e811df9fc27d1d831a5e1d74627b0"
++      },
++      "independent": {
++        "result": "established",
++        "details": "accepted least-index-frame-total-v1 com/google/common/primitives/Ints#indexOf([II)I companion indexOf([IIII)I environment initialized-verified-jvm-v1 class ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb request 7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740 obligations 34",
++        "hintSha256": "6e9d8964e61f6f40ca58840fc6b936bd39dd08045b964a8fcf31f3b277b02104"
++      },
++      "jvm": [
++        {
++          "cells": [
++            7,
++            7
++          ],
++          "target": 7,
++          "returned": 0,
++          "after": [
++            7,
++            7
++          ],
++          "loaded": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
++        },
++        {
++          "cells": [],
++          "target": 7,
++          "returned": -1,
++          "after": [],
++          "loaded": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb"
++        }
++      ],
++      "missingHintControl": {
++        "required": "indexOf([IIII)I@27>exit result",
++        "output": "rejected missing obligation indexOf([IIII)I@27>exit result",
++        "hintSha256": "f7328c0f1c0f9a06328a1e3352bf9f62b75e72200e1e5cdb2495b41bd343d147"
++      }
++    },
++    {
++      "key": "336/historical/frame",
++      "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Ints 7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747\nentry indexOf ([II)I\ncompanion indexOf ([IIII)I\nsupport com/google/common/primitives/IntsMethodsForWeb a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6\n",
++      "requestSha256": "eb9ed325938200c9de24c467629139ac4adff7bfda38eaa62c5c6041952c6813",
++      "classSha256": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747",
++      "supportSha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
++      "genuine": {
++        "producer": "unresolved",
++        "solver": {
++          "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++          "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++        },
++        "answers": [
++          "sat",
++          "sat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "sat"
++        ],
++        "obligations": [
++          {
++            "name": "nonempty input domain",
++            "expected": "sat",
++            "obtained": "sat"
++          },
++          {
++            "name": "maximal signed length admitted",
++            "expected": "sat",
++            "obtained": "sat"
++          },
++          {
++            "name": "entry establishes invariant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "safe array access at 12",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "safe array access at 25",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "return the earliest match or minus one",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "preserve the input heap",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "iteration preserves invariant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "nonnegative strictly decreasing Java-int variant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "return the earliest match or minus one",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "preserve the input heap",
++            "expected": "unsat",
++            "obtained": "sat"
++          }
++        ],
++        "smtSha256": "6cfbfef4efd36c3d2d7292c9442b0c73028d02ee589e8d10e1025835b564a61b"
++      },
++      "independent": {
++        "result": "counterexample",
++        "details": "rejected checked witness [7] target 7: frame changed, return 0, after [0]; first rule: heap frame at store 25",
++        "hintSha256": "2399558842cafec8eeba576efc314c0949167096d1ade42e6e9866d6903bb899"
++      },
++      "jvm": [
++        {
++          "cells": [
++            7
++          ],
++          "target": 7,
++          "returned": 0,
++          "after": [
++            0
++          ],
++          "loaded": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747"
++        },
++        {
++          "cells": [
++            0
++          ],
++          "target": 0,
++          "returned": 0,
++          "after": [
++            0
++          ],
++          "loaded": "7432818271aeb2cccc0e68215c022e585a1aaba29feb72d8c60f52a202993747"
++        }
++      ],
++      "historicalFault": {
++        "provenance": "managed historical producer experiment",
++        "receipt": "historical-frame-control.json",
++        "sha256": "b4a68738421e9998b5f5f133a95c9f3c2805cf3a8f34504a1067ef4475971844",
++        "changedQuery": 10,
++        "producer": {
++          "disposition": "established",
++          "formulaSha256": "847b232a28b3b7163cfa8d728d56195e76126e6081b0db65d0081ef7ac313980",
++          "frame": {
++            "name": "preserve the input heap",
++            "expected": "unsat",
++            "obtained": "unsat"
++          }
++        },
++        "comparison": {
++          "comparedBy": "examples/tools/targets/array_induction.py:differences",
++          "againstGenuineProof": [
++            "status",
++            "obligations",
++            "certificateSha256"
++          ],
++          "againstRegeneratedFaultyProof": []
++        }
++      }
++    },
++    {
++      "key": "336/historical/miss",
++      "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Ints 4cbdc3e3e7ddda3196050ee42b1606e7c6ebb8aedfab66eec0aec669c479da02\nentry indexOf ([II)I\ncompanion indexOf ([IIII)I\nsupport com/google/common/primitives/IntsMethodsForWeb a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6\n",
++      "requestSha256": "0f8d110f50fa79286f9886328970c7b9f25077485c690bd0f7de1613b626b361",
++      "classSha256": "4cbdc3e3e7ddda3196050ee42b1606e7c6ebb8aedfab66eec0aec669c479da02",
++      "supportSha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
++      "genuine": {
++        "producer": "unresolved",
++        "solver": {
++          "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++          "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++        },
++        "answers": [
++          "sat",
++          "sat",
++          "unsat",
++          "unsat",
++          "sat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat"
++        ],
++        "obligations": [
++          {
++            "name": "nonempty input domain",
++            "expected": "sat",
++            "obtained": "sat"
++          },
++          {
++            "name": "maximal signed length admitted",
++            "expected": "sat",
++            "obtained": "sat"
++          },
++          {
++            "name": "entry establishes invariant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "safe array access at 12",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "return the earliest match or minus one",
++            "expected": "unsat",
++            "obtained": "sat"
++          },
++          {
++            "name": "preserve the input heap",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "iteration preserves invariant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "nonnegative strictly decreasing Java-int variant",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "return the earliest match or minus one",
++            "expected": "unsat",
++            "obtained": "unsat"
++          },
++          {
++            "name": "preserve the input heap",
++            "expected": "unsat",
++            "obtained": "unsat"
++          }
++        ],
++        "smtSha256": "2577c4af409f90bdc148beab0d2db8c2adab4404a770b5c25acb88f2d5d4ca01"
++      },
++      "independent": {
++        "result": "counterexample",
++        "details": "rejected checked witness [] target 7: returned 0, expected first index -1; first rule: return value at 27 on End: Const(0)",
++        "hintSha256": "e403554ec1e66d0c3ab85b8a20cf0db87fb599b66532a5a3afe868700366a29a"
++      },
++      "jvm": [
++        {
++          "cells": [],
++          "target": 7,
++          "returned": 0,
++          "after": [],
++          "loaded": "4cbdc3e3e7ddda3196050ee42b1606e7c6ebb8aedfab66eec0aec669c479da02"
++        }
++      ],
++      "omittedExitControl": {
++        "provenance": "query-inventory negative control on fresh pristine SMT",
++        "missingOrdinal": 4,
++        "missingQuerySha256": "485e013ee699071d6a4ef53e7346df7647b67a7275cbda523cb3ea22f3750be5",
++        "remainingSolverAnswers": [
++          "sat",
++          "sat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat",
++          "unsat"
++        ],
++        "historicalPredicateOnSubset": "established",
++        "remainingSmtSha256": "d097c6df369301ccbc16b132942a84e0e927ba5287e802805113e327eb1959ac",
++        "comparisonToPristine": [
++          "status",
++          "obligations",
++          "certificateSha256"
++        ],
++        "comparisonToSameInventory": [],
++        "firstSemanticFailure": "rejected checked witness [] target 7: returned 0, expected first index -1; first rule: return value at 27 on End: Const(0)"
++      }
++    }
++  ]
++}

@@ -1,0 +1,440 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-035004-check-whole-verdict-lrat-on-the-complete",
+  "title": "Check whole-verdict LRAT on the complete bound verifier",
+  "status": "failed",
+  "summary": "failed: 1 failed, 1 skipped step(s) in 13.4s, peak 166.5 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed; signals: example:task-as-expected×7",
+  "attention": [
+    "step 1 (Run and challenge five complete native verdicts) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-035004-check-whole-verdict-lrat-on-the-complete.json",
+    "sha256": "ef7c6088bb8ad51dbeffa87d8e56e84e780f4e62378a95be96490bb61e43faea",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-035004-check-whole-verdict-lrat-on-the-complete",
+      "title": "Check whole-verdict LRAT on the complete bound verifier",
+      "description": "Run Guava 336, both Jackson 393 claims, and UTF-16 395 on the normal example route with certification off and on. Recheck the held prefix-sums result on its pinned class files. Bind every native pass and attempt, validate the actual SAT models, check LRAT for every UNSAT in fresh processes, and withhold assurance for missing, duplicated, swapped and transplanted evidence. Measure wall time, generation, checking and retained size. The runner claimed 20261124-033703-certify-ordinary-native-verdicts-and-rep while its shared source revision was being repaired; its exported tree lacked the verifier module. This repeat pins the complete source revision.",
+      "kind": "library",
+      "capabilities": [
+        "sat-certificate",
+        "jvmcontract:transcript",
+        "jvmcontract:prove",
+        "jvm:counterexample"
+      ],
+      "links": {
+        "examples": [
+          "336",
+          "393",
+          "395"
+        ]
+      },
+      "expected": "The Guava and prefix-sums runs recheck 8 and 10 UNSAT calls, Jackson retains the classified positive and original JVM counterexample, and UTF-16 records its solver-free proof. All pass-level attempts reconcile, all negative controls withhold assurance, and both ordinary and certified receipts are retained.",
+      "submitted": {
+        "at": "2026-11-24T03:50:04+00:00",
+        "session": "01a20b98-bfb6-7981-b527-1699b229ddce"
+      },
+      "revision": "b23efef26a97a163fe3053313be928484cdaea6f",
+      "requires": [
+        "jvmcontract",
+        "python3",
+        "java",
+        "javac",
+        "/home/filip/.cache/in-the-loop/trusted-kernel/src/cake_lpr-033aad53/cake_lpr"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m"
+      },
+      "steps": [
+        {
+          "name": "Run and challenge five complete native verdicts",
+          "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --output verification/trusted-kernel-recovery/lrat",
+          "cwd": "."
+        },
+        {
+          "name": "Reconstruct the expected Guava request and both pass ledgers independently of the issuer",
+          "run": "python3 -B - <<'PYTHON'\nfrom pathlib import Path\nimport json\nimport os\nimport subprocess\nimport sys\nimport tarfile\nsys.path.insert(0, \"lib/python\")\nimport jvmcontract_lrat as lrat\n\nread = lambda path: json.loads(path.read_text())\ntask = \"first-8-release\"\nexample, = Path(\"examples\").glob(\"336-*\")\nrequests = (example / \"receipts\" / task / \"executions\").glob(\"*/lrat-request.json\")\nsource, = (p for p in requests if read(p.parent / \"attempt.json\")[\"job\"] == os.environ[\"VERIFY_JOB_ID\"])\nrequest = read(source)\njournal = read(source.parent / \"attempt.json\")\nchecker = read(source.parent / \"checker.json\")\nresult = example / journal[\"receipt\"]\nconclusion = read(result)[\"conclusion\"]\nassert request[\"run\"] == journal[\"id\"] == conclusion[\"attempt\"]\nassert request[\"claim\"][\"key\"] == read(result)[\"claim\"][\"target\"][\"claimKey\"]\nassert request[\"checker\"][\"classpath\"] == journal[\"checker\"][\"classpath\"]\nassert conclusion[\"status\"] == \"established\" and not conclusion[\"vacuous\"]\nanchor = {\"status\": conclusion[\"status\"], \"execution\": journal[\"id\"], \"conclusion\": conclusion,\n          \"receiptSha256\": lrat.digest(result.read_bytes()), \"jvmReplay\": []}\nnative, = (Path(os.environ[\"VERIFY_WORKDIR\"]) / \".build-py\").glob(\n    f\"*/targets/336/{task}/{journal['id']}/verifier\")\nruns = [run for resultset in checker[\"outcomes\"] for run in resultset[\"search\"][\"runs\"]]\nboundary, streams = lrat.capture(request, anchor, native, native / \"solver-traces\", runs)\nroot = Path(\"verification/trusted-kernel-recovery/lrat\")\nout = root / \"independent-guava\"\nout.mkdir()\n(out / \"request.json\").write_bytes(source.read_bytes())\nlrat.save(out / \"boundary.json\", boundary)\nwith tarfile.open(out / \"native-origin.tar.gz\", \"w:gz\") as arc:\n    for p in [source, source.parent / \"attempt.json\", source.parent / \"checker.json\", result]:\n        arc.add(p, arcname=\"original/\" + p.name)\n    for p in [*streams, *native.rglob(\"bmc.log\")]:\n        arc.add(p, arcname=\"verifier/\" + p.relative_to(native).as_posix())\n# Only now read the issuer's evidence. Neither expected input was loaded from the proof bundle or its sidecars.\ncheck = subprocess.run([sys.executable, \"-B\", lrat.__file__, \"--check\", str(out / \"request.json\"),\n                        str(out / \"boundary.json\"), str(root / task / \"evidence.zip\")],\n                       capture_output=True, text=True, check=True)\nverdict = json.loads(check.stdout)\nassert verdict[\"answers\"] == {\"sat\": 18, \"unsat\": 8}\nlrat.save(out / \"recheck.json\", verdict)\nprint(\"Native journal and both actual call boundaries independently rechecked 18 SAT models and 8 LRAT proofs.\")\nPYTHON",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/trusted-kernel-recovery/lrat"
+      ]
+    }
+  },
+  "sourceCommit": "b23efef26a97a163fe3053313be928484cdaea6f",
+  "startedAt": "2026-11-24T04:18:32+00:00",
+  "finishedAt": "2026-11-24T04:26:28+00:00",
+  "wallSeconds": 476.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 174542848,
+    "wallSeconds": 13.4,
+    "cpuSeconds": 19.5,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.06
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 238.34,
+      "cpuSeconds": 238.794,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2268528640,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "5a71aa9fddbca134d4e751bad551e56360f6bfc6fcb48f1240fedd21a225d77b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-035004-check-whole-verdict-lrat-on-the-complete/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 58s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Run and challenge five complete native verdicts",
+      "run": "python3 -B lib/benchmark/trusted-kernel/verdict_qualification.py --output verification/trusted-kernel-recovery/lrat",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 13.423,
+      "cpuSeconds": 19.476,
+      "cpuThrottledSeconds": 1.227,
+      "peakMemoryBytes": 174542848,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-and-challenge-five-complet.log",
+        "lines": 37,
+        "bytes": 3175,
+        "sha256": "2529becda35b21618d3ad96f05e7afaf54a6d602966dd502fa280923cdd4ab74",
+        "truncated": false
+      },
+      "signalCounts": {
+        "example:task-as-expected": 7
+      },
+      "signals": [
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 2,
+          "text": "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T042615Z-3cd49142/result.json",
+          "groups": [
+            "336",
+            "first-8-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 5,
+          "text": "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T042616Z-9d0c31e9/result.json",
+          "groups": [
+            "336",
+            "first-8-release",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 9,
+          "text": "393-wide-floating-conversions: task conversion-equivalence-classified: established (completed; as expected), receipt receipts/conversion-equivalence-classified/20261124T042618Z-4860fe5c/result.json",
+          "groups": [
+            "393",
+            "conversion-equivalence-classified",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 12,
+          "text": "393-wide-floating-conversions: task conversion-equivalence-classified: established (completed; as expected), receipt receipts/conversion-equivalence-classified/20261124T042620Z-79581d72/result.json",
+          "groups": [
+            "393",
+            "conversion-equivalence-classified",
+            "established"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 16,
+          "text": "393-wide-floating-conversions: task node-checks-same: refuted (completed; as expected), receipt receipts/node-checks-same/20261124T042624Z-03fe893e/result.json",
+          "groups": [
+            "393",
+            "node-checks-same",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 19,
+          "text": "393-wide-floating-conversions: task node-checks-same: refuted (completed; as expected), receipt receipts/node-checks-same/20261124T042626Z-4dae2dd0/result.json",
+          "groups": [
+            "393",
+            "node-checks-same",
+            "refuted"
+          ]
+        },
+        {
+          "tool": "example",
+          "kind": "task-as-expected",
+          "line": 35,
+          "text": "393-wide-floating-conversions: task node-checks-same: refuted (completed; as expected), receipt receipts/node-checks-same/20261124T042626Z-4dae2dd0/result.json",
+          "groups": [
+            "393",
+            "node-checks-same",
+            "refuted"
+          ]
+        }
+      ],
+      "tail": [
+        "336-guava-first-array-match: running task first-8-release (target route)",
+        "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T042615Z-3cd49142/result.json",
+        "",
+        "336-guava-first-array-match: running task first-8-release (target route)",
+        "336-guava-first-array-match: task first-8-release: established (completed; as expected), receipt receipts/first-8-release/20261124T042616Z-9d0c31e9/result.json",
+        "LRAT assurance: checked",
+        "",
+        "393-wide-floating-conversions: running task conversion-equivalence-classified (target route)",
+        "393-wide-floating-conversions: task conversion-equivalence-classified: established (completed; as expected), receipt receipts/conversion-equivalence-classified/20261124T042618Z-4860fe5c/result.json",
+        "",
+        "393-wide-floating-conversions: running task conversion-equivalence-classified (target route)",
+        "393-wide-floating-conversions: task conversion-equivalence-classified: established (completed; as expected), receipt receipts/conversion-equivalence-classified/20261124T042620Z-79581d72/result.json",
+        "LRAT assurance: checked",
+        "",
+        "393-wide-floating-conversions: running task node-checks-same (target route)",
+        "393-wide-floating-conversions: task node-checks-same: refuted (completed; as expected), receipt receipts/node-checks-same/20261124T042624Z-03fe893e/result.json",
+        "",
+        "393-wide-floating-conversions: running task node-checks-same (target route)",
+        "393-wide-floating-conversions: task node-checks-same: refuted (completed; as expected), receipt receipts/node-checks-same/20261124T042626Z-4dae2dd0/result.json",
+        "LRAT assurance: ordinary refutation lacks a reproduced original JVM witness",
+        "",
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-035004-check-whole-verdict-lrat-on-the-complete/lib/benchmark/trusted-kernel/verdict_qualification.py\", line 203, in <module>",
+        "    main()",
+        "    ~~~~^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-035004-check-whole-verdict-lrat-on-the-complete/lib/benchmark/trusted-kernel/verdict_qualification.py\", line 173, in main",
+        "    rows = [run_example(example, task, out, work) for example, task in TASKS]",
+        "            ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-035004-check-whole-verdict-lrat-on-the-complete/lib/benchmark/trusted-kernel/verdict_qualification.py\", line 54, in run_example",
+        "    on, on_time = normal(example, task, [\"--certify-lrat\"], os.environ)",
+        "                  ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261124-035004-check-whole-verdict-lrat-on-the-complete/lib/benchmark/trusted-kernel/verdict_qualification.py\", line 44, in normal",
+        "    raise ValueError(f\"{task}: {done.stderr} {done.stdout[-1500:]}\")",
+        "ValueError: node-checks-same:  393-wide-floating-conversions: running task node-checks-same (target route)",
+        "393-wide-floating-conversions: task node-checks-same: refuted (completed; as expected), receipt receipts/node-checks-same/20261124T042626Z-4dae2dd0/result.json",
+        "LRAT assurance: ordinary refutation lacks a reproduced original JVM witness",
+        ""
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Reconstruct the expected Guava request and both pass ledgers independently of the issuer",
+      "run": "python3 -B - <<'PYTHON'\nfrom pathlib import Path\nimport json\nimport os\nimport subprocess\nimport sys\nimport tarfile\nsys.path.insert(0, \"lib/python\")\nimport jvmcontract_lrat as lrat\n\nread = lambda path: json.loads(path.read_text())\ntask = \"first-8-release\"\nexample, = Path(\"examples\").glob(\"336-*\")\nrequests = (example / \"receipts\" / task / \"executions\").glob(\"*/lrat-request.json\")\nsource, = (p for p in requests if read(p.parent / \"attempt.json\")[\"job\"] == os.environ[\"VERIFY_JOB_ID\"])\nrequest = read(source)\njournal = read(source.parent / \"attempt.json\")\nchecker = read(source.parent / \"checker.json\")\nresult = example / journal[\"receipt\"]\nconclusion = read(result)[\"conclusion\"]\nassert request[\"run\"] == journal[\"id\"] == conclusion[\"attempt\"]\nassert request[\"claim\"][\"key\"] == read(result)[\"claim\"][\"target\"][\"claimKey\"]\nassert request[\"checker\"][\"classpath\"] == journal[\"checker\"][\"classpath\"]\nassert conclusion[\"status\"] == \"established\" and not conclusion[\"vacuous\"]\nanchor = {\"status\": conclusion[\"status\"], \"execution\": journal[\"id\"], \"conclusion\": conclusion,\n          \"receiptSha256\": lrat.digest(result.read_bytes()), \"jvmReplay\": []}\nnative, = (Path(os.environ[\"VERIFY_WORKDIR\"]) / \".build-py\").glob(\n    f\"*/targets/336/{task}/{journal['id']}/verifier\")\nruns = [run for resultset in checker[\"outcomes\"] for run in resultset[\"search\"][\"runs\"]]\nboundary, streams = lrat.capture(request, anchor, native, native / \"solver-traces\", runs)\nroot = Path(\"verification/trusted-kernel-recovery/lrat\")\nout = root / \"independent-guava\"\nout.mkdir()\n(out / \"request.json\").write_bytes(source.read_bytes())\nlrat.save(out / \"boundary.json\", boundary)\nwith tarfile.open(out / \"native-origin.tar.gz\", \"w:gz\") as arc:\n    for p in [source, source.parent / \"attempt.json\", source.parent / \"checker.json\", result]:\n        arc.add(p, arcname=\"original/\" + p.name)\n    for p in [*streams, *native.rglob(\"bmc.log\")]:\n        arc.add(p, arcname=\"verifier/\" + p.relative_to(native).as_posix())\n# Only now read the issuer's evidence. Neither expected input was loaded from the proof bundle or its sidecars.\ncheck = subprocess.run([sys.executable, \"-B\", lrat.__file__, \"--check\", str(out / \"request.json\"),\n                        str(out / \"boundary.json\"), str(root / task / \"evidence.zip\")],\n                       capture_output=True, text=True, check=True)\nverdict = json.loads(check.stdout)\nassert verdict[\"answers\"] == {\"sat\": 18, \"unsat\": 8}\nlrat.save(out / \"recheck.json\", verdict)\nprint(\"Native journal and both actual call boundaries independently rechecked 18 SAT models and 8 LRAT proofs.\")\nPYTHON",
+      "cwd": ".",
+      "status": "skipped",
+      "why": "an earlier step failed"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/assurance.json",
+      "change": "added",
+      "bytes": 722,
+      "sha256": "d378dd357a687592c8d2d4e20d0db1e6038537b10341dcd3c9916ac395687a31",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/boundary.json",
+      "change": "added",
+      "bytes": 9152,
+      "sha256": "fc31d8af57dc07f26cc1f069cc75cc466c6192a6ddeb55c77b52c7138aa14e8b",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/evidence.zip",
+      "change": "added",
+      "bytes": 532556,
+      "sha256": "ef0d7d7ce6673649ee52c3f8c0633efbc50e322aa300f3aacacf1ff69edca038",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/ordinary.json",
+      "change": "added",
+      "bytes": 16172,
+      "sha256": "bbdf3570276c9dcf0f55946e3ce26a12a03dc631029e2184fbca9e1ac8ba7eba",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/request.json",
+      "change": "added",
+      "bytes": 10929,
+      "sha256": "860673e7976f743f3b5a539724af5824ceaeb0015fdd429cfcaa696632b5f320",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/uncertified.json",
+      "change": "added",
+      "bytes": 16174,
+      "sha256": "ceee033608cd55e91f5eea2033bf6ff596163adb65922ec2768180efc46ae0ff",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/first-8-release/assurance.json",
+      "change": "added",
+      "bytes": 851,
+      "sha256": "a3b0dcf57a33d2c8edbb4204c591e669b7471ab011e1b1490cf4b565f404387d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/first-8-release/boundary.json",
+      "change": "added",
+      "bytes": 11621,
+      "sha256": "4a0c4f8a8a0c24870dc7d1fdd34cc35896f45a270477a8430f26f05f17c89fc4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/first-8-release/evidence.zip",
+      "change": "added",
+      "bytes": 54830,
+      "sha256": "c0922a67af0a3e4a9fdea41beb8f6eccf4c6808e35ec3541692b7605e4a67c19",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/first-8-release/ordinary.json",
+      "change": "added",
+      "bytes": 18718,
+      "sha256": "3ab15cf6313393a91930a710fd09e9153bd936b4d46d8e6e29e4b97a56e2c09e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/first-8-release/request.json",
+      "change": "added",
+      "bytes": 10334,
+      "sha256": "c37618393a5209f4d8a43011c2c4984bdc3a1d05655f334a9c0ab71ffea9400a",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/trusted-kernel-recovery/lrat/first-8-release/uncertified.json",
+      "change": "added",
+      "bytes": 18713,
+      "sha256": "96b29a6cd0e208296b99ef7e79135036a0d37ef291151a95ce501c53f30dfde1",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:26:49+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [
+      "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/assurance.json",
+      "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/boundary.json",
+      "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/evidence.zip",
+      "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/ordinary.json",
+      "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/request.json",
+      "verification/trusted-kernel-recovery/lrat/conversion-equivalence-classified/uncertified.json",
+      "verification/trusted-kernel-recovery/lrat/first-8-release/assurance.json",
+      "verification/trusted-kernel-recovery/lrat/first-8-release/boundary.json",
+      "verification/trusted-kernel-recovery/lrat/first-8-release/evidence.zip",
+      "verification/trusted-kernel-recovery/lrat/first-8-release/ordinary.json",
+      "verification/trusted-kernel-recovery/lrat/first-8-release/request.json",
+      "verification/trusted-kernel-recovery/lrat/first-8-release/uncertified.json"
+    ],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "534d008629ba01b13ae15e963fb7abdb2d1ae041",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/534d008629ba01b13ae15e963fb7abdb2d1ae041/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 2,
+    "occurrences": {
+      "logs": "20261124T042628Z-47593057b63722d5",
+      "outputs": "20261124T042628Z-512832304d3e2082",
+      "diff": "20261124T042628Z-5325104a1c83e9eb",
+      "workdir": "20261124T042634Z-826631f690687a49"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-035004-check-whole-verdict-lrat-on-the-complete"
+}

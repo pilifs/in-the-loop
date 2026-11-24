@@ -1,0 +1,233 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-041236-replay-javaparser-separator-claims-on-th",
+  "title": "Replay JavaParser separator claims on the clean recovery revision",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 14m19s, peak 376.5 MiB (estimated 13m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-041236-replay-javaparser-separator-claims-on-th.json",
+    "sha256": "40332bb34faa6555dad1813d040bb26ece02a617868759af3b4d6e28aeea6e7e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-041236-replay-javaparser-separator-claims-on-th",
+      "title": "Replay JavaParser separator claims on the clean recovery revision",
+      "description": "VF-060 identified a conflicted source export used by the previous JavaParser run. Repeat the eight original roots, the separator read and subsequent erroneous class behavior, and the bounded UTF-16 separator family on the recorded conflict-free revision; retain the old result separately.",
+      "kind": "real-world",
+      "capabilities": [
+        "receiver-construction",
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "expected": "Source-bound ordinary and conditional verdicts with original JVM outcomes, including all registered caller inputs.",
+      "submitted": {
+        "at": "2026-11-24T04:12:36+00:00",
+        "session": "01a20bbf-66e7-7ad0-9353-1fdb338d0b28"
+      },
+      "revision": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "13m",
+        "timeout": "32m",
+        "notes": "The earlier transfer took thirteen minutes and 390 MiB on the conflicted export."
+      },
+      "steps": [
+        {
+          "name": "Check the original parent and fix",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py javaparser --output verification/receiver-discovery/recovery/javaparser/clean-ordinary",
+          "cwd": "."
+        },
+        {
+          "name": "Check missing, fixed and arbitrary bounded separators",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py javaparser --output verification/receiver-discovery/recovery/javaparser/clean-profiles",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/recovery/javaparser/clean-ordinary",
+        "verification/receiver-discovery/recovery/javaparser/clean-profiles"
+      ]
+    }
+  },
+  "sourceCommit": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+  "startedAt": "2026-11-24T04:26:35+00:00",
+  "finishedAt": "2026-11-24T04:41:07+00:00",
+  "wallSeconds": 872.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 780.0,
+    "notes": "The earlier transfer took thirteen minutes and 390 MiB on the conflicted export."
+  },
+  "usage": {
+    "peakMemoryBytes": 394801152,
+    "wallSeconds": 859.9,
+    "cpuSeconds": 870.4,
+    "memoryOfEstimate": 0.18,
+    "durationOfEstimate": 1.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the original parent and fix",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py javaparser --output verification/receiver-discovery/recovery/javaparser/clean-ordinary",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 213.958,
+      "cpuSeconds": 218.039,
+      "cpuThrottledSeconds": 1.044,
+      "peakMemoryBytes": 385277952,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-original-parent-and.log",
+        "lines": 8,
+        "bytes": 216,
+        "sha256": "1fd791923dc34a7f70cdc86027f89fe447b6a7cf34dc9e8cade6a5ed730e645b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent postorder violation",
+        "parent terminal violation",
+        "parent nonempty unverifiable",
+        "parent preorder unverifiable",
+        "fix postorder unverifiable",
+        "fix terminal unverifiable",
+        "fix nonempty unverifiable",
+        "fix preorder unverifiable"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check missing, fixed and arbitrary bounded separators",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py javaparser --output verification/receiver-discovery/recovery/javaparser/clean-profiles",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 645.918,
+      "cpuSeconds": 652.331,
+      "cpuThrottledSeconds": 8.827,
+      "peakMemoryBytes": 394801152,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-missing-fixed-and-arbitr.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/recovery/javaparser/clean-ordinary/measurement.json",
+      "change": "added",
+      "bytes": 66650,
+      "sha256": "51781f583126e0cd90d3ef7c9d652c198559940eec1641ba5e293793cf9fe16c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/recovery/javaparser/clean-profiles/measurement.json",
+      "change": "added",
+      "bytes": 283455,
+      "sha256": "48e18553a5381e8c599aa19f12c975b2cc122b5d93e85d1d372c3eae6b27d364",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:41:12+00:00",
+    "applied": [
+      "verification/receiver-discovery/recovery/javaparser/clean-ordinary/measurement.json",
+      "verification/receiver-discovery/recovery/javaparser/clean-profiles/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b90eaba6eed651aeea13329277d5deb5e85aeed7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b90eaba6eed651aeea13329277d5deb5e85aeed7/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 2,
+    "occurrences": {
+      "logs": "20261124T044107Z-88463511f35359ee",
+      "outputs": "20261124T044107Z-9167109ad6325d5d",
+      "diff": "20261124T044107Z-936783387c4135ce"
+    }
+  }
+}

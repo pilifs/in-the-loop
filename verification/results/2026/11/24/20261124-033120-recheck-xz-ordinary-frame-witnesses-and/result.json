@@ -1,0 +1,315 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-033120-recheck-xz-ordinary-frame-witnesses-and",
+  "title": "Recheck XZ ordinary frame witnesses and live cache prestates",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 1m02s, peak 175.9 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-033120-recheck-xz-ordinary-frame-witnesses-and.json",
+    "sha256": "75d527efed552312d9109b095e83e7c6ae035eb756a7876156f6d185a992d17c",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-033120-recheck-xz-ordinary-frame-witnesses-and",
+      "title": "Recheck XZ ordinary frame witnesses and live cache prestates",
+      "description": "Exercise the unmodified public frame claim on XZ 1.11 and 1.12 and distinguish default JVM replay, an admitted nondefault setting, four frame outputs, and the physical first-use and erroneous-class behavior of the cache. Retain fresh measurements and evidence separately from the historical campaign.",
+      "kind": "real-world",
+      "capabilities": [
+        "receiver-construction",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "expected": "Both registered artifacts are bound, the four frame outputs and each cache profile have fresh observations, and a failure in an admitted prestate is replayed at the original entry with its default comparison.",
+      "submitted": {
+        "at": "2026-11-24T03:31:20+00:00",
+        "session": "01a20b98-a4a8-7b90-bf7a-097e3504fb3a"
+      },
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "4m",
+        "timeout": "25m"
+      },
+      "steps": [
+        {
+          "name": "Recheck ordinary claims",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz --output verification/receiver-discovery/recovery/xz/ordinary",
+          "cwd": "."
+        },
+        {
+          "name": "Recheck nondefault and default witnesses",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/property_witness.py xz --output verification/receiver-discovery/recovery/xz/witnesses",
+          "cwd": "."
+        },
+        {
+          "name": "Recheck all cache and frame profiles",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py xz --output verification/receiver-discovery/recovery/xz/profiles",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/recovery/xz"
+      ]
+    }
+  },
+  "sourceCommit": "0bd3b57768a815b304241fae840abba78bb0cb76",
+  "startedAt": "2026-11-24T03:44:19+00:00",
+  "finishedAt": "2026-11-24T03:51:36+00:00",
+  "wallSeconds": 437.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3763382,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 1500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 240.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 184422400,
+    "wallSeconds": 62.5,
+    "cpuSeconds": 77.0,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.26
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 268.155,
+      "cpuSeconds": 267.753,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2545213440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "1e06c5f3d505eb0df83712ed7d421a59ed249ac4040f49958e8d451b60f7519b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-033120-recheck-xz-ordinary-frame-witnesses-and/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 27s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Recheck ordinary claims",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz --output verification/receiver-discovery/recovery/xz/ordinary",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 4.049,
+      "cpuSeconds": 6.826,
+      "cpuThrottledSeconds": 0.918,
+      "peakMemoryBytes": 135897088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-recheck-ordinary-claims.log",
+        "lines": 2,
+        "bytes": 46,
+        "sha256": "433e62bdf85d7c6cb500cc83ebce015f86fa7d03b107f3afcd7905c6bb2718e0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "old frame unverifiable",
+        "new frame unverifiable"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Recheck nondefault and default witnesses",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/property_witness.py xz --output verification/receiver-discovery/recovery/xz/witnesses",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 8.826,
+      "cpuSeconds": 13.711,
+      "cpuThrottledSeconds": 1.307,
+      "peakMemoryBytes": 134897664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-recheck-nondefault-and-default.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Recheck all cache and frame profiles",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py xz --output verification/receiver-discovery/recovery/xz/profiles",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1500.0,
+      "cancelled": false,
+      "wallSeconds": 49.61,
+      "cpuSeconds": 56.481,
+      "cpuThrottledSeconds": 6.602,
+      "peakMemoryBytes": 184422400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-recheck-all-cache-and-frame-pr.log",
+        "lines": 2,
+        "bytes": 116,
+        "sha256": "e5ca4711e0617b5a32face8a048d91be60b4ac68b8ace265651bbae559a5b137",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "preserved org.apache.commons.compress.compressors.xz.XZCompressorInputStream#read()I",
+        "commons-compress-767 preserved"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/recovery/xz/ordinary/measurement.json",
+      "change": "added",
+      "bytes": 16651,
+      "sha256": "ca91e734c7e8bbcea59db18573496daf95ac9ca6aeb131ce7dc593c4f08c8390",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/recovery/xz/profiles/measurement.json",
+      "change": "added",
+      "bytes": 131148,
+      "sha256": "8ae21e26ba61175b743d99e6c5be7039278a52643e9654aefac3717b4db371ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/recovery/xz/profiles/receipts.tar.gz",
+      "change": "added",
+      "bytes": 6261,
+      "sha256": "39d89bfa315a1321e17da02194968d9373b1960e1f64b2cb662b9022dbf7cfd6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/recovery/xz/witnesses/measurement.json",
+      "change": "added",
+      "bytes": 36423,
+      "sha256": "49b8b9438f857296e9cc2642a946b32233bd53a7bbaa6358b5ddbf211d8f2754",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:09:16+00:00",
+    "applied": [
+      "verification/receiver-discovery/recovery/xz/ordinary/measurement.json",
+      "verification/receiver-discovery/recovery/xz/profiles/measurement.json",
+      "verification/receiver-discovery/recovery/xz/profiles/receipts.tar.gz",
+      "verification/receiver-discovery/recovery/xz/witnesses/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6d4a7e033710845d455430f2eff3af7a6a21f1b1",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6d4a7e033710845d455430f2eff3af7a6a21f1b1/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T035136Z-140816c1be42b97b",
+      "outputs": "20261124T035136Z-175030e0dbb2d26a",
+      "diff": "20261124T035136Z-20317115c0490c20"
+    }
+  }
+}

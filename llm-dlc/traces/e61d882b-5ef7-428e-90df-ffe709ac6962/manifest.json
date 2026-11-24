@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "e61d882b-5ef7-428e-90df-ffe709ac6962",
-  "status": "open",
+  "status": "ended",
   "title": "/run-brief invocation options",
   "first_prompt": "<command-name>/clear</command-name>\n            <command-message>clear</command-message>\n            <command-args></command-args>",
   "client": {
@@ -12,27 +12,27 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-24T03:26:13.135Z",
-  "duration_seconds": 571710,
+  "ended": "2026-11-24T04:24:09.140Z",
+  "duration_seconds": 575186,
   "stats": {
-    "turns": 194,
-    "api_calls": 1500,
-    "tool_calls": 1390,
+    "turns": 197,
+    "api_calls": 1545,
+    "tool_calls": 1428,
     "tool_errors": 23,
     "compactions": 7,
     "peak_context_tokens": 565519,
     "usage": {
-      "input_tokens": 3570,
-      "output_tokens": 1014383,
-      "cache_read_input_tokens": 384287533,
-      "cache_creation_input_tokens": 4423221
+      "input_tokens": 3680,
+      "output_tokens": 1040177,
+      "cache_read_input_tokens": 405737032,
+      "cache_creation_input_tokens": 4483747
     }
   },
   "tools": {
-    "Bash": 1186,
+    "Bash": 1221,
     "Edit": 68,
     "Read": 49,
-    "SendMessage": 31,
+    "SendMessage": 34,
     "Write": 18,
     "ToolSearch": 13,
     "ListAgents": 8,
@@ -189,24 +189,24 @@
     {
       "index": 7,
       "started": "2026-11-23T13:17:01.528Z",
-      "ended": "2026-11-24T03:26:13.135Z",
-      "turns": 32,
-      "api_calls": 277,
+      "ended": "2026-11-24T04:24:09.140Z",
+      "turns": 35,
+      "api_calls": 322,
       "usage": {
-        "input_tokens": 692,
-        "output_tokens": 172536,
-        "cache_read_input_tokens": 76256781,
-        "cache_creation_input_tokens": 389727
+        "input_tokens": 802,
+        "output_tokens": 198330,
+        "cache_read_input_tokens": 97706280,
+        "cache_creation_input_tokens": 450253
       },
-      "peak_context_tokens": 448938
+      "peak_context_tokens": 514725
     }
   ],
   "log": {
-    "sha256": "131a49a72cf6789ab3cbca58f573cdcfde736465f5f5b5d36717e554b54a2d03",
-    "bytes": 27981872,
-    "lines": 11417,
-    "gzip_bytes": 4965637,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/131a49a72cf6789ab3cbca58f573cdcfde736465f5f5b5d36717e554b54a2d03.jsonl.gz"
+    "sha256": "4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f",
+    "bytes": 28572191,
+    "lines": 11736,
+    "gzip_bytes": 5047524,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f.jsonl.gz"
   },
   "subagents": [
     {
@@ -8397,6 +8397,118 @@
       "summary": "Put the setup notes of trusted-kernel-and-receiver-recovery into its brief",
       "body": "The setup run trusted-kernel-and-receiver-recovery-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/trusted-kernel-and-receiver-recovery-brief.md and ~/code/scripts/analysis/trusted-kernel-and-receiver-recovery-brief.md, for the domain agent.",
       "log_sha256": "131a49a72cf6789ab3cbca58f573cdcfde736465f5f5b5d36717e554b54a2d03"
+    },
+    {
+      "change_id": "tlqopkxnlsvzzospulrzkvqzmuwnusmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "131a49a72cf6789ab3cbca58f573cdcfde736465f5f5b5d36717e554b54a2d03"
+    },
+    {
+      "change_id": "tuppllptypzurwssmrsnpqxmmrxryswn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-058: the receiver campaign's Maven cache lives in an old session's scratch folder",
+      "body": "The watcher's 2026-11-23 cleanup of ~/.cache/in-the-loop/agent-tmp/0cea9d0e-… removed the receiver campaign's Maven cache, which prepared.json files name by absolute path. The trusted-kernel-and-receiver-recovery setup restored it from a hard-link snapshot. VF-058 records the hazard, the check to run before cleaning any agent-tmp folder, and the lasting fix of a stable path. Documentation only.",
+      "log_sha256": "131a49a72cf6789ab3cbca58f573cdcfde736465f5f5b5d36717e554b54a2d03"
+    },
+    {
+      "change_id": "qyzskpnkqqkwvoookvuqklvmswxqzryq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261124-033410-qualify-long-range-fill-and-portable-gua: failed: 1 failed step(s) in 0.2s, peak 3.9 MiB (estimated 1m00s, 1.0 GiB) 20261124-033453-audit-historical-induction-queries-again: failed: 1 passed, 1 failed step(s) in 1.7s, peak 119.0 MiB (estimated 1m00s, 1.0 GiB) 20261124-033937-check-five-original-array-contracts-thro: failed: 1 failed step(s) in 0.2s, peak 11.8 MiB (estimated 2m00s, 1.0 GiB) Collected by the watcher of the trusted-kernel-and-receiver-recovery run, which keeps the queue while the run is under way.",
+      "log_sha256": "fabe4f3412f1b46a56c7b69a57726b5f556ee687d9ac4970837c2d12a698122c"
+    },
+    {
+      "change_id": "tvowykmkrumpxvuwmzlkwwnxwovukumy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record VF-060: jobs exported from a conflicted revision run on jj's conflict layout",
+      "body": "Six jobs of the queued trusted-kernel-and-receiver-recovery run were exported from a revision with a jj conflict, which the agent later resolved. Each work folder held jj's JJ-CONFLICT-README and three whole-tree conflict copies (7.3 GB against about 1.8 GB normally), so free disk fell from 94 to 49 GB in 30 minutes; one job ran to completion on that layout. VF-060 asks the pipeline to refuse conflicted source revisions. Documentation only.",
+      "log_sha256": "4315598a459c9618eb55109b4f37a1b9dd9d76e6f2bfce5a6eb53d9e52a9917c"
+    },
+    {
+      "change_id": "wnuksuxkvkxulvvtowvnouzkptonntqv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 2 of the 4 job(s); 2 declared or produced none. 20261124-033119-recheck-javaparser-traversal-across-live: passed: 2 passed step(s) in 13m01s, peak 389.2 MiB (estimated 12m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-033120-recheck-xz-ordinary-frame-witnesses-and: passed: 3 passed step(s) in 1m02s, peak 175.9 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261124-033637-recover-json-and-yaml-public-callers-fro: failed: 1 failed, 2 skipped step(s) in 0.6s, peak 51.9 MiB (estimated 3m00s, 2.0 GiB) 20261124-033703-certify-ordinary-native-verdicts-and-rep: failed: 1 failed step(s) in 0.2s, peak 14.6 MiB (estimated 4m00s, 2.0 GiB) Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "f8cadb2b29ce902fc3aaa589efd141d3a6a035675ce8cfda8c2b255ade748d11"
+    },
+    {
+      "change_id": "zymuwnlyrrnyxpspspvvrzxonprqlvzu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-046: a third filter stop; the queued brief continues in a fresh session",
+      "body": "OpenAI's cybersecurity filter refused trusted-kernel-and-receiver-recovery's first cycle 30 minutes in, in session 461ff7e6 (fresh for change-verification, which ran cleanly). Following the brief queue's procedure, the watcher committed the unverified work-in-progress in the workspace (uwuytsrn), started the domain run again as trusted-kernel-and-receiver-recovery-2 in fresh session fbbe8930, and pointed the queue at it (queue.jsonl). VF-046 records the occurrence. Documentation and queue log only.",
+      "log_sha256": "706fbaa035f428062381f6ce0ea07015534b97006539123a6881f6fc7cf0a889"
+    },
+    {
+      "change_id": "wrlmpxwrqloutmnlqoqqnnomyquolllk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261124-034953-audit-historical-induction-queries-again: passed: 2 passed step(s) in 7.7s, peak 113.4 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-034953-qualify-long-range-fill-and-portable-gua: passed: 1 passed step(s) in 8.3s, peak 123.4 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "96bd72f9a08d272dbf792bf54137de2bbe18f9d0fc1602332e5025643f47958c"
+    },
+    {
+      "change_id": "upouuyxqtrmqxlznptuquxnrvmnqklrv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-034954-check-five-original-array-contracts-thro: passed: 1 passed step(s) in 36.8s, peak 188.3 MiB (estimated 2m00s, 1.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "675a11a466fdcea2fc8fa2834f33d7e625e86b8fe92b86c909f30680391e21eb"
+    },
+    {
+      "change_id": "plkwvopmmpywtvtynmkqvmqupwmvsutx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-034422-check-replacement-properties-identity-an: passed: 3 passed step(s) in 27.3s, peak 120.0 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "59aed5371ec7285de937a521e6fcac5fca777b6cb290801e226ce2d5caa99fe8"
+    },
+    {
+      "change_id": "oqrmymmutslpvuvvsxksmolkpqvktxsy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 declared or produced none. 20261124-035044-check-the-executed-jdk-range-branches-an: failed: 1 failed step(s) in 4.0s, peak 199.8 MiB (estimated 2m00s, 3.0 GiB) 20261124-035044-qualify-both-fastutil-range-fill-loops-o: passed: 1 passed step(s) in 5.2s, peak 106.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "3b19192263ace5e65918cdf069aeb122f0920c15413d311a996f928ae2934546"
+    },
+    {
+      "change_id": "wuuktxuuyytpowpqplpxkuylrrsvwkpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261124-035004-check-whole-verdict-lrat-on-the-complete: failed: 1 failed, 1 skipped step(s) in 13.4s, peak 166.5 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed; signals: example:task-as-expected×7 Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f"
+    },
+    {
+      "change_id": "ukryvsmxtwopwvxwlppzrxuwvxvumwuu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-041236-replay-the-original-xz-frame-and-cache-w: passed: 2 passed step(s) in 11.4s, peak 114.1 MiB (estimated 1m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f"
+    },
+    {
+      "change_id": "wrzoqtxuywlkuumlmyzsvuvqqvxmpnqz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-035617-retry-xz-frame-and-cache-roots-beyond-bo: passed: 1 passed step(s) in 47.7s, peak 176.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f"
+    },
+    {
+      "change_id": "qvtrkqsmskqkqmlnyompovmmtzxkmzpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-035245-recover-json-and-yaml-public-callers-fro: passed: 3 passed step(s) in 1m48s, peak 195.3 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f"
     }
   ],
   "logs": {
@@ -8640,6 +8752,12 @@
       "gzip_bytes": 4619089,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/3a6ee4b091ff7ecdddd5224cd9695ffc07673275018065047f67d8bdba697172.jsonl.gz"
     },
+    "3b19192263ace5e65918cdf069aeb122f0920c15413d311a996f928ae2934546": {
+      "bytes": 28568386,
+      "lines": 11733,
+      "gzip_bytes": 5046944,
+      "url": null
+    },
     "3da5026b997450a183fa68085ccbe4dfb12acceb302463e9d1066e26b427e8f4": {
       "bytes": 16687377,
       "lines": 6138,
@@ -8669,6 +8787,12 @@
       "lines": 9074,
       "gzip_bytes": 4177870,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/421feb3d53a2766e37c6473e61df185fc27280a4691e3ed6e31bb0500d4659bd.jsonl.gz"
+    },
+    "4315598a459c9618eb55109b4f37a1b9dd9d76e6f2bfce5a6eb53d9e52a9917c": {
+      "bytes": 28146767,
+      "lines": 11526,
+      "gzip_bytes": 4986253,
+      "url": null
     },
     "44c38faaa6d6b92e04b2c70f0e60b5e1b679f26425ed0bae67bd838627a1713f": {
       "bytes": 9800601,
@@ -8711,6 +8835,12 @@
       "lines": 1570,
       "gzip_bytes": 900158,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/49f7beeb087dddd9f43d4cdb90f4195156570229502e33a76f6630f9ebbdcd25.jsonl.gz"
+    },
+    "4c3b611e1295ec5d0c5db587bf5cd23ff1bf21e8c0652144451b617172d69d4f": {
+      "bytes": 28572191,
+      "lines": 11736,
+      "gzip_bytes": 5047524,
+      "url": null
     },
     "4fdff2dab645ae09bd2448390cc96c1d970887d1f4fb9b1fa1a3362f1427fe57": {
       "bytes": 18565267,
@@ -8760,6 +8890,12 @@
       "gzip_bytes": 3498078,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/58dff867f32e3695059aaaf4f57aaad966a39401388a1c32cb09d52063cdf571.jsonl.gz"
     },
+    "59aed5371ec7285de937a521e6fcac5fca777b6cb290801e226ce2d5caa99fe8": {
+      "bytes": 28508150,
+      "lines": 11696,
+      "gzip_bytes": 5038981,
+      "url": null
+    },
     "5babe4b5b0217b71c8c131e81f63ef4ccc7d9694ff5e5b72687a30814ff172fb": {
       "bytes": 27413147,
       "lines": 11109,
@@ -8802,6 +8938,12 @@
       "gzip_bytes": 1788508,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/64e0bf5112d6764e7ac0d87ec1f62aaac18abee62d21f5c7a4f23e6ec7a313c5.jsonl.gz"
     },
+    "675a11a466fdcea2fc8fa2834f33d7e625e86b8fe92b86c909f30680391e21eb": {
+      "bytes": 28485072,
+      "lines": 11680,
+      "gzip_bytes": 5035512,
+      "url": null
+    },
     "6a69550fc550a1a49e6a7b5d3507ed01d40b60c305051c731c40be2f1331d714": {
       "bytes": 24563106,
       "lines": 9523,
@@ -8825,6 +8967,12 @@
       "lines": 4652,
       "gzip_bytes": 2260346,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/7032dc319e3048de09df14ab220da56adc62d190eefb16a88fd588a5849e935f.jsonl.gz"
+    },
+    "706fbaa035f428062381f6ce0ea07015534b97006539123a6881f6fc7cf0a889": {
+      "bytes": 28443384,
+      "lines": 11653,
+      "gzip_bytes": 5028639,
+      "url": null
     },
     "71b932814d17b781efc8407b9535fc49013a835590a02041cb471c5267f84b81": {
       "bytes": 16508856,
@@ -9011,6 +9159,12 @@
       "lines": 233,
       "gzip_bytes": 160142,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/960a57323376cb1f5a65fd1a1f8fd0788409448e6f410d81968cdcf02552f60f.jsonl.gz"
+    },
+    "96bd72f9a08d272dbf792bf54137de2bbe18f9d0fc1602332e5025643f47958c": {
+      "bytes": 28471275,
+      "lines": 11668,
+      "gzip_bytes": 5033050,
+      "url": null
     },
     "9942325ff2cd091d660cc75bb96c62bcb740c865af020bdda9193485a0651f6d": {
       "bytes": 15925416,
@@ -9336,11 +9490,23 @@
       "gzip_bytes": 2645898,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f6ab9938257a54b1259622dbb8bbd6dbf5c2f83c0c7e3102055df58ac255b3d8.jsonl.gz"
     },
+    "f8cadb2b29ce902fc3aaa589efd141d3a6a035675ce8cfda8c2b255ade748d11": {
+      "bytes": 28426103,
+      "lines": 11646,
+      "gzip_bytes": 5024602,
+      "url": null
+    },
     "f9a03c59044607197c9620b9f0316285b55d44dc196fc1b084e03c63fa0eae4f": {
       "bytes": 4910154,
       "lines": 1567,
       "gzip_bytes": 898970,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/f9a03c59044607197c9620b9f0316285b55d44dc196fc1b084e03c63fa0eae4f.jsonl.gz"
+    },
+    "fabe4f3412f1b46a56c7b69a57726b5f556ee687d9ac4970837c2d12a698122c": {
+      "bytes": 28061630,
+      "lines": 11465,
+      "gzip_bytes": 4976511,
+      "url": null
     },
     "fb1e77e9d63b29720bbb2b22752b855488772c34ce8f623de7faa20c57c3a7af": {
       "bytes": 14802808,

@@ -1,0 +1,174 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-041759-bind-the-commons-lang-reversal-theorem-t",
+  "title": "Bind the Commons Lang reversal theorem to loaded release methods",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 5.0s, peak 192.6 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Check the pinned release, Lean theorem and physical JVM grid) was held back 2.6s by its 1-CPU quota in 5.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-041759-bind-the-commons-lang-reversal-theorem-t.json",
+    "sha256": "15971323612de82b89b04fab67eb35de4acaf4054aefc239d3f403b5ea8e7f08",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-041759-bind-the-commons-lang-reversal-theorem-t",
+      "title": "Bind the Commons Lang reversal theorem to loaded release methods",
+      "description": "Check the descending and ascending cursors of Commons Lang 3.17.0 ArrayUtils.reverse on its byte-bound two-cursor model. Extract the two resolved Math helpers from Temurin 21, specialize the valid-range Lean proof, and corroborate its mirror and frame through an alias on the original JVM. Check the unrestricted signed-bounds counterexample separately.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "lean4"
+      ],
+      "links": {},
+      "expected": "Lean checks the valid range model over the loaded bytes and records its axioms. The JVM produces 40525 normal observations and 3640 exact exceptions.",
+      "submitted": {
+        "at": "2026-11-24T04:17:59+00:00",
+        "session": "01a20bbe-42f1-7502-85e3-160daf41fb6f"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "python3",
+        "rustc",
+        "setpriv",
+        "lean"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Check the pinned release, Lean theorem and physical JVM grid",
+          "run": "python3 -B lib/benchmark/trusted-kernel/reverse_qualification.py --output verification/kernel-recovery/reverse.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/kernel-recovery/reverse.json"
+      ]
+    }
+  },
+  "sourceCommit": "8b22979ae0406d3263aa1ec9a473f51fa098468e",
+  "startedAt": "2026-11-24T04:34:25+00:00",
+  "finishedAt": "2026-11-24T04:34:38+00:00",
+  "wallSeconds": 13.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 201945088,
+    "wallSeconds": 5.0,
+    "cpuSeconds": 4.8,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the pinned release, Lean theorem and physical JVM grid",
+      "run": "python3 -B lib/benchmark/trusted-kernel/reverse_qualification.py --output verification/kernel-recovery/reverse.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 5.009,
+      "cpuSeconds": 4.826,
+      "cpuThrottledSeconds": 2.624,
+      "peakMemoryBytes": 201945088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-pinned-release-lean.log",
+        "lines": 1,
+        "bytes": 127,
+        "sha256": "6ae353e0be8b852d5963c185494ad03da463a6bc829add06f470a668dd3730a7",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "commons-lang3-3.17.0/ArrayUtils.reverse([III)V 'loadedReverse' depends on axioms: [propext, Classical.choice, Quot.sound] 3640"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/kernel-recovery/reverse.json",
+      "change": "added",
+      "bytes": 2655,
+      "sha256": "0c69cd6238ee57f51ed7b57578e71f570c64e11c63e4df1a7857b2dfe3f7cdd0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:34:51+00:00",
+    "applied": [
+      "verification/kernel-recovery/reverse.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T043438Z-312265c71e765cd3",
+      "outputs": "20261124T043438Z-33387658d2b6932e",
+      "diff": "20261124T043438Z-35403637c52dafba"
+    }
+  }
+}

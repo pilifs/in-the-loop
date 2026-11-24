@@ -1,0 +1,162 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-033410-qualify-long-range-fill-and-portable-gua",
+  "title": "Qualify long range fill and portable Guava search on release bytes",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.2s, peak 3.9 MiB (estimated 1m00s, 1.0 GiB)",
+  "attention": [
+    "declared output verification/kernel-recovery/range-jdk.json was not produced",
+    "step 1 (Check the source-frozen ranges and release searches) exited 2, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-033410-qualify-long-range-fill-and-portable-gua.json",
+    "sha256": "104366ee94d7b583b95e39d62061ae37fe7545a76c57107a6396a9831edb06e8",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-033410-qualify-long-range-fill-and-portable-gua",
+      "title": "Qualify long range fill and portable Guava search on release bytes",
+      "description": "Rebuild the source-frozen int and long checkers and run them with Landlock on the same Temurin 21 range-fill request. Bind four earlier and relocated Guava operations to their original class and support bytes. Recheck every earlier Guava and range control, run the physical release grids, and record the post-JDK refusal on the fastutil public range entry.",
+      "kind": "library",
+      "capabilities": [
+        "independent-java-proof",
+        "array-induction",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "expected": "The frozen int checker declines long fill, the successor establishes its full-width frame, all four Guava entries transfer on the original checker, and staled evidence is rejected.",
+      "submitted": {
+        "at": "2026-11-24T03:34:10+00:00",
+        "session": "01a20b98-d8fa-7453-94b3-f735e0b31a4b"
+      },
+      "requires": [
+        "java",
+        "rustc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "1m"
+      },
+      "steps": [
+        {
+          "name": "Check the source-frozen ranges and release searches",
+          "run": "python3 -B lib/benchmark/trusted-kernel/range_transfer.py --output verification/kernel-recovery/range-jdk.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/kernel-recovery/range-jdk.json"
+      ]
+    }
+  },
+  "sourceCommit": "0bd3b57768a815b304241fae840abba78bb0cb76",
+  "startedAt": "2026-11-24T03:44:19+00:00",
+  "finishedAt": "2026-11-24T03:46:11+00:00",
+  "wallSeconds": 112.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3763382,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 300
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 60.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 4055040,
+    "wallSeconds": 0.2,
+    "cpuSeconds": 0.0,
+    "memoryOfEstimate": 0.0,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check the source-frozen ranges and release searches",
+      "run": "python3 -B lib/benchmark/trusted-kernel/range_transfer.py --output verification/kernel-recovery/range-jdk.json",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 2,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 300,
+      "cancelled": false,
+      "wallSeconds": 0.204,
+      "cpuSeconds": 0.02,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 4055040,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-source-frozen-ranges.log",
+        "lines": 1,
+        "bytes": 222,
+        "sha256": "680701b400256d8bed88e0602a31402f55cb9010d87b1d513933bcfb340b60f9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "python3: can't open file '/home/filip/code/in-the-loop/verification/.state/work/20261124-033410-qualify-long-range-fill-and-portable-gua/lib/benchmark/trusted-kernel/range_transfer.py': [Errno 2] No such file or directory"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T03:49:08+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T034611Z-92950326f369e01c",
+      "outputs": "20261124T034611Z-97513591eeae11b4",
+      "workdir": "20261124T034846Z-46550775cebc901b"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261124-033410-qualify-long-range-fill-and-portable-gua"
+}

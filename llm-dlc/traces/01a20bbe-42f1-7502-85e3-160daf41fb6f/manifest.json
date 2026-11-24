@@ -12,58 +12,62 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T04:09:08.563Z",
-  "ended": "2026-11-24T04:39:06.517Z",
-  "duration_seconds": 1798,
+  "ended": "2026-11-24T04:59:46.079Z",
+  "duration_seconds": 3038,
   "stats": {
     "turns": 1,
-    "api_calls": 157,
-    "tool_calls": 570,
-    "tool_errors": 22,
+    "api_calls": 227,
+    "tool_calls": 771,
+    "tool_errors": 28,
     "compactions": 0,
-    "peak_context_tokens": 308292,
+    "peak_context_tokens": 381364,
     "usage": {
-      "input_tokens": 306701,
-      "output_tokens": 60323,
-      "cache_read_input_tokens": 33282176,
+      "input_tokens": 384985,
+      "output_tokens": 97816,
+      "cache_read_input_tokens": 57660672,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 432,
-    "exec": 112,
-    "send_message": 17,
-    "apply_patch": 5,
+    "Bash": 566,
+    "exec": 161,
+    "send_message": 22,
+    "apply_patch": 12,
+    "wait": 6,
     "spawn_agent": 4
   },
   "files_touched": [
+    "lib/benchmark/trusted-kernel/README.md",
     "lib/benchmark/trusted-kernel/decision_evidence.py",
     "lib/benchmark/trusted-kernel/java/ReverseRelease.java",
     "lib/benchmark/trusted-kernel/lean_range.py",
+    "lib/benchmark/trusted-kernel/recovery_table.py",
     "lib/benchmark/trusted-kernel/reverse_qualification.py",
+    "llm-dlc/loops/trusted-kernel-and-receiver-recovery-results.md",
     "verification/findings.md"
   ],
   "context_windows": [
     {
       "index": 0,
       "started": "2026-11-24T04:09:08.563Z",
-      "ended": "2026-11-24T04:39:06.517Z",
+      "ended": "2026-11-24T04:59:46.079Z",
       "turns": 1,
-      "api_calls": 157,
+      "api_calls": 227,
       "usage": {
-        "input_tokens": 306701,
-        "output_tokens": 60323,
-        "cache_read_input_tokens": 33282176,
+        "input_tokens": 384985,
+        "output_tokens": 97816,
+        "cache_read_input_tokens": 57660672,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 308292
+      "peak_context_tokens": 381364
     }
   ],
   "log": {
-    "sha256": "94a859baf74470779c17defad7707eea5c153284c8c4640f6d27c8ee9c69dadd",
-    "bytes": 3029327,
-    "lines": 1463,
-    "gzip_bytes": 631148,
-    "path": "llm-dlc/traces/01a20bbe-42f1-7502-85e3-160daf41fb6f/logs/94a859baf74470779c17defad7707eea5c153284c8c4640f6d27c8ee9c69dadd.jsonl.gz"
+    "sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222",
+    "bytes": 3759421,
+    "lines": 2060,
+    "gzip_bytes": 735117,
+    "path": "llm-dlc/traces/01a20bbe-42f1-7502-85e3-160daf41fb6f/logs/36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -116,23 +120,141 @@
       "log_sha256": "6c084e8c408c5b4d2a929214d160c0523a3eb673000658121a96e36853832827"
     },
     {
-      "change_id": "pxwkrqlzvyslwnzzxqmlplvursmmoumn",
-      "commit_id": null,
-      "immutable": false,
-      "summary": null,
-      "body": "",
-      "log_sha256": "94a859baf74470779c17defad7707eea5c153284c8c4640f6d27c8ee9c69dadd"
-    },
-    {
       "change_id": "oxukptwtnnszwlvsoplwkxrxsozqxqwk",
       "commit_id": null,
       "immutable": false,
       "summary": "Follow live property removal on the JDK (verification pending)",
       "body": "Exercise the full install, replace, inherit and remove sequence against the actual Properties table. Cover removal at the head and interior of a colliding String-key bucket. The original caller keeps the same reference in a static initializer while a child sees changes through its parent. For the reader transfer, qualify the JavaLangAccess object cached by the JDK 25 DataInputStream initializer from the verified bootstrap provider.\n\nThe native and physical JVM regressions passed with both Temurin 21.0.13 and 25.0.5. Job 20261124-043349-qualify-live-parent-removal-through-the repeats the full live-table claims and the inverse identity control on the managed runner.",
       "log_sha256": "94a859baf74470779c17defad7707eea5c153284c8c4640f6d27c8ee9c69dadd"
+    },
+    {
+      "change_id": "wnuksuxkvkxulvvtowvnouzkptonntqv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 2 of the 4 job(s); 2 declared or produced none. 20261124-033119-recheck-javaparser-traversal-across-live: passed: 2 passed step(s) in 13m01s, peak 389.2 MiB (estimated 12m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). 20261124-033120-recheck-xz-ordinary-frame-witnesses-and: passed: 3 passed step(s) in 1m02s, peak 175.9 MiB (estimated 4m00s, 2.0 GiB); 4 output file(s) changed Applied 4 output(s). 20261124-033637-recover-json-and-yaml-public-callers-fro: failed: 1 failed, 2 skipped step(s) in 0.6s, peak 51.9 MiB (estimated 3m00s, 2.0 GiB) 20261124-033703-certify-ordinary-native-verdicts-and-rep: failed: 1 failed step(s) in 0.2s, peak 14.6 MiB (estimated 4m00s, 2.0 GiB) Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "zymuwnlyrrnyxpspspvvrzxonprqlvzu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "VF-046: a third filter stop; the queued brief continues in a fresh session",
+      "body": "OpenAI's cybersecurity filter refused trusted-kernel-and-receiver-recovery's first cycle 30 minutes in, in session 461ff7e6 (fresh for change-verification, which ran cleanly). Following the brief queue's procedure, the watcher committed the unverified work-in-progress in the workspace (uwuytsrn), started the domain run again as trusted-kernel-and-receiver-recovery-2 in fresh session fbbe8930, and pointed the queue at it (queue.jsonl). VF-046 records the occurrence. Documentation and queue log only.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "wrlmpxwrqloutmnlqoqqnnomyquolllk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261124-034953-audit-historical-induction-queries-again: passed: 2 passed step(s) in 7.7s, peak 113.4 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-034953-qualify-long-range-fill-and-portable-gua: passed: 1 passed step(s) in 8.3s, peak 123.4 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "upouuyxqtrmqxlznptuquxnrvmnqklrv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-034954-check-five-original-array-contracts-thro: passed: 1 passed step(s) in 36.8s, peak 188.3 MiB (estimated 2m00s, 1.0 GiB); 7 output file(s) changed Applied 7 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "plkwvopmmpywtvtynmkqvmqupwmvsutx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-034422-check-replacement-properties-identity-an: passed: 3 passed step(s) in 27.3s, peak 120.0 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed Applied 3 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "oqrmymmutslpvuvvsxksmolkpqvktxsy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 1 of the 2 job(s); 1 declared or produced none. 20261124-035044-check-the-executed-jdk-range-branches-an: failed: 1 failed step(s) in 4.0s, peak 199.8 MiB (estimated 2m00s, 3.0 GiB) 20261124-035044-qualify-both-fastutil-range-fill-loops-o: passed: 1 passed step(s) in 5.2s, peak 106.9 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "wuuktxuuyytpowpqplpxkuylrrsvwkpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 kept under outputs/, not applied (the job didn't pass). 20261124-035004-check-whole-verdict-lrat-on-the-complete: failed: 1 failed, 1 skipped step(s) in 13.4s, peak 166.5 MiB (estimated 4m00s, 2.0 GiB); 12 output file(s) changed; signals: example:task-as-expected×7 Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "ukryvsmxtwopwvxwlppzrxuwvxvumwuu",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-041236-replay-the-original-xz-frame-and-cache-w: passed: 2 passed step(s) in 11.4s, peak 114.1 MiB (estimated 1m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "wrzoqtxuywlkuumlmyzsvuvqqvxmpnqz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-035617-retry-xz-frame-and-cache-roots-beyond-bo: passed: 1 passed step(s) in 47.7s, peak 176.9 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "qvtrkqsmskqkqmlnyompovmmtzxkmzpt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-035245-recover-json-and-yaml-public-callers-fro: passed: 3 passed step(s) in 1m48s, peak 195.3 MiB (estimated 3m00s, 2.0 GiB); 5 output file(s) changed Applied 5 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "psxlxlrnqyxyokrmqpruzyzlmtlllomz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 2 of the 2 job(s). 20261124-041759-bind-the-commons-lang-reversal-theorem-t: passed: 1 passed step(s) in 5.0s, peak 192.6 MiB (estimated 1m00s, 2.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-041856-replay-the-configuration-callers-past-th: passed: 2 passed step(s) in 27.3s, peak 114.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "uoxmonoxxytuxutvpkuylqrqnkkovzyw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 4 job(s)",
+      "body": "Outputs applied for 4 of the 4 job(s). 20261124-043118-certify-the-ordinary-guava-verdict-and-h: passed: 2 passed step(s) in 4.4s, peak 131.1 MiB (estimated 3m00s, 2.0 GiB); 17 output file(s) changed; signals: example:task-as-expected×2 Applied 17 output(s). 20261124-043118-check-jackson-and-utf-16-ordinary-sat-ev: passed: 2 passed step(s) in 18.0s, peak 152.9 MiB (estimated 3m00s, 2.0 GiB); 19 output file(s) changed; signals: example:task-as-expected×6 Applied 19 output(s). 20261124-043143-check-the-executed-jdk-range-branches-an: passed: 1 passed step(s) in 15.3s, peak 270.4 MiB (estimated 2m00s, 3.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261124-043151-compare-the-three-pinned-guava-controls: passed: 1 passed step(s) in 27.7s, peak 174.4 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "qvplywqvpvokqsvlszylywtxmqrzxrqx",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-041236-replay-javaparser-separator-claims-on-th: passed: 2 passed step(s) in 14m19s, peak 376.5 MiB (estimated 13m00s, 2.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "xwtwuskuwoultkqsvmtzrlonzkmtwvwn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 1 of the 1 job(s). 20261124-043349-qualify-live-parent-removal-through-the: passed: 1 passed step(s) in 3.0s, peak 97.3 MiB (estimated 1m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the trusted-kernel-and-receiver-recovery-2 run, which keeps the queue while the run is under way.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
+    },
+    {
+      "change_id": "mmlptprqqswtqnrsmtottolxwtsumwol",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the kernel and receiver recovery decisions",
+      "body": "Integrate the managed receipts and publish one comparison of 116 requests and controls. Forty input files are checked against 18 passed jobs, including their opening baselines. Close VF-057 on the producer frame error and VF-058 on the four Configuration sides, with separate owners for the remaining strict-native startup frontiers. The report records the source-fault and missing-query experiments at their measured scopes, checker and preparation costs, and the next investment.\n\nThe release, range, frame, LRAT, change-plan and receiver inventories all validated. Fresh ordinary executions checked 33 UNSAT proofs and 38 SAT assignments, both JDK back edges passed Lean, and the JavaParser and XZ clean reruns were collected. The final native changed-test run passed all 59 Rust test binaries and the three selected Python files. The verification schema and cost-tier lint passed.",
+      "log_sha256": "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222"
     }
   ],
   "logs": {
+    "36dcccffdfe1e8447e6c37bcafe1d2c78f824dc8e3ab398759daea1fe7cff222": {
+      "bytes": 3759421,
+      "lines": 2060,
+      "gzip_bytes": 735117,
+      "url": null
+    },
     "662fc5e17d453e81cad8e183e2cbbda309deee9f385c1fd6da5b9a15b5e3289d": {
       "bytes": 2703811,
       "lines": 1227,

@@ -1,0 +1,179 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-043151-compare-the-three-pinned-guava-controls",
+  "title": "Compare the three pinned Guava controls through the original recorder",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 27.7s, peak 174.4 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-043151-compare-the-three-pinned-guava-controls.json",
+    "sha256": "ddf91c3b89d80c0540791918071352087372d346cc275ca929fdecc9e9667a53",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-043151-compare-the-three-pinned-guava-controls",
+      "title": "Compare the three pinned Guava controls through the original recorder",
+      "description": "Prepare the positive release and both intentionally incorrect Guava inputs by the ordinary published artifact and constructed mutation recipes from the local source mirror. Require their original byte and SMT digests, record the actual adapter results, then compare each with an empty record directory and with a separately retained pristine run. This distinguishes detection of a changed result from absence of any comparison baseline.",
+      "kind": "library",
+      "capabilities": [
+        "array-induction",
+        "ordinary-receipt"
+      ],
+      "links": {
+        "examples": [
+          "336"
+        ]
+      },
+      "expected": "The release is established and both incorrect inputs remain unresolved on the original obligation. Every empty comparison is refused, and every pristine comparison repeats its own outcome on the expected original class.",
+      "submitted": {
+        "at": "2026-11-24T04:31:51+00:00",
+        "session": "01a20bbe-42f1-7502-85e3-160daf41fb6f"
+      },
+      "requires": [
+        "python3",
+        "java",
+        "javac",
+        "javap",
+        "git",
+        "z3"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Reprepare the actual release and the two incorrect inputs and compare their receipts",
+          "run": "python3 -B lib/benchmark/trusted-kernel/historical_adapter.py --output verification/kernel-recovery/historical-adapter.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/kernel-recovery/historical-adapter.json"
+      ]
+    }
+  },
+  "sourceCommit": "fa5e319c6b7ec6f8c888268bc32c7d712036f187",
+  "startedAt": "2026-11-24T04:38:46+00:00",
+  "finishedAt": "2026-11-24T04:39:23+00:00",
+  "wallSeconds": 37.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 182882304,
+    "wallSeconds": 27.7,
+    "cpuSeconds": 44.8,
+    "memoryOfEstimate": 0.17,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Reprepare the actual release and the two incorrect inputs and compare their receipts",
+      "run": "python3 -B lib/benchmark/trusted-kernel/historical_adapter.py --output verification/kernel-recovery/historical-adapter.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 27.693,
+      "cpuSeconds": 44.768,
+      "cpuThrottledSeconds": 2.336,
+      "peakMemoryBytes": 182882304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-reprepare-the-actual-release-a.log",
+        "lines": 4,
+        "bytes": 493,
+        "sha256": "f1b85f0b846186e52eb729934c28999c8cd2a6a68ee992e655b31108b8ed7722",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "first-any-length: established, 10 solver answers, records/array-induction/first-any-length/4396f8e89adf63fa0f2a",
+        "first-any-length: unresolved, 11 solver answers, records/array-induction/first-any-length/1858f3ac128279f44327",
+        "first-any-length: unresolved, 10 solver answers, records/array-induction/first-any-length/c9dc62ac35ac0b8c8942",
+        "[('336/historical/Ints', 'established', False, True), ('336/historical/frame', 'unresolved', False, True), ('336/historical/miss', 'unresolved', False, True)]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/kernel-recovery/historical-adapter.json",
+      "change": "added",
+      "bytes": 23665,
+      "sha256": "e4708d9b96183ab90983314e923a4932c40aeb7485837716f65f844b6c9db12a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:40:21+00:00",
+    "applied": [
+      "verification/kernel-recovery/historical-adapter.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T043923Z-379685b0b1bee9cb",
+      "outputs": "20261124T043923Z-401936d7f16c9e3a",
+      "diff": "20261124T043923Z-4409231deb6934e3"
+    }
+  }
+}

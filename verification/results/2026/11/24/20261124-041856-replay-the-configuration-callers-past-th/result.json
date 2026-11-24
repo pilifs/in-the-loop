@@ -1,0 +1,255 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-041856-replay-the-configuration-callers-past-th",
+  "title": "Replay the Configuration callers past the lookup delimiter",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 27.3s, peak 114.0 MiB (estimated 2m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-041856-replay-the-configuration-callers-past-th.json",
+    "sha256": "7b34a74a9ef723dfb2f30e084b652527fa286046c8aeff16fd2427ee31878ae6",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-041856-replay-the-configuration-callers-past-th",
+      "title": "Replay the Configuration callers past the lookup delimiter",
+      "description": "On the prior checker an explicitly installed table reached DefaultPrefixLookupsHolder.parseLookups in the original JSON deployment and stopped at String.split, PC 11. Run JSON and then YAML on the same new checker over the four registered inputs. Compare an invalid own name, a list containing only delimiters, an inherited name, and an empty table. Retain original JVM and native results, and bind the actual selector and dependency classes.",
+      "kind": "real-world",
+      "capabilities": [
+        "receiver-construction",
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "expected": "Each side returns four input observations per setting, and any native positive agrees with every original JVM observation; each open case records its first outstanding operation.",
+      "submitted": {
+        "at": "2026-11-24T04:18:56+00:00",
+        "session": "01a20bbf-66e7-7ad0-9353-1fdb338d0b28"
+      },
+      "requires": [
+        "jvmcontract",
+        "javac",
+        "java"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m",
+        "timeout": "16m"
+      },
+      "steps": [
+        {
+          "name": "Check commons-configuration-565",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-565 --output verification/receiver-discovery/recovery/parsed-property",
+          "cwd": "."
+        },
+        {
+          "name": "Check commons-configuration-601",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-601 --output verification/receiver-discovery/recovery/parsed-property",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/recovery/parsed-property"
+      ]
+    }
+  },
+  "sourceCommit": "4302a22c2380eb6570e43623559275a0db19b3ed",
+  "startedAt": "2026-11-24T04:30:39+00:00",
+  "finishedAt": "2026-11-24T04:34:41+00:00",
+  "wallSeconds": 242.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 960.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 119513088,
+    "wallSeconds": 27.3,
+    "cpuSeconds": 45.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.23
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 207.161,
+      "cpuSeconds": 207.49,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2364436480,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "36e1dc82ddd330b7edb3bdc01ddacbd99d164fee1585e89d6b14c852a07181d5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-041856-replay-the-configuration-callers-past-th/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 27s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check commons-configuration-565",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-565 --output verification/receiver-discovery/recovery/parsed-property",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 13.639,
+      "cpuSeconds": 22.773,
+      "cpuThrottledSeconds": 1.355,
+      "peakMemoryBytes": 118726656,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-commons-configuration-56.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check commons-configuration-601",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/installed_table.py commons-configuration-601 --output verification/receiver-discovery/recovery/parsed-property",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 960.0,
+      "cancelled": false,
+      "wallSeconds": 13.675,
+      "cpuSeconds": 22.509,
+      "cpuThrottledSeconds": 1.158,
+      "peakMemoryBytes": 119513088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-commons-configuration-60.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/recovery/parsed-property/commons-configuration-565.json",
+      "change": "added",
+      "bytes": 33036,
+      "sha256": "63ec437353c1e08e06694b3e9eeb80340871d7d3ccd8eeb47c475f356b460198",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/recovery/parsed-property/commons-configuration-601.json",
+      "change": "added",
+      "bytes": 33036,
+      "sha256": "7ab8c73c3e7f0333d0ffe071e214437b6209b77283c8a46be0aa530c297f6b5c",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:34:51+00:00",
+    "applied": [
+      "verification/receiver-discovery/recovery/parsed-property/commons-configuration-565.json",
+      "verification/receiver-discovery/recovery/parsed-property/commons-configuration-601.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "db0641483ad764d364c8769cde37516daaa08411",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/db0641483ad764d364c8769cde37516daaa08411/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T043441Z-725871c4f7a2901b",
+      "outputs": "20261124T043441Z-7463067cb2b97914",
+      "diff": "20261124T043441Z-7645652e88a1b1ee"
+    }
+  }
+}

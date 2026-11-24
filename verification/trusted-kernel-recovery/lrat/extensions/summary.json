@@ -1,0 +1,162 @@
+{
+  "schema": "whole-verdict-lrat-evaluation/v1",
+  "scope": "Each SAT assignment satisfies the active clauses and assumption units. Each UNSAT answer has a checked LRAT proof. Java encoding, control flow, bounds and constant folding remain trusted.",
+  "group": "extensions",
+  "workloads": [
+    {
+      "key": "393/conversion-equivalence-classified",
+      "qualified": "established",
+      "offWallSeconds": 2.2851339080370963,
+      "onWallSeconds": 2.874602486961521,
+      "defaultLauncherFilteredTranscript": true,
+      "ordinarySha256": "7fcf98fe360535012eb1ee74c337471b883ad7983e726e3e9c1ef7a3835aa6a9",
+      "uncertifiedSha256": "5fd9a7601ec20c0924fca83a225b3b6b954605faff9e7d22d01cf23aaf188a2b",
+      "assurance": {
+        "status": "checked",
+        "ordinary": "established",
+        "requestSha256": "2f3cc5ca03ab78a29a13757089415e5aff721b0995a85f615d1cb6029c38a9d8",
+        "boundarySha256": "3eaed031053fa9b08da114129cf3a070e77aafa95d5c244c79f25ce48d45a157",
+        "checkerSha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54",
+        "unsatCoverage": "all UNSAT answers certified",
+        "satModelsChecked": 7,
+        "answers": {
+          "sat": 7,
+          "unsat": 12
+        },
+        "passes": [
+          {
+            "id": "1-proof",
+            "solverFree": false,
+            "attempts": 19,
+            "answers": {
+              "sat": 7,
+              "unsat": 12
+            }
+          }
+        ],
+        "generationSeconds": 0.3863147939555347,
+        "freshCheckSeconds": 0.40426135901361704,
+        "bundleBytes": 532559
+      }
+    },
+    {
+      "key": "393/node-checks-same",
+      "qualified": "refuted",
+      "offWallSeconds": 2.336604487034492,
+      "onWallSeconds": 2.9906972190365195,
+      "defaultLauncherFilteredTranscript": true,
+      "ordinarySha256": "f8a768009cd1e888011ca3bb9e844c74b8bb602254d0faeb58c53a8f3d2b2748",
+      "uncertifiedSha256": "74c89211a8a11d58e009fd8d5b9ff3a875e633b8b6f1f678c1ebdeba7b851ba7",
+      "assurance": {
+        "status": "checked",
+        "ordinary": "refuted",
+        "requestSha256": "ec99dce131f616617a55334f216d47ddf81fac0e48b2bd0b963c44df7a4ff7d9",
+        "boundarySha256": "40aa6350a45c75b0444c0cf3a71553fa7a5c1e43978bf5724d9b4f272bd42c8d",
+        "checkerSha256": "c14ff49853e890436d6a2fbf66a85b9492dad1dcd2d76254f16a89f2236c8a54",
+        "unsatCoverage": "all UNSAT answers certified",
+        "satModelsChecked": 5,
+        "answers": {
+          "sat": 5,
+          "unsat": 3
+        },
+        "passes": [
+          {
+            "id": "1-proof",
+            "solverFree": false,
+            "attempts": 8,
+            "answers": {
+              "sat": 5,
+              "unsat": 3
+            }
+          }
+        ],
+        "generationSeconds": 0.09389632404781878,
+        "freshCheckSeconds": 0.15132931794505566,
+        "bundleBytes": 112627
+      }
+    },
+    {
+      "key": "395/exact-order-same-reference",
+      "qualified": "established",
+      "offWallSeconds": 2.313434973009862,
+      "onWallSeconds": 3.8454375609289855,
+      "defaultLauncherFilteredTranscript": true,
+      "ordinarySha256": "7734b7e8c1311d06895d89f27b9a42d0b775f1a37c6bdf250e2316bd878325d8",
+      "uncertifiedSha256": "ba3702a2d2aa2e33e4b0f6435f4d39520332df6274cd481ef858bf8fe396eab1",
+      "assurance": {
+        "status": "checked",
+        "ordinary": "established",
+        "requestSha256": "d654cd0de4e12958d1f58f6d74c7f374c3cb1d7bccd67ee3e2fd520b1b5140ad",
+        "boundarySha256": "72c0dd00cfc52c291cf0ef68d121ea1c36c791603d1d02ab88fb3a774fe42029",
+        "checkerSha256": null,
+        "unsatCoverage": "no UNSAT calls",
+        "satModelsChecked": 0,
+        "answers": {},
+        "passes": [
+          {
+            "id": "1-proof",
+            "solverFree": true,
+            "attempts": 0,
+            "answers": {}
+          }
+        ],
+        "generationSeconds": 0.0020630479557439685,
+        "freshCheckSeconds": 0.07143398199696094,
+        "bundleBytes": 2662
+      }
+    }
+  ],
+  "jacksonJvmReplay": [
+    {
+      "claimKey": "58e21ca4147c8529",
+      "entry": "NodeChecks#same",
+      "inputs": [
+        {
+          "name": "n",
+          "type": "long",
+          "value": "18014401730707454"
+        }
+      ],
+      "observations": [
+        "result",
+        "exception"
+      ],
+      "by": "jvm",
+      "reproduced": true,
+      "sides": {
+        "numeric": {
+          "entryClassSha256": "dad9881a0d61d9a235ff71566d404f67c4ac4a40f9fd5bd5ca81b40ae40b2a8f",
+          "classpath": [
+            "063f7cdf1f86c58f342a9b3c4871dd749f39634cdf34e75d5f8d1d76290e5dca",
+            "ceda311f476c3b18e1d2b240c94e2dcb9c8d44e70f8afa9facab88bac4ddc03a",
+            "da8e859bac94874528116a25f20c68560e4287acbf27628711b8a4f96b028430",
+            "ead60e9cac0e42b57092b9e2d087ff43536e9477d4486ba393037a8cc156cda7",
+            "6ee731df5c8e5a2976a1ca023b6bb320ea8d3539fbe64c8a1d5cb765127c33b4"
+          ],
+          "program": "class CandidateReplay { public static void main(String[] args) {\nlong n = 18014401730707454L;\nif (!(true)) { System.out.println(\"outside\"); return; }\nboolean result = false;\nThrowable failure = null;\ntry { result = NodeChecks.same(n); } catch (Throwable t) { failure = t; }\nSystem.out.println(\"admitted\");\nSystem.out.println(failure == null && (result));\nSystem.out.println(failure == null ? Boolean.toString(result) : \"null\");\nSystem.out.println(failure == null ? \"null\" : ((char)34 + failure.getClass().getName() + (char)34));\n} }\n",
+          "admitted": true,
+          "descriptor": "(J)Z",
+          "values": [
+            false,
+            null
+          ],
+          "satisfies": false
+        }
+      },
+      "jdkRelease": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      }
+    }
+  ],
+  "jacksonClassification": {
+    "sourceSha256": "7689850ddf8fca0f4000a7e2002eb72479c3fd576e1277b9a6edd10cb1573eb4",
+    "admittedLongs": 18014398509481984,
+    "midpointBins": 8388608,
+    "mismatchesPerBin": 2,
+    "disagreements": 16777216
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-041236-replay-the-original-xz-frame-and-cache-w",
+  "title": "Replay the original XZ frame and cache witnesses on clean sources",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 11.4s, peak 114.1 MiB (estimated 1m00s, 2.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-041236-replay-the-original-xz-frame-and-cache-w.json",
+    "sha256": "354096008947d2cbe6f924ab6cebbd766da92b2b1967ca02178062afb68f564b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-041236-replay-the-original-xz-frame-and-cache-w",
+      "title": "Replay the original XZ frame and cache witnesses on clean sources",
+      "description": "The first transfer shared the conflicted JavaParser export in VF-060. Repeat both unmodified ordinary XZ claims and the admitted nondefault process witness with a fresh-default comparison. The existing constructor-progress job separately handles all physical and fixed-setting profiles on this same source.",
+      "kind": "real-world",
+      "capabilities": [
+        "receiver-construction",
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "expected": "Source-bound ordinary and conditional verdicts with original JVM outcomes, including all registered caller inputs.",
+      "submitted": {
+        "at": "2026-11-24T04:12:36+00:00",
+        "session": "01a20bbf-66e7-7ad0-9353-1fdb338d0b28"
+      },
+      "revision": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+      "requires": [
+        "jvmcontract",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "1m",
+        "timeout": "12m",
+        "notes": "The original three-step XZ transfer completed in 62 seconds. This repeat uses two of those steps."
+      },
+      "steps": [
+        {
+          "name": "Check both original XZ frame claims",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz --output verification/receiver-discovery/recovery/xz/clean-ordinary",
+          "cwd": "."
+        },
+        {
+          "name": "Replay the default and nondefault settings",
+          "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/property_witness.py xz --output verification/receiver-discovery/recovery/xz/clean-witnesses",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/receiver-discovery/recovery/xz/clean-ordinary",
+        "verification/receiver-discovery/recovery/xz/clean-witnesses"
+      ]
+    }
+  },
+  "sourceCommit": "fceb2272af000ec678aaa68c5a27094f3d7d03c9",
+  "startedAt": "2026-11-24T04:26:35+00:00",
+  "finishedAt": "2026-11-24T04:26:59+00:00",
+  "wallSeconds": 24.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 184544,
+    "workers": 4,
+    "cpus": 8.0,
+    "memoryBudgetBytes": 19327352832,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 60.0,
+    "notes": "The original three-step XZ transfer completed in 62 seconds. This repeat uses two of those steps."
+  },
+  "usage": {
+    "peakMemoryBytes": 119676928,
+    "wallSeconds": 11.4,
+    "cpuSeconds": 18.3,
+    "memoryOfEstimate": 0.06,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check both original XZ frame claims",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz --output verification/receiver-discovery/recovery/xz/clean-ordinary",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 3.608,
+      "cpuSeconds": 6.058,
+      "cpuThrottledSeconds": 0.794,
+      "peakMemoryBytes": 119676928,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-both-original-xz-frame-c.log",
+        "lines": 2,
+        "bytes": 46,
+        "sha256": "433e62bdf85d7c6cb500cc83ebce015f86fa7d03b107f3afcd7905c6bb2718e0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "old frame unverifiable",
+        "new frame unverifiable"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Replay the default and nondefault settings",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/property_witness.py xz --output verification/receiver-discovery/recovery/xz/clean-witnesses",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 7.82,
+      "cpuSeconds": 12.216,
+      "cpuThrottledSeconds": 1.349,
+      "peakMemoryBytes": 117825536,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-replay-the-default-and-nondefa.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/receiver-discovery/recovery/xz/clean-ordinary/measurement.json",
+      "change": "added",
+      "bytes": 16651,
+      "sha256": "b67cd9aa316bf292b4b07ff14a8316919f9c73501e0b07472cde217544bdb2d1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/receiver-discovery/recovery/xz/clean-witnesses/measurement.json",
+      "change": "added",
+      "bytes": 36101,
+      "sha256": "1d1e7fd5e130e46a91756ef89ea958f62d39b1039e1b8c9c0b2889f55da046d3",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T04:27:18+00:00",
+    "applied": [
+      "verification/receiver-discovery/recovery/xz/clean-ordinary/measurement.json",
+      "verification/receiver-discovery/recovery/xz/clean-witnesses/measurement.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "b90eaba6eed651aeea13329277d5deb5e85aeed7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/b90eaba6eed651aeea13329277d5deb5e85aeed7/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 2,
+    "occurrences": {
+      "logs": "20261124T042659Z-42617202df7120c6",
+      "outputs": "20261124T042659Z-449572a86ae5ca25",
+      "diff": "20261124T042659Z-4698876fc9552af0"
+    }
+  }
+}

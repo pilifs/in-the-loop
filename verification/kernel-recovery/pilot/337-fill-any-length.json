@@ -1,0 +1,267 @@
+{
+  "schema": "array-second-opinion/v1",
+  "example": "337",
+  "contract": "fill-any-length",
+  "ordinary": {
+    "schema": "java-array-induction-result/v2",
+    "sourceKey": "453ff8ea1ed5c077b9e77b994c0df71db2ef87c903c6ee9fc721f24b8d2515ac",
+    "entry": "java.util.Arrays#fill([IIII)V",
+    "revision": "original",
+    "rule": "range-fill",
+    "status": "established",
+    "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
+    "preparation": "fixture:original",
+    "classpath": [
+      {
+        "path": "original.jar",
+        "role": "original",
+        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
+      }
+    ],
+    "classes": {
+      "java/util/Arrays": {
+        "sha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+        "origin": "java.base"
+      }
+    },
+    "jdk": {
+      "feature": "21",
+      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "release": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "rules": {
+      "files": {
+        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
+        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
+        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
+      },
+      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
+    },
+    "heapCellBits": 32,
+    "indexBits": 32,
+    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
+    "solver": {
+      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
+      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+    },
+    "solverTimeoutSeconds": 60,
+    "bytecode": [
+      {
+        "pc": 0,
+        "op": "aload_0",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 1,
+        "op": "arraylength",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 2,
+        "op": "iload_1",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 3,
+        "op": "iload_2",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 4,
+        "op": "invokestatic",
+        "argument": "#13",
+        "member": "Method rangeCheck:(III)V"
+      },
+      {
+        "pc": 7,
+        "op": "iload_1",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 8,
+        "op": "istore",
+        "argument": "4",
+        "member": ""
+      },
+      {
+        "pc": 10,
+        "op": "iload",
+        "argument": "4",
+        "member": ""
+      },
+      {
+        "pc": 12,
+        "op": "iload_2",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 13,
+        "op": "if_icmpge",
+        "argument": "27",
+        "member": ""
+      },
+      {
+        "pc": 16,
+        "op": "aload_0",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 17,
+        "op": "iload",
+        "argument": "4",
+        "member": ""
+      },
+      {
+        "pc": 19,
+        "op": "iload_3",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 20,
+        "op": "iastore",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 21,
+        "op": "iinc",
+        "argument": "4, 1",
+        "member": ""
+      },
+      {
+        "pc": 24,
+        "op": "goto",
+        "argument": "10",
+        "member": ""
+      },
+      {
+        "pc": 27,
+        "op": "return",
+        "argument": "",
+        "member": ""
+      }
+    ],
+    "obligations": [
+      {
+        "name": "nonempty input domain",
+        "expected": "sat",
+        "obtained": "sat"
+      },
+      {
+        "name": "maximal signed length admitted",
+        "expected": "sat",
+        "obtained": "sat"
+      },
+      {
+        "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "entry establishes invariant",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "safe array access at 20",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "return with exactly the range written",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "iteration preserves invariant",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "nonnegative strictly decreasing Java-int variant",
+        "expected": "unsat",
+        "obtained": "unsat"
+      }
+    ],
+    "certificateSha256": "ce49d79dfbd492a195bbe30e72a25877fdfb2e6997d63f2245c6d03c96824819",
+    "disassemblySha256": "b2a9b66f52713564008d956ce19d3a798e6c7d806f7d6c6792611584da3b4adb"
+  },
+  "ordinaryRecordSha256": "acefc48f68f6356b5d5538ddb4cc39ea406c5accb8d938bf1797dc004e00318a",
+  "times": {
+    "ordinary": 2.085401511983946,
+    "independentPreparation": 1.5382501060375944,
+    "checkerPreparation": 0.00414508196990937,
+    "certificatePreparation": 0.515714670997113,
+    "isolatedProcess": 0.003011,
+    "stagingAndProcess": 0.004278613021597266,
+    "wholeRun": 4.155417965026572
+  },
+  "request": "request 1\ntheorem range-fill-frame-v1\nenvironment initialized-verified-jvm-v1\nclass java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\nentry fill ([IIII)V\ncompanion rangeCheck (III)V\n",
+  "requestSha256": "130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5",
+  "deployment": {
+    "sourceKey": "453ff8ea1ed5c077b9e77b994c0df71db2ef87c903c6ee9fc721f24b8d2515ac",
+    "revision": "original",
+    "preparation": "fixture:original",
+    "classes": {
+      "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
+    },
+    "classpath": [
+      {
+        "path": "original.jar",
+        "role": "original",
+        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
+      }
+    ],
+    "jdk": {
+      "feature": "21",
+      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "release": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
+  },
+  "independent": {
+    "disposition": "independently established",
+    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+    "checkerPreparation": "prebuilt",
+    "certificateSha256": "4e8d46fd0fcbd565835a71bd81f3be6791b948e6afeb7774e4ffeb5abda4378f",
+    "certificateBytes": 1197,
+    "suppliedEvidence": false,
+    "exit": 0,
+    "stdout": "accepted range-fill-frame-v1 java/util/Arrays#fill([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab request 130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5 obligations 37",
+    "wallSeconds": 0.003011,
+    "peakKiB": 63260
+  },
+  "assurance": "independently established"
+}
