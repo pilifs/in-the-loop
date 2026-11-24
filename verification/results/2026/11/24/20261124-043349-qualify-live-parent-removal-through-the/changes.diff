@@ -1,0 +1,378 @@
+--- /dev/null
++++ b/verification/receiver-discovery/recovery/removed-property/controls.json
+@@ -0,0 +1,375 @@
++{
++  "job": "20261124-043349-qualify-live-parent-removal-through-the",
++  "source": "35d258c6200126359b7d28c35e5db827b78f44f1",
++  "jdk": {
++    "release": "f83f6dcc966043c93cd498ac8e7ee7c310852074970d62c702e4ad2710002898",
++    "java": "9cad3f2620d3ef2ed10b26f922af7e773d54fdaa05f615d6d6df014f3fec4155",
++    "modules": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
++  },
++  "checkerSha256": "f02a6de8c6298109711f9cc4f81fb00c84168cfb276abfd57c1e1ab4dc6f9ca6",
++  "bindings": {},
++  "rows": {
++    "control": {
++      "liveIdentity": {
++        "jvm": [
++          "returned true"
++        ],
++        "native": {
++          "verdict": "verified",
++          "problem": null,
++          "assume": null,
++          "assert": "result",
++          "counterexample": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [],
++              "shared_arrays": false,
++              "text": ""
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              },
++              {
++                "kind": "library",
++                "text": "the single-threaded JVM has no active SecurityManager during system property access",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 64,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          },
++          "target": "InstalledProperties#liveIdentity"
++        }
++      },
++      "wrongIdentity": {
++        "jvm": [
++          "returned false"
++        ],
++        "native": {
++          "verdict": "violation",
++          "problem": null,
++          "assume": null,
++          "assert": "result",
++          "counterexample": {
++            "input": "wrongIdentity()",
++            "outcome": "false",
++            "values": [],
++            "shrink_runs": 0,
++            "inputs": [],
++            "call": {
++              "class": "InstalledProperties",
++              "class_file": "InstalledProperties.class",
++              "classes": "after",
++              "method": "wrongIdentity",
++              "descriptor": "()Z",
++              "static": true,
++              "arguments": []
++            }
++          },
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [],
++              "shared_arrays": false,
++              "text": ""
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              },
++              {
++                "kind": "library",
++                "text": "the single-threaded JVM has no active SecurityManager during system property access",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 64,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          },
++          "target": "InstalledProperties#wrongIdentity"
++        }
++      },
++      "ownAndInherited": {
++        "jvm": [
++          "returned true"
++        ],
++        "native": {
++          "verdict": "verified",
++          "problem": null,
++          "assume": null,
++          "assert": "result",
++          "counterexample": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [],
++              "shared_arrays": false,
++              "text": ""
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              },
++              {
++                "kind": "library",
++                "text": "the single-threaded JVM has no active SecurityManager during system property access",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 64,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          },
++          "target": "InstalledProperties#ownAndInherited"
++        }
++      },
++      "nonStringPrevious": {
++        "jvm": [
++          "returned true"
++        ],
++        "native": {
++          "verdict": "verified",
++          "problem": null,
++          "assume": null,
++          "assert": "result",
++          "counterexample": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [],
++              "shared_arrays": false,
++              "text": ""
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              },
++              {
++                "kind": "library",
++                "text": "the single-threaded JVM has no active SecurityManager during system property access",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 64,
++              "max_array_length": null,
++              "complete": true
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null,
++            "vacuity": {
++              "status": "non-vacuous",
++              "basis": "harness",
++              "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
++            }
++          },
++          "target": "InstalledProperties#nonStringPrevious"
++        }
++      },
++      "unknownTableEmpty": {
++        "jvm": [
++          "returned false"
++        ],
++        "native": {
++          "verdict": "unverifiable",
++          "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperties()Ljava/util/Properties;@jdk-21.0.13 (java.lang.System.getProperties() at InstalledProperties.unknownTableEmpty:51). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++          "assume": null,
++          "assert": "result",
++          "counterexample": null,
++          "stated": {
++            "kind": "property",
++            "domain": {
++              "parameters": [],
++              "shared_arrays": false,
++              "text": ""
++            },
++            "assumptions": [
++              {
++                "kind": "initialization",
++                "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++                "basis": "engine"
++              }
++            ],
++            "observations": {
++              "result": "the result and the parameters, against result",
++              "exceptions": "none may be thrown"
++            },
++            "bounds": {
++              "unwind": 64,
++              "max_array_length": null,
++              "complete": false
++            },
++            "models": {
++              "used": true,
++              "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++              "classes": 40,
++              "jdk": "21.0.13"
++            },
++            "checker": {
++              "engine": "native",
++              "name": "jvmcontract's own checker (CaDiCaL)",
++              "solver": "CaDiCaL 1.9.5 (bundled)",
++              "fallback": null,
++              "sat": {
++                "solver": "CaDiCaL",
++                "version": "1.9.5",
++                "source": "bundled by the Rust crate cadical 0.1.16",
++                "configuration": [
++                  "CaDiCaL's default options",
++                  "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                  "the run's deadline through CaDiCaL's terminate callback",
++                  "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++                ]
++              }
++            },
++            "gap_mode": "strict",
++            "confirmation": null
++          },
++          "target": "InstalledProperties#unknownTableEmpty"
++        }
++      }
++    }
++  }
++}
