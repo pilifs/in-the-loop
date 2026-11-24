@@ -1,0 +1,352 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-192229-verify-log4j-on-the-complete-registered",
+  "title": "Verify Log4j on the complete registered API-first source",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5.8s, peak 99.8 MiB (estimated 2m00s, 2.0 GiB); 3 output file(s) changed",
+  "attention": [
+    "step 4 (Record the strict scheduling opening) was held back 1.8s by its 1-CPU quota in 2.0s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-192229-verify-log4j-on-the-complete-registered.json",
+    "sha256": "070c3f9213545db7be5332dd0bcf43e2fa7fdd4896e9976140e05c858a47ad21",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-192229-verify-log4j-on-the-complete-registered",
+      "title": "Verify Log4j on the complete registered API-first source",
+      "description": "Repeat the first canonical-order change plans on the complete committed Log4j registration. The earlier queue snapshot lacked the new manifests and reached no claim. Keep its empty archive separately. Record all original provider decisions and the strict startup opening.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "jvmcontract:prove"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T19:22:29+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "revision": "8e310c8a6916",
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Verify the frozen implementation",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+          "cwd": "."
+        },
+        {
+          "name": "Run the registered API-first plans",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py log4j canonical",
+          "cwd": "."
+        },
+        {
+          "name": "Audit the original binding decisions",
+          "run": "python3 -B lib/benchmark/organic-composition/audit.py log4j canonical",
+          "cwd": "."
+        },
+        {
+          "name": "Record the strict scheduling opening",
+          "run": "python3 -B lib/benchmark/organic-composition/native_open.py log4j 'schedule()Z'",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/log4j/canonical",
+        "verification/organic-composition/log4j/first-native.json"
+      ]
+    }
+  },
+  "sourceCommit": "8e310c8a6916da476dc9b84f4d61a321119bc975",
+  "startedAt": "2026-11-24T19:36:12+00:00",
+  "finishedAt": "2026-11-24T19:40:13+00:00",
+  "wallSeconds": 241.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1308933,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 104644608,
+    "wallSeconds": 5.8,
+    "cpuSeconds": 5.2,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.05
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 223.994,
+      "cpuSeconds": 223.829,
+      "cpuThrottledSeconds": 0.512,
+      "peakMemoryBytes": 3241050112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "15315a0d5e82924d81684e3f83155620419d876b38bdcd7afc739524605f7c92",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-192229-verify-log4j-on-the-complete-registered/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 43s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Verify the frozen implementation",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.402,
+      "cpuSeconds": 0.307,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 33484800,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-verify-the-frozen-implementati.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Run the registered API-first plans",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py log4j canonical",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 3.208,
+      "cpuSeconds": 2.98,
+      "cpuThrottledSeconds": 0.041,
+      "peakMemoryBytes": 104644608,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-run-the-registered-api-first-p.log",
+        "lines": 4,
+        "bytes": 208,
+        "sha256": "af9256a7d1ac8ede80730642766d32f03609b16d2ac903f585ce82360b0617e6",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "4 claims in /tmp/organic-matrix-067nxepg/planned.json",
+        "4 claims in /tmp/organic-matrix-067nxepg/cold.json",
+        "4 claims in /tmp/organic-matrix-067nxepg/warm.json",
+        "4 claims in /tmp/organic-matrix-067nxepg/clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Audit the original binding decisions",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py log4j canonical",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.062,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 27226112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-audit-the-original-binding-dec.log",
+        "lines": 1,
+        "bytes": 141,
+        "sha256": "e10501a8f230935af7adfd1c3a39c0c45930d629fec51215a4ef9241dcbe4a76",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "log4j canonical matched original observations, proof identities, applied values and startup witnesses: [['cold', 'warm'], ['cold', 'clean']]"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "Record the strict scheduling opening",
+      "run": "python3 -B lib/benchmark/organic-composition/native_open.py log4j 'schedule()Z'",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 2.004,
+      "cpuSeconds": 1.806,
+      "cpuThrottledSeconds": 1.799,
+      "peakMemoryBytes": 65015808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-record-the-strict-scheduling-o.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/log4j/canonical/plans.zip",
+      "change": "added",
+      "bytes": 198168,
+      "sha256": "de67998844e387ada50b91c87b777eb65d5db9bfe2de830fa87418d24d181893",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/log4j/canonical/summary.json",
+      "change": "added",
+      "bytes": 26419,
+      "sha256": "fc683cac67bcbfd92fcb62aa8f948a02bff7d85c61e2e55a79967b35590493f3",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/log4j/first-native.json",
+      "change": "added",
+      "bytes": 15571,
+      "sha256": "9ec5dca61675cf1a715fec1eb05b25cd764cb7e5e004361c419bd761079a144a",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T19:40:29+00:00",
+    "applied": [
+      "verification/organic-composition/log4j/canonical/plans.zip",
+      "verification/organic-composition/log4j/canonical/summary.json",
+      "verification/organic-composition/log4j/first-native.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "6a1ebf4928c141e37868963b3e5ad63268236349",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/6a1ebf4928c141e37868963b3e5ad63268236349/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T194013Z-6931423a7944c343",
+      "outputs": "20261124T194013Z-71822065a9c55356",
+      "diff": "20261124T194013Z-736633aae898e2fa"
+    }
+  }
+}
