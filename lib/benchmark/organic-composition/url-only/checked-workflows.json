@@ -1,0 +1,94 @@
+{
+  "schema": "caller-workflows/v1",
+  "change": "URL-only intake of stleary/JSON-java PR 552, collection bulk insertion",
+  "workflows": [
+    {
+      "id": "alias-and-partial-batch",
+      "scope": "alias-and-partial-batch.json",
+      "probe": "UpgradeProbe.java",
+      "cohort": "registered",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "base=seed/true|returns=true/true|first=a/a,b|sameInput=true/true|sameSlots=true|removedFirst=true|remaining=3:c"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after"
+            }
+          },
+          {
+            "input": 2,
+            "expectedNew": {
+              "return": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JVM, ordered original JSON-java production JAR and pinned OpenJDK image. Small caller-owned lists, fixed insertion order, no concurrent mutation or external provider."
+      ],
+      "checkedHelper": "helper.json"
+    },
+    {
+      "id": "preserved-elements",
+      "scope": "preserved-elements.json",
+      "probe": "UpgradeProbe.java",
+      "cohort": "registered",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JVM, ordered original JSON-java production JAR and pinned OpenJDK image. Small caller-owned lists, fixed insertion order, no concurrent mutation or external provider."
+      ],
+      "checkedHelper": "helper.json"
+    },
+    {
+      "id": "alias-and-partial-batch-ordinary",
+      "scope": "alias-and-partial-batch.json",
+      "probe": "UpgradeProbe.java",
+      "cohort": "control",
+      "intent": {
+        "allowedChanges": [
+          {
+            "input": 0,
+            "expectedNew": {
+              "return": "base=seed/true|returns=true/true|first=a/a,b|sameInput=true/true|sameSlots=true|removedFirst=true|remaining=3:c"
+            }
+          },
+          {
+            "input": 1,
+            "expectedNew": {
+              "return": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after"
+            }
+          },
+          {
+            "input": 2,
+            "expectedNew": {
+              "return": "base=seed/true|batch=throw(org.json.JSONException)|afterBatch=3:head|afterRecovery=4:after"
+            }
+          }
+        ]
+      },
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JVM, ordered original JSON-java production JAR and pinned OpenJDK image. Small caller-owned lists, fixed insertion order, no concurrent mutation or external provider."
+      ]
+    },
+    {
+      "id": "preserved-elements-ordinary",
+      "scope": "preserved-elements.json",
+      "probe": "UpgradeProbe.java",
+      "cohort": "control",
+      "intent": "preserve",
+      "deterministicUnderAssumptions": true,
+      "assumptions": [
+        "Fresh JVM, ordered original JSON-java production JAR and pinned OpenJDK image. Small caller-owned lists, fixed insertion order, no concurrent mutation or external provider."
+      ]
+    }
+  ]
+}

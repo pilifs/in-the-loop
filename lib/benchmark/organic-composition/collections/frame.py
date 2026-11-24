@@ -38,6 +38,25 @@ def inspect(data, root):
             "arrayStores":array_writes,"scope":"Static declared-class closure only. External iterator calls and virtual overrides may read or write arbitrary reachable state."}
 
 
+def depth_source(worktree):
+    rel=Path("src/test/java/org/apache/commons/collections4/iterators/IteratorChainTest.java")
+    source=(worktree/rel).read_text()
+    marker="public void testChainingPerformsWell()"
+    if marker not in source:
+        return {"file":str(rel),"methodPresent":False}
+    start=source.index(marker); body=source[source.index("{",start):]
+    level=0
+    for i,ch in enumerate(body):
+        if ch=="{":level+=1
+        if ch=="}":level-=1
+        if not level:break
+    method=source[start:source.index("{",start)]+body[:i+1]
+    if not all(text in method for text in ("i < 150","Duration.ofSeconds(1)","iterFinal.next()","iterFinal.remove()","iterFinal.hasNext()")):
+        raise ValueError("published upstream depth control differs")
+    return {"file":str(rel),"methodPresent":True,"methodSha256":hashlib.sha256(method.encode()).hexdigest(),
+            "nestedLayers":150,"traversalSeconds":1,"testFileSha256":hashlib.sha256(source.encode()).hexdigest()}
+
+
 def main():
     result={}
     for n in ("628","755"):
@@ -46,7 +65,9 @@ def main():
             p=Path(manifest["classpath"][0]["file"])
             if hashlib.sha256(p.read_bytes()).hexdigest()!=manifest["classpath"][0]["sha256"]:raise ValueError("unexpected production JAR")
             data=runtime_jar.read_class(p,OWNER)
-            result[n+"-"+side]={"classSha256":hashlib.sha256(data).hexdigest(),
+            upstream=json.loads((HERE.parent/("collections-"+n)/"upstream.json").read_bytes())
+            worktree=Path.home()/".cache/in-the-loop/organic-composition-ff/worktrees"/upstream[side]["worktree"]
+            result[n+"-"+side]={"upstreamDepthTest":depth_source(worktree),"classSha256":hashlib.sha256(data).hexdigest(),
                                 "update":inspect(data,("updateCurrentIterator","()V")),"remove":inspect(data,("remove","()V"))}
     dest=ROOT/OUTPUT/"collections/bytecode-frames.json";dest.parent.mkdir(parents=True,exist_ok=True)
     dest.write_text(json.dumps(result,indent=2)+"\n")

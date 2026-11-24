@@ -1,0 +1,819 @@
+{
+  "proof": {
+    "key": "0cf7cb9f5f8891fce182115343164602ac864824e2c63ae41f443a7697b84ece",
+    "qualification": {
+      "change_helpers.py": "760a6a7174b33376ddc6abed96f6c2155156ee35168f5994de23da90ec138664",
+      "change_inventory.py": "831e7ac76736ef6f6a7a53cdfadb607be2bfc5e7c80e706613e2cf307e481594",
+      "runtime_jar.py": "dc8c8c5571da2a9fe5dfb86017e8989ff08a39fdbf444c86e4ac482ee95a232a",
+      "runtime_jdk.py": "8c6518fdc92c120c8bed194f1993d02f5268cc120c390371f0f508ca3b00ff0a"
+    },
+    "entry": "java.lang.Math#min(II)I",
+    "provider": "java.base",
+    "classSha256": "f01ef790ce8af52b262c5f717f0e3db201863b9deb834915787ef31ed744d170",
+    "codeSha256": "7d29c22719c7cfff5f65adf3dea1bc49c1f295ea952f900f823eb7a578caa584",
+    "poolSha256": "e8a80f82885e7622665255f0f7d186b498e4028c2c56c87a62a74ab0e36956e4",
+    "rows": [
+      {
+        "args": [
+          2,
+          3
+        ],
+        "result": 2
+      },
+      {
+        "args": [
+          2,
+          4
+        ],
+        "result": 2
+      },
+      {
+        "args": [
+          2,
+          5
+        ],
+        "result": 2
+      },
+      {
+        "args": [
+          3,
+          4
+        ],
+        "result": 3
+      },
+      {
+        "args": [
+          3,
+          5
+        ],
+        "result": 3
+      },
+      {
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "args": [
+          6,
+          9
+        ],
+        "result": 6
+      },
+      {
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "args": [
+          10,
+          15
+        ],
+        "result": 10
+      }
+    ],
+    "contract": "java.lang.Math#min(int,int)\n  assume: (a == 2 && b == 3) || (a == 2 && b == 4) || (a == 2 && b == 5) || (a == 3 && b == 4) || (a == 3 && b == 5) || (a == 4 && b == 6) || (a == 5 && b == 7) || (a == 6 && b == 9) || (a == 7 && b == 10) || (a == 10 && b == 15)\n  assert: (a == 2 && b == 3 && result == 2) || (a == 2 && b == 4 && result == 2) || (a == 2 && b == 5 && result == 2) || (a == 3 && b == 4 && result == 3) || (a == 3 && b == 5 && result == 3) || (a == 4 && b == 6 && result == 4) || (a == 5 && b == 7 && result == 5) || (a == 6 && b == 9 && result == 6) || (a == 7 && b == 10 && result == 7) || (a == 10 && b == 15 && result == 10)\n",
+    "consumer": "public final class CheckedHelperUse { public static boolean check(int choice) { switch(choice) {\ncase 0: return java.lang.Math.min(2, 3) == 2;\ncase 1: return java.lang.Math.min(2, 4) == 2;\ncase 2: return java.lang.Math.min(2, 5) == 2;\ncase 3: return java.lang.Math.min(3, 4) == 3;\ncase 4: return java.lang.Math.min(3, 5) == 3;\ncase 5: return java.lang.Math.min(4, 6) == 4;\ncase 6: return java.lang.Math.min(5, 7) == 5;\ncase 7: return java.lang.Math.min(6, 9) == 6;\ncase 8: return java.lang.Math.min(7, 10) == 7;\ncase 9: return java.lang.Math.min(10, 15) == 10;\ndefault: return false; } } }\n",
+    "argv": [
+      "/home/filip/code/in-the-loop-foundation-domain-streams/lib/target/release/jvmcontract",
+      "prove",
+      "--classes",
+      "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/tmpmqdk6pum/proof",
+      "--classpath",
+      "/home/filip/.cache/in-the-loop/organic-composition-ff/url-intake-json-java/5541a6d91d6c11fdb0035c7b2dba29047fac6842.jar",
+      "CheckedHelperUse#check",
+      "--assume",
+      "choice >= 0 && choice < 10",
+      "--assert",
+      "result == true",
+      "--engine",
+      "native",
+      "--gaps",
+      "strict",
+      "--unwind",
+      "16",
+      "--timeout",
+      "60",
+      "--json",
+      "--lemmas",
+      "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/tmpmqdk6pum/proof/helper.contract"
+    ],
+    "exit": 1,
+    "proof": [
+      {
+        "wire_version": 1,
+        "verdict": "unverifiable",
+        "target": "CheckedHelperUse#check",
+        "domain": null,
+        "assume": "choice >= 0 && choice < 10",
+        "assert": "result == true",
+        "throws": [],
+        "throws_checked": [],
+        "counterexample": null,
+        "proof": null,
+        "problem": "the lemma about java.lang.Math#min(int,int) in /home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/tmpmqdk6pum/proof/helper.contract is not one a summary can state: class not found: java.lang.Math",
+        "statement": null,
+        "findings": [
+          {
+            "rule_id": "unverifiable",
+            "message": "CheckedHelperUse#check cannot be verified: the lemma about java.lang.Math#min(int,int) in /home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/tmpmqdk6pum/proof/helper.contract is not one a summary can state: class not found: java.lang.Math",
+            "uri": null,
+            "line": 1
+          }
+        ],
+        "output": "✗ CheckedHelperUse#check cannot be verified: the lemma about java.lang.Math#min(int,int) in /home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/tmpmqdk6pum/proof/helper.contract is not one a summary can state: class not found: java.lang.Math\n",
+        "work": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/jvmcontract-property-3140811-1795537616668932199-0"
+      }
+    ],
+    "proofDigest": "25fe9b2abefa7b7571be1eb335c2e232bd651e99dff17e0655f358d29f0d34b9",
+    "finiteCertificate": {
+      "domain": [
+        {
+          "args": [
+            2,
+            3
+          ],
+          "result": 2
+        },
+        {
+          "args": [
+            2,
+            4
+          ],
+          "result": 2
+        },
+        {
+          "args": [
+            2,
+            5
+          ],
+          "result": 2
+        },
+        {
+          "args": [
+            3,
+            4
+          ],
+          "result": 3
+        },
+        {
+          "args": [
+            3,
+            5
+          ],
+          "result": 3
+        },
+        {
+          "args": [
+            4,
+            6
+          ],
+          "result": 4
+        },
+        {
+          "args": [
+            5,
+            7
+          ],
+          "result": 5
+        },
+        {
+          "args": [
+            6,
+            9
+          ],
+          "result": 6
+        },
+        {
+          "args": [
+            7,
+            10
+          ],
+          "result": 7
+        },
+        {
+          "args": [
+            10,
+            15
+          ],
+          "result": 10
+        }
+      ],
+      "body": {
+        "classSha256": "f01ef790ce8af52b262c5f717f0e3db201863b9deb834915787ef31ed744d170",
+        "codeSha256": "7d29c22719c7cfff5f65adf3dea1bc49c1f295ea952f900f823eb7a578caa584",
+        "poolSha256": "e8a80f82885e7622665255f0f7d186b498e4028c2c56c87a62a74ab0e36956e4"
+      },
+      "afterSuccessfulInitialization": true,
+      "provider": "java.base",
+      "closedInstructions": [
+        26,
+        27,
+        163,
+        26,
+        167,
+        27,
+        172
+      ],
+      "normalReturns": 10,
+      "consumerClassSha256": "d6a4bd4bc87e61fa0e41df664ff34f830ced4464fd4c3bbe41203dbb19f60834"
+    },
+    "finiteDigest": "061ff0c0fce0e10d0ce5ab14df89843f46f5a303cb51fe0c5cad00b46b8fbe3b",
+    "basis": "closed integral bytecode and exhaustive JVM evaluation",
+    "action": "proved"
+  },
+  "input": [
+    "alias"
+  ],
+  "exit": 0,
+  "markers": [
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMyw0XSwicmVzdWx0IjozfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMiw0XSwicmVzdWx0IjoyfQ==",
+    "UPGRADE-STARTUP ZW50ZXJlZA==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNiw5XSwicmVzdWx0Ijo2fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMiwzXSwicmVzdWx0IjoyfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMyw0XSwicmVzdWx0IjozfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMiw0XSwicmVzdWx0IjoyfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMiw0XSwicmVzdWx0IjoyfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMyw1XSwicmVzdWx0IjozfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMyw1XSwicmVzdWx0IjozfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMyw1XSwicmVzdWx0IjozfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMyw1XSwicmVzdWx0IjozfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMTAsMTVdLCJyZXN1bHQiOjEwfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbMTAsMTVdLCJyZXN1bHQiOjEwfQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNCw2XSwicmVzdWx0Ijo0fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNywxMF0sInJlc3VsdCI6N30=",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-SUBSTITUTED eyJjYWxsZXIiOiJqYXZhLnV0aWwuQXJyYXlzI2NvcHlPZihbTGphdmEvbGFuZy9PYmplY3Q7SUxqYXZhL2xhbmcvQ2xhc3M7KVtMamF2YS9sYW5nL09iamVjdDsiLCJiY2kiOjMyLCJhcmdzIjpbNSw3XSwicmVzdWx0Ijo1fQ==",
+    "UPGRADE-HIT org.json.JSONArray#putAll(Ljava/util/Collection;)Lorg/json/JSONArray;",
+    "UPGRADE-CALL-SITE 66\torg.json.JSONArray#putAll(Ljava/util/Collection;)Lorg/json/JSONArray;"
+  ],
+  "observation": {
+    "return": "base=seed/true|returns=true/true|first=a/a,b|sameInput=true/true|sameSlots=true|removedFirst=true|remaining=3:c"
+  },
+  "applications": {
+    "proofKey": "0cf7cb9f5f8891fce182115343164602ac864824e2c63ae41f443a7697b84ece",
+    "applications": [
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          3,
+          4
+        ],
+        "result": 3
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          2,
+          4
+        ],
+        "result": 2
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          6,
+          9
+        ],
+        "result": 6
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          2,
+          3
+        ],
+        "result": 2
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          3,
+          4
+        ],
+        "result": 3
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          2,
+          4
+        ],
+        "result": 2
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          2,
+          4
+        ],
+        "result": 2
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          3,
+          5
+        ],
+        "result": 3
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          3,
+          5
+        ],
+        "result": 3
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          3,
+          5
+        ],
+        "result": 3
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          3,
+          5
+        ],
+        "result": 3
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          10,
+          15
+        ],
+        "result": 10
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          10,
+          15
+        ],
+        "result": 10
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          4,
+          6
+        ],
+        "result": 4
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          7,
+          10
+        ],
+        "result": 7
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      },
+      {
+        "caller": "java.util.Arrays#copyOf([Ljava/lang/Object;ILjava/lang/Class;)[Ljava/lang/Object;",
+        "bci": 32,
+        "args": [
+          5,
+          7
+        ],
+        "result": 5
+      }
+    ],
+    "startupEntry": "org.json.JSONObject$Null#<init>()V",
+    "startupArguments": [
+      "entered"
+    ],
+    "resources": []
+  }
+}
