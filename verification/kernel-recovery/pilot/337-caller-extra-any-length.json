@@ -1,0 +1,301 @@
+{
+  "schema": "array-second-opinion/v1",
+  "example": "337",
+  "contract": "caller-extra-any-length",
+  "ordinary": {
+    "schema": "java-array-induction-result/v2",
+    "sourceKey": "3073494bb24599f6b7f24958d487adaa135b1081187d22f435f32b162812748f",
+    "entry": "java.util.Arrays#fill([IIII)V",
+    "revision": "extra",
+    "rule": "range-fill",
+    "status": "unresolved",
+    "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
+    "preparation": "fixture:extra",
+    "classpath": [
+      {
+        "path": "extra.jar",
+        "role": "original",
+        "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
+      }
+    ],
+    "classes": {
+      "java/util/Arrays": {
+        "sha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+        "origin": "java.base"
+      },
+      "fill/Range": {
+        "sha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+        "origin": "extra.jar"
+      }
+    },
+    "jdk": {
+      "feature": "21",
+      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "release": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "rules": {
+      "files": {
+        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
+        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
+        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
+      },
+      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
+    },
+    "heapCellBits": 32,
+    "indexBits": 32,
+    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
+    "solver": {
+      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
+      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
+    },
+    "solverTimeoutSeconds": 60,
+    "bytecode": [
+      {
+        "pc": 0,
+        "op": "aload_0",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 1,
+        "op": "arraylength",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 2,
+        "op": "iload_1",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 3,
+        "op": "iload_2",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 4,
+        "op": "invokestatic",
+        "argument": "#13",
+        "member": "Method rangeCheck:(III)V"
+      },
+      {
+        "pc": 7,
+        "op": "iload_1",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 8,
+        "op": "istore",
+        "argument": "4",
+        "member": ""
+      },
+      {
+        "pc": 10,
+        "op": "iload",
+        "argument": "4",
+        "member": ""
+      },
+      {
+        "pc": 12,
+        "op": "iload_2",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 13,
+        "op": "if_icmpge",
+        "argument": "27",
+        "member": ""
+      },
+      {
+        "pc": 16,
+        "op": "aload_0",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 17,
+        "op": "iload",
+        "argument": "4",
+        "member": ""
+      },
+      {
+        "pc": 19,
+        "op": "iload_3",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 20,
+        "op": "iastore",
+        "argument": "",
+        "member": ""
+      },
+      {
+        "pc": 21,
+        "op": "iinc",
+        "argument": "4, 1",
+        "member": ""
+      },
+      {
+        "pc": 24,
+        "op": "goto",
+        "argument": "10",
+        "member": ""
+      },
+      {
+        "pc": 27,
+        "op": "return",
+        "argument": "",
+        "member": ""
+      }
+    ],
+    "obligations": [
+      {
+        "name": "nonempty input domain",
+        "expected": "sat",
+        "obtained": "sat"
+      },
+      {
+        "name": "maximal signed length admitted",
+        "expected": "sat",
+        "obtained": "sat"
+      },
+      {
+        "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "entry establishes invariant",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "safe array access at 20",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "return with exactly the range written",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "iteration preserves invariant",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "nonnegative strictly decreasing Java-int variant",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "caller establishes the helper precondition",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "caller read follows from the proved frame",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "caller establishes the helper precondition",
+        "expected": "unsat",
+        "obtained": "unsat"
+      },
+      {
+        "name": "caller read follows from the proved frame",
+        "expected": "unsat",
+        "obtained": "sat"
+      }
+    ],
+    "certificateSha256": "d99835a0d93b55cf99cadb7030385b1095da11771618649f7b771404ba6f572d",
+    "disassemblySha256": "5a0662d860c2c07001f473907b83d62b53039e302dc4b92ecc17483859a6c17d",
+    "caller": {
+      "entry": "fill.Range#observe([I[IIIII)I",
+      "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+      "callee": "java.util.Arrays#fill([IIII)V",
+      "calleeClassSha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
+      "invocationPc": 17,
+      "observationPc": 23,
+      "roots": "the same int array or two distinct int arrays of independent legal lengths"
+    }
+  },
+  "ordinaryRecordSha256": "10b7e91524644d011a512335d4333de4f4dd1a110472901e343b561a4f9591ba",
+  "times": {
+    "ordinary": 2.23864602309186,
+    "independentPreparation": 1.5150854070670903,
+    "checkerPreparation": 0.004935035016387701,
+    "certificatePreparation": 0.7017349629895762,
+    "isolatedProcess": 0.003068,
+    "stagingAndProcess": 0.0044671769719570875,
+    "wholeRun": 4.471623185090721
+  },
+  "request": "request 1\ntheorem range-fill-caller-frame-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\ncallee java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\n",
+  "requestSha256": "e0d37834af4cf3309a5d5c1b8b67315741e9fef41475f40c0755ee9f93cfe545",
+  "deployment": {
+    "sourceKey": "3073494bb24599f6b7f24958d487adaa135b1081187d22f435f32b162812748f",
+    "revision": "extra",
+    "preparation": "fixture:extra",
+    "classes": {
+      "fill/Range": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
+      "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
+    },
+    "classpath": [
+      {
+        "path": "extra.jar",
+        "role": "original",
+        "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
+      }
+    ],
+    "jdk": {
+      "feature": "21",
+      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
+      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
+      "release": {
+        "JAVA_VERSION": "21.0.13",
+        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
+        "IMPLEMENTOR": "Eclipse Adoptium",
+        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
+        "OS_ARCH": "x86_64"
+      }
+    },
+    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
+  },
+  "independent": {
+    "disposition": "checked counterexample",
+    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
+    "checkerPreparation": "prebuilt",
+    "certificateSha256": "591602c4be436210d901226ead7d0b31766cb8addc7042b388bd46c296692e68",
+    "certificateBytes": 1983,
+    "suppliedEvidence": false,
+    "exit": 2,
+    "stdout": "rejected checked witness shared [11], from=0 to=0 value=7 k=0: returned 7, after [7], expected 11 and [11]; first rule: callee write interval or arguments at 17: [Root, From, Next, Value]",
+    "wallSeconds": 0.003068,
+    "peakKiB": 63380
+  },
+  "assurance": "checked counterexample"
+}

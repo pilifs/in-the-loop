@@ -1,0 +1,1845 @@
+--- /dev/null
++++ b/verification/kernel-recovery/pilot/336-first-any-length.json
+@@ -0,0 +1,286 @@
++{
++  "schema": "array-second-opinion/v1",
++  "example": "336",
++  "contract": "first-any-length",
++  "ordinary": {
++    "schema": "java-array-induction-result/v2",
++    "sourceKey": "cf77b58842a14dfc5d3c9abb1f063fb7e6d33129c94a541b7ded7de7f86dc9b2",
++    "entry": "com.google.common.primitives.Ints#indexOf([II)I",
++    "revision": "release",
++    "rule": "first-index",
++    "status": "established",
++    "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs.",
++    "preparation": "f06690fa3e874f65515e8fd338a74d636e2c792f",
++    "classpath": [
++      {
++        "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
++        "role": "original",
++        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
++      },
++      {
++        "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
++        "role": "dependency",
++        "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
++      },
++      {
++        "path": "lib/org.jspecify/jspecify-1.0.0.jar",
++        "role": "dependency",
++        "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++      }
++    ],
++    "classes": {
++      "com/google/common/primitives/Ints": {
++        "sha256": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
++        "origin": "lib/com.google.guava/guava-33.4.8-jre.jar"
++      },
++      "com/google/common/primitives/IntsMethodsForWeb": {
++        "sha256": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6",
++        "origin": "lib/com.google.guava/guava-33.4.8-jre.jar"
++      }
++    },
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "rules": {
++      "files": {
++        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
++        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
++        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
++      },
++      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
++    },
++    "heapCellBits": 32,
++    "indexBits": 32,
++    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
++    "solver": {
++      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++    },
++    "solverTimeoutSeconds": 60,
++    "bytecode": [
++      {
++        "pc": 0,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 1,
++        "op": "istore",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 3,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 5,
++        "op": "iload_3",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 6,
++        "op": "if_icmpge",
++        "argument": "26",
++        "member": ""
++      },
++      {
++        "pc": 9,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 10,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 12,
++        "op": "iaload",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 13,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 14,
++        "op": "if_icmpne",
++        "argument": "20",
++        "member": ""
++      },
++      {
++        "pc": 17,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 19,
++        "op": "ireturn",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 20,
++        "op": "iinc",
++        "argument": "4, 1",
++        "member": ""
++      },
++      {
++        "pc": 23,
++        "op": "goto",
++        "argument": "3",
++        "member": ""
++      },
++      {
++        "pc": 26,
++        "op": "iconst_m1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 27,
++        "op": "ireturn",
++        "argument": "",
++        "member": ""
++      }
++    ],
++    "obligations": [
++      {
++        "name": "nonempty input domain",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "maximal signed length admitted",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "entry establishes invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "safe array access at 12",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return the earliest match or minus one",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "preserve the input heap",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "iteration preserves invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "nonnegative strictly decreasing Java-int variant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return the earliest match or minus one",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "preserve the input heap",
++        "expected": "unsat",
++        "obtained": "unsat"
++      }
++    ],
++    "certificateSha256": "090a95bf986ac98a4815dd8138558aaa837e811df9fc27d1d831a5e1d74627b0",
++    "disassemblySha256": "5fb5491692489ebc76adb6a20d82008f417e4ae372d6ec5c2bd3d601a0fa170c"
++  },
++  "ordinaryRecordSha256": "388140ee3daa0c293e64a84cc3ab72377d5f455f2462f8b3be8bf18896e90aa3",
++  "times": {
++    "ordinary": 1.3823567630024627,
++    "independentPreparation": 1.0811552560189739,
++    "checkerPreparation": 0.004429205902852118,
++    "certificatePreparation": 0.301521026995033,
++    "isolatedProcess": 0.003097,
++    "stagingAndProcess": 0.0046818399569019675,
++    "wholeRun": 2.7837875769473612
++  },
++  "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Ints ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb\nentry indexOf ([II)I\ncompanion indexOf ([IIII)I\nsupport com/google/common/primitives/IntsMethodsForWeb a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6\n",
++  "requestSha256": "7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740",
++  "deployment": {
++    "sourceKey": "cf77b58842a14dfc5d3c9abb1f063fb7e6d33129c94a541b7ded7de7f86dc9b2",
++    "revision": "release",
++    "preparation": "f06690fa3e874f65515e8fd338a74d636e2c792f",
++    "classes": {
++      "com/google/common/primitives/Ints": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
++      "com/google/common/primitives/IntsMethodsForWeb": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6"
++    },
++    "classpath": [
++      {
++        "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
++        "role": "original",
++        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
++      },
++      {
++        "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
++        "role": "dependency",
++        "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
++      },
++      {
++        "path": "lib/org.jspecify/jspecify-1.0.0.jar",
++        "role": "dependency",
++        "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++      }
++    ],
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
++  },
++  "independent": {
++    "disposition": "independently established",
++    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
++    "checkerPreparation": "prebuilt",
++    "certificateSha256": "6e9d8964e61f6f40ca58840fc6b936bd39dd08045b964a8fcf31f3b277b02104",
++    "certificateBytes": 1064,
++    "suppliedEvidence": false,
++    "exit": 0,
++    "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Ints#indexOf([II)I companion indexOf([IIII)I environment initialized-verified-jvm-v1 class ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb request 7dfa6c2737ea4a428676196a87cbc3becedb8b4261ac19cce60b0e3384292740 obligations 34",
++    "wallSeconds": 0.003097,
++    "peakKiB": 63480
++  },
++  "assurance": "independently established"
++}
+--- /dev/null
++++ b/verification/kernel-recovery/pilot/337-caller-any-length.json
+@@ -0,0 +1,291 @@
++{
++  "schema": "array-second-opinion/v1",
++  "example": "337",
++  "contract": "caller-any-length",
++  "ordinary": {
++    "schema": "java-array-induction-result/v2",
++    "sourceKey": "58b50c51a40dc6f86e18ea2fc073d2b2b0aa7016a8f5aa1f7ea0ecd629d8554b",
++    "entry": "java.util.Arrays#fill([IIII)V",
++    "revision": "original",
++    "rule": "range-fill",
++    "status": "established",
++    "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
++    "preparation": "fixture:original",
++    "classpath": [
++      {
++        "path": "original.jar",
++        "role": "original",
++        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
++      }
++    ],
++    "classes": {
++      "java/util/Arrays": {
++        "sha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++        "origin": "java.base"
++      },
++      "fill/Range": {
++        "sha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
++        "origin": "original.jar"
++      }
++    },
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "rules": {
++      "files": {
++        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
++        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
++        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
++      },
++      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
++    },
++    "heapCellBits": 32,
++    "indexBits": 32,
++    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
++    "solver": {
++      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++    },
++    "solverTimeoutSeconds": 60,
++    "bytecode": [
++      {
++        "pc": 0,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 1,
++        "op": "arraylength",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 2,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 3,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 4,
++        "op": "invokestatic",
++        "argument": "#13",
++        "member": "Method rangeCheck:(III)V"
++      },
++      {
++        "pc": 7,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 8,
++        "op": "istore",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 10,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 12,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 13,
++        "op": "if_icmpge",
++        "argument": "27",
++        "member": ""
++      },
++      {
++        "pc": 16,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 17,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 19,
++        "op": "iload_3",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 20,
++        "op": "iastore",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 21,
++        "op": "iinc",
++        "argument": "4, 1",
++        "member": ""
++      },
++      {
++        "pc": 24,
++        "op": "goto",
++        "argument": "10",
++        "member": ""
++      },
++      {
++        "pc": 27,
++        "op": "return",
++        "argument": "",
++        "member": ""
++      }
++    ],
++    "obligations": [
++      {
++        "name": "nonempty input domain",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "maximal signed length admitted",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "entry establishes invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "safe array access at 20",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return with exactly the range written",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "iteration preserves invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "nonnegative strictly decreasing Java-int variant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller establishes the helper precondition",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller read follows from the proved frame",
++        "expected": "unsat",
++        "obtained": "unsat"
++      }
++    ],
++    "certificateSha256": "84c2bc9cfe602bcde8564670bbfc72807ec962c815156665687d9d89cc36eff7",
++    "disassemblySha256": "c0c8049053c05a16015aeb1e56b2ddfa1f6ccc96840d0c7eab11767b7aa3a596",
++    "caller": {
++      "entry": "fill.Range#observe([I[IIIII)I",
++      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
++      "callee": "java.util.Arrays#fill([IIII)V",
++      "calleeClassSha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++      "invocationPc": 5,
++      "observationPc": 11,
++      "roots": "the same int array or two distinct int arrays of independent legal lengths"
++    }
++  },
++  "ordinaryRecordSha256": "091d8e3bf2953fa6bb9c480607dce7bc308a10daf1b6c83d8a7ee05616edb734",
++  "times": {
++    "ordinary": 2.209203631966375,
++    "independentPreparation": 1.4696238910546526,
++    "checkerPreparation": 0.004262202070094645,
++    "certificatePreparation": 0.6601359460037202,
++    "isolatedProcess": 0.003343,
++    "stagingAndProcess": 0.005240859114564955,
++    "wholeRun": 4.356167156016454
++  },
++  "request": "request 1\ntheorem range-fill-caller-frame-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\ncallee java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\n",
++  "requestSha256": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
++  "deployment": {
++    "sourceKey": "58b50c51a40dc6f86e18ea2fc073d2b2b0aa7016a8f5aa1f7ea0ecd629d8554b",
++    "revision": "original",
++    "preparation": "fixture:original",
++    "classes": {
++      "fill/Range": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
++      "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
++    },
++    "classpath": [
++      {
++        "path": "original.jar",
++        "role": "original",
++        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
++      }
++    ],
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
++  },
++  "independent": {
++    "disposition": "independently established",
++    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
++    "checkerPreparation": "prebuilt",
++    "certificateSha256": "b16e0319a62c66a2313bde5182d9d361160d56fd326438d4cbd14ec8fd12f4ba",
++    "certificateBytes": 1683,
++    "suppliedEvidence": false,
++    "exit": 0,
++    "stdout": "accepted range-fill-caller-frame-observation-v1 fill/Range#observe([I[IIIII)I companion fill([IIII)V environment initialized-verified-jvm-v1 class 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742 request ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9 obligations 51",
++    "wallSeconds": 0.003343,
++    "peakKiB": 63296
++  },
++  "assurance": "independently established"
++}
+--- /dev/null
++++ b/verification/kernel-recovery/pilot/337-caller-extra-any-length.json
+@@ -0,0 +1,301 @@
++{
++  "schema": "array-second-opinion/v1",
++  "example": "337",
++  "contract": "caller-extra-any-length",
++  "ordinary": {
++    "schema": "java-array-induction-result/v2",
++    "sourceKey": "3073494bb24599f6b7f24958d487adaa135b1081187d22f435f32b162812748f",
++    "entry": "java.util.Arrays#fill([IIII)V",
++    "revision": "extra",
++    "rule": "range-fill",
++    "status": "unresolved",
++    "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
++    "preparation": "fixture:extra",
++    "classpath": [
++      {
++        "path": "extra.jar",
++        "role": "original",
++        "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
++      }
++    ],
++    "classes": {
++      "java/util/Arrays": {
++        "sha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++        "origin": "java.base"
++      },
++      "fill/Range": {
++        "sha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
++        "origin": "extra.jar"
++      }
++    },
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "rules": {
++      "files": {
++        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
++        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
++        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
++      },
++      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
++    },
++    "heapCellBits": 32,
++    "indexBits": 32,
++    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
++    "solver": {
++      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++    },
++    "solverTimeoutSeconds": 60,
++    "bytecode": [
++      {
++        "pc": 0,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 1,
++        "op": "arraylength",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 2,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 3,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 4,
++        "op": "invokestatic",
++        "argument": "#13",
++        "member": "Method rangeCheck:(III)V"
++      },
++      {
++        "pc": 7,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 8,
++        "op": "istore",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 10,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 12,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 13,
++        "op": "if_icmpge",
++        "argument": "27",
++        "member": ""
++      },
++      {
++        "pc": 16,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 17,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 19,
++        "op": "iload_3",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 20,
++        "op": "iastore",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 21,
++        "op": "iinc",
++        "argument": "4, 1",
++        "member": ""
++      },
++      {
++        "pc": 24,
++        "op": "goto",
++        "argument": "10",
++        "member": ""
++      },
++      {
++        "pc": 27,
++        "op": "return",
++        "argument": "",
++        "member": ""
++      }
++    ],
++    "obligations": [
++      {
++        "name": "nonempty input domain",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "maximal signed length admitted",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "entry establishes invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "safe array access at 20",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return with exactly the range written",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "iteration preserves invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "nonnegative strictly decreasing Java-int variant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller establishes the helper precondition",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller read follows from the proved frame",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller establishes the helper precondition",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller read follows from the proved frame",
++        "expected": "unsat",
++        "obtained": "sat"
++      }
++    ],
++    "certificateSha256": "d99835a0d93b55cf99cadb7030385b1095da11771618649f7b771404ba6f572d",
++    "disassemblySha256": "5a0662d860c2c07001f473907b83d62b53039e302dc4b92ecc17483859a6c17d",
++    "caller": {
++      "entry": "fill.Range#observe([I[IIIII)I",
++      "classSha256": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
++      "callee": "java.util.Arrays#fill([IIII)V",
++      "calleeClassSha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++      "invocationPc": 17,
++      "observationPc": 23,
++      "roots": "the same int array or two distinct int arrays of independent legal lengths"
++    }
++  },
++  "ordinaryRecordSha256": "10b7e91524644d011a512335d4333de4f4dd1a110472901e343b561a4f9591ba",
++  "times": {
++    "ordinary": 2.23864602309186,
++    "independentPreparation": 1.5150854070670903,
++    "checkerPreparation": 0.004935035016387701,
++    "certificatePreparation": 0.7017349629895762,
++    "isolatedProcess": 0.003068,
++    "stagingAndProcess": 0.0044671769719570875,
++    "wholeRun": 4.471623185090721
++  },
++  "request": "request 1\ntheorem range-fill-caller-frame-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\ncallee java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\n",
++  "requestSha256": "e0d37834af4cf3309a5d5c1b8b67315741e9fef41475f40c0755ee9f93cfe545",
++  "deployment": {
++    "sourceKey": "3073494bb24599f6b7f24958d487adaa135b1081187d22f435f32b162812748f",
++    "revision": "extra",
++    "preparation": "fixture:extra",
++    "classes": {
++      "fill/Range": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
++      "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
++    },
++    "classpath": [
++      {
++        "path": "extra.jar",
++        "role": "original",
++        "sha256": "42aed2685824c3275dd18e76e419f21c7407f87b264dd0fda2b46ebdc4614190"
++      }
++    ],
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
++  },
++  "independent": {
++    "disposition": "checked counterexample",
++    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
++    "checkerPreparation": "prebuilt",
++    "certificateSha256": "591602c4be436210d901226ead7d0b31766cb8addc7042b388bd46c296692e68",
++    "certificateBytes": 1983,
++    "suppliedEvidence": false,
++    "exit": 2,
++    "stdout": "rejected checked witness shared [11], from=0 to=0 value=7 k=0: returned 7, after [7], expected 11 and [11]; first rule: callee write interval or arguments at 17: [Root, From, Next, Value]",
++    "wallSeconds": 0.003068,
++    "peakKiB": 63380
++  },
++  "assurance": "checked counterexample"
++}
+--- /dev/null
++++ b/verification/kernel-recovery/pilot/337-fill-any-length.json
+@@ -0,0 +1,267 @@
++{
++  "schema": "array-second-opinion/v1",
++  "example": "337",
++  "contract": "fill-any-length",
++  "ordinary": {
++    "schema": "java-array-induction-result/v2",
++    "sourceKey": "453ff8ea1ed5c077b9e77b994c0df71db2ef87c903c6ee9fc721f24b8d2515ac",
++    "entry": "java.util.Arrays#fill([IIII)V",
++    "revision": "original",
++    "rule": "range-fill",
++    "status": "established",
++    "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
++    "preparation": "fixture:original",
++    "classpath": [
++      {
++        "path": "original.jar",
++        "role": "original",
++        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
++      }
++    ],
++    "classes": {
++      "java/util/Arrays": {
++        "sha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++        "origin": "java.base"
++      }
++    },
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "rules": {
++      "files": {
++        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
++        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
++        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
++      },
++      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
++    },
++    "heapCellBits": 32,
++    "indexBits": 32,
++    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
++    "solver": {
++      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++    },
++    "solverTimeoutSeconds": 60,
++    "bytecode": [
++      {
++        "pc": 0,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 1,
++        "op": "arraylength",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 2,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 3,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 4,
++        "op": "invokestatic",
++        "argument": "#13",
++        "member": "Method rangeCheck:(III)V"
++      },
++      {
++        "pc": 7,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 8,
++        "op": "istore",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 10,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 12,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 13,
++        "op": "if_icmpge",
++        "argument": "27",
++        "member": ""
++      },
++      {
++        "pc": 16,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 17,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 19,
++        "op": "iload_3",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 20,
++        "op": "iastore",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 21,
++        "op": "iinc",
++        "argument": "4, 1",
++        "member": ""
++      },
++      {
++        "pc": 24,
++        "op": "goto",
++        "argument": "10",
++        "member": ""
++      },
++      {
++        "pc": 27,
++        "op": "return",
++        "argument": "",
++        "member": ""
++      }
++    ],
++    "obligations": [
++      {
++        "name": "nonempty input domain",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "maximal signed length admitted",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "entry establishes invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "safe array access at 20",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return with exactly the range written",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "iteration preserves invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "nonnegative strictly decreasing Java-int variant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      }
++    ],
++    "certificateSha256": "ce49d79dfbd492a195bbe30e72a25877fdfb2e6997d63f2245c6d03c96824819",
++    "disassemblySha256": "b2a9b66f52713564008d956ce19d3a798e6c7d806f7d6c6792611584da3b4adb"
++  },
++  "ordinaryRecordSha256": "acefc48f68f6356b5d5538ddb4cc39ea406c5accb8d938bf1797dc004e00318a",
++  "times": {
++    "ordinary": 2.085401511983946,
++    "independentPreparation": 1.5382501060375944,
++    "checkerPreparation": 0.00414508196990937,
++    "certificatePreparation": 0.515714670997113,
++    "isolatedProcess": 0.003011,
++    "stagingAndProcess": 0.004278613021597266,
++    "wholeRun": 4.155417965026572
++  },
++  "request": "request 1\ntheorem range-fill-frame-v1\nenvironment initialized-verified-jvm-v1\nclass java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\nentry fill ([IIII)V\ncompanion rangeCheck (III)V\n",
++  "requestSha256": "130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5",
++  "deployment": {
++    "sourceKey": "453ff8ea1ed5c077b9e77b994c0df71db2ef87c903c6ee9fc721f24b8d2515ac",
++    "revision": "original",
++    "preparation": "fixture:original",
++    "classes": {
++      "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
++    },
++    "classpath": [
++      {
++        "path": "original.jar",
++        "role": "original",
++        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
++      }
++    ],
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
++  },
++  "independent": {
++    "disposition": "independently established",
++    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
++    "checkerPreparation": "prebuilt",
++    "certificateSha256": "4e8d46fd0fcbd565835a71bd81f3be6791b948e6afeb7774e4ffeb5abda4378f",
++    "certificateBytes": 1197,
++    "suppliedEvidence": false,
++    "exit": 0,
++    "stdout": "accepted range-fill-frame-v1 java/util/Arrays#fill([IIII)V companion rangeCheck(III)V environment initialized-verified-jvm-v1 class 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab request 130135e8c335fe3ed0f34abee49fc250698166b0c777a4faeb284adb0dfcfff5 obligations 37",
++    "wallSeconds": 0.003011,
++    "peakKiB": 63260
++  },
++  "assurance": "independently established"
++}
+--- /dev/null
++++ b/verification/kernel-recovery/pilot/346-first-any-length.json
+@@ -0,0 +1,292 @@
++{
++  "schema": "array-second-opinion/v1",
++  "example": "346",
++  "contract": "first-any-length",
++  "ordinary": {
++    "schema": "java-array-induction-result/v2",
++    "sourceKey": "41253a07cc37be4ae7ec8b802a8b22012881dba24bb8e8637c54ffad0f870e48",
++    "entry": "com.google.common.primitives.Longs#indexOf([JJ)I",
++    "revision": "release",
++    "rule": "first-index",
++    "status": "established",
++    "domain": "Every non-null, already allocated long array of legal Java length and all signed scalar inputs.",
++    "preparation": "f06690fa3e874f65515e8fd338a74d636e2c792f",
++    "classpath": [
++      {
++        "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
++        "role": "original",
++        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
++      },
++      {
++        "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
++        "role": "dependency",
++        "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
++      },
++      {
++        "path": "lib/org.jspecify/jspecify-1.0.0.jar",
++        "role": "dependency",
++        "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++      }
++    ],
++    "classes": {
++      "com/google/common/primitives/Longs": {
++        "sha256": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9",
++        "origin": "lib/com.google.guava/guava-33.4.8-jre.jar"
++      }
++    },
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "rules": {
++      "files": {
++        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
++        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
++        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
++      },
++      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
++    },
++    "heapCellBits": 64,
++    "indexBits": 32,
++    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
++    "solver": {
++      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++    },
++    "solverTimeoutSeconds": 60,
++    "bytecode": [
++      {
++        "pc": 0,
++        "op": "iload_3",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 1,
++        "op": "istore",
++        "argument": "5",
++        "member": ""
++      },
++      {
++        "pc": 3,
++        "op": "iload",
++        "argument": "5",
++        "member": ""
++      },
++      {
++        "pc": 5,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 7,
++        "op": "if_icmpge",
++        "argument": "28",
++        "member": ""
++      },
++      {
++        "pc": 10,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 11,
++        "op": "iload",
++        "argument": "5",
++        "member": ""
++      },
++      {
++        "pc": 13,
++        "op": "laload",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 14,
++        "op": "lload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 15,
++        "op": "lcmp",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 16,
++        "op": "ifne",
++        "argument": "22",
++        "member": ""
++      },
++      {
++        "pc": 19,
++        "op": "iload",
++        "argument": "5",
++        "member": ""
++      },
++      {
++        "pc": 21,
++        "op": "ireturn",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 22,
++        "op": "iinc",
++        "argument": "5, 1",
++        "member": ""
++      },
++      {
++        "pc": 25,
++        "op": "goto",
++        "argument": "3",
++        "member": ""
++      },
++      {
++        "pc": 28,
++        "op": "iconst_m1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 29,
++        "op": "ireturn",
++        "argument": "",
++        "member": ""
++      }
++    ],
++    "obligations": [
++      {
++        "name": "nonempty input domain",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "maximal signed length admitted",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "distinct elements can have identical low 32 bits",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "entry establishes invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "safe array access at 13",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return the earliest match or minus one",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "preserve the input heap",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "iteration preserves invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "nonnegative strictly decreasing Java-int variant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return the earliest match or minus one",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "preserve the input heap",
++        "expected": "unsat",
++        "obtained": "unsat"
++      }
++    ],
++    "certificateSha256": "a722d68c157693a66e58d63678c0b6ae443c1ada5fc9ca7b9644129bc924b16d",
++    "disassemblySha256": "b3f96622dd45ae57d352230d8ab83b5169ab84ca28f8fb0ddd4f8baa81c65fc3"
++  },
++  "ordinaryRecordSha256": "f3453a2c57299ddcb53e8902ed60d46d69d085ff54b059d1a7712264a5297fdf",
++  "times": {
++    "ordinary": 1.243717601057142,
++    "independentPreparation": 0.8881537100533023,
++    "checkerPreparation": 0.0035151789197698236,
++    "certificatePreparation": 0.3089090290013701,
++    "isolatedProcess": 0.002357,
++    "stagingAndProcess": 0.0036204069619998336,
++    "wholeRun": 2.4573140119900927
++  },
++  "request": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Longs b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9\nentry indexOf ([JJ)I\ncompanion indexOf ([JJII)I\n",
++  "requestSha256": "19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984",
++  "deployment": {
++    "sourceKey": "41253a07cc37be4ae7ec8b802a8b22012881dba24bb8e8637c54ffad0f870e48",
++    "revision": "release",
++    "preparation": "f06690fa3e874f65515e8fd338a74d636e2c792f",
++    "classes": {
++      "com/google/common/primitives/Longs": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9"
++    },
++    "classpath": [
++      {
++        "path": "lib/com.google.guava/guava-33.4.8-jre.jar",
++        "role": "original",
++        "sha256": "f3d7f57f67fd622f4d468dfdd692b3a5e3909246c28017ac3263405f0fe617ed"
++      },
++      {
++        "path": "lib/com.google.errorprone/error_prone_annotations-2.36.0.jar",
++        "role": "dependency",
++        "sha256": "77440e270b0bc9a249903c5a076c36a722c4886ca4f42675f2903a1c53ed61a5"
++      },
++      {
++        "path": "lib/org.jspecify/jspecify-1.0.0.jar",
++        "role": "dependency",
++        "sha256": "1fad6e6be7557781e4d33729d49ae1cdc8fdda6fe477bb0cc68ce351eafdfbab"
++      }
++    ],
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
++  },
++  "independent": {
++    "disposition": "independently established",
++    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
++    "checkerPreparation": "prebuilt",
++    "certificateSha256": "7856409eac2ca9a863f4e2b744cdf41f38655cadd55c4ed895af347e910819ab",
++    "certificateBytes": 1093,
++    "suppliedEvidence": false,
++    "exit": 0,
++    "stdout": "accepted least-index-frame-total-v1 com/google/common/primitives/Longs#indexOf([JJ)I companion indexOf([JJII)I environment initialized-verified-jvm-v1 class b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9 request 19de353b86742bb188da26d1054dab428d77679e191fee565190b316956aa984 obligations 35",
++    "wallSeconds": 0.002357,
++    "peakKiB": 63528
++  },
++  "assurance": "independently established"
++}
+--- /dev/null
++++ b/verification/kernel-recovery/pilot/callee-only-for-caller.json
+@@ -0,0 +1,291 @@
++{
++  "schema": "array-second-opinion/v1",
++  "example": "337",
++  "contract": "caller-any-length",
++  "ordinary": {
++    "schema": "java-array-induction-result/v2",
++    "sourceKey": "58b50c51a40dc6f86e18ea2fc073d2b2b0aa7016a8f5aa1f7ea0ecd629d8554b",
++    "entry": "java.util.Arrays#fill([IIII)V",
++    "revision": "original",
++    "rule": "range-fill",
++    "status": "established",
++    "domain": "Every non-null, already allocated int array of legal Java length and all signed scalar inputs with 0 <= from <= to <= length.",
++    "preparation": "fixture:original",
++    "classpath": [
++      {
++        "path": "original.jar",
++        "role": "original",
++        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
++      }
++    ],
++    "classes": {
++      "java/util/Arrays": {
++        "sha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++        "origin": "java.base"
++      },
++      "fill/Range": {
++        "sha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
++        "origin": "original.jar"
++      }
++    },
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "rules": {
++      "files": {
++        "examples/tools/targets/array_induction.py": "7d04abe7d1a11ec05e9478a83f2bbb9eb76a33432aa2219f763f2de5b3c089b4",
++        "lib/python/jvm_array_induction.py": "c0f84f228dfb4f14a98dcd4832da767fc68af2d231c6eef6641fdd16c970c9ff",
++        "lib/python/jvm_disassembly.py": "1bac05d6186b5bce98ce250f59a3ecb15f5658718d2941e67a185c4581b46eed"
++      },
++      "sha256": "b08e6069a4c7f5377affcb4360eae33ccca202ae3cf647f7482fb2f18d45510a"
++    },
++    "heapCellBits": 32,
++    "indexBits": 32,
++    "javapSha256": "b2146e8dcfe5662c04d14f3fad68756a1a597d01461ca475a2cdbeb44c84a678",
++    "solver": {
++      "version": "Z3 version 5.3.3 - 64 bit - build hashcode 430d19e697e2ec9bad79ff210d41b4a7a5fcfa3e",
++      "sha256": "fcd0ca765d1c0b4eac776f442ec0f10294b9a6416be91fad4e52fa19012c8d01"
++    },
++    "solverTimeoutSeconds": 60,
++    "bytecode": [
++      {
++        "pc": 0,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 1,
++        "op": "arraylength",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 2,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 3,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 4,
++        "op": "invokestatic",
++        "argument": "#13",
++        "member": "Method rangeCheck:(III)V"
++      },
++      {
++        "pc": 7,
++        "op": "iload_1",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 8,
++        "op": "istore",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 10,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 12,
++        "op": "iload_2",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 13,
++        "op": "if_icmpge",
++        "argument": "27",
++        "member": ""
++      },
++      {
++        "pc": 16,
++        "op": "aload_0",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 17,
++        "op": "iload",
++        "argument": "4",
++        "member": ""
++      },
++      {
++        "pc": 19,
++        "op": "iload_3",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 20,
++        "op": "iastore",
++        "argument": "",
++        "member": ""
++      },
++      {
++        "pc": 21,
++        "op": "iinc",
++        "argument": "4, 1",
++        "member": ""
++      },
++      {
++        "pc": 24,
++        "op": "goto",
++        "argument": "10",
++        "member": ""
++      },
++      {
++        "pc": 27,
++        "op": "return",
++        "argument": "",
++        "member": ""
++      }
++    ],
++    "obligations": [
++      {
++        "name": "nonempty input domain",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "maximal signed length admitted",
++        "expected": "sat",
++        "obtained": "sat"
++      },
++      {
++        "name": "unreachable new at 64 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 50 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "unreachable new at 5 in static void rangeCheck(int, int, int);",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "entry establishes invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "safe array access at 20",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "return with exactly the range written",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "iteration preserves invariant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "nonnegative strictly decreasing Java-int variant",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller establishes the helper precondition",
++        "expected": "unsat",
++        "obtained": "unsat"
++      },
++      {
++        "name": "caller read follows from the proved frame",
++        "expected": "unsat",
++        "obtained": "unsat"
++      }
++    ],
++    "certificateSha256": "84c2bc9cfe602bcde8564670bbfc72807ec962c815156665687d9d89cc36eff7",
++    "disassemblySha256": "c0c8049053c05a16015aeb1e56b2ddfa1f6ccc96840d0c7eab11767b7aa3a596",
++    "caller": {
++      "entry": "fill.Range#observe([I[IIIII)I",
++      "classSha256": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
++      "callee": "java.util.Arrays#fill([IIII)V",
++      "calleeClassSha256": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab",
++      "invocationPc": 5,
++      "observationPc": 11,
++      "roots": "the same int array or two distinct int arrays of independent legal lengths"
++    }
++  },
++  "ordinaryRecordSha256": "091d8e3bf2953fa6bb9c480607dce7bc308a10daf1b6c83d8a7ee05616edb734",
++  "times": {
++    "ordinary": 2.2517680170712993,
++    "independentPreparation": 1.341305154026486,
++    "checkerPreparation": 0.00497039093170315,
++    "certificatePreparation": 0.00015954894479364157,
++    "isolatedProcess": 0.006416,
++    "stagingAndProcess": 0.007951137027703226,
++    "wholeRun": 3.61670860205777
++  },
++  "request": "request 1\ntheorem range-fill-caller-frame-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\ncallee java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\n",
++  "requestSha256": "ae9aff6a6af5c867c8dedfcbf85e995fe96c300fedaeb3790a41ef60c495f2c9",
++  "deployment": {
++    "sourceKey": "58b50c51a40dc6f86e18ea2fc073d2b2b0aa7016a8f5aa1f7ea0ecd629d8554b",
++    "revision": "original",
++    "preparation": "fixture:original",
++    "classes": {
++      "fill/Range": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
++      "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
++    },
++    "classpath": [
++      {
++        "path": "original.jar",
++        "role": "original",
++        "sha256": "f8e701517b508e86c6dbe4a2ce0701ace715c7d0bf7026aad6ac19e7e5cf4628"
++      }
++    ],
++    "jdk": {
++      "feature": "21",
++      "version": "openjdk version \"21.0.13\" 2026-10-20 LTS",
++      "home": "/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem",
++      "release": {
++        "JAVA_VERSION": "21.0.13",
++        "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++        "IMPLEMENTOR": "Eclipse Adoptium",
++        "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++        "OS_ARCH": "x86_64"
++      }
++    },
++    "javaModuleImageSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c"
++  },
++  "independent": {
++    "disposition": "invalid evidence",
++    "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
++    "checkerPreparation": "prebuilt",
++    "certificateSha256": "4e8d46fd0fcbd565835a71bd81f3be6791b948e6afeb7774e4ffeb5abda4378f",
++    "certificateBytes": 1197,
++    "suppliedEvidence": true,
++    "exit": 2,
++    "stdout": "rejected certificate does not bind external request",
++    "wallSeconds": 0.006416,
++    "peakKiB": 63548
++  },
++  "assurance": "invalid evidence"
++}
+--- /dev/null
++++ b/verification/kernel-recovery/pilot/summary.json
+@@ -0,0 +1,96 @@
++{
++  "schema": "array-second-opinion-pilot/v1",
++  "checkerSha256": "635cc9433ada216c0f065c10d823c2b4d3f1cc67f5e9354de9151995f9604da1",
++  "compilationSeconds": 1.2903736579464749,
++  "isolationReadDenials": {
++    "producer": "rejected input: Permission denied (os error 13)",
++    "prior verdict": "rejected input: Permission denied (os error 13)",
++    "cache": "rejected input: Permission denied (os error 13)"
++  },
++  "cases": [
++    {
++      "key": "336/first-any-length",
++      "ordinary": "established",
++      "independent": "independently established",
++      "externalRequest": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Ints ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb\nentry indexOf ([II)I\ncompanion indexOf ([IIII)I\nsupport com/google/common/primitives/IntsMethodsForWeb a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6\n",
++      "classes": {
++        "com/google/common/primitives/Ints": "ae581f721521c93250639d17348c5b7215f3591a1bb433fb63985caa4364edbb",
++        "com/google/common/primitives/IntsMethodsForWeb": "a31b977048c2bc8257a8371ab2c89e9026e0c52507746c09e34a47ad94217bd6"
++      },
++      "sha256": "95bad1a84e2095de3fff18cd80284a7564b05039e675c21d07552aa22ccec7b1",
++      "receipt": "336-first-any-length.json",
++      "ordinaryCompareWallSeconds": 1.610164,
++      "optInWallSeconds": 3.183574,
++      "ordinaryComparePeakKiB": 92904,
++      "optInPeakKiB": 92916
++    },
++    {
++      "key": "346/first-any-length",
++      "ordinary": "established",
++      "independent": "independently established",
++      "externalRequest": "request 1\ntheorem least-index-frame-total-v1\nenvironment initialized-verified-jvm-v1\nclass com/google/common/primitives/Longs b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9\nentry indexOf ([JJ)I\ncompanion indexOf ([JJII)I\n",
++      "classes": {
++        "com/google/common/primitives/Longs": "b8c75a5f24b89f0a6a263bd56b4e4e9f4c53bd7a1e8e2fc9ad4975113f4396d9"
++      },
++      "sha256": "9280a06ca6abb7b2c4748bbc56ac365d7a87b791c6596c524236bdb15c934de8",
++      "receipt": "346-first-any-length.json",
++      "ordinaryCompareWallSeconds": 1.710673,
++      "optInWallSeconds": 2.802957,
++      "ordinaryComparePeakKiB": 92400,
++      "optInPeakKiB": 92592
++    },
++    {
++      "key": "337/fill-any-length",
++      "ordinary": "established",
++      "independent": "independently established",
++      "externalRequest": "request 1\ntheorem range-fill-frame-v1\nenvironment initialized-verified-jvm-v1\nclass java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\nentry fill ([IIII)V\ncompanion rangeCheck (III)V\n",
++      "classes": {
++        "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
++      },
++      "sha256": "d2e1c17afb12acdf0b5ab5d35719c3acf0db4ed3cac8118b9cec8b2cbd5dd78d",
++      "receipt": "337-fill-any-length.json",
++      "ordinaryCompareWallSeconds": 2.470548,
++      "optInWallSeconds": 4.4737,
++      "ordinaryComparePeakKiB": 92028,
++      "optInPeakKiB": 91712
++    },
++    {
++      "key": "337/caller-any-length",
++      "ordinary": "established",
++      "independent": "independently established",
++      "externalRequest": "request 1\ntheorem range-fill-caller-frame-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range 65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\ncallee java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\n",
++      "classes": {
++        "fill/Range": "65a3dcaa8e00b184403c745907a3e1778500beec33b30ad26b3ecd29ba933742",
++        "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
++      },
++      "sha256": "9e0cc9e35ed8cff3911baa199ec865e8da6b43b88c2e37acd43fcc0eb9a433e6",
++      "receipt": "337-caller-any-length.json",
++      "ordinaryCompareWallSeconds": 2.781541,
++      "optInWallSeconds": 4.730966,
++      "ordinaryComparePeakKiB": 92352,
++      "optInPeakKiB": 91768
++    },
++    {
++      "key": "337/caller-extra-any-length",
++      "ordinary": "unresolved",
++      "independent": "checked counterexample",
++      "externalRequest": "request 1\ntheorem range-fill-caller-frame-observation-v1\nenvironment initialized-verified-jvm-v1\nclass fill/Range b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe\nentry observe ([I[IIIII)I\ncompanion fill ([IIII)V\ncallee java/util/Arrays 4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab\n",
++      "classes": {
++        "fill/Range": "b180ea7555fe22eb7c84af1a6812cd86ee76650f967d12c7f9ec5060224b3ebe",
++        "java/util/Arrays": "4a41d89cb79284298b95303a66b3738955d22694f9b34016d87241d9ae8193ab"
++      },
++      "sha256": "f8ed07f1c0c0958abeae9065bf88d0acf75301ab807fbe04bf9c2c1c952c6959",
++      "receipt": "337-caller-extra-any-length.json",
++      "ordinaryCompareWallSeconds": 2.741303,
++      "optInWallSeconds": 4.775827,
++      "ordinaryComparePeakKiB": 91008,
++      "optInPeakKiB": 91368
++    }
++  ],
++  "calleeOnly": {
++    "key": "337/caller-any-length/callee-only",
++    "receipt": "callee-only-for-caller.json",
++    "sha256": "06cd48ffc933831cece02e8c45c65c6bc107bcfbec3c8ada90a8bb819922f427",
++    "outcome": "invalid evidence"
++  }
++}
