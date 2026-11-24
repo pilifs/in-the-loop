@@ -106,25 +106,25 @@ Both scorecards requalified from the managed outputs, all eight oracle tables re
 
 ### Record the watcher's decision D002 on jbmc-java-semantics-gap
 
-change `lwoyqyptykmm` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`b9b58745412c`](https://github.com/pilifs/in-the-loop/commit/b9b58745412c45ca1a9f15882ea089b78b3e4e5b) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 Cycle 2 went from 50/60 to 57/60 frozen statements decided natively, closing the nullable-array and Gson #719 blockers. The last three stop at Thread.&lt;init>(). The watcher answered continue for one more cycle; if it decides none of the three, the run hands over to the next queued brief. Decision record only.
 
 ### Propose JLS/JVMS section numbers for the allow list
 
-change `kvurtnuuokrl` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`a45702da817a`](https://github.com/pilifs/in-the-loop/commit/a45702da817a72bdc6a3798fb130bae8c3720846) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 The public-ip rule read the Java specification section numbers 9.4.1.3 and 5.4.3.3 (from VF-055 and the jbmc run's default-method discussion) as an address. Proposed for a person's approval; no approval recorded.
 
 ### Redaction policy 7: Codex encrypted reasoning quoted in text
 
-change `vnznxvmtwlqq` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`3735ae401384`](https://github.com/pilifs/in-the-loop/commit/3735ae40138474d38450035d1b1046268e004e0e) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 Policy 6 removed Codex's encrypted reasoning under its own key (encrypted_content), but Astra quotes the same ciphertext in command arguments and tool output, where each blob stays a long-token warning that no evidence can vouch for (79 open in the jbmc-java-semantics-gap session alone). Policy 7 adds a text rule for its Fernet form, gAAAAA followed by at least 60 URL-safe base64 characters, with a cheap gate on the prefix. Like policy 6 it is not audited as a leak (UNAUDITED_KINDS), so logs stored before it keep their warnings instead of turning into errors. Test: test_codex.Redaction.test_encrypted_reasoning_in_text, made-up blob in a heredoc, in prose and in echoed JSON; idempotent; no warning left; a pre-policy log is not an error; short or embedded look-alikes are kept. Specification and README updated. The commit landed by accident inside the user's allow-approve commit and was split out of it.
 
 ### Allow list: Filip Stankovic approved a3e7de48, c116f0a8
 
-change `yrmsxysuzzwr` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`3870bd25bb8a`](https://github.com/pilifs/in-the-loop/commit/3870bd25bb8a2d2e017ea42f768288f6d2bbfe4b) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 Filip Stankovic approved 2 value(s) at their terminal with sync.py allow; the command committed the decision itself.
 
@@ -133,31 +133,31 @@ c116f0a8  public-ip  9.…3: Not an address: Java specification section numbers 
 
 ### Record verification results for 2 job(s)
 
-change `kxspvlrsrtpw` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`22f398443729`](https://github.com/pilifs/in-the-loop/commit/22f398443729b87e7c1cec016ada5fd3f6195cf0) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 Outputs applied for 2 of the 2 job(s). 20261123-134727-qualify-the-four-original-commons-lang-d: passed: 1 passed step(s) in 24.7s, peak 157.7 MiB (estimated 1m00s, 3.0 GiB); 112 output file(s) changed Applied 112 output(s). 20261123-134736-compare-strict-native-and-jbmc-on-both-o: passed: 1 passed step(s) in 11.0s, peak 163.4 MiB (estimated 2m00s, 4.0 GiB); 17 output file(s) changed Applied 17 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.
 
 ### Queue the JBMC fast-follow brief (calls, conversions and arrays)
 
-change `nkwtozsyktuz` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`b64f1e53f16a`](https://github.com/pilifs/in-the-loop/commit/b64f1e53f16a8883405aee8578bdb8d257ff56a7) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 The user's brief ~/code/scripts/analysis/jbmc-fast-follow-calls-conversions-and-arrays.md, copied unchanged, so that the Opus setup phase and the Astra run that follow jbmc-java-semantics-gap can read it in their workspace. It runs as a fast-follow before the trusted-kernel, receiver-construction and change-verification briefs. Brief only.
 
 ### Record verification results for 1 job(s)
 
-change `zvywolowvzwz` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`8598cfeec863`](https://github.com/pilifs/in-the-loop/commit/8598cfeec8637f2ed482cb182e7e14f878b43a53) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 Outputs applied for 1 of the 1 job(s). 20261123-134806-recheck-38-frozen-historical-java-claims: passed: 1 passed step(s) in 10m01s, peak 5.8 GiB (estimated 10m00s, 4.0 GiB); 4 output file(s) changed Applied 4 output(s). Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.
 
 ### Record verification results for 1 job(s)
 
-change `nzlvlvopyyzz` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`522f0cd10039`](https://github.com/pilifs/in-the-loop/commit/522f0cd10039ac9eaf2aff0a528f63eaab944a55) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261123-135311-recheck-proof-tier-conformance-after-dec: passed: 1 passed step(s) in 24m41s, peak 2.3 GiB (estimated 25m00s, 5.0 GiB); signals: cargo:tests×1 Collected by the watcher of the jbmc-java-semantics-gap run, which keeps the queue while the run is under way.
 
 ### Check the original Commons Lang decimal parsers (verification pending)
 
-change `oultnyrqxyxw` · [log `4f4f86394f78`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/4f4f86394f787363d2888ab7e59233a012919e554c5f73d7b197983de162666f.jsonl.gz)
+[`45faa5d32e1a`](https://github.com/pilifs/in-the-loop/commit/45faa5d32e1a687712a4b96010fe7d63030fc813) · [log `4f4f86394f78`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/4f4f86394f787363d2888ab7e59233a012919e554c5f73d7b197983de162666f.jsonl.gz)
 
 Round concrete decimal literals directly to binary32 or binary64. Run the selected JDK formatter bytecode, integer decoder, BigDecimal constructors and comparisons, and BigInteger magnitude operations. Five read-only arithmetic tables come from the fingerprinted Temurin 21 class initializers. Preserve the original UTF-16 units when a String copies a byte range.
 
@@ -167,7 +167,7 @@ The changed-test selection passed all eight groups, including 59 Rust binaries. 
 
 ### Trace inherited state through the original monitor worker startup
 
-change `tmqvwpvmrtrp` · [log `4f4f86394f78`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/4f4f86394f787363d2888ab7e59233a012919e554c5f73d7b197983de162666f.jsonl.gz)
+[`7754647a9a21`](https://github.com/pilifs/in-the-loop/commit/7754647a9a21861e1aa14b837458878399f4c2f9) · [log `4f4f86394f78`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/4f4f86394f787363d2888ab7e59233a012919e554c5f73d7b197983de162666f.jsonl.gz)
 
 Bind the unchanged Worker and caller class files and disassemble the platform constructor directly from the measured JDK modules. Eight fresh JVM runs distinguish absent, removed, stored-null and populated parent bindings. A returning callback completes on the caller thread. A throwing callback escapes each original public caller as the identical exception before any shared-field write or worker start. The ordinary three-claim score remains separate from these explicitly installed parent environments.
 
@@ -175,7 +175,7 @@ Rebuilt and repeated all eight observations with monitor_startup.py --check, val
 
 ### Record four ordinary Commons Lang decimal decisions
 
-change `ztxynrywrvlz` · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
+[`38d2f4423d18`](https://github.com/pilifs/in-the-loop/commit/38d2f4423d18555dd331b5b4ef18b5e6488d646a) · [log `b0a458fe82be`](https://terminalvalue.net/raw-traces/01a2040d-9fa8-7910-9870-057030c48169/b0a458fe82beff6497762eaf2a9ac8ef2efcba2860eb8917f9df8297c0ce3418.jsonl.gz)
 
 Merge the five passed verification jobs on checker source 36542708757f and bind the generated scorecard and example pages to their original classpaths, asserted statements, raw results and JVM evidence. The native checker proves three of the four Commons Lang #1635 statements and refutes precision on the parent. Selector 0 returned Float bits 0x3dcccccd on the parent and a BigDecimal with coefficient 100000001490116121 and scale 18 on the fix. Integrated JBMC reproduced the parent refutation. Its three other candidates held on the original JVM.
 

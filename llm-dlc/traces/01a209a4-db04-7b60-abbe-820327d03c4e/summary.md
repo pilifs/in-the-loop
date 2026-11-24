@@ -5,7 +5,7 @@
 
 | | |
 |---|---|
-| Session | `01a209a4-db04-7b60-abbe-820327d03c4e` (open) |
+| Session | `01a209a4-db04-7b60-abbe-820327d03c4e` (ended) |
 | When | 2026-11-23 18:22 UTC to 2026-11-23 18:31 UTC (8 min) |
 | Models | `codex-auto-review` |
 | Client | codex 0.170.0 |
@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Record 49 ordinary Java fast-follow decisions
 
-change `uytqvpmxokzw` · [log `cd48ac47a3ee`](https://terminalvalue.net/raw-traces/01a209a4-db04-7b60-abbe-820327d03c4e/cd48ac47a3ee9526426bc6ed41e232b438f5b3f0f9decc8671c64738d77159e2.jsonl.gz)
+[`b9abdf19ce6f`](https://github.com/pilifs/in-the-loop/commit/b9abdf19ce6f6375a5912c4604e38da8b236a96c) · [log `cd48ac47a3ee`](https://terminalvalue.net/raw-traces/01a209a4-db04-7b60-abbe-820327d03c4e/cd48ac47a3ee9526426bc6ed41e232b438f5b3f0f9decc8671c64738d77159e2.jsonl.gz)
 
 Examples 392–396 went from 7 opening native decisions to 49 on checker source 701ca64e1980. All 29 proofs are non-vacuous at the declared bounds, and the original JVM reproduced all 20 refutations. Strict integrated JBMC decided 26 at matching scope. The report follows the Guava and Commons method references, the exact 16,777,216 Jackson double-rounding disagreements, caller-owned primitive rows, UTF-16 ordering and reference-array fills through their public callers.
 

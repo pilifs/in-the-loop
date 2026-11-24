@@ -20,7 +20,7 @@ The commits this session made, oldest first, with the message the agent wrote fo
 
 ### Queue the JBMC fast-follow brief (calls, conversions and arrays)
 
-change `nkwtozsyktuz` · [log `bf4e9b9ac9e8`](https://terminalvalue.net/raw-traces/01a208bb-d263-7192-a164-d416303a582d/bf4e9b9ac9e80f858a752d6d8291662a91fa8b397d7bfd91998082b27852b62a.jsonl.gz)
+[`b64f1e53f16a`](https://github.com/pilifs/in-the-loop/commit/b64f1e53f16a8883405aee8578bdb8d257ff56a7) · [log `bf4e9b9ac9e8`](https://terminalvalue.net/raw-traces/01a208bb-d263-7192-a164-d416303a582d/bf4e9b9ac9e80f858a752d6d8291662a91fa8b397d7bfd91998082b27852b62a.jsonl.gz)
 
 The user's brief ~/code/scripts/analysis/jbmc-fast-follow-calls-conversions-and-arrays.md, copied unchanged, so that the Opus setup phase and the Astra run that follow jbmc-java-semantics-gap can read it in their workspace. It runs as a fast-follow before the trusted-kernel, receiver-construction and change-verification briefs. Brief only.
 
