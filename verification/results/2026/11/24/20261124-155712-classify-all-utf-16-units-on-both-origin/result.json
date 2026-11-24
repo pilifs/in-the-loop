@@ -1,0 +1,171 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-155712-classify-all-utf-16-units-on-both-origin",
+  "title": "Classify all UTF-16 units on both original ICU4J surrogate helpers",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 1.8s, peak 80.1 MiB (estimated 2m00s, 2.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-155712-classify-all-utf-16-units-on-both-origin.json",
+    "sha256": "2244c07b3f2735e781555621b7e58811757c4561b0a97f0c7c565fb55ae4dc09",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-155712-classify-all-utf-16-units-on-both-origin",
+      "title": "Classify all UTF-16 units on both original ICU4J surrogate helpers",
+      "description": "Check the original public trail-surrogate predicate at the full unsigned UTF-16 code-unit bound on both production revisions. Verify the primitive frame, exhaust all 65,536 original JVM returns, and retain the direct native assertion and any real initialization refusal.",
+      "kind": "real-world",
+      "capabilities": [
+        "jvmcontract:prove",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:57:12+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "2G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Run both full-domain helper comparisons",
+          "run": "python3 -B lib/benchmark/organic-composition/icu/surrogates.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/icu/surrogates.json"
+      ]
+    }
+  },
+  "sourceCommit": "ef9f62b5badecb59c347e0a4e030d24c449b1586",
+  "startedAt": "2026-11-24T16:01:00+00:00",
+  "finishedAt": "2026-11-24T16:05:14+00:00",
+  "wallSeconds": 254.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2661725,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 3221225472,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 2147483648,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 84021248,
+    "wallSeconds": 1.8,
+    "cpuSeconds": 2.7,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.02
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Run both full-domain helper comparisons",
+      "run": "python3 -B lib/benchmark/organic-composition/icu/surrogates.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 1.806,
+      "cpuSeconds": 2.745,
+      "cpuThrottledSeconds": 0.264,
+      "peakMemoryBytes": 84021248,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-run-both-full-domain-helper-co.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/icu/surrogates.json",
+      "change": "added",
+      "bytes": 14249,
+      "sha256": "97beaaf048b997baa8bf5fa3061058c92cce5c536f6fda039ef19b1d56ef6758",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T16:07:20+00:00",
+    "applied": [
+      "verification/organic-composition/icu/surrogates.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "3dd06e78154ee24184d0797b33b16662a276ddc7",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3dd06e78154ee24184d0797b33b16662a276ddc7/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T160514Z-542571d946b906c3",
+      "outputs": "20261124T160514Z-575170fd22dffb2d",
+      "diff": "20261124T160514Z-598029ac968a8997"
+    }
+  }
+}

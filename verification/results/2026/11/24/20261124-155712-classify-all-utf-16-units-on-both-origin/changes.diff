@@ -1,0 +1,399 @@
+--- /dev/null
++++ b/verification/organic-composition/icu/surrogates.json
+@@ -0,0 +1,396 @@
++{
++  "old": {
++    "jar": "47235ad8dfd1d3f44736174dac8509d1267d3b87ec01ab1ede1dc69bfadd73b2",
++    "class": "0cba408d08acb711264a661fb94bbe24a8fbb33a400d3a465c77c1722de1a0bb",
++    "code": "1a11fc007e121aa0000704a7000403ac",
++    "normalReturns": 65536,
++    "trueCount": 1024,
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3dd06e78154ee24184d0797b33b16662a276ddc7/jvmcontract",
++      "prove",
++      "--classes",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-parent-core.jar",
++      "com.ibm.icu.text.UTF16#isTrailSurrogate",
++      "--assume",
++      "codePoint >= 0 && codePoint <= 65535",
++      "--assert",
++      "result == (codePoint >= 56320 && codePoint <= 57343)",
++      "--engine",
++      "native",
++      "--timeout",
++      "90",
++      "--json"
++    ],
++    "exit": 0,
++    "native": [
++      {
++        "wire_version": 1,
++        "verdict": "verified",
++        "target": "com.ibm.icu.text.UTF16#isTrailSurrogate",
++        "domain": "codePoint: int",
++        "assume": "codePoint >= 0 && codePoint <= 65535",
++        "assert": "result == (codePoint >= 56320 && codePoint <= 57343)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over codePoint: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "/tmp/jvmcontract-property-2903771-1795536313524659338-0/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "\u2713 com.ibm.icu.text.UTF16#isTrailSurrogate satisfies `result == (codePoint >= 56320 && codePoint <= 57343)` on every input where codePoint >= 0 && codePoint <= 65535 (jvmcontract's own checker (CaDiCaL): 1 properties proved over codePoint: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: isTrailSurrogate(codePoint=20) reaches the calls\n",
++        "work": "/tmp/jvmcontract-property-2903771-1795536313524659338-0",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.01614075,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 7,
++            "solving_seconds": 0.000137762,
++            "gates_evaluated": 170,
++            "evaluating_seconds": 1.0251e-05,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 179,
++            "clauses": 493,
++            "seconds": 0.007140833,
++            "loading_seconds": 0.000356597,
++            "decoding_seconds": 7.1637e-05,
++            "encoding_seconds": 0.000161881,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 90.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 90.0,
++              "seconds": 0.007,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.006,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 179,
++                "clauses": 493
++              }
++            },
++            {
++              "checker": "native",
++              "purpose": "probe",
++              "stage": null,
++              "budget_seconds": 89.984,
++              "seconds": 0.006,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.006,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 130,
++                "clauses": 338
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.053,
++            "setup": 0.002,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.013,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.038
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "codePoint",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "codePoint: int"
++          },
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "codePoint >= 0 && codePoint <= 65535",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result == (codePoint >= 56320 && codePoint <= 57343)",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "probe",
++            "text": "Some input in the domain reaches the calls: the tool's own checker found isTrailSurrogate(codePoint=20).",
++            "witness": "isTrailSurrogate(codePoint=20)"
++          }
++        }
++      }
++    ]
++  },
++  "new": {
++    "jar": "45f175800c28882b34223896697afb5050669f22a64d4989ba06d2f287037f7a",
++    "class": "0cba408d08acb711264a661fb94bbe24a8fbb33a400d3a465c77c1722de1a0bb",
++    "code": "1a11fc007e121aa0000704a7000403ac",
++    "normalReturns": 65536,
++    "trueCount": 1024,
++    "argv": [
++      "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/3dd06e78154ee24184d0797b33b16662a276ddc7/jvmcontract",
++      "prove",
++      "--classes",
++      "/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/D-icu-fix-core.jar",
++      "com.ibm.icu.text.UTF16#isTrailSurrogate",
++      "--assume",
++      "codePoint >= 0 && codePoint <= 65535",
++      "--assert",
++      "result == (codePoint >= 56320 && codePoint <= 57343)",
++      "--engine",
++      "native",
++      "--timeout",
++      "90",
++      "--json"
++    ],
++    "exit": 0,
++    "native": [
++      {
++        "wire_version": 1,
++        "verdict": "verified",
++        "target": "com.ibm.icu.text.UTF16#isTrailSurrogate",
++        "domain": "codePoint: int",
++        "assume": "codePoint >= 0 && codePoint <= 65535",
++        "assert": "result == (codePoint >= 56320 && codePoint <= 57343)",
++        "throws": [],
++        "throws_checked": [],
++        "counterexample": null,
++        "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over codePoint: int in 0.0 s; loops unwound 16 times with unwinding assertions",
++        "problem": null,
++        "statement": "/tmp/jvmcontract-property-2904243-1795536314284438636-0/harness/PropertyHarness.java",
++        "findings": [],
++        "output": "\u2713 com.ibm.icu.text.UTF16#isTrailSurrogate satisfies `result == (codePoint >= 56320 && codePoint <= 57343)` on every input where codePoint >= 0 && codePoint <= 65535 (jvmcontract's own checker (CaDiCaL): 1 properties proved over codePoint: int in 0.0 s; loops unwound 16 times with unwinding assertions)\n  not vacuous: isTrailSurrogate(codePoint=20) reaches the calls\n",
++        "work": "/tmp/jvmcontract-property-2904243-1795536314284438636-0",
++        "search": {
++          "engine": "native",
++          "checker": "jvmcontract's own checker (CaDiCaL)",
++          "seconds": 0.013486545,
++          "properties": 1,
++          "unwind": 16,
++          "max_array_length": 8,
++          "stage": null,
++          "native": {
++            "paths": 5,
++            "merges": 0,
++            "solver_calls": 7,
++            "solving_seconds": 6.9042e-05,
++            "gates_evaluated": 170,
++            "evaluating_seconds": 8.866e-06,
++            "divisions": 0,
++            "divisions_built": 0,
++            "multiplications": 0,
++            "multiplications_built": 0,
++            "variables": 179,
++            "clauses": 493,
++            "seconds": 0.006540692,
++            "loading_seconds": 0.000186735,
++            "decoding_seconds": 4.3873e-05,
++            "encoding_seconds": 0.000126972,
++            "witness_seconds": 0.0
++          },
++          "gap_mode": "strict",
++          "deadline_seconds": 90.0,
++          "runs": [
++            {
++              "checker": "native",
++              "purpose": "proof",
++              "stage": null,
++              "budget_seconds": 90.0,
++              "seconds": 0.007,
++              "ended": "verified",
++              "ending": "verified",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.006,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 179,
++                "clauses": 493
++              }
++            },
++            {
++              "checker": "native",
++              "purpose": "probe",
++              "stage": null,
++              "budget_seconds": 89.986,
++              "seconds": 0.007,
++              "ended": "violation",
++              "ending": "counterexample",
++              "phases": {
++                "loading": 0.0,
++                "lowering": 0.0,
++                "symbolic": 0.007,
++                "encoding": 0.0,
++                "solving": 0.0,
++                "trace": 0.0,
++                "other": 0.0
++              },
++              "formula": {
++                "variables": 130,
++                "clauses": 338
++              }
++            }
++          ],
++          "phases": {
++            "seconds": 0.049,
++            "setup": 0.002,
++            "harness": 0.0,
++            "gaps": 0.0,
++            "contracts": 0.0,
++            "runs": 0.014,
++            "replay": 0.0,
++            "jvm": 0.0,
++            "other": 0.033
++          }
++        },
++        "stated": {
++          "kind": "property",
++          "domain": {
++            "parameters": [
++              {
++                "name": "codePoint",
++                "type": "int",
++                "kind": "primitive",
++                "null": false
++              }
++            ],
++            "shared_arrays": false,
++            "text": "codePoint: int"
++          },
++          "assumptions": [
++            {
++              "kind": "precondition",
++              "text": "codePoint >= 0 && codePoint <= 65535",
++              "basis": "stated"
++            },
++            {
++              "kind": "initialization",
++              "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
++              "basis": "engine"
++            }
++          ],
++          "observations": {
++            "result": "the result and the parameters, against result == (codePoint >= 56320 && codePoint <= 57343)",
++            "exceptions": "none may be thrown"
++          },
++          "bounds": {
++            "unwind": 16,
++            "max_array_length": null,
++            "complete": true
++          },
++          "models": {
++            "used": true,
++            "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
++            "classes": 40,
++            "jdk": "21.0.13"
++          },
++          "checker": {
++            "engine": "native",
++            "name": "jvmcontract's own checker (CaDiCaL)",
++            "solver": "CaDiCaL 1.9.5 (bundled)",
++            "fallback": null,
++            "sat": {
++              "solver": "CaDiCaL",
++              "version": "1.9.5",
++              "source": "bundled by the Rust crate cadical 0.1.16",
++              "configuration": [
++                "CaDiCaL's default options",
++                "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
++                "the run's deadline through CaDiCaL's terminate callback",
++                "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
++              ]
++            }
++          },
++          "gap_mode": "strict",
++          "confirmation": null,
++          "vacuity": {
++            "status": "non-vacuous",
++            "basis": "probe",
++            "text": "Some input in the domain reaches the calls: the tool's own checker found isTrailSurrogate(codePoint=20).",
++            "witness": "isTrailSurrogate(codePoint=20)"
++          }
++        }
++      }
++    ]
++  }
++}

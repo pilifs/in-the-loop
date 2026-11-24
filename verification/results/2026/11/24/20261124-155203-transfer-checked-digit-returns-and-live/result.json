@@ -1,0 +1,323 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-155203-transfer-checked-digit-returns-and-live",
+  "title": "Transfer checked digit returns and live regional metadata to libphonenumber",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 3m25s, peak 154.2 MiB (estimated 8m00s, 4.0 GiB); 4 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-155203-transfer-checked-digit-returns-and-live.json",
+    "sha256": "7e860f07df877e6813e4f26a9a4af4dd34d871f4d2f9be8b7fbed61fea335249",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-155203-transfer-checked-digit-returns-and-live",
+      "title": "Transfer checked digit returns and live regional metadata to libphonenumber",
+      "description": "On both original PR 2272 production JARs, replay every visible prefix and remembered position across append, clear and reuse. Exercise Swedish and Ecuadorian fixed-line changes, US and Ecuadorian mobile preservation, checked Character.forDigit at the original call, the selected production resource URL, incorrect-premise rejection and clean cache recomputation.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "checked-proof-reuse",
+        "original-jvm-replay"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T15:52:03+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "4G",
+        "duration": "8m"
+      },
+      "steps": [
+        {
+          "name": "Check the shared freeze and ordinary public native entry",
+          "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/native_open.py phone phone",
+          "cwd": "."
+        },
+        {
+          "name": "Qualify and preserve the first libphonenumber plans",
+          "run": "python3 -B lib/benchmark/organic-composition/matrix.py phone first --controls",
+          "cwd": "."
+        },
+        {
+          "name": "Requalify every resource and public input",
+          "run": "python3 -B lib/benchmark/organic-composition/audit.py phone first && python3 -B lib/benchmark/organic-composition/phone/metadata.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/phone/first-native.json",
+        "verification/organic-composition/phone/first",
+        "verification/organic-composition/phone/metadata.json"
+      ]
+    }
+  },
+  "sourceCommit": "3a95da4a75a142cda8a5a2ea00676beeaa79fe22",
+  "startedAt": "2026-11-24T15:56:39+00:00",
+  "finishedAt": "2026-11-24T16:04:09+00:00",
+  "wallSeconds": 450.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2661725,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 161656832,
+    "wallSeconds": 205.3,
+    "cpuSeconds": 267.1,
+    "memoryOfEstimate": 0.04,
+    "durationOfEstimate": 0.43
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 236.394,
+      "cpuSeconds": 236.796,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2358530048,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 211,
+        "sha256": "2b0a3ced8c5bc7b0ad3b14c2f7808e65207f8f0530755060a16e61ca47a56f7c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-155203-transfer-checked-digit-returns-and-live/lib)",
+        "    Finished `release` profile [optimized] target(s) in 3m 56s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check the shared freeze and ordinary public native entry",
+      "run": "python3 -B lib/benchmark/organic-composition/freeze.py && python3 -B lib/benchmark/organic-composition/native_open.py phone phone",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 1.403,
+      "cpuSeconds": 2.001,
+      "cpuThrottledSeconds": 0.201,
+      "peakMemoryBytes": 66220032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-the-shared-freeze-and-or.log",
+        "lines": 1,
+        "bytes": 41,
+        "sha256": "538a41e53ca3d8c4bc51a9955fb894b1e3bd0b7fe7a5086f9a430b03ff07bbe0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "d92dea060ce873e0a64cec67c27e9dadea448efc"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Qualify and preserve the first libphonenumber plans",
+      "run": "python3 -B lib/benchmark/organic-composition/matrix.py phone first --controls",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 203.741,
+      "cpuSeconds": 264.972,
+      "cpuThrottledSeconds": 39.672,
+      "peakMemoryBytes": 161656832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-qualify-and-preserve-the-first.log",
+        "lines": 8,
+        "bytes": 446,
+        "sha256": "bb6d8338be708eb004371c0db91d2c405d86970cb69e85d536d2190b31b9fa64",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "4 claims in /tmp/organic-matrix-t6_sg00i/planned.json",
+        "4 claims in /tmp/organic-matrix-t6_sg00i/cold.json",
+        "4 claims in /tmp/organic-matrix-t6_sg00i/warm.json",
+        "4 claims in /tmp/organic-matrix-t6_sg00i/clean.json",
+        "4 claims in /tmp/organic-matrix-t6_sg00i/unrelated-warm.json",
+        "4 claims in /tmp/organic-matrix-t6_sg00i/unrelated-clean.json",
+        "4 claims in /tmp/organic-matrix-t6_sg00i/wrong-warm.json",
+        "4 claims in /tmp/organic-matrix-t6_sg00i/wrong-clean.json"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Requalify every resource and public input",
+      "run": "python3 -B lib/benchmark/organic-composition/audit.py phone first && python3 -B lib/benchmark/organic-composition/phone/metadata.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.125,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 14159872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-requalify-every-resource-and-p.log",
+        "lines": 1,
+        "bytes": 207,
+        "sha256": "62d1618bd56ade3bb3cbcc816f00d7a1b0750b6a5bff76dd615e3cc6e60f4d07",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "phone first matched original observations, proof identities, applied values and startup witnesses: [['cold', 'warm'], ['cold', 'clean'], ['unrelated-warm', 'unrelated-clean'], ['wrong-warm', 'wrong-clean']]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/phone/first-native.json",
+      "change": "added",
+      "bytes": 15589,
+      "sha256": "fa97d2095a0121cfbc1e89b5170f64639330e5a9b145dc5535f662ebe0a54f56",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/phone/first/plans.zip",
+      "change": "added",
+      "bytes": 358515,
+      "sha256": "8e71da0b1ee0d595372064a955329231e3af333c187e216c686419cf6e70823d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/phone/first/summary.json",
+      "change": "added",
+      "bytes": 42916,
+      "sha256": "745a7f362eb399ea8008985d16e795e8fd4ee8fb5bdf32151cd9305d9b54e122",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/organic-composition/phone/metadata.json",
+      "change": "added",
+      "bytes": 2982,
+      "sha256": "4d7cdc222def6a33ecd73d6369f983e580e140c8ce579b48ca24835691ebfc75",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T16:07:20+00:00",
+    "applied": [
+      "verification/organic-composition/phone/first-native.json",
+      "verification/organic-composition/phone/first/plans.zip",
+      "verification/organic-composition/phone/first/summary.json",
+      "verification/organic-composition/phone/metadata.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ca35ff2b9ff2e65e5432bfb5b60c63cf4e533e28",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ca35ff2b9ff2e65e5432bfb5b60c63cf4e533e28/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T160409Z-763016d41ee58707",
+      "outputs": "20261124T160409Z-802415e6ed50fa55",
+      "diff": "20261124T160409Z-825796e5285a9e59"
+    }
+  }
+}
