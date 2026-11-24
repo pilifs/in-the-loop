@@ -1,0 +1,241 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-230538-remeasure-the-frozen-automatic-callers-0",
+  "title": "Remeasure the frozen automatic callers 01 through 04",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 6m41s, peak 679.0 MiB (estimated 5m00s, 3.0 GiB); 8 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-230538-remeasure-the-frozen-automatic-callers-0.json",
+    "sha256": "a96ce607e2ef24654d74d517a9a4509c6bdfd8d3cf0dc0d2fdac8adcf23929bb",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-230538-remeasure-the-frozen-automatic-callers-0",
+      "title": "Remeasure the frozen automatic callers 01 through 04",
+      "description": "Replay the unchanged artifact-only operator after repairing the class-name and lookup cache. Hold the original ordered JAR bytes, generated callers, physical inputs and independent reference registrations fixed. Record cold and warm literal outcomes, witness replay, JVM disagreements and complete process outputs. This disclosed repeat preserves the first blind score.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py"
+        ]
+      },
+      "expected": "The original four choices and caller digest for each packet match, all measured cold outcomes have warm results and the comparison retains every JVM disagreement.",
+      "submitted": {
+        "at": "2026-11-24T23:05:38+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "jvmcontract",
+        "bwrap",
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "32m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurem",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py 01 02 03 04",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/scaffold-first/remeasured/01",
+        "verification/beyond-jbmc/scaffold-first/remeasured/02",
+        "verification/beyond-jbmc/scaffold-first/remeasured/03",
+        "verification/beyond-jbmc/scaffold-first/remeasured/04"
+      ]
+    }
+  },
+  "sourceCommit": "6a07afe4a9dc54d8e6f208329c2b1e29f2badf45",
+  "startedAt": "2026-11-24T23:17:16+00:00",
+  "finishedAt": "2026-11-24T23:27:25+00:00",
+  "wallSeconds": 609.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2872314,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 712003584,
+    "wallSeconds": 401.8,
+    "cpuSeconds": 418.4,
+    "memoryOfEstimate": 0.22,
+    "durationOfEstimate": 1.34
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurem",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py 01 02 03 04",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 401.808,
+      "cpuSeconds": 418.409,
+      "cpuThrottledSeconds": 14.693,
+      "peakMemoryBytes": 712003584,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 4,
+        "bytes": 192,
+        "sha256": "7caa2fc53233c39cb047aaa992f8952e073a4869ed7f3b7e6f70ef423690b8fa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "01 4 locked candidates, 1 cold/warm comparisons",
+        "02 4 locked candidates, 4 cold/warm comparisons",
+        "03 4 locked candidates, 4 cold/warm comparisons",
+        "04 4 locked candidates, 4 cold/warm comparisons"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/01/comparison.json.gz",
+      "change": "added",
+      "bytes": 1185,
+      "sha256": "8171507d1119fd8f361bb188a75d2416864506fb03c004d4f6b61a2907f2380d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/01/executions.zip",
+      "change": "added",
+      "bytes": 22338,
+      "sha256": "b729397b38ec7e039b805c25c0ba725aa1637210c726b4b6aa2918cb55a81650",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/02/comparison.json.gz",
+      "change": "added",
+      "bytes": 1536,
+      "sha256": "b2f5f271c6beccf0a85b3cc6547591e7f38e08581117f5b3e42fa03e2a07b923",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/02/executions.zip",
+      "change": "added",
+      "bytes": 81148,
+      "sha256": "611a5c5e196c510f8fec02373d448780f08f274b55138cd034a9cea20afc2c32",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/03/comparison.json.gz",
+      "change": "added",
+      "bytes": 3147,
+      "sha256": "c6f384dc56a06c78aa86a1ece057f185273ff83687b3ee1fdf35bc8fd0fb6c50",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/03/executions.zip",
+      "change": "added",
+      "bytes": 84570,
+      "sha256": "82c001e4cf5e935e48a1f5648722fceb2ccec20b22fc6d422afea7f8e3f6d743",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/04/comparison.json.gz",
+      "change": "added",
+      "bytes": 4944,
+      "sha256": "9cfa8ced70d6e835224f4ca5cc2c8653c6e49094e82542f9e18db23ab7ced310",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/remeasured/04/executions.zip",
+      "change": "added",
+      "bytes": 81708,
+      "sha256": "02fc4ceb433a211d03fbc75d8b9c2eba97981830194820e4efd7888839b296dd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T23:27:36+00:00",
+    "applied": [
+      "verification/beyond-jbmc/scaffold-first/remeasured/01/comparison.json.gz",
+      "verification/beyond-jbmc/scaffold-first/remeasured/01/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/remeasured/02/comparison.json.gz",
+      "verification/beyond-jbmc/scaffold-first/remeasured/02/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/remeasured/03/comparison.json.gz",
+      "verification/beyond-jbmc/scaffold-first/remeasured/03/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/remeasured/04/comparison.json.gz",
+      "verification/beyond-jbmc/scaffold-first/remeasured/04/executions.zip"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7a7d4bc95790495b4687573a137ee8bb801fe6c5",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7a7d4bc95790495b4687573a137ee8bb801fe6c5/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T232725Z-73676569899c6f16",
+      "outputs": "20261124T232725Z-762008ec554ef651",
+      "diff": "20261124T232725Z-7800463860191e56"
+    }
+  }
+}
