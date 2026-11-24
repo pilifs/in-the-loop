@@ -10,7 +10,9 @@ from plan_run import HERE, OUTPUT, ROOT
 START="27e6cca94c80ea8ac7ad83971e0efa05a3d601b9"
 
 
-def main(end):
+def main(end, cycles=1):
+    if cycles < 1:
+        raise ValueError("at least one domain cycle is required")
     jobs=json.loads((ROOT/OUTPUT/"jobs.json").read_bytes())
     specs={j["id"]:json.loads(next((ROOT/"verification/jobs").rglob(j["id"]+".json")).read_bytes()) for j in jobs}
     session=specs[jobs[0]["id"]]["submitted"]["session"]
@@ -28,12 +30,14 @@ def main(end):
     replacements={"20261124-150013-retry-the-threeten-public-caller-after-o":
                   "20261124-152629-retain-the-original-threeten-startup-obs",
                   "20261124-153512-locate-the-ordinary-and-observed-poi-for":
-                  "20261124-155203-retain-the-poi-startup-frontier-on-ordin"}
+                  "20261124-155203-retain-the-poi-startup-frontier-on-ordin",
+                  "20261124-172139-identify-the-original-commons-io-rewind":
+                  "20261124-173601-capture-the-original-commons-io-default"}
     superseded={job:success for job,success in replacements.items()
                 if job in per_job and per_job[job]["status"]=="failed" and per_job.get(success,{}).get("status")=="passed"}
     unresolved=[job for job,row in per_job.items() if row["status"]!="passed" and job not in superseded]
     profiles={}
-    for case in ("threeten","poi","phone","icu","collections-628","collections-755","url-only"):
+    for case in ("threeten","poi","phone","icu","collections-628","collections-755","url-only","io"):
         folder=HERE/case
         if not (folder/"effort.json").is_file():continue
         row=json.loads((folder/"effort.json").read_bytes())
@@ -43,7 +47,7 @@ def main(end):
             runs=json.loads(report.read_bytes())["runs"]
             row["measuredPlanSeconds"]={name:{k:runs[name][k] for k in ("wallSeconds","childCpuSeconds")} for name in ("cold","warm","clean") if name in runs}
         profiles[case]=row
-    record={"domainCyclesObserved":1,"setup":"Separate setup run, outside the job and inference intervals below.",
+    record={"domainCyclesObserved":cycles,"setup":"Separate setup run, outside the job and inference intervals below.",
             "aggregateInference":{"session":session,"startSnapshot":START,"endSnapshot":end,"startCounters":before,"endCounters":after,"delta":totals,
             "scope":"Published aggregate counters between the initial checkout and the named source checkpoint. Includes work between trace syncs; per-case inference and post-checkpoint reporting cannot be isolated."},
             "jobs":{"firstSubmitted":first.isoformat(),"lastFinished":last.isoformat(),"elapsedSeconds":(last-first).total_seconds(),
@@ -56,4 +60,8 @@ def main(end):
     print(len(per_job),"jobs;",len(profiles),"case records")
 
 if __name__=="__main__":
-    ap=argparse.ArgumentParser(description=__doc__);ap.add_argument("end_revision");main(ap.parse_args().end_revision)
+    ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("end_revision")
+    ap.add_argument("--cycles", type=int, default=1)
+    args=ap.parse_args()
+    main(args.end_revision, args.cycles)

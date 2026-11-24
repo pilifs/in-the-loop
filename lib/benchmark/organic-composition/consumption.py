@@ -10,7 +10,7 @@ from plan_run import HERE, ROOT, OUTPUT
 sys.path.insert(0,str(ROOT/"examples/tools"))
 from targets import change_evidence, change_plan
 
-CASES={"threeten":"transfer-baseline","poi":"first","phone":"first","icu":"first","url-only":"first"}
+CASES={"threeten":"transfer-baseline","poi":"first","phone":"first","icu":"first","url-only":"first","io":"first"}
 
 
 def examine(case,label):
