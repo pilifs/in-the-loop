@@ -113,7 +113,7 @@ def qualify(checker, cp, tools, tmp, entry, key, expected, first, count, limits,
     return result
 
 
-def measure(family):
+def measure(family, dest=None):
     checker = Path(os.environ["JVMCONTRACT"]).resolve()
     result = {
         "job": os.environ["VERIFY_JOB_ID"],
@@ -186,7 +186,7 @@ def measure(family):
                     downstream,
                 )
             result["sides"][side] = receipts
-    dest = RESULTS / "transfer" / (family + "-ordinary-witnesses")
+    dest = dest or RESULTS / "transfer" / (family + "-ordinary-witnesses")
     dest.mkdir(parents=True, exist_ok=True)
     write(dest / "measurement.json", result)
 
@@ -194,4 +194,6 @@ def measure(family):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("family", choices=["xz", "javaparser"])
-    measure(parser.parse_args().family)
+    parser.add_argument("--output", type=Path, help="write this repeat to a separate receipt directory")
+    args = parser.parse_args()
+    measure(args.family, args.output)

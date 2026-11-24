@@ -7,7 +7,7 @@ use super::*;
 pub(super) const IMAGE: &str = "<JDK.HashMap>";
 const MAP: &str = "java/util/HashMap";
 pub(super) const CONCURRENT_IMAGE: &str = "<JDK.ConcurrentHashMap>";
-const PROPERTIES_IMAGE: &str = "<JDK.Properties>";
+pub(super) const PROPERTIES_IMAGE: &str = "<JDK.Properties>";
 
 impl Engine<'_> {
     /// In a single-threaded JDK map with no counter cells the first baseCount CAS

@@ -152,8 +152,8 @@ def prepare(family, side, tmp, frozen):
     return [classes, *cp], owner, entries
 
 
-def run(family):
-    out = RESULTS / "transfer" / family
+def run(family, out=None):
+    out = out or RESULTS / "transfer" / family
     out.mkdir(parents=True, exist_ok=True)
     checker = Path(os.environ["JVMCONTRACT"]).resolve()
     frozen = read(RESULTS / "scope.json")
@@ -248,4 +248,6 @@ def run(family):
 if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("family", choices=("xz", "javaparser"))
-    run(p.parse_args().family)
+    p.add_argument("--output", type=Path, help="write this repeat to a separate receipt directory")
+    args = p.parse_args()
+    run(args.family, args.output)

@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-033120-recheck-xz-ordinary-frame-witnesses-and",
+  "title": "Recheck XZ ordinary frame witnesses and live cache prestates",
+  "description": "Exercise the unmodified public frame claim on XZ 1.11 and 1.12 and distinguish default JVM replay, an admitted nondefault setting, four frame outputs, and the physical first-use and erroneous-class behavior of the cache. Retain fresh measurements and evidence separately from the historical campaign.",
+  "kind": "real-world",
+  "capabilities": [
+    "receiver-construction",
+    "jvmcontract:prove"
+  ],
+  "links": {},
+  "expected": "Both registered artifacts are bound, the four frame outputs and each cache profile have fresh observations, and a failure in an admitted prestate is replayed at the original entry with its default comparison.",
+  "submitted": {
+    "at": "2026-11-24T03:31:20+00:00",
+    "session": "01a20b98-a4a8-7b90-bf7a-097e3504fb3a"
+  },
+  "requires": [
+    "jvmcontract",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "4m",
+    "timeout": "25m"
+  },
+  "steps": [
+    {
+      "name": "Recheck ordinary claims",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/ordinary.py xz --output verification/receiver-discovery/recovery/xz/ordinary",
+      "cwd": "."
+    },
+    {
+      "name": "Recheck nondefault and default witnesses",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/property_witness.py xz --output verification/receiver-discovery/recovery/xz/witnesses",
+      "cwd": "."
+    },
+    {
+      "name": "Recheck all cache and frame profiles",
+      "run": "TMPDIR=\"$HOME/.cache/in-the-loop/tmp\" python3 -B lib/benchmark/receiver-discovery/process_states.py xz --output verification/receiver-discovery/recovery/xz/profiles",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/receiver-discovery/recovery/xz"
+  ]
+}

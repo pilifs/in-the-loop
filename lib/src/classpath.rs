@@ -385,6 +385,7 @@ pub struct ClassPath {
     class_table_image: std::cell::OnceCell<bool>,
     jar_resource_image: std::cell::OnceCell<bool>,
     properties_reader_image: std::cell::OnceCell<bool>,
+    system_properties_image: std::cell::OnceCell<bool>,
     linked_map_image: std::cell::OnceCell<bool>,
     soft_queue_image: std::cell::OnceCell<bool>,
     generic_interface_image: std::cell::OnceCell<bool>,
@@ -417,7 +418,7 @@ impl ClassPath {
     /// An empty class path with no JDK. Add entries with [`add`](Self::add) and a JDK with
     /// [`with_default_jdk`](Self::with_default_jdk).
     pub fn new() -> ClassPath {
-        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
+        ClassPath { entries: Vec::new(), jar_release: configured_jar_release(), observations: configured_observations(), jdk: None, legacy_boot: None, models: true, cache: RefCell::new(HashMap::new()), classes: RefCell::new(None), initializer_runs: Default::default(), plain_buffer_formatter: Default::default(), string_unit_replacement: Default::default(), reflection_copies: Default::default(), thread_local_keys: Default::default(), class_table_image: Default::default(), jar_resource_image: Default::default(), properties_reader_image: Default::default(), system_properties_image: Default::default(), linked_map_image: Default::default(), soft_queue_image: Default::default(), generic_interface_image: Default::default(), explicit_utc: Default::default(), string_buffer_layout: Default::default(), basic_base64: Default::default(), heap_buffer_copy: Default::default(), concurrent_table_layout: Default::default(), decimal_tables_image: Default::default(), observed_initializers: Default::default(), requested_models: Default::default(), loading: Default::default(), refusals: Default::default(), jdk_packages: Default::default() }
     }
 
     /// With or without the tool's models of JDK classes ([`crate::models`]); on by default. Without them, a call
@@ -503,6 +504,7 @@ impl ClassPath {
         self.class_table_image.take();
         self.jar_resource_image.take();
         self.properties_reader_image.take();
+        self.system_properties_image.take();
         self.linked_map_image.take();
         self.soft_queue_image.take();
         self.explicit_utc.take();
@@ -1354,6 +1356,14 @@ impl ClassPath {
             &["5557162135c0a12b872b1c44af1171fe8e91a104ef7495da7777c47ea6a614fa"]))
     }
 
+    /// The getters of this System image return its installed Properties object and delegate
+    /// to that exact receiver. Its non-null setter replaces the reference after permission checks.
+    pub(crate) fn system_properties_image(&self) -> bool {
+        *self.system_properties_image.get_or_init(|| self.matches_jdk_classes(
+            &["java/lang/System", "java/util/Properties"],
+            &["9febf1a065577810a10eb907d79a2ab8fde138615693bb5507337db7bd59a395"]))
+    }
+
     pub(crate) fn linked_map_image(&self) -> bool {
         *self.linked_map_image.get_or_init(|| self.matches_jdk_classes(&["java/util/HashMap", "java/util/LinkedHashMap"],
             &["b26ef44090b682e76fe299447ad1189e4321f62f343f0c4f633568024b7fb754"]))
@@ -1655,7 +1665,7 @@ impl ClassPath {
     pub(crate) fn concurrent_map_method(&self, name: &str, desc: &str) -> Option<(Rc<ClassFile>, Method)> {
         if self.runs_model(crate::models::CONCURRENT_MAP) || !matches!((name, desc),
             ("<init>", "()V" | "(I)V" | "(IFI)V") | ("isEmpty", "()Z") | ("size", "()I") | ("sumCount", "()J")
-            | ("get", "(Ljava/lang/Object;)Ljava/lang/Object;") | ("containsKey", "(Ljava/lang/Object;)Z")
+            | ("get" | "remove", "(Ljava/lang/Object;)Ljava/lang/Object;") | ("containsKey", "(Ljava/lang/Object;)Z")
             | ("put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | ("putVal", "(Ljava/lang/Object;Ljava/lang/Object;Z)Ljava/lang/Object;")
             | ("initTable", "()[Ljava/util/concurrent/ConcurrentHashMap$Node;")
@@ -1679,7 +1689,7 @@ impl ClassPath {
             | (PROPS, "loadConvert", "([CIILjava/lang/StringBuilder;)Ljava/lang/String;")
             | ("java/util/Hashtable", "<init>", "(Ljava/lang/Void;)V") | ("java/util/Dictionary", "<init>", "()V")
             | (PROPS, "size", "()I") | (PROPS, "isEmpty", "()Z") | (PROPS, "containsKey", "(Ljava/lang/Object;)Z")
-            | (PROPS, "get", "(Ljava/lang/Object;)Ljava/lang/Object;")
+            | (PROPS, "get" | "remove", "(Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "setProperty", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;")
             | (PROPS, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;")
             | (PROPS, "forEach", "(Ljava/util/function/BiConsumer;)V")

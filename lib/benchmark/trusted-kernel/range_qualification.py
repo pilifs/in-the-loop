@@ -225,7 +225,13 @@ def qualify(tmp, arrays, measure):
                     raise ValueError((name, sample))
                 samples.append(sample)
             generation[name] = summarize(samples)
-    binary, build = build_kernel(tmp)
+    if measure:
+        binary, build = build_kernel(tmp)
+    else:
+        from frozen_range import int_kernel
+
+        binary = int_kernel(tmp / "historical")
+        build = {"binarySha256": digest(binary.read_bytes())}
     rows = [
         outcome(name, inputs(name, BUNDLE, arrays), binary, code, reason, 3 if measure else 1)
         for name, (_, _, code, reason) in CASES.items()

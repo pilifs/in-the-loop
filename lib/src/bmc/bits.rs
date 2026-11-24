@@ -263,6 +263,9 @@ pub struct Blaster {
     sampling: u64,
     /// Where every clause and call goes as well, when the check is recorded ([`super::transcript`]).
     transcript: Option<super::transcript::Transcript>,
+    /// The disposition of every attempt at the solver boundary, including constant-false shortcuts.
+    /// Kept separately from the clause writer so a missing transcript call can be detected.
+    pub(super) call_boundary: Option<String>,
     /// Whether the solver takes terms ([`super::sat::Terms`]): gates and word-level operations are then defined to
     /// it, not bit-blasted.
     words: bool,
@@ -346,7 +349,8 @@ impl Blaster {
     pub fn over(mut solver: Box<dyn super::sat::Sat>, transcript: Option<super::transcript::Transcript>) -> Blaster {
         let words = solver.terms().is_some();
         assert!(!(words && transcript.is_some()), "a transcript records clauses, and this solver is given terms");
-        let mut b = Blaster { words, word_ops: Vec::new(), word_keys: HashMap::new(), solver, next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, limit: None, work_limit: None, deferred: None, given: Vec::new(), needed: Vec::new(), numbered: Vec::new(), numbers: 0, numbered_inputs: Vec::new() };
+        let call_boundary = transcript.as_ref().map(|_| String::new());
+        let mut b = Blaster { words, word_ops: Vec::new(), word_keys: HashMap::new(), solver, next: 2, defs: vec![Def::Input, Def::Input], gates: HashMap::new(), lazy: Vec::new(), divisions: HashMap::new(), products: HashMap::new(), congruences: 0, clauses: 0, solves: 0, solving: std::time::Duration::ZERO, evaluated: 0, evaluating: std::time::Duration::ZERO, encoding: std::time::Duration::ZERO, timing: false, sampling: 0x9E37_79B9_7F4A_7C15, clock: clock_cost(), transcript, call_boundary, limit: None, work_limit: None, deferred: None, given: Vec::new(), needed: Vec::new(), numbered: Vec::new(), numbers: 0, numbered_inputs: Vec::new() };
         b.clause(&[TRUE]);
         b
     }
@@ -1414,6 +1418,9 @@ impl Blaster {
         self.solves += 1;
         let assumptions: Vec<Lit> = assumptions.iter().copied().filter(|&l| l != TRUE).collect();
         if assumptions.contains(&FALSE) {
+            if let Some(boundary) = &mut self.call_boundary {
+                boundary.push('F');
+            }
             return Some(false);
         }
         let assumptions: Vec<Lit> = if self.deferred.is_some() {
@@ -1427,8 +1434,14 @@ impl Blaster {
         let answer = self.solver.solve(&assumptions);
         let took = started.elapsed();
         self.solving += took;
+        if let Some(boundary) = &mut self.call_boundary {
+            boundary.push(match answer { Some(true) => 'S', Some(false) => 'U', None => '?' });
+        }
         if let Some(t) = &mut self.transcript {
             t.call(&assumptions, self.limit, self.work_limit, answer, took);
+            if answer == Some(true) {
+                t.model(&*self.solver);
+            }
         }
         answer
     }

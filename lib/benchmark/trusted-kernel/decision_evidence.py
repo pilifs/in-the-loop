@@ -9,6 +9,7 @@ import tarfile
 from prepare import HERE, digest
 from recheck_saved import snapshot_sources
 from frame_witness import FILL, Z3, guava_record, original_scope, witness_query
+from frozen_range import historical_files, historical_manifest
 
 EV = HERE / "evidence"
 
@@ -305,8 +306,9 @@ def report():
     transfer = read(EV / rel)
     version = transfer["checker"]["binarySha256"]
     require(transfer["previousGuavaCasesReplayed"] == 18, "range checker Guava regressions")
+    frozen_sources = historical_files()
     for name, sha in transfer["consumerSources"].items():
-        require(digest((HERE / name).read_bytes()) == sha, "range checker source " + name)
+        require(digest(frozen_sources[name]) == sha, "range checker source " + name)
     rows = {r["control"]: r for r in transfer["cases"]}
     require(len(rows) == len(transfer["cases"]) == 14, "range case inventory")
     for control, r in rows.items():
@@ -447,21 +449,11 @@ def report():
         ),
         "native counters",
     )
-    files = [
-        p
-        for folder in (HERE / "inputs", HERE / "requests", EV)
-        for p in folder.rglob("*")
-        if p.is_file() and p != EV / "cases.json"
-    ]
-    files.extend(sorted(HERE.rglob("*.rs")))
-    files.extend([HERE / "Scalar.lean", HERE / "protocol.md", HERE / "meter.c"])
-    files.extend(
-        HERE / name for name in ("replay.py", "range_qualification.py", "range_certificate.py", "frame_witness.py")
-    )
-    manifest = {
-        p.relative_to(HERE).as_posix(): {"sha256": digest(p.read_bytes()), "bytes": p.stat().st_size}
-        for p in sorted(files)
-    }
+    manifest = {}
+    for name, expected in sorted(historical_manifest().items(), key=lambda item: Path(item[0])):
+        data = frozen_sources[name] if name in frozen_sources else (HERE / name).read_bytes()
+        manifest[name] = {"sha256": digest(data), "bytes": len(data)}
+        require(manifest[name] == expected, "historical evidence " + name)
     return {
         "schema": "trusted-kernel-cases/v1",
         "bundle": manifest,
