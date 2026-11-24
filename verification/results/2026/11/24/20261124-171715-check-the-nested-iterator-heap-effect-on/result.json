@@ -1,0 +1,257 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-171715-check-the-nested-iterator-heap-effect-on",
+  "title": "Check the nested iterator heap effect on four original deployments",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 22.5s, peak 89.7 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (Check, substitute and remove through all four original JVM histories) was held back 20.7s by its 1-CPU quota in 22.1s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-171715-check-the-nested-iterator-heap-effect-on.json",
+    "sha256": "aa68b3a9f08f404a97e7b49548a6993ac8743031057dfe648aef2a855d644042",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-171715-check-the-nested-iterator-heap-effect-on",
+      "title": "Check the nested iterator heap effect on four original deployments",
+      "description": "Certify the registered advanced input of Commons Collections #628 and #755 against two ordinary JVM executions per endpoint. Compare every field and array slot in the bound entry heap with the declared queue, child and cache changes, then replace the actual parent helper in two independent JVMs. Qualify the original next and remove receivers and final public observation. Reject a stale cursor and a missing detached-node write on live disposable executions and check missing, wrong-receiver and cross-deployment receipts.",
+      "kind": "real-world",
+      "capabilities": [
+        "application:change-plan",
+        "original-jvm-replay",
+        "checked-heap-effects"
+      ],
+      "links": {},
+      "submitted": {
+        "at": "2026-11-24T17:17:15+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Check, substitute and remove through all four original JVM histories",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py",
+          "cwd": "."
+        },
+        {
+          "name": "Independently recheck every stored heap certificate and original plan link",
+          "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --audit",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/organic-composition/collections/checked-heap-effect.json"
+      ]
+    }
+  },
+  "sourceCommit": "46c40165e115b6bca805d0232726445aa0622e59",
+  "startedAt": "2026-11-24T17:21:00+00:00",
+  "finishedAt": "2026-11-24T17:25:31+00:00",
+  "wallSeconds": 271.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3747145,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 94031872,
+    "wallSeconds": 22.5,
+    "cpuSeconds": 18.0,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 240.6,
+      "cpuSeconds": 240.413,
+      "cpuThrottledSeconds": 0.51,
+      "peakMemoryBytes": 3234062336,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "68b15d1b0317f564b34d9fbe7dcee43794bb00ecd923130009020c024eab4ebd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261124-171715-check-the-nested-iterator-heap-effect-on/lib)",
+        "    Finished `release` profile [optimized] target(s) in 4m 00s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "Check, substitute and remove through all four original JVM histories",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 22.06,
+      "cpuSeconds": 17.821,
+      "cpuThrottledSeconds": 20.714,
+      "peakMemoryBytes": 94031872,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-substitute-and-remove-th.log",
+        "lines": 4,
+        "bytes": 292,
+        "sha256": "278903509571239341dc0df827608440a99e78d4092be286e17efb2504d890a8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "628-old retained child 9 changed fields, java.util.ArrayList$Itr#remove()V",
+        "628-new flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-old flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-new retained child 9 changed fields, java.util.ArrayList$Itr#remove()V"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Independently recheck every stored heap certificate and original plan link",
+      "run": "python3 -B lib/benchmark/organic-composition/collections/effect_replay.py --audit",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.401,
+      "cpuSeconds": 0.18,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 34054144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-independently-recheck-every-st.log",
+        "lines": 4,
+        "bytes": 292,
+        "sha256": "278903509571239341dc0df827608440a99e78d4092be286e17efb2504d890a8",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "628-old retained child 9 changed fields, java.util.ArrayList$Itr#remove()V",
+        "628-new flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-old flattened child 7 changed fields, java.util.Iterator#remove()V",
+        "755-new retained child 9 changed fields, java.util.ArrayList$Itr#remove()V"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/organic-composition/collections/checked-heap-effect.json",
+      "change": "added",
+      "bytes": 55462,
+      "sha256": "17caba92bccc6d1c7932175ec6a814ccf4d21cc59cb1a01533ebbdf0433d372d",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-24T17:25:45+00:00",
+    "applied": [
+      "verification/organic-composition/collections/checked-heap-effect.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ffc19b4605cfd246bfbb1242576401f3b68ce5d8",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ffc19b4605cfd246bfbb1242576401f3b68ce5d8/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T172531Z-352371e8f9438aac",
+      "outputs": "20261124T172531Z-37469659ae8e1ffe",
+      "diff": "20261124T172531Z-3943541fe86dfeac"
+    }
+  }
+}
