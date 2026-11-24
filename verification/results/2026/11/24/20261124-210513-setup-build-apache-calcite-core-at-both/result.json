@@ -1,0 +1,371 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-210513-setup-build-apache-calcite-core-at-both",
+  "title": "Setup: build Apache Calcite core at both #1003 revisions and run CoreQuidemTest (agg.iq)",
+  "status": "passed",
+  "summary": "passed: 5 passed step(s) in 6m14s, peak 2.1 GiB (estimated 30m00s, 4.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-210513-setup-build-apache-calcite-core-at-both.json",
+    "sha256": "8148b771b7c05774aec8f708dbe7ab7928fa63713144d8d89b5d54b920d82a1e",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-210513-setup-build-apache-calcite-core-at-both",
+      "title": "Setup: build Apache Calcite core at both #1003 revisions and run CoreQuidemTest (agg.iq)",
+      "description": "Setup for case J12 of llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/organic-pr-20/worktrees (J12-calcite-fix = f992e6c8fbc3712c6bd70096fb6b05da448b2cab, J12-calcite-parent = f2638b9f7dc878f3f109cbc59d1a6ae02d3d5696), builds calcite core (with -am: linq4j) with Maven 3.5.4 (the project's wrapper version; Maven 3.10 rejects a duplicate dependency in piglet/pom.xml) on JDK 8u512, with the generate-git-id profile switched off on the command line (git-commit-id-plugin 2.1.9 cannot read a worktree of the shallow mirror; it only writes git.properties, build metadata; the first try, 20261124-203257, failed there), through an https mirror of the pom's http 'central' repository (scripts/maven-settings-https-central.xml), into the cache's own m2. The first step is online, the rest offline. Runs CoreQuidemTest (every sql/*.iq script, agg.iq among them) on each side, then the landed agg.iq transplanted onto the parent, where it is expected to fail, then again offline on the fix. Core and linq4j jars go to .../artifacts with sha256, runtime classpaths and JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-setup.md",
+          "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md"
+        ]
+      },
+      "expected": "every step exits 0: CoreQuidemTest passes on both sides' own trees; the transplanted agg.iq fails on the parent; the offline rerun passes",
+      "submitted": {
+        "at": "2026-11-24T21:05:13+00:00",
+        "session": "9c1d1c59-e947-449f-97e1-6ebf7cc523bb",
+        "by": "setup agent (Claude Opus 5.5, fork D)"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "4G",
+        "duration": "30m"
+      },
+      "steps": [
+        {
+          "name": "J12-calcite-fix: build core -am online with Maven 3.5.4 on JDK 8, CoreQuidemTest (landed agg.iq)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml  -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-fix; echo worktree=J12-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package org.apache.maven.plugins:maven-dependency-plugin:3.1.1:build-classpath -DincludeScope=runtime -Dmdep.outputFile=target/setup-runtime-classpath.txt > $O/logs/J12-calcite-fix.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-fix.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; cp core/target/calcite-core-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-fix-core.jar; cp linq4j/target/calcite-linq4j-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-fix-linq4j.jar; cp core/target/setup-runtime-classpath.txt $O/logs/J12-calcite-fix.core.runtime-classpath.txt; sha256sum $O/artifacts/J12-calcite-fix-core.jar $O/artifacts/J12-calcite-fix-linq4j.jar; unzip -l $O/artifacts/J12-calcite-fix-core.jar | grep -E 'adapter/enumerable/(Basic|Lazy|SourceSorter|Sequenced|Ordered)' || true; ",
+          "cwd": "."
+        },
+        {
+          "name": "J12-calcite-parent: build core -am offline, its own CoreQuidemTest",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml -o -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-parent; echo worktree=J12-calcite-parent commit=$(git rev-parse HEAD); rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package org.apache.maven.plugins:maven-dependency-plugin:3.1.1:build-classpath -DincludeScope=runtime -Dmdep.outputFile=target/setup-runtime-classpath.txt > $O/logs/J12-calcite-parent.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-parent.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; cp core/target/calcite-core-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-parent-core.jar; cp linq4j/target/calcite-linq4j-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-parent-linq4j.jar; cp core/target/setup-runtime-classpath.txt $O/logs/J12-calcite-parent.core.runtime-classpath.txt; sha256sum $O/artifacts/J12-calcite-parent-core.jar $O/artifacts/J12-calcite-parent-linq4j.jar; unzip -l $O/artifacts/J12-calcite-parent-core.jar | grep -E 'adapter/enumerable/(Basic|Lazy|SourceSorter|Sequenced|Ordered)' || true; ",
+          "cwd": "."
+        },
+        {
+          "name": "J12-calcite-parent: the landed agg.iq transplanted (expected to fail)",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml -o -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-parent; echo worktree=J12-calcite-parent commit=$(git rev-parse HEAD); git show f992e6c8fbc3712c6bd70096fb6b05da448b2cab:core/src/test/resources/sql/agg.iq > core/src/test/resources/sql/agg.iq; echo transplanted core/src/test/resources/sql/agg.iq from f992e6c8fbc3712c6bd70096fb6b05da448b2cab; sha256sum core/src/test/resources/sql/agg.iq; rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package  > $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt; git checkout -q -- core/src/test/resources/sql/agg.iq; git status --short --untracked-files=no; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt | cut -d= -f2) )) -gt 0; echo landed-test-fails-on-parent=yes; ",
+          "cwd": "."
+        },
+        {
+          "name": "J12-calcite-fix: CoreQuidemTest again, offline",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml -o -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-fix; echo worktree=J12-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package  > $O/logs/J12-calcite-fix.offline.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/J12-calcite-fix clean -fdxq; git -C $W/J12-calcite-fix status --short; git -C $W/J12-calcite-parent clean -fdxq; git -C $W/J12-calcite-parent status --short; du -sh $W/J12-*",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "46bdf396cd0cd783bb1a6f4130f4028e01c24e8a",
+  "startedAt": "2026-11-24T21:07:18+00:00",
+  "finishedAt": "2026-11-24T21:13:40+00:00",
+  "wallSeconds": 382.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1954462,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2252390400,
+    "wallSeconds": 374.2,
+    "cpuSeconds": 309.5,
+    "memoryOfEstimate": 0.52,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "J12-calcite-fix: build core -am online with Maven 3.5.4 on JDK 8, CoreQuidemTest (landed agg.iq)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml  -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-fix; echo worktree=J12-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package org.apache.maven.plugins:maven-dependency-plugin:3.1.1:build-classpath -DincludeScope=runtime -Dmdep.outputFile=target/setup-runtime-classpath.txt > $O/logs/J12-calcite-fix.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-fix.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-fix.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; cp core/target/calcite-core-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-fix-core.jar; cp linq4j/target/calcite-linq4j-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-fix-linq4j.jar; cp core/target/setup-runtime-classpath.txt $O/logs/J12-calcite-fix.core.runtime-classpath.txt; sha256sum $O/artifacts/J12-calcite-fix-core.jar $O/artifacts/J12-calcite-fix-linq4j.jar; unzip -l $O/artifacts/J12-calcite-fix-core.jar | grep -E 'adapter/enumerable/(Basic|Lazy|SourceSorter|Sequenced|Ordered)' || true; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 309.409,
+      "cpuSeconds": 97.518,
+      "cpuThrottledSeconds": 3.196,
+      "peakMemoryBytes": 2252390400,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-j12-calcite-fix-build-core-am.log",
+        "lines": 16,
+        "bytes": 1391,
+        "sha256": "75018b0150d787df069554b2bf9a42e4ee013079bfd3609bfd5107cc23225f3d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J12-calcite-fix commit=f992e6c8fbc3712c6bd70096fb6b05da448b2cab",
+        "mvn-exit=0",
+        "[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 14.009 s - in org.apache.calcite.test.CoreQuidemTest",
+        "[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] Total time: 05:08 min",
+        "junit tests=16 failures=0 errors=0 skipped=0",
+        "d893406d9d311aae022a00fe312d931f99e5381771351fc1dbe238100700f7a8  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J12-calcite-fix-core.jar",
+        "a6725b9bd6eef4a8c86e3d0b77e577de7172285d794fa414c1b11942d88812ef  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J12-calcite-fix-linq4j.jar",
+        "     3316  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/BasicAggregateLambdaFactory.class",
+        "     1541  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/LazyAggregateLambdaFactory$LazySource.class",
+        "     2087  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/BasicLazyAccumulator.class",
+        "      536  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/LazyAggregateLambdaFactory$LazyAccumulator.class",
+        "     7075  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/LazyAggregateLambdaFactory.class",
+        "     2180  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/BasicAggregateLambdaFactory$AccumulatorAdderSeq.class",
+        "     3198  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/SourceSorter.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "J12-calcite-parent: build core -am offline, its own CoreQuidemTest",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml -o -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-parent; echo worktree=J12-calcite-parent commit=$(git rev-parse HEAD); rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package org.apache.maven.plugins:maven-dependency-plugin:3.1.1:build-classpath -DincludeScope=runtime -Dmdep.outputFile=target/setup-runtime-classpath.txt > $O/logs/J12-calcite-parent.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-parent.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-parent.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; cp core/target/calcite-core-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-parent-core.jar; cp linq4j/target/calcite-linq4j-1.19.0-SNAPSHOT.jar $O/artifacts/J12-calcite-parent-linq4j.jar; cp core/target/setup-runtime-classpath.txt $O/logs/J12-calcite-parent.core.runtime-classpath.txt; sha256sum $O/artifacts/J12-calcite-parent-core.jar $O/artifacts/J12-calcite-parent-linq4j.jar; unzip -l $O/artifacts/J12-calcite-parent-core.jar | grep -E 'adapter/enumerable/(Basic|Lazy|SourceSorter|Sequenced|Ordered)' || true; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 26.476,
+      "cpuSeconds": 85.533,
+      "cpuThrottledSeconds": 3.073,
+      "peakMemoryBytes": 2172575744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-j12-calcite-parent-build-core.log",
+        "lines": 14,
+        "bytes": 1211,
+        "sha256": "4f0bd04622f29fc757429bcb9ca7761c9786b8afa967549a0d71893b5eee6df4",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J12-calcite-parent commit=f2638b9f7dc878f3f109cbc59d1a6ae02d3d5696",
+        "mvn-exit=0",
+        "[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 12.152 s - in org.apache.calcite.test.CoreQuidemTest",
+        "[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] Total time: 25.806 s",
+        "junit tests=16 failures=0 errors=0 skipped=0",
+        "13c68c4fd5e30bd89b2eb39f458bc33b2b8c779921186c864e3d510ca171e7d0  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J12-calcite-parent-core.jar",
+        "3a793df15285a96f94c8c7a56d5d7a085d97c4402668cbbf2fc21c3ec567cef9  /home/filip/.cache/in-the-loop/organic-pr-20/artifacts/J12-calcite-parent-linq4j.jar",
+        "     3370  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/SequencedAdderAggregateLambdaFactory.class",
+        "     2243  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/SequencedAdderAggregateLambdaFactory$AccumulatorAdderSeq.class",
+        "     7036  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/OrderedAggregateLambdaFactory.class",
+        "     1559  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/OrderedAggregateLambdaFactory$LazySource.class",
+        "     2729  2026-11-24 21:12   org/apache/calcite/adapter/enumerable/SourceSorter.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "J12-calcite-parent: the landed agg.iq transplanted (expected to fail)",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml -o -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-parent; echo worktree=J12-calcite-parent commit=$(git rev-parse HEAD); git show f992e6c8fbc3712c6bd70096fb6b05da448b2cab:core/src/test/resources/sql/agg.iq > core/src/test/resources/sql/agg.iq; echo transplanted core/src/test/resources/sql/agg.iq from f992e6c8fbc3712c6bd70096fb6b05da448b2cab; sha256sum core/src/test/resources/sql/agg.iq; rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package  > $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt; git checkout -q -- core/src/test/resources/sql/agg.iq; git status --short --untracked-files=no; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-parent.transplanted.CoreQuidemTest.junit.txt | cut -d= -f2) )) -gt 0; echo landed-test-fails-on-parent=yes; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 18.667,
+      "cpuSeconds": 61.606,
+      "cpuThrottledSeconds": 3.053,
+      "peakMemoryBytes": 1751429120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-j12-calcite-parent-the-landed.log",
+        "lines": 11,
+        "bytes": 661,
+        "sha256": "ba6f5dd89a9358979946c290a66a06883860bcf67491209425906a026eeecf80",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J12-calcite-parent commit=f2638b9f7dc878f3f109cbc59d1a6ae02d3d5696",
+        "transplanted core/src/test/resources/sql/agg.iq from f992e6c8fbc3712c6bd70096fb6b05da448b2cab",
+        "cae212c54c6409b0229adccd6c50d85001a92af66a1600c9549eed2e375bac5d  core/src/test/resources/sql/agg.iq",
+        "mvn-exit=1",
+        "[ERROR] Tests run: 16, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 13.345 s <<< FAILURE! - in org.apache.calcite.test.CoreQuidemTest",
+        "[ERROR] Tests run: 16, Failures: 1, Errors: 0, Skipped: 0",
+        "[INFO] BUILD FAILURE",
+        "[INFO] Total time: 18.026 s",
+        "junit tests=16 failures=1 errors=0 skipped=0",
+        "junit failed CoreQuidemTest#test[8: quidem(sql/agg.iq)]",
+        "landed-test-fails-on-parent=yes"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "J12-calcite-fix: CoreQuidemTest again, offline",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; \nsummarize() {  # summarize DIR...: count JUnit XML results and name the failures\npython3 -I - \"$@\" <<'PY'\nimport glob, sys, xml.etree.ElementTree as E\nt = f = e = s = 0; bad = []\nfor d in sys.argv[1:]:\n    for p in sorted(glob.glob(d + \"/TEST-*.xml\")):\n        r = E.parse(p).getroot()\n        t += int(r.get(\"tests\", 0)); f += int(r.get(\"failures\", 0)); e += int(r.get(\"errors\", 0)); s += int(r.get(\"skipped\", 0))\n        for c in r.iter(\"testcase\"):\n            if c.find(\"failure\") is not None or c.find(\"error\") is not None:\n                bad.append(r.get(\"name\").rsplit(\".\", 1)[-1] + \"#\" + c.get(\"name\"))\nprint(f\"junit tests={t} failures={f} errors={e} skipped={s}\")\nfor b in bad: print(\"junit failed\", b)\nPY\n}\nexport JAVA_HOME=$HOME/.sdkman/candidates/java/8.0.512.0+9-tem; MV=\"$O/tools/apache-maven-3.5.4/bin/mvn -B -s $O/scripts/maven-settings-https-central.xml -o -P !generate-git-id -Drat.skip -Dcheckstyle.skip -Dmaven.javadoc.skip -Dmaven.source.skip -DfailIfNoTests=false\"; cd $W/J12-calcite-fix; echo worktree=J12-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/target/surefire-reports; set +e; $MV -pl core -am -Dtest=CoreQuidemTest package  > $O/logs/J12-calcite-fix.offline.CoreQuidemTest.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; grep -E 'Tests run:|BUILD|Total time' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.mvn-log.txt | tail -6; summarize core/target/surefire-reports | tee $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/J12-calcite-fix.offline.CoreQuidemTest.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 19.445,
+      "cpuSeconds": 64.652,
+      "cpuThrottledSeconds": 3.57,
+      "peakMemoryBytes": 1783832576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-j12-calcite-fix-corequidemtest.log",
+        "lines": 7,
+        "bytes": 359,
+        "sha256": "8f2590f6f86ead1bcc728ee9b9358f97aaf1dd34600522e5385f4f4dec12d265",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=J12-calcite-fix commit=f992e6c8fbc3712c6bd70096fb6b05da448b2cab",
+        "mvn-exit=0",
+        "[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 13.62 s - in org.apache.calcite.test.CoreQuidemTest",
+        "[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "[INFO] Total time: 18.716 s",
+        "junit tests=16 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; O=$HOME/.cache/in-the-loop/organic-pr-20; W=$O/worktrees; export TMPDIR=$O/tmp; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/J12-calcite-fix clean -fdxq; git -C $W/J12-calcite-fix status --short; git -C $W/J12-calcite-parent clean -fdxq; git -C $W/J12-calcite-parent status --short; du -sh $W/J12-*",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.173,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 4128768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-remove-the-build-trees.log",
+        "lines": 2,
+        "bytes": 153,
+        "sha256": "8567987cb38f54c9b97741c89e6637a9e93d5b994eaab9ceb8617ba07c5e9816",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "25M\t/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J12-calcite-fix",
+        "25M\t/home/filip/.cache/in-the-loop/organic-pr-20/worktrees/J12-calcite-parent"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-24T21:20:50+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261124T211340Z-51403387479e1b2b"
+    }
+  }
+}
