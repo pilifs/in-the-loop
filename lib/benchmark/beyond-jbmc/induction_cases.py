@@ -72,7 +72,9 @@ def run(name):
             raise ValueError("independent kernel did not establish every named claim")
         negative=work/("False"+file.name);negative.write_text(file.read_text()+"\n"+wrong+"\n")
         control=subprocess.run([LEAN,negative],cwd=work,capture_output=True,text=True,timeout=150)
-        if control.returncode==0 or "error:" not in control.stdout:raise ValueError("the rejected control was not exercised")
+        if (control.returncode==0 or "Tactic `decide` proved that the proposition" not in control.stdout
+                or not control.stdout.rstrip().endswith("is false")):
+            raise ValueError("the independent negative control did not evaluate to false")
         identity=[]
         import hashlib
         for graph in graphs:
@@ -80,6 +82,7 @@ def run(name):
             with zipfile.ZipFile(jar) as z:
                 identity.append({"artifact":jar.name,"sha256":digest(jar),"members":{c:hashlib.sha256(z.read(c+".class")).hexdigest() for c in classes}})
         reductions=sorted(set(re.findall(r"[\w.]+\._native\.bv_decide\.ax_[\w]+",proof.stdout)))
+        if reductions:raise ValueError("a compiled Boolean reduction still needs independent discharge")
         report={"prover":subprocess.check_output([LEAN,"--version"],text=True).strip(),"proverSha256":digest(LEAN),
                 "model":source,"modelSha256":digest(file),"claims":claims,"kernelOutput":proof.stdout,
                 "compiledBooleanCertificateReductions":reductions,

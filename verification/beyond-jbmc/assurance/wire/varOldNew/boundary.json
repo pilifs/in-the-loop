@@ -1,0 +1,115 @@
+{
+  "schema": "native-sat-boundary/v1",
+  "requestSha256": "062457e8636ad85c7aa7bff6d5dc758ecc62e19ca96ca23e3d22e863f2b318a3",
+  "ordinary": {
+    "status": "established",
+    "execution": "2a6fd5ca-c47f-411e-9877-b798c08c13cb",
+    "receiptSha256": "c9075d08e9ae15f404f4d2814252d792dcb93ebe21abb6fa9662312bab1038e3",
+    "conclusion": {
+      "status": "established",
+      "vacuous": false,
+      "stated": {
+        "kind": "property",
+        "domain": {
+          "parameters": [
+            {
+              "name": "v",
+              "type": "int",
+              "kind": "primitive",
+              "null": false
+            }
+          ],
+          "shared_arrays": false,
+          "text": "v: int"
+        },
+        "assumptions": [
+          {
+            "kind": "initialization",
+            "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+            "basis": "engine"
+          }
+        ],
+        "observations": {
+          "result": "the result and the parameters, against result",
+          "exceptions": "none may be thrown"
+        },
+        "bounds": {
+          "unwind": 16,
+          "max_array_length": null,
+          "complete": true
+        },
+        "models": {
+          "used": true,
+          "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+          "classes": 40,
+          "jdk": "21.0.13"
+        },
+        "checker": {
+          "engine": "native",
+          "name": "jvmcontract's own checker (CaDiCaL)",
+          "solver": "CaDiCaL 1.9.5 (bundled)",
+          "fallback": null,
+          "sat": {
+            "solver": "CaDiCaL",
+            "version": "1.9.5",
+            "source": "bundled by the Rust crate cadical 0.1.16",
+            "configuration": [
+              "CaDiCaL's default options",
+              "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+              "the run's deadline through CaDiCaL's terminate callback",
+              "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+            ]
+          }
+        },
+        "gap_mode": "strict",
+        "confirmation": null,
+        "vacuity": {
+          "status": "non-vacuous",
+          "basis": "harness",
+          "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+        }
+      }
+    },
+    "jvmReplay": []
+  },
+  "generatedClasses": {
+    "harness/PropertyHarness.class": "568cdc1f3b5f3484106012f750ae1ab9da28a4e98c5a0a730bd86bdbca59d21d",
+    "jdk/java/lang/Byte.class": "5fcd7c81556e31ed11c863c08b7a8414469bd591ef5334cc536642cdb7bb3915",
+    "jdk/java/lang/Integer.class": "44bc6d0e77a7f4965c2fa6bcecc9af63b841ef94eace398fcbc1f954c3835179",
+    "jdk/java/lang/Long.class": "cc18d51ef0f74906c2c8714849ff778f7e01a4a29539ba8817faedb989a50f29",
+    "jdk/java/lang/Math.class": "f01ef790ce8af52b262c5f717f0e3db201863b9deb834915787ef31ed744d170",
+    "jdk/java/lang/Short.class": "b7090cb2cede8931f40b998f3b9cb3a48de96fc9adc89ddd7680df80df665efa",
+    "jdk/java/lang/StrictMath.class": "6f089f974b0bf962d9347880f9617a08ee4eea8771e61c447e9bed67fdd0c191",
+    "models/java/lang/Byte$ByteCache.class": "f987e17cfb5b3dbed86060101aecc9683c53c9ad214ddfcedc87044ddd488bf8",
+    "models/java/lang/Character.class": "45a180e9c14fe41278c08831291dcf4fa50d0ed265e76ac79e9495597bc007a0",
+    "models/java/lang/Enum.class": "6ef9681af8b4815121bc832fbdabab7b2e6ef8145db41538648ee9c42a68879e",
+    "models/java/lang/Integer$IntegerCache.class": "adbb2876a13815cc662944ea46331e1fe626ac83a07e5f2c2734dea1731a4dce",
+    "models/java/lang/Long$LongCache.class": "c2456b6c09fe3e9557462ae9a557f91f9361b7fa79d3679c1be80433711e1706",
+    "models/java/lang/Short$ShortCache.class": "89a00c84bd054c58ca237b9498a481556e63d40f352e32d34a7c8eca4219052f",
+    "models/java/nio/charset/Charset.class": "cb47bfc76806ece3901e3937f31927fcd3ba4ae4a3ee2cbffe35bbf5581b6009",
+    "models/java/nio/charset/IllegalCharsetNameException.class": "410d4b269c0d213b6cbac3db64584701dc2bc25a85c33c4d505af3bb9a41a28f",
+    "models/java/nio/charset/StandardCharsets$Standard.class": "bcac5db8daf26479fb618c4d9d3c2a0ffeefe9cf7449c365dc263ea77a855897",
+    "models/java/nio/charset/StandardCharsets.class": "1d2f2a40134194f5a40b458f9b9bd40a407e64546431a2e1c80b93039e23c945",
+    "models/java/nio/charset/UnsupportedCharsetException.class": "29d081b861b667b8f324ce94c2070d9943dabeb53c35388de58a3c596609243d",
+    "models/java/util/HashMap$Node.class": "c66aca00b2b1e53462fa6fdc3a2c1af902f30331d6ad899a42adf504c6068fd4",
+    "models/java/util/HashMap.class": "207980788541bb406059227942b40bbbf5be4af515c005b1afefdb9bd796af54",
+    "models/java/util/ImmutableCollections$AbstractImmutableList.class": "136c6d0774c7ab6dd049142660065480c3351db564d23e8d0dbcca9cd72f205d",
+    "models/java/util/ImmutableCollections$List12.class": "78720b4b2ae094bfdea8e561d59c00008c49f53b5082f2f4afe6263ae150ab5e",
+    "models/java/util/ImmutableCollections$ListItr.class": "18b0cbccf44e94dcf29bcea0a92ec671a25570b02bddd630d13a40bb975548c6",
+    "models/java/util/ImmutableCollections$ListN.class": "54145aeefd431efcab22d5a2616bd2fa7ab81369c9c9885fd68fd901bba469ef",
+    "models/java/util/ImmutableCollections.class": "cd522de17181f276fff9c068ce63e65511d72d5f1b2ffaeea3cab97cb62eab26",
+    "models/java/util/List.class": "12d8a13695c9d9fe62df6a808c00af1ae29f2a424cc5725273ec1d3d611b53a5"
+  },
+  "passes": [
+    {
+      "id": "1-proof",
+      "purpose": "proof",
+      "ending": "verified",
+      "calls": "SSSUUSUSUSUSUUSUSUSUSSUUSUSUSUSUUSUSUSU",
+      "clauses": 328,
+      "nativeLog": "bmc.log",
+      "nativeLogSha256": "7352c479c2191e492acb65288b08186437efe293c82d9cb90fcce8eb03020657",
+      "transcriptSha256": "e627ac667133a30c9a36250114e8f66db7a85df360971d701d3d9587d4d8ffcb"
+    }
+  ]
+}

@@ -11,16 +11,29 @@ theorem mul_inj (k inv : W) (valid : k*inv=1) : Injective (fun x : W => x*k) := 
   have h := congrArg (fun y : W => y*inv) equal
   simpa [BitVec.mul_assoc,valid] using h
 
-theorem rot27 : Injective (fun x : W => x.rotateLeft 27) := by
-  intro a b h
-  bv_decide
-theorem rot31 : Injective (fun x : W => x.rotateLeft 31) := by
-  intro a b h
-  bv_decide
+theorem rotate_inj {k : Nat} (hk : k < 64) : Injective (fun x : W => x.rotateLeft k) := by
+  intro a b equal
+  apply BitVec.eq_of_getLsbD_eq_iff.mpr
+  intro i hi
+  by_cases wrap : i+k < 64
+  · have obs := congrArg (fun x : W => x.getLsbD (i+k)) equal
+    have pos : ¬ i+k < k := by omega
+    simpa [BitVec.getLsbD_rotateLeft_of_le hk, Nat.mod_eq_of_lt hk, wrap, pos, BitVec.getLsbD_eq_getElem hi] using obs
+  · have obs := congrArg (fun x : W => x.getLsbD (i+k-64)) equal
+    have pos : i+k-64 < k := by omega
+    have restore : 64-k+(i+k-64) = i := by omega
+    simpa [BitVec.getLsbD_rotateLeft_of_le hk, Nat.mod_eq_of_lt hk, pos, restore] using obs
 
 def shiftXor (x : W) := x ^^^ (x >>> 33)
 theorem shift_inj : Injective shiftXor := by
-  have twice (x : W) : shiftXor (shiftXor x) = x := by unfold shiftXor; bv_decide
+  have twice (x : W) : shiftXor (shiftXor x) = x := by
+    have double : (x >>> 33) >>> 33 = 0 := by
+      apply BitVec.eq_of_getLsbD_eq_iff.mpr
+      intro i _
+      simp [BitVec.getLsbD_of_ge x (66+i) (by omega)]
+    unfold shiftXor
+    rw [BitVec.ushiftRight_xor_distrib,double]
+    simp [BitVec.xor_assoc]
   intro a b equal
   simpa only [twice] using congrArg shiftXor equal
 
@@ -58,7 +71,7 @@ def step (s k : Pair) : Pair := coupled
   (component k.2 0x38495ab5 (fun x => x.rotateLeft 31)) s
 
 theorem step_inj (k : Pair) : Injective (fun s => step s k) :=
-  coupled_inj _ _ (fun _ => component_inj _ _ _ _ rot27) (fun _ => component_inj _ _ _ _ rot31)
+  coupled_inj _ _ (fun _ => component_inj _ _ _ _ (rotate_inj (by decide))) (fun _ => component_inj _ _ _ _ (rotate_inj (by decide)))
 
 def addPair := coupled (fun other x => x+other) (fun other x => x+other)
 theorem addPair_inj : Injective addPair :=
@@ -84,22 +97,36 @@ theorem final_inj (tail : Pair) (length : W) : Injective (finalPair tail length)
   · exact (BitVec.xor_left_inj tail.1).mp ((BitVec.xor_left_inj length).mp (congrArg Prod.fst z))
   · exact (BitVec.xor_left_inj tail.2).mp ((BitVec.xor_left_inj length).mp (congrArg Prod.snd z))
 
-theorem blocks_inj (ks : List Pair) : Injective (fun s => ks.foldl step s) := by
+theorem fold_inj {α β : Type} (f : α → β → α) (one : ∀ k, Injective (fun s => f s k)) (ks : List β) :
+    Injective (fun s => ks.foldl f s) := by
   induction ks with
   | nil => exact fun _ _ eq => eq
-  | cons k ks ih => exact fun _ _ eq => step_inj k (ih eq)
+  | cons k ks ih =>
+    intro a b eq
+    have rest : ks.foldl f (f a k) = ks.foldl f (f b k) := eq
+    exact @one k a b (@ih (f a k) (f b k) rest)
 
 def output (ks : List Pair) (tail : Pair) (length seed : W) : Pair :=
   finalPair tail length (ks.foldl step (seed,seed))
 
 theorem output_inj (ks : List Pair) (tail : Pair) (length : W) : Injective (output ks tail length) := by
   intro a b h
-  exact congrArg Prod.fst (blocks_inj ks (final_inj tail length h))
+  let x := ks.foldl step (a,a)
+  let y := ks.foldl step (b,b)
+  have same : x=y := @final_inj tail length x y h
+  have seeds : (a,a)=(b,b) := @fold_inj Pair Pair step step_inj ks (a,a) (b,b) same
+  exact congrArg Prod.fst seeds
 
 /-- Blocks and tail words have already been mixed with the fixed input bytes. None depends on the seed. -/
 theorem signed_seed_boundary (ks : List Pair) (tail : Pair) (length : W) (seed : BitVec 32) :
     output ks tail length (seed.signExtend 64) = output ks tail length (seed.zeroExtend 64) ↔ seed.msb=false := by
-  have boundary : seed.signExtend 64 = seed.zeroExtend 64 ↔ seed.msb=false := by bv_decide
+  have boundary : seed.signExtend 64 = seed.zeroExtend 64 ↔ seed.msb=false := by
+    constructor
+    · intro same
+      have highest := congrArg (fun x : W => x.msb) same
+      simpa [BitVec.msb_signExtend,BitVec.zeroExtend_eq_setWidth,BitVec.msb_setWidth,
+        BitVec.getLsbD_of_ge seed 63 (by decide)] using highest
+    · exact fun h => BitVec.signExtend_eq_setWidth_of_msb_false h
   constructor
   · exact fun h => boundary.mp (output_inj ks tail length h)
   · intro h; rw [boundary.mpr h]

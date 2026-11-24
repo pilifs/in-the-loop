@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-102145-certify-the-codec-signed-seed-boundary-b",
+  "title": "Certify the Codec signed seed boundary by kernel-level bit identities",
+  "description": "Use a generic structural fold-injectivity proof over the two-word state. Prove rotation, doubled XOR-shifts and sign extension from individual bit identities without compiled Boolean evaluation. Verify the original seed overloads and normalized bytecode for the shared 386-instruction body and its two helper methods. Keep the false empty-slice digest as a negative control.",
+  "kind": "library",
+  "capabilities": [
+    "assurance:induction"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/extended/Seed128.lean"
+    ]
+  },
+  "expected": "All 128-bit seed and round-injectivity theorems check with standard kernel axioms and the wrong seed identity is rejected.",
+  "submitted": {
+    "at": "2026-11-24T10:21:45+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "priority": 31,
+  "requires": [
+    "lean"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "1m",
+    "timeout": "6m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py seed",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/induction_cases.py seed",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/assurance/seed-sequence"
+  ]
+}

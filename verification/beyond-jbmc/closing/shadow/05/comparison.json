@@ -1,0 +1,110 @@
+{
+ "argv": [
+  "/usr/bin/python3",
+  "-B",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/lib/benchmark/external-upgrades/engineering.py",
+  "--build",
+  "current",
+  "--checker",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/products/f820e79f7b841b63d5897764b7532b0af6fa415d727c9d9a3a8b5d698b6e07f6/jvmcontract",
+  "--repositories",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-079hp8jm/data/sources/repos.json",
+  "--work",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-079hp8jm/data/slices",
+  "--complete",
+  "/home/filip/.cache/in-the-loop/beyond-jbmc/tmp/historical-shadow-079hp8jm/data/modules",
+  "--maven-cache",
+  "/home/filip/.cache/in-the-loop/receiver-construction/receivers/maven-repository",
+  "--maven8",
+  "/home/filip/.cache/in-the-loop/external-upgrades/ci-tools/apache-maven-3.6.3/bin/mvn",
+  "--output",
+  "/home/filip/code/in-the-loop/verification/.state/work/20261124-084235-remeasure-original-automatic-v3-upgrade/verification/beyond-jbmc/closing/shadow/05",
+  "--case",
+  "commons-beanutils-440",
+  "--case",
+  "commons-csv-8993be87",
+  "--case",
+  "commons-fileupload-377",
+  "--case",
+  "compsuite-i-94",
+  "--case",
+  "cucumber-reporting-1198",
+  "--case",
+  "reflector-35"
+ ],
+ "cases": [
+  {
+   "id": "commons-beanutils-440",
+   "v3Result": "open",
+   "v3Sha256": "342273608a2b5083931c2f9fc45ce4999843310b913702692fb6c00a698540f8",
+   "currentSha256": "942d296a9cddf797a6deb1760b016d28a5dfb201b178c39e0bbd4fbdcf39735c",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "parameter clazz has type java.lang.Class; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+  },
+  {
+   "id": "commons-csv-8993be87",
+   "v3Result": "open",
+   "v3Sha256": "33200f4b30997e47fa934cd834c483290c85c405df16d35fdba6d8924a1e0f00",
+   "currentSha256": "3bf5e5507de231a4e14e8219591b17efd42b7e8a6a9efbc61463dd3230d2789e",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "nextRecord is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.csv.CSVParser made by its constructor: org.apache.commons.csv.CSVParser has 2 constructors; an object made by one of several is not supported yet"
+  },
+  {
+   "id": "commons-fileupload-377",
+   "v3Result": "open",
+   "v3Sha256": "2eaef2d5299739b61d5007e650f0489c63c1600f0fe35bca8afe27106514c762",
+   "currentSha256": "9f2378ae394c03abab30c9611621fc845baae3f7621e3648811f3c7e2aea6901",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "readBodyData is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of org.apache.commons.fileupload2.core.MultipartInput made by its constructor: org.apache.commons.fileupload2.core.MultipartInput has no constructor a caller can use"
+  },
+  {
+   "id": "compsuite-i-94",
+   "v3Result": "open",
+   "v3Sha256": "e114950f21dd3ffe743793627efb955ac3daa27fce39bbda30f470146850f03e",
+   "currentSha256": "3fd1aa9a346e4ed4b6ed33426b201211e9f72311f069ef0559d122917a7ab57e",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "validate is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of com.alibaba.citrus.service.form.impl.validation.DateValidator made by its constructor: the field minDate of com.alibaba.citrus.service.form.impl.validation.DateValidator has type java.util.Date; the fields of an object input must be primitives, arrays of primitives, Strings, or objects of application classes"
+  },
+  {
+   "id": "cucumber-reporting-1198",
+   "v3Result": "open",
+   "v3Sha256": "1b99b475f177b6fb66d3f0cc384d7c129ca083d7143d7436dc87c8ae9f3a1f7a",
+   "currentSha256": "3379b3d685b9adb406d37176df68ca4f8ac26e4aa9fead9f35a8298e45f0738b",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "parameter arguments has type net.masterthought.cucumber.json.support.Argument[]; the symbolic verifier handles primitive parameters, arrays of integral or boolean elements, records whose components are primitive, and objects of application classes made by their constructor. Finite types (enums, booleans) are covered by behavioural contracts."
+  },
+  {
+   "id": "reflector-35",
+   "v3Result": "open",
+   "v3Sha256": "50a8a318b4a48a3be62c8945fda3dac6ae93c277cab083c049ee3d0b63e7746c",
+   "currentSha256": "dc85a86590026d95e97e6f8843cec8beb9ddb176448aaa90a6ff3d7e9d79daeb",
+   "sameOrderedArtifacts": {
+    "old": true,
+    "new": true
+   },
+   "result": "open",
+   "firstBlocker": "newClassInstanceManipulator is an instance method, whose receiver is outside the objects a regression check makes: the receiver, an object of ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator made by its constructor: ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator has 2 constructors; an object made by one of several is not supported yet"
+  }
+ ],
+ "job": "20261124-084235-remeasure-original-automatic-v3-upgrade"
+}

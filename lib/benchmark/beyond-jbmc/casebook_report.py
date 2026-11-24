@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 from history import HERE,ROOT,OUTPUT,encoded,digest
 from scores import qualified,DECISIONS,partition,costs
+from casebook_pairs import compare_releases
 
 def read(p):return json.loads(gzip.decompress(p.read_bytes()) if p.suffix==".gz" else p.read_bytes())
 
@@ -51,7 +52,7 @@ ANNOTATIONS={
 "W06":"Two changed size implementations versus an independent shift oracle, UInt32 and UInt64.",
 "W07":"Both directions for UInt32, UInt64 and ZigZag on exact-sized records. The stock unsigned proofs and disputed ZigZag witnesses have different dispositions.",
 "W08":"Fixed header plus independent VInt payload in both directions, including separate value, suffix and position checks.",
-"W09":"The sequence theorem and alternate field-order experiment are separate from an unrestricted released Java loop.",
+"W09":"Kernel-checked finite sequences, unconditional suffix, progress and cursor bounds in the executable model. The released payload-first experiment covers both mixed directions.",
 "N01":"Two independent binary32 factors, 2⁴⁶ pairs, range and sign-related companion. The unrounded double-product sibling is false.",
 "N02":"Two independent binary32 factors, 2⁴⁶ pairs. Exact zero boundary and three possible rounded underflow results.",
 "N03":"Two component scaleAdd with 2,048 cancellation inputs. Positive-zero bits through n=1,448, then the negative predecessor spacing.",
@@ -62,7 +63,7 @@ ANNOTATIONS={
 "N08":"Signed zeros and separately boxed NaN bits. Equality, emitted hashes, ordering, raw bits and reflexive cases distinguish the profiles.",
 "N09":"Signed-coordinate box [−8,8] and a separate large near-collinear family of integer determinants one. Both point orders and releases.",
 "N10":"Two independent binary64 factors, 2¹⁰⁴ pairs, three subnormal-or-zero results on the public fresh-vector call.",
-"N11":"Exact 11,111-string Core partition, separate null control and four public quoted-token consumers. Original JVMs exhaust the finite domain.",
+"N11":"Exact 11,111-string Core partition, null control and four public quoted-token consumers. The Core extension covers another 100,000 length-five words.",
 "H01":"Direct Cell[] inputs and explicit null, shared and distinct MutableInt payloads. Java int wraparound included.",
 "H02":"Three publicly linked MutableObjects, 64 successor graphs × four starts. The self-link-only detector misses a two-node cycle.",
 "H03":"Two public MutableObject roots, equal values or identical MutableInt tails, an untouched sibling and arbitrary initial int.",
@@ -92,7 +93,7 @@ ANNOTATIONS={
 "C01":"Three pairings with both 128-bit result words and all signed seeds on bounded arrays. The exact sign-boundary conjecture is separate.",
 "C02":"Signed-negative tail condition for the original 32-bit and canonical x86 hashes over bounded slices. Sampled agreement does not prove collision freedom.",
 "C03":"One-shot versus two arbitrary chunks, repeated end, seed and input frame within the eight-byte input bound.",
-"C04":"Three chunks after a partial reset and an independently specified arbitrary-partition streaming model. Java execution and model induction are distinct.",
+"C04":"Three chunks after a partial reset on Java. The independent arbitrary-partition model proves equality with complete-block traversal and reset from any prefix.",
 "C05":"Old, warm and clean new checks. The unchanged 32-bit wrapper reuses its proof. A 128-bit result at seed −1 invalidates stale evidence.",
 "C06":"Original bundled provider in UTC 2023, both transition endpoints and month controls. Shared class bytes coexist with a changed zone payload.",
 "C07":"Seeded unaffected zone among 439 identical payloads. Its own provider alias entry agrees while the complete ZoneInfoMap file differs.",
@@ -167,13 +168,21 @@ def build(root,out):
         all_native=bool(total) and c["both"]+c["native-only"]==total
         all_comparator=bool(total) and c["both"]+c["comparator-only"]==total
         complete_units[partition(all_native,all_comparator)]+=1
+    pairs=compare_releases(cases)
     out.mkdir(parents=True,exist_ok=True)
     (out/"matrix.json.gz").write_bytes(gzip.compress(encoded({"tasks":list(cases.values()),"units":groups,
-        "allMeasuredPropertiesByReplicationUnit":complete_units,"propertyCounts":totals,"matchedCosts":costs(flat)}),mtime=0))
-    md=["# Disclosed casebook","","The 68 rows are work items. Columns count qualified property results within the measured scopes. A proved helper or a bounded model has its own statement. The same release pair supplies several work items. The data file retains each literal comparison, failed control, JVM replay, cost and underlying receipt. [Full matrix](matrix.json.gz)","","| ID | Measured scope | Properties | Native | Integrated | Stock |","|---|---|---:|---:|---:|---:|"]
+        "allMeasuredPropertiesByReplicationUnit":complete_units,"releasePairs":pairs,"propertyCounts":totals,"matchedCosts":costs(flat)}),mtime=0))
+    md=["# Disclosed casebook","","The 68 rows are work items. Columns count qualified property results within the measured scopes. A proved helper or a bounded model has its own statement. The same release pair supplies several work items. The data file retains each literal comparison, failed control, JVM replay, cost and underlying receipt. [Full matrix](matrix.json.gz)","","| ID | Measured scope | Properties | Native | Integrated | Stock | Additional evidence |","|---|---|---:|---:|---:|---:|---|"]
     for key,r in cases.items():
-        q=r["qualified"];md.append(f"| {key} | {r['scope']} | {len(r['properties'])} | {q['native']} | {q['integrated']} | {q['stock']} |")
-    md+=["","The following rows group property decisions by library upgrade or independent benchmark program. Each number still counts predicates in the indicated unit. A unit with several predicates contributes one project to transfer claims.","","| Release pair or corpus task | Both | Native only | Comparator only | Neither |","|---|---:|---:|---:|---:|"]
+        q=r["qualified"];links=[]
+        for idx,item in enumerate(r["additionalEvidence"],1):
+            path=item["file"];prefix="../../../" if path.startswith("examples/") else "../"
+            links.append(f"[Receipt {idx}]({prefix}{path})")
+        md.append(f"| {key} | {r['scope']} | {len(r['properties'])} | {q['native']} | {q['integrated']} | {q['stock']} | {' · '.join(links)} |")
+    md+=["","## Paired release observations","","For a two-copy caller, each row below uses its single relational result. For separately measured releases, one checker profile must decide the same observation on both releases. The complete-pair column asks which side of the comparison decided every measured observation for that release pair. Adjacent neighbors and overlapping version pairs share projects.","","| Release comparison | Both | Native only | Comparator only | Neither | Complete pair |","|---|---:|---:|---:|---:|---|"]
+    for label,r in pairs.items():
+        c=r["counts"];md.append("| "+label+" | "+" | ".join(str(c.get(k,0)) for k in ("both","native-only","comparator-only","neither"))+" | "+r["oneVoteAll"]+" |")
+    md+=["","## Replication units","","The following rows group property decisions by library family or independent benchmark program. Each number counts predicates in the indicated unit. A unit with several predicates contributes one project to transfer claims.","","| Release unit or corpus task | Both | Native only | Comparator only | Neither |","|---|---:|---:|---:|---:|"]
     for unit,c in groups.items():md.append("| "+unit+" | "+" | ".join(str(c[k]) for k in ("both","native-only","comparator-only","neither"))+" |")
     md+=["",f"Using one vote per release unit or public program, every measured predicate was decided by both profiles in {complete_units['both']} units, by native alone in {complete_units['native-only']}, by an admissible comparator alone in {complete_units['comparator-only']}, and by neither across the entire unit in {complete_units['neither']}. This uses the scopes actually listed in the property table. Unbounded sequence theorems and bytecode occurrence investigations have separate receipts."]
     (out/"RESULTS.md").write_text("\n".join(md)+"\n")
