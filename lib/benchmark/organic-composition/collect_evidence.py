@@ -51,9 +51,15 @@ def collect(collector):
                     raise ValueError("copied output digest differs")
                 pending.replace(dest)
             outputs.append({"path":str(rel),"sha256":checksum})
+        # The pipeline's usage totals cover the submitted steps only. Its separate step zero
+        # measures the actual checker build when another job has not already provided it.
+        build_steps = [s for s in result["steps"] if s.get("index") == 0]
+        if any(s["name"] != "build jvmcontract" for s in build_steps) or len(build_steps) > 1:
+            raise ValueError("unrecognized preparation step in " + doc["id"])
+        preparation = {key: build_steps[0].get(key) for key in ("wallSeconds", "cpuSeconds", "peakMemoryBytes")} if build_steps else None
         jobs.append({"id":doc["id"],"status":result["status"],"source":result["sourceCommit"],
                      "finishedAt":result["finishedAt"],"specSha256":result["job"]["sha256"],
-                     "resultSha256":sha(result_path),"usage":result.get("usage"),"outputs":outputs})
+                     "resultSha256":sha(result_path),"usage":result.get("usage"),"checkerBuild":preparation,"outputs":outputs})
     out=ROOT/OUTPUT/"jobs.json"
     out.parent.mkdir(parents=True,exist_ok=True)
     out.write_text(json.dumps(jobs,indent=2)+"\n")

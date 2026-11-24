@@ -1,0 +1,389 @@
+{
+  "firstAttempt": "c6fc7c0e07826651c5b9684bbc7fde50ccc3c4a0ec2de4b17004a6e342e2acde",
+  "sides": {
+    "old": {
+      "commit": "390fe4027e331a77bc126d647fee3287c13827a6",
+      "jar": "bebde4555f1cc520baab15d86d29df52d1fdc79623c2d9c027438e374e72d01a",
+      "entry": "UpgradeProbe#parseWeek()Z",
+      "initializer": "org.apache.commons.lang3.time.TimeZones",
+      "runs": [
+        {
+          "process": "ordinary",
+          "runtimeArguments": [],
+          "exit": 2,
+          "stage": "startup observation",
+          "verdict": "refused before native execution",
+          "reason": "jvmcontract: --observed-initializer org.apache.commons.lang3.time.TimeZones: its initialization initialized org.apache.commons.lang3.SystemUtils, whose code reads the environment (java.lang.System.getenv), which the observation cannot bind"
+        },
+        {
+          "process": "controlled",
+          "runtimeArguments": [
+            "--observed-runtime",
+            "{\"emptyEnvironment\":true,\"processors\":2,\"rootWorkingDirectory\":true}"
+          ],
+          "exit": 1,
+          "stage": "native",
+          "verdict": "unverifiable",
+          "reason": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+          "report": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "UpgradeProbe#parseWeek()Z",
+            "domain": "",
+            "assume": null,
+            "assert": "result == true",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "statement": "/tmp/jvmcontract-property-824050-1795546359399395674-0/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 51
+              }
+            ],
+            "output": "\u2717 UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+            "work": "/tmp/jvmcontract-property-824050-1795546359399395674-0",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 2.101233065,
+              "properties": 1,
+              "unwind": 16,
+              "max_array_length": 8,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.008330701,
+                "loading_seconds": 0.001440001,
+                "decoding_seconds": 0.000147095,
+                "encoding_seconds": 7.4068e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824050-1795546359399395674-0/observed:/tmp/jvmcontract-property-824050-1795546359399395674-0/harness:/tmp/week-initializer-aemyepnn:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-parent.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                  "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13",
+                  "kind": "jdk-reference-method",
+                  "call": "java.util.TimeZone.clone()",
+                  "sites": [
+                    "org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223"
+                  ],
+                  "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 600.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 597.909,
+                  "seconds": 0.008,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.007,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 2.11,
+                "setup": 0.002,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.008,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 2.101
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824050-1795546359399395674-0/observed:/tmp/jvmcontract-property-824050-1795546359399395674-0/harness:/tmp/week-initializer-aemyepnn:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-parent.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                  "basis": "engine",
+                  "id": "observed-initializer:org.apache.commons.lang3.time.TimeZones:a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2:93151d92c11b5523dcb60792869c6cf1b2207ed16c38686412a7b7bc319781be"
+                },
+                {
+                  "kind": "library",
+                  "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result == true",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 16,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          }
+        }
+      ]
+    },
+    "new": {
+      "commit": "f4bdd4e1d2c99cdab12e5177989fc11e1add33d5",
+      "jar": "26166ddf56ce976033f286bfc1c30db63531c5dea80132de8040177f45bf4316",
+      "entry": "UpgradeProbe#parseWeek()Z",
+      "initializer": "org.apache.commons.lang3.time.TimeZones",
+      "runs": [
+        {
+          "process": "ordinary",
+          "runtimeArguments": [],
+          "exit": 2,
+          "stage": "startup observation",
+          "verdict": "refused before native execution",
+          "reason": "jvmcontract: --observed-initializer org.apache.commons.lang3.time.TimeZones: its initialization initialized org.apache.commons.lang3.SystemUtils, whose code reads the environment (java.lang.System.getenv), which the observation cannot bind"
+        },
+        {
+          "process": "controlled",
+          "runtimeArguments": [
+            "--observed-runtime",
+            "{\"emptyEnvironment\":true,\"processors\":2,\"rootWorkingDirectory\":true}"
+          ],
+          "exit": 1,
+          "stage": "native",
+          "verdict": "unverifiable",
+          "reason": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+          "report": {
+            "wire_version": 1,
+            "verdict": "unverifiable",
+            "target": "UpgradeProbe#parseWeek()Z",
+            "domain": "",
+            "assume": null,
+            "assert": "result == true",
+            "throws": [],
+            "throws_checked": [],
+            "counterexample": null,
+            "proof": null,
+            "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+            "statement": "/tmp/jvmcontract-property-824503-1795546363031253825-0/harness/PropertyHarness.java",
+            "findings": [
+              {
+                "rule_id": "unverifiable",
+                "message": "UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
+                "uri": null,
+                "line": 51
+              }
+            ],
+            "output": "\u2717 UpgradeProbe#parseWeek()Z cannot be verified: the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13 (java.util.TimeZone.clone() at org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223). With --gaps assume it assumes instead that java.util.TimeZone.clone() returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption\n",
+            "work": "/tmp/jvmcontract-property-824503-1795546363031253825-0",
+            "search": {
+              "engine": "native",
+              "checker": "jvmcontract's own checker (CaDiCaL)",
+              "seconds": 2.087211616,
+              "properties": 1,
+              "unwind": 16,
+              "max_array_length": 8,
+              "stage": null,
+              "native": {
+                "paths": 1,
+                "merges": 0,
+                "solver_calls": 0,
+                "solving_seconds": 0.0,
+                "gates_evaluated": 0,
+                "evaluating_seconds": 0.0,
+                "divisions": 0,
+                "divisions_built": 0,
+                "multiplications": 0,
+                "multiplications_built": 0,
+                "variables": 1,
+                "clauses": 1,
+                "seconds": 0.008146112,
+                "loading_seconds": 0.001467188,
+                "decoding_seconds": 0.000134153,
+                "encoding_seconds": 8.8293e-05,
+                "witness_seconds": 0.0,
+                "assumed": [
+                  "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824503-1795546363031253825-0/observed:/tmp/jvmcontract-property-824503-1795546363031253825-0/harness:/tmp/week-initializer-eegsdj_1:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-fix.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                  "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier"
+                ]
+              },
+              "gap_mode": "strict",
+              "gaps": [
+                {
+                  "id": "jdk-reference-method:java.util.TimeZone.clone()Ljava/lang/Object;@jdk-21.0.13",
+                  "kind": "jdk-reference-method",
+                  "call": "java.util.TimeZone.clone()",
+                  "sites": [
+                    "org.apache.commons.lang3.time.AbstractFormatCache.getInstance:223"
+                  ],
+                  "approximation": "returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments",
+                  "treatment": "refused"
+                }
+              ],
+              "deadline_seconds": 600.0,
+              "runs": [
+                {
+                  "checker": "native",
+                  "purpose": "proof",
+                  "stage": null,
+                  "budget_seconds": 597.923,
+                  "seconds": 0.008,
+                  "ended": "no-verdict",
+                  "ending": "no-verdict",
+                  "phases": {
+                    "loading": 0.001,
+                    "lowering": 0.0,
+                    "symbolic": 0.006,
+                    "encoding": 0.0,
+                    "solving": 0.0,
+                    "trace": 0.0,
+                    "other": 0.0
+                  },
+                  "formula": {
+                    "variables": 1,
+                    "clauses": 1
+                  }
+                }
+              ],
+              "phases": {
+                "seconds": 2.096,
+                "setup": 0.001,
+                "harness": 0.0,
+                "gaps": 0.0,
+                "contracts": 0.0,
+                "runs": 0.008,
+                "replay": 0.0,
+                "jvm": 0.0,
+                "other": 2.087
+              }
+            },
+            "stated": {
+              "kind": "property",
+              "domain": {
+                "parameters": [],
+                "shared_arrays": false,
+                "text": ""
+              },
+              "assumptions": [
+                {
+                  "kind": "initialization",
+                  "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+                  "basis": "engine"
+                },
+                {
+                  "kind": "library",
+                  "text": "the class initializer of org.apache.commons.lang3.time.TimeZones was not run by the checker: its static state is the one a JVM (JDK 21.0.13, Eclipse Adoptium) left after initializing the selected roots on the check's class path, from the class file the check reads (sha256 a16fd4077702), in a JVM whose default locale was en-US (formatting en-US, display en-US) and default time zone Etc/UTC; it read the system properties java.specification.version = \"21\"; file.encoding = \"UTF-8\"; file.separator = \"/\"; java.awt.fonts, not set; java.awt.graphicsenv, not set; java.awt.headless, not set; java.awt.printerjob, not set; java.class.path = \"/tmp/jvmcontract-property-824503-1795546363031253825-0/observed:/tmp/jvmcontract-property-824503-1795546363031253825-0/harness:/tmp/week-initializer-eegsdj_1:/home/filip/.cache/in-the-loop/organic-composition-ff/artifacts/H-commons-lang-fix.jar\"; java.class.version = \"65.0\"; java.compiler, not set; java.endorsed.dirs, not set; java.ext.dirs, not set; java.home = \"/home/filip/.sdkman/candidates/java/21.0.13.0+9-tem\"; java.io.tmpdir = \"/tmp\"; java.library.path = \"/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib\"; java.runtime.name = \"OpenJDK Runtime Environment\"; java.runtime.version = \"21.0.13+9-LTS\"; java.specification.name = \"Java Platform API Specification\"; java.specification.vendor = \"Oracle Corporation\"; java.util.prefs.PreferencesFactory, not set; java.vendor = \"Eclipse Adoptium\"; java.vendor.url = \"https://adoptium.net/\"; java.version = \"21.0.13\"; java.vm.info = \"mixed mode, emulated-client, sharing\"; java.vm.name = \"OpenJDK 64-Bit Server VM\"; java.vm.specification.name = \"Java Virtual Machine Specification\"; java.vm.specification.vendor = \"Oracle Corporation\"; java.vm.specification.version = \"21\"; java.vm.vendor = \"Eclipse Adoptium\"; java.vm.version = \"21.0.13+9-LTS\"; line.separator = \"\\n\"; os.arch = \"amd64\"; os.name = \"Linux\"; os.version = \"7.0.0-43-generic\"; path.separator = \":\"; user.country = \"US\"; user.dir = \"/\"; user.home = \"/home/filip\"; user.language = \"en\"; user.name = \"filip\"; user.timezone = \"Etc/UTC\"; awt.toolkit, not set, and the result holds where each is as it was; Runtime.availableProcessors() was pinned to 2 (-XX:ActiveProcessorCount=2) throughout initialization, with an empty process environment throughout initialization, with the process working directory and JVM absolute-path base both at the Unix root /; it initialized org.apache.commons.lang3.time.ImmutableTimeZone, org.apache.commons.lang3.JavaVersion, org.apache.commons.lang3.SystemProperties, org.apache.commons.lang3.StringUtils, org.apache.commons.lang3.math.NumberUtils, org.apache.commons.lang3.SystemUtils, org.apache.commons.lang3.function.Suppliers, org.apache.commons.lang3.Strings, org.apache.commons.lang3.Strings$CiStrings, org.apache.commons.lang3.Strings$CsStrings, org.apache.commons.lang3.CharSequenceUtils, org.apache.commons.lang3.ArraySorter besides, and left each in the state the class has initialized alone, every value of it compared (one the observation does not hold by what the observer read of it: an object's fields, a lambda's method and captured values, a collection's elements); and it is taken to leave that state in every run (it reads nothing a run could have changed before it, and the objects it leaves are held by no other class)",
+                  "basis": "engine",
+                  "id": "observed-initializer:org.apache.commons.lang3.time.TimeZones:a16fd4077702d5e664b2bf43e92734746fd2efd9c47abfdb5aa49ebd608780a2:93151d92c11b5523dcb60792869c6cf1b2207ed16c38686412a7b7bc319781be"
+                },
+                {
+                  "kind": "library",
+                  "text": "the selected JDK uses its bundled, digest-checked tzdb.dat for the explicit UTC identifier",
+                  "basis": "engine"
+                }
+              ],
+              "observations": {
+                "result": "the result and the parameters, against result == true",
+                "exceptions": "none may be thrown"
+              },
+              "bounds": {
+                "unwind": 16,
+                "max_array_length": null,
+                "complete": false
+              },
+              "models": {
+                "used": true,
+                "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+                "classes": 40,
+                "jdk": "21.0.13"
+              },
+              "checker": {
+                "engine": "native",
+                "name": "jvmcontract's own checker (CaDiCaL)",
+                "solver": "CaDiCaL 1.9.5 (bundled)",
+                "fallback": null,
+                "sat": {
+                  "solver": "CaDiCaL",
+                  "version": "1.9.5",
+                  "source": "bundled by the Rust crate cadical 0.1.16",
+                  "configuration": [
+                    "CaDiCaL's default options",
+                    "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+                    "the run's deadline through CaDiCaL's terminate callback",
+                    "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+                  ]
+                }
+              },
+              "gap_mode": "strict",
+              "confirmation": null
+            }
+          }
+        }
+      ]
+    }
+  }
+}
