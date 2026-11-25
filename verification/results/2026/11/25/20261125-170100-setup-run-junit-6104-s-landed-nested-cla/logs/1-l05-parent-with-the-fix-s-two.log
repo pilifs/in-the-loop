@@ -1,0 +1,148 @@
+worktree=L05-junit-framework-parent commit=bbeb7900fa76b6fc00e36e0bea05747066b4a2ec fix=2b484caa962ad9b0d9a6af5d2c25100b6a8f4ef6
+--- /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java	2026-11-25 16:08:26.594994070 +0000
++++ jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java	2026-11-25 17:04:21.277663709 +0000
+@@ -349,7 +349,7 @@
+ 	@Test
+ 	void doesNotDiscoverNestedClassesWithInvalidEnclosingClasses() {
+ 		var uniqueId = uniqueIdForClass(TestCaseWithExtendedNested.class) //
+-				.append(NestedClassTestDescriptor.FULLY_QUALIFIED_NAME_SEGMENT_TYPE,
++				.append("fq-nested-class",
+ 					AbstractSuperClass.NestedInAbstractClass.class.getName());
+ 
+ 		var results = discoverTests(selectUniqueId(uniqueId));
+--- /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java	2026-11-25 16:08:26.594994070 +0000
++++ jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java	2026-11-25 17:04:21.282604962 +0000
+@@ -119,12 +119,12 @@
+ 			TwoInvocationsTestCase.class.getName());
+ 		var invocationId1 = classTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#1");
+ 		var invocation1MethodAId = invocationId1.append(TestMethodTestDescriptor.SEGMENT_TYPE, "a()");
+-		var invocation1NestedClassId = invocationId1.append(NestedClassTestDescriptor.SIMPLE_NAME_SEGMENT_TYPE,
++		var invocation1NestedClassId = invocationId1.append(NestedClassTestDescriptor.SEGMENT_TYPE,
+ 			"NestedTestCase");
+ 		var invocation1NestedMethodBId = invocation1NestedClassId.append(TestMethodTestDescriptor.SEGMENT_TYPE, "b()");
+ 		var invocationId2 = classTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var invocation2MethodAId = invocationId2.append(TestMethodTestDescriptor.SEGMENT_TYPE, "a()");
+-		var invocation2NestedClassId = invocationId2.append(NestedClassTestDescriptor.SIMPLE_NAME_SEGMENT_TYPE,
++		var invocation2NestedClassId = invocationId2.append(NestedClassTestDescriptor.SEGMENT_TYPE,
+ 			"NestedTestCase");
+ 		var invocation2NestedMethodBId = invocation2NestedClassId.append(TestMethodTestDescriptor.SEGMENT_TYPE, "b()");
+ 
+@@ -221,7 +221,7 @@
+ 		var classId = engineId.append(ClassTestDescriptor.SEGMENT_TYPE,
+ 			NestedClassTemplateWithTwoInvocationsTestCase.class.getName());
+ 		var methodAId = classId.append(TestMethodTestDescriptor.SEGMENT_TYPE, "a()");
+-		var nestedClassTemplateId = classId.append(ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE,
++		var nestedClassTemplateId = classId.append(ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE,
+ 			"NestedTestCase");
+ 		var invocationId1 = nestedClassTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#1");
+ 		var invocation1NestedMethodBId = invocationId1.append(TestMethodTestDescriptor.SEGMENT_TYPE, "b()");
+@@ -268,7 +268,7 @@
+ 		var engineId = UniqueId.forEngine(JupiterEngineDescriptor.ENGINE_ID);
+ 		var classId = engineId.append(ClassTestDescriptor.SEGMENT_TYPE,
+ 			NestedClassTemplateWithTwoInvocationsTestCase.class.getName());
+-		var nestedClassTemplateId = classId.append(ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE,
++		var nestedClassTemplateId = classId.append(ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE,
+ 			"NestedTestCase");
+ 		var invocationId1 = nestedClassTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#1");
+ 		var invocation1NestedMethodBId = invocationId1.append(TestMethodTestDescriptor.SEGMENT_TYPE, "b()");
+@@ -311,7 +311,7 @@
+ 
+ 		var outerInvocation1Id = outerClassTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#1");
+ 		var outerInvocation1NestedClassTemplateId = outerInvocation1Id.append(
+-			ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
++			ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
+ 		var outerInvocation1InnerInvocation1Id = outerInvocation1NestedClassTemplateId.append(
+ 			ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#1");
+ 		var outerInvocation1InnerInvocation1NestedMethodId = outerInvocation1InnerInvocation1Id.append(
+@@ -323,7 +323,7 @@
+ 
+ 		var outerInvocation2Id = outerClassTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var outerInvocation2NestedClassTemplateId = outerInvocation2Id.append(
+-			ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
++			ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
+ 		var outerInvocation2InnerInvocation1Id = outerInvocation2NestedClassTemplateId.append(
+ 			ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#1");
+ 		var outerInvocation2InnerInvocation1NestedMethodId = outerInvocation2InnerInvocation1Id.append(
+@@ -628,7 +628,7 @@
+ 			TwoInvocationsTestCase.class.getName());
+ 		var invocationId2 = classTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var methodAId = invocationId2.append(TestMethodTestDescriptor.SEGMENT_TYPE, "a()");
+-		var nestedClassId = invocationId2.append(NestedClassTestDescriptor.SIMPLE_NAME_SEGMENT_TYPE, "NestedTestCase");
++		var nestedClassId = invocationId2.append(NestedClassTestDescriptor.SEGMENT_TYPE, "NestedTestCase");
+ 		var nestedMethodBId = nestedClassId.append(TestMethodTestDescriptor.SEGMENT_TYPE, "b()");
+ 
+ 		var results = executeTests(selectUniqueId(invocationId2));
+@@ -661,7 +661,7 @@
+ 			TwoInvocationsTestCase.class.getName());
+ 		var invocationId2 = classTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var methodAId = invocationId2.append(TestMethodTestDescriptor.SEGMENT_TYPE, "a()");
+-		var nestedClassId = invocationId2.append(NestedClassTestDescriptor.SIMPLE_NAME_SEGMENT_TYPE, "NestedTestCase");
++		var nestedClassId = invocationId2.append(NestedClassTestDescriptor.SEGMENT_TYPE, "NestedTestCase");
+ 		var nestedMethodBId = nestedClassId.append(TestMethodTestDescriptor.SEGMENT_TYPE, "b()");
+ 
+ 		var results = executeTests(selectIteration(selectClass(TwoInvocationsTestCase.class), 1));
+@@ -735,7 +735,7 @@
+ 		var classTemplateId = engineId.append(ClassTemplateTestDescriptor.STANDALONE_CLASS_SEGMENT_TYPE,
+ 			TwoInvocationsTestCase.class.getName());
+ 		var invocationId2 = classTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+-		var nestedClassId = invocationId2.append(NestedClassTestDescriptor.SIMPLE_NAME_SEGMENT_TYPE, "NestedTestCase");
++		var nestedClassId = invocationId2.append(NestedClassTestDescriptor.SEGMENT_TYPE, "NestedTestCase");
+ 		var nestedMethodBId = nestedClassId.append(TestMethodTestDescriptor.SEGMENT_TYPE, "b()");
+ 
+ 		var results = executeTests(selectUniqueId(nestedMethodBId));
+@@ -765,7 +765,7 @@
+ 			TwoTimesTwoInvocationsWithMultipleMethodsTestCase.class.getName());
+ 		var outerInvocation2Id = outerClassTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var outerInvocation2NestedClassTemplateId = outerInvocation2Id.append(
+-			ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
++			ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
+ 		var outerInvocation2InnerInvocation2Id = outerInvocation2NestedClassTemplateId.append(
+ 			ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var outerInvocation2InnerInvocation2NestedMethodId = outerInvocation2InnerInvocation2Id.append(
+@@ -805,14 +805,14 @@
+ 			TwoTimesTwoInvocationsTestCase.class.getName());
+ 		var outerInvocation1Id = outerClassTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#1");
+ 		var outerInvocation1NestedClassTemplateId = outerInvocation1Id.append(
+-			ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
++			ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
+ 		var outerInvocation1InnerInvocation2Id = outerInvocation1NestedClassTemplateId.append(
+ 			ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var outerInvocation1InnerInvocation2NestedMethodId = outerInvocation1InnerInvocation2Id.append(
+ 			TestMethodTestDescriptor.SEGMENT_TYPE, "test()");
+ 		var outerInvocation2Id = outerClassTemplateId.append(ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var outerInvocation2NestedClassTemplateId = outerInvocation2Id.append(
+-			ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
++			ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase");
+ 		var outerInvocation2InnerInvocation2Id = outerInvocation2NestedClassTemplateId.append(
+ 			ClassTemplateInvocationTestDescriptor.SEGMENT_TYPE, "#2");
+ 		var outerInvocation2InnerInvocation2NestedMethodId = outerInvocation2InnerInvocation2Id.append(
+@@ -1036,9 +1036,9 @@
+ 				.extracting(TestDescriptor::getUniqueId) //
+ 				.extracting(UniqueId::getLastSegment) //
+ 				.extracting(UniqueId.Segment::getType, UniqueId.Segment::getValue).contains(
+-					tuple(ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase"), //
+-					tuple(ClassTemplateTestDescriptor.SIMPLE_NESTED_CLASS_SEGMENT_TYPE, "$"), //
+-					tuple(ClassTemplateTestDescriptor.FULLY_QUALIFIED_NESTED_CLASS_SEGMENT_TYPE,
++					tuple(ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE, "NestedTestCase"), //
++					tuple(ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE, "$"), //
++					tuple("fq-nested-class-template",
+ 						NestedClassTemplateWithTagOnEnclosingClassTestCase.NestedTestCase.class.getName()));
+ 		assertAll(engineDescriptor.getDescendants().stream() //
+ 				.map(TestDescriptor::getUniqueId) //
+ M jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java
+ M jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java
+production-and-fixtures-unchanged
+gradle-exit=1
+You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+
+For more on this, please refer to https://docs.gradle.org/9.8.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+
+BUILD FAILED in 2m 51s
+141 actionable tasks: 140 executed, 1 up-to-date
+The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.
+Configuration cache entry stored.
+junit tests=56 failures=3 errors=0 skipped=0
+junit failed ClassTemplateInvocationTests#nestedClassTemplateIsInherited()
+junit failed NestedTestClassesTests#nestedTestClassesWithSameNameAreCorrectlyDiscoveredAndExecuted()
+junit failed NestedTestClassesTests#deeplyNestedInheritedMethodsAreExecutedWhenSelectedViaUniqueId()
+TRANSPLANT-FAILS-AS-EXPECTED

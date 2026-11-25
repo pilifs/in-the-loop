@@ -135,7 +135,7 @@ Other files of fork C: `$O/scripts/gradle_case_C.sh` (one Gradle run with log an
 | Gradle 5.4.1 (L19 Kafka) | `$O/tools/gradle-5.4.1` | zip sha256 `7bdbad1e4f54f13c8a78abc00c26d44dd8709d4aedb704d913fb1bb78ac025dc` = published `7bdbad1e4f54f13c8a78abc00c26d44dd8709d4aedb704d913fb1bb78ac025dc` |
 | Gradle 7.5.1 (L15: runs Gradle's own build; release without the fix) | `$O/tools/gradle-7.5.1` | zip sha256 `f6b8596b10cce501591e92f229816aa4046424f3b24d771751b06779d58c8ec4` = published `f6b8596b10cce501591e92f229816aa4046424f3b24d771751b06779d58c8ec4` |
 | Gradle 7.6 (L15: release with the fix) | `$O/tools/gradle-7.6` | zip sha256 `7ba68c54029790ab444b39d7e293d3236b2632631fb5f2e012bb28b4ff669e4b` = published `7ba68c54029790ab444b39d7e293d3236b2632631fb5f2e012bb28b4ff669e4b` |
-| Gradle 7.6 built from the L15 pins | `$O/tools/gradle-pin-L15-parent`, `$O/tools/gradle-pin-L15-fix` | built by job `20261125-165654-setup-build-gradle-distributions-at-both` |
+| Gradle 7.6 built from the L15 pins | `$O/tools/gradle-pin-L15-parent`, `$O/tools/gradle-pin-L15-fix` | built by job `20261125-172547-setup-build-gradle-distributions-at-both` |
 
 The zips and published `.sha256` files are in `$O/dl/gradle-D/`. No JDK was added: L10 uses 21 and 25, L14 17, L15 11 (toolchains 8, 11, 17), L19 8.
 Fork D's init scripts: `$O/scripts/resolve-all.init.gradle` (tasks `setupResolveAll`, `setupWriteClasspath`; adds tasks only),
@@ -154,17 +154,17 @@ parent's own on the parent / fix's tests on the parent. "Pending" cells wait for
 | L02 Commons Collections #701 | source build, JDK 17 | 4.5.0 = parent iterator code (other diffs); 4.6.0 has fix + later changes | 214/214, 210/210, 3 fail (Hash, Predicated, Synchronized; expected 2 but was 5) | inline |
 | L03 picocli #1529 | Gradle 7.3.3, JDK 11, root jar at both pins | 4.6.3 has the fix (+ later changes); 4.6.2 predates the parent | 1 f0 e0 s0 / no test at parent / FAILS 1 f1 e0 s0 (AssertionError Issue1528.java:42) | inline |
 | L04 java-diff-utils #233 | source build of java-diff-utils module, JDK 17 | 4.17 = parent, 4.18 = fix (renderer file) | 6/6, 4/4, 2 fail (EQUAL vs CHANGE) | inline |
-| L05 JUnit #6104 | Gradle 9.8.0, JDK 25 + toolchains 17/21/24/25, standalone clones; both sides' jars by job | 6.2.0-M1 = fix (3 changed files); 6.1.3 = parent resolver, NestedClassTestDescriptor differs | 56 f0 e0 s0 / 53 f0 e0 s0 / landed transplant does not compile (renamed constants); constant-mapped transplant pending | jobs 20261125-162622-setup-build-junit-6104-at-both-revisions (passed), 20261125-170100-setup-run-junit-6104-s-landed-nested-cla (pending) |
+| L05 JUnit #6104 | Gradle 9.8.0, JDK 25 + toolchains 17/21/24/25, standalone clones; both sides' jars by job | 6.2.0-M1 = fix (3 changed files); 6.1.3 = parent resolver, NestedClassTestDescriptor differs | 56 f0 e0 s0 / 53 f0 e0 s0 / landed transplant does not compile (renamed constants); constant-mapped transplant: 56 run, 3 fail (nestedTestClassesWithSameName..., deeplyNestedInherited...ViaUniqueId, nestedClassTemplateIsInherited) | jobs 20261125-162622-setup-build-junit-6104-at-both-revisions (passed), 20261125-170100-setup-run-junit-6104-s-landed-nested-cla (passed) |
 | L06 | source build -pl vector -am (Maven 3.9.9, JDK 17) | none = parent; 19.0.0 has the fix's file (+3 later files) | 64/64 fix, 56/56 parent, transplant 8 fail (4 new end-index tests x 2 allocators) | inline |
 | L07 | source build jgrapht-core (JDK 8) | 1.3.1 = parent's three algorithm files; none = fix | 43/43 fix, 41/41 parent, transplant 2 errors (NullPointerException) | inline |
 | L08 Commons Statistics #140 | source build of distribution module, JDK 17; commons-rng 1.8-SNAPSHOT dependency | 1.3 = parent quantile code (older NaN checks); no release has the fix | 58/58, 56/56, 2 fail (tail quantiles) | inline |
-| L09 | source build evaluation -am (Maven 3.9.9, JDK 8); compliance by job | 3.1.2 = fix (sources of all 24 runtime modules, evaluation jar class-identical) | GroupIteratorTest 9/9 fix, 8/8 parent, transplant 1 fails (testMaxEmptySet_Grouped); compliance tests: the first job did not run them, second job pending | inline + jobs 20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou, 20261125-165913-setup-run-rdf4j-1989-s-landed-compliance |
+| L09 | source build evaluation -am (Maven 3.9.9, JDK 8); compliance by job | 3.1.2 = fix (sources of all 24 runtime modules, evaluation jar class-identical) | fix: MemoryComplexSPARQLQueryTest 81/81, SPARQL12QueryTest 2/2, GroupIteratorTest 9/9 (online and offline); parent's own: 78/78, 8/8; transplant: 5 fail (3 Max/Min/Sample empty-group, 'agg on empty set, explicit grouping', testMaxEmptySet_Grouped) | inline + jobs 20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou, 20261125-165913-setup-run-rdf4j-1989-s-landed-compliance |
 | L10 Calcite #5378 | Gradle 8.14.4, JDK 21 + toolchain 25 (job) | none has the fix; 1.42.0 has the parent's rule source | junit tests=1006 failures=0 errors=0 skipped=4 / junit tests=1006 failures=0 errors=0 skipped=4 / junit tests=1007 failures=3 errors=0 skipped=4 | job 20261125-161916-setup-build-calcite-core-at-both-5378-re |
 | L11 Commons Imaging #335 | source build, JDK 17 | none equals parent; 1.0.0-alpha4..6 carry the fix's limits | 2/2, 2/2, 2 errors (AIOOBE Index 64) | inline |
 | L12 Quartz #1496 | Gradle 8.5 on JDK 17, toolchain 11, :quartz jar at both pins | none has the fix; 2.5.2 = parent logic (one unrelated line differs) | 38 f0 e0 s2 / 36 f0 e0 s2 / FAILS 38 f1 e0 s2 (JdbcJobStoreTest.testStoreTriggerReplaceChangesTriggerType) | inline |
 | L13 | source build (JDK 11) | 3.4.0 = fix (all sources); 3.3.0 = parent except DefaultShader | 4/4 fix, 3/3 parent, transplant 1 error (ZipException duplicate entry) | inline |
-| L14 Iceberg #12855 | Gradle 8.14, JDK 17 (job) | 1.9.2 = parent, 1.10.0 = fix (GenericRecord) | pending (job) / pending (job) / pending (job) | job 20261125-165654-setup-build-iceberg-api-core-data-parque |
-| L15 Gradle #21084 | Gradle's build on Gradle 7.5.1 (pinned nightly gone), JDK 11; distributions installed (job) | none equal; 7.5.1 lacks fix, 7.6 has fix + later | pending (job) / pending (job) / pending (job) | job 20261125-165654-setup-build-gradle-distributions-at-both |
+| L14 Iceberg #12855 | Gradle 8.14, JDK 17 (job) | 1.9.2 = parent, 1.10.0 = fix (GenericRecord) | junit tests=48 failures=0 errors=0 skipped=1 / junit tests=39 failures=0 errors=0 skipped=1 / junit tests=48 failures=9 errors=0 skipped=1 | job 20261125-165654-setup-build-iceberg-api-core-data-parque |
+| L15 Gradle #21084 | Gradle's build on Gradle 7.5.1 (pinned nightly gone), JDK 11; distributions installed (job) | none equal; 7.5.1 lacks fix, 7.6 has fix + later | pending (job) / pending (job) / pending (job) | job 20261125-172547-setup-build-gradle-distributions-at-both |
 | L16 | source build JRE + Android by job (JDK 21) | 33.3.0 has the fix's file; 33.2.1-jre = parent's file minus an annotation | no landed test; FuturesTest 160/160 at both pins, JRE and Android (job) | job 20261125-162448-setup-build-guava-7277-s-two-revisions-j |
 | L17 iCal4j #947 | Gradle 8.5, JDK 17, jar at both pins | none has the fix; 4.4.0 older than the parent, has its EXDATE line | 20 f0 e0 s0 / 19 f0 e0 s0 / FAILS 20 f1 e0 s0 (testCalculateRecurrenceSetWithUtcExDate) | inline |
 | L18 RxJava #6895 | Gradle 6.0.1, JDK 8, init script for 4 jcenter-only build-script modules | 3.0.0-RC8 = parent, 3.0.0-RC9 = fix (FlowableGroupBy.java) | 67 f0 e0 s1 / 66 f0 e0 s1 / FAILS 67 f1 e0 s1 (cancelledGroupResumesRequesting) | inline |
@@ -500,9 +500,9 @@ External runtime dependency of the engine and launcher: `org.opentest4j:opentest
 | fix, offline (same job) | 56 run, 0 failures, 0 errors, 0 skipped |
 | parent, its own copies, offline (same job) | 53 run, 0 failures, 0 errors, 0 skipped |
 | the fix's two test classes and `JupiterUniqueIdBuilder` on the parent, offline (same job) | does not compile: `JupiterUniqueIdBuilder.java:40` cannot find symbol; `JupiterUniqueIdBuilder.java:41` cannot find symbol (the fixture uses the fix's renamed constants) |
-| the fix's two test classes on the parent with constant names mapped, parent's `JupiterUniqueIdBuilder`, offline (job `20261125-170100-setup-run-junit-6104-s-landed-nested-cla`) | pending: job `20261125-170100-setup-run-junit-6104-s-landed-nested-cla` |
+| the fix's two test classes on the parent with constant names mapped, parent's `JupiterUniqueIdBuilder`, offline (job `20261125-170100-setup-run-junit-6104-s-landed-nested-cla`) | 56 run, 3 failures, 0 errors, 0 skipped; failing: `ClassTemplateInvocationTests#nestedClassTemplateIsInherited()`, `NestedTestClassesTests#nestedTestClassesWithSameNameAreCorrectlyDiscoveredAndExecuted()`, `NestedTestClassesTests#deeplyNestedInheritedMethodsAreExecutedWhenSelectedViaUniqueId()` |
 
-The fix renames `NestedClassTestDescriptor.SEGMENT_TYPE` to `SIMPLE_NAME_SEGMENT_TYPE` and `ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE` to `SIMPLE_NESTED_CLASS_SEGMENT_TYPE` (same values) and adds `FULLY_QUALIFIED_NAME_SEGMENT_TYPE = "fq-nested-class"` and `FULLY_QUALIFIED_NESTED_CLASS_SEGMENT_TYPE = "fq-nested-class-template"`. The second job's copies map those four references (to the parent's names, or to the same string literals) and change nothing else; the mapped files and their diffs against the fix's are in `$O/artifacts/L05-transplant-mapped/`.
+The fix renames `NestedClassTestDescriptor.SEGMENT_TYPE` to `SIMPLE_NAME_SEGMENT_TYPE` and `ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE` to `SIMPLE_NESTED_CLASS_SEGMENT_TYPE` (same values) and adds `FULLY_QUALIFIED_NAME_SEGMENT_TYPE = "fq-nested-class"` and `FULLY_QUALIFIED_NESTED_CLASS_SEGMENT_TYPE = "fq-nested-class-template"`. The second job's copies map those four references (to the parent's names, or to the same string literals) and change nothing else; the mapped files and their diffs against the fix's are in `$O/artifacts/L05-transplant-mapped/` (sha256 `ClassTemplateInvocationTests.java` `6498be950aeed8e885b9e58cf77c43e66eee01b0c5dd52263e91423f85255f8c`, `NestedTestClassesTests.java` `6d48cc63ff76ad23baa63ca746421aa65e0de510ceeed972064fb1c3198469e4`).
 <!-- /L05-jobs -->
 
 **Release side** (`$O/releases/junit-6.2.0-M1`, `$O/releases/junit-6.1.3`: engine and launcher with their runtime graphs, strict checksums). Central has
@@ -547,7 +547,7 @@ The fix renames `NestedClassTestDescriptor.SEGMENT_TYPE` to `SIMPLE_NAME_SEGMENT
 from keyserver.ubuntu.com via the earlier setup's saved copy, nothing further vouching for it (`$O/logs/sigs-C.txt`). `apiguardian-api` and `jspecify`
 rest on strict checksums.
 
-**Jobs.** `20261125-162622-setup-build-junit-6104-at-both-revisions` (fork C, `$O/scripts/submit_C.py`): passed; built both sides and ran the tests above. `20261125-170100-setup-run-junit-6104-s-landed-nested-cla` (`$O/scripts/submit_L05b.py`): the mapped transplant (pending).
+**Jobs.** `20261125-162622-setup-build-junit-6104-at-both-revisions` (fork C, `$O/scripts/submit_C.py`): passed; built both sides and ran the tests above. `20261125-170100-setup-run-junit-6104-s-landed-nested-cla` (`$O/scripts/submit_L05b.py`): the mapped transplant (done).
 
 **For the domain agent**
 - Both sides' jars are in `$O/artifacts` (table above); 6.2.0-M1 stands for the fix side by its changed files. There is no
@@ -855,10 +855,10 @@ to `$O/artifacts/L09-rdf4j-ROLE-modules/` (sha256 lists `$O/logs/L09-rdf4j-ROLE-
 | fix, the same, offline (first job; only `GroupIteratorTest` ran) | 9 run, 0 failures, 0 errors, 0 skipped (43 s) |
 | parent, the same, offline (first job; only `GroupIteratorTest` ran) | 8 run, 0 failures, 0 errors, 0 skipped (75 s) |
 | the PR's test-side files on the parent, offline (first job; only `GroupIteratorTest` ran) | 9 run, 1 failures, 0 errors, 0 skipped (38 s); failing: `GroupIteratorTest#testMaxEmptySet_Grouped` |
-| fix, to `verify`: failsafe `MemoryComplexSPARQLQueryTest` + `SPARQL12QueryTest`, surefire `GroupIteratorTest`, online (second job) | pending: job `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` |
-| fix, the same, offline (second job) | pending: job `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` |
-| parent, its own `MemoryComplexSPARQLQueryTest` + `GroupIteratorTest`, offline (second job) | pending: job `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` |
-| the PR's test-side files on the parent, offline (second job; expected to fail) | pending: job `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` |
+| fix, to `verify`: failsafe `MemoryComplexSPARQLQueryTest` + `SPARQL12QueryTest`, surefire `GroupIteratorTest`, online (second job) | 92 run, 0 failures, 0 errors, 0 skipped (90 s); MemoryComplexSPARQLQueryTest: Tests run: 81, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.574 sec - in org.eclipse.rdf4j.sail.memory.MemoryComplexSPARQLQueryTest; SPARQL12QueryTest: Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.349 sec - in org.eclipse.rdf4j.query.parser.sparql.manifest.SPARQL12QueryTest; GroupIteratorTest: Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.113 s - in org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIteratorTest |
+| fix, the same, offline (second job) | 92 run, 0 failures, 0 errors, 0 skipped (37 s); MemoryComplexSPARQLQueryTest: Tests run: 81, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.525 sec - in org.eclipse.rdf4j.sail.memory.MemoryComplexSPARQLQueryTest; SPARQL12QueryTest: Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.324 sec - in org.eclipse.rdf4j.query.parser.sparql.manifest.SPARQL12QueryTest; GroupIteratorTest: Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.098 s - in org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIteratorTest |
+| parent, its own `MemoryComplexSPARQLQueryTest` + `GroupIteratorTest`, offline (second job) | 86 run, 0 failures, 0 errors, 0 skipped (78 s); MemoryComplexSPARQLQueryTest: Tests run: 78, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.611 sec - in org.eclipse.rdf4j.sail.memory.MemoryComplexSPARQLQueryTest; GroupIteratorTest: Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.105 s - in org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIteratorTest |
+| the PR's test-side files on the parent, offline (second job; expected to fail) | 92 run, 5 failures, 0 errors, 0 skipped (38 s); failing: `SPARQL12QueryTest#agg`, `MemoryComplexSPARQLQueryTest#testMinAggregateWithGroupEmptyResult`, `MemoryComplexSPARQLQueryTest#testSampleAggregateWithGroupEmptyResult`, `MemoryComplexSPARQLQueryTest#testMaxAggregateWithGroupEmptyResult`, `GroupIteratorTest#testMaxEmptySet_Grouped`; MemoryComplexSPARQLQueryTest: Tests run: 81, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.492 sec <<< FAILURE! - in org.eclipse.rdf4j.sail.memory.MemoryComplexSPARQLQueryTest; SPARQL12QueryTest: Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.294 sec <<< FAILURE! - in org.eclipse.rdf4j.query.parser.sparql.manifest.SPARQL12QueryTest; GroupIteratorTest: Tests run: 9, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.12 s <<< FAILURE! - in org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIteratorTest |
 
 On the parent `testMaxEmptySet_Grouped:91` fails with `ComparisonFailure: expected:<[fals]e> but was:<[tru]e>` (the grouped iterator still has a row).
 
@@ -881,7 +881,12 @@ equals the fix tree's `src/main/java` file for file, and the evaluation jar is c
 **Jobs.** `20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou` (`$O/scripts/submit_B.py l09`): passed, but stopped at `package`, so of the three classes only
 `GroupIteratorTest` ran (the same results as inline); it did copy the module jars of both sides and compare them. Its rows are kept above, labelled.
 `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` (`$O/scripts/submit_L09b.py`): the same build to `verify`, so failsafe runs the compliance classes, on the
-fix online and offline, the parent's own offline, and the PR's test-side files on the parent (production code unchanged); each step fails if a named class did not run.
+fix online and offline, the parent's own offline, and the PR's test-side files on the parent (production code unchanged): passed, and the rows above
+come from it. All three classes ran in every step (the failsafe and surefire lines name them, and the transplant's failures are in all three). Two
+faults in the setup's own tooling, neither of which changed what ran: `rdf4j_verify.sh`'s per-class pattern took the package as `[a-z.]*`, which
+`rdf4j` does not match, so the as-run summaries said "NOT RUN" for every class; and the step guard meant to fail on "NOT RUN" did not take effect.
+The pattern is fixed (`[a-z0-9.]*`) and the class lines in `$O/logs/L09-*.verify-*.junit.txt` were recomputed from the job's own `.log` files; the
+as-run summaries are kept beside them as `*.junit.txt.as-run`.
 
 **For the domain agent**
 - For a JVM run, the 3.1.2 release set with each side's evaluation jar first is the simplest classpath; for the fix side, plain 3.1.2 is class-identical.
@@ -911,7 +916,9 @@ Online resolution of core, linq4j and testkit (all `*Classpath` and `annotationP
   then `$O/scripts/cp_export_D.py`.
 The offline form is exercised by the job (steps 2–6); it was not run inline.
 
-**Artifacts.** | File in `$O/artifacts/` | sha256 |
+**Artifacts.** 
+
+| File in `$O/artifacts/` | sha256 |
 |---|---|
 | `L10-calcite-fix-calcite-core-1.43.0-SNAPSHOT.jar` | `3a1461c8ff66e2aa831cfc71709de2021a3129c3a23c8d92e0db86099fd7e64d` |
 | `L10-calcite-fix-calcite-linq4j-1.43.0-SNAPSHOT.jar` | `a2e3947f948dc7e0084a2fb66023c3094779a4d90411209e7c271c96025d667a` |
@@ -1189,7 +1196,30 @@ and the parent's `iceberg-core-4ca3f10.jar`. Modules for the brief: `iceberg-api
   -PsetupCpOut=FILE` (and `:iceberg-parquet:` with `runtimeClasspath`), then `$O/scripts/cp_export_D.py`.
 The offline form is exercised by the job.
 
-**Artifacts.** Pending: the job writes them to `$O/artifacts/` (names below); this section is filled in from there afterwards.
+**Artifacts.** 
+
+| File in `$O/artifacts/` | sha256 |
+|---|---|
+| `L14-iceberg-fix-iceberg-api-a7f3dc7-tests.jar` | `18f33d3cad8f2ca84d71cd8175629fe525d59ef13cea0a89fd197637767874f4` |
+| `L14-iceberg-fix-iceberg-api-a7f3dc7.jar` | `87c5f3dc51a21de8f458a974ab023cb8e3ffff509598d063839a5dd93ff69833` |
+| `L14-iceberg-fix-iceberg-bundled-guava-a7f3dc7.jar` | `f97a0050d713ce4a17374ffdd0f2e96ce6356cbb7a33cf3a4d9be07d0d226086` |
+| `L14-iceberg-fix-iceberg-common-a7f3dc7.jar` | `2345a89380ecbb3e4ee4420905ac4780b32512056b5753cc34131558269866f4` |
+| `L14-iceberg-fix-iceberg-core-a7f3dc7-tests.jar` | `a56d80454ae294c6083b751833516fcb4ec71c4424abd2a5fad8edabe9427cba` |
+| `L14-iceberg-fix-iceberg-core-a7f3dc7.jar` | `49f052897d791dfe091e3d606dfa5eb8dca8f74b6019da8dc7a6d0e457321cbc` |
+| `L14-iceberg-fix-iceberg-data-a7f3dc7.jar` | `7a66a462b62be68bbf00d946cd662d249c3df4bf2beab7fc579881d7694198b6` |
+| `L14-iceberg-fix-iceberg-orc-a7f3dc7.jar` | `b96c68ab6ea2a05505eb47499cacf57ab5b46997892a231d1f31afa039d190a2` |
+| `L14-iceberg-fix-iceberg-parquet-a7f3dc7.jar` | `569e60d6fcaed51bcf97e603881c540c83a9ef51fc7319941ae959c969caa29e` |
+| `L14-iceberg-parent-iceberg-api-4ca3f10-tests.jar` | `c6f3b753ab851fcc49867198a6b7280dc4411eaa9179531fe957b688c6762974` |
+| `L14-iceberg-parent-iceberg-api-4ca3f10.jar` | `de7f07450c5aa3d6d33947b478a01979369e32ceafa32fd54a3d4b4d1dd2fdf0` |
+| `L14-iceberg-parent-iceberg-bundled-guava-4ca3f10.jar` | `f97a0050d713ce4a17374ffdd0f2e96ce6356cbb7a33cf3a4d9be07d0d226086` |
+| `L14-iceberg-parent-iceberg-common-4ca3f10.jar` | `a72b09845aeb080549b841a4d615ba86bc81064a5e4c5a72520846a0fd53da5a` |
+| `L14-iceberg-parent-iceberg-core-4ca3f10-tests.jar` | `303faa3073663d354f6f6cab007607ba71aef93db992e82294eb58629e288ea8` |
+| `L14-iceberg-parent-iceberg-core-4ca3f10.jar` | `708ac1a9c90503b377f5d22fe95fe6ea0b92664528e40f5af071ddad270c6224` |
+| `L14-iceberg-parent-iceberg-data-4ca3f10.jar` | `05cd384e26528ae48f9440f4bc4f40c3bc2f9b08d67103db3319066bcfb6201a` |
+| `L14-iceberg-parent-iceberg-orc-4ca3f10.jar` | `08ad00334c790de86e75908b9d66a02f6e3622bf30f1fc397d67f0f5f200b32c` |
+| `L14-iceberg-parent-iceberg-parquet-4ca3f10.jar` | `13acd918c4e07b87f685a0d142644921196e8e97c428a76ee8af980b52d2d363` |
+
+Class digests (sha256 of each changed class, per side) are in `$O/artifacts/L14-*.class-digests.txt`; runtime classpaths in `$O/artifacts/L14-*-classpath.txt` (colon-separated; project jars point at the copies above).
 
 Expected: each side's api, common, core, data, parquet and bundled-guava jars (`L14-iceberg-ROLE-iceberg-*-VERSION.jar`), three classpath files
 `L14-iceberg-ROLE.{data-runtime,parquet-runtime,data-test-runtime}-classpath.txt` (the last includes hadoop-client and the api/core test jars),
@@ -1199,10 +1229,10 @@ and class digests of `GenericRecord`, `BaseDeleteLoader` and `ByteBuffers`.
 
 | Run | Result |
 |---|---|
-| fix, landed tests (first build, online) | pending (job) |
-| fix, again offline | pending (job) |
-| parent, its own tests (offline) | pending (job) |
-| fix's test files on the parent (offline; expected to fail) | pending (job) |
+| fix, landed tests (first build, online) | junit tests=48 failures=0 errors=0 skipped=1 |
+| fix, again offline | junit tests=48 failures=0 errors=0 skipped=1 |
+| parent, its own tests (offline) | junit tests=39 failures=0 errors=0 skipped=1 |
+| fix's test files on the parent (offline; expected to fail) | junit tests=48 failures=9 errors=0 skipped=1; junit failed TestGenericReaderDeletes#fileFormat = PARQUET; junit failed TestGenericReaderDeletes#fileFormat = AVRO; junit failed TestGenericReaderDeletes#fileFormat = ORC; junit failed TestGenericReaderDeletes#fileFormat = PARQUET; junit failed TestGenericReaderDeletes#fileFormat = PARQUET; junit failed TestGenericReaderDeletes#fileFormat = AVRO; junit failed TestGenericReaderDeletes#fileFormat = ORC; junit failed TestGenericReaderDeletes#fileFormat = PARQUET; junit failed TestGenericRecord#testDeepCopyValues() |
 
 Run by job `20261125-165654-setup-build-iceberg-api-core-data-parque`; logs `$O/logs/L14-*.gradle-log.txt` and `*.junit.txt`.
 
@@ -1258,13 +1288,19 @@ Changed production file: `subprojects/core/src/main/java/org/gradle/api/internal
   downloads.gradle.org, which answers 404, and repo.gradle.org has no copy either. Its predecessor as the line's wrapper (2022-05-12) was 7.5-rc-1.
   **Substitution:** the job runs Gradle's build with the released **Gradle 7.5.1** (zip sha256 `f6b8596b10cce501591e92f229816aa4046424f3b24d771751b06779d58c8ec4` = published `f6b8596b10cce501591e92f229816aa4046424f3b24d771751b06779d58c8ec4`). Upstream
   build files are unchanged.
-- **Substitution (root build-script classpath only):** the first job (`20261125-161917-setup-build-gradle-distributions-at-both`) failed configuring the root project: the root
-  settings resolve build-logic's `org.openmbee.junit:junit-xml-parser:1.0.0` from the Gradle Plugin Portal alone, which no longer serves it
-  (it came from jcenter). `build-logic/settings.gradle.kts` itself declares `https://repo.gradle.org/gradle/public`, which still serves it;
-  the init script `$O/scripts/gradle-L15-openmbee-substitute.init.gradle` adds that repository, for the group `org.openmbee.junit` only, to
-  every project's build-script repositories. The jar fetched once from there (`$O/dl/L15-junit-xml-parser-check/junit-xml-parser-1.0.0.jar`)
-  has sha256 `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049`; the pins' `gradle/verification-metadata.xml` pin `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049` (parent) and `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049` (fix),
-  and Gradle's strict dependency verification checks it again in the build. The first attempt's logs are kept in `$O/logs/attempt-1/`.
+- **Substitution (one library, `org.openmbee.junit:junit-xml-parser:1.0.0`):** it is no longer on Maven Central or the Gradle Plugin Portal
+  (it came from jcenter), and the build needs it twice. The first job (`20261125-161917-setup-build-gradle-distributions-at-both`) failed resolving it for the root project's
+  build-script `:classpath` (root settings: Plugin Portal only). The second (`20261125-165654-setup-build-gradle-distributions-at-both`), whose init script added the repository to
+  build-script repositories only, got past that and failed after 45 s resolving it for `:build-logic:performance-testing:compileClasspath`
+  (`build-logic/settings.gradle.kts` resolves from Central and the Portal, and declares `https://repo.gradle.org/gradle/public` only for
+  `classycle:classycle`). The init script `$O/scripts/gradle-L15-openmbee-substitute.init.gradle` now adds `https://repo.gradle.org/gradle/public`,
+  for the group `org.openmbee.junit` only, to every build's settings repositories (`beforeSettings`, which also reaches the included builds
+  `build-logic` and `build-logic-commons`) and to every project's build-script repositories. Inline check (26 s, online, fix worktree):
+  `$G15 -p build-logic :performance-testing:dependencies --configuration compileClasspath` resolved `junit-xml-parser -> 1.0.0` and printed the
+  script's line for both included builds (`$O/logs/L15-init-check.build-logic-deps.gradle-log.txt`). The jar fetched once from there
+  (`$O/dl/L15-junit-xml-parser-check/junit-xml-parser-1.0.0.jar`) has sha256 `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049`; the pins' `gradle/verification-metadata.xml` pin
+  `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049` (parent) and `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049` (fix), and Gradle's strict dependency verification checks it again in the build.
+  The earlier attempts' logs are kept in `$O/logs/attempt-1/` and `$O/logs/attempt-2/` (with the second attempt's init script).
 - The build: version `7.6` (`version.txt`), `build-logic` in Kotlin, compile toolchain JDK 11, dependency verification `strict`
   (`gradle/verification-metadata.xml`), configuration cache on. Its settings apply `com.gradle.enterprise` 3.10.2 and the
   `gradle-enterprise-conventions-plugin` 0.7.6, which point build scans and a remote build cache at Gradle's servers: every run here uses
@@ -1293,7 +1329,7 @@ Changed production file: `subprojects/core/src/main/java/org/gradle/api/internal
 | parent, its own tests (offline) | pending (job) |
 | fix's test files on the parent (offline; expected to fail) | pending (job) |
 
-Run by job `20261125-165654-setup-build-gradle-distributions-at-both`; logs `$O/logs/L15-*.gradle-log.txt` and `*.junit.txt`.
+Run by job `20261125-172547-setup-build-gradle-distributions-at-both`; logs `$O/logs/L15-*.gradle-log.txt` and `*.junit.txt`.
 
 **Release side.** Neither release equals a side. `v7.6.0` contains the fix (GitHub compare: the fix is behind 7.6.0) and its `AbstractTask.java`
 has the fix's lines plus later changes (onlyIf reasons, `ScriptOriginUtil`). `v7.5.0`/`v7.5.1` are on the release branch, which diverged
@@ -1316,8 +1352,8 @@ the action to `ImplementationSnapshot.of`). Distributions fetched and checked (s
 **Signatures.** Gradle distributions are checked by sha256 only (no signatures). The pins' `gradle-wrapper.jar` (sha256 `b95314dbc8c92954d14d1b8e8c14eab50e7a599468fbb2e9fae81ec1f4fafc0a`) is not
 in Gradle's published list of wrapper checksums (`wrapper-checksums.json`, sha256 `c5deb57f25df459bdd954a08338c685caf08b05b302afcd1fefd21c77c70f927`; releases only) and was not used.
 
-**Jobs.** `20261125-165654-setup-build-gradle-distributions-at-both` (second attempt, with the init script; 4 CPUs, ~10 GB, estimated 2.5 h); the first, `20261125-161917-setup-build-gradle-distributions-at-both`,
-failed as above after 2m42s.
+**Jobs.** `20261125-172547-setup-build-gradle-distributions-at-both` (third attempt, with the extended init script; 4 CPUs, ~10 GB, estimated 2.5 h). The first, `20261125-161917-setup-build-gradle-distributions-at-both`,
+failed as above after 2m42s; the second, `20261125-165654-setup-build-gradle-distributions-at-both`, after 1m17s (every step exited 1 at configuration; no test ran).
 
 **For the domain agent**
 - The brief's scenario runs a Gradle distribution: use `$O/tools/gradle-pin-L15-parent/bin/gradle` and `$O/tools/gradle-pin-L15-fix/bin/gradle`
@@ -1581,7 +1617,9 @@ Online resolution of clients, core, streams, streams:test-utils, connect:json an
 - classpath export: `$G19 --offline -I $O/scripts/resolve-all.init.gradle :streams:test-utils:setupWriteClasspath -PsetupCpOut=FILE`, then `cp_export_D.py`.
 Offline was checked inline for the small export above; the job runs the rest offline.
 
-**Artifacts.** | File in `$O/artifacts/` | sha256 |
+**Artifacts.** 
+
+| File in `$O/artifacts/` | sha256 |
 |---|---|
 | `L19-kafka-fix-connect-api-2.3.0-SNAPSHOT.jar` | `5632a6a2a15a2a74c52299ad427c13902de3af8b8c317d28a21c457dee27d1a9` |
 | `L19-kafka-fix-connect-json-2.3.0-SNAPSHOT.jar` | `f7a1a2806156e34a3581f93a8e942a1d48e20c078e1a4762e4437d1860593664` |
@@ -1705,10 +1743,11 @@ transplant (does not compile), the modified transplant (16 failures), then both 
 ## Jobs
 
 Eight jobs were queued by the forks with `$O/scripts/submit_{A,B,C,D}.py` and committed with the start of this record; four more followed
-when their results came back (`submit_D.py l14 l15` again, `submit_L09b.py`, `submit_L05b.py`). Each resolves online first (one connector
+when their results came back (`submit_D.py l14 l15` again, `submit_L09b.py`, `submit_L05b.py`), and a third L15 attempt after those
+(`submit_D.py l15`). Each resolves online first (one connector
 thread) and runs its later steps offline; each copies its jars, digests and classpaths to `$O/artifacts/` and ends by removing its build
 trees. A transplant step passes only when the named test fails (or, where noted, when the landed test does not compile). The first attempts'
-logs for L14 and L15 are kept in `$O/logs/attempt-1/`.
+logs for L14 and L15 are kept in `$O/logs/attempt-1/`, the second L15 attempt's (with its init script) in `$O/logs/attempt-2/`.
 
 | Job | Case | What it runs | Estimate | Result |
 |---|---|---|---|---|
@@ -1720,10 +1759,11 @@ logs for L14 and L15 are kept in `$O/logs/attempt-1/`.
 | `20261125-162448-setup-build-guava-7277-s-two-revisions-j` | L16 | Guava JRE and Android at both pins, `FuturesTest` (the PR adds no tests) | 4 CPU, 5G, 30m | **passed** (2m46s): `FuturesTest` 160/160 on each of fix JRE, fix Android, parent JRE, parent Android, and fix JRE offline |
 | `20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou` | L09 | meant: rdf4j compliance tests at both pins and the transplant | 3 CPU, 5G, 25m | **passed, but did not run the compliance classes**: it stopped at `package`, and `compliance/sparql` runs its tests under failsafe in `verify`. Only `GroupIteratorTest` ran (as inline). It did copy and compare the module jars of both sides. Rerun below |
 | `20261125-162622-setup-build-junit-6104-at-both-revisions` | L05 | JUnit jars at both pins; `NestedTestClassesTests`, `ClassTemplateInvocationTests` on the fix, the parent, and the fix's tests on the parent | 2 CPU, 6G, 30m | **passed** (5m49s): fix 56/56 online and offline; parent 53/53; landed transplant does not compile (the fixture uses the fix's renamed constants). Follow-up below |
-| `20261125-165654-setup-build-iceberg-api-core-data-parque` | L14 | second attempt, on standalone clones (`:generateGitProperties` checked inline) | 3 CPU, 6G, 40m | pending |
-| `20261125-165654-setup-build-gradle-distributions-at-both` | L15 | second attempt, with `$O/scripts/gradle-L15-openmbee-substitute.init.gradle` | 4 CPU, 10G, 150m | pending |
-| `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` | L09 | the compliance build to `verify` (`$O/scripts/rdf4j_verify.sh`): failsafe `MemoryComplexSPARQLQueryTest`, `SPARQL12QueryTest`, surefire `GroupIteratorTest`, at both pins and the PR's test-side files on the parent; each step fails if a named class did not run | 3 CPU, 5G, 30m | pending |
-| `20261125-170100-setup-run-junit-6104-s-landed-nested-cla` | L05 | the fix's two test classes on the parent with only four constant references mapped to the parent's names or the same string values; the parent's own fixture | 2 CPU, 6G, 15m | pending |
+| `20261125-165654-setup-build-iceberg-api-core-data-parque` | L14 | second attempt, on standalone clones (`:generateGitProperties` checked inline) | 3 CPU, 6G, 40m | **passed**: fix 48 run, 0 failures, 1 skipped, online and offline; parent's own 39 run, 0 failures, 1 skipped; transplant 9 failures (8 `TestGenericReaderDeletes` parameterizations, `TestGenericRecord#testDeepCopyValues()`); jars, class digests and classpaths of both sides copied |
+| `20261125-165654-setup-build-gradle-distributions-at-both` | L15 | second attempt, with `$O/scripts/gradle-L15-openmbee-substitute.init.gradle` | 4 CPU, 10G, 150m | **failed** (1m17s): every Gradle step exited 1 configuring the root project; `junit-xml-parser` was still not found, now for `:build-logic:performance-testing:compileClasspath`, which resolves from `build-logic`'s settings repositories (the script reached build-script repositories only). No test ran. Rerun below |
+| `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` | L09 | the compliance build to `verify` (`$O/scripts/rdf4j_verify.sh`): failsafe `MemoryComplexSPARQLQueryTest`, `SPARQL12QueryTest`, surefire `GroupIteratorTest`, at both pins and the PR's test-side files on the parent; each step was meant to fail if a named class did not run | 3 CPU, 5G, 30m | **passed**: fix `MemoryComplexSPARQLQueryTest` 81/81, `SPARQL12QueryTest` 2/2, `GroupIteratorTest` 9/9, online and offline; parent's own 78/78 and 8/8; transplant 5 failures (`testMax/Min/SampleAggregateWithGroupEmptyResult`, `agg on empty set, explicit grouping`, `testMaxEmptySet_Grouped`). Its per-class lines wrongly said "NOT RUN" (a pattern fault in the setup's script, and the guard did not take effect); recomputed from its logs, as L09's section explains |
+| `20261125-170100-setup-run-junit-6104-s-landed-nested-cla` | L05 | the fix's two test classes on the parent with only four constant references mapped to the parent's names or the same string values; the parent's own fixture | 2 CPU, 6G, 15m | **passed** (2m52s): production code and fixtures unchanged; 56 run, 3 failures (`NestedTestClassesTests#nestedTestClassesWithSameNameAreCorrectlyDiscoveredAndExecuted()`, `NestedTestClassesTests#deeplyNestedInheritedMethodsAreExecutedWhenSelectedViaUniqueId()`, `ClassTemplateInvocationTests#nestedClassTemplateIsInherited()`) |
+| `20261125-172547-setup-build-gradle-distributions-at-both` | L15 | third attempt: the init script now also adds the repository to every build's settings repositories (`build-logic`'s resolution checked inline, 26 s) | 4 CPU, 10G, 150m | pending |
 
 ## Signatures
 
@@ -1741,7 +1781,7 @@ Each case's section has its own signature table. In short:
   the pins themselves (git commits fetched by SHA), and the jcenter-era build-script modules substituted for L18 (`build-info-extractor`,
   `-client`, `-api` 2.15.0 from JFrog's public jcenter mirror, `http-builder` 0.7.2) and L19 (`grgit-core` 3.1.1 from repo.grails.org), each
   by SHA-1 against the serving repository, with no second source.
-- **L15's build-script substitute** `org.openmbee.junit:junit-xml-parser:1.0.0` (from `https://repo.gradle.org/gradle/public`, which the
+- **L15's substitute library** `org.openmbee.junit:junit-xml-parser:1.0.0` (from `https://repo.gradle.org/gradle/public`, which the
   upstream `build-logic` declares): its sha256 equals the one both pins' `gradle/verification-metadata.xml` pin (L15's section has both), and
   Gradle's strict dependency verification checks it again in the build.
 
@@ -1762,9 +1802,10 @@ landed commits).
   [Upstream revisions](#upstream-revisions)). Every PR's merge SHA is the brief's after pin; every after pin's first parent is the before pin,
   except L03, whose three rebased commits lead from the before pin to the after pin as the brief says.
 - Built jars of both sides in `$O/artifacts/`, named in each case's section with full sha256 and the digests of the changed classes, and
-  runtime classpath files beside them: L01–L04, L06–L08, L11–L13, L17, L18 inline; L20 (fix inline, parent by job); L05, L10, L16, L19
-  by job; L09's evaluation module inline, and every rdf4j module of both sides by job (`$O/artifacts/L09-rdf4j-ROLE-modules/`).
-  **Not yet:** L14 and L15, whose first jobs failed in their build set-up; their second attempts are queued (see [Jobs](#jobs)).
+  runtime classpath files beside them: L01–L04, L06–L08, L11–L13, L17, L18 inline; L20 (fix inline, parent by job); L05, L10, L14, L16,
+  L19 by job; L09's evaluation module inline, and every rdf4j module of both sides by job (`$O/artifacts/L09-rdf4j-ROLE-modules/`).
+  **Not yet:** L15's two pin distributions (`$O/tools/gradle-pin-L15-ROLE`); two attempts failed configuring Gradle's build, and the third
+  is queued (see [Jobs](#jobs)).
 - Release sets resolved with strict checksums in `$O/releases/`, and which side each equals: the "Release side" column of
   [Summary by case](#summary-by-case).
 - Dependencies are in `$O/m2` and `$O/gradle-home`; the offline form (`$MVN -o`, `--offline`) was checked for every case built inline, and
@@ -1775,17 +1816,20 @@ landed commits).
 - The landed regression passes on the fix and fails on the parent (the fix's test moved onto the parent) for L01, L02, L03, L04, L06, L07,
   L08, L09 (`GroupIteratorTest#testMaxEmptySet_Grouped`), L11, L12 (`JdbcJobStoreTest`, Derby), L13, L17 and L18: 13 cases, counts and
   failing tests in the summary table.
-- By job, the same holds for **L10** (`planner.iq` and two `RelOptRulesTest` entries fail on the parent with the fix's resources) and **L19**
-  (6 of the 26 landed tests fail on the parent): 15 cases in all.
-- **L05:** the landed tests pass on the fix (56) and the parent's own on the parent (53), but the fix's tests do not compile on the parent:
-  the test fixture uses constants the fix renames. A copy with only those constant references mapped (to the parent's names, or the same
-  string values) is queued (`20261125-170100-setup-run-junit-6104-s-landed-nested-cla`).
+- By job, the same holds for **L10** (`planner.iq` and two `RelOptRulesTest` entries fail on the parent with the fix's resources), **L14**
+  (9 of 48: eight `TestGenericReaderDeletes` parameterizations and `TestGenericRecord#testDeepCopyValues()`) and **L19** (6 of the 26 landed
+  tests fail on the parent): 16 cases in all.
+- **L05, with a mapped transplant:** the landed tests pass on the fix (56) and the parent's own on the parent (53). The fix's tests do not
+  compile on the parent as they are (the fixture uses constants the fix renames); with only four constant references mapped (to the parent's
+  names, or the same string values) and nothing else changed, 3 of 56 fail on the parent, the two `NestedTestClassesTests` cases of the PR
+  and `ClassTemplateInvocationTests#nestedClassTemplateIsInherited()`. The mapped files and their diffs are in `$O/artifacts/L05-transplant-mapped/`.
 - **L20's landed test does not compile on the parent** (it calls the fix-only `hasActiveColumnDefinitions()`); a copy with those six lines
   deleted, labelled as modified, compiles and has 16 failures on the parent.
 - **L16 has no landed test** (the PR adds none); `FuturesTest` passes at both pins, JRE and Android (160 each), and cannot separate the sides.
-- **L09:** `GroupIteratorTest#testMaxEmptySet_Grouped` separates the sides; the compliance classes (`MemoryComplexSPARQLQueryTest`,
-  `SPARQL12QueryTest`) have **not run yet**: the first job stopped at `package`, and their rerun to `verify` is queued.
-- Pending, by job: L14 and L15 (second attempts), L09's compliance classes, L05's mapped transplant. [Jobs](#jobs) has the ids.
+- **L09:** besides `GroupIteratorTest#testMaxEmptySet_Grouped` (inline), the compliance classes ran under failsafe by job: on the fix
+  `MemoryComplexSPARQLQueryTest` 81/81 and `SPARQL12QueryTest` 2/2; on the parent its own 78/78; with the PR's test-side files on the parent,
+  the three `...AggregateWithGroupEmptyResult` tests and `agg on empty set, explicit grouping` fail.
+- Pending, by job: **L15** only (`20261125-172547-setup-build-gradle-distributions-at-both`, third attempt): no L15 build or test has run yet.
 - **None of the brief's claim scenarios was run** in any case.
 
 ### What to know before starting
@@ -1812,11 +1856,12 @@ landed commits).
 - **L05, L14, L19:** `$W/L05-junit-framework-*`, `$W/L14-iceberg-*` and `$W/L19-kafka-*` are standalone depth-1 clones, not worktrees,
   because their builds read git through JGit (L14's `gradle-git-properties` failed in a worktree); build JUnit only through
   `$O/scripts/L05-gradle.sh`.
-- **L15, second substitution:** the root project's build-script classpath needs `org.openmbee.junit:junit-xml-parser:1.0.0`, which the Plugin
-  Portal no longer serves; `$O/scripts/gradle-L15-openmbee-substitute.init.gradle` adds `https://repo.gradle.org/gradle/public` (declared by
-  the upstream `build-logic`) for that one group. Pass it with `-I` on every L15 Gradle run.
+- **L15, second substitution:** `org.openmbee.junit:junit-xml-parser:1.0.0` is no longer on Central or the Plugin Portal, and Gradle's build
+  needs it for the root build-script classpath and for `build-logic`'s compile classpath; `$O/scripts/gradle-L15-openmbee-substitute.init.gradle`
+  adds `https://repo.gradle.org/gradle/public` (which `build-logic` already declares for another module) for that one group, to every
+  build's settings repositories and every project's build-script repositories. Pass it with `-I` on every L15 Gradle run.
 - **L09:** `compliance/sparql` skips surefire and runs its tests under failsafe; run them with `$O/scripts/rdf4j_verify.sh` (`verify`,
-  `-Dit.test=...`), not with `-Dtest` and `package`.
+  `-Dit.test=...`), not with `-Dtest` and `package`. Its per-class lines were fixed after the job; read counts from the Maven log if in doubt.
 - **Signatures:** RxJava 3.0.0-RC8/RC9 and reactive-streams 1.0.3 cannot be verified; shade 3.3.0/3.4.0 and Kafka 2.2.1 are signed by keys
   that have since expired. See [Signatures](#signatures).
 - Jars built from pins carry build timestamps: compare the class digests in each section, not the jar digests.
