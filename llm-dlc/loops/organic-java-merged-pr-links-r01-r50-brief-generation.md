@@ -7,11 +7,11 @@
 | vavr-io/vavr#3276 | written | Read the public Map contract, Maps remapping branch and null-valued lookup assertions. Before/after use different option constructors for the same stored null. Callback arguments and persistence across a second remap remain open. |
 | vigna/fastutil#325 | written | Compared the primitive driver and both int regressions. The copy length changes from destination length to size(). Nonzero spare cells and post-copy mutation remain unexecuted. |
 | google/guava#8811 | written | Compared the pinned extreme-distance rotation test and public range method with the boxed-list contract. Integer.MIN_VALUE modulo lengths 3 and 5 gives right rotations of 1 and 2. The sentinel-protected subrange remains unexecuted. |
-| apache/commons-lang#1865 | not yet |  |
-| locationtech/jts#1168 | not yet |  |
-| jgrapht/jgrapht#1379 | not yet |  |
-| google/guava#8801 | not yet |  |
-| jgrapht/jgrapht#1376 | not yet |  |
+| apache/commons-lang#1865 | written | Read divideBy and its CSV cases. The parent inverts first, while the merge checks reduced components. Compared the exact divisors m/2 and −1073741824/1 on paper. The paired public result remains unexecuted. |
+| locationtech/jts#1168 | written | Read the issue, clone's indexed add-to-set change, and the three-point test. The published test checks values and length. Repeated equal coordinates and mutation isolation remain open. |
+| jgrapht/jgrapht#1379 | written | Read the cache invalidation paths and directed/undirected listener fixtures. An edge joining a,b to c forces a three-vertex weak component. A partial query followed by reversed directed-edge insertion and fresh-inspector comparison remains a prediction. |
+| google/guava#8801 | written | Read the duplicated graph change, regression and shortcut. Three triangle edges plus one isolate force traversal. Parent behavior may depend on neighbor order. The unrelated-component variation remains unexecuted. |
+| jgrapht/jgrapht#1376 | written | Read both −1 sentinel changes and the supplied triangle and K4 weights. Triangle sums are −6 and 9 after translation. Path-to-weight readback remains unexecuted. |
 | apache/commons-io#931 | not yet |  |
 | apache/commons-io#860 | not yet |  |
 | google/jimfs#435 | not yet |  |
