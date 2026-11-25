@@ -1,0 +1,412 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-202838-setup-build-checkstyle-at-both-14128-rev",
+  "title": "Setup: build Checkstyle at both #14128 revisions and run HiddenFieldCheckTest",
+  "status": "passed",
+  "summary": "passed: 6 passed step(s) in 1m19s, peak 1.4 GiB (estimated 30m00s, 4.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-202838-setup-build-checkstyle-at-both-14128-rev.json",
+    "sha256": "83f442b22d3a265b257c18b4adfdba4490df614c23e5c073e89af057297fc1b5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-202838-setup-build-checkstyle-at-both-14128-rev",
+      "title": "Setup: build Checkstyle at both #14128 revisions and run HiddenFieldCheckTest",
+      "description": "Setup for case M08 of llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-m01-m10/worktrees, Maven 3.10.0 on JDK 17 with lint and report plugins skipped: builds Checkstyle (10.12.7-SNAPSHOT) at the fix pin d150018d141294ac9bb02ae653d01072c5c4c4ae (online first, then offline) and the parent pin d3f020a5c477edbb57afc0f3fa2d1fab0849d6fb, running only HiddenFieldCheckTest; keeps both jars, the HiddenFieldCheck class digests and the runtime classpaths; then runs the fix's HiddenFieldCheckTest with its two new resources-noncompilable inputs on a copy of the parent (expected to fail), and the Checkstyle CLI once at each pin on a setup smoke file. A Checkstyle build compiles its 439 main sources, runs its generators and compiles over 750 test-side sources (src/test/java, src/it/java, src/xdocs-examples/java), so the runs are a job. Dependencies and lifecycle plugins up to compile were resolved inline first.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: fix and parent HiddenFieldCheckTest pass online and offline; the transplant prints TRANSPLANT-FAILS-AS-EXPECTED; both CLI runs print XML naming HiddenFieldCheck; the trees are removed",
+      "submitted": {
+        "at": "2026-11-25T20:28:38+00:00",
+        "session": "a5b4fdc9-3bf2-4c02-8a33-72bad19f6a2d",
+        "by": "setup agent (Claude Opus 5.5), fork B"
+      },
+      "requires": [
+        "java",
+        "mvn",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "4G",
+        "duration": "30m"
+      },
+      "steps": [
+        {
+          "name": "M08 fix: Checkstyle build online (first resolution of the test classpath and surefire), HiddenFieldCheckTest",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh fix-online",
+          "cwd": "."
+        },
+        {
+          "name": "M08 fix offline: HiddenFieldCheckTest; fix jar, class digest, runtime classpath",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh fix-offline",
+          "cwd": "."
+        },
+        {
+          "name": "M08 parent offline: its own HiddenFieldCheckTest; parent jar, class digest, runtime classpath",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh parent",
+          "cwd": "."
+        },
+        {
+          "name": "M08 the fix's HiddenFieldCheckTest and its two new input files on the parent (expected to fail)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh transplant",
+          "cwd": "."
+        },
+        {
+          "name": "M08 the Checkstyle CLI (-c hidden.xml -f xml) on a setup smoke file with both built jars",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh cli",
+          "cwd": "."
+        },
+        {
+          "name": "remove the M08 build trees",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh clean",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "a4492bc87c13dd184b7a9c9ddc39bff6baf898b4",
+  "startedAt": "2026-11-25T20:55:51+00:00",
+  "finishedAt": "2026-11-25T20:57:19+00:00",
+  "wallSeconds": 88.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3579567,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 6442450944,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 4294967296,
+    "durationSeconds": 1800.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1511813120,
+    "wallSeconds": 79.6,
+    "cpuSeconds": 189.3,
+    "memoryOfEstimate": 0.35,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "M08 fix: Checkstyle build online (first resolution of the test classpath and surefire), HiddenFieldCheckTest",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh fix-online",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 20.063,
+      "cpuSeconds": 45.647,
+      "cpuThrottledSeconds": 1.453,
+      "peakMemoryBytes": 1329016832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-m08-fix-checkstyle-build-onlin.log",
+        "lines": 3,
+        "bytes": 88,
+        "sha256": "019a2a5a90cf5e8d36d4461156d05f619c6d571e03fba3f0cee618130b0b8f9e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=20",
+        "junit tests=19 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "M08 fix offline: HiddenFieldCheckTest; fix jar, class digest, runtime classpath",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh fix-offline",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 18.242,
+      "cpuSeconds": 44.295,
+      "cpuThrottledSeconds": 2.383,
+      "peakMemoryBytes": 1004130304,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-m08-fix-offline-hiddenfieldche.log",
+        "lines": 5,
+        "bytes": 377,
+        "sha256": "e75e485d1fd1e10afe699c8f54d80e81ee3abdb0566c95df2f88d861e65c3738",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=17",
+        "junit tests=19 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "0e1928b13ed70530a20e335093534fd4757c5082ab071ef039f367b4e0057716  /home/filip/.cache/in-the-loop/merged-pr-links-m01-m10/artifacts/M08-checkstyle-fix.jar",
+        "4bfdcf6dc984f38364910fd54aba3e86a8851e3296920c52fa39d0a0064e62e9  com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "M08 parent offline: its own HiddenFieldCheckTest; parent jar, class digest, runtime classpath",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 20.456,
+      "cpuSeconds": 50.228,
+      "cpuThrottledSeconds": 1.934,
+      "peakMemoryBytes": 1503158272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-m08-parent-offline-its-own-hid.log",
+        "lines": 5,
+        "bytes": 380,
+        "sha256": "0d4753a4cad364550b6cd866ca0178d15aaf1b836fd9deffb23073111a1fbe1d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=18",
+        "junit tests=17 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "148cc2176d27d52e08002083d43ce5f7d93dbbfcf952f54501a0bf09f8a10639  /home/filip/.cache/in-the-loop/merged-pr-links-m01-m10/artifacts/M08-checkstyle-parent.jar",
+        "3c1fe57d1426649e4567490f22d637132c266022a0ce47da6e37b5cb0f6f7aa0  com/puppycrawl/tools/checkstyle/checks/coding/HiddenFieldCheck.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "M08 the fix's HiddenFieldCheckTest and its two new input files on the parent (expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 19.642,
+      "cpuSeconds": 47.527,
+      "cpuThrottledSeconds": 1.303,
+      "peakMemoryBytes": 1511813120,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-m08-the-fix-s-hiddenfieldcheck.log",
+        "lines": 13,
+        "bytes": 1769,
+        "sha256": "d66e2d35014f1b885846a29b7b393d0eb1ad748eb4f1d996a46d0b61414ff749",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "mvn-exit=0 seconds=20",
+        "junit tests=19 failures=2 errors=0 skipped=0",
+        "junit failed HiddenFieldCheckTest#testHiddenFieldInnerRecordsImplicitlyStatic",
+        "junit failed HiddenFieldCheckTest#testHiddenFieldRecordsImplicitlyStaticClassComparison",
+        "[ERROR] Tests run: 19, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.621 s <<< FAILURE! -- in com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheckTest",
+        "[ERROR] com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheckTest.testHiddenFieldInnerRecordsImplicitlyStatic -- Time elapsed: 0.194 s <<< FAILURE!",
+        "[ERROR] com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheckTest.testHiddenFieldRecordsImplicitlyStaticClassComparison -- Time elapsed: 0.010 s <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   HiddenFieldCheckTest.testHiddenFieldInnerRecordsImplicitlyStatic:480->AbstractModuleTestSupport.verifyWithInlineConfigParser:238->AbstractModuleTestSupport.verifyViolations:470 Violation lines for /home/filip/.cache/in-the-loop/merged-pr-links-m01-m10/build/M08-checkstyle-transplant/src/te",
+        "[ERROR]   HiddenFieldCheckTest.testHiddenFieldRecordsImplicitlyStaticClassComparison:492->AbstractModuleTestSupport.verifyWithInlineConfigParser:238->AbstractModuleTestSupport.verifyViolations:470 Violation lines for /home/filip/.cache/in-the-loop/merged-pr-links-m01-m10/build/M08-checkstyle-transpl",
+        "[ERROR] Tests run: 19, Failures: 2, Errors: 0, Skipped: 0",
+        "[ERROR] There are test failures.",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "M08 the Checkstyle CLI (-c hidden.xml -f xml) on a setup smoke file with both built jars",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh cli",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 1.127,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 52768768,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-m08-the-checkstyle-cli-c-hidde.log",
+        "lines": 18,
+        "bytes": 819,
+        "sha256": "9722979079f4a255ac77be6bd290a4d2d3fe3ba839f3e630d5050ee115c813b9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "== parent",
+        "exit=1",
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+        "<checkstyle version=\"10.12.7-SNAPSHOT\">",
+        "<file name=\"/home/filip/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08-cli-check/Trivial.java\">",
+        "<error line=\"2\" column=\"37\" severity=\"error\" message=\"&apos;n&apos; hides a field.\" source=\"com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck\"/>",
+        "</file>",
+        "</checkstyle>",
+        "Checkstyle ends with 1 errors.",
+        "== fix",
+        "exit=1",
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+        "<checkstyle version=\"10.12.7-SNAPSHOT\">",
+        "<file name=\"/home/filip/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08-cli-check/Trivial.java\">",
+        "<error line=\"2\" column=\"37\" severity=\"error\" message=\"&apos;n&apos; hides a field.\" source=\"com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck\"/>",
+        "</file>",
+        "</checkstyle>",
+        "Checkstyle ends with 1 errors."
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "remove the M08 build trees",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-m01-m10/scripts/M08_job.sh clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.477,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2629632,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-remove-the-m08-build-trees.log",
+        "lines": 1,
+        "bytes": 8,
+        "sha256": "37c3dee866bc87fc3d52b6b053805dfbe5df3d394fdad9ec535f162a4e695941",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "cleaned"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T20:57:34+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T205719Z-558629f784dae9c7"
+    }
+  }
+}
