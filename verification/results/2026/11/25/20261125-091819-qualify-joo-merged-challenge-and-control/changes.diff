@@ -1,0 +1,452 @@
+--- /dev/null
++++ b/verification/merged-pr-links/qualified-419/419-jool-java-8.json
+@@ -0,0 +1,223 @@
++{
++  "entry": "org.jooq.lambda.WindowImpl#lastValue()Ljava/util/Optional;",
++  "observer": "Same public observer as the physical receipt, with an original-method breakpoint.",
++  "domainBasis": "Cross-check the previously measured typed returns on both revisions against two independent debugger trials.",
++  "cases": [
++    {
++      "args": [
++        "future"
++      ],
++      "expected": {
++        "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++      }
++    },
++    {
++      "args": [
++        "overflow"
++      ],
++      "expected": {
++        "return": "5=-:-; max-1=-:-"
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "541a4986e4d098ffdf7959bf9757f7f9a050708aa4c56b1ffaa4b726829fca83",
++  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
++  "tracerSha256": "60580c7a8f6cce3e4254e2855016ef92a64812888f34aa9958b5be1c7a5e0f50",
++  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "5ef86d6525374c6cc412a5a2d996d3d6457cb59c",
++      "sourceSha256": "424027c00696411f3a224e938abdb8c23df38cb179b5be182433080799d11bbd",
++      "callerClassSha256": "c388caf818948a24a14a9f414af91ac5fe2e6ed09562ea17b2e1d714883a9b64",
++      "classpath": [
++        "26d5315b0f3f6ea33f04b198d88061038c9a7bea02a115415b5eac9e4b33351b"
++      ],
++      "dependency": "26d5315b0f3f6ea33f04b198d88061038c9a7bea02a115415b5eac9e4b33351b",
++      "preparation": null,
++      "compiledClasses": null,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            },
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5=-:-; max-1=-:-"
++            },
++            {
++              "return": "5=-:-; max-1=-:-"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.jooq.lambda.Collectable",
++        "org.jooq.lambda.Partition",
++        "org.jooq.lambda.Seq",
++        "org.jooq.lambda.SeqImpl",
++        "org.jooq.lambda.SeqUtils",
++        "org.jooq.lambda.SeqUtils$1",
++        "org.jooq.lambda.SeqUtils$DelegatingSpliterator",
++        "org.jooq.lambda.Window",
++        "org.jooq.lambda.WindowImpl",
++        "org.jooq.lambda.WindowSpecification",
++        "org.jooq.lambda.WindowSpecificationImpl",
++        "org.jooq.lambda.exception.TooManyElementsException",
++        "org.jooq.lambda.tuple.Tuple",
++        "org.jooq.lambda.tuple.Tuple1",
++        "org.jooq.lambda.tuple.Tuple2"
++      ]
++    },
++    "new": {
++      "commit": "d1e06969ff748049aa8d1a9bf5d7f96dee7dc201",
++      "sourceSha256": "fdfd794bd5248edd606fbdc0b5c9297d92fe31d2cfdb898aae548951ca7b1df1",
++      "callerClassSha256": "05c63834eae3eea3432b7233c4ff647a2b5ab75fdbc58bb9c90604f76656e188",
++      "classpath": [
++        "db4c33c8ed67775947b674cfb94e52bd6492a95cbecd874aefd2f922b6a69d75"
++      ],
++      "dependency": "db4c33c8ed67775947b674cfb94e52bd6492a95cbecd874aefd2f922b6a69d75",
++      "preparation": null,
++      "compiledClasses": null,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            },
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5=1:3; max-1=1:1"
++            },
++            {
++              "return": "5=1:3; max-1=1:1"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.jooq.lambda.Collectable",
++        "org.jooq.lambda.Partition",
++        "org.jooq.lambda.Seq",
++        "org.jooq.lambda.SeqImpl",
++        "org.jooq.lambda.SeqUtils",
++        "org.jooq.lambda.SeqUtils$1",
++        "org.jooq.lambda.SeqUtils$DelegatingSpliterator",
++        "org.jooq.lambda.Window",
++        "org.jooq.lambda.WindowImpl",
++        "org.jooq.lambda.WindowSpecification",
++        "org.jooq.lambda.WindowSpecificationImpl",
++        "org.jooq.lambda.exception.TooManyElementsException",
++        "org.jooq.lambda.tuple.Tuple",
++        "org.jooq.lambda.tuple.Tuple1",
++        "org.jooq.lambda.tuple.Tuple2"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalFixtures": [
++    {
++      "kind": "java",
++      "class": "PublicCaller",
++      "file": "PublicCaller.java",
++      "sha256": "acdc7eeda0aa03e852387f9f17ae5121060a9053a6c71f724eaf1d21f919ff15"
++    }
++  ],
++  "runtimeCompanions": [],
++  "observerInvocation": {
++    "declaration": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;",
++    "codeIndices": [
++      1
++    ]
++  },
++  "workingDirectory": ".",
++  "originalInvocation": "org.jooq.lambda.WindowImpl#lastValue()Ljava/util/Optional;",
++  "invocationVia": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;",
++  "probeClasses": {
++    "PublicCaller": "c64b3076acf53007dbe440c3076c29c784cde671c2ea50ce646282d17b7e86f9",
++    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
++    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
++    "UpgradeProbe": "4aad22263510f5dd43f39f68a9fde6c42ff2e64f1b852c62c43aeba3b508d1b5",
++    "UpgradeTrace$CheckedReplay": "7c99d3e71bcf852c0c87b205da8c55ac4128ba5582d72671bfd54d4af18495b1",
++    "UpgradeTrace": "9c466951ca08d149f844929c44bba110d865072f9c02b56c73220bedce9375b8"
++  },
++  "differences": [
++    1
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 7.888
++}
+--- /dev/null
++++ b/verification/merged-pr-links/qualified-419/419-jool.json
+@@ -0,0 +1,223 @@
++{
++  "entry": "org.jooq.lambda.WindowImpl#lastValue()Ljava/util/Optional;",
++  "observer": "Same public observer as the physical receipt, with an original-method breakpoint.",
++  "domainBasis": "Cross-check the previously measured typed returns on both revisions against two independent debugger trials.",
++  "cases": [
++    {
++      "args": [
++        "future"
++      ],
++      "expected": {
++        "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++      }
++    },
++    {
++      "args": [
++        "overflow"
++      ],
++      "expected": {
++        "return": "5=-:-; max-1=-:-"
++      }
++    }
++  ],
++  "operandScope": "runtime",
++  "probeSha256": "541a4986e4d098ffdf7959bf9757f7f9a050708aa4c56b1ffaa4b726829fca83",
++  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
++  "tracerSha256": "60580c7a8f6cce3e4254e2855016ef92a64812888f34aa9958b5be1c7a5e0f50",
++  "lookupSha256": "6fe4c785f389c1f41849617ea9e68e702dad3aaebd93f157e0b67d06c8d68b08",
++  "jdk": {
++    "JAVA_VERSION": "21.0.13",
++    "JAVA_RUNTIME_VERSION": "21.0.13+9-LTS",
++    "IMPLEMENTOR": "Eclipse Adoptium",
++    "IMPLEMENTOR_VERSION": "Temurin-21.0.13+9",
++    "OS_ARCH": "x86_64"
++  },
++  "sides": {
++    "old": {
++      "commit": "5ef86d6525374c6cc412a5a2d996d3d6457cb59c",
++      "sourceSha256": "c0da85e7ea75987aa213b8b3491cf8b446535b52096701ea05faa2bede338533",
++      "callerClassSha256": "9ff1f4286cee3430bb6c13bad4cb45f252b88b225caa2a6c58c785b0ca531c53",
++      "classpath": [
++        "db4ef5a69bc373ad12a5720b8be4bfd5f031eeba9f16c4344e1c62fb048f552e"
++      ],
++      "dependency": "db4ef5a69bc373ad12a5720b8be4bfd5f031eeba9f16c4344e1c62fb048f552e",
++      "preparation": null,
++      "compiledClasses": null,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            },
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5=-:-; max-1=-:-"
++            },
++            {
++              "return": "5=-:-; max-1=-:-"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.jooq.lambda.Collectable",
++        "org.jooq.lambda.Partition",
++        "org.jooq.lambda.Seq",
++        "org.jooq.lambda.SeqImpl",
++        "org.jooq.lambda.SeqUtils",
++        "org.jooq.lambda.SeqUtils$1",
++        "org.jooq.lambda.SeqUtils$DelegatingSpliterator",
++        "org.jooq.lambda.Window",
++        "org.jooq.lambda.WindowImpl",
++        "org.jooq.lambda.WindowSpecification",
++        "org.jooq.lambda.WindowSpecificationImpl",
++        "org.jooq.lambda.exception.TooManyElementsException",
++        "org.jooq.lambda.tuple.Tuple",
++        "org.jooq.lambda.tuple.Tuple1",
++        "org.jooq.lambda.tuple.Tuple2"
++      ]
++    },
++    "new": {
++      "commit": "d1e06969ff748049aa8d1a9bf5d7f96dee7dc201",
++      "sourceSha256": "4fac4e31cf6834de5b00e4def5750eb65d4c318e3d8680a377f5e75a3529a424",
++      "callerClassSha256": "d3de6c47c0c499ef3ae8ef8c1b4541f6af76ea14518382ba3339322eab111ecb",
++      "classpath": [
++        "cc018f313a315dea624582901278e2d8efa0f99913a8a7244f29f9c66012fc08"
++      ],
++      "dependency": "cc018f313a315dea624582901278e2d8efa0f99913a8a7244f29f9c66012fc08",
++      "preparation": null,
++      "compiledClasses": null,
++      "resources": null,
++      "trials": [
++        {
++          "input": 0,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            },
++            {
++              "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        },
++        {
++          "input": 1,
++          "qualifiedMethodEntries": 2,
++          "observations": [
++            {
++              "return": "5=1:3; max-1=1:1"
++            },
++            {
++              "return": "5=1:3; max-1=1:1"
++            }
++          ],
++          "entryInvocations": [
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            },
++            {
++              "observerCodeIndex": 1,
++              "dispatchedTo": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
++            }
++          ],
++          "loadedUpgradeOnEachReplay": true
++        }
++      ],
++      "loadedDependencyClasses": [
++        "org.jooq.lambda.Collectable",
++        "org.jooq.lambda.Partition",
++        "org.jooq.lambda.Seq",
++        "org.jooq.lambda.SeqImpl",
++        "org.jooq.lambda.SeqUtils",
++        "org.jooq.lambda.SeqUtils$1",
++        "org.jooq.lambda.SeqUtils$DelegatingSpliterator",
++        "org.jooq.lambda.Window",
++        "org.jooq.lambda.WindowImpl",
++        "org.jooq.lambda.WindowSpecification",
++        "org.jooq.lambda.WindowSpecificationImpl",
++        "org.jooq.lambda.exception.TooManyElementsException",
++        "org.jooq.lambda.tuple.Tuple",
++        "org.jooq.lambda.tuple.Tuple1",
++        "org.jooq.lambda.tuple.Tuple2"
++      ]
++    }
++  },
++  "status": "changed",
++  "originalFixtures": [
++    {
++      "kind": "java",
++      "class": "PublicCaller",
++      "file": "PublicCaller.java",
++      "sha256": "acdc7eeda0aa03e852387f9f17ae5121060a9053a6c71f724eaf1d21f919ff15"
++    }
++  ],
++  "runtimeCompanions": [],
++  "observerInvocation": {
++    "declaration": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;",
++    "codeIndices": [
++      1
++    ]
++  },
++  "workingDirectory": ".",
++  "originalInvocation": "org.jooq.lambda.WindowImpl#lastValue()Ljava/util/Optional;",
++  "invocationVia": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;",
++  "probeClasses": {
++    "PublicCaller": "c64b3076acf53007dbe440c3076c29c784cde671c2ea50ce646282d17b7e86f9",
++    "UpgradeClassLookup": "ee3e7335330fd9dadd3850772de3f4874e1929ba32e6e553a61fffc3613b40f9",
++    "UpgradeObservation": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
++    "UpgradeProbe": "4aad22263510f5dd43f39f68a9fde6c42ff2e64f1b852c62c43aeba3b508d1b5",
++    "UpgradeTrace$CheckedReplay": "7c99d3e71bcf852c0c87b205da8c55ac4128ba5582d72671bfd54d4af18495b1",
++    "UpgradeTrace": "9c466951ca08d149f844929c44bba110d865072f9c02b56c73220bedce9375b8"
++  },
++  "differences": [
++    1
++  ],
++  "oldOracleDisagreements": [],
++  "elapsedSeconds": 7.97
++}

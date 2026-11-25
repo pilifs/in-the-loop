@@ -1,0 +1,175 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-091819-qualify-jackson-csv-merged-challenge-and",
+  "title": "Qualify Jackson CSV merged challenge and control at method entry",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 11.8s, peak 97.7 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [
+    "step 1 (qualify control and counterexample) was held back 11.9s by its 1-CPU quota in 11.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-091819-qualify-jackson-csv-merged-challenge-and.json",
+    "sha256": "d0f8f15a3305963a55af1b0c77d07e7b6648a98b46109ae1f6901d0a5403d119",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-091819-qualify-jackson-csv-merged-challenge-and",
+      "title": "Qualify Jackson CSV merged challenge and control at method entry",
+      "description": "For example 409, qualify its challenge and control inside the original CSV tokenization method on each registered classpath. The existing upgrade verifier runs two fresh debugger trials per side and checks their typed observations against the independent public caller receipt.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md",
+          "examples/409-jackson-csv-end-of-input/comparison.json"
+        ]
+      },
+      "expected": "Every selected method is reached twice per side per question and the complete result in each trial agrees with the recorded public observation.",
+      "submitted": {
+        "at": "2026-11-25T09:18:19+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 1.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "qualify control and counterexample",
+          "run": "python3 verification/merged-pr-links/qualify.py 409 --output verification/merged-pr-links/qualified-409",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/qualified-409"
+      ]
+    }
+  },
+  "sourceCommit": "dff18b13cda2f81ec9ca43aa8a99361ddb8ed1d6",
+  "startedAt": "2026-11-25T09:26:14+00:00",
+  "finishedAt": "2026-11-25T09:26:40+00:00",
+  "wallSeconds": 26.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3566000,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 1.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 1.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 102445056,
+    "wallSeconds": 11.8,
+    "cpuSeconds": 9.7,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "qualify control and counterexample",
+      "run": "python3 verification/merged-pr-links/qualify.py 409 --output verification/merged-pr-links/qualified-409",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 11.824,
+      "cpuSeconds": 9.659,
+      "cpuThrottledSeconds": 11.927,
+      "peakMemoryBytes": 102445056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-qualify-control-and-counterexa.log",
+        "lines": 1,
+        "bytes": 115,
+        "sha256": "ecc0ea63403bcae7e60594b4f88027b8398d21f9872e25df716a67899d8fab67",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "409 pinned tools.jackson.dataformat.csv.CsvParser#nextToken()Ltools/jackson/core/JsonToken; 8 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/qualified-409/409-pinned.json",
+      "change": "added",
+      "bytes": 8890,
+      "sha256": "ea664f2d240ae73505d56c58ed53fe86b40e31af0f808bd87b128e44876e6ce6",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T09:26:54+00:00",
+    "applied": [
+      "verification/merged-pr-links/qualified-409/409-pinned.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T092640Z-748696acde2f2ed4",
+      "outputs": "20261125T092640Z-775434c4b53a0057",
+      "diff": "20261125T092640Z-79149645351140d9"
+    }
+  }
+}
