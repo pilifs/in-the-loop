@@ -1,0 +1,53 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-071708-setup-run-hikaricp-s-landed-postgrestest",
+  "title": "Setup: run HikariCP's landed PostgresTest at both #2346 revisions and transplanted onto the parent",
+  "description": "Setup for case M11 (HikariCP #2346, schema reset between borrowers) of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M11-HikariCP-fix = b81bbc9d, M11-HikariCP-parent = ee5328d2), runs Maven offline on JDK 17 against the cache's local repository: the whole PostgresTest class (Testcontainers 1.20.3, image postgres:16 already pulled, one container per test) on the fix, the parent's own copy on the parent, and the fix's PostgresTest plus its postgres_init_script.sql transplanted onto the parent, where only testSchema should fail (the setup saw it fail alone at line 162, expected:<test> but was:<null>). Testcontainers needs -Dapi.version=1.44 for Docker 29 (passed through the POM's sureFireOptions11 property; no upstream file changed). JUnit summaries go to .../logs; worktrees are restored and build trees removed. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: fix 7/7 pass, parent's own 6/6 pass, transplant fails exactly testSchema; no containers left",
+  "submitted": {
+    "at": "2026-11-25T07:17:08+00:00",
+    "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+    "by": "setup agent (Claude Opus 5.5), fork B"
+  },
+  "requires": [
+    "java",
+    "docker",
+    "mvn",
+    "git",
+    "python3"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "10m"
+  },
+  "steps": [
+    {
+      "name": "M11-HikariCP-fix: the whole landed PostgresTest (7 tests) on the fix, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-fix; echo worktree=M11-HikariCP-fix commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'rm -rf target' EXIT; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-fix-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-fix-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M11-fix-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+      "cwd": "."
+    },
+    {
+      "name": "M11-HikariCP-parent: the parent's own PostgresTest (6 tests), offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-parent; echo worktree=M11-HikariCP-parent commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'rm -rf target' EXIT; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-parent-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-parent-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M11-parent-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+      "cwd": "."
+    },
+    {
+      "name": "M11-HikariCP-parent: the fix's PostgresTest and init script transplanted; only testSchema may fail",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs; export JAVA_HOME=$J17 MAVEN_OPTS=-Xmx1g; docker image inspect postgres:16 --format '{{json .RepoDigests}}'; cd $W/M11-HikariCP-parent; echo worktree=M11-HikariCP-parent commit=$(git rev-parse HEAD); git status --short; rm -rf target; trap 'git checkout -q -- . ; git clean -fdq src; rm -rf target' EXIT; git show b81bbc9d438ffac5ef7be4609121d76bb8a31564:src/test/java/com/zaxxer/hikari/pool/PostgresTest.java > src/test/java/com/zaxxer/hikari/pool/PostgresTest.java; git show b81bbc9d438ffac5ef7be4609121d76bb8a31564:src/test/resources/postgres_init_script.sql > src/test/resources/postgres_init_script.sql; git status --short; set +e; $MVN -o -Dmaven.javadoc.skip -Dgpg.skip test -Dtest=PostgresTest -DforkCount=1 -Dsurefire.failIfNoSpecifiedTests=false '-DsureFireOptions11=--add-modules=ALL-MODULE-PATH -Dapi.version=1.44' > $O/logs/M11-transplant-PostgresTest.maven.log 2>&1; rc=$?; set -e; echo maven-exit=$rc; python3 -I $O/scripts/junit_summary.py target/surefire-reports | tee $O/logs/M11-transplant-PostgresTest.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M11-transplant-PostgresTest.junit.txt | cut -d= -f2) -gt 0; test $(grep -c '^junit failed' $O/logs/M11-transplant-PostgresTest.junit.txt) -eq 1; grep -q '^junit failed PostgresTest#testSchema$' $O/logs/M11-transplant-PostgresTest.junit.txt; test $(grep -o 'errors=[0-9]*' $O/logs/M11-transplant-PostgresTest.junit.txt | cut -d= -f2) -eq 0; sleep 15; docker ps --format '{{.Image}} {{.Names}}' | grep -E 'postgres:16|ryuk' && echo 'containers still running' || echo 'no test containers left'",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

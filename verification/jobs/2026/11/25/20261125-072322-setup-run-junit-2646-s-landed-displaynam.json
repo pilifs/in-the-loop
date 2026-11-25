@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-072322-setup-run-junit-2646-s-landed-displaynam",
+  "title": "Setup: run JUnit #2646's landed DisplayNameGenerationTests at both revisions",
+  "description": "Setup for case M19 of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup checkouts under ~/.cache/in-the-loop/merged-pr-links/worktrees (M19-junit-framework-fix = 694efb6dbd8506d623d5c117d1df39f9260f72df, M19-junit-framework-parent = 882bf488e228b1f55ed3b636838825dec31ec20d; standalone depth-1 clones, because the build's versioning plugin reads git history with JGit), runs the upstream Gradle build through $O/scripts/M19-gradle.sh: Gradle 7.1-rc-2 (checked against services.gradle.org and the wrapper's distributionSha256Sum) on JDK 11, toolchain AdoptOpenJDK 16.0.1+9 (checked), --no-build-cache and --no-scan (nothing from or to ge.junit.org), one init script that adds the public repositories for a moved test-distribution plugin and a jcenter-only grgit-core (copied with checked SHA-1). It compiles the junit-jupiter-engine tests (Java, Kotlin, Groovy) and runs org.junit.jupiter.api.DisplayNameGenerationTests with -Pretries=0: on the fix online then offline, on the parent its own copy offline, then the fix's test and its two new fixture classes transplanted onto the parent (expected to fail, or not to compile; the step says which). JUnit summaries to .../logs, checkouts restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: the fix's DisplayNameGenerationTests pass online and offline, the parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE",
+  "submitted": {
+    "at": "2026-11-25T07:23:22+00:00",
+    "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+    "by": "setup agent (Claude Opus 5.5), fork C"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "15m"
+  },
+  "steps": [
+    {
+      "name": "M19 fix: compile junit-jupiter-engine tests and run DisplayNameGenerationTests, online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M19-junit-framework-fix; echo worktree=M19-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf junit-jupiter-engine/build/test-results/test; set +e; choom -n 500 -- $O/scripts/M19-gradle.sh  -Pretries=0 :junit-jupiter-engine:cleanTest :junit-jupiter-engine:test --tests org.junit.jupiter.api.DisplayNameGenerationTests > $O/logs/M19-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/M19-fix.test-online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py junit-jupiter-engine/build/test-results/test | tee $O/logs/M19-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M19-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M19-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M19-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/M19-fix.test-online.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M19 fix: the same, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M19-junit-framework-fix; echo worktree=M19-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf junit-jupiter-engine/build/test-results/test; set +e; choom -n 500 -- $O/scripts/M19-gradle.sh --offline -Pretries=0 :junit-jupiter-engine:cleanTest :junit-jupiter-engine:test --tests org.junit.jupiter.api.DisplayNameGenerationTests > $O/logs/M19-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/M19-fix.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py junit-jupiter-engine/build/test-results/test | tee $O/logs/M19-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M19-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M19-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M19-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/M19-fix.test-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M19 parent: its own DisplayNameGenerationTests, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M19-junit-framework-parent; echo worktree=M19-junit-framework-parent commit=$(git rev-parse HEAD); rm -rf junit-jupiter-engine/build/test-results/test; set +e; choom -n 500 -- $O/scripts/M19-gradle.sh --offline -Pretries=0 :junit-jupiter-engine:cleanTest :junit-jupiter-engine:test --tests org.junit.jupiter.api.DisplayNameGenerationTests > $O/logs/M19-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/M19-parent.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py junit-jupiter-engine/build/test-results/test | tee $O/logs/M19-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M19-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M19-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M19-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/M19-parent.test-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M19 parent with the fix's DisplayNameGenerationTests and two new fixtures transplanted, offline (expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M19-junit-framework-parent; echo worktree=M19-junit-framework-parent commit=$(git rev-parse HEAD); for f in DisplayNameGenerationTests.java IndicativeSentencesNestedTestCase.java IndicativeSentencesTopLevelTestCase.java; do cp $W/M19-junit-framework-fix/junit-jupiter-engine/src/test/java/org/junit/jupiter/api/$f junit-jupiter-engine/src/test/java/org/junit/jupiter/api/$f; done; git status --short; rm -rf junit-jupiter-engine/build/test-results/test; set +e; choom -n 500 -- $O/scripts/M19-gradle.sh --offline -Pretries=0 :junit-jupiter-engine:cleanTest :junit-jupiter-engine:test --tests org.junit.jupiter.api.DisplayNameGenerationTests > $O/logs/M19-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/M19-parent.transplanted.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py junit-jupiter-engine/build/test-results/test | tee $O/logs/M19-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest(Java|Kotlin|Groovy) FAILED' $O/logs/M19-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/M19-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/M19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/M19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/M19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git clean -fdxq; git status --short; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M19-junit-framework-fix checkout -- .; git -C $W/M19-junit-framework-fix clean -fdxq; git -C $W/M19-junit-framework-fix status --short; git -C $W/M19-junit-framework-parent checkout -- .; git -C $W/M19-junit-framework-parent clean -fdxq; git -C $W/M19-junit-framework-parent status --short; du -sh $W/M19-junit-framework-fix $W/M19-junit-framework-parent",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
