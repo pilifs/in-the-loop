@@ -1,0 +1,60 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-225459-setup-build-spring-jdbc-at-both-37322-re",
+  "title": "Setup: build spring-jdbc at both #37322 revisions and run the incrementer regression",
+  "description": "Setup for case N05 of llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-n01-n05/worktrees, offline Gradle 9.8.0 (verified distribution, JDK 25 launcher, toolchains Temurin 17 and 25 only, no build cache or scan): builds spring-jdbc 7.0.10-SNAPSHOT and the modules it needs at the fix pin f96403da2a821f9b8281161847e32a1c4e35e470 and the parent pin eb9928f993fc650ba92a833ecfd28194c28afd3e, runs spring-jdbc's whole test task at each, keeps the jar, the MySQLMaxValueIncrementer class digest and the runtime and test runtime classpaths (project outputs copied to the setup's artifacts folder); then runs the fix's DataFieldMaxValueIncrementerTests on a copy of the parent (expected to fail), and removes the build trees. Spring's buildSrc and spring-core/beans/tx/context compile for several minutes, so this is a job. Dependencies were resolved online inline first (every resolvable configuration of the modules involved).",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md"
+    ]
+  },
+  "expected": "steps 1, 2 and 4 exit 0 (spring-jdbc tests pass at both pins, artifacts kept); step 3 prints TRANSPLANT-FAILS-AS-EXPECTED",
+  "submitted": {
+    "at": "2026-11-25T22:54:59+00:00",
+    "session": "641068ac-42ac-4f23-bdac-7628dd0dc780",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash",
+    "systemd-run"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "6G",
+    "duration": "30m"
+  },
+  "steps": [
+    {
+      "name": "N05 fix offline: spring-jdbc jar and its whole test task; jar, class digest, runtime and test runtime classpaths",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh fix",
+      "cwd": "."
+    },
+    {
+      "name": "N05 parent offline: the same at the parent",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh parent",
+      "cwd": "."
+    },
+    {
+      "name": "N05 the fix's DataFieldMaxValueIncrementerTests on a copy of the parent (expected to fail)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh transplant",
+      "cwd": "."
+    },
+    {
+      "name": "remove the N05 build trees",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-n01-n05/scripts/N05_job.sh clean",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}
