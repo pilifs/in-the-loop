@@ -1,0 +1,360 @@
+{
+ "job": "20261125-002306-native-resource-index-witnesses-on-unmod",
+ "source": "689388178a8d91956be51af424f473d0271795a8",
+ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
+ "scopeSha256": "4e29e9c84b85e017def5358bae7e72d72f8cd0619f98075dcc2dad1928d9faec",
+ "rows": [
+  {
+   "name": "cold",
+   "rawVerdict": "violation",
+   "firstProblem": null,
+   "reuse": null,
+   "witness": {
+    "input": "read(selected=true)",
+    "before": "112",
+    "after": "113",
+    "values": [
+     "true"
+    ],
+    "shrink_runs": 0,
+    "inputs": [
+     {
+      "name": "selected",
+      "type": "boolean",
+      "value": true
+     }
+    ],
+    "call": {
+     "class": "PairResourceGate",
+     "class_file": "PairResourceGate.class",
+     "classes": "after",
+     "method": "read",
+     "descriptor": "(Z)I",
+     "static": true,
+     "arguments": [
+      {
+       "name": "selected",
+       "type": "boolean",
+       "value": true,
+       "from": "selected"
+      }
+     ]
+    },
+    "previous_call": {
+     "class": "PairResourceGate",
+     "class_file": "PairResourceGate.class",
+     "classes": "before",
+     "method": "read",
+     "descriptor": "(Z)I",
+     "static": true,
+     "arguments": [
+      {
+       "name": "selected",
+       "type": "boolean",
+       "value": true,
+       "from": "selected"
+      }
+     ]
+    },
+    "differs": [
+     "result"
+    ],
+    "jvm": "21.0.13"
+   },
+   "replay": {
+    "by": "jvm",
+    "reproduced": true
+   },
+   "assumptions": [
+    {
+     "kind": "initialization",
+     "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+     "basis": "engine"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:0bf89708195609a84198bfb7c71839a06cf0c5cb07b684fa2eb8ecc1899b6a47] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:b71a6126d0e60189d01cc1a973412b7e7d6386a5e4056da38a337f5a166cc2aa"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:f09dd24a1916f7dbb83fd0f988f519780470e79864f611d0e85b3134de02b5ee] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:ddd6ba833cef0ef5cd1224282bd90b392e5924106066733b613d1b1f1f99527a"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:f32b7c667c80380de5f3526040e93e92a1a40a096115d876d3b03d2cf724089e"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:c8484dc9460f1b426ca9c6a5a98bd0f1aa6f2021679f84d27c6ede9da40a0d24"
+    },
+    {
+     "kind": "library",
+     "text": "within each original deployment the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+     "basis": "engine"
+    }
+   ],
+   "seconds": 0.224,
+   "cpuSeconds": 0.205
+  },
+  {
+   "name": "warm",
+   "rawVerdict": "violation",
+   "firstProblem": null,
+   "reuse": null,
+   "witness": {
+    "input": "read(selected=true)",
+    "before": "112",
+    "after": "113",
+    "values": [
+     "true"
+    ],
+    "shrink_runs": 0,
+    "inputs": [
+     {
+      "name": "selected",
+      "type": "boolean",
+      "value": true
+     }
+    ],
+    "call": {
+     "class": "PairResourceGate",
+     "class_file": "PairResourceGate.class",
+     "classes": "after",
+     "method": "read",
+     "descriptor": "(Z)I",
+     "static": true,
+     "arguments": [
+      {
+       "name": "selected",
+       "type": "boolean",
+       "value": true,
+       "from": "selected"
+      }
+     ]
+    },
+    "previous_call": {
+     "class": "PairResourceGate",
+     "class_file": "PairResourceGate.class",
+     "classes": "before",
+     "method": "read",
+     "descriptor": "(Z)I",
+     "static": true,
+     "arguments": [
+      {
+       "name": "selected",
+       "type": "boolean",
+       "value": true,
+       "from": "selected"
+      }
+     ]
+    },
+    "differs": [
+     "result"
+    ],
+    "jvm": "21.0.13"
+   },
+   "replay": {
+    "by": "jvm",
+    "reproduced": true
+   },
+   "assumptions": [
+    {
+     "kind": "initialization",
+     "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+     "basis": "engine"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:0bf89708195609a84198bfb7c71839a06cf0c5cb07b684fa2eb8ecc1899b6a47] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:b71a6126d0e60189d01cc1a973412b7e7d6386a5e4056da38a337f5a166cc2aa"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:f09dd24a1916f7dbb83fd0f988f519780470e79864f611d0e85b3134de02b5ee] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:ddd6ba833cef0ef5cd1224282bd90b392e5924106066733b613d1b1f1f99527a"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:f32b7c667c80380de5f3526040e93e92a1a40a096115d876d3b03d2cf724089e"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:c8484dc9460f1b426ca9c6a5a98bd0f1aa6f2021679f84d27c6ede9da40a0d24"
+    },
+    {
+     "kind": "library",
+     "text": "within each original deployment the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+     "basis": "engine"
+    }
+   ],
+   "seconds": 0.213,
+   "cpuSeconds": 0.203
+  },
+  {
+   "name": "clean",
+   "rawVerdict": "violation",
+   "firstProblem": null,
+   "reuse": null,
+   "witness": {
+    "input": "read(selected=true)",
+    "before": "112",
+    "after": "113",
+    "values": [
+     "true"
+    ],
+    "shrink_runs": 0,
+    "inputs": [
+     {
+      "name": "selected",
+      "type": "boolean",
+      "value": true
+     }
+    ],
+    "call": {
+     "class": "PairResourceGate",
+     "class_file": "PairResourceGate.class",
+     "classes": "after",
+     "method": "read",
+     "descriptor": "(Z)I",
+     "static": true,
+     "arguments": [
+      {
+       "name": "selected",
+       "type": "boolean",
+       "value": true,
+       "from": "selected"
+      }
+     ]
+    },
+    "previous_call": {
+     "class": "PairResourceGate",
+     "class_file": "PairResourceGate.class",
+     "classes": "before",
+     "method": "read",
+     "descriptor": "(Z)I",
+     "static": true,
+     "arguments": [
+      {
+       "name": "selected",
+       "type": "boolean",
+       "value": true,
+       "from": "selected"
+      }
+     ]
+    },
+    "differs": [
+     "result"
+    ],
+    "jvm": "21.0.13"
+   },
+   "replay": {
+    "by": "jvm",
+    "reproduced": true
+   },
+   "assumptions": [
+    {
+     "kind": "initialization",
+     "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+     "basis": "engine"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:0bf89708195609a84198bfb7c71839a06cf0c5cb07b684fa2eb8ecc1899b6a47] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:b71a6126d0e60189d01cc1a973412b7e7d6386a5e4056da38a337f5a166cc2aa"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:f09dd24a1916f7dbb83fd0f988f519780470e79864f611d0e85b3134de02b5ee] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:ddd6ba833cef0ef5cd1224282bd90b392e5924106066733b613d1b1f1f99527a"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:f32b7c667c80380de5f3526040e93e92a1a40a096115d876d3b03d2cf724089e"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:c8484dc9460f1b426ca9c6a5a98bd0f1aa6f2021679f84d27c6ede9da40a0d24"
+    },
+    {
+     "kind": "library",
+     "text": "within each original deployment the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+     "basis": "engine"
+    }
+   ],
+   "seconds": 0.214,
+   "cpuSeconds": 0.214
+  },
+  {
+   "name": "paired",
+   "rawVerdict": "unverifiable",
+   "firstProblem": "a witness to this paired property reads an original release's resources and needs the complete postcondition replayed on separate original classpaths",
+   "reuse": null,
+   "witness": null,
+   "replay": null,
+   "assumptions": [
+    {
+     "kind": "precondition",
+     "text": "true",
+     "basis": "stated"
+    },
+    {
+     "kind": "initialization",
+     "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+     "basis": "engine"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:0bf89708195609a84198bfb7c71839a06cf0c5cb07b684fa2eb8ecc1899b6a47] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:b71a6126d0e60189d01cc1a973412b7e7d6386a5e4056da38a337f5a166cc2aa"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/annotations/java.lang.Deprecated resources (classpath index and entry SHA-256) are [2:f09dd24a1916f7dbb83fd0f988f519780470e79864f611d0e85b3134de02b5ee] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:ddd6ba833cef0ef5cd1224282bd90b392e5924106066733b613d1b1f1f99527a"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the current deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:f32b7c667c80380de5f3526040e93e92a1a40a096115d876d3b03d2cf724089e"
+    },
+    {
+     "kind": "library",
+     "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are [] on the previous deployment",
+     "basis": "engine",
+     "id": "original-jar-resources:c8484dc9460f1b426ca9c6a5a98bd0f1aa6f2021679f84d27c6ede9da40a0d24"
+    },
+    {
+     "kind": "library",
+     "text": "within each original deployment the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+     "basis": "engine"
+    }
+   ],
+   "seconds": 0.495,
+   "cpuSeconds": 0.905
+  }
+ ],
+ "archiveSha256": "bad2a71e8052c33e2b4f8226c05082ac08569455856e04bfbda47ad8d30119cf"
+}

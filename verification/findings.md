@@ -34,7 +34,7 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   - **Stop for the usual reasons only:** churn (cycles with no new decision and only the blocker moving), a reached outcome, something only a person can decide, or soundness problems left unrecorded.
   - **Extra cycles are acceptable** to get both the fixes and the capabilities.
 - **What would close it**: a run in which named fixes and new capability work both progress across continued cycles. If a run again leaves the named fixes undone across several cycles, the continue message's inability to steer it toward them is the problem to solve. That is recorded for planning, not worked around by the watcher, since the continue message is the user's.
-- **Related**: VF-062 (the rename isolation fixes left open); VF-063 (scaffolding before solving); the `single-agent-run` skill's verdict rules; `prompt=scaffold-first`.
+- **Related**: VF-062 (release namespace isolation), VF-063 (scaffolding before solving), the `single-agent-run` skill's verdict rules, and `prompt=scaffold-first`.
 
 ### VF-063: the product's main gap is investigation and claim scaffolding, not solving
 
@@ -62,31 +62,8 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Scaffold-first follow-up, 2026-11-25.** The first two measurements are now available for all 16 projects. Among the four previously unreached projects, three lacked typed environment construction and one lacked grammar inputs. On the twelve with some public reach, four needed operation histories, four needed a complete reader or writer, three needed grammar inputs and one needed typed metadata. All supplied registrations ran in normal original JVMs and in separate resource-recording loaders before solving. A new artifact-only generator recovered the annotation indexer's lookup, resource classloader, duplicate-name observation and unpopulated control after disclosure. It transferred to Batik's service iterator and stopped at the entry shape for the other 14 projects. The prospective disjoint population has no scored decisions. [Per-project dispositions](beyond-jbmc/scaffold-first/RESULTS.md) · [Unopened acquisition state](beyond-jbmc/scaffold-first/prospective.json)
 - **Related**:
   - **VF-054:** Avro, where the original scope was blocked at startup.
-  - **VF-062:** the before/after rename isolation, whose open Batik/dom4j item is a scaffolding problem too, at resource lookup.
+  - **VF-062:** the Batik and dom4j release-isolation investigation traced resource and factory lookup before qualifying either comparison.
   - **The queue:** `beyond-jbmc` queued again with `prompt=scaffold-first`.
-
-### VF-062: the checker's before/after renaming was visible to the program, in both directions
-
-- **Status**: open. The class-name and proof-cache parts are fixed; the resource-lookup part and a re-measurement of the blind panel remain.
-- **Raised**: 2026-11-24 by the watcher, from the advisor's reading of the queued run `beyond-jbmc-java-change-verification-cam` (Astra 6.2 at max effort, session `c3caedf3`, 3 cycles).
-- **Found**:
-  - **A false counterexample.** On the blind panel, the native checker refuted equality on a generated Sisu Plexus caller. The old version's `toString()` carried the checker's synthetic `before.` package in its class name, although both unmodified releases return the same string for both Boolean inputs, the witness included. It counts in the frozen blind result as an incorrect native decision (`lib/benchmark/beyond-jbmc/blind_report.py`).
-  - **A false proof.** The same renaming could also hide a real difference: on a constructed control, the frozen checker proved equality although the original JVMs returned different strings for both inputs.
-  - **So the bug is two-sided.** It produced accepted results the JVM refutes in both directions, the kind of failure VF-055 is about. Any frozen native proof or refutation that involves an observed class name (`toString`, `getName`, `getSuperclass`) or reflective lookup is suspect until it is re-measured.
-  - **A stale proof cache.** A separate regression showed `Class.forName("lookup.Optional")`: equality held while neither release had the class. After the class was added to the new release only, the JVMs answered false and true, but the cache reused the earlier proof.
-- **Fixed in the run (cycle 2, `mrnrzoyr`, `yopsvwqk`, `yptnxvlp`)**:
-  - The checker preserves original names in equivalence.
-  - The proof cache's key binds the ordered class providers and their contents.
-  - The constructed control is now refuted with the strings both JVMs return, and the Plexus caller is proved unchanged.
-  - Eight post-freeze cold and warm decisions on Plexus and Commons Codec matched the JVMs.
-  - Cycle 3 re-ran all 187 historical claims on the final checker: no disposition changed (94 proved, 85 refuted, 8 open; `verification/beyond-jbmc/followup/historical-native/`, job 20261124-124601).
-- **Still open**:
-  1. **Resource lookup.** Batik and dom4j hit the same isolation problem when the renamed old definitions look up XML resources (`verification/beyond-jbmc/blind/04/assisted/report.json`, `blind/16/assisted/report.json`).
-  2. **The blind panel.** Its decisions, and the calibration's, are not yet re-measured with the fixed checker. The frozen 0/16 stands as recorded, but the per-project dispositions that involve class names or resources should be repeated.
-- **Additional original-JVM witness, 2026-11-25.** Ordinary strict native equivalence on checker `a03d514a66aa` proved that a public reader returned the same integer on both releases for every Boolean input. The original applications returned −1 on a missing key, then 65 and 66 on the present key. The proof's own assumption listed only the repaired deployment's byte digest for `META-INF/paint`. The generated loader represented both releases with the same object and looked up both keys on the combined classpath. The real application's finite two-JVM comparison and this native symbolic proof are distinct routes.
-- **The converse and replay.** On the compensating reader, both original deployments returned 65. The old checker reported 66 versus 65 and marked its replay as reproduced on a JVM. That JVM had run both calls on the repaired deployment's resource path. The strict checker now keeps a distinct loader and original classpath for each side, records the ordered resource digests, and confirms public static integral return differences on two fresh, unmodified deployments. It refuted the first equality at `true` with 65 versus 66 and proved the compensating equality. A paired counterexample requiring an arbitrary postcondition remains open when its original isolated replay is unavailable. [Original false proof and raw inputs](beyond-jbmc/scaffold-first/native-resource/pre-repair.json) · [Original false counterexample and oracle](beyond-jbmc/scaffold-first/native-resource/pre-repair-compensation.json)
-- **Closes when**: both open items are done, with a control that renames nothing the program can observe, and no native decision changes against the JVMs.
-- **Related**: VF-055 (an accepted result the JVM refutes); VF-063 (scaffolding, of which the resource isolation is a part); VF-064 (why the run stopped before these were done).
 
 ### VF-061: OpenAI's filter stops clustered on raw-bytecode Lean work; precautions for more Lean work
 
@@ -1234,6 +1211,30 @@ that did not execute can also cause refusal.
   through `run()`; then resubmit 147 and 148 unchanged. VF-002 stays open.
 
 ## Decided and closed
+
+### VF-062: the checker's before/after renaming was visible to the program, in both directions
+
+- **Status**: closed for the reported namespace and cache errors on 2026-11-25 by `689388178a8d`, the original release JVM controls, and the final historical, blind and calibration remeasurements.
+- **Raised**: 2026-11-24 by the watcher, from the advisor's reading of the queued run `beyond-jbmc-java-change-verification-cam` (Astra 6.2 at max effort, session `c3caedf3`, 3 cycles).
+- **Found**:
+  - **A false counterexample.** On the blind panel, the native checker refuted equality on a generated Sisu Plexus caller. The old version's `toString()` carried the checker's synthetic `before.` package in its class name, although both unmodified releases return the same string for both Boolean inputs, the witness included. It counts in the frozen blind result as an incorrect native decision (`lib/benchmark/beyond-jbmc/blind_report.py`).
+  - **A false proof.** The same renaming could also hide a real difference: on a constructed control, the frozen checker proved equality although the original JVMs returned different strings for both inputs.
+  - **So the bug is two-sided.** It produced accepted results the JVM refutes in both directions, the kind of failure VF-055 is about. Any frozen native proof or refutation that involves an observed class name (`toString`, `getName`, `getSuperclass`) or reflective lookup is suspect until it is re-measured.
+  - **A stale proof cache.** A separate regression showed `Class.forName("lookup.Optional")`: equality held while neither release had the class. After the class was added to the new release only, the JVMs answered false and true, but the cache reused the earlier proof.
+- **Fixed in the run (cycle 2, `mrnrzoyr`, `yopsvwqk`, `yptnxvlp`)**:
+  - The checker preserves original names in equivalence.
+  - The proof cache's key binds the ordered class providers and their contents.
+  - The constructed control is now refuted with the strings both JVMs return, and the Plexus caller is proved unchanged.
+  - Eight post-freeze cold and warm decisions on Plexus and Commons Codec matched the JVMs.
+  - Cycle 3 re-ran all 187 historical claims on the final checker: no disposition changed (94 proved, 85 refuted, 8 open; `verification/beyond-jbmc/followup/historical-native/`, job 20261124-124601).
+- **What remained after the first run**:
+  1. **Resource lookup.** Batik and dom4j hit the same isolation problem when the renamed old definitions look up XML resources (`verification/beyond-jbmc/blind/04/assisted/report.json`, `blind/16/assisted/report.json`).
+  2. **The blind panel.** Its decisions, and the calibration's, are not yet re-measured with the fixed checker. The frozen 0/16 stands as recorded, but the per-project dispositions that involve class names or resources should be repeated.
+- **Additional original-JVM witness, 2026-11-25.** Ordinary strict native equivalence on checker `a03d514a66aa` proved that a public reader returned the same integer on both releases for every Boolean input. The original applications returned −1 on a missing key, then 65 and 66 on the present key. The proof's own assumption listed only the repaired deployment's byte digest for `META-INF/paint`. The generated loader represented both releases with the same object and looked up both keys on the combined classpath. The real application's finite two-JVM comparison and this native symbolic proof are distinct routes.
+- **The converse and replay.** On the compensating reader, both original deployments returned 65. The old checker reported 66 versus 65 and marked its replay as reproduced on a JVM. That JVM had run both calls on the repaired deployment's resource path. The strict checker now keeps a distinct loader and original classpath for each side, records the ordered resource digests, and confirms public static integral return differences on two fresh, unmodified deployments. It refuted the first equality at `true` with 65 versus 66 and proved the compensating equality. A paired counterexample requiring an arbitrary postcondition remains open when its original isolated replay is unavailable. [Original false proof and raw inputs](beyond-jbmc/scaffold-first/native-resource/pre-repair.json) · [Original false counterexample and oracle](beyond-jbmc/scaffold-first/native-resource/pre-repair-compensation.json)
+- **Closing evidence.** Batik and dom4j ran on unrenamed original classpaths with recorded resource and factory origins. The corrected native binary preserved all 187 historical dispositions, including 179 decisions. It remeasured the 64 original generated blind candidates, four calibration candidates and the full supplied questions for all 16 pairs. The earlier false Sisu counterexample became a verified equality. Every other generated disposition held and no measured native decision contradicted the original JVMs. The corrected symbolic resource job preserved the compensating equality and reproduced the real changed byte, including after a same-path replacement. [Original deployment and proof comparison](beyond-jbmc/scaffold-first/RESULTS.md) · [Final machine-readable audit](beyond-jbmc/scaffold-first/audit.json)
+- **Closes when**: both open items are done, with a control that renames nothing the program can observe, and no native decision changes against the JVMs.
+- **Related**: VF-055 (an accepted result the JVM refutes); VF-063 (scaffolding, of which the resource isolation is a part); VF-064 (why the run stopped before these were done).
 
 ### VF-058: ordinary Configuration startup and the remaining receiver frontiers
 
