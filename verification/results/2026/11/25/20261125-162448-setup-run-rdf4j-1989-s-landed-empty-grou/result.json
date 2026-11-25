@@ -1,0 +1,416 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou",
+  "title": "Setup: run rdf4j #1989's landed empty-group aggregate tests at both revisions",
+  "status": "passed",
+  "summary": "passed: 6 passed step(s) in 5m03s, peak 1.4 GiB (estimated 25m00s, 5.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou.json",
+    "sha256": "4623df32c36a294287d178d443fad682b92f00b2d1d2ac7f12a1f6769d9a28f6",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou",
+      "title": "Setup: run rdf4j #1989's landed empty-group aggregate tests at both revisions",
+      "description": "Setup for case L09 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L09-rdf4j-fix = 1767ceebe5d309238263bdca732b730cc47b3e45, L09-rdf4j-parent = c2c7a5265e6c40bc5dc2574260c96c3e10f9a87c), builds rdf4j's compliance/sparql module with everything it depends on (-pl compliance/sparql -am, JDK 8, Maven 3.9.9 checked against Maven Central's sha512 and the Apache Maven KEYS: Maven 3.10.0 rejects a duplicate dependency in compliance/repository/pom.xml) and runs the landed tests: MemoryComplexSPARQLQueryTest (the memory-store subclass of ComplexSPARQLQueryTest, which gains six Max/Min/Sample empty-group tests), the new SPARQL12QueryTest (agg-empty-group-1/2 manifest) and GroupIteratorTest. On the fix online (one connector thread, Maven Central) then offline; on the parent its own tests offline; then every test-side file of the PR checked out from the fix onto the parent, production code unchanged (expected: some of the new tests fail). Also copies the module jars of both sides to the cache and compares them class by class. The whole -am chain (including the HTTP server war) is why this is a job. Logs and JUnit summaries to ~/.cache/in-the-loop/merged-pr-links-l01-l20/logs; worktrees restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: the fix's three test classes pass online and offline, the parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED (or TRANSPLANT-DOES-NOT-COMPILE) with production-unchanged",
+      "submitted": {
+        "at": "2026-11-25T16:24:48+00:00",
+        "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+        "by": "setup agent (Claude Opus 5.5), fork B"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "5G",
+        "duration": "25m"
+      },
+      "steps": [
+        {
+          "name": "L09 fix: build compliance/sparql with -am and run MemoryComplexSPARQLQueryTest, SPARQL12QueryTest, GroupIteratorTest, online",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-fix; echo worktree=L09-rdf4j-fix commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-fix L09-fix.compliance-online compliance/sparql MemoryComplexSPARQLQueryTest,SPARQL12QueryTest,GroupIteratorTest online; set -e; test $(grep -o 'tests=[0-9]*' $O/logs/L09-fix.compliance-online.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-fix.compliance-online.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-fix.compliance-online.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-fix.compliance-online.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L09 fix: the same, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-fix; echo worktree=L09-rdf4j-fix commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-fix L09-fix.compliance-offline compliance/sparql MemoryComplexSPARQLQueryTest,SPARQL12QueryTest,GroupIteratorTest ; set -e; test $(grep -o 'tests=[0-9]*' $O/logs/L09-fix.compliance-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-fix.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-fix.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-fix.compliance-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L09 parent: its own MemoryComplexSPARQLQueryTest and GroupIteratorTest, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-parent; echo worktree=L09-rdf4j-parent commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-parent L09-parent.compliance-offline compliance/sparql MemoryComplexSPARQLQueryTest,GroupIteratorTest ; set -e; test $(grep -o 'tests=[0-9]*' $O/logs/L09-parent.compliance-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-parent.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-parent.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-parent.compliance-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L09 jars of every module built at both pins, and their class comparison",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; for r in parent fix; do d=$O/artifacts/L09-rdf4j-$r-modules; mkdir -p $d; find $W/L09-rdf4j-$r -path '*/target/rdf4j-*-3.1.2-SNAPSHOT.jar' ! -name '*-tests.jar' ! -name '*-sources.jar' -exec cp {} $d/ \\; ; ls $d | wc -l; (cd $d && sha256sum *.jar) > $O/logs/L09-rdf4j-$r-modules.sha256; done; for j in $O/artifacts/L09-rdf4j-fix-modules/*.jar; do b=$(basename $j); python3 -I $O/scripts/jarcmp_B.py $O/artifacts/L09-rdf4j-parent-modules/$b $j | head -1 | sed \"s#^#$b parent-vs-fix: #\"; done > $O/logs/L09-modules-parent-vs-fix.txt; grep -v 'differ=0 ' $O/logs/L09-modules-parent-vs-fix.txt || true; ",
+          "cwd": "."
+        },
+        {
+          "name": "L09 parent with the PR's test-side files transplanted (production code unchanged), offline: new tests expected to fail",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-parent; echo worktree=L09-rdf4j-parent commit=$(git rev-parse HEAD); FIX=$(git -C $W/L09-rdf4j-fix rev-parse HEAD); git checkout $FIX -- compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL12QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11UpdateTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/federation/FederationSPARQL11QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/nativerdf/NativeSPARQLQueryTest.java core/queryalgebra/evaluation/src/test/java/org/eclipse/rdf4j/query/algebra/evaluation/iterator/GroupIteratorTest.java testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/ComplexSPARQLQueryTest.java testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL11ManifestTest.java testsuites/sparql/src/main/resources/testcases-sparql-1.1-w3c/aggregates/manifest.ttl testsuites/sparql/src/main/resources/testcases-sparql-1.2; git status --short; git diff --cached --quiet -- core/queryalgebra/evaluation/src/main && echo production-unchanged; set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-parent L09-parent.transplanted.compliance-offline compliance/sparql MemoryComplexSPARQLQueryTest,SPARQL12QueryTest,GroupIteratorTest ; set -e; if grep -q -E 'COMPILATION ERROR|Compilation failure' $O/logs/L09-parent.transplanted.compliance-offline.log; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E '\\[ERROR\\].*\\.java' $O/logs/L09-parent.transplanted.compliance-offline.log | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L09-parent.transplanted.compliance-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L09-parent.transplanted.compliance-offline.junit.txt | head -1 | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L09-parent.transplanted.compliance-offline.junit.txt | head -1 | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git reset -q; git checkout -- .; git clean -fdq; git status --short; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L09-rdf4j-fix checkout -- .; git -C $W/L09-rdf4j-fix clean -fdxq; git -C $W/L09-rdf4j-fix status --short; git -C $W/L09-rdf4j-parent checkout -- .; git -C $W/L09-rdf4j-parent clean -fdxq; git -C $W/L09-rdf4j-parent status --short; du -sh $W/L09-rdf4j-fix $W/L09-rdf4j-parent",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3037ff3919d78e3dea67e70d8ef9562ea1f53fa8",
+  "startedAt": "2026-11-25T16:31:06+00:00",
+  "finishedAt": "2026-11-25T16:36:33+00:00",
+  "wallSeconds": 327.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585564,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 6000.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1500.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1528107008,
+    "wallSeconds": 303.8,
+    "cpuSeconds": 538.4,
+    "memoryOfEstimate": 0.28,
+    "durationOfEstimate": 0.2
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "L09 fix: build compliance/sparql with -am and run MemoryComplexSPARQLQueryTest, SPARQL12QueryTest, GroupIteratorTest, online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-fix; echo worktree=L09-rdf4j-fix commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-fix L09-fix.compliance-online compliance/sparql MemoryComplexSPARQLQueryTest,SPARQL12QueryTest,GroupIteratorTest online; set -e; test $(grep -o 'tests=[0-9]*' $O/logs/L09-fix.compliance-online.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-fix.compliance-online.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-fix.compliance-online.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-fix.compliance-online.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 142.83,
+      "cpuSeconds": 180.552,
+      "cpuThrottledSeconds": 0.355,
+      "peakMemoryBytes": 1528107008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-l09-fix-build-compliance-sparq.log",
+        "lines": 5,
+        "bytes": 269,
+        "sha256": "ea3b9ab8dc627c0ed179e185b81092bc6cb9028617d884536c75c1decaff5efd",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L09-rdf4j-fix commit=1767ceebe5d309238263bdca732b730cc47b3e45",
+        "mvn-exit=0 seconds=143",
+        "junit tests=9 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L09-fix.compliance-online.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "L09 fix: the same, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-fix; echo worktree=L09-rdf4j-fix commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-fix L09-fix.compliance-offline compliance/sparql MemoryComplexSPARQLQueryTest,SPARQL12QueryTest,GroupIteratorTest ; set -e; test $(grep -o 'tests=[0-9]*' $O/logs/L09-fix.compliance-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-fix.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-fix.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-fix.compliance-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 43.057,
+      "cpuSeconds": 95.748,
+      "cpuThrottledSeconds": 0.022,
+      "peakMemoryBytes": 856735744,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-l09-fix-the-same-offline.log",
+        "lines": 5,
+        "bytes": 269,
+        "sha256": "394242beea517b89fa7f8abd72ff3f676a7100a2b5330c14a5ba0756e132c76d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L09-rdf4j-fix commit=1767ceebe5d309238263bdca732b730cc47b3e45",
+        "mvn-exit=0 seconds=43",
+        "junit tests=9 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L09-fix.compliance-offline.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "L09 parent: its own MemoryComplexSPARQLQueryTest and GroupIteratorTest, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-parent; echo worktree=L09-rdf4j-parent commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-parent L09-parent.compliance-offline compliance/sparql MemoryComplexSPARQLQueryTest,GroupIteratorTest ; set -e; test $(grep -o 'tests=[0-9]*' $O/logs/L09-parent.compliance-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-parent.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-parent.compliance-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-parent.compliance-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 74.824,
+      "cpuSeconds": 169.26,
+      "cpuThrottledSeconds": 0.961,
+      "peakMemoryBytes": 1122992128,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-l09-parent-its-own-memorycompl.log",
+        "lines": 5,
+        "bytes": 275,
+        "sha256": "f64baf39a518813cf84f993fcf7fa0fb4c583416137a01511478bb6684186dfa",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L09-rdf4j-parent commit=c2c7a5265e6c40bc5dc2574260c96c3e10f9a87c",
+        "mvn-exit=0 seconds=75",
+        "junit tests=8 failures=0 errors=0 skipped=0",
+        "[INFO] BUILD SUCCESS",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L09-parent.compliance-offline.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "L09 jars of every module built at both pins, and their class comparison",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; for r in parent fix; do d=$O/artifacts/L09-rdf4j-$r-modules; mkdir -p $d; find $W/L09-rdf4j-$r -path '*/target/rdf4j-*-3.1.2-SNAPSHOT.jar' ! -name '*-tests.jar' ! -name '*-sources.jar' -exec cp {} $d/ \\; ; ls $d | wc -l; (cd $d && sha256sum *.jar) > $O/logs/L09-rdf4j-$r-modules.sha256; done; for j in $O/artifacts/L09-rdf4j-fix-modules/*.jar; do b=$(basename $j); python3 -I $O/scripts/jarcmp_B.py $O/artifacts/L09-rdf4j-parent-modules/$b $j | head -1 | sed \"s#^#$b parent-vs-fix: #\"; done > $O/logs/L09-modules-parent-vs-fix.txt; grep -v 'differ=0 ' $O/logs/L09-modules-parent-vs-fix.txt || true; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 3.009,
+      "cpuSeconds": 3.181,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 29687808,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-l09-jars-of-every-module-built.log",
+        "lines": 4,
+        "bytes": 233,
+        "sha256": "622792695357e42ddb3cebc677fcd9e6333a3ca00a8bd1cee1c241ff64933537",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "63",
+        "63",
+        "rdf4j-queryalgebra-evaluation-3.1.2-SNAPSHOT.jar parent-vs-fix: classes A=237 B=237 same=226 differ=11 onlyA=0 onlyB=0",
+        "rdf4j-sparql-testsuite-3.1.2-SNAPSHOT.jar parent-vs-fix: classes A=16 B=16 same=12 differ=4 onlyA=0 onlyB=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "L09 parent with the PR's test-side files transplanted (production code unchanged), offline: new tests expected to fail",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-parent; echo worktree=L09-rdf4j-parent commit=$(git rev-parse HEAD); FIX=$(git -C $W/L09-rdf4j-fix rev-parse HEAD); git checkout $FIX -- compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL12QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11UpdateTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/federation/FederationSPARQL11QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/nativerdf/NativeSPARQLQueryTest.java core/queryalgebra/evaluation/src/test/java/org/eclipse/rdf4j/query/algebra/evaluation/iterator/GroupIteratorTest.java testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/ComplexSPARQLQueryTest.java testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL11ManifestTest.java testsuites/sparql/src/main/resources/testcases-sparql-1.1-w3c/aggregates/manifest.ttl testsuites/sparql/src/main/resources/testcases-sparql-1.2; git status --short; git diff --cached --quiet -- core/queryalgebra/evaluation/src/main && echo production-unchanged; set +e; XMX=-Xmx2g $O/scripts/rdf4j_B.sh L09-rdf4j-parent L09-parent.transplanted.compliance-offline compliance/sparql MemoryComplexSPARQLQueryTest,SPARQL12QueryTest,GroupIteratorTest ; set -e; if grep -q -E 'COMPILATION ERROR|Compilation failure' $O/logs/L09-parent.transplanted.compliance-offline.log; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E '\\[ERROR\\].*\\.java' $O/logs/L09-parent.transplanted.compliance-offline.log | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L09-parent.transplanted.compliance-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L09-parent.transplanted.compliance-offline.junit.txt | head -1 | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L09-parent.transplanted.compliance-offline.junit.txt | head -1 | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git reset -q; git checkout -- .; git clean -fdq; git status --short; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 38.682,
+      "cpuSeconds": 88.437,
+      "cpuThrottledSeconds": 0.657,
+      "peakMemoryBytes": 861995008,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-l09-parent-with-the-pr-s-test.log",
+        "lines": 29,
+        "bytes": 2347,
+        "sha256": "7e7b3f3e00ca9eb2a76f347600545c0e30bc12ff82f5faef725f29892bd8eab1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L09-rdf4j-parent commit=c2c7a5265e6c40bc5dc2574260c96c3e10f9a87c",
+        "A  compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL12QueryTest.java",
+        "M  compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11QueryTest.java",
+        "M  compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11UpdateTest.java",
+        "M  compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/federation/FederationSPARQL11QueryTest.java",
+        "M  compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/nativerdf/NativeSPARQLQueryTest.java",
+        "M  core/queryalgebra/evaluation/src/test/java/org/eclipse/rdf4j/query/algebra/evaluation/iterator/GroupIteratorTest.java",
+        "M  testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/ComplexSPARQLQueryTest.java",
+        "M  testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL11ManifestTest.java",
+        "M  testsuites/sparql/src/main/resources/testcases-sparql-1.1-w3c/aggregates/manifest.ttl",
+        "A  testsuites/sparql/src/main/resources/testcases-sparql-1.2/aggregates/agg-empty-group-1.rq",
+        "A  testsuites/sparql/src/main/resources/testcases-sparql-1.2/aggregates/agg-empty-group-1.srx",
+        "A  testsuites/sparql/src/main/resources/testcases-sparql-1.2/aggregates/agg-empty-group-2.rq",
+        "A  testsuites/sparql/src/main/resources/testcases-sparql-1.2/aggregates/agg-empty-group-2.srx",
+        "A  testsuites/sparql/src/main/resources/testcases-sparql-1.2/aggregates/empty.ttl",
+        "A  testsuites/sparql/src/main/resources/testcases-sparql-1.2/aggregates/manifest.ttl",
+        "A  testsuites/sparql/src/main/resources/testcases-sparql-1.2/manifest-all.ttl",
+        "production-unchanged",
+        "mvn-exit=0 seconds=38",
+        "junit tests=9 failures=1 errors=0 skipped=0",
+        "junit failed GroupIteratorTest#testMaxEmptySet_Grouped",
+        "[ERROR] Tests run: 9, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.155 s <<< FAILURE! - in org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIteratorTest",
+        "[ERROR] testMaxEmptySet_Grouped(org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIteratorTest)  Time elapsed: 0.009 s  <<< FAILURE!",
+        "[ERROR] Failures: ",
+        "[ERROR]   GroupIteratorTest.testMaxEmptySet_Grouped:91 expected:<[fals]e> but was:<[tru]e>",
+        "[ERROR] Tests run: 9, Failures: 1, Errors: 0, Skipped: 0",
+        "[ERROR] There are test failures.",
+        "[INFO] BUILD SUCCESS",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L09-rdf4j-fix checkout -- .; git -C $W/L09-rdf4j-fix clean -fdxq; git -C $W/L09-rdf4j-fix status --short; git -C $W/L09-rdf4j-parent checkout -- .; git -C $W/L09-rdf4j-parent clean -fdxq; git -C $W/L09-rdf4j-parent status --short; du -sh $W/L09-rdf4j-fix $W/L09-rdf4j-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 6000.0,
+      "cancelled": false,
+      "wallSeconds": 1.403,
+      "cpuSeconds": 1.209,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 69844992,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-remove-the-build-trees.log",
+        "lines": 2,
+        "bytes": 171,
+        "sha256": "a85a121bcdeb82ee114011f13013fdfccd9bf2ce09a8ab31c8b2d69ed4dfc693",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "352M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L09-rdf4j-fix",
+        "352M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L09-rdf4j-parent"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T16:40:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T163633Z-343300bf365168b3"
+    }
+  }
+}

@@ -1,0 +1,457 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-161917-setup-build-iceberg-api-core-data-parque",
+  "title": "Setup: build Iceberg api/core/data/parquet at both #12855 revisions and run TestGenericRecord and TestGenericReaderDeletes",
+  "status": "failed",
+  "summary": "failed: 6 failed, 1 passed step(s) in 3m20s, peak 2.3 GiB (estimated 40m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (L14 fix: build and landed tests (first build; may resolve online)) exited 1, expected 0",
+    "step 1 (L14 fix: build and landed tests (first build; may resolve online)) was held back 48.8s by its 3-CPU quota in 1m31s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (L14 fix: jars, class digests and runtime classpaths, offline) exited 1, expected 0",
+    "step 3 (L14 fix: the same tests again, offline) exited 1, expected 0",
+    "step 4 (L14 parent: build and its own copies of the tests, offline) exited 1, expected 0",
+    "step 5 (L14 parent: jars, class digests and runtime classpaths, offline) exited 1, expected 0",
+    "step 6 (L14 parent with the fix's test files transplanted, offline (landed tests expected to fail)) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-161917-setup-build-iceberg-api-core-data-parque.json",
+    "sha256": "d83652957b5f6a605d0cb79cb59a2b1f3481fcf58b6a53851f4a4aad51e85899",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-161917-setup-build-iceberg-api-core-data-parque",
+      "title": "Setup: build Iceberg api/core/data/parquet at both #12855 revisions and run TestGenericRecord and TestGenericReaderDeletes",
+      "description": "Setup for case L14 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L14-iceberg-fix = a7f3dc79a2f42a4875ac35eec2137ecff15204fc, L14-iceberg-parent = 4ca3f10832907540eee798236fa401eb07c7e7df), runs the upstream Gradle build (Gradle 8.14, sha256 checked against services.gradle.org and the wrapper's distributionSha256Sum; JDK 17.0.21; --no-scan; dependencies already resolved inline): the api, common, core, data, parquet and bundled-guava jars and :iceberg-data:test for TestGenericRecord and TestGenericReaderDeletes (parameterized over formats and format versions), on the fix (first build may go online) then offline, on the parent offline, then the fix's DeleteReadTests, TestGenericReaderDeletes and TestGenericRecord transplanted onto the parent (the new binary-key and copy tests are expected to fail). Copies each side's jars, runtime classpaths (data, parquet, data test runtime with hadoop-client) and class digests into ~/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts; JUnit summaries to .../logs; worktrees restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: fix tests pass online and offline, parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE; artifacts and classpath files for both sides",
+      "submitted": {
+        "at": "2026-11-25T16:19:17+00:00",
+        "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+        "by": "setup agent (Claude Opus 5.5), fork D"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "6G",
+        "duration": "40m"
+      },
+      "steps": [
+        {
+          "name": "L14 fix: build and landed tests (first build; may resolve online)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-fix; echo worktree=L14-iceberg-fix commit=$(git rev-parse HEAD); rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --continue :iceberg-api:jar :iceberg-common:jar :iceberg-core:jar :iceberg-data:jar :iceberg-parquet:jar :iceberg-bundled-guava:shadowJar :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.test-online.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L14-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L14-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L14-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L14-fix.test-online.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L14 fix: jars, class digests and runtime classpaths, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-fix; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-fix.data-runtime.raw.txt > $O/logs/L14-fix.export-data-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.export-data-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-fix.data-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-fix.data-runtime.raw.txt $W/L14-iceberg-fix L14-iceberg-fix $O/artifacts/L14-iceberg-fix.data-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-parquet:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-fix.parquet-runtime.raw.txt > $O/logs/L14-fix.export-parquet-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.export-parquet-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-fix.parquet-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-fix.parquet-runtime.raw.txt $W/L14-iceberg-fix L14-iceberg-fix $O/artifacts/L14-iceberg-fix.parquet-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$O/tmp/L14-fix.data-test-runtime.raw.txt > $O/logs/L14-fix.export-data-test-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.export-data-test-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-fix.data-test-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-fix.data-test-runtime.raw.txt $W/L14-iceberg-fix L14-iceberg-fix $O/artifacts/L14-iceberg-fix.data-test-runtime-classpath.txt; for j in core/build/libs/iceberg-core-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/GenericRecord | tee $O/artifacts/L14-iceberg-fix-$(basename $j .jar).class-digests.txt; done; for j in data/build/libs/iceberg-data-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/BaseDeleteLoader | tee $O/artifacts/L14-iceberg-fix-$(basename $j .jar).class-digests.txt; done; for j in api/build/libs/iceberg-api-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/util/ByteBuffers | tee $O/artifacts/L14-iceberg-fix-$(basename $j .jar).class-digests.txt; done; ",
+          "cwd": "."
+        },
+        {
+          "name": "L14 fix: the same tests again, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-fix; echo worktree=L14-iceberg-fix commit=$(git rev-parse HEAD); rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline --continue :iceberg-api:jar :iceberg-common:jar :iceberg-core:jar :iceberg-data:jar :iceberg-parquet:jar :iceberg-bundled-guava:shadowJar :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L14-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L14-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L14-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L14-fix.test-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L14 parent: build and its own copies of the tests, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-parent; echo worktree=L14-iceberg-parent commit=$(git rev-parse HEAD); rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline --continue :iceberg-api:jar :iceberg-common:jar :iceberg-core:jar :iceberg-data:jar :iceberg-parquet:jar :iceberg-bundled-guava:shadowJar :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L14-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L14-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L14-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L14-parent.test-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L14 parent: jars, class digests and runtime classpaths, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-parent; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-parent.data-runtime.raw.txt > $O/logs/L14-parent.export-data-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.export-data-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-parent.data-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-parent.data-runtime.raw.txt $W/L14-iceberg-parent L14-iceberg-parent $O/artifacts/L14-iceberg-parent.data-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-parquet:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-parent.parquet-runtime.raw.txt > $O/logs/L14-parent.export-parquet-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.export-parquet-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-parent.parquet-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-parent.parquet-runtime.raw.txt $W/L14-iceberg-parent L14-iceberg-parent $O/artifacts/L14-iceberg-parent.parquet-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$O/tmp/L14-parent.data-test-runtime.raw.txt > $O/logs/L14-parent.export-data-test-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.export-data-test-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-parent.data-test-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-parent.data-test-runtime.raw.txt $W/L14-iceberg-parent L14-iceberg-parent $O/artifacts/L14-iceberg-parent.data-test-runtime-classpath.txt; for j in core/build/libs/iceberg-core-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/GenericRecord | tee $O/artifacts/L14-iceberg-parent-$(basename $j .jar).class-digests.txt; done; for j in data/build/libs/iceberg-data-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/BaseDeleteLoader | tee $O/artifacts/L14-iceberg-parent-$(basename $j .jar).class-digests.txt; done; for j in api/build/libs/iceberg-api-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/util/ByteBuffers | tee $O/artifacts/L14-iceberg-parent-$(basename $j .jar).class-digests.txt; done; ",
+          "cwd": "."
+        },
+        {
+          "name": "L14 parent with the fix's test files transplanted, offline (landed tests expected to fail)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-parent; echo worktree=L14-iceberg-parent commit=$(git rev-parse HEAD); cp $W/L14-iceberg-fix/data/src/test/java/org/apache/iceberg/data/DeleteReadTests.java data/src/test/java/org/apache/iceberg/data/DeleteReadTests.java; cp $W/L14-iceberg-fix/data/src/test/java/org/apache/iceberg/data/TestGenericReaderDeletes.java data/src/test/java/org/apache/iceberg/data/TestGenericReaderDeletes.java; cp $W/L14-iceberg-fix/data/src/test/java/org/apache/iceberg/data/TestGenericRecord.java data/src/test/java/org/apache/iceberg/data/TestGenericRecord.java; git status --short; rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline --continue :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest[A-Za-z]* FAILED|compileIntegTest[A-Za-z]* FAILED' $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L14-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L14-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L14-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L14-iceberg-fix checkout -- .; git -C $W/L14-iceberg-fix clean -fdxq; git -C $W/L14-iceberg-fix status --short; git -C $W/L14-iceberg-parent checkout -- .; git -C $W/L14-iceberg-parent clean -fdxq; git -C $W/L14-iceberg-parent status --short; du -sh $W/L14-iceberg-fix $W/L14-iceberg-parent; du -sh $GRADLE_USER_HOME",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3037ff3919d78e3dea67e70d8ef9562ea1f53fa8",
+  "startedAt": "2026-11-25T16:31:06+00:00",
+  "finishedAt": "2026-11-25T16:34:49+00:00",
+  "wallSeconds": 223.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585564,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 9600.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 2400.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2507091968,
+    "wallSeconds": 201.0,
+    "cpuSeconds": 457.3,
+    "memoryOfEstimate": 0.39,
+    "durationOfEstimate": 0.08
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "L14 fix: build and landed tests (first build; may resolve online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-fix; echo worktree=L14-iceberg-fix commit=$(git rev-parse HEAD); rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --continue :iceberg-api:jar :iceberg-common:jar :iceberg-core:jar :iceberg-data:jar :iceberg-parquet:jar :iceberg-bundled-guava:shadowJar :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.test-online.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L14-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L14-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L14-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L14-fix.test-online.junit.txt; ",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 91.906,
+      "cpuSeconds": 228.613,
+      "cpuThrottledSeconds": 48.803,
+      "peakMemoryBytes": 2507091968,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-l14-fix-build-and-landed-tests.log",
+        "lines": 6,
+        "bytes": 210,
+        "sha256": "067a6b2cc7128402437239fbf5496246b759a820947a341b9484d43319a5c2c2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L14-iceberg-fix commit=a7f3dc79a2f42a4875ac35eec2137ecff15204fc",
+        "gradle-exit=1",
+        "> Task :generateGitProperties FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 1m 31s",
+        "junit tests=0 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "L14 fix: jars, class digests and runtime classpaths, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-fix; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-fix.data-runtime.raw.txt > $O/logs/L14-fix.export-data-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.export-data-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-fix.data-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-fix.data-runtime.raw.txt $W/L14-iceberg-fix L14-iceberg-fix $O/artifacts/L14-iceberg-fix.data-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-parquet:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-fix.parquet-runtime.raw.txt > $O/logs/L14-fix.export-parquet-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.export-parquet-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-fix.parquet-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-fix.parquet-runtime.raw.txt $W/L14-iceberg-fix L14-iceberg-fix $O/artifacts/L14-iceberg-fix.parquet-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$O/tmp/L14-fix.data-test-runtime.raw.txt > $O/logs/L14-fix.export-data-test-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.export-data-test-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-fix.data-test-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-fix.data-test-runtime.raw.txt $W/L14-iceberg-fix L14-iceberg-fix $O/artifacts/L14-iceberg-fix.data-test-runtime-classpath.txt; for j in core/build/libs/iceberg-core-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/GenericRecord | tee $O/artifacts/L14-iceberg-fix-$(basename $j .jar).class-digests.txt; done; for j in data/build/libs/iceberg-data-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/BaseDeleteLoader | tee $O/artifacts/L14-iceberg-fix-$(basename $j .jar).class-digests.txt; done; for j in api/build/libs/iceberg-api-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/util/ByteBuffers | tee $O/artifacts/L14-iceberg-fix-$(basename $j .jar).class-digests.txt; done; ",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 11.821,
+      "cpuSeconds": 26.047,
+      "cpuThrottledSeconds": 0.922,
+      "peakMemoryBytes": 588603392,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-l14-fix-jars-class-digests-and.log",
+        "lines": 4,
+        "bytes": 90,
+        "sha256": "6979bc2ecc99b807e90b35d44c34afd653d4f7a9df5556a8838db910d3928bd0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gradle-exit=1",
+        "> Task :generateGitProperties FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 11s"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "L14 fix: the same tests again, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-fix; echo worktree=L14-iceberg-fix commit=$(git rev-parse HEAD); rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline --continue :iceberg-api:jar :iceberg-common:jar :iceberg-core:jar :iceberg-data:jar :iceberg-parquet:jar :iceberg-bundled-guava:shadowJar :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-fix.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L14-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L14-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L14-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L14-fix.test-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 10.648,
+      "cpuSeconds": 24.568,
+      "cpuThrottledSeconds": 0.773,
+      "peakMemoryBytes": 635514880,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-l14-fix-the-same-tests-again-o.log",
+        "lines": 6,
+        "bytes": 207,
+        "sha256": "e751cb37c04f193070215cd0f41513d64fe52eaa2854decd5f9d55a9bef961d1",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L14-iceberg-fix commit=a7f3dc79a2f42a4875ac35eec2137ecff15204fc",
+        "gradle-exit=1",
+        "> Task :generateGitProperties FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 10s",
+        "junit tests=0 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "L14 parent: build and its own copies of the tests, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-parent; echo worktree=L14-iceberg-parent commit=$(git rev-parse HEAD); rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline --continue :iceberg-api:jar :iceberg-common:jar :iceberg-core:jar :iceberg-data:jar :iceberg-parquet:jar :iceberg-bundled-guava:shadowJar :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L14-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L14-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L14-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L14-parent.test-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 56.982,
+      "cpuSeconds": 122.695,
+      "cpuThrottledSeconds": 2.244,
+      "peakMemoryBytes": 1318572032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-l14-parent-build-and-its-own-c.log",
+        "lines": 6,
+        "bytes": 210,
+        "sha256": "1407fb0574b6fa41b26617bb24c95c5cebcb5d3516fad71573638150f9657f18",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L14-iceberg-parent commit=4ca3f10832907540eee798236fa401eb07c7e7df",
+        "gradle-exit=1",
+        "> Task :generateGitProperties FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 56s",
+        "junit tests=0 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "L14 parent: jars, class digests and runtime classpaths, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-parent; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-parent.data-runtime.raw.txt > $O/logs/L14-parent.export-data-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.export-data-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-parent.data-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-parent.data-runtime.raw.txt $W/L14-iceberg-parent L14-iceberg-parent $O/artifacts/L14-iceberg-parent.data-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-parquet:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L14-parent.parquet-runtime.raw.txt > $O/logs/L14-parent.export-parquet-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.export-parquet-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-parent.parquet-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-parent.parquet-runtime.raw.txt $W/L14-iceberg-parent L14-iceberg-parent $O/artifacts/L14-iceberg-parent.parquet-runtime-classpath.txt; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline -I $O/scripts/resolve-all.init.gradle :iceberg-data:setupWriteClasspath -PsetupCpConf=testRuntimeClasspath -PsetupCpOut=$O/tmp/L14-parent.data-test-runtime.raw.txt > $O/logs/L14-parent.export-data-test-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.export-data-test-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L14-parent.data-test-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L14-parent.data-test-runtime.raw.txt $W/L14-iceberg-parent L14-iceberg-parent $O/artifacts/L14-iceberg-parent.data-test-runtime-classpath.txt; for j in core/build/libs/iceberg-core-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/GenericRecord | tee $O/artifacts/L14-iceberg-parent-$(basename $j .jar).class-digests.txt; done; for j in data/build/libs/iceberg-data-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/data/BaseDeleteLoader | tee $O/artifacts/L14-iceberg-parent-$(basename $j .jar).class-digests.txt; done; for j in api/build/libs/iceberg-api-*[0-9a-f].jar; do cp $j $O/artifacts/L14-iceberg-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L14-iceberg-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/iceberg/util/ByteBuffers | tee $O/artifacts/L14-iceberg-parent-$(basename $j .jar).class-digests.txt; done; ",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 11.557,
+      "cpuSeconds": 26.966,
+      "cpuThrottledSeconds": 1.136,
+      "peakMemoryBytes": 555474944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-l14-parent-jars-class-digests.log",
+        "lines": 4,
+        "bytes": 90,
+        "sha256": "6979bc2ecc99b807e90b35d44c34afd653d4f7a9df5556a8838db910d3928bd0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gradle-exit=1",
+        "> Task :generateGitProperties FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 11s"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "L14 parent with the fix's test files transplanted, offline (landed tests expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L14-iceberg-parent; echo worktree=L14-iceberg-parent commit=$(git rev-parse HEAD); cp $W/L14-iceberg-fix/data/src/test/java/org/apache/iceberg/data/DeleteReadTests.java data/src/test/java/org/apache/iceberg/data/DeleteReadTests.java; cp $W/L14-iceberg-fix/data/src/test/java/org/apache/iceberg/data/TestGenericReaderDeletes.java data/src/test/java/org/apache/iceberg/data/TestGenericReaderDeletes.java; cp $W/L14-iceberg-fix/data/src/test/java/org/apache/iceberg/data/TestGenericRecord.java data/src/test/java/org/apache/iceberg/data/TestGenericRecord.java; git status --short; rm -rf data/build/test-results/test; set +e; JAVA_HOME=$J17 choom -n 500 -- $O/tools/gradle-8.14/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false --offline --continue :iceberg-data:test --tests org.apache.iceberg.data.TestGenericRecord --tests org.apache.iceberg.data.TestGenericReaderDeletes > $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py data/build/test-results/test | tee $O/logs/L14-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest[A-Za-z]* FAILED|compileIntegTest[A-Za-z]* FAILED' $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L14-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L14-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L14-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L14-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 17.437,
+      "cpuSeconds": 27.853,
+      "cpuThrottledSeconds": 0.617,
+      "peakMemoryBytes": 588537856,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-l14-parent-with-the-fix-s-test.log",
+        "lines": 9,
+        "bytes": 422,
+        "sha256": "27512ca491d64a33b4f246e1ed1aaa7e54c5772b16458bded2ba50d9a87e729d",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L14-iceberg-parent commit=4ca3f10832907540eee798236fa401eb07c7e7df",
+        " M data/src/test/java/org/apache/iceberg/data/DeleteReadTests.java",
+        " M data/src/test/java/org/apache/iceberg/data/TestGenericReaderDeletes.java",
+        " M data/src/test/java/org/apache/iceberg/data/TestGenericRecord.java",
+        "gradle-exit=1",
+        "> Task :generateGitProperties FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 16s",
+        "junit tests=0 failures=0 errors=0 skipped=0"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L14-iceberg-fix checkout -- .; git -C $W/L14-iceberg-fix clean -fdxq; git -C $W/L14-iceberg-fix status --short; git -C $W/L14-iceberg-parent checkout -- .; git -C $W/L14-iceberg-parent clean -fdxq; git -C $W/L14-iceberg-parent status --short; du -sh $W/L14-iceberg-fix $W/L14-iceberg-parent; du -sh $GRADLE_USER_HOME",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 9600.0,
+      "cancelled": false,
+      "wallSeconds": 0.603,
+      "cpuSeconds": 0.543,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 8970240,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-remove-the-build-trees.log",
+        "lines": 3,
+        "bytes": 245,
+        "sha256": "548eabc42316c937d13dc280a13f6ba70f8b83b0ce4f2d0871dd518154b00086",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "56M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L14-iceberg-fix",
+        "56M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L14-iceberg-parent",
+        "3.7G\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/gradle-home"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T16:40:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T163449Z-61979657eecaecf9",
+      "workdir": "20261125T163454Z-683744a6e07b3408"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261125-161917-setup-build-iceberg-api-core-data-parque"
+}
