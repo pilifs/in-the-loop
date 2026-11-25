@@ -215,6 +215,41 @@ python3 llm-dlc/tools/single_run.py setup NAME-setup --brief FILE [--workspace W
 
   Tell the user in a few lines what was set up, what was verified and what could not be done.
 
+## A generation phase
+
+When the user gives a **list of pull requests** instead of a brief, a **brief author** writes the brief first. The
+brief is then queued at the end, and goes through a setup phase and a domain run exactly as any other. The three phases each keep a
+session of their own, and you orchestrate all three:
+
+| Phase | Agent (default) | Session |
+|---|---|---|
+| Generation: `single_run.py generate` | Codex Astra 6.2 at ultra effort, compacting at 600k tokens | the brief author's, continued by every generation (`generateSession=previous`), never the domain runs' |
+| Setup: `single_run.py setup` | Claude Opus 5.5 at high | a new one for each brief |
+| Verification: `single_run.py start` | Codex Astra 6.2 at max | the domain runs', continued by every domain run |
+
+The author's instructions and the brief's format are the user's handoff, `llm-dlc/loops/brief-generation-handoff.md`
+(theirs, unchanged), wrapped by the two texts of `llm-dlc/loops/brief-generation-template.md`:
+
+```bash
+python3 llm-dlc/tools/single_run.py generate NAME-generate --input LIST.md --output llm-dlc/loops/NAME-brief.md \
+  --workspace WORKSPACE
+```
+
+The brief author researches and writes; it builds nothing and submits no job. It keeps a record
+(`llm-dlc/loops/NAME-brief-generation.md`) of which pull requests are written, and commits the brief and the record
+each cycle. A list of twenty pull requests can take several cycles.
+
+**Judge its cycles as any run's:**
+- continue while pull requests are left to write;
+- stop when it says "The brief is complete" and the record agrees, or when what is left needs the user (a private
+  repository, say).
+
+`brief_queue.py`'s `brief` step then checks that the landed brief names every pull request of the list. When one
+is missing, it says so and the landing is undone in the queue's record: continue the run
+(`single_run.py generate NAME-generate`), and `next --finished` lands it again. A filter stop or a lost session is handled as for a domain run, below, with a new
+name and `brief_queue.py set NAME run=NEWNAME`. Record a new author's session with
+`brief_queue.py defaults --last-generate-session ID`.
+
 ## A queue of briefs
 
 When the user queues briefs, they run one after the other, each as a run of this skill with a setup phase first.
@@ -234,6 +269,17 @@ watcher's place reads `brief_queue.py status` and carries on.
   - the two "aspirational" texts of `llm-dlc/loops/domain-prompt-aspirational.md`.
 
   A brief overrides a default with `KEY=VALUE`, or with `queue.KEY: VALUE` lines in a `---` block at its top.
+- **A list of pull requests** is added the same way, by the inbox or `add`. A file whose every line is a GitHub
+  pull request's link is taken for one, and `--generate` says so for any other. Its entry is a generation
+  (see "A generation phase"):
+  - The list's copy goes into `llm-dlc/loops/`.
+  - The author writes the brief into `llm-dlc/loops/NAME-brief.md`.
+  - Once it is landed and checked, its copy goes beside the list as `NAME-brief.md` and is **queued at the end**
+    as the brief `NAME-brief`. That copy then counts as the user's original: the setup notes go there, and the
+    domain run's texts name it. From the brief on, nothing differs from a brief the user wrote.
+
+  Until the queue is further productized, you manage its order (the user, 2026-11-25): `move` a generated brief
+  if another order serves the user better, and tell them.
 - **The handover is `brief_queue.py next`.** Run it when a brief's run has finished, with `--finished`, and when
   the queue has nothing running. It does every step that is due and records each:
   - land the run;
@@ -242,6 +288,8 @@ watcher's place reads `brief_queue.py status` and carries on.
   - move the workspace onto the line;
   - start the next brief's setup run. After the setup run: land it, put its notes into both copies of the brief,
     and start the domain run.
+  - For a list of pull requests: start its generation run. After it: land it, check the brief (the `brief` step),
+    put its copy beside the list, queue that at the end, and checkpoint develop.
 
   A step that fails is named, and the next call carries on from it. It never promotes `main` and never runs the
   default tests: tell the user when a brief is done, and they decide both.

@@ -14,22 +14,29 @@ between two briefs is one command.
 
 Commands (python3 llm-dlc/tools/brief_queue.py COMMAND ...):
 
-  add BRIEF [--name NAME] [--first | --after NAME | --before NAME] [--no-setup] [KEY=VALUE ...]
+  add BRIEF [--name NAME] [--first | --after NAME | --before NAME] [--no-setup] [--generate] [KEY=VALUE ...]
         put a brief on the queue: its copy goes into llm-dlc/loops/ unchanged and is committed. KEY=VALUE overrides a
         default for this brief alone (the keys of DEFAULTS), as does a front-matter block at the brief's top
-        (`---`, `queue.KEY: VALUE` lines, `---`).
+        (`---`, `queue.KEY: VALUE` lines, `---`). A list of pull requests instead of a brief (a file whose every
+        line is a GitHub pull request's link, or any file with --generate) is a generation entry: a brief author
+        writes its brief (single_run.py generate) into llm-dlc/loops/NAME-brief.md; once it is landed and names
+        every pull request, its copy goes beside the list (~/code/scripts/analysis/NAME-brief.md) and is queued at
+        the end as the brief NAME-brief, a brief of the user's like any other: setup phase, notes, domain run.
   inbox                         add every brief of the inbox that the queue does not have yet
   list | status                 the queue, the run under way, and what `next` would do; `status --json` as data
   move NAME (--first | --after NAME | --before NAME)
   remove NAME                   take a brief off the queue (not one whose run is under way)
   set NAME KEY=VALUE ...        change a brief's settings; `run=RUN` makes the queue follow another run (a fresh
                                 session started by hand after a client refused the old one, say)
-  defaults [KEY=VALUE ...] [--last-session ID]
+  defaults [KEY=VALUE ...] [--last-session ID] [--last-generate-session ID]
                                 print or change the queue's defaults; --last-session names the session `previous`
-                                continues when the queue has started no domain run yet (the run before the queue's)
+                                continues when the queue has started no domain run yet (the run before the queue's),
+                                and --last-generate-session the brief author's, which is kept apart from it
   next [--finished]             the handover. It does every step that is due, in order, and records each, so that it
-        can be run again after a failure or a crash and carries on where it stopped: bring the inbox in; for the brief
-        at the head, move the workspace onto the line and start its setup run; when that has finished, land it, put its
+        can be run again after a failure or a crash and carries on where it stopped: bring the inbox in; for a list
+        of pull requests at the head, start its generation run, and when that has finished, land it, check that the
+        brief accounts for every pull request, put its copy beside the list, queue that copy at the end and
+        checkpoint develop; for the brief at the head, move the workspace onto the line and start its setup run; when that has finished, land it, put its
         notes into both copies of the brief and commit; move the workspace onto the line again and start the domain
         run; when that has finished, land it, checkpoint develop, clear what is safe to clear, and go on to the next
         brief. A run that has stopped is taken as finished only with --finished: one stopped to wait on its jobs is
@@ -65,8 +72,15 @@ LOOPS = "llm-dlc/loops"
 PROMPT_TEMPLATE = "llm-dlc/loops/domain-prompt-{}.md"  # a template's two texts, as the setup agent's template has
 # What the user asked for with each brief from 2026-11-19 to 2026-11-23: an Opus 5.5 setup phase first (from
 # 2026-11-22), then Codex Astra 6.2 at max effort, continuing the session of the domain run before it, in the
-# workspace the domain runs share, with no limit on cycles and the two "aspirational" texts.
+# workspace the domain runs share, with no limit on cycles and the two "aspirational" texts. From 2026-11-25 a list
+# of pull requests has a generation phase before those: Codex Astra 6.2 at ultra effort writes the brief, in a
+# session of its own that every generation continues (never the domain runs' session), compacting at 600k tokens.
 DEFAULTS = {
+    "generate": "none",                # the brief author's model for a list of pull requests (set by `add`), or none
+    "generateClient": single_run.GENERATE_CLIENT,
+    "generateEffort": single_run.GENERATE_EFFORT,
+    "generateSession": "previous",     # previous (the last generation run's session), new, or a session id
+    "generateCompactAt": single_run.GENERATE_COMPACT,
     "setup": single_run.SETUP_MODEL,   # the setup agent's model, or `none` for no setup phase
     "setupEffort": single_run.SETUP_EFFORT,
     "client": "codex",
@@ -78,7 +92,11 @@ DEFAULTS = {
     "cycles": "0",
     "prompt": "aspirational",          # PROMPT_TEMPLATE's name
 }
+STEPS_GENERATE = ("generate-start", "generate-land", "brief")  # then the brief is queued at the end
 STEPS_SETUP = ("setup-start", "setup-land", "notes")
+# A pull request as a list of them names it: a GitHub URL, which `add` reads to tell a list from a brief and the
+# `brief` step to check that the brief accounts for each one.
+PULL = re.compile(r"https?://github\.com/([\w.-]+)/([\w.-]+)/pull/(\d+)")
 STEPS_DOMAIN = ("domain-start", "domain-land", "checkpoint", "cleanup")
 ORDER = ("first", "after", "before")
 
@@ -296,44 +314,113 @@ def position(a: argparse.Namespace) -> tuple[str | None, str | None]:
     return None, None
 
 
-def add(root: Path, source: Path, name: str | None = None, where: str | None = None, other: str | None = None,
-        over: dict | None = None) -> dict:
+def pull_requests(text: str) -> list[str]:
+    """The pull requests a text names, as owner/repo#number, in order and each once."""
+    out = []
+    for owner, repo, number in PULL.findall(text):
+        key = f"{owner}/{repo}#{number}"
+        if key.lower() not in [k.lower() for k in out]:
+            out.append(key)
+    return out
+
+
+# A line of a list of pull requests: the URL alone, or as a Markdown link, bulleted, numbered or bare.
+PULL_LINE = re.compile(r"\s*(?:[-*+]|\d+[.)])?\s*(?:\[[^\]]*\]\(\s*<?|<)?" + PULL.pattern + r"[^\s)>]*>?\s*\)?\s*")
+
+
+def is_pull_request_list(text: str) -> bool:
+    """A list of pull requests, not a brief: every line with words on it is a pull request's link (a heading
+    aside). A brief that mentions one in a sentence is a brief."""
+    lines = [l for l in text.splitlines() if l.strip() and not l.lstrip().startswith("#")]
+    return bool(lines) and all(PULL_LINE.fullmatch(l) for l in lines)
+
+
+def make_entry(root: Path, data: dict, source: Path, name: str | None = None, where: str | None = None,
+               other: str | None = None, over: dict | None = None) -> dict:
+    """A brief's entry, or a list of pull requests' entry, put on the queue DATA (read under its lock): the file's
+    copy is written into llm-dlc/loops/, and the caller logs the entry and commits the copy."""
     source = source.expanduser().resolve()
     if not source.is_file():
         raise Problem(f"no brief at {source}")
     text = source.read_text()
     over = {**front_matter(text), **(over or {})}
+    if over.get("generate") in (None, "auto") and is_pull_request_list(text):
+        over["generate"] = single_run.GENERATE_MODEL
+    elif over.get("generate") == "auto":
+        over.pop("generate")
     checked(over)
+    generating = over.get("generate", "none") != "none"
+    if generating and not pull_requests(text):
+        raise Problem(f"{shown(source)} names no GitHub pull request (https://github.com/OWNER/REPO/pull/N): a "
+                      f"generation phase writes a brief from a list of them")
     copy = f"{LOOPS}/{source.name}"
     try:
         inside = source.relative_to(root.resolve())
     except ValueError:
         inside = None
+    for e in data["entries"]:
+        if Path(e["source"]).expanduser().resolve() == source and e["state"] != "removed":
+            raise Problem(f"{shown(source)} is on the queue already, as {e['name']}")
+    taken = {e["name"] for e in data["entries"]}
+    name = name or name_for(source, taken)
+    if name in taken:
+        raise Problem(f"a brief named {name} is on the queue already")
+    single_run.Run(root, name + "-setup")  # the name must make valid run names
+    extra = {}
+    if generating:
+        try:
+            single_run.Run(root, name + "-generate")
+            single_run.Run(root, name + "-brief-setup")
+        except single_run.Problem:
+            raise Problem(f"{name} is too long for the names of its runs ({name}-brief-setup): give a shorter --name")
+        # The brief the author writes, in the checkout, and its copy beside the list, which is queued as a brief of
+        # the user's once it is written: its setup notes go there. Neither may exist yet.
+        written, beside = f"{LOOPS}/{name}-brief.md", source.parent / f"{name}-brief.md"
+        for path in (root / written, beside):
+            if path.exists():
+                raise Problem(f"{shown(path)} exists: the brief generated from {shown(source)} would overwrite it. "
+                              f"Give another --name")
+        extra = {"brief": written, "beside": shown(beside), "pullRequests": pull_requests(text)}
+    target = root / copy
+    if inside is None:
+        if target.exists() and target.read_text() != text:
+            raise Problem(f"{copy} exists and differs from {shown(source)}: name the brief's file differently")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(text)
+    else:
+        copy = str(inside)
+    entry = {"name": name, "source": shown(source), "copy": copy, "settings": over, "state": "queued", "done": [],
+             "runs": {}, "added": now(), **extra}
+    placed(data["entries"], entry, where, other)
+    return entry
+
+
+def queued(root: Path, entry: dict, where: str | None = None, other: str | None = None, why: str = "") -> None:
+    """An entry just made, logged and its copy committed."""
+    at = "at the head" if where == "first" else f"{where} {other}" if where else "at the end"
+    over = entry["settings"]
+    log(root, "add", entry["name"], source=entry["source"], copy=entry["copy"], settings=over,
+        **({"position": where, "other": other} if where else {}),
+        **({"brief": entry["brief"], "pullRequests": len(entry["pullRequests"])} if entry.get("brief") else {}),
+        **({"generatedBy": entry["generatedBy"]} if entry.get("generatedBy") else {}))
+    if entry.get("brief"):
+        commit(root, [entry["copy"], LOG],
+               f"Queue a brief to be generated from {len(entry['pullRequests'])} pull requests: {entry['name']}",
+               f"The list of pull requests {entry['source']} is copied unchanged to {entry['copy']} and put on the brief "
+               f"queue (llm-dlc/tools/brief_queue.py), {at}. A brief author ({over['generate']}) writes its brief into "
+               f"{entry['brief']}, and that brief is then queued at the end, with a setup phase and a domain run as any other.")
+    else:
+        commit(root, [entry["copy"], LOG], f"Queue the brief {entry['name']}",
+               f"The brief {entry['source']} is copied unchanged to {entry['copy']} and put on the brief queue "
+               f"(llm-dlc/tools/brief_queue.py), {at}" + (f", with its own settings {json.dumps(over)}" if over else "")
+               + (f". {why}" if why else "") + ".")
+
+
+def add(root: Path, source: Path, name: str | None = None, where: str | None = None, other: str | None = None,
+        over: dict | None = None) -> dict:
     with locked(root) as data:
-        for e in data["entries"]:
-            if Path(e["source"]).expanduser().resolve() == source and e["state"] != "removed":
-                raise Problem(f"{shown(source)} is on the queue already, as {e['name']}")
-        taken = {e["name"] for e in data["entries"]}
-        name = name or name_for(source, taken)
-        if name in taken:
-            raise Problem(f"a brief named {name} is on the queue already")
-        single_run.Run(root, name + "-setup")  # the name must make valid run names
-        target = root / copy
-        if inside is None:
-            if target.exists() and target.read_text() != text:
-                raise Problem(f"{copy} exists and differs from {shown(source)}: name the brief's file differently")
-            target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_text(text)
-        else:
-            copy = str(inside)
-        entry = {"name": name, "source": shown(source), "copy": copy, "settings": over, "state": "queued", "done": [],
-                 "runs": {}, "added": now()}
-        placed(data["entries"], entry, where, other)
-    log(root, "add", name, source=shown(source), copy=copy, settings=over, **({"position": where, "other": other} if where else {}))
-    commit(root, [copy, LOG], f"Queue the brief {name}",
-           f"The brief {shown(source)} is copied unchanged to {copy} and put on the brief queue "
-           f"(llm-dlc/tools/brief_queue.py), {'at the head' if where == 'first' else f'{where} {other}' if where else 'at the end'}"
-           + (f", with its own settings {json.dumps(over)}" if over else "") + ".")
+        entry = make_entry(root, data, source, name, where, other, over)
+    queued(root, entry, where, other)
     return entry
 
 
@@ -414,16 +501,24 @@ def run_state(root: Path, name: str) -> str:
 
 def step(root: Path, data: dict, entry: dict, s: dict, name: str, finished: bool) -> dict | None:
     """Do one step. None means it is done; a dict means stop here (a run started, or one is under way or stopped)."""
-    if name in ("setup-start", "domain-start"):
+    if name in ("generate-start", "setup-start", "domain-start"):
         kind = name.split("-")[0]
-        run = entry["runs"].get(kind) or (entry["name"] + "-setup" if kind == "setup" else entry["name"])
+        run = entry["runs"].get(kind) or (entry["name"] if kind == "domain" else f"{entry['name']}-{kind}")
         state = run_state(root, run)
         if state != "none":  # started by an earlier `next` that was cut off before it recorded the step
             entry["runs"][kind] = run
             return None
         moved = onto_line(root, s["workspace"])
         common = ["--workspace", s["workspace"], "--memory", s["memory"], "--cycles", s["cycles"]]
-        if kind == "setup":
+        if kind == "generate":
+            # The brief author's own session, which every generation continues: never the domain runs'.
+            session = (data.get("lastGenerateSession") if s["generateSession"] == "previous" else None
+                       if s["generateSession"] == "new" else s["generateSession"])
+            out = run_tool(root, "generate", run, "--input", entry["copy"], "--output", entry["brief"],
+                           "--client", s["generateClient"], "--model", s["generate"], "--effort", s["generateEffort"],
+                           "--compact-at", s["generateCompactAt"], *common, *(["--session", session] if session else []))
+            data["lastGenerateSession"] = out.get("session") or session
+        elif kind == "setup":
             out = run_tool(root, "setup", run, "--brief", entry["copy"], "--model", s["setup"], "--effort", s["setupEffort"], *common)
         else:
             first, cont = prompt_files(root, entry, s)
@@ -437,7 +532,7 @@ def step(root: Path, data: dict, entry: dict, s: dict, name: str, finished: bool
         return {"started": run, "workspace": moved, "session": out.get("session"), "model": out.get("model"),
                 "next": f"watch it (`single_run.py wait {run}` as a background task); when it has finished, "
                         f"`brief_queue.py next --finished`"}
-    if name in ("setup-land", "domain-land"):
+    if name in ("generate-land", "setup-land", "domain-land"):
         run = entry["runs"][name.split("-")[0]]
         state = run_state(root, run)
         if state == "running":
@@ -456,6 +551,8 @@ def step(root: Path, data: dict, entry: dict, s: dict, name: str, finished: bool
             out = run_tool(root, "land", run)
             entry.setdefault("landed", {})[run] = out.get("commit") or out.get("landed")
         return None
+    if name == "brief":
+        return written_brief(root, data, entry)
     if name == "notes":
         run = entry["runs"]["setup"]
         source = str(Path(entry["source"]).expanduser())
@@ -474,7 +571,52 @@ def step(root: Path, data: dict, entry: dict, s: dict, name: str, finished: bool
     raise Problem(f"no step {name}")
 
 
+def written_brief(root: Path, data: dict, entry: dict) -> None:
+    """The generated brief, landed: it is there, it is a brief, and it accounts for every pull request of the list.
+    Its copy then goes beside the list, and that copy is queued at the end as a brief of the user's, with the list's
+    own settings but the generation's: its setup notes go there, and from there on nothing differs."""
+    brief = root / entry["brief"]
+    run = entry["runs"].get("generate")
+
+    def again(why: str) -> Problem:
+        # The run is continued and lands again: its next commits are not on the line yet.
+        if "generate-land" in entry["done"]:
+            entry["done"].remove("generate-land")
+        if run:
+            single_run.Run(root, run).update(landed=None)
+        return Problem(f"{why}: continue the generation run (`single_run.py generate {run}`), and when it has finished, "
+                       f"`brief_queue.py next --finished` lands it again and checks the brief")
+    if not brief.is_file():
+        raise again(f"the generation run {run} landed no brief at {entry['brief']}")
+    text = brief.read_text()
+    if not text.lstrip().startswith("# "):
+        raise again(f"{entry['brief']} does not start with a title (`# ...`), as the handoff's format does")
+    named = {k.lower() for k in pull_requests(text)}
+    missing = [k for k in entry.get("pullRequests") or [] if k.lower() not in named]
+    if missing:
+        raise again(f"{entry['brief']} does not name {len(missing)} of the list's pull requests by URL "
+                    f"({', '.join(missing[:5])}{'…' if len(missing) > 5 else ''})")
+    beside = Path(entry["beside"]).expanduser()
+    if beside.exists() and beside.read_text() != text:
+        raise Problem(f"{entry['beside']} exists and differs from the generated brief: move it away, then run `next` again")
+    beside.write_text(text)
+    log(root, "brief", entry["name"], brief=entry["brief"], copy=entry["beside"],
+        pullRequests=len(entry.get("pullRequests") or []))
+    # The list's own settings, but the generation's; and a brief, whatever it looks like (one that is only links
+    # and headings would otherwise be taken for another list).
+    own = {**{k: v for k, v in entry.get("settings", {}).items() if not k.startswith("generate")}, "generate": "none"}
+    made = make_entry(root, data, beside, f"{entry['name']}-brief", None, None, own)
+    made["generatedBy"] = entry["name"]
+    entry["queued"] = made["name"]
+    queued(root, made, why=f"It was written by the generation run {run} from the pull requests of {entry['source']}")
+    return None
+
+
 def steps_of(s: dict) -> tuple[str, ...]:
+    """A list of pull requests is done once its brief is written, landed, checked and queued (and develop has it);
+    a brief has its setup phase, if any, and its domain run."""
+    if s["generate"] != "none":
+        return STEPS_GENERATE + ("checkpoint",)
     return (STEPS_SETUP if s["setup"] != "none" else ()) + STEPS_DOMAIN
 
 
@@ -498,7 +640,7 @@ def cmd_next(root: Path, finished: bool) -> dict:
                                   next="fix what it names, then run `brief_queue.py next` again: it carries on from this step")
                     stop = "failed"
                     break
-                if stop is not None and name in ("setup-start", "domain-start"):
+                if stop is not None and name in ("generate-start", "setup-start", "domain-start"):
                     entry["done"].append(name)  # the start is the step; the run is what comes after it
                     entry.pop("problem", None)
                 if stop is not None:
@@ -506,19 +648,26 @@ def cmd_next(root: Path, finished: bool) -> dict:
                 entry["done"].append(name)
                 entry.pop("problem", None)
                 report["steps"].append(f"{entry['name']}: {name}")
-                finished = finished and name not in ("setup-land",)  # --finished speaks for the run that had stopped
+                finished = finished and name not in ("generate-land", "setup-land")  # --finished speaks for the run that had stopped
             name = entry["name"]
             if stop is None:
                 entry["state"] = "done"
                 entry["ended"] = now()
                 report["done"].append(name)
+                made = entry.get("queued")
         if stop == "failed":
             log(root, "failed", name, step=report["failedAt"], problem=report["problem"])
             break
         if stop is None:
             log(root, "done", name)
-            report.setdefault("forTheUser", []).append(
-                f"{name} is landed and on develop: promoting main and running the default tests are yours to decide")
+            if made:
+                report.setdefault("queued", []).append(made)
+                report.setdefault("forTheUser", []).append(
+                    f"{name}'s brief is written and queued at the end as {made}; it is on develop: review it whenever "
+                    f"you like, before its setup phase starts or while it runs")
+            else:
+                report.setdefault("forTheUser", []).append(
+                    f"{name} is landed and on develop: promoting main and running the default tests are yours to decide")
             finished = False
             continue
         report.update(brief=name, **stop)
@@ -545,6 +694,10 @@ def describe(root: Path) -> dict:
         due = next((n for n in steps_of(s) if n not in e["done"]), None)
         rows.append({"name": e["name"], "state": e["state"], "source": e["source"], "runs": runs, "nextStep": due,
                      **({"problem": e["problem"]} if e.get("problem") else {}),
+                     **({"brief": e["brief"], "pullRequests": len(e.get("pullRequests") or []),
+                         "generator": f"{s['generateClient']} {s['generate']} {s['generateEffort']}, compacting at "
+                                      f"{s['generateCompactAt']}, session {s['generateSession']}"} if e.get("brief") else {}),
+                     **({"generatedBy": e["generatedBy"]} if e.get("generatedBy") else {}),
                      "agent": f"{s['client']} {s['model']} {s['effort']}, session {s['session']}",
                      "setup": s["setup"]})
     folder = inbox()
@@ -552,7 +705,7 @@ def describe(root: Path) -> dict:
     waiting = [shown(p) for p in inbox_briefs(folder)] if folder.is_dir() else []
     waiting = [w for w in waiting if Path(w).expanduser().resolve() not in known]
     return {"queue": rows, "inboxNotYetAdded": waiting, "lastSession": data.get("lastSession"),
-            "defaults": {**DEFAULTS, **data["defaults"]}}
+            "lastGenerateSession": data.get("lastGenerateSession"), "defaults": {**DEFAULTS, **data["defaults"]}}
 
 
 def cmd_report(root: Path) -> list[dict]:
@@ -588,6 +741,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     a.add_argument("brief")
     a.add_argument("--name")
     a.add_argument("--no-setup", action="store_true")
+    a.add_argument("--generate", action="store_true", help="the file is a list of pull requests: write its brief first")
     a.add_argument("settings", nargs="*", metavar="KEY=VALUE")
     sub.add_parser("inbox", help="add the inbox's new briefs")
     for c in ("list", "status"):
@@ -601,6 +755,7 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     d = sub.add_parser("defaults", help="print or change the defaults")
     d.add_argument("settings", nargs="*", metavar="KEY=VALUE")
     d.add_argument("--last-session")
+    d.add_argument("--last-generate-session")
     sub.add_parser("next", help="the handover: every step that is due").add_argument("--finished", action="store_true")
     sub.add_parser("report", help="each brief's runs and state").add_argument("--json", action="store_true")
     args = ap.parse_args(argv)
@@ -610,6 +765,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             over = settings(args.settings)
             if args.no_setup:
                 over["setup"] = "none"
+            if args.generate:
+                over.setdefault("generate", single_run.GENERATE_MODEL)
             w, other = position(args)
             print(json.dumps(add(root, Path(args.brief), args.name, w, other, over), indent=1))
         elif args.command == "inbox":
@@ -621,7 +778,9 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             else:
                 for i, r in enumerate(d["queue"], 1):
                     runs = ", ".join(f"{k}: {v}" for k, v in r["runs"].items()) or "no run yet"
-                    print(f"{i}. {r['name']} [{r['state']}] {r['source']}: {runs}; next step {r['nextStep'] or '-'}"
+                    given = (f"{r['source']} ({r['pullRequests']} pull requests) -> {r['brief']}" if r.get("brief")
+                             else r["source"] + (f" (generated by {r['generatedBy']})" if r.get("generatedBy") else ""))
+                    print(f"{i}. {r['name']} [{r['state']}] {given}: {runs}; next step {r['nextStep'] or '-'}"
                           + (f"; PROBLEM {r['problem']}" if r.get("problem") else ""))
                 if d["inboxNotYetAdded"]:
                     print("inbox, not yet added: " + ", ".join(d["inboxNotYetAdded"]))
@@ -658,7 +817,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
                 if e is None:
                     raise Problem(f"no brief {args.name} on the queue")
                 if "run" in over:
-                    kind = "domain" if "domain-start" in e["done"] or e["state"] == "domain" else "setup"
+                    kind = next((k for k in ("domain", "setup", "generate") if f"{k}-start" in e["done"] or e["state"] == k),
+                                "generate" if e.get("brief") else "setup")
                     single_run.Run(root, over["run"])
                     e["runs"][kind] = over.pop("run")
                 e.setdefault("settings", {}).update(over)
@@ -666,15 +826,20 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             print(json.dumps(next(r for r in describe(root)["queue"] if r["name"] == args.name), indent=1))
         elif args.command == "defaults":
             over = checked(settings(args.settings))
-            if args.last_session and not brief_run.SESSION.fullmatch(args.last_session):
-                raise Problem(f"not a session id: {args.last_session}")
-            if over or args.last_session:
+            for given in (args.last_session, args.last_generate_session):
+                if given and not brief_run.SESSION.fullmatch(given):
+                    raise Problem(f"not a session id: {given}")
+            if over or args.last_session or args.last_generate_session:
                 with locked(root) as data:
                     data["defaults"].update(over)
                     if args.last_session:
                         data["lastSession"] = args.last_session
-                log(root, "defaults", None, settings=over, **({"lastSession": args.last_session} if args.last_session else {}))
-            print(json.dumps({**DEFAULTS, **read(root)["defaults"], "lastSession": read(root).get("lastSession")}, indent=1))
+                    if args.last_generate_session:
+                        data["lastGenerateSession"] = args.last_generate_session
+                log(root, "defaults", None, settings=over, **({"lastSession": args.last_session} if args.last_session else {}),
+                    **({"lastGenerateSession": args.last_generate_session} if args.last_generate_session else {}))
+            print(json.dumps({**DEFAULTS, **read(root)["defaults"], "lastSession": read(root).get("lastSession"),
+                              "lastGenerateSession": read(root).get("lastGenerateSession")}, indent=1))
         elif args.command == "next":
             print(json.dumps(cmd_next(root, args.finished), indent=1))
         elif args.command == "report":

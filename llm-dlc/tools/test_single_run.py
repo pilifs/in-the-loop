@@ -613,6 +613,49 @@ class SingleRunTest(unittest.TestCase):
         self.assertNotIn("Everything is cached", (self.root / "notes/brief.md").read_text(), "replaced, not added again")
 
     @cost("tool")
+    def test_a_generation_phase_runs_the_brief_author_on_astra_at_ultra_compacting_at_600k(self):
+        (self.root / "llm-dlc/loops").mkdir(parents=True)
+        for name in ("brief-generation-template.md", "brief-generation-handoff.md"):
+            shutil.copy(TOOLS.parent / "loops" / name, self.root / "llm-dlc/loops" / name)
+        (self.root / "notes/prs.md").write_text("- [PR](https://github.com/made/up/pull/1)\n")
+        for args, why in ((("generate", "gen"), "--input FILE --output FILE"),
+                          (("generate", "gen", "--input", "notes/prs.md", "--output", "x.txt"), "a Markdown file in the checkout"),
+                          (("generate", "gen", "--input", "notes/prs.md", "--output", "/elsewhere/b.md"), "written in the checkout"),
+                          (("generate", "gen", "--input", "notes/prs.md", "--output", "b.md", "--prompt", PROMPT),
+                           "texts are llm-dlc/loops/brief-generation-template.md's"),
+                          (("generate", "gen", "--input", "notes/prs.md", "--output", "b.md", "--compact-at", "lots"),
+                           "--compact-at: not a count of tokens")):
+            status, _, err = self.tool(*args, ok=False)
+            self.assertEqual(status, 1, args)
+            self.assertIn(why, err, args)
+        with mock.patch.dict(os.environ, self.codex(CODEX_STANDIN_MODES="commit")):
+            started = json.loads(self.tool("generate", "gen", "--input", "notes/prs.md", "--output", "llm-dlc/loops/prs-brief.md",
+                                           "--memory", "none", "--no-verification", "--verdict-wait", 30)[1])
+            self.assertEqual((started["client"], started["model"], started["effort"], started["compactAt"]),
+                             ("codex", "gpt-6.2-astra", "ultra", "600k"))
+            self.assertEqual(started["generate"], {"input": "notes/prs.md", "output": "llm-dlc/loops/prs-brief.md",
+                                                   "record": "llm-dlc/loops/prs-brief-generation.md"})
+            self.assertIsNone(started["brief"], "the brief does not exist yet: the texts name the handoff")
+            self.wait("gen")
+            self.tool("answer", "gen", "stop", "--reason", "The brief is complete.")
+            self.wait("gen", kind="ended")
+        work = [json.loads(line)["argv"] for line in self.codex_log.read_text().splitlines()]
+        work = [argv for argv in work if argv[0] == "exec"]
+        self.assertIn('model_reasoning_effort="ultra"', work[0])
+        self.assertIn("model_auto_compact_token_limit=600000", work[0])
+        first = work[0][-1]
+        self.assertTrue(first.startswith("You are the BRIEF AUTHOR for the pull requests listed in `notes/prs.md`."), first[:90])
+        for named in ("`llm-dlc/loops/brief-generation-handoff.md`", "`llm-dlc/loops/prs-brief.md`",
+                      "`llm-dlc/loops/prs-brief-generation.md`", "The brief is complete"):
+            self.assertIn(named, first)
+        self.assertNotIn("{", first)
+        self.assertTrue((self.run_dir("gen") / "continue.md").read_text().startswith("Continue writing the brief `llm-dlc/loops/prs-brief.md`"))
+        status, _, err = self.tool("generate", "gen", "--input", "notes/prs.md", ok=False)  # continued, never re-generated
+        self.assertIn("only continues it", err)
+        status, _, err = self.tool("generate", "thing2", "--input", "notes/prs.md", "--output", "b.md", "--client", "claude", ok=False)
+        self.assertIn("Codex's alone", err, "a Claude Code brief author is given an effort of its own")
+
+    @cost("tool")
     def test_what_cannot_start_says_why_and_starts_nothing(self):
         for args, why in ((("start", "thing"), "needs its first text"),
                           (("start", "Thing", "--prompt", PROMPT), "lower-case letters"),
@@ -732,6 +775,28 @@ class TheSetupPhase(unittest.TestCase):
         again = single_run.with_notes(once, notes.replace("ready", "all ready"))
         self.assertEqual(again.count(single_run.SETUP_NOTES), 1)
         self.assertIn("- all ready", again)
+
+class TheGenerationPhase(unittest.TestCase):
+    TEMPLATE = (TOOLS.parent / "loops/brief-generation-template.md").read_text()
+
+    def test_the_template_gives_two_texts_with_the_input_the_brief_the_record_and_the_handoff_filled_in(self):
+        self.assertEqual(single_run.generation_record("llm-dlc/loops/prs-brief.md"), "llm-dlc/loops/prs-brief-generation.md")
+        fills = {"input": "`in.md`", "output": "`out.md`", "record": "`rec.md`", "handoff": f"`{single_run.GENERATE_HANDOFF}`"}
+        first, cont = single_run.template_texts(self.TEMPLATE, fills, single_run.GENERATE_TEMPLATE)
+        for text in (first, cont):
+            self.assertNotIn("{", text)
+            for value in fills.values():
+                self.assertIn(value, text)
+        self.assertNotIn("# Brief generation template", first, "the template's explanation is not a text")
+        self.assertIn("Setup Agent Notes", first, "the author leaves the setup notes to the setup agent")
+        self.assertTrue((TOOLS.parent / "loops/brief-generation-handoff.md").read_text().startswith(
+            "# Generate a verification brief from a Java pull request"), "the user's handoff, as they wrote it")
+        with self.assertRaisesRegex(single_run.Problem, "brief-generation-template.md needs two sections"):
+            single_run.template_texts("## First text\n\nOnly one.\n", fills, single_run.GENERATE_TEMPLATE)
+        self.assertEqual(single_run.setup_texts("## First text\n\nFor {brief}, {record}.\n\n## Continue message\n\nOn {brief}.\n",
+                                                "b.md", "r.md"), ("For `b.md`, r.md.\n", "On `b.md`.\n"),
+                         "the setup texts are filled as before")
+
 
 if __name__ == "__main__":
     unittest.main()

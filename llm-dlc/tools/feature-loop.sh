@@ -372,6 +372,9 @@ SESSION_ID=${FEATURE_LOOP_SESSION:-$SESSION_ID}
 # Moonshots only: a brief has its own Loop until.
 AUTOCOMPACT=
 [[ -z "$BRIEF" ]] && AUTOCOMPACT=${FEATURE_LOOP_AUTOCOMPACT:-600k}
+# A run's own compaction point (single_run.py --compact-at, the brief author's 600k): only the client's setting.
+# Unlike a moonshot's, a compaction with no commit is not put to anyone: the run's cycles are judged as usual.
+COMPACT_AT=${FEATURE_LOOP_COMPACT_AT:-}
 # A compaction with no commit: stop by rule (opt-in), ask a conductor, or, with neither, only log it.
 STOP_ON_COMPACT=
 [[ -n "$AUTOCOMPACT" && "${FEATURE_LOOP_STOP_ON_COMPACT:-}" == 1 ]] && STOP_ON_COMPACT=1
@@ -757,6 +760,9 @@ run_claude() {
   local session=(--resume "$SESSION_ID") compact=()
   [[ -n "$FRESH" ]] && session=(--session-id "$SESSION_ID")
   [[ -n "$AUTOCOMPACT" ]] && compact=(--autocompact "$AUTOCOMPACT")
+  [[ -n "$COMPACT_AT" ]] && compact=(--autocompact "$COMPACT_AT")
+  local codex_compact=()
+  [[ -n "$COMPACT_AT" ]] && codex_compact=(--compact-at "$COMPACT_AT")
   FRESH=
   (
     [[ -n "${LOOP_WATCH_PID:-}" ]] && printf '%s\n' "$BASHPID" >"$LOOP_WATCH_PID"
@@ -771,7 +777,7 @@ run_claude() {
         exec python3 "$AGENT_CLIENT" compact --client codex --session "$SESSION_ID" --cwd "$ROOT"
       fi
       exec python3 "$AGENT_CLIENT" run --client codex --session "$SESSION_ID" --model "$MODEL" --effort "$EFFORT" \
-        --cwd "$ROOT" "$1"
+        --cwd "$ROOT" "${codex_compact[@]}" "$1"
     fi
     unset CODEX_THREAD_ID CODEX_SESSION_ID  # a Codex session that started this loop is not this session
     exec claude -p "$1" "${session[@]}" --model "$MODEL" --effort "$EFFORT" "${compact[@]}" "${ISOLATION[@]}" \

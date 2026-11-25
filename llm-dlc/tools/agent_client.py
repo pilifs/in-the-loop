@@ -9,7 +9,7 @@ with text and tool_use blocks, `system`/`compact_boundary`, and one closing `res
 watches for a compaction, reads a turn's report and counts its cost needs no second reader. Diagnostics go to
 stderr, never into that stream.
 
-    agent_client.py run --client codex --session ID --model MODEL --effort LEVEL [--cwd DIR] PROMPT
+    agent_client.py run --client codex --session ID --model MODEL --effort LEVEL [--cwd DIR] [--compact-at TOKENS] PROMPT
         one turn. The first turn of a session starts a Codex thread; every later one resumes that exact
         thread. Prints the stream, exits 0 when the turn ended with a result.
     agent_client.py compact --client codex --session ID [--cwd DIR]
@@ -67,7 +67,10 @@ from pathlib import Path
 CLIENTS = ("claude", "codex")
 # The operator's equivalences (2026-11-18): what Codex runs for a role a brief names by its Claude model.
 MODELS = {"claude-fable-5-2": "gpt-6.2-astra", "claude-opus-5-5": "gpt-6.2-sol"}
-EFFORTS = ("low", "medium", "high", "xhigh", "max")
+EFFORTS = ("low", "medium", "high", "xhigh", "max", "ultra")
+# Codex's alone: "maximum reasoning with automatic task delegation" (its model catalog, 2026-11-25). The brief author
+# runs at it (single_run.py generate); Claude Code has no such level.
+CODEX_ONLY_EFFORTS = ("ultra",)
 SESSION = re.compile(r"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}")
 INSTRUCTIONS = "CLAUDE.md"
 NOTES = ("llm-dlc/operating-notes.md",)
@@ -111,6 +114,8 @@ def resolve(client: str, model: str) -> str:
 def plan(client: str, model: str, effort: str) -> dict:
     if effort not in EFFORTS:
         raise Problem(f"{effort!r} is not an effort ({', '.join(EFFORTS)})")
+    if effort in CODEX_ONLY_EFFORTS and client != "codex":
+        raise Problem(f"{effort!r} is an effort of Codex's alone: {client} has {', '.join(e for e in EFFORTS if e not in CODEX_ONLY_EFFORTS)}")
     return {"client": client, "model": resolve(client, model), "effort": effort, **({"for": model} if resolve(client, model) != model else {})}
 
 
@@ -256,9 +261,27 @@ def attempt_path(session: str, cwd: Path, n: int) -> Path:
     return folder / f"{n:03d}-{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}-{os.getpid()}.jsonl"
 
 
-def codex_argv(model: str, effort: str, last: Path, thread: str | None, cwd: Path, sandbox: str, prompt: str) -> list[str]:
+def tokens(value: str | int | None) -> int | None:
+    """A count of tokens as a person writes it: 600000, 600k or 0.6M. None for none."""
+    if value is None or str(value).strip() == "":
+        return None
+    m = re.fullmatch(r"\s*(\d+(?:\.\d+)?)\s*([kKmM]?)\s*", str(value))
+    if not m:
+        raise Problem(f"not a count of tokens: {value!r} (600000, 600k or 0.6M)")
+    n = int(float(m[1]) * {"": 1, "k": 1000, "m": 1000000}[m[2].lower()])
+    if n < 1000:
+        raise Problem(f"a compaction point of {n} tokens leaves no room for a turn")
+    return n
+
+
+def codex_argv(model: str, effort: str, last: Path, thread: str | None, cwd: Path, sandbox: str, prompt: str,
+               compact_at: int | None = None) -> list[str]:
     argv = [os.environ.get("AGENT_CLIENT_CODEX") or "codex", "exec", *(["resume"] if thread else []), "--json",
             "--skip-git-repo-check", "-m", model, "-c", f'model_reasoning_effort="{effort}"']
+    # A run's own compaction point (single_run.py --compact-at), over the machine's config.toml: given with every
+    # turn, since `exec resume` keeps no setting of the turn before.
+    if compact_at:
+        argv += ["-c", f"model_auto_compact_token_limit={compact_at}"]
     for setting in CODEX_CONFIG:
         argv += ["-c", setting]
     # `auto` is the counterpart of the `--permission-mode auto` the loops give Claude Code: the workspace-write
@@ -383,7 +406,7 @@ def after_turn(cwd: Path, thread: str, model: str, committed: list[str], log: Pa
                 out.write(f"{now()} sync.py {name}: {said}")
 
 
-def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prompt: str) -> int:
+def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prompt: str, compact_at: int | None = None) -> int:
     model = resolve("codex", model)
     if effort not in EFFORTS:
         raise Problem(f"{effort!r} is not an effort ({', '.join(EFFORTS)})")
@@ -400,11 +423,12 @@ def cmd_run(session: str, model: str, effort: str, cwd: Path, sandbox: str, prom
     compactions = Compactions((before or {}).get("thread"))
     tokens: dict | None = None  # the thread's totals, once the turn has ended
     env, parent = child_env(session)
-    argv = codex_argv(model, effort, last, (before or {}).get("thread"), cwd, sandbox, prompt)
+    argv = codex_argv(model, effort, last, (before or {}).get("thread"), cwd, sandbox, prompt, compact_at)
     # What this attempt was given, by digest: two clients sent the same task show the same one (the loop logs its
     # own for a Claude Code turn), and the text itself stays in the client's own log.
     given = {"prompt": {"sha256": hashlib.sha256(prompt.encode()).hexdigest(), "chars": len(prompt)}, "model": model,
-             "effort": effort, "resumed": (before or {}).get("thread"), "started": now()}
+             "effort": effort, **({"compactAt": compact_at} if compact_at else {}), "resumed": (before or {}).get("thread"),
+             "started": now()}
     attempt.with_suffix(".given.json").write_text(json.dumps(given, indent=1) + "\n")
     try:
         child = subprocess.Popen(argv, cwd=cwd, env=env, stdin=subprocess.DEVNULL, stdout=subprocess.PIPE,
@@ -710,6 +734,7 @@ def main(argv: list[str] | None = None) -> int:
     r.add_argument("--sandbox", default=os.environ.get("AGENT_CLIENT_SANDBOX") or "auto",
                    help="auto (the default: workspace-write, requests to leave it reviewed automatically), or a "
                         "Codex sandbox named outright: read-only, workspace-write")
+    r.add_argument("--compact-at", help="the tokens at which the thread compacts itself (600k), over the machine's own setting")
     r.add_argument("prompt", help="the turn's text; - reads it from stdin")
     c = sub.add_parser("compact")
     common(c)
@@ -756,7 +781,7 @@ def main(argv: list[str] | None = None) -> int:
         if a.command == "compact":
             return cmd_compact(a.session, cwd, a.timeout)
         prompt = sys.stdin.read() if a.prompt == "-" else a.prompt
-        return cmd_run(a.session, a.model, a.effort, cwd, a.sandbox, prompt)
+        return cmd_run(a.session, a.model, a.effort, cwd, a.sandbox, prompt, tokens(a.compact_at))
     except Problem as e:
         print(f"agent_client.py: {e}", file=sys.stderr)
         return 2

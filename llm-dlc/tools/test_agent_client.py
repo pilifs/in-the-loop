@@ -105,6 +105,32 @@ class Resolving(unittest.TestCase):
                 self.assertEqual(agent_client.Compactions(None).new("s"), [])
 
 
+class TheBriefAuthorsSettings(unittest.TestCase):
+    """The brief author's run (single_run.py generate): Codex Astra at ultra effort, compacting at 600k tokens."""
+
+    def test_ultra_is_an_effort_of_codex_alone(self):
+        self.assertEqual(agent_client.plan("codex", "gpt-6.2-astra", "ultra")["effort"], "ultra")
+        with self.assertRaisesRegex(agent_client.Problem, "Codex's alone"):
+            agent_client.plan("claude", "claude-fable-5-2", "ultra")
+        with self.assertRaisesRegex(agent_client.Problem, "not an effort"):
+            agent_client.plan("codex", "gpt-6.2-astra", "mega")
+
+    def test_a_compaction_point_is_read_as_a_person_writes_it_and_given_with_every_turn(self):
+        self.assertEqual([agent_client.tokens(v) for v in ("600k", "600000", "0.6M", "1M", None, "")],
+                         [600000, 600000, 600000, 1000000, None, None])
+        for bad in ("lots", "600 tokens", "12"):
+            with self.assertRaises(agent_client.Problem, msg=bad):
+                agent_client.tokens(bad)
+        cwd = Path(tempfile.gettempdir())
+        first = agent_client.codex_argv("gpt-6.2-astra", "ultra", Path("last.md"), None, cwd, "auto", "x", 600000)
+        resumed = agent_client.codex_argv("gpt-6.2-astra", "ultra", Path("last.md"), "thread-1", cwd, "auto", "x", 600000)
+        for argv in (first, resumed):  # `exec resume` keeps no setting of the turn before
+            self.assertIn("model_auto_compact_token_limit=600000", argv)
+            self.assertIn('model_reasoning_effort="ultra"', argv)
+        plain = agent_client.codex_argv("gpt-6.2-astra", "max", Path("last.md"), None, cwd, "auto", "x")
+        self.assertEqual([x for x in plain if "auto_compact" in x], [], "without one, the machine's own setting stands")
+
+
 class Fixture(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()

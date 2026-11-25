@@ -88,6 +88,36 @@ class TheQueuesRules(unittest.TestCase):
         with mock.patch.object(brief_queue.single_run, "person_at_terminal", lambda: True):
             self.assertEqual(brief_queue.who(), "a person, at their terminal")
 
+    def test_a_list_of_pull_requests_is_told_from_a_brief_and_becomes_a_generation_entry(self):
+        listed = ("# Pull requests\n\n- [Merged PR #14732](https://github.com/apache/lucene/pull/14732)\n"
+                  "2. <https://github.com/google/guava/pull/7784>\nhttps://github.com/Apache/Lucene/pull/14732/files\n")
+        self.assertTrue(brief_queue.is_pull_request_list(listed))
+        self.assertEqual(brief_queue.pull_requests(listed), ["apache/lucene#14732", "google/guava#7784"], "in order, each once")
+        self.assertFalse(brief_queue.is_pull_request_list("# A brief\n\nIt fixes https://github.com/a/b/pull/1 and more.\n"),
+                         "a brief that mentions a pull request in a sentence is a brief")
+        self.assertFalse(brief_queue.is_pull_request_list("# Only a heading\n"))
+        self.assertEqual(brief_queue.steps_of({**brief_queue.DEFAULTS, "generate": "gpt-6.2-astra"}),
+                         brief_queue.STEPS_GENERATE + ("checkpoint",), "its brief is queued as an entry of its own")
+        with tempfile.TemporaryDirectory() as tmp:
+            root, analysis = Path(tmp) / "checkout", Path(tmp) / "analysis"
+            analysis.mkdir()
+            (analysis / "prs.md").write_text(listed)
+            data = {"defaults": {}, "entries": []}
+            entry = brief_queue.make_entry(root, data, analysis / "prs.md")
+            self.assertEqual((entry["name"], entry["settings"]["generate"], entry["copy"], entry["brief"], entry["pullRequests"]),
+                             ("prs", "gpt-6.2-astra", "llm-dlc/loops/prs.md", "llm-dlc/loops/prs-brief.md",
+                              ["apache/lucene#14732", "google/guava#7784"]))
+            self.assertEqual(Path(entry["beside"]).expanduser(), analysis / "prs-brief.md")
+            self.assertEqual((root / "llm-dlc/loops/prs.md").read_text(), listed, "the list's copy, unchanged")
+            (analysis / "brief.md").write_text("# A brief\n")
+            with self.assertRaisesRegex(brief_queue.Problem, "names no GitHub pull request"):
+                brief_queue.make_entry(root, data, analysis / "brief.md", over={"generate": "gpt-6.2-astra"})
+            self.assertNotIn("brief", brief_queue.make_entry(root, data, analysis / "brief.md"), "a brief is a brief")
+            (analysis / "more.md").write_text(listed)
+            (analysis / "more-brief.md").write_text("# Someone's own brief\n")
+            with self.assertRaisesRegex(brief_queue.Problem, "would overwrite it"):
+                brief_queue.make_entry(root, data, analysis / "more.md")
+
     def test_cleanup_clears_a_failed_jobs_folder_only_once_its_originals_are_in_the_archive(self):
         with tempfile.TemporaryDirectory() as tmp, mock.patch.dict(os.environ, {"HOME": tmp}):
             root, home = Path(tmp) / "checkout", Path(tmp) / ".cache/in-the-loop"
@@ -240,6 +270,72 @@ class TheHandover(unittest.TestCase):
         actions = [json.loads(line)["action"] for line in (self.root / brief_queue.LOG).read_text().splitlines()]
         self.assertEqual(actions, ["defaults", "add", "add", "move", "start", "done", "start", "notes", "start", "done"])
         self.assertEqual(brief_queue.changed(self.root, [brief_queue.LOG]), [], "the log is committed with the queue's commits")
+
+    @cost("tool")
+    def test_a_list_of_pull_requests_is_written_into_a_brief_in_a_session_of_its_own_and_the_brief_queued_at_the_end(self):
+        loops = self.root / "llm-dlc/loops"
+        for name in ("brief-generation-template.md", "brief-generation-handoff.md"):
+            shutil.copy(TOOLS.parent / "loops" / name, loops / name)
+        self.jj("commit", "-m", "The generation templates")
+        (self.analysis / "prs.md").write_text("- [PR](https://github.com/made/up/pull/1)\n- [PR](https://github.com/other/thing/pull/22)\n")
+        (self.analysis / "waiting.md").write_text("---\nqueue.setup: none\n---\n# A brief already waiting\n")
+        # Claude Code stands in for Codex here, at an effort it has: the run's settings are what is tested.
+        self.data("defaults", "client=claude", "model=claude-fable-5-2", "effort=high", "memory=none", "workspace=ws",
+                  "session=new", "generateClient=claude", "generateEffort=high")
+        added = self.data("add", self.analysis / "prs.md", "generate=claude-fable-5-2")
+        self.assertEqual((added["name"], added["copy"], added["brief"], added["pullRequests"]),
+                         ("prs", "llm-dlc/loops/prs.md", "llm-dlc/loops/prs-brief.md", ["made/up#1", "other/thing#22"]))
+        self.data("add", self.analysis / "waiting.md")
+        self.assertIn("prs.md (2 pull requests) -> llm-dlc/loops/prs-brief.md", self.queue("list")[1])
+
+        # 1. The brief author starts in a session of its own, compacting at 600k, with the template's texts.
+        out = self.data("next")
+        self.assertEqual((out["brief"], out["started"]), ("prs", "prs-generate"))
+        run = json.loads((self.run_dir("prs-generate") / "watch.json").read_text())
+        self.assertEqual((run["compactAt"], run["generate"]["output"]), ("600k", "llm-dlc/loops/prs-brief.md"))
+        self.wait("prs-generate")
+        self.assertTrue(self.prompts()[0].startswith("You are the BRIEF AUTHOR for the pull requests listed in `llm-dlc/loops/prs.md`."))
+        args = self.calls()[0]["args"]
+        self.assertEqual(args[args.index("--autocompact") + 1], "600k")
+        queue = json.loads((self.root / brief_queue.QUEUE).read_text())
+        self.assertEqual(queue["lastGenerateSession"], run["session"])
+        self.assertIsNone(queue.get("lastSession"), "the domain runs' session is another")
+
+        # 2. A brief that leaves out a pull request is refused, and its landing is undone in the queue's record.
+        self.tool("answer", "prs-generate", "stop", "--reason", "It says the brief is complete.")
+        self.wait("prs-generate", kind="ended")
+        folder = test_single_run.single_run.brief_run.workspaces(self.root)["ws"]
+        written = folder / "llm-dlc/loops/prs-brief.md"
+        written.write_text("# Made-up behaviour\n\n## made/up#1\n\nhttps://github.com/made/up/pull/1\n")
+        subprocess.run(["jj", "--quiet", "commit", "-m", "The brief, part of it"], cwd=folder, check=True, capture_output=True)
+        out = self.data("next", "--finished")
+        self.assertEqual(out["failedAt"], "brief")
+        self.assertIn("does not name 1 of the list's pull requests by URL (other/thing#22)", out["problem"])
+        self.assertIn("single_run.py generate prs-generate", out["problem"])
+        self.assertFalse((self.analysis / "prs-brief.md").exists())
+
+        # 3. Continued, it writes the rest; landed again and checked, the brief is queued at the end and runs as any.
+        self.tool("generate", "prs-generate")
+        self.finish("prs-generate")
+        written.write_text(written.read_text() + "\n## other/thing#22\n\nhttps://github.com/other/thing/pull/22\n")
+        subprocess.run(["jj", "--quiet", "commit", "-m", "The brief, whole"], cwd=folder, check=True, capture_output=True)
+        out = self.data("next", "--finished")
+        self.assertEqual(out["steps"], ["prs: generate-land", "prs: brief", "prs: checkpoint"], out)
+        self.assertEqual((out["done"], out["queued"]), (["prs"], ["prs-brief"]))
+        self.assertIn("queued at the end as prs-brief", out["forTheUser"][0])
+        self.assertEqual((self.analysis / "prs-brief.md").read_text(), (self.root / "llm-dlc/loops/prs-brief.md").read_text())
+        rows = self.data("status", "--json")["queue"]
+        self.assertEqual([(r["name"], r["state"]) for r in rows], [("prs", "done"), ("waiting", "domain"), ("prs-brief", "queued")])
+        self.assertEqual((rows[2]["source"], rows[2]["generatedBy"]), ("~/code/scripts/analysis/prs-brief.md", "prs"))
+        self.assertEqual(out["started"], "waiting", "the brief already waiting goes first")
+        self.finish("waiting")
+        out = self.data("next", "--finished")
+        self.assertEqual(out.get("started"), "prs-brief-setup", f"then the generated brief's setup phase, as for any brief: {out}")
+        setup = json.loads((self.run_dir("prs-brief-setup") / "watch.json").read_text())
+        self.assertEqual(setup["setup"]["brief"], "llm-dlc/loops/prs-brief.md")
+        actions = [json.loads(line)["action"] for line in (self.root / brief_queue.LOG).read_text().splitlines()]
+        self.assertEqual(actions[:4], ["defaults", "add", "add", "start"])
+        self.assertIn("brief", actions)
 
     @cost("tool")
     def test_a_step_that_fails_is_named_and_the_next_call_carries_on_from_it(self):

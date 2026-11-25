@@ -60,6 +60,14 @@ is feature-loop.sh's `single-agent`, with this run's directory as its conductor.
         brief and the record filled in. The record (--record; by default llm-dlc/loops/BRIEF-setup.md) ends with a
         section headed SETUP_NOTES, written for the domain agent. Run again on a setup run that has stopped (to
         wait on its jobs, say), it continues it, as `start` does.
+    single_run.py generate NAME --input FILE --output FILE [--record FILE] [start's options, but the texts]
+        start a brief's generation phase as the run NAME: a brief author (Codex Astra 6.2 at ultra effort, its
+        thread compacting at 600k tokens, unless --client, --model, --effort or --compact-at say otherwise) that
+        writes one verification brief from a list of pull requests, as GENERATE_HANDOFF says, into --output (a path
+        in the checkout, committed in the folder it works in). Its two texts are GENERATE_TEMPLATE's. The record
+        (--record; by default llm-dlc/loops/OUTPUT-generation.md) says which pull requests are written and what is
+        open. Run again on a generation run that has stopped, it continues it, as `start` does. The brief it
+        writes then goes through a setup phase and a domain run like any other (brief_queue.py does all three).
     single_run.py notes NAME [--to FILE ...]
         put a setup run's SETUP_NOTES section into the brief it set up, and into each FILE (another copy of the
         brief, such as the user's original): appended, or in place of the section already there, so that running it
@@ -111,6 +119,12 @@ OTHER_RUNS = ("run-streams.sh", "prove-loop.sh")  # runs whose own watcher keeps
 SETUP_TEMPLATE = "llm-dlc/loops/setup-agent-template.md"
 SETUP_CLIENT, SETUP_MODEL, SETUP_EFFORT = "claude", "claude-opus-5-5", "high"
 SETUP_NOTES = "## Setup Agent Notes"
+# A generation phase (`generate`): the brief author's texts, its instructions and output format (the user's handoff,
+# 2026-11-25, kept unchanged), and the agent it runs by default. The thread compacts at 600k tokens, the user's
+# choice: a list of twenty pull requests is researched over several cycles.
+GENERATE_TEMPLATE = "llm-dlc/loops/brief-generation-template.md"
+GENERATE_HANDOFF = "llm-dlc/loops/brief-generation-handoff.md"
+GENERATE_CLIENT, GENERATE_MODEL, GENERATE_EFFORT, GENERATE_COMPACT = "codex", "gpt-6.2-astra", "ultra", "600k"
 
 
 class Problem(Exception):
@@ -320,6 +334,11 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
             raise Problem(f"no transcript of session {a.fork} to fork, under {projects}")
     session = data.get("session") or a.session or str(uuid.uuid4())
     memory = a.memory or data.get("memory") or doctor.budget(doctor.machine())["loopMemory"]
+    compact_at = getattr(a, "compact_at", None) or data.get("compactAt")
+    try:
+        agent_client.tokens(compact_at)
+    except agent_client.Problem as e:
+        raise Problem(f"--compact-at: {e}")
     # A leg keeps the limits of the leg before unless it is given its own: a bare `start NAME` on a run that had
     # stopped used to drop its count of cycles and turn its verification queue back on, with nothing to say so.
     kept = []
@@ -348,6 +367,7 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
                effort=a.effort or data.get("effort") or EFFORT, memory=memory, cycles=cycles,
                verdictWait=a.verdict_wait or data.get("verdictWait") or VERDICT_WAIT, verification=queue,
                base=data.get("base") or base, legs=legs, told=[], lastSummary=None, loop=None,
+               **({"compactAt": compact_at} if compact_at else {}),
                **({"interval": a.summary_interval} if a.summary_interval else {}), **(extra or {}))
     pid = watch.detached([sys.executable, str(Path(__file__).resolve()), "--root", str(run.root), "loop", run.name],
                          run.root, run.dir / "loop.log")
@@ -358,7 +378,8 @@ def cmd_start(run: Run, a: argparse.Namespace, extra: dict | None = None) -> int
         "forkOf": data["fork"] if new else None, "folder": str(folder),
         "workspace": workspace, **({"workspaceMade": "now, from this line's last commit"} if made else {}),
         "client": client, "model": data["model"], **({"runs": resolved["model"]} if resolved["model"] != data["model"] else {}),
-        "effort": data["effort"], "memory": memory, "cycles": cycles or "no limit",
+        "effort": data["effort"], **({"compactAt": compact_at} if compact_at else {}), "memory": memory,
+        "cycles": cycles or "no limit",
         "firstCycleTakes": legs[-1]["first"], "continueMessage": run.message.read_text().strip(), "brief": brief,
         "verificationQueue": queue, **({"keptFromTheLegBefore": kept} if kept else {}), **(extra or {}),
         "output": str(run.dir / "loop.log"),
@@ -404,6 +425,8 @@ def cmd_loop(run: Run) -> int:
         env["FEATURE_LOOP_MEMORY_MAX"] = data["memory"]
     if data.get("brief"):
         env["FEATURE_LOOP_BRIEF"] = data["brief"]
+    if data.get("compactAt"):
+        env["FEATURE_LOOP_COMPACT_AT"] = str(data["compactAt"])
     if data.get("fork") and not watch.transcript(folder, data["session"]).exists():
         env["FEATURE_LOOP_FORK"] = data["fork"]
     command = [str(folder / "llm-dlc" / "tools" / "feature-loop.sh"), "single-agent"] + ([str(data["cycles"])] if data.get("cycles") else [])
@@ -758,15 +781,25 @@ def cmd_jobs(run: Run, timeout: float) -> int:
         time.sleep(min(watch.QUEUE_LOOK, max(1, until - time.monotonic())))
 
 
-def setup_texts(template: str, brief: str, record: str) -> tuple[str, str]:
-    """The setup agent's first text and continue message: the template's two sections, with the brief and the record
-    filled in. What comes before the first section is the template's own explanation, not a text."""
+def template_texts(template: str, fills: dict[str, str], name: str = SETUP_TEMPLATE) -> tuple[str, str]:
+    """A template's first text and continue message: its two sections, with each `{KEY}` of FILLS filled in. What
+    comes before the first section is the template's own explanation, not a text."""
     parts = re.split(r"^## (First text|Continue message)[ \t]*$", template, flags=re.M)
     sections = dict(zip(parts[1::2], parts[2::2]))
     if set(sections) != {"First text", "Continue message"}:
-        raise Problem(f"{SETUP_TEMPLATE} needs two sections, `## First text` and `## Continue message`")
-    fill = lambda text: text.strip().replace("{brief}", f"`{brief}`").replace("{record}", record) + "\n"
+        raise Problem(f"{name} needs two sections, `## First text` and `## Continue message`")
+
+    def fill(text: str) -> str:
+        text = text.strip()
+        for key, value in fills.items():
+            text = text.replace("{" + key + "}", value)
+        return text + "\n"
     return fill(sections["First text"]), fill(sections["Continue message"])
+
+
+def setup_texts(template: str, brief: str, record: str) -> tuple[str, str]:
+    """The setup agent's first text and continue message, with the brief and the record filled in."""
+    return template_texts(template, {"brief": f"`{brief}`", "record": record})
 
 
 def setup_record(brief: str) -> str:
@@ -813,6 +846,60 @@ def cmd_setup(run: Run, a: argparse.Namespace) -> int:
     return cmd_start(run, a, extra={"setup": {"brief": brief, "record": record},
                                     "afterSetup": f"land the run if it has a workspace, then `single_run.py notes {run.name}` "
                                                   f"(--to FILE for each other copy of the brief), commit, and start the domain run"})
+
+
+def generation_record(output: str) -> str:
+    """Where a brief's generation is written down by default: beside the briefs, named for the brief it writes."""
+    return f"llm-dlc/loops/{Path(output).stem}-generation.md"
+
+
+def output_named(run: Run, output: str) -> str:
+    """The brief a generation run writes: a Markdown file in the checkout (the agent commits it where it works),
+    which does not exist yet or is the one an earlier leg of this run began."""
+    path = Path(output)
+    if path.is_absolute():
+        try:
+            path = path.resolve().relative_to(run.root.resolve())
+        except ValueError:
+            raise Problem(f"--output {output}: the brief is written in the checkout (llm-dlc/loops/NAME.md), where it "
+                          f"is committed and the setup phase finds it")
+    if path.suffix != ".md" or ".." in path.parts:
+        raise Problem(f"--output {output}: a Markdown file in the checkout, such as llm-dlc/loops/NAME.md")
+    return path.as_posix()
+
+
+def cmd_generate(run: Run, a: argparse.Namespace) -> int:
+    data = run.read()
+    texts = a.prompt or a.prompt_file or getattr(a, "continue") or a.continue_file
+    if data.get("session"):  # a generation run that has stopped: continued as `start` continues any run
+        if not data.get("generate"):
+            raise Problem(f"the run {run.name} is not a generation run: `single_run.py start {run.name}` continues it")
+        if texts or a.record or a.input or a.output:
+            raise Problem(f"the generation run {run.name} has its texts, its input and its brief: `generate` only continues it")
+        return cmd_start(run, a)
+    if not a.input or not a.output:
+        raise Problem("a generation phase writes a brief from a list of pull requests: --input FILE --output FILE")
+    if texts:
+        raise Problem(f"a generation run's texts are {GENERATE_TEMPLATE}'s: change the template, or `start` a run with "
+                      f"texts of your own")
+    try:
+        template = (run.root / GENERATE_TEMPLATE).read_text()
+    except OSError:
+        raise Problem(f"no {GENERATE_TEMPLATE} in {run.root}: this checkout is on a line from before generation phases")
+    if not (run.root / GENERATE_HANDOFF).is_file():
+        raise Problem(f"no {GENERATE_HANDOFF} in {run.root}: the brief author's instructions")
+    source = brief_named(run, a.input, a.workspace)
+    output = output_named(run, a.output)
+    record = a.record or generation_record(output)
+    a.prompt, cont = template_texts(template, {"input": f"`{source}`", "output": f"`{output}`", "record": f"`{record}`",
+                                               "handoff": f"`{GENERATE_HANDOFF}`"}, GENERATE_TEMPLATE)
+    setattr(a, "continue", cont)
+    a.brief = None  # the brief does not exist yet: the agent's instructions are the handoff, named in its texts
+    a.client, a.model = a.client or GENERATE_CLIENT, a.model or GENERATE_MODEL
+    a.effort, a.compact_at = a.effort or GENERATE_EFFORT, a.compact_at or GENERATE_COMPACT
+    return cmd_start(run, a, extra={"generate": {"input": source, "output": output, "record": record},
+                                    "afterGenerate": f"land the run if it has a workspace; the brief {output} then has a "
+                                                     f"setup phase (`single_run.py setup`) and a domain run, as any brief"})
 
 
 def cmd_notes(run: Run, targets: list[str]) -> int:
@@ -874,7 +961,11 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
     s = named("start", "start the run, or continue one that has stopped")
     u = named("setup", "start a brief's setup phase: a setup agent that only fetches, pins, verifies and builds")
     u.add_argument("--record", help="the setup's record, in the checkout (default llm-dlc/loops/BRIEF-setup.md)")
-    for p in (s, u):  # setup takes start's options; its texts are refused there
+    g = named("generate", "start a brief's generation phase: a brief author that writes a brief from pull requests")
+    g.add_argument("--input", help="the list of pull requests (a file of URLs)")
+    g.add_argument("--output", help="the brief to write, in the checkout (llm-dlc/loops/NAME.md)")
+    g.add_argument("--record", help="the generation's record (default llm-dlc/loops/OUTPUT-generation.md)")
+    for p in (s, u, g):  # setup and generate take start's options; their texts are refused there
         p.add_argument("--prompt")
         p.add_argument("--prompt-file")
         p.add_argument("--continue")
@@ -889,6 +980,8 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
         p.add_argument("--model")
         p.add_argument("--effort")
         p.add_argument("--memory", help="the loop's memory cap, as 12G; `none` runs it uncapped")
+        p.add_argument("--compact-at", help="the tokens at which the session compacts itself mid-turn (600k), over the "
+                                            "client's own setting; a run keeps it")
         p.add_argument("--cycles", type=int)
         p.add_argument("--verdict-wait", type=int, help=f"seconds the loop waits for the watcher after a cycle ({VERDICT_WAIT})")
         p.add_argument("--no-verification", action="store_true", help="leave the verification queue alone")
@@ -935,6 +1028,10 @@ def main(argv: list[str] | None = None, root: Path = REPO) -> int:
             if args.cycles is not None and args.cycles < 0:
                 raise Problem("--cycles takes a count of 1 or more, or 0 for no limit")
             return cmd_setup(run, args)
+        if args.command == "generate":
+            if args.cycles is not None and args.cycles < 0:
+                raise Problem("--cycles takes a count of 1 or more, or 0 for no limit")
+            return cmd_generate(run, args)
         if args.command == "notes":
             return cmd_notes(run, args.to)
         if args.command == "loop":

@@ -127,8 +127,13 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 - **Precautions for the next Lean or bytecode-level brief** (cheap; none of them yet shown to work):
   - Name such files and theorems for what they prove (`ArrayMirrorProof`, `RangeRule`), not after the method under study (`Reverse…`).
   - Keep raw byte dumps, `javap -c` listings and hex patterns out of the conversation: write them to files, and refer to them by path and digest.
-  - Have Astra work as a single agent rather than fork several sub-agents with the same context, since two of the three stops were sub-agents. The user is weighing this one.
+  - Have Astra work as a single agent rather than fork several sub-agents with the same context, since two of the three stops were sub-agents. The user is weighing this one, **for deep JVM verification only** (see the next point).
   - After any stop, continue in a fresh session (VF-046's rule since 2026-11-24).
+- **Where these precautions don't apply: brief generation (the user, 2026-11-25).** The precautions are for deep JVM verification, meaning bytecode-level proofs, raw class bytes and runtime probes, where the stops happened. They are not for researching and writing briefs.
+  - **The brief author** (`single_run.py generate`, Codex Astra 6.2 at `ultra`) reads pull requests, issues, diffs, source and documentation, and writes Markdown. `ultra` is Codex's "maximum reasoning with automatic task delegation", so it forks sub-agents by design.
+  - **The user's decision:** that work is much less likely to be flagged, so it keeps its delegation. Don't restrict it to a single agent on this finding's account.
+  - **What still holds there:** keep large raw output (a whole diff, a byte dump) in files, as `brief-generation-template.md` says, and continue in a fresh session after any stop.
+  - **If a generation run is stopped all the same,** record it here with what it was doing. That would revise the distinction.
 - **Tracked in**: this finding and VF-046. The proof work itself landed with trusted-kernel-and-receiver-recovery (`lib/benchmark/trusted-kernel/RangeRule.lean`, `Reverse.lean`, and `llm-dlc/loops/trusted-kernel-and-receiver-recovery-results.md`).
 - **Closes when**: a later Lean or bytecode-level Codex run has followed these precautions and the outcome, stopped or not, is recorded here, or the user decides how such work is routed (for example to Claude Code runs).
 
