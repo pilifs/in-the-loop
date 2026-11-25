@@ -44,10 +44,11 @@ def unseal():
     return doc
 
 
-def suite_packages(suite, release):
-    if suite in CACHE:
-        return CACHE[suite]
-    folder = AREA / suite
+def suite_packages(suite, release, index_area=AREA):
+    cache_key = (suite, release["signedSha256"])
+    if cache_key in CACHE:
+        return CACHE[cache_key]
+    folder = index_area / suite
     signed = folder / "InRelease"
     if sha(signed.read_bytes()) != release["signedSha256"]:
         raise ValueError("signed release record differs")
@@ -58,7 +59,7 @@ def suite_packages(suite, release):
     for component in ("universe","main"):
         path = Path(release["indexes"]["Packages"]["path"]) if component=="universe" else folder/"main-Packages.xz"
         key = component + "/binary-amd64/Packages" + (".xz" if path.suffix==".xz" else "")
-        fetch(AREA,"dists/"+suite+"/"+key,path,sums[key])
+        fetch(index_area,"dists/"+suite+"/"+key,path,sums[key])
         for entry in records(path):
             name=entry["Package"]
             if not (name.endswith("-java") or name in JAVA_TOOLS or entry.get("Section","").split("/")[-1]=="java"):
@@ -66,8 +67,8 @@ def suite_packages(suite, release):
             table[name]={k:entry[k] for k in ("Package","Version","Depends","Pre-Depends","Filename","SHA256","Provides") if k in entry}
             for group in entry.get("Provides","").split(","):
                 if group.strip():virtual.setdefault(group.strip().split()[0],[]).append(name)
-    CACHE[suite]=table,virtual
-    return table,virtual
+    CACHE[cache_key] = table, virtual
+    return table, virtual
 
 
 def archive_jars(deb):
@@ -109,21 +110,28 @@ def choose(group, table, virtual):
     return None
 
 
-def graph(row, side, releases, dest):
+def graph(row, side, releases, dest, *, area=AREA, index_area=AREA, available_only=False):
     index=0 if side=="old" else 1
     rec=row[("before","after")[index]]
     suite=row["suites"][index]
-    table,virtual=suite_packages(suite,releases[suite])
+    table,virtual=suite_packages(suite,releases[suite],index_area)
     root=row["artifact"]
     if table[root]["SHA256"]!=rec["SHA256"]:raise ValueError("root package changed")
     queue=deque([root]);packages={}; jars={}; links={}; skipped=[]
+    unavailable = []
     while queue:
         name=queue.popleft()
         if name in packages:continue
         pkg=table[name]
-        path=AREA/(pkg["SHA256"]+".deb")
-        fetch(AREA,pkg["Filename"],path,pkg["SHA256"])
-        files, aliases=archive_jars(path)
+        path=area/(pkg["SHA256"]+".deb")
+        if available_only and not path.is_file() and name != root:
+            unavailable.append(name)
+            files, aliases = {}, {}
+        else:
+            if available_only and not path.is_file():
+                raise ValueError("the selected original package is missing")
+            fetch(area,pkg["Filename"],path,pkg["SHA256"])
+            files, aliases=archive_jars(path)
         packages[name]={"version":pkg["Version"],"file":pkg["Filename"],"sha256":pkg["SHA256"],"requires":[]}
         for k,v in files.items():
             if k in jars and jars[k][:2]!=(name,v[0]):raise ValueError("classpath package file conflict")
@@ -177,7 +185,7 @@ def graph(row, side, releases, dest):
         if len(candidates)==1:alternatives[path]=next(iter(candidates))
     return {"suite":suite,"packages":packages,"classpath":order,"unresolvedManifestPaths":sorted(set(missing)),
             "matchingBasenameOnOrderedClasspath":alternatives,
-            "nonJavaOrUnresolvedDepends":skipped}
+            "nonJavaOrUnresolvedDepends":skipped, **({"unavailablePackages":unavailable} if available_only else {})}
 
 
 def prepare(doc, indexes):
