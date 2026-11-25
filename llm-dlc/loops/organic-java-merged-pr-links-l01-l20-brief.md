@@ -415,3 +415,97 @@ Before `46211fccf642d6dcfcebc31081817da1529d6a35` → after `9fd4973d12abbd9e9d1
 **Technical notes.** The public entries are CCJSqlParserUtil, Alter.accept and StatementDeParser in the Maven project. Retain separate fresh StringBuilders and a new visit log per render. The usage guide distinguishes active defaults and definitions from raw metadata and describes the subclass hooks.
 
 **Sources.** [Dispatch regression](https://github.com/JSQLParser/JSqlParser/blob/0a7436a10301e118802a4b7effba056de22ee7f8/src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java) · [ALTER body selection](https://github.com/JSQLParser/JSqlParser/blob/0a7436a10301e118802a4b7effba056de22ee7f8/src/main/java/net/sf/jsqlparser/statement/alter/AlterExpression.java) · [Drop action fallback](https://github.com/JSQLParser/JSqlParser/blob/0a7436a10301e118802a4b7effba056de22ee7f8/src/main/java/net/sf/jsqlparser/statement/alter/AlterExpressionDrop.java) · [ALTER deparser](https://github.com/JSQLParser/JSqlParser/blob/0a7436a10301e118802a4b7effba056de22ee7f8/src/main/java/net/sf/jsqlparser/util/deparser/AlterDeParser.java) · [Statement visitor](https://github.com/JSQLParser/JSqlParser/blob/0a7436a10301e118802a4b7effba056de22ee7f8/src/main/java/net/sf/jsqlparser/util/deparser/StatementDeParser.java) · [Usage guide](https://github.com/JSQLParser/JSqlParser/blob/0a7436a10301e118802a4b7effba056de22ee7f8/src/site/sphinx/usage.rst) · [Maven build](https://github.com/JSQLParser/JSqlParser/blob/0a7436a10301e118802a4b7effba056de22ee7f8/pom.xml)
+
+## Setup Agent Notes
+
+### What is ready, and where
+
+- Everything is under `~/.cache/in-the-loop/merged-pr-links-l01-l20` (`$O`); `source $O/scripts/env.sh` gives `$O`, `$W`, `$MVN`,
+  `GRADLE_USER_HOME`, `TMPDIR` and the JDK homes `$J8` `$J11` `$J17` `$J21` `$J25`. The default `java` is 25.
+- Both revisions of every case at the brief's pins: `$W/LNN-MIRROR-parent` and `$W/LNN-MIRROR-fix` (full SHAs, trees and parents in
+  [Upstream revisions](#upstream-revisions)). Every PR's merge SHA is the brief's after pin; every after pin's first parent is the before pin,
+  except L03, whose three rebased commits lead from the before pin to the after pin as the brief says.
+- Built jars of both sides in `$O/artifacts/`, named in each case's section with full sha256 and the digests of the changed classes, and
+  runtime classpath files beside them: L01–L04, L06–L08, L11–L13, L17, L18 inline; L20 (fix inline, parent by job); L05, L10, L14, L16,
+  L19 by job; L09's evaluation module inline, and every rdf4j module of both sides by job (`$O/artifacts/L09-rdf4j-ROLE-modules/`).
+  **Not built, and setup stopped there:** L15's two pin distributions (`$O/tools/gradle-pin-L15-ROLE`). Three jobs failed in Gradle's own
+  `build-logic`; the last on a pinned jar (`grolifant-0.16.1.jar`) that is gone, whose only public copy fails the build's verification (see
+  [What to know](#what-to-know-before-starting)). For L15, the pins' sources, the releases 7.5.1 and 7.6, and `$O/gradle-home-L15`
+  (resolved up to `build-logic`) are ready.
+- Release sets resolved with strict checksums in `$O/releases/`, and which side each equals: the "Release side" column of
+  [Summary by case](#summary-by-case).
+- Dependencies are in `$O/m2` and `$O/gradle-home`; the offline form (`$MVN -o`, `--offline`) was checked for every case built inline, and
+  the jobs run offline after their first step. Exact commands are in each case's section.
+
+### What was verified on a JVM
+
+- The landed regression passes on the fix and fails on the parent (the fix's test moved onto the parent) for L01, L02, L03, L04, L06, L07,
+  L08, L09 (`GroupIteratorTest#testMaxEmptySet_Grouped`), L11, L12 (`JdbcJobStoreTest`, Derby), L13, L17 and L18: 13 cases, counts and
+  failing tests in the summary table.
+- By job, the same holds for **L10** (`planner.iq` and two `RelOptRulesTest` entries fail on the parent with the fix's resources), **L14**
+  (9 of 48: eight `TestGenericReaderDeletes` parameterizations and `TestGenericRecord#testDeepCopyValues()`) and **L19** (6 of the 26 landed
+  tests fail on the parent): 16 cases in all.
+- **L05, with a mapped transplant:** the landed tests pass on the fix (56) and the parent's own on the parent (53). The fix's tests do not
+  compile on the parent as they are (the fixture uses constants the fix renames); with only four constant references mapped (to the parent's
+  names, or the same string values) and nothing else changed, 3 of 56 fail on the parent, the two `NestedTestClassesTests` cases of the PR
+  and `ClassTemplateInvocationTests#nestedClassTemplateIsInherited()`. The mapped files and their diffs are in `$O/artifacts/L05-transplant-mapped/`.
+- **L20's landed test does not compile on the parent** (it calls the fix-only `hasActiveColumnDefinitions()`); a copy with those six lines
+  deleted, labelled as modified, compiles and has 16 failures on the parent.
+- **L16 has no landed test** (the PR adds none); `FuturesTest` passes at both pins, JRE and Android (160 each), and cannot separate the sides.
+- **L09:** besides `GroupIteratorTest#testMaxEmptySet_Grouped` (inline), the compliance classes ran under failsafe by job: on the fix
+  `MemoryComplexSPARQLQueryTest` 81/81 and `SPARQL12QueryTest` 2/2; on the parent its own 78/78; with the PR's test-side files on the parent,
+  the three `...AggregateWithGroupEmptyResult` tests and `agg on empty set, explicit grouping` fail.
+- **L15: nothing verified on a JVM.** No pin build or landed test ran; the third job (`20261125-172547-setup-build-gradle-distributions-at-both`)
+  stopped on `grolifant` as described above. No job is pending.
+- **None of the brief's claim scenarios was run** in any case.
+
+### What to know before starting
+
+- **Build tools:** Maven 3.9.9 (`$O/tools/apache-maven-3.9.9`) for L06 (Arrow) and L09 (rdf4j); 3.10.0 fails on both. Gradle versions per
+  case are in `$O/tools/gradle-*` (tables above); run the distributions directly, not `./gradlew`.
+- **JDKs:** L07 and L09 build on JDK 8, L18 and L19 on 8, L03 and L13 on 11, L15's Gradle build on 11, L05 on 25 with toolchains 17/21/24/25,
+  L10 on 21 with a 25 compile toolchain; the rest on 17. L06 needs `--add-opens=java.base/java.nio=ALL-UNNAMED` on 17+ and one allocator
+  module on the classpath.
+- **L15, substitution and unstable input:** the pins' wrapper names a nightly (`gradle-7.6-20220513164305+0000`) that is gone everywhere;
+  the pin distributions are built by released Gradle 7.5.1 with `--no-scan --no-build-cache`. No release equals either side (7.5.1 lacks the
+  fix and an earlier parent-side change; 7.6 has the fix plus later changes).
+- **L08, unstable input:** commons-statistics depends on `commons-rng` **1.8-SNAPSHOT**; the build pinned the snapshot timestamp recorded in
+  L08's section (`$O/notes/A-L08-snapshots.md`).
+- **L18 and L19, substitutions:** build-script modules gone from jcenter were taken from public mirrors by SHA-1, through init scripts in
+  `$O/scripts/`; no upstream build file was edited.
+- **L19:** the release pair 2.2.0 (parent logic) / 2.2.1 (fix logic) also differs in other changes; 2.2.x test-utils has the pre-2.4
+  `TopologyTestDriver` API (no `TestInputTopic`).
+- **L13:** the brief's scenario runs the shade goal in a Maven build. 3.4.0 is source-equal to the fix; the parent has no equal release and
+  its built jar is not installed anywhere (both pins say `3.3.1-SNAPSHOT`). The fixture JARs A and B were not built.
+- **L11:** the parent's tree lacks the 127×127 images; copies are in `$O/artifacts/L11-resources/`.
+- **L10:** the landed fixture enables the rule with Quidem's `!set planner-rules "+CoreRules.PROJECT_SET_OP_TRANSPOSE"`; how a plain JDBC
+  connection gets the same rule set was not looked into.
+- **L05, L14, L19:** `$W/L05-junit-framework-*`, `$W/L14-iceberg-*` and `$W/L19-kafka-*` are standalone depth-1 clones, not worktrees,
+  because their builds read git through JGit (L14's `gradle-git-properties` failed in a worktree); build JUnit only through
+  `$O/scripts/L05-gradle.sh`.
+- **L15 is blocked on `org.ysb33r.gradle:grolifant:0.16.1`.** Gradle's build verifies dependencies strictly, and both pins record a
+  sha256 for this jar (origin "Artifact is not signed") that no public copy has now: the Plugin Portal and jcenter redirect to Maven Central,
+  whose jar differs and was signed on 2022-11-08, after the pins, and `repo.gradle.org/gradle/public` answers 404. Digests and URLs:
+  L15's section and `$O/dl/L15-grolifant-check/`. Going on needs someone to decide to accept Central's jar, e.g. by adding
+  `--dependency-verification lenient` to the job's Gradle commands (`submit_D.py l15`), which reports the mismatch and carries on, or to
+  find the original jar elsewhere. Setup took neither step. Until then, the releases 7.5.1 and 7.6 are the only Gradle distributions here,
+  and neither equals a side.
+- **L15, second substitution:** `org.openmbee.junit:junit-xml-parser:1.0.0` is no longer on Central or the Plugin Portal, and Gradle's build
+  needs it for the root build-script classpath and for `build-logic`'s compile classpath; `$O/scripts/gradle-L15-openmbee-substitute.init.gradle`
+  adds `https://repo.gradle.org/gradle/public` (which `build-logic` already declares for another module) for that one group, to every
+  build's settings repositories and every project's build-script repositories. Pass it with `-I` on every L15 Gradle run.
+- **L09:** `compliance/sparql` skips surefire and runs its tests under failsafe; run them with `$O/scripts/rdf4j_verify.sh` (`verify`,
+  `-Dit.test=...`), not with `-Dtest` and `package`. Its per-class lines were fixed after the job; read counts from the Maven log if in doubt.
+- **Signatures:** RxJava 3.0.0-RC8/RC9 and reactive-streams 1.0.3 cannot be verified; shade 3.3.0/3.4.0 and Kafka 2.2.1 are signed by keys
+  that have since expired. See [Signatures](#signatures).
+- Jars built from pins carry build timestamps: compare the class digests in each section, not the jar digests.
+
+### What is left for the domain work on purpose
+
+- Every claim, example folder, example id, adapter, sidecar, observer and recipe; the brief's public scenarios and challenge histories
+  (none was run or probed).
+- Choosing, per case, whether the built pins or a published release stand for each side.
+- L15: whether to build Gradle's pins with Central's `grolifant-0.16.1.jar` in place of the pinned one (lenient dependency verification),
+  or to work from the releases 7.5.1 and 7.6, which only approximate the sides.
+- L13's fixture JARs and the coordinates under which a parent-side shade plugin would be installed; L10's JDBC route to the rule set; the
+  Quartz databases other than Derby (L12).
