@@ -303,3 +303,103 @@ Determine what each merged change lets a Java caller observe, which results shou
 **Technical notes.** Use the byte-array API in Commons Codec’s binary package. Compare bytes as US-ASCII. The builder validates the custom alphabet’s length and uniqueness. The PR identifies the report as [CODEC-340](https://issues.apache.org/jira/browse/CODEC-340).
 
 **Sources.** [Base58.java](https://github.com/apache/commons-codec/blob/98986558dc1c0e2013b76bea92d75bde80568a00/src/main/java/org/apache/commons/codec/binary/Base58.java) · [Base58Test.java](https://github.com/apache/commons-codec/blob/98986558dc1c0e2013b76bea92d75bde80568a00/src/test/java/org/apache/commons/codec/binary/Base58Test.java) · [pom.xml](https://github.com/apache/commons-codec/blob/98986558dc1c0e2013b76bea92d75bde80568a00/pom.xml).
+
+## apache/commons-compress#725 · Verify a CPIO entry checksum when the caller reads into a slice
+
+**Change and revisions.** [Merged PR #725](https://github.com/apache/commons-compress/pull/725). Accumulate unsigned entry bytes from the destination offset supplied to CpioArchiveInputStream.read. Before `a7a749f028a38a07c6b3765a4b2c3607b1ab6e71`, after `befbfe070270f61c29e032b51363dfc8c8ef51f1`. [Landed comparison](https://github.com/apache/commons-compress/compare/a7a749f028a38a07c6b3765a4b2c3607b1ab6e71...befbfe070270f61c29e032b51363dfc8c8ef51f1).
+
+**Public scenario.** Use a new-format CRC CPIO archive with entry a containing [1,128,3], a stored checksum of 132 and a following entry b containing byte 7. Use a CpioArchiveInputStream, getNextEntry(), then read a into a caller array starting at offset 2. Continue through entry EOF and open b.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| apache/commons-compress#725.1 · Intent | Fill the destination with 9, reserve enough room at offset 2, and read the three bytes of a. Request another byte to finish the entry. | The parent can return the correct payload and then report a checksum error. On the merge a yields [1,128,3], entry EOF, then entry b. | The new-CRC checksum is the unsigned byte sum, 1+128+3=132. The two prefix bytes belong to the caller. | A correct payload followed by a checksum error, wrong payload, or failure to advance to b on the merge. |
+| apache/commons-compress#725.2 · Control | Read a into offset zero and consume through entry EOF. | Both revisions should accept checksum 132 and let the caller read 7 from b. | The old and new checksum intervals coincide at offset zero. | Either stream rejects the archive, changes the payload, or loses the following entry. |
+| apache/commons-compress#725.3 · Challenge | Hold archive bytes fixed. Read a one byte at a time at offset 1, once with prefix 0 and once with prefix 255. Reassemble the bytes and read b in each run. | Afterward both histories should finish cleanly and yield identical entries and payloads. Prefix sentinels remain unchanged. | Varying destination padding or splitting a read cannot alter the entry's bytes or checksum. | The outcome depends on the prefix, chunk size or entry order, although the archive is identical. |
+
+**Evidence and limits.** The upstream regression reads bla.cpio into buffer offset 1 and asserts the loop completes. A check that stops after receiving the expected bytes can miss verification at entry EOF. The independently checksummed two-entry fixture also tests cursor alignment. [Issue COMPRESS-711](https://issues.apache.org/jira/browse/COMPRESS-711).
+
+**Technical notes.** Use the Commons Compress Maven module and the CPIO new ASCII format with checksum (FORMAT_NEW_CRC). Other CPIO formats bypass this comparison.
+
+**Sources.** [CpioArchiveInputStream.java](https://github.com/apache/commons-compress/blob/befbfe070270f61c29e032b51363dfc8c8ef51f1/src/main/java/org/apache/commons/compress/archivers/cpio/CpioArchiveInputStream.java) · [CpioArchiveInputStreamTest.java](https://github.com/apache/commons-compress/blob/befbfe070270f61c29e032b51363dfc8c8ef51f1/src/test/java/org/apache/commons/compress/archivers/cpio/CpioArchiveInputStreamTest.java) · [pom.xml](https://github.com/apache/commons-compress/blob/befbfe070270f61c29e032b51363dfc8c8ef51f1/pom.xml).
+
+## apache/commons-compress#775 · GNU sparse TAR extraction starts at the first data record
+
+**Change and revisions.** [Merged PR #775](https://github.com/apache/commons-compress/pull/775). An aligned GNU PAX 1.x sparse map occupies complete TAR records. The merge consumes zero padding when the last map byte already ends a 512-byte record. Before `a8cb750e5bdd0fe136d5d9cab38781f9447b2dd3`, after `948512a35a9f8ed1f8eac12f743e879aff9266d2`. [Landed comparison](https://github.com/apache/commons-compress/compare/a8cb750e5bdd0fe136d5d9cab38781f9447b2dd3...948512a35a9f8ed1f8eac12f743e879aff9266d2).
+
+**Public scenario.** Open a valid two-member TAR through TarArchiveInputStream. The first member is GNU PAX sparse 1.0 with logical size 7, one extent at offset 3 of length 4, and stored data ABCD. Its PAX metadata must identify the sparse version and real size, and the physical entry size must include the map record and four stored bytes. In the aligned fixture pad the decimal length field with leading zeroes so the map’s final LF is byte 512. Follow the sparse member with an ordinary member named tail containing Z.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| apache/commons-compress#775.1 · Intent | Call getNextEntry(), then read the sparse member through end of entry. | The parent’s extra-record skip predicts lost data or a read failure. On the merge expect exactly three zero bytes followed by ABCD. | Expanding a four-byte extent at logical offset 3 produces those seven bytes. No physical padding lies after an exactly full map record. | An exception, a missing hole or payload byte, or padding appearing in the logical output on the merge. |
+| apache/commons-compress#775.2 · Control | Encode the same extent with the short decimal map and zero-pad the rest of its 512-byte record. | Both revisions should extract the identical seven bytes. | The numeric extent and payload are unchanged. Both padding calculations consume the remaining bytes of a partially used record. | The ordinary short map changes the recovered data or its length on either revision. |
+| apache/commons-compress#775.3 · Challenge | Keep the aligned map fixed, change only the four stored bytes to WXYZ and continue to the second member. | On the merge the first readback must become three zeros then WXYZ. The next entry must still be tail with its one byte Z and then the archive must end. | The file data and the next member have independent TAR boundaries. Successful delivery of the first file alone does not prove subsequent alignment. | The new data is ignored, or the second name, payload or end-of-archive changes. |
+
+**Evidence and limits.** The PR regression invokes package-level TarUtils with a 512-byte map of 100 zero extents and checks the next raw byte is A rather than the B a record later. That check establishes the intended cursor position. Logical reconstruction and locating the second complete entry remain public-API predictions. [Original COMPRESS-724 report](https://issues.apache.org/jira/browse/COMPRESS-724)
+
+**Technical notes.** Use the Commons Compress root Maven module and TAR’s 512-byte record size. The short-map and aligned-map cases need valid outer TAR headers, physical sizes, padding and GNU PAX sparse metadata in addition to the sparse text.
+
+**Sources.** [TarUtils.java](https://github.com/apache/commons-compress/blob/948512a35a9f8ed1f8eac12f743e879aff9266d2/src/main/java/org/apache/commons/compress/archivers/tar/TarUtils.java) · [TarUtilsTest.java](https://github.com/apache/commons-compress/blob/948512a35a9f8ed1f8eac12f743e879aff9266d2/src/test/java/org/apache/commons/compress/archivers/tar/TarUtilsTest.java) · [TarArchiveInputStream.java](https://github.com/apache/commons-compress/blob/948512a35a9f8ed1f8eac12f743e879aff9266d2/src/main/java/org/apache/commons/compress/archivers/tar/TarArchiveInputStream.java) · [pom.xml](https://github.com/apache/commons-compress/blob/948512a35a9f8ed1f8eac12f743e879aff9266d2/pom.xml).
+
+## FasterXML/jackson-core#1716 · A UTF-32 supplementary character survives a parser refill
+
+**Change and revisions.** [Merged PR #1716](https://github.com/FasterXML/jackson-core/pull/1716). The UTF32Reader saves the computed low surrogate when only the high surrogate fits in the current character buffer. Before `2a0ea7beeb9eb0a16f04c14e07b5d0804c64433d`, after `15591d013c44ef3b2a84bb639df396149a5917f5`. [Landed comparison](https://github.com/FasterXML/jackson-core/compare/2a0ea7beeb9eb0a16f04c14e07b5d0804c64433d...15591d013c44ef3b2a84bb639df396149a5917f5).
+
+**Public scenario.** Use a JsonFactory to create a parser on BOM-free UTF-32 bytes for an array of one string. For each prefix length 3995 through 4001, put that many cycling ASCII letters before U+1F600 and U+10000. Read START_ARRAY and VALUE_STRING, inspect the text and its code points, then read END_ARRAY.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| FasterXML/jackson-core#1716.1 · Intent | Encode these documents in UTF-32BE. Repeat in UTF-32LE. | The issue reports loss or corruption of a low surrogate when the pair is split. After, every prefix and byte order must produce exactly the two requested supplementary scalars at the tail. | U+1F600 has UTF-16 units D83D DE00 and U+10000 has D800 DC00. Endianness changes the input bytes only. | A replacement, missing or unpaired surrogate, different code point, or missing END_ARRAY on the merge. |
+| FasterXML/jackson-core#1716.2 · Control | Replace the supplementary characters with two BMP letters, retaining byte order and prefix lengths. | Both revisions should return exactly those letters and the same token sequence. | Each BMP letter needs just one UTF-16 code unit. | Either parser changes the letters or terminates the array early. |
+| FasterXML/jackson-core#1716.3 · Challenge | Keep the JSON value fixed, add one leading JSON whitespace character before the array, and compare the UTF-32 parse with a UTF-8 parse of the same document. | On the merge every parser must return the same string and code-point count. Spacing may move a reader refill without changing any string character. | Whitespace outside the string is insignificant. The UTF-8 path provides a second decoding route. | The byte encodings disagree, or adding only external whitespace changes the last string character. |
+
+**Evidence and limits.** The landed test uses a public byte-array parser across seven prefix lengths and tests single-character reads in both byte orders. Checking only VALUE_STRING or string length misses an incorrect low surrogate. The external-whitespace comparison is a prediction. [Original report](https://github.com/FasterXML/jackson-core/issues/1713).
+
+**Technical notes.** Use Jackson core’s com.fasterxml.jackson.core 2.x APIs and its normal input-encoding detection. Emit four bytes per Unicode code point when constructing the UTF-32 fixture. Encoding each Java char separately would create invalid input.
+
+**Sources.** [UTF32Reader.java](https://github.com/FasterXML/jackson-core/blob/15591d013c44ef3b2a84bb639df396149a5917f5/src/main/java/com/fasterxml/jackson/core/io/UTF32Reader.java) · [UTF32ReaderSurrogate1713Test.java](https://github.com/FasterXML/jackson-core/blob/15591d013c44ef3b2a84bb639df396149a5917f5/src/test/java/com/fasterxml/jackson/core/io/UTF32ReaderSurrogate1713Test.java) · [pom.xml](https://github.com/FasterXML/jackson-core/blob/15591d013c44ef3b2a84bb639df396149a5917f5/pom.xml) · [Related PR #1714](https://github.com/FasterXML/jackson-core/pull/1714).
+
+## locationtech/jts#1092 · Keep measures distinct from elevations in binary geometry
+
+**Change and revisions.** [Merged PR #1092](https://github.com/locationtech/jts/pull/1092). Choose the WKB ordinate flags and payload from the geometry and the ordinates the writer is configured to emit. Before `a7597288e551757426015db75c22603c0baeff20`, after `034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3`. [Landed comparison](https://github.com/locationtech/jts/compare/a7597288e551757426015db75c22603c0baeff20...034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3).
+
+**Public scenario.** Parse LINESTRING M(1 2 3, 5 6 7) with WKTReader. Serialize with WKBWriter(4, ByteOrderValues.LITTLE_ENDIAN, false). Inspect the header and size, decode with WKBReader and examine the coordinate sequence's measures, Z and M values.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| locationtech/jts#1092.1 · Intent | Write the XYM line with maximum output dimension four. | The parent advertises both extra dimensions by default and attempts a fourth ordinate. The merge should encode a measured line with only M set, returning measures 3 and 7 and no elevation. | The fixture has three doubles per point, a five-byte geometry header and four-byte point count, so the no-SRID output is 57 bytes. The pinned test checks the exact M-only encoding. | An exception on the merge, a Z flag, a size other than 57, or decoded M values different from 3 and 7. |
+| locationtech/jts#1092.2 · Control | Write LINESTRING ZM(1 2 3 4, 5 6 7 8) with the same writer. | Both should round-trip with elevations 3 and 7 and measures 4 and 8. | The input has four distinct ordinates per position. The pinned XYZM readback examines all four. | A swapped, missing or altered Z or M, even if XY geometry equality passes. |
+| locationtech/jts#1092.3 · Challenge | On the merge serialize the same XYM geometry in each supported byte order and decode each byte sequence independently. | The byte-order markers differ, but each decoded sequence has one measure per point, equal XY coordinates and M values [3,7]. | Endianness determines how numbers are encoded, independent of the meaning of the third ordinate. | Only one order decodes, or the decoded values agree in XY while the third ordinate moves into Z. |
+
+**Evidence and limits.** Issue #733 observed an XYM line read back as XYZ with a dimension-three writer. The PR specifies four for its default-configured measured output. The M-only test compares fixed bytes, whereas the XYZM test uses WKBReader. The dual-endian M readback extends both.
+
+**Technical notes.** Use the JTS core module and its measure-capable coordinate sequences. Disable SRID output for the stated byte count. A dimension-three constructor with default ordinates is a different configuration.
+
+**Sources.** [WKBWriter.java](https://github.com/locationtech/jts/blob/034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3/modules/core/src/main/java/org/locationtech/jts/io/WKBWriter.java) · [CheckOrdinatesFilter.java](https://github.com/locationtech/jts/blob/034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3/modules/core/src/main/java/org/locationtech/jts/io/CheckOrdinatesFilter.java) · [WKBWriterTest.java](https://github.com/locationtech/jts/blob/034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3/modules/core/src/test/java/org/locationtech/jts/io/WKBWriterTest.java) · [pom.xml](https://github.com/locationtech/jts/blob/034207b1de6605ad3eb8dbf8373b1ad8fab1b1b3/modules/core/pom.xml) · [Issue #733](https://github.com/locationtech/jts/issues/733).
+
+## apache/commons-csv#412 · Round-trip MongoDB CSV records with an empty leading field
+
+**Change and revisions.** [Merged PR #412](https://github.com/apache/commons-csv/pull/412). The MongoDB CSV preset uses the same character for quoting and escaping. The lexer now recognizes a quote at the boundary of a quoted field before interpreting it as an escape. Before `2abebaa74eb413ece7a56d86f826bc690ee26df9`, after `5770cc07e351cc124d34a6049c59e9aea8885675`. [Landed comparison](https://github.com/apache/commons-csv/compare/2abebaa74eb413ece7a56d86f826bc690ee26df9...5770cc07e351cc124d34a6049c59e9aea8885675).
+
+**Public scenario.** Use a CSVPrinter over a StringWriter with CSVFormat.MONGODB_CSV. Print two records [a,b] and [empty,x], close the printer, then open a public CSVParser with that same preset over the saved text. Collect records through the iterator and inspect each field by index and each record’s size.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| apache/commons-csv#412.1 · Intent | Print and reparse [a,b] then [empty,x]. | The PR reports failure to parse the printer’s empty first column on the parent. Expect precisely two records of size two, with second record fields empty string and x after the merge. | The values passed to the independent printer are the expected reader values. Empty string still occupies a column. | Exception, early EOF, an extra record, or any merged record with the wrong field count or contents. |
+| apache/commons-csv#412.2 · Control | Use only nonempty unquoted ASCII fields a,b and c,d. | Expect those two records and four corresponding values on both revisions. | These records contain no ambiguous quote/escape boundary and the comma separates two nonempty columns. | Either revision drops, merges or changes a field. |
+| apache/commons-csv#412.3 · Challenge | On the merge print [empty,x] twice, changing only the second occurrence’s second field to one value containing both a comma and a literal double quote. | The first occurrence must remain [empty,x], and the second must contain precisely the empty first field and the changed second string, with its comma and quote intact. | The printer must protect delimiters and quotes within a field. The caller’s original strings give an oracle independent of the lexer. | A changed trailing field affects the leading empty column or earlier row, or escaping adds or drops a literal character. |
+
+**Evidence and limits.** The submitted test prints the two baseline rows under every predefined format, then calls package-level nextRecord(). The public iterator and the delimiter-plus-quote field extend that evidence. Comparing printed text alone cannot show that callers can read those records back. The pinned MONGODB_CSV Javadoc still describes parsing as unsupported. These reader predictions describe particular inputs motivated by the PR and its test. A general MongoDB parsing guarantee remains undocumented.
+
+**Technical notes.** The root Maven module supplies CSVParser, CSVPrinter, CSVFormat and the changed Lexer. This describes the named preset at the pinned revisions, with empty string distinct from null.
+
+**Sources.** [Lexer.java](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/src/main/java/org/apache/commons/csv/Lexer.java) · [CSVParserTest.java](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/src/test/java/org/apache/commons/csv/CSVParserTest.java) · [CSVFormat.java](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/src/main/java/org/apache/commons/csv/CSVFormat.java) · [pom.xml](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/pom.xml).

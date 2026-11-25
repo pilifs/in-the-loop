@@ -17,11 +17,11 @@
 | google/jimfs#435 | written | Read the order of bounds, closure, zero-length and finished checks and the stream regression. Endpoint empty-slice reads through Files.newInputStream remain open. |
 | vigna/fastutil#384 | written | Read the repositioned overwrite regression and both write overloads. The source now advances by len before testing extension. A subsequent write after split versus bulk overwrite remains unexecuted. |
 | apache/commons-codec#437 | written | Read CODEC-340, the former static alphabet paths, the landed table lookup, and swapped-alphabet assertions. Independent base-58 division gives "212" for [0,58] with digits zero/one exchanged. Fresh-codec readback remains open. |
-| apache/commons-compress#725 | not yet |  |
-| apache/commons-compress#775 | not yet |  |
-| FasterXML/jackson-core#1716 | not yet |  |
-| locationtech/jts#1092 | not yet |  |
-| apache/commons-csv#412 | not yet |  |
+| apache/commons-compress#725 | written | Read the read/entry-EOF checks for nonzero offset and the bla.cpio regression. For unsigned [1,128,3] the expected sum is 132. Two-entry readback with varied padding remains unexecuted. |
+| apache/commons-compress#775 | written | Read the pinned 512-byte map helper regression and both padding formulas. Aligned maps previously skipped 512 additional bytes. Extraction of a nonempty extent and a following ordinary member remains open. The pinned public input stream invokes the helper before building sparse input streams. |
+| FasterXML/jackson-core#1716 | written | Read issue #1713, the changed saved-surrogate assignment, and the BE/LE parser sweep at 3995–4001. The external-whitespace and UTF-8 controls have not been executed. |
+| locationtech/jts#1092 | written | Read #733 and the fixed-byte XYM and four-ordinate XYZM tests. Two XYM points require 57 no-SRID bytes. Both-endian measured readback remains open. |
+| apache/commons-csv#412 | written | Read the quote/escape branch order and preset round-trip regression on [a,b] and [empty,x]. Its parser entry is nextRecord(). Public iteration and quoted punctuation in the adjacent field remain unexecuted. The pinned preset Javadoc explicitly says parsing is unsupported. The expected scope is the particular PR examples and proposed extension. |
 | square/javapoet#994 | not yet |  |
 | square/javapoet#986 | not yet |  |
 | javaparser/javaparser#5176 | not yet |  |
