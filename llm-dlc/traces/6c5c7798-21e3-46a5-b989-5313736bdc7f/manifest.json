@@ -12,25 +12,25 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-25T22:00:04.197Z",
-  "duration_seconds": 880357,
+  "ended": "2026-11-25T22:21:52.823Z",
+  "duration_seconds": 881666,
   "stats": {
     "turns": 1439,
-    "api_calls": 6215,
-    "tool_calls": 5563,
+    "api_calls": 6222,
+    "tool_calls": 5569,
     "tool_errors": 68,
     "compactions": 16,
     "peak_context_tokens": 666720,
     "usage": {
-      "input_tokens": 15358,
-      "output_tokens": 2640881,
-      "cache_read_input_tokens": 1938794929,
-      "cache_creation_input_tokens": 8975276
+      "input_tokens": 15374,
+      "output_tokens": 2643838,
+      "cache_read_input_tokens": 1940554239,
+      "cache_creation_input_tokens": 8982642
     }
   },
   "tools": {
-    "Bash": 5335,
-    "SendMessage": 87,
+    "Bash": 5340,
+    "SendMessage": 88,
     "Edit": 34,
     "ToolSearch": 25,
     "Write": 20,
@@ -306,24 +306,24 @@
     {
       "index": 16,
       "started": "2026-11-25T11:44:10.877Z",
-      "ended": "2026-11-25T22:00:04.197Z",
+      "ended": "2026-11-25T22:21:52.823Z",
       "turns": 53,
-      "api_calls": 234,
+      "api_calls": 241,
       "usage": {
-        "input_tokens": 578,
-        "output_tokens": 81009,
-        "cache_read_input_tokens": 39502365,
-        "cache_creation_input_tokens": 217885
+        "input_tokens": 594,
+        "output_tokens": 83966,
+        "cache_read_input_tokens": 41261675,
+        "cache_creation_input_tokens": 225251
       },
-      "peak_context_tokens": 248170
+      "peak_context_tokens": 256037
     }
   ],
   "log": {
-    "sha256": "5e930cb220ba41207ff7d3d4de75f59d0e66309c503b1665e06d3eb3a44f50a9",
-    "bytes": 97746363,
-    "lines": 54282,
-    "gzip_bytes": 15324261,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/5e930cb220ba41207ff7d3d4de75f59d0e66309c503b1665e06d3eb3a44f50a9.jsonl.gz"
+    "sha256": "6a6fd06e41a2d6bd23e1af1dfa929f2abf51d20bf129b7c93fda73da6104aff4",
+    "bytes": 97891545,
+    "lines": 54350,
+    "gzip_bytes": 15350277,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/6a6fd06e41a2d6bd23e1af1dfa929f2abf51d20bf129b7c93fda73da6104aff4.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -13704,6 +13704,30 @@
       "log_sha256": "05983074f57732b965bef9397fa0258e19259adf95e04242dc999ae95d82e561"
     },
     {
+      "change_id": "uxxrqyvptzsmsrsxuywyloomqpsxorut",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Start the M01-M10 setup record: pinned revisions fetched",
+      "body": "Setup agent for the merged Java PR links M01-M10 brief: all 20 pinned revisions fetched by SHA into shallow mirrors, one worktree each under ~/.cache/in-the-loop/merged-pr-links-m01-m10. Every PR's merge SHA equals the brief's after pin, every after pin's first parent is the before pin, and each landed diff names exactly the PR's files. Builds follow.",
+      "log_sha256": "7573cbfa603b11a3b3aca3e093fa4f3c02fe8dd5d95553587637f3a6da776398"
+    },
+    {
+      "change_id": "sxkpqmwwmlkopllmstwwzknssswlxolo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the M01-M10 setup: eight cases built and checked, two jobs queued (verification pending)",
+      "body": "Setup for the merged Java PR links M01-M10 brief, no claims. M01 RoaringBitmap, M02 jackson-databind, M03 vavr, M04 commons-compress, M05 commons-rng, M06 agrona, M07 spatial4j and M09 libgdx are built at both pins with their jars, class digests and runtime classpaths under ~/.cache/in-the-loop/merged-pr-links-m01-m10; for each the landed test passes on the fix and fails on the parent (M04's needs four fix-only accessor lines removed to compile there; M07 has no landed test, and issue #210's reproduction throws on the parent and succeeds on the fix). Offline builds checked. Released versions the brief names are resolved with strict checksums and signatures checked. M02's four 3.2.0/2.22 snapshot inputs are no longer served and were rebuilt from their own upstream commits before the parent pin.\n\nM08 Checkstyle and M10 TinkerPop build by job: 20261125-202838-setup-build-checkstyle-at-both-14128-rev (queued in the previous commit) and 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t.",
+      "log_sha256": "7573cbfa603b11a3b3aca3e093fa4f3c02fe8dd5d95553587637f3a6da776398"
+    },
+    {
+      "change_id": "nmvyrrtytovkvknzulwomwnnvsownmmy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the M08 and M10 setup jobs' results in the M01-M10 setup record",
+      "body": "Both setup jobs passed. Checkstyle #14128 (job 20261125-202838-setup-build-checkstyle-at-both-14128-rev): HiddenFieldCheckTest 19/19 on the fix online and offline, 17/17 on the parent, and the fix's test with its two new inputs fails twice on the parent; the CLI runs on both built jars. TinkerPop #3105 (job 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t): DedupGlobalStepTest and Dedup.feature pass at both pins, and the fix's versions fail once in each module on the parent. Jar and changed-class digests of both sides are now in the M08 and M10 sections and the Setup Agent Notes; setup is complete.",
+      "log_sha256": "7573cbfa603b11a3b3aca3e093fa4f3c02fe8dd5d95553587637f3a6da776398"
+    },
+    {
       "change_id": "xwqlllonsmrrzpomnonvoyzpsovppymk",
       "commit_id": null,
       "immutable": false,
@@ -13734,30 +13758,6 @@
       "summary": "Note that pgrep -f on a command's text never ends a wait",
       "body": "The L01-L20 and M01-M10 setup agents both waited for sync.py commit with an until ! pgrep -f loop. The loop's own command line matches the pattern, so it spun long after the commit landed (the M setup had four such loops, up to 40 minutes old). The note gives the waits that do end: foreground, wait PID, kill -0, or a bracketed pattern.",
       "log_sha256": "3dffaa5bb86aa33288e56d0d448ccc40522046d68cea45fb577060b783effa32"
-    },
-    {
-      "change_id": "uxxrqyvptzsmsrsxuywyloomqpsxorut",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Start the M01-M10 setup record: pinned revisions fetched",
-      "body": "Setup agent for the merged Java PR links M01-M10 brief: all 20 pinned revisions fetched by SHA into shallow mirrors, one worktree each under ~/.cache/in-the-loop/merged-pr-links-m01-m10. Every PR's merge SHA equals the brief's after pin, every after pin's first parent is the before pin, and each landed diff names exactly the PR's files. Builds follow.",
-      "log_sha256": "7573cbfa603b11a3b3aca3e093fa4f3c02fe8dd5d95553587637f3a6da776398"
-    },
-    {
-      "change_id": "sxkpqmwwmlkopllmstwwzknssswlxolo",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the M01-M10 setup: eight cases built and checked, two jobs queued (verification pending)",
-      "body": "Setup for the merged Java PR links M01-M10 brief, no claims. M01 RoaringBitmap, M02 jackson-databind, M03 vavr, M04 commons-compress, M05 commons-rng, M06 agrona, M07 spatial4j and M09 libgdx are built at both pins with their jars, class digests and runtime classpaths under ~/.cache/in-the-loop/merged-pr-links-m01-m10; for each the landed test passes on the fix and fails on the parent (M04's needs four fix-only accessor lines removed to compile there; M07 has no landed test, and issue #210's reproduction throws on the parent and succeeds on the fix). Offline builds checked. Released versions the brief names are resolved with strict checksums and signatures checked. M02's four 3.2.0/2.22 snapshot inputs are no longer served and were rebuilt from their own upstream commits before the parent pin.\n\nM08 Checkstyle and M10 TinkerPop build by job: 20261125-202838-setup-build-checkstyle-at-both-14128-rev (queued in the previous commit) and 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t.",
-      "log_sha256": "7573cbfa603b11a3b3aca3e093fa4f3c02fe8dd5d95553587637f3a6da776398"
-    },
-    {
-      "change_id": "nmvyrrtytovkvknzulwomwnnvsownmmy",
-      "commit_id": null,
-      "immutable": false,
-      "summary": "Record the M08 and M10 setup jobs' results in the M01-M10 setup record",
-      "body": "Both setup jobs passed. Checkstyle #14128 (job 20261125-202838-setup-build-checkstyle-at-both-14128-rev): HiddenFieldCheckTest 19/19 on the fix online and offline, 17/17 on the parent, and the fix's test with its two new inputs fails twice on the parent; the CLI runs on both built jars. TinkerPop #3105 (job 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t): DedupGlobalStepTest and Dedup.feature pass at both pins, and the fix's versions fail once in each module on the parent. Jar and changed-class digests of both sides are now in the M08 and M10 sections and the Setup Agent Notes; setup is complete.",
-      "log_sha256": "7573cbfa603b11a3b3aca3e093fa4f3c02fe8dd5d95553587637f3a6da776398"
     },
     {
       "change_id": "nxzrtlrnxwnzzzntrupkstvsnvyzqspz",
@@ -13798,6 +13798,30 @@
       "summary": "Record VF-069: agents' pgrep wait loops match themselves and hang a run",
       "body": "Two setup agents and the advisor's monitor waited for a long command with pgrep -f on its text, which always matches the waiting loop itself. The M01-M10 setup sat in four such loops for about 40 minutes after its commit had landed; the watcher's kill was refused and stop --now is the user's, so it needed the user. The finding lists the fixes: a wait that cannot match itself, the operating-notes rule (already added), a sanctioned unhang for the watcher, and faster commits. From the advisor's draft, at the user's request, with the watcher's timings.",
       "log_sha256": "5e930cb220ba41207ff7d3d4de75f59d0e66309c503b1665e06d3eb3a44f50a9"
+    },
+    {
+      "change_id": "tolluxvtsmlxlnowvmppuxsnxlqzqxry",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Prove each list of pull requests before generating the next",
+      "body": "A generated brief used to be queued at the end, so every list on the queue was generated before any was set up or proved. The user asked on 2026-11-25 that each list be processed whole instead (generate, setup, prove), so later runs can learn from executing earlier entries. brief_queue.py gains the setting generatedBrief: next (the new default) queues the brief right after its list, end keeps the old order. The written_brief step places the brief via brief_place, records where (queuedAt), and the handover message says so; checked() refuses other values; the single-agent-run skill describes both. Verified: test_brief_queue.py 9/9, including a new unit test of the choice and the handover test, now proving the generated brief before a brief already waiting; test_costs lint agrees.",
+      "log_sha256": "6a6fd06e41a2d6bd23e1af1dfa929f2abf51d20bf129b7c93fda73da6104aff4"
+    },
+    {
+      "change_id": "srqoyurrvpsvyswowmtrrosworkxrlyq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Keep a sync cache per workspace, so a commit stops re-syncing every session",
+      "body": "A commit sometimes took 5 to 15 minutes instead of 15 to 30 seconds (perf.jsonl, 2026-11-25): 97% of it was 375 to 1,190 jj log calls. The sync cache (each session's state after its last sync) was one file shared by every workspace, under a fingerprint that names the checkout, so a commit in one workspace emptied the other's entries; while the watcher's checkout and foundation-domain-streams committed in turn, every other commit re-synced every session, and after each session re-read the commit index, a full-history jj log. The cache is now one file per workspace (sync_cache_path, a hash of the checkout's path), and cmd_sync re-reads the commit index after a session only when its sync described a change. The cause also made agents background slow commits, which led to the hang in VF-069. Verified: two new unit tests (Incremental: separate files per workspace; the index read once for two sessions and again after each describing one); test_costs run --changed, 24 of 24 files pass; lint agrees.",
+      "log_sha256": "6a6fd06e41a2d6bd23e1af1dfa929f2abf51d20bf129b7c93fda73da6104aff4"
+    },
+    {
+      "change_id": "owpslqourypvlsqkxmnmopumtuplkmyt",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the queue-order line: prove each list before the next, and a sync cache per workspace",
+      "body": "Brings in the advisor's two commits from workspace queue-order, at the user's request: brief_queue.py's generatedBrief setting (next, the new default, queues a generated brief right after its list so each list is generated, set up and proved before the next is generated; end keeps the old order), and one sync cache file per workspace with the commit index re-read only after a session's sync described a change (VF-069's fix 4, for the 5-15 minute commits). The merge had no conflicts; sync.py regenerate, test_costs.py run --from ee00a38d (61/61) and lint passed. The first commit here after the merge re-syncs every session once, as the new cache file starts empty.",
+      "log_sha256": "6a6fd06e41a2d6bd23e1af1dfa929f2abf51d20bf129b7c93fda73da6104aff4"
     }
   ],
   "logs": {
@@ -15972,6 +15996,12 @@
       "lines": 36442,
       "gzip_bytes": 10877674,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/6a568f9c9337b81174c57293732b6769d1157c498c0b6bb4f493382bb26ac5fa.jsonl.gz"
+    },
+    "6a6fd06e41a2d6bd23e1af1dfa929f2abf51d20bf129b7c93fda73da6104aff4": {
+      "bytes": 97891545,
+      "lines": 54350,
+      "gzip_bytes": 15350277,
+      "url": null
     },
     "6a9148aeec7e8986c3423806dc2e103dc4f09ad5741a00c7688cdf75db87e1a0": {
       "bytes": 27604286,

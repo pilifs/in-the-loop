@@ -643,7 +643,15 @@ def write_if_changed(path: Path, text: str) -> bool:
 TRANSCRIPT_CACHE = STATE / "transcript-cache.json"
 SCAN_CACHE = STATE / "scan-cache.json"
 CHECK_CACHE = STATE / "check-cache.json"
-SYNC_CACHE = STATE / "sync-cache.json"
+# One per workspace: a session's state (session_state) holds this checkout's trace files and commits, and the
+# fingerprint names the checkout. Until 2026-11-25 every workspace shared one file, so a commit in one emptied the
+# other's entries, and the next commit there synced every session, each with a full-history `jj log`: 5 to 15
+# minutes instead of seconds while two workspaces committed in turn (VF-069).
+def sync_cache_path(repo: Path) -> Path:
+    return STATE / f"sync-cache-{hashlib.sha256(str(repo).encode()).hexdigest()[:16]}.json"
+
+
+SYNC_CACHE = sync_cache_path(REPO)
 
 
 def full_audit(args: list[str]) -> bool:
@@ -834,9 +842,15 @@ def sync_session(transcript: Path, redact: Redactor, status: str,
 
 # --------------------------------------------------------------------------- jj
 
+_describes = 0  # how many `jj describe` calls this process made: cmd_sync re-reads the commit index only after one
+
+
 def jj(*args: str) -> subprocess.CompletedProcess:
     # Snapshotting must not skip files; the default limit for new files is 1 MiB.
+    global _describes
     started = time.perf_counter()
+    if args and args[0] == "describe":
+        _describes += 1
     try:
         return subprocess.run([JJ, "--quiet", "--config", "snapshot.max-new-file-size=100MiB", *args],
                               capture_output=True, text=True, timeout=60, cwd=REPO)
@@ -2649,9 +2663,13 @@ def cmd_sync(args: list[str], publishing: bool = False, redact: "Redactor | None
                 continue
             state = session_state(p, status, current, None)  # its sources, before they are read
             synced.append(p)
+            described = _describes
             with perf.phase("process"):
                 m = process(p, redact, status, live, current=current, publishing=publishing, cache=cache, render=render)
-            index = commit_index()  # process may have described changes
+            if _describes != described:
+                index = commit_index()  # process described changes: their descriptions and ids are new
+            else:
+                perf.count("commit index reused (nothing described)")
             if publishing:  # its manifest records git SHAs that a sync outside a publish leaves out
                 states.entries.pop(sid, None)
             else:

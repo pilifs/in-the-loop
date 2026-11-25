@@ -1138,6 +1138,30 @@ class Incremental(SyncFixture):
             self.assertEqual(self.synced()[0], ["s1", "s2"])
         self.assertEqual(self.synced()[0], [])
 
+    def test_each_workspace_keeps_a_sync_cache_of_its_own(self):
+        # A shared file let a commit in one workspace empty the other's entries (VF-069).
+        one, other = sync.sync_cache_path(Path("/made/up/in-the-loop")), sync.sync_cache_path(Path("/made/up/in-the-loop-ws"))
+        self.assertNotEqual(one, other)
+        self.assertEqual(one, sync.sync_cache_path(Path("/made/up/in-the-loop")))
+        self.assertEqual((one.parent, one.name[:11], one.suffix), (sync.STATE, "sync-cache-", ".json"))
+
+    def test_the_commit_index_is_read_again_only_after_a_session_described_a_change(self):
+        real = sync.process
+
+        def describing(*args, **kwargs):  # stands in for link_commits describing a change
+            sync._describes += 1
+            return real(*args, **kwargs)
+
+        with mock.patch.object(sync, "commit_index", wraps=sync.commit_index) as index:
+            self.synced()
+        self.assertEqual(index.call_count, 1, "two sessions synced, nothing described: the first index serves both")
+        self.grow("s1", 1)
+        self.grow("s2", 1)
+        with mock.patch.object(sync, "commit_index", wraps=sync.commit_index) as index, \
+                mock.patch.object(sync, "process", side_effect=describing):
+            sync.cmd_sync([])
+        self.assertEqual(index.call_count, 3, "read once, then again after each session that described a change")
+
     def test_a_changed_tool_or_publish_means_syncing_again(self):
         self.synced()
         with mock.patch.object(sync, "repo_web_url", return_value="https://example.com/x/y"):
