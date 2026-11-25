@@ -1,0 +1,5 @@
+- [Merged PR #450](https://github.com/apache/commons-cli/pull/450)
+- [Merged PR #145](https://github.com/HdrHistogram/HdrHistogram/pull/145)
+- [Merged PR #463](https://github.com/ThreeTen/threeten-extra/pull/463)
+- [Merged PR #329](https://github.com/Esri/geometry-api-java/pull/329)
+- [Merged PR #37322](https://github.com/spring-projects/spring-framework/pull/37322)
