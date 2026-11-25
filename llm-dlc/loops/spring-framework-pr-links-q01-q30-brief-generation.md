@@ -7,11 +7,11 @@
 | spring-projects/spring-framework#37326 | written | Read the old shape check, landed container identity check, helper-only test and public MergedAnnotations defaults. Reflection versus the mixed real/decoy stream remains open. |
 | spring-projects/spring-framework#2060 | written | Read the two submitted commits' squash, public methods, SpringExtension delegation and the test which returns its descriptor from a mock. Real qualifier and generic-containing-class selection remain unexecuted. |
 | spring-projects/spring-framework#35808 | written | Compared the Java overload, exception fields and concrete-subclass regression with Kotlin's old raw-Class call and new mock argument check. Cross-language readback from a real factory remains open. |
-| spring-projects/spring-framework#37332 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37577 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37524 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#26700 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#25464 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#37332 | written | Read the two-list regression, factory precedence contract and filtered values/iterator implementations. The generic filter iterator has no remove override. Parent partial failure, second-only removal and same-key shadow visibility remain public-API predictions. |
+| spring-projects/spring-framework#37577 | written | Compared the three null-returning remapping paths, count accessors and iterator entry retention with upstream tests. Immediate count and survivor iteration in a one-segment, two-entry map remain unexecuted. |
+| spring-projects/spring-framework#37524 | written | Read both converter overloads, mixed batch and varargs regressions, the batch binder and the related JdbcClient change #37501. SQL binding after mutating the original source and fresh-connection row readback remain unexecuted. |
+| spring-projects/spring-framework#26700 | written | Read the assignment ordering and compared the six live-setter tests with the underlying executor getters. Recovery using the Spring getter to calculate the next valid core size remains unexecuted. |
+| spring-projects/spring-framework#25464 | written | Compared the old/new June 31 trigger assertions, the old four-year search guard and the merged direct leap-year test. The 2096-to-2104 Gregorian century crossing and Date/java.time agreement are predictions. |
 | spring-projects/spring-framework#27716 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#27735 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#34709 | not yet | Awaiting source review and claims. |
