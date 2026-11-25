@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-25T21:03:00.872Z",
-  "duration_seconds": 876934,
+  "ended": "2026-11-25T21:25:36.614Z",
+  "duration_seconds": 878290,
   "stats": {
-    "turns": 1433,
-    "api_calls": 6182,
-    "tool_calls": 5535,
-    "tool_errors": 67,
+    "turns": 1435,
+    "api_calls": 6198,
+    "tool_calls": 5550,
+    "tool_errors": 68,
     "compactions": 16,
     "peak_context_tokens": 666720,
     "usage": {
-      "input_tokens": 15276,
-      "output_tokens": 2629794,
-      "cache_read_input_tokens": 1931005572,
-      "cache_creation_input_tokens": 8953007
+      "input_tokens": 15314,
+      "output_tokens": 2635186,
+      "cache_read_input_tokens": 1934690479,
+      "cache_creation_input_tokens": 8962557
     }
   },
   "tools": {
-    "Bash": 5309,
-    "SendMessage": 86,
-    "Edit": 33,
+    "Bash": 5322,
+    "SendMessage": 87,
+    "Edit": 34,
     "ToolSearch": 25,
     "Write": 20,
     "TaskStop": 17,
@@ -57,6 +57,7 @@
     "examples/tools/test_scaffold_example.py",
     "examples/tools/validate_example.py",
     "llm-dlc/loops/domain-foundations-strategy.md",
+    "llm-dlc/operating-notes.md",
     "llm-dlc/prove-plan.schema.json",
     "llm-dlc/tools/sync.py",
     "llm-dlc/tools/test_brief_run.py",
@@ -305,24 +306,24 @@
     {
       "index": 16,
       "started": "2026-11-25T11:44:10.877Z",
-      "ended": "2026-11-25T21:03:00.872Z",
-      "turns": 47,
-      "api_calls": 201,
+      "ended": "2026-11-25T21:25:36.614Z",
+      "turns": 49,
+      "api_calls": 217,
       "usage": {
-        "input_tokens": 496,
-        "output_tokens": 69922,
-        "cache_read_input_tokens": 31713008,
-        "cache_creation_input_tokens": 195616
+        "input_tokens": 534,
+        "output_tokens": 75314,
+        "cache_read_input_tokens": 35397915,
+        "cache_creation_input_tokens": 205166
       },
-      "peak_context_tokens": 225901
+      "peak_context_tokens": 235451
     }
   ],
   "log": {
-    "sha256": "bb00927f5b879ba344d1ee6eba6afbfa082d0f0056efc835e9879626cc7e4f90",
-    "bytes": 97385938,
-    "lines": 53995,
-    "gzip_bytes": 15282229,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/bb00927f5b879ba344d1ee6eba6afbfa082d0f0056efc835e9879626cc7e4f90.jsonl.gz"
+    "sha256": "3dffaa5bb86aa33288e56d0d448ccc40522046d68cea45fb577060b783effa32",
+    "bytes": 97554236,
+    "lines": 54133,
+    "gzip_bytes": 15299318,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/3dffaa5bb86aa33288e56d0d448ccc40522046d68cea45fb577060b783effa32.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -13725,6 +13726,14 @@
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t: passed: 5 passed step(s) in 1m31s, peak 1.4 GiB (estimated 35m00s, 5.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-m01-m10-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "bb00927f5b879ba344d1ee6eba6afbfa082d0f0056efc835e9879626cc7e4f90"
+    },
+    {
+      "change_id": "qtuvxxuwrlzyplooqqkxurquutwtzttp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Note that pgrep -f on a command's text never ends a wait",
+      "body": "The L01-L20 and M01-M10 setup agents both waited for sync.py commit with an until ! pgrep -f loop. The loop's own command line matches the pattern, so it spun long after the commit landed (the M setup had four such loops, up to 40 minutes old). The note gives the waits that do end: foreground, wait PID, kill -0, or a bracketed pattern.",
+      "log_sha256": "3dffaa5bb86aa33288e56d0d448ccc40522046d68cea45fb577060b783effa32"
     }
   ],
   "logs": {
@@ -14993,6 +15002,12 @@
       "lines": 22647,
       "gzip_bytes": 7951494,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/3df61c1047a81218b474d176416a82cd1d538661997498280b0dcbe15bc843d0.jsonl.gz"
+    },
+    "3dffaa5bb86aa33288e56d0d448ccc40522046d68cea45fb577060b783effa32": {
+      "bytes": 97554236,
+      "lines": 54133,
+      "gzip_bytes": 15299318,
+      "url": null
     },
     "3e306b59d89f990a9754c4b4fada20cb1cb68d3363c438ccc7bdd11cf7cd426a": {
       "bytes": 59434938,

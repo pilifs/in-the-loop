@@ -256,6 +256,15 @@ hook after the turn. For the same reason, never start a headless probe of a clie
 -p`, `codex exec`) with a development checkout as its directory, where it would be traced as a session of the
 repository: probe from a scratch folder.
 
+## Waiting for a command to finish: not by `pgrep -f` on its text
+
+Don't wait for another command with `until ! pgrep -f 'python3 llm-dlc/tools/sync.py commit'; do sleep 10; done`
+or anything like it. The waiting shell's own command line holds the pattern, so `pgrep -f` always finds it and the
+loop never ends. Two setup agents sat in such loops on 2026-11-25, long after their commits had landed; the second
+had four of them, the oldest 40 minutes old. Run the command in the foreground, or wait on its process id
+(`wait PID`, or `while kill -0 PID 2>/dev/null; do sleep 10; done`). If you must match by name, use a pattern that
+can't match itself, such as `pgrep -f '[s]ync.py commit'`.
+
 ## Verification jobs
 
 - A job cannot be withdrawn by deleting its committed job file: the runner reads the files of `@-` and may have
