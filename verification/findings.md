@@ -18,6 +18,35 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-068: merging a promotion's record back conflicts in the manifest of a session that kept working after the freeze
+
+- **Status**: open. The tooling needs fixing. Until then, each occurrence needs the user's decision, because agents may not edit `llm-dlc/traces/`. This occurrence is resolved: with the user's permission the watcher took the line's side whole and committed the merge (wzsnyuzr).
+- **Raised**: 2026-11-25 by the watcher, from the advisor's draft, at the user's request, after promotion `20261125T102804Z-6994ae80fc8f` (`main` 867fa025 → be470ab3, 360 commits).
+- **What happened.**
+  - The promotion froze `develop` at 6994ae80, uploaded the frozen commits' logs, and put its publication record commit `C` on top. The record adds the logs' URLs in their sessions' manifests (`llm-dlc/specification.md`, *Promotions*: "The publication record").
+  - Meanwhile the default line moved on. `develop` had moved too, so `C` had to be merged into the working line; the spec says "the generated files are regenerated".
+  - The merge conflicted in one session's `llm-dlc/traces/01a2115c-9513-7e00-92f4-2bec1d881ba5/manifest.json`. That is the trace of the **persistent brief-generation session** (Codex `ea63c5f6`), which the frozen commits of entry 6 reference. After the freeze it continued with entry 8 and committed again.
+    - **The promotion's side:** status `ended`, 6 logs, all with `url`, current log `04da…`.
+    - **The line's side:** status `open`, 10 logs (the same 5 older ones with `url: null`, 4 newer, `04da…` dropped), current log `b1ca…`.
+  - `sync.py regenerate` refuses while a session file is conflicted, by design. Agents may not edit `llm-dlc/traces/` (CLAUDE.md). A scripted field merge by the watcher was rightly refused.
+  - The queue paused at entry 8's checkpoint, since that revision is not a descendant of `develop`, until the user decided (2026-11-25: take the line's side).
+- **Why it recurs.**
+  - `cmd_regenerate` assumes that "every input (a session's manifest and metrics.json) is in a directory of its own, so it merges cleanly". That holds only when one line writes a session's files.
+  - A session that spans a promotion is written on both sides: the promotion adds URLs, and the line adds logs, commits and status.
+  - The queue's sessions are persistent by design: the domain session (`session=previous`) and the generation session (`generateSession=previous`). So almost every promotion taken while the queue runs will meet this, and so will any long watcher or advisor session that commits.
+- **The safe manual resolution, this time.**
+  - Take the **line's** side whole (`jj restore --from <line parent> <manifest>`), then `sync.py regenerate`, commit and checkpoint.
+  - Checked by the advisor: no commit's `LLM-Trace` names the dropped log `04da…`. So only the URLs of the 5 already-published logs are missing on `develop`, and the next promotion re-fills them from the store (`remote_matches`). `main` keeps its copy with the URLs.
+  - The promotion's side would be wrong: it drops 4 logs that entry 8's commits name, which `check` would report.
+- **The fix (to build).** When a session's `manifest.json` conflicts in this merge (or any merge), resolve it in the tool, field by field:
+  - the **union** of `logs`, keyed by SHA-256;
+  - each log's `url` from whichever side has one;
+  - the line's side for the session's live fields (`status`, `ended`, `log`, `commits`, `stats`, `context_windows`, …);
+  - then regenerate.
+
+  Do it in `promote`'s merge into `develop` and in `regenerate` (or `sync.py sync`), with a test of a session committed on both sides. Keep refusing a conflict in anything else under a session's folder.
+- **When it closes**: a promotion taken while a persistent session keeps committing merges back without a person.
+
 ### VF-067: three successor launches still need 12 signed Ubuntu packages; approved for a later beyond-jbmc follow-up
 
 - **Status**: open, deferred (the user, 2026-11-25). The user approves fetching the 12 packages, but **only as part of a future beyond-jbmc follow-up run**, not now and not as a run of its own. When that run is queued, its brief or continue message carries the approval explicitly. The finding closes when the three launches have run on signed providers and the panel is re-scored.

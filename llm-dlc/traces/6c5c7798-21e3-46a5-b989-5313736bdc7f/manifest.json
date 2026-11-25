@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-15T17:27:26.715Z",
-  "ended": "2026-11-25T13:02:46.580Z",
-  "duration_seconds": 848120,
+  "ended": "2026-11-25T13:03:23.692Z",
+  "duration_seconds": 848157,
   "stats": {
     "turns": 1388,
-    "api_calls": 5990,
-    "tool_calls": 5369,
+    "api_calls": 5993,
+    "tool_calls": 5372,
     "tool_errors": 66,
     "compactions": 16,
     "peak_context_tokens": 666720,
     "usage": {
-      "input_tokens": 14798,
-      "output_tokens": 2563259,
-      "cache_read_input_tokens": 1899959037,
-      "cache_creation_input_tokens": 8814454
+      "input_tokens": 14806,
+      "output_tokens": 2564552,
+      "cache_read_input_tokens": 1900214732,
+      "cache_creation_input_tokens": 8818803
     }
   },
   "tools": {
-    "Bash": 5148,
+    "Bash": 5151,
     "SendMessage": 82,
     "Edit": 33,
     "ToolSearch": 24,
@@ -305,24 +305,24 @@
     {
       "index": 16,
       "started": "2026-11-25T11:44:10.877Z",
-      "ended": "2026-11-25T13:02:46.580Z",
+      "ended": "2026-11-25T13:03:23.692Z",
       "turns": 2,
-      "api_calls": 9,
+      "api_calls": 12,
       "usage": {
-        "input_tokens": 18,
-        "output_tokens": 3387,
-        "cache_read_input_tokens": 666473,
-        "cache_creation_input_tokens": 57063
+        "input_tokens": 26,
+        "output_tokens": 4680,
+        "cache_read_input_tokens": 922168,
+        "cache_creation_input_tokens": 61412
       },
-      "peak_context_tokens": 83432
+      "peak_context_tokens": 87781
     }
   ],
   "log": {
-    "sha256": "2bcfcaca2b709cdae0d28c2e84505fd1961dc5edce62612d84069fd694b0e60b",
-    "bytes": 94801797,
-    "lines": 52202,
-    "gzip_bytes": 14910467,
-    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/2bcfcaca2b709cdae0d28c2e84505fd1961dc5edce62612d84069fd694b0e60b.jsonl.gz"
+    "sha256": "269c05d0cf4c7c14aaf527b87da1993828a79f3f7312d93a0ebf50c8e06f8d98",
+    "bytes": 94870618,
+    "lines": 52239,
+    "gzip_bytes": 14919772,
+    "path": "llm-dlc/traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/logs/269c05d0cf4c7c14aaf527b87da1993828a79f3f7312d93a0ebf50c8e06f8d98.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -12973,6 +12973,14 @@
       "summary": "Merge the promotion record 20261125T102804Z into the line",
       "body": "The promotion of develop to main (867fa025 -> be470ab3, 360 commits) put its record on develop, and the line has to descend from it before the next checkpoint. The merge conflicted in one session manifest (llm-dlc/traces/01a2115c-.../manifest.json, the L01-L20 generation session): the line's side holds the session's later state (10 commits, 10 logs), the promotion's side upload links for its 6 earlier logs. With the user's permission the line's side was taken whole (jj restore, no hand edit), and sync.py regenerate rebuilt the generated trace files. The upload links come back when those logs are next uploaded.",
       "log_sha256": "2bcfcaca2b709cdae0d28c2e84505fd1961dc5edce62612d84069fd694b0e60b"
+    },
+    {
+      "change_id": "nyszlzsoxlsuwvlnvmwrrkuwuqyosxrq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record VF-068: a promotion's record conflicts with a session that kept committing",
+      "body": "Merging promotion 20261125T102804Z back into the line conflicted in the manifest of the persistent brief-generation session, written on both sides (upload links by the promotion, new logs and commits by the line). sync.py regenerate refuses such a conflict and agents may not edit traces, so every promotion taken while the queue's persistent sessions commit will stop for a person. The finding records the safe resolution (the line's side whole, which the user approved this time) and the proposed fix: a field-wise manifest merge in the tool. From the advisor's draft, at the user's request.",
+      "log_sha256": "269c05d0cf4c7c14aaf527b87da1993828a79f3f7312d93a0ebf50c8e06f8d98"
     }
   ],
   "logs": {
@@ -13815,6 +13823,12 @@
       "lines": 29642,
       "gzip_bytes": 9388802,
       "url": "https://terminalvalue.net/raw-traces/6c5c7798-21e3-46a5-b989-5313736bdc7f/268b6c0340ebd7d5adae1cfca57c2be6116b26a1ce1b116278c66b9cdc8a9b21.jsonl.gz"
+    },
+    "269c05d0cf4c7c14aaf527b87da1993828a79f3f7312d93a0ebf50c8e06f8d98": {
+      "bytes": 94870618,
+      "lines": 52239,
+      "gzip_bytes": 14919772,
+      "url": null
     },
     "2776e245ef724ae80a707d1ff8a96cd0dd416f472f896e3bd9fb80da363da730": {
       "bytes": 45016226,
