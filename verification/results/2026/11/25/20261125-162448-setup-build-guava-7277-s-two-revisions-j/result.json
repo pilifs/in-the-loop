@@ -1,0 +1,495 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-162448-setup-build-guava-7277-s-two-revisions-j",
+  "title": "Setup: build Guava #7277's two revisions (JRE and Android) and run FuturesTest",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 2m46s, peak 1.2 GiB (estimated 30m00s, 5.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-162448-setup-build-guava-7277-s-two-revisions-j.json",
+    "sha256": "8448dcb02c0990ab49a3286705235d20c6ed5c2f299fc18ca7d3fa5519e28aca",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-162448-setup-build-guava-7277-s-two-revisions-j",
+      "title": "Setup: build Guava #7277's two revisions (JRE and Android) and run FuturesTest",
+      "description": "Setup for case L16 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. The PR changes AggregateFuture in both Guava flavours and adds no tests. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L16-guava-fix = dc80e7e9f3844381aacc93ee1e043a711f1feffb, L16-guava-parent = 8c31d52687cf03346635e29b3c5529e183c3f6ee), runs Guava's Maven build (JDK 21, Maven 3.10.0, the cache's local repository, user.home redirected into the cache) for guava-tests with -am, JRE and Android flavours, running the existing FuturesTest (allAsList, ordering, cancellation): fix online (one connector thread), parent offline, fix JRE again offline. Copies each built guava jar to the cache with the digests of its AggregateFuture classes. Compiling guava-testlib and guava-tests is why this is a job. Logs and JUnit summaries to ~/.cache/in-the-loop/merged-pr-links-l01-l20/logs; worktrees cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: FuturesTest passes on both revisions in both flavours, online and offline; four jars copied",
+      "submitted": {
+        "at": "2026-11-25T16:24:48+00:00",
+        "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+        "by": "setup agent (Claude Opus 5.5), fork B"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 4.0,
+        "memory": "5G",
+        "duration": "30m"
+      },
+      "steps": [
+        {
+          "name": "L16 fix JRE: build guava, guava-testlib, guava-tests and run FuturesTest, online",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-fix/.; echo worktree=L16-guava-fix flavour=jre commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-fix.jre.online.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-fix.jre.online.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-fix.jre.online.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-fix.jre.online.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-fix.jre.online.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-fix.jre.online.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-fix.jre.online.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-fix.jre.online.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-jre-SNAPSHOT.jar $O/artifacts/L16-guava-fix-jre.jar; python3 -I $O/scripts/digests_B.py fix-jre $O/artifacts/L16-guava-fix-jre.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-fix-jre.digests.md; cat $O/logs/L16-guava-fix-jre.digests.md; ",
+          "cwd": "."
+        },
+        {
+          "name": "L16 fix Android: the same in android/, online",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-fix/android; echo worktree=L16-guava-fix flavour=android commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-fix.android.online.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-fix.android.online.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-fix.android.online.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-fix.android.online.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-fix.android.online.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-fix.android.online.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-fix.android.online.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-fix.android.online.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-android-SNAPSHOT.jar $O/artifacts/L16-guava-fix-android.jar; python3 -I $O/scripts/digests_B.py fix-android $O/artifacts/L16-guava-fix-android.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-fix-android.digests.md; cat $O/logs/L16-guava-fix-android.digests.md; ",
+          "cwd": "."
+        },
+        {
+          "name": "L16 parent JRE: FuturesTest, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-parent/.; echo worktree=L16-guava-parent flavour=jre commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -o -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-parent.jre.offline.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-parent.jre.offline.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-parent.jre.offline.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-parent.jre.offline.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-parent.jre.offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-parent.jre.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-parent.jre.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-parent.jre.offline.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-jre-SNAPSHOT.jar $O/artifacts/L16-guava-parent-jre.jar; python3 -I $O/scripts/digests_B.py parent-jre $O/artifacts/L16-guava-parent-jre.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-parent-jre.digests.md; cat $O/logs/L16-guava-parent-jre.digests.md; ",
+          "cwd": "."
+        },
+        {
+          "name": "L16 parent Android: FuturesTest, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-parent/android; echo worktree=L16-guava-parent flavour=android commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -o -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-parent.android.offline.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-parent.android.offline.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-parent.android.offline.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-parent.android.offline.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-parent.android.offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-parent.android.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-parent.android.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-parent.android.offline.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-android-SNAPSHOT.jar $O/artifacts/L16-guava-parent-android.jar; python3 -I $O/scripts/digests_B.py parent-android $O/artifacts/L16-guava-parent-android.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-parent-android.digests.md; cat $O/logs/L16-guava-parent-android.digests.md; ",
+          "cwd": "."
+        },
+        {
+          "name": "L16 fix JRE again, offline (checks the offline form)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-fix/.; echo worktree=L16-guava-fix flavour=jre commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -o -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-fix.jre.rerun.offline.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-fix.jre.rerun.offline.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-fix.jre.rerun.offline.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-fix.jre.rerun.offline.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-fix.jre.rerun.offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-fix.jre.rerun.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-fix.jre.rerun.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-fix.jre.rerun.offline.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-jre-SNAPSHOT.jar $O/artifacts/L16-guava-fix-jre.jar; python3 -I $O/scripts/digests_B.py fix-jre $O/artifacts/L16-guava-fix-jre.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-fix-jre.digests.md; cat $O/logs/L16-guava-fix-jre.digests.md; ",
+          "cwd": "."
+        },
+        {
+          "name": "check that nothing was written to the user's ~/.m2",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; test ! -e $HOME/.m2/jdks && echo no-user-m2-jdks",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L16-guava-fix checkout -- .; git -C $W/L16-guava-fix clean -fdxq; git -C $W/L16-guava-fix status --short; git -C $W/L16-guava-parent checkout -- .; git -C $W/L16-guava-parent clean -fdxq; git -C $W/L16-guava-parent status --short; du -sh $W/L16-guava-fix $W/L16-guava-parent",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3037ff3919d78e3dea67e70d8ef9562ea1f53fa8",
+  "startedAt": "2026-11-25T16:31:06+00:00",
+  "finishedAt": "2026-11-25T16:34:16+00:00",
+  "wallSeconds": 190.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585564,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 4.0,
+    "memoryLimitBytes": 8053063680,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 4.0,
+    "memoryBytes": 5368709120,
+    "durationSeconds": 1800.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 1241231360,
+    "wallSeconds": 166.9,
+    "cpuSeconds": 442.6,
+    "memoryOfEstimate": 0.23,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "L16 fix JRE: build guava, guava-testlib, guava-tests and run FuturesTest, online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-fix/.; echo worktree=L16-guava-fix flavour=jre commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-fix.jre.online.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-fix.jre.online.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-fix.jre.online.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-fix.jre.online.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-fix.jre.online.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-fix.jre.online.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-fix.jre.online.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-fix.jre.online.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-jre-SNAPSHOT.jar $O/artifacts/L16-guava-fix-jre.jar; python3 -I $O/scripts/digests_B.py fix-jre $O/artifacts/L16-guava-fix-jre.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-fix-jre.digests.md; cat $O/logs/L16-guava-fix-jre.digests.md; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 46.526,
+      "cpuSeconds": 104.993,
+      "cpuThrottledSeconds": 0.479,
+      "peakMemoryBytes": 1230786560,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-l16-fix-jre-build-guava-guava.log",
+        "lines": 17,
+        "bytes": 1690,
+        "sha256": "2bf4cdd2235287ff0b744c6686aaf3fb4f00445d1b15711febc2da9d892863b3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L16-guava-fix flavour=jre commit=dc80e7e9f3844381aacc93ee1e043a711f1feffb",
+        "mvn-exit=0 seconds=46",
+        "Tests run: 0, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.71 sec",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "junit tests=160 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L16-fix.jre.online.junit.txt",
+        "guava/target/guava-HEAD-jre-SNAPSHOT.jar",
+        "| `L16-guava-fix-jre.jar` | fix-jre | `d76cfec9ff5de1d4847d2acdb6a16134b0ec1fc791653c50e405724b71bfc075` |",
+        "| `com/google/common/util/concurrent/AggregateFuture$ReleaseResourcesReason.class` | fix-jre | `c791aa816bd896d715e4553a8b19c471fec347c24e4617553c745a2a682babb1` |",
+        "| `com/google/common/util/concurrent/AggregateFuture.class` | fix-jre | `0b935258c913e94befef889ee39639adeb6c8aef636dc81c0b19078eb1b5d306` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$1.class` | fix-jre | `e878737e7f7ff9e735f3da01fdde564fb69ba151fb49da9e03b44729d272e777` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$AtomicHelper.class` | fix-jre | `8ad8f4c1c5a4ea4a1e2a1e3746d1ec701a0b3dbb8b35dd0621b81ed325b53f8c` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SafeAtomicHelper.class` | fix-jre | `b3af620171a6da7939e2d4ea734c030d8c286f292728aa7fcb201ac00c08d3e5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SynchronizedAtomicHelper.class` | fix-jre | `645a877e8e82b0893910c6af736ab6ca91e53efada89e395a6c617ee9790a2b5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState.class` | fix-jre | `6754e59e357ed16481d6dbebcb6a0b51b364d03cef3088221171db6c00096e63` |"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "L16 fix Android: the same in android/, online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-fix/android; echo worktree=L16-guava-fix flavour=android commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-fix.android.online.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-fix.android.online.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-fix.android.online.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-fix.android.online.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-fix.android.online.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-fix.android.online.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-fix.android.online.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-fix.android.online.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-android-SNAPSHOT.jar $O/artifacts/L16-guava-fix-android.jar; python3 -I $O/scripts/digests_B.py fix-android $O/artifacts/L16-guava-fix-android.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-fix-android.digests.md; cat $O/logs/L16-guava-fix-android.digests.md; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 33.065,
+      "cpuSeconds": 94.611,
+      "cpuThrottledSeconds": 0.716,
+      "peakMemoryBytes": 1160921088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-l16-fix-android-the-same-in-an.log",
+        "lines": 17,
+        "bytes": 1739,
+        "sha256": "89f6b6c3464ceeb54a35e265ab91a400b245beeb9effca3886a5249981a312df",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L16-guava-fix flavour=android commit=dc80e7e9f3844381aacc93ee1e043a711f1feffb",
+        "mvn-exit=0 seconds=32",
+        "Tests run: 0, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.641 sec",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "junit tests=160 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L16-fix.android.online.junit.txt",
+        "guava/target/guava-HEAD-android-SNAPSHOT.jar",
+        "| `L16-guava-fix-android.jar` | fix-android | `bb2558a1dc6ef991dba235325a67a02060d8078e746e821a5c31f59108bb72e8` |",
+        "| `com/google/common/util/concurrent/AggregateFuture$ReleaseResourcesReason.class` | fix-android | `c791aa816bd896d715e4553a8b19c471fec347c24e4617553c745a2a682babb1` |",
+        "| `com/google/common/util/concurrent/AggregateFuture.class` | fix-android | `0b935258c913e94befef889ee39639adeb6c8aef636dc81c0b19078eb1b5d306` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$1.class` | fix-android | `e878737e7f7ff9e735f3da01fdde564fb69ba151fb49da9e03b44729d272e777` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$AtomicHelper.class` | fix-android | `8ad8f4c1c5a4ea4a1e2a1e3746d1ec701a0b3dbb8b35dd0621b81ed325b53f8c` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SafeAtomicHelper.class` | fix-android | `b3af620171a6da7939e2d4ea734c030d8c286f292728aa7fcb201ac00c08d3e5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SynchronizedAtomicHelper.class` | fix-android | `645a877e8e82b0893910c6af736ab6ca91e53efada89e395a6c617ee9790a2b5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState.class` | fix-android | `6754e59e357ed16481d6dbebcb6a0b51b364d03cef3088221171db6c00096e63` |"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "L16 parent JRE: FuturesTest, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-parent/.; echo worktree=L16-guava-parent flavour=jre commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -o -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-parent.jre.offline.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-parent.jre.offline.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-parent.jre.offline.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-parent.jre.offline.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-parent.jre.offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-parent.jre.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-parent.jre.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-parent.jre.offline.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-jre-SNAPSHOT.jar $O/artifacts/L16-guava-parent-jre.jar; python3 -I $O/scripts/digests_B.py parent-jre $O/artifacts/L16-guava-parent-jre.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-parent-jre.digests.md; cat $O/logs/L16-guava-parent-jre.digests.md; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 32.879,
+      "cpuSeconds": 95.117,
+      "cpuThrottledSeconds": 0.57,
+      "peakMemoryBytes": 1241231360,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-l16-parent-jre-futurestest-off.log",
+        "lines": 17,
+        "bytes": 1725,
+        "sha256": "1307b40e3a209d82cea7756c96fdea33a3d34c91bbe3dc239d8c18c0b991c35b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L16-guava-parent flavour=jre commit=8c31d52687cf03346635e29b3c5529e183c3f6ee",
+        "mvn-exit=0 seconds=32",
+        "Tests run: 0, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.712 sec",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "junit tests=160 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L16-parent.jre.offline.junit.txt",
+        "guava/target/guava-HEAD-jre-SNAPSHOT.jar",
+        "| `L16-guava-parent-jre.jar` | parent-jre | `756a806f3d005d31395f6979fbe95ffa8631e6f5ac6d0ff7fd4374080e6882dc` |",
+        "| `com/google/common/util/concurrent/AggregateFuture$ReleaseResourcesReason.class` | parent-jre | `d045d53010e76c8a1eeaa929eb183783621881c6855966c729a29703b9673225` |",
+        "| `com/google/common/util/concurrent/AggregateFuture.class` | parent-jre | `84fee5ddc908efb74f785c2fcc608cf99e47f9276c594e7936cb3f9144bde26d` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$1.class` | parent-jre | `e878737e7f7ff9e735f3da01fdde564fb69ba151fb49da9e03b44729d272e777` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$AtomicHelper.class` | parent-jre | `8ad8f4c1c5a4ea4a1e2a1e3746d1ec701a0b3dbb8b35dd0621b81ed325b53f8c` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SafeAtomicHelper.class` | parent-jre | `b3af620171a6da7939e2d4ea734c030d8c286f292728aa7fcb201ac00c08d3e5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SynchronizedAtomicHelper.class` | parent-jre | `645a877e8e82b0893910c6af736ab6ca91e53efada89e395a6c617ee9790a2b5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState.class` | parent-jre | `6754e59e357ed16481d6dbebcb6a0b51b364d03cef3088221171db6c00096e63` |"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "L16 parent Android: FuturesTest, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-parent/android; echo worktree=L16-guava-parent flavour=android commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -o -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-parent.android.offline.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-parent.android.offline.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-parent.android.offline.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-parent.android.offline.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-parent.android.offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-parent.android.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-parent.android.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-parent.android.offline.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-android-SNAPSHOT.jar $O/artifacts/L16-guava-parent-android.jar; python3 -I $O/scripts/digests_B.py parent-android $O/artifacts/L16-guava-parent-android.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-parent-android.digests.md; cat $O/logs/L16-guava-parent-android.digests.md; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 33.338,
+      "cpuSeconds": 95.903,
+      "cpuThrottledSeconds": 0.551,
+      "peakMemoryBytes": 1146781696,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-l16-parent-android-futurestest.log",
+        "lines": 17,
+        "bytes": 1773,
+        "sha256": "adb1da457630532871e1d1ac6145b016ee9c11db5d8c5f54ebed1e9d96c8b67e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L16-guava-parent flavour=android commit=8c31d52687cf03346635e29b3c5529e183c3f6ee",
+        "mvn-exit=0 seconds=34",
+        "Tests run: 0, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.742 sec",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "junit tests=160 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L16-parent.android.offline.junit.txt",
+        "guava/target/guava-HEAD-android-SNAPSHOT.jar",
+        "| `L16-guava-parent-android.jar` | parent-android | `96a53acef6570cb4d309ad5c626a4ae89de280405ad467a1081ac28477be210d` |",
+        "| `com/google/common/util/concurrent/AggregateFuture$ReleaseResourcesReason.class` | parent-android | `d045d53010e76c8a1eeaa929eb183783621881c6855966c729a29703b9673225` |",
+        "| `com/google/common/util/concurrent/AggregateFuture.class` | parent-android | `84fee5ddc908efb74f785c2fcc608cf99e47f9276c594e7936cb3f9144bde26d` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$1.class` | parent-android | `e878737e7f7ff9e735f3da01fdde564fb69ba151fb49da9e03b44729d272e777` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$AtomicHelper.class` | parent-android | `8ad8f4c1c5a4ea4a1e2a1e3746d1ec701a0b3dbb8b35dd0621b81ed325b53f8c` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SafeAtomicHelper.class` | parent-android | `b3af620171a6da7939e2d4ea734c030d8c286f292728aa7fcb201ac00c08d3e5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SynchronizedAtomicHelper.class` | parent-android | `645a877e8e82b0893910c6af736ab6ca91e53efada89e395a6c617ee9790a2b5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState.class` | parent-android | `6754e59e357ed16481d6dbebcb6a0b51b364d03cef3088221171db6c00096e63` |"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "L16 fix JRE again, offline (checks the offline form)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L16-guava-fix/.; echo worktree=L16-guava-fix flavour=jre commit=$(git rev-parse HEAD); find . -path '*/target/surefire-reports' -type d -prune -exec rm -rf {} +; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; st=$(date +%s); set +e; choom -n 500 -- $MVN -o -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dmaven.source.skip=true -Dtest=FuturesTest -Dsurefire.failIfNoSpecifiedTests=false -DfailIfNoTests=false -Dmaven.test.failure.ignore=true -pl guava-tests -am package > $O/logs/L16-fix.jre.rerun.offline.log 2>&1; rc=$?; set -e; echo mvn-exit=$rc seconds=$(( $(date +%s)-st )) | tee $O/logs/L16-fix.jre.rerun.offline.junit.txt; grep -E 'BUILD|Tests run:.*Fail' $O/logs/L16-fix.jre.rerun.offline.log | tail -4; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee -a $O/logs/L16-fix.jre.rerun.offline.junit.txt; test $rc -eq 0; test $(grep -o 'tests=[0-9]*' $O/logs/L16-fix.jre.rerun.offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L16-fix.jre.rerun.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L16-fix.jre.rerun.offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L16-fix.jre.rerun.offline.junit.txt; ls guava/target/*.jar; cp guava/target/guava-HEAD-jre-SNAPSHOT.jar $O/artifacts/L16-guava-fix-jre.jar; python3 -I $O/scripts/digests_B.py fix-jre $O/artifacts/L16-guava-fix-jre.jar com/google/common/util/concurrent/AggregateFuture > $O/logs/L16-guava-fix-jre.digests.md; cat $O/logs/L16-guava-fix-jre.digests.md; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 19.04,
+      "cpuSeconds": 50.831,
+      "cpuThrottledSeconds": 1.099,
+      "peakMemoryBytes": 621522944,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-l16-fix-jre-again-offline-chec.log",
+        "lines": 17,
+        "bytes": 1698,
+        "sha256": "a0feacfa231ea2a690dbaf0c85351daf0f9c4b336e9bbbfce5e0a2f025b6fddf",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L16-guava-fix flavour=jre commit=dc80e7e9f3844381aacc93ee1e043a711f1feffb",
+        "mvn-exit=0 seconds=19",
+        "Tests run: 0, Failures: 0, Errors: 0, Skipped: 0",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 3.814 sec",
+        "Tests run: 160, Failures: 0, Errors: 0, Skipped: 0",
+        "[INFO] BUILD SUCCESS",
+        "junit tests=160 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L16-fix.jre.rerun.offline.junit.txt",
+        "guava/target/guava-HEAD-jre-SNAPSHOT.jar",
+        "| `L16-guava-fix-jre.jar` | fix-jre | `d76cfec9ff5de1d4847d2acdb6a16134b0ec1fc791653c50e405724b71bfc075` |",
+        "| `com/google/common/util/concurrent/AggregateFuture$ReleaseResourcesReason.class` | fix-jre | `c791aa816bd896d715e4553a8b19c471fec347c24e4617553c745a2a682babb1` |",
+        "| `com/google/common/util/concurrent/AggregateFuture.class` | fix-jre | `0b935258c913e94befef889ee39639adeb6c8aef636dc81c0b19078eb1b5d306` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$1.class` | fix-jre | `e878737e7f7ff9e735f3da01fdde564fb69ba151fb49da9e03b44729d272e777` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$AtomicHelper.class` | fix-jre | `8ad8f4c1c5a4ea4a1e2a1e3746d1ec701a0b3dbb8b35dd0621b81ed325b53f8c` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SafeAtomicHelper.class` | fix-jre | `b3af620171a6da7939e2d4ea734c030d8c286f292728aa7fcb201ac00c08d3e5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState$SynchronizedAtomicHelper.class` | fix-jre | `645a877e8e82b0893910c6af736ab6ca91e53efada89e395a6c617ee9790a2b5` |",
+        "| `com/google/common/util/concurrent/AggregateFutureState.class` | fix-jre | `6754e59e357ed16481d6dbebcb6a0b51b364d03cef3088221171db6c00096e63` |"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "check that nothing was written to the user's ~/.m2",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; test ! -e $HOME/.m2/jdks && echo no-user-m2-jdks",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.202,
+      "cpuSeconds": 0.015,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2240512,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-check-that-nothing-was-written.log",
+        "lines": 1,
+        "bytes": 16,
+        "sha256": "ca9bfe728315b207b2f4dbdfa237b23f389f37786c18ddf9efca3b0c8eb1ddc9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "no-user-m2-jdks"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L16-guava-fix checkout -- .; git -C $W/L16-guava-fix clean -fdxq; git -C $W/L16-guava-fix status --short; git -C $W/L16-guava-parent checkout -- .; git -C $W/L16-guava-parent clean -fdxq; git -C $W/L16-guava-parent status --short; du -sh $W/L16-guava-fix $W/L16-guava-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 1.806,
+      "cpuSeconds": 1.155,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 51953664,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-remove-the-build-trees.log",
+        "lines": 2,
+        "bytes": 169,
+        "sha256": "7153e7780272e5b3aa21b69766d6e435cc00b15b094af0abbea249e23cb1ee90",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "41M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L16-guava-fix",
+        "41M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L16-guava-parent"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T16:34:22+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T163416Z-416452a7bf07cbdd"
+    }
+  }
+}
