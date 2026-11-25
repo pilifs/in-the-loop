@@ -1,0 +1,34 @@
+{
+ "question": "Which lengths around the VM array-header allowance can the public growth policy recommend?",
+ "control": "The default policy grows a ten-element buffer to twenty for one additional element.",
+ "domain": "Request maximum Java int minus 33, 32 or 31 as the number of additions to an empty buffer. No array of that length is allocated.",
+ "seeds": [
+  0,
+  1,
+  2
+ ],
+ "bounds": [
+  0,
+  2
+ ],
+ "expected": {
+  "beforeExpression": "2147483614 + n",
+  "afterExpression": "(n == 2 ? -1 : 2147483614 + n)",
+  "controlExpression": "20"
+ },
+ "entries": [
+  "com.carrotsearch.hppc.BoundedProportionalArraySizingStrategy#grow"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/BoundedProportionalArraySizingStrategy.java",
+   "text": "MAX_ARRAY_SIZE = Integer.MAX_VALUE"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/BoundedProportionalArraySizingStrategyTest.java",
+   "text": "testExactIntRange"
+  }
+ ]
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-232650-10-manifest-bound-release-and-negative-c",
+  "title": "10 manifest-bound release and negative controls",
+  "description": "Repeat the locked primary and control on the unmodified original release graph. Bind absent manifest paths, preserve provider order, and compare cold, warm and clean decisions to a deliberately wrong expectation. Every input retains its actual original method entry and two fresh JVM repetitions.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:change-plan"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/original_plans.py"
+    ]
+  },
+  "expected": "Both original public calls are qualified or expose their first open dependency. Warm and clean decisions and the false expectation are retained with their receipts.",
+  "submitted": {
+    "at": "2026-11-24T23:26:50+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/original_plans.py",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/original_plans.py 10 --label manifest-bound --modes cold warm clean wrong",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/original-plans/manifest-bound/10"
+  ]
+}

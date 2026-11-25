@@ -38,15 +38,20 @@ def bindings(slot):
 
 def automatic(slot):
     checker,lock,ref,pair=bindings(slot)
-    out=PUBLIC/slot/"automatic";out.mkdir(parents=True,exist_ok=True)
+    out=PUBLIC/slot/"automatic"
     store=BASE/slot/("automatic-"+lock["checkerSha256"])
-    store.mkdir(exist_ok=True)
+    measure_automatic(slot, checker, lock, ref, pair, out, store, DOCKET)
+
+
+def measure_automatic(slot, checker, lock, ref, pair, out, store, docket):
+    out.mkdir(parents=True,exist_ok=True)
+    store.mkdir(parents=True,exist_ok=True)
     with (store/"first-run.lock").open("a") as guard:
         fcntl.flock(guard,fcntl.LOCK_EX)
         fixed=store/"report.json.gz"
         if fixed.exists():
             bound=json.loads(gzip.decompress(fixed.read_bytes()))
-            if (bound["rawSha256"]!=digest(store/"executions.zip") or bound["docketSha256"]!=digest(DOCKET)
+            if (bound["rawSha256"]!=digest(store/"executions.zip") or bound["docketSha256"]!=digest(docket)
                     or bound["packetSha256"]!=ref["packetSha256"]):
                 raise ValueError("first automatic attempt has different bindings")
             for name in ("report.json.gz","executions.zip"):shutil.copyfile(store/name,out/name)
@@ -74,7 +79,7 @@ def automatic(slot):
                 if f.exists():r[label+"Cost"]=json.loads(f.read_bytes())
         warm=raw/"warm.json"
         if warm.is_file():report["warmAgreement"]=json.loads(warm.read_bytes())
-        report.update(slot=slot,packetSha256=ref["packetSha256"],docketSha256=digest(DOCKET),
+        report.update(slot=slot,packetSha256=ref["packetSha256"],docketSha256=digest(docket),
                       checkerSha256=digest(checker),rawSha256=digest(out/"executions.zip"),job=os.environ.get("VERIFY_JOB_ID"))
         (out/"report.json.gz").write_bytes(gzip.compress(encoded(report),mtime=0))
         shutil.copyfile(out/"executions.zip",store/"executions.zip")
@@ -84,7 +89,7 @@ def automatic(slot):
         print(slot,len(report["selected"]),"automatic candidates",flush=True)
 
 
-def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py"):
+def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py", *, native_only=False):
     # The measured libraries and checker can only see the pinned public modules, their own caller and writable scratch.
     fake_home="/guest"
     jpath=fake_home+"/.sdkman/candidates/java/21.0.13.0+9-tem"
@@ -104,6 +109,7 @@ def matched_namespace(pair,ref,out,checker,physical,worker="matched_worker.py"):
         if worker not in ("matched_worker.py","assisted_worker.py","identity_worker.py"):raise ValueError("unknown matched worker")
         cmd+=["/usr/bin/python3","-B","/tool/lib/benchmark/beyond-jbmc/blind/"+worker]
         if physical:cmd.append("--physical-only")
+        if native_only:cmd.append("--native-only")
         with (out/"process.log").open("wb") as f:
             proc=subprocess.run(cmd,stdout=f,stderr=subprocess.STDOUT)
         return proc.returncode

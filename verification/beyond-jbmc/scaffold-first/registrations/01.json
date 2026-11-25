@@ -1,0 +1,140 @@
+{
+ "slot": "01",
+ "artifact": "libdirgra-java",
+ "callerJarSha256": "9b509bd389fb6c46aa55286a4c7fde5214485dac9df278368325e668c630dc40",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "ab3211354e76b09944452d8fe7e178cb1e7204b8988abf2601edcf5da7b51430",
+ "referenceSha256": "20502082bb6fb21cfa1a01ebc199b39130e5c044ce348d06e8cf89228405bfad",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "14fa4fddff1ba3632999e4781391294920cecc5fa8611cd630a6a70d43e9383c",
+   "sourceFiles": [
+    [
+     "ca3b8a72f2cf4b1169d100e30b0587eb35864e4f7ec19e11847c316c6905a552",
+     "2103",
+     "dirgra_0.3-1.1.dsc"
+    ],
+    [
+     "4f4f6d1ced38a843c58982a66725e055468801847e630c13d0fe8d7f755f7536",
+     "13201",
+     "dirgra_0.3.orig.tar.gz"
+    ],
+    [
+     "23298d120898ee4f68dd2be189548aa19ab957629dfda2fdfc8f7683f4f4682b",
+     "6316",
+     "dirgra_0.3-1.1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.jruby.dirgra.DirectedGraph#removeVertexFor(Lorg/jruby/dirgra/ExplicitVertexID;)V": "367f78380f54056d7012ae2724bb07e4f651f303a08a5c5697fdcb4b0e982a91",
+    "org.jruby.dirgra.DirectedGraph#findOrCreateVertexFor(Lorg/jruby/dirgra/ExplicitVertexID;)Lorg/jruby/dirgra/Vertex;": "367f78380f54056d7012ae2724bb07e4f651f303a08a5c5697fdcb4b0e982a91"
+   },
+   "orderedClasspathSha256": [
+    "bb4e5c127d9667b2f61eb9e7021f96458f665dc1ecf17ca41ae6ec081be72862"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "f227e2d7b7df6d0260f997e4b8e78b6b7b3ab1daa7dc43e65c38085af09a29db",
+   "sourceFiles": [
+    [
+     "52bae0a231b933edd5ab64d43de1dc51a82ce4f2433cd889632380a75cb5136a",
+     "2085",
+     "dirgra_0.4-2.dsc"
+    ],
+    [
+     "9a83f2b8760ae1f24bd9b1eaeaa78eb9bf60e00d37373a23cf738bf09e55b85a",
+     "13160",
+     "dirgra_0.4.orig.tar.gz"
+    ],
+    [
+     "a1b3ba95f1e0445e20bbe04b1152bcfa2f965d39e31fbb866df58186928014c7",
+     "6412",
+     "dirgra_0.4-2.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.jruby.dirgra.DirectedGraph#removeVertexFor(Lorg/jruby/dirgra/ExplicitVertexID;)V": "eb0ab73bfb78f79190d8270abf04bbfcfacffa9c19bedfd330a00314d60427fd",
+    "org.jruby.dirgra.DirectedGraph#findOrCreateVertexFor(Lorg/jruby/dirgra/ExplicitVertexID;)Lorg/jruby/dirgra/Vertex;": "eb0ab73bfb78f79190d8270abf04bbfcfacffa9c19bedfd330a00314d60427fd"
+   },
+   "orderedClasspathSha256": [
+    "ed5f56cc155c729f2c166fee42c9e853da146f304a00f27df8dd45b1b55f6cb2"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.jruby.dirgra.DirectedGraph#removeVertexFor(Lorg/jruby/dirgra/ExplicitVertexID;)V",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Do repeated lookup, removal and re-insertion preserve the public graph's insertion order and vertex identities?",
+    "basis": "Two distinct public ExplicitVertexID keys; remove either the first or last then reinsert it. Both histories are included.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.jruby.dirgra.DirectedGraph#findOrCreateVertexFor(Lorg/jruby/dirgra/ExplicitVertexID;)Lorg/jruby/dirgra/Vertex;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "A repeated lookup returns the already registered vertex without changing the graph's size.",
+    "basis": "Two distinct public ExplicitVertexID keys; remove either the first or last then reinsert it. Both histories are included.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  1
+ ],
+ "inputs": [
+  0,
+  1
+ ],
+ "fullRegisteredDomain": true
+}

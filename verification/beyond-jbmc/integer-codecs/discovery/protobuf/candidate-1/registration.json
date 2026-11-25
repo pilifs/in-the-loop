@@ -1,0 +1,86 @@
+{
+  "encoder": [
+    "com.google.protobuf.CodedOutputStream",
+    "encodeZigZag32"
+  ],
+  "decoder": [
+    "com.google.protobuf.CodedInputStream",
+    "decodeZigZag32"
+  ],
+  "descriptor": "(I)I",
+  "inputs": {
+    "old": [
+      "8540247fad9e06baefa8fb45eb313802d019f485f14300e0f9d6b556ed88e753"
+    ],
+    "new": [
+      "6c50b4323a101dfd7b8aea209337ac49ecf5d8e33e0b210b196fc654291ed2cc"
+    ]
+  },
+  "callerSha256": "56b570dfba08f619606895efdd40b67724454659f6902a7d14a7331fa0cf35ba",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "primary": "Decode each nonnegative Java int by parity and half its magnitude.",
+  "unchangedControl": "Encode the decoded value and recover the input on the same domain.",
+  "rawBitHypothesis": "Decode all 32-bit inputs as unsigned zigzag bit patterns.",
+  "rawBitPredictions": [
+    [
+      -1,
+      -2147483648
+    ],
+    [
+      -2147483648,
+      1073741824
+    ]
+  ],
+  "expectedSamples": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      -1,
+      1
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      3,
+      -2,
+      3
+    ],
+    [
+      31,
+      -16,
+      31
+    ],
+    [
+      32,
+      16,
+      32
+    ],
+    [
+      127,
+      -64,
+      127
+    ],
+    [
+      128,
+      64,
+      128
+    ],
+    [
+      2147483646,
+      1073741823,
+      2147483646
+    ],
+    [
+      2147483647,
+      -1073741824,
+      2147483647
+    ]
+  ]
+}

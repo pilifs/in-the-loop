@@ -30,6 +30,8 @@ pub struct Previous {
     pub shared: bool,
     /// The previous version's class path: its build, then its libraries.
     pub classpath: Vec<std::path::PathBuf>,
+    /// The current version's original build and libraries, without the generated two-copy harness.
+    pub current_classpath: Vec<std::path::PathBuf>,
     /// Whether a call of code both versions share may be taken as one function of both
     /// ([`crate::bmc`]'s ties); `--no-shared-callees` says not, and every callee is run as written.
     pub calls_as_one_function: bool,

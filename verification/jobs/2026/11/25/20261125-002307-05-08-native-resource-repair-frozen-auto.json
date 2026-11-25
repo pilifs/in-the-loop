@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-002307-05-08-native-resource-repair-frozen-auto",
+  "title": "05-08 native resource repair frozen automatic replay",
+  "description": "Apply the unchanged artifact-only selection and comparison policy to the exact signed inputs and generated callers. Reproduce any displaced candidate separately in its neutral namespace. Preserve every cold and warm literal verdict and any original JVM disagreement on the resource-aware native checker.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py"
+    ]
+  },
+  "expected": "All four frozen callers per packet represented with bound reports and warm agreement, and any new selection remains visible.",
+  "submitted": {
+    "at": "2026-11-25T00:23:07+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "bwrap"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "5m",
+    "timeout": "35m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurem",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py 05 06 07 08 --output verification/beyond-jbmc/scaffold-first/native-resource/remeasured",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/native-resource/remeasured/05",
+    "verification/beyond-jbmc/scaffold-first/native-resource/remeasured/06",
+    "verification/beyond-jbmc/scaffold-first/native-resource/remeasured/07",
+    "verification/beyond-jbmc/scaffold-first/native-resource/remeasured/08"
+  ]
+}

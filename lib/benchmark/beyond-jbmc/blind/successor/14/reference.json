@@ -1,0 +1,40 @@
+{
+ "question": "Can two bit fields written at a nonzero byte offset be read back at exactly their original positions?",
+ "control": "Neither write touches the bytes flanking the encoded octet.",
+ "domain": "All 256 byte values split into three high and five low bits. Position and the written octet are part of the observation.",
+ "seeds": [
+  0,
+  1,
+  31,
+  32,
+  127,
+  128,
+  254,
+  255
+ ],
+ "bounds": [
+  0,
+  255
+ ],
+ "expected": {
+  "beforeExpression": "n",
+  "afterExpression": "n",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "com.googlecode.mp4parser.boxes.mp4.objectdescriptors.BitWriterBuffer#writeBits",
+  "com.googlecode.mp4parser.boxes.mp4.objectdescriptors.BitReaderBuffer#readBits"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/BitReaderBuffer.java",
+   "text": "public int readBits(int i)"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/BitWriterBuffer.java",
+   "text": "public void writeBits(int i, int numBits)"
+  }
+ ]
+}

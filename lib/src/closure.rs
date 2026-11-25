@@ -11,6 +11,7 @@
 //! | `config FILE` | the file's bytes | the application files (`application*.properties`, `application*.yml`, `application*.yaml`, at a resource root or under `config/`), for a closure that touches Spring |
 //! | `missing NAME` | nothing | a class or method the closure names that the class path doesn't have: adding it later changes the closure |
 //! | `config Class.forName runtime class path` | ordered provider paths and contents, selected multi-release feature and observed class bindings | a reachable call to Class.forName can select a class and run its initializer using a computed name |
+//! | `config resource lookup runtime class path` | the same ordered deployment and its bytes | a loader can observe resources and their absence without naming a Java method in their provider |
 //!
 //! Following: from the target, every method a call may run (static and special calls by resolution, virtual and
 //! interface calls by every dispatch target, lambda bodies through `LambdaMetafactory`'s handle), and the class
@@ -196,15 +197,17 @@ pub fn version_digest(cp: &ClassPath, roots: &[MemberRef], configuration: &Confi
 
 const LOOKUP_INPUT: &str = "config Class.forName runtime class path";
 const UNBOUND_LOOKUP: &str = "config unreadable Class.forName runtime class path";
+const RESOURCE_LOOKUP: &str = "config resource lookup runtime class path";
+const UNBOUND_RESOURCE: &str = "config unreadable resource lookup runtime class path";
 
 pub(crate) fn unbound_lookup(closures: &[Closure]) -> bool {
-    closures.iter().any(|c| c.parts.contains_key(UNBOUND_LOOKUP))
+    closures.iter().any(|c| c.parts.contains_key(UNBOUND_LOOKUP) || c.parts.contains_key(UNBOUND_RESOURCE))
 }
 
 pub(crate) fn cache_version_digest(cp: &ClassPath, roots: &[MemberRef], config: &Configuration) -> Result<String, Error> {
     let graph = closures(cp, roots, config);
     if unbound_lookup(&graph) {
-        return Err(Error::new("the runtime class path read by Class.forName could not be bound"));
+        return Err(Error::new("the runtime class path of a class or resource lookup could not be bound"));
     }
     Ok(digest_of_version(&graph))
 }
@@ -241,14 +244,17 @@ impl<'a> Walk<'a> {
     }
 
     fn bind_lookup(&mut self, parts: &mut BTreeMap<String, String>, callee: &MemberRef) {
-        if callee.owner != "java/lang/Class" || callee.name != "forName" {
+        let resource = matches!(callee.owner.as_str(), "java/lang/Class" | "java/lang/ClassLoader")
+            && matches!(callee.name.as_str(), "getResource" | "getResources" | "getResourceAsStream" | "resources");
+        if !resource && (callee.owner != "java/lang/Class" || callee.name != "forName") {
             return;
         }
         let (key, digest) = self.lookup.get_or_insert_with(|| match self.cp.lookup_digest() {
             Ok(digest) => (LOOKUP_INPUT, digest),
             Err(error) => (UNBOUND_LOOKUP, sha256_hex(error.to_string().as_bytes())),
         });
-        parts.insert((*key).into(), digest.clone());
+        let key = if !resource { *key } else if *key == UNBOUND_LOOKUP { UNBOUND_RESOURCE } else { RESOURCE_LOOKUP };
+        parts.insert(key.into(), digest.clone());
     }
 
     fn run(&mut self, root: &MemberRef, configuration: &Configuration) -> Closure {
@@ -326,6 +332,7 @@ impl<'a> Walk<'a> {
                     }
                     Insn::InvokeVirtual(i) | Insn::InvokeInterface(i) => {
                         let Ok(callee) = class.pool.member(i) else { continue };
+                        self.bind_lookup(&mut parts, &callee);
                         spring |= callee.owner.starts_with(SPRING);
                         if callee.owner.starts_with('[') {
                             continue; // an array's clone(): the JDK's

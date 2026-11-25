@@ -29,7 +29,7 @@ def delta(previous, current):
             before = previous["launches"][side].get(kind) or {}
             after = current["launches"][side].get(kind) or {}
             changed = {k: {"before": before.get(k), "after": after.get(k)} for k in
-                       ("classpath", "jdk", "environment", "environmentFiles") if before.get(k) != after.get(k)}
+                       ("classpath", "jdk", "environment", "environmentFiles", "manifestClassPath") if before.get(k) != after.get(k)}
             if changed:
                 launches[f"{side}/{kind}"] = changed
     before_entries = {c["entry"] for c in previous["inventory"]["candidates"]}
@@ -172,12 +172,19 @@ def compare(args, *, original_binary=True):
     plan["executionState"] = "running" if args.run else "planned"
     if args.run and original_binary:
         change_evidence.write_json(args.output, plan)
+    manifests = {s: launches[s]["production"].get("manifestClassPath", {}) for s in jdks}
+    missing = {p for manifest in manifests.values() for p in manifest.get("absent", [])}
+    unresolved = {s: m["unresolved"] for s, m in manifests.items() if m.get("unresolved")}
     for node, basis, row, scope, probe, spec in pending:
-        closed = row.get("deterministicUnderAssumptions") is True and node["assumptions"] and not any(inventory["implicitClasspaths"].values())
+        initially_absent = change_inventory.absences_hold(missing)
+        closed = row.get("deterministicUnderAssumptions") is True and node["assumptions"] and not unresolved and initially_absent
         use_cache = args.cache is not None and closed
         side_inputs = {s: {"jdk": images[j], "environmentFiles": launches[s]["production"].get("environmentFiles", [])}
                        for s, j in jdks.items()}
-        cache = change_evidence.SideCache(args.cache, basis, side_inputs) if use_cache else None
+        for side, manifest in manifests.items():
+            if manifest:
+                side_inputs[side]["manifestClassPath"] = manifest
+        cache = change_evidence.SideCache(args.cache, basis, side_inputs, defer_writes=bool(missing)) if use_cache else None
         evidence = {}
         try:
             upgrade_replay.evaluate(scope, args.before, args.after, probe, jdks["old"], operands, args.seconds,
@@ -186,6 +193,9 @@ def compare(args, *, original_binary=True):
                                     checked_helper=(row["checkedHelper"], checker, images, args.cache) if "checkedHelper" in row else None)
         except (OSError, ValueError, subprocess.SubprocessError) as error:
             evidence.update(status="open", reason=str(error))
+        stable = initially_absent and change_inventory.absences_hold(missing)
+        if cache and missing and stable and evidence.get("status") != "open":
+            cache.publish_pending()
         if evidence.get("cases") == spec["cases"]:
             node.update(change_evidence.compose(spec, evidence, row["intent"]))
             for c in node["children"]:
@@ -194,6 +204,9 @@ def compare(args, *, original_binary=True):
                                  for c in node["children"]]
             if node["status"] == "established" and not closed:
                 node.update(status="open", firstOpenDependency="bind all runtime inputs and justify deterministic observations")
+        if unresolved or not stable:
+            node.update(status="open", firstOpenDependency={"manifestClassPath": unresolved} if unresolved
+                        else "a manifest Class-Path changed during the original JVM comparisons")
         if "checkedHelper" in row:
             node["helperProofs"] = {side: {k: proof[k] for k in ("key", "entry", "action", "proofDigest")}
                                     for side, proof in evidence.get("helperProofs", {}).items()}

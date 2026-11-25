@@ -16,11 +16,15 @@ public final class OriginalGraph {
         } catch (Exception e) { throw new IllegalStateException(e); }
     }
     public static Object call(int side, String owner, String method, Class<?>[] types, Object... args) {
+        Thread thread = Thread.currentThread();
+        ClassLoader original = thread.getContextClassLoader();
         try {
+            thread.setContextClassLoader(sides[side]);
             return Class.forName(owner, true, sides[side]).getMethod(method, types).invoke(null, args);
         } catch (InvocationTargetException e) {
             throw OriginalGraph.<RuntimeException>rethrow(e.getCause());
         } catch (ReflectiveOperationException e) { throw new IllegalStateException(e); }
+        finally { thread.setContextClassLoader(original); }
     }
     @SuppressWarnings("unchecked")
     private static <E extends Throwable> RuntimeException rethrow(Throwable t) throws E { throw (E)t; }

@@ -1,0 +1,86 @@
+{
+  "encoder": [
+    "org.apache.lucene.util.BitUtil",
+    "zigZagEncode"
+  ],
+  "decoder": [
+    "org.apache.lucene.util.BitUtil",
+    "zigZagDecode"
+  ],
+  "descriptor": "(I)I",
+  "inputs": {
+    "old": [
+      "5069436519426486f74a84a77763895ec9ace807929dc931ab36760893cb8267"
+    ],
+    "new": [
+      "f03aa0afc676ac80d111189c235974e6f4c628182e511aeb7e58b01db577c91a"
+    ]
+  },
+  "callerSha256": "1a5e65b73245ee450fe5e4a40f014a5c073c5a2ceec3636a560f5394cd7a66ef",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "primary": "Decode each nonnegative Java int by parity and half its magnitude.",
+  "unchangedControl": "Encode the decoded value and recover the input on the same domain.",
+  "rawBitHypothesis": "Decode all 32-bit inputs as unsigned zigzag bit patterns.",
+  "rawBitPredictions": [
+    [
+      -1,
+      -2147483648
+    ],
+    [
+      -2147483648,
+      1073741824
+    ]
+  ],
+  "expectedSamples": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      -1,
+      1
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      3,
+      -2,
+      3
+    ],
+    [
+      31,
+      -16,
+      31
+    ],
+    [
+      32,
+      16,
+      32
+    ],
+    [
+      127,
+      -64,
+      127
+    ],
+    [
+      128,
+      64,
+      128
+    ],
+    [
+      2147483646,
+      1073741823,
+      2147483646
+    ],
+    [
+      2147483647,
+      -1073741824,
+      2147483647
+    ]
+  ]
+}

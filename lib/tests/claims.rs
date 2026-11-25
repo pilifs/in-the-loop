@@ -109,10 +109,7 @@ fn class_lookup_folds_and_local_resource_order_match_the_launch() {
         let mut o = options(classes, &format!("claims.ClassTableChecks#{method}"), 64, method);
         o.classpath = jars.clone();
         let result = run(&o);
-        if method == "nestedArgument" {
-            assert_eq!(result.verdict, Verdict::Unverifiable, "{}", result.output);
-            assert!(result.output.contains("getGenericInterfaces"), "{}", result.output);
-        } else if matches!(method, "lastWriter" | "exportedOrder") {
+        if matches!(method, "lastWriter" | "exportedOrder") {
             assert_eq!(result.verdict, Verdict::Unverifiable, "{method}: {}", result.output);
             assert!(result.output.contains("entrySet"), "{}", result.output);
         } else {

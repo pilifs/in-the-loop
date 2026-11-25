@@ -1,0 +1,363 @@
+{
+ "slot": "06",
+ "artifact": "libparboiled-java",
+ "callerJarSha256": "149ff4455fb8009d2e1e72879d8c9fa53d31916ed30d262eac0786f2c1594cc4",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "b6264264ff4c0f6a6b90f83c59cd9ae7e8f547f01f8192460152b664b9367f63",
+ "referenceSha256": "bba2d5f7112e1fc4bf0a053003448434c35c6279301600df4b57efb2f23b429e",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "20c1fc1d50a258dbe1f6aa7673696285e1086d9af8ad912ccef742d4242fd7ef",
+   "sourceFiles": [
+    [
+     "cdf8d0326d98817879e206fba1b33c775a6decff858bb55941da61670e1ee641",
+     "1998",
+     "parboiled_1.1.7-2.1.dsc"
+    ],
+    [
+     "226b4d2b1648e8bbfe854c45dd4a9e80bdad68acbe3cf5022fdd725c4be25309",
+     "215549",
+     "parboiled_1.1.7.orig.tar.gz"
+    ],
+    [
+     "0918bf44d4e17b89ac289b62447315968c65b9dc4840fc346bfe23f84a305261",
+     "4704",
+     "parboiled_1.1.7-2.1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.parboiled.buffers.DefaultInputBuffer#getPosition(I)Lorg/parboiled/support/Position;": "2a230eb58a5dc54f1e562606e91af2c10255376cf1653147510397ddd92bfc79",
+    "org.parboiled.buffers.DefaultInputBuffer#extractLine(I)Ljava/lang/String;": "2a230eb58a5dc54f1e562606e91af2c10255376cf1653147510397ddd92bfc79"
+   },
+   "orderedClasspathSha256": [
+    "1ede2b9b1b7435b8e7e451535324e2d4e5535353e28281e4dfab1fdd6c6d33ee",
+    "4fbac4916240dfe8b196ee230cf34dd5b55a849f791cd84804cb2ca2bedb9e9e",
+    "6254e3aae24aa7a1a5f854f1c57c241b6289c9be502ad3fb150cba7788ce3961",
+    "04a4b59376ed3414e10576fc44610f0e84d81c8e4f2219a35e9c42f478fdb4cb",
+    "c2f387b8dba2848098365f1461a0fb7e8606f049ceca14b835962041ed600681",
+    "8981947565d08f4d4239bf5b7aaa3456c03ebe9ca02809bb1d68d06935b3533d",
+    "5cbc64863883045b084769a9f2d65692918a3546b00a684ae28ac3ae7047ef1a",
+    "d231043e162b11308c94348230d7397b3675279958795ce693e91f729b0976f7"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "7b22b8e77bd57760e62ee99bcfdd95089a6459b2ffa11a07a5b52c1b16ed65c0",
+   "sourceFiles": [
+    [
+     "7cbbb362c2d4f1663ab825e6c4d6d59c017337e0adbbd04deb014cec26d91a9b",
+     "2007",
+     "parboiled_1.4.1-1.dsc"
+    ],
+    [
+     "5f396cd6f51939efed94f37736440238a86291ed02bcd523aa97aa2eff8de1f2",
+     "230536",
+     "parboiled_1.4.1.orig.tar.gz"
+    ],
+    [
+     "ab80c1f1bce58b70c94d28d474feae855b07b3c8b031753775f7651f8a9c5b8e",
+     "4832",
+     "parboiled_1.4.1-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "org.parboiled.buffers.DefaultInputBuffer#getPosition(I)Lorg/parboiled/support/Position;": "f44e975d5b6295cb28c29fa46bed140462f2fd302282a96e5d247877702a8e1f",
+    "org.parboiled.buffers.DefaultInputBuffer#extractLine(I)Ljava/lang/String;": "f44e975d5b6295cb28c29fa46bed140462f2fd302282a96e5d247877702a8e1f"
+   },
+   "orderedClasspathSha256": [
+    "8486f04f2a9bcedb60500048ea827a304d5289bc374d99f4647469837adee82b",
+    "c8db3dedbbc8ab2cc57d04fe0edc2414e11e043500e41c33f5c644913738b96d",
+    "3648402359be6fd64949c0710d37c506555d768312ad57df86067c0175f90ea8",
+    "0cbe8822e39cab92174092a7e887ffa55e8d79ed9fb4c4ad917c89819898a232",
+    "1fbe073893559a2bd203d4d2a023bc454887a146c4e47f9b18175d9d699a3427",
+    "bec7ab32e7ccc1847bba49c20d2e3f0196be6e1628a31ea337cbe4932efdddba",
+    "c44f3294a5ec1caa999abaf22ad655210ef86ff5c0cdedf839a97df6c1f3b8f9",
+    "0b60f46cd3d78e0d8a3a9f0f2176098db6a8bf0a6a6db6e04644df6447b35e4e"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.parboiled.buffers.DefaultInputBuffer#getPosition(I)Lorg/parboiled/support/Position;",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "How does the public parsing buffer map the offsets around LF, CRLF and an empty line to line and column?",
+    "basis": "All thirteen offsets 0 through 12 in the upstream multiline input. Encode an observed position as 100 × line + column.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "101"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "102"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "2"
+      ],
+      "expected": {
+       "return": "103"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "3"
+      ],
+      "expected": {
+       "return": "104"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "4"
+      ],
+      "expected": {
+       "return": "105"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "5"
+      ],
+      "expected": {
+       "return": "201"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "6"
+      ],
+      "expected": {
+       "return": "202"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "7"
+      ],
+      "expected": {
+       "return": "203"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "8"
+      ],
+      "expected": {
+       "return": "204"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "9"
+      ],
+      "expected": {
+       "return": "301"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "10"
+      ],
+      "expected": {
+       "return": "401"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "11"
+      ],
+      "expected": {
+       "return": "402"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "12"
+      ],
+      "expected": {
+       "return": "403"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "org.parboiled.buffers.DefaultInputBuffer#extractLine(I)Ljava/lang/String;",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "Extracting the second and third lines returns their contents without either line terminator.",
+    "basis": "All thirteen offsets 0 through 12 in the upstream multiline input. Encode an observed position as 100 × line + column.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "2"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "3"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "4"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "5"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "6"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "7"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "8"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "9"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "10"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "11"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "12"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "new int[]{101,102,103,104,105,201,202,203,204,301,401,402,403}[n]",
+  "afterExpression": "new int[]{101,102,103,104,105,201,202,203,204,301,401,402,403}[n]",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  12
+ ],
+ "inputs": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8,
+  9,
+  10,
+  11,
+  12
+ ],
+ "fullRegisteredDomain": true
+}

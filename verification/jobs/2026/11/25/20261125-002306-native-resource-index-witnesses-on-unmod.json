@@ -1,0 +1,43 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-002306-native-resource-index-witnesses-on-unmod",
+  "title": "Native resource index witnesses on unmodified JVMs",
+  "description": "A former universal proof saw only the new resource. Recheck the bytes each original loader opens, the unchanged missing key, ordinary and paired witnesses, and same-path mutation against clean. The case definitions and independent original JVM returns were registered before solving.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/native_resources.py"
+    ]
+  },
+  "expected": "Retain the full native calls and original witnesses. Reject a false proof or a refutation that disagrees with either original deployment.",
+  "submitted": {
+    "at": "2026-11-25T00:23:06+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.py index dom4j",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/native-resource/index",
+    "verification/beyond-jbmc/scaffold-first/native-resource/dom4j"
+  ]
+}

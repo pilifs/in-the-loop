@@ -1,0 +1,47 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-002307-05-08-native-resource-repair-matched-rel",
+  "title": "05-08 native resource repair matched release replay",
+  "description": "Measure the original supplied primary, control and inverse on the release-namespace repair. Preserve all previously exposed questions, original graph qualifications, and named refusals.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:prove"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/matched_successor.py"
+    ]
+  },
+  "expected": "Measured primary, control and inverse on all specified original graphs, including the qualified original release conjuncts in the two XML cases.",
+  "submitted": {
+    "at": "2026-11-25T00:23:07+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract",
+    "bwrap",
+    "jbmc"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "3m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor.py 05 06 07 08 --output verification/beyond-jbmc/scaffold-first/native-resource/matched-native",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/05",
+    "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/06",
+    "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/07",
+    "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/08"
+  ]
+}

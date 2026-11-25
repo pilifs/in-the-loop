@@ -1,0 +1,34 @@
+{
+ "question": "What does an empty stack return from peek before a push and after popping the last element?",
+ "control": "Peeking a populated stack returns the top without consuming it.",
+ "domain": "A single thread, a fresh fixed-capacity stack, and two histories ending empty.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "-1",
+  "afterExpression": "0",
+  "controlExpression": "42"
+ },
+ "entries": [
+  "com.conversantmedia.util.concurrent.ConcurrentStack#peek",
+  "com.conversantmedia.util.concurrent.ConcurrentStack#pop"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/ConcurrentStack.java",
+   "text": "stack.get(stackTop-1)"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/ConcurrentStackTest.java",
+   "text": "Assert.assertNull(stack.peek());"
+  }
+ ]
+}

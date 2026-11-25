@@ -1151,6 +1151,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         classes: old_classes,
         shared: options.before_classpath.is_none(),
         classpath: std::iter::once(options.before.clone()).chain(options.before_entries().iter().cloned()).collect(),
+        current_classpath: std::iter::once(options.after.clone()).chain(options.classpath.iter().cloned()).collect(),
         calls_as_one_function: options.shared_callees,
         fresh_states: paired,
     };
@@ -1217,7 +1218,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         out.push_str(&p.output);
         let domain = paired.target_statement.as_ref().map(|s| s.domain.text.clone()).or_else(|| p.domain.clone());
-        let replay = paired.target_statement.as_ref().and_then(|_| p.replay.clone());
+        let replay = if paired.target_statement.is_some() || paired.target_witness.is_some() { p.replay.clone() } else { None };
         let stated = paired.target_statement.or_else(|| p.stated.clone());
         return Ok(Outcome { verdict: p.verdict, target: options.target.clone(), domain, counterexample: paired.target_witness, proof: p.proof.clone(), problem: p.problem.clone(), statement: Some(paired.statement), findings: p.findings.clone(), output: out, work, shared: Vec::new(), helpers: Vec::new(), previous: None, relation: None, vacuous: p.vacuous.clone(), search: p.search.clone(), replay, stated, advice: None, reuse: None, pair: Some(Box::new(p)) });
     }
@@ -2544,6 +2545,10 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let through_contracts = unreplayed.and_then(|(t, _)| unconfirmed_through_contracts(&last, &witness::call_in(&method_name, &layout, &found).0, t));
             let contracted = through_contracts.is_some();
             let mut unconfirmed = through_contracts.or_else(|| unreplayed.map(|(t, which)| self::unreplayed(&last, &witness::call_in(&method_name, &layout, &found).0, t, which)));
+            let resource_lookup = last.native.as_ref().is_some_and(crate::bmc::Stats::reads_jar_resources);
+            if resource_lookup && unconfirmed.is_none() {
+                unconfirmed = Some("the resource witness needs both original JVM classpaths".into());
+            }
             // A witness the interpreter cannot run is run on a JVM: the harness on it, with the JDK's real calls
             // where any contracts stood, then each version alone when both are static methods of the harness's
             // parameters, for what each did, and what they differ in.
@@ -2564,16 +2569,37 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 };
                 let slots: Vec<u16> = layout.params.iter().map(|p| p.slot).collect();
                 let rendered = witness::call_in(&method_name, &layout, &found).0;
-                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::CLASS, &flat_types, &slots, &found, &calls, &entries) {
+                let physical = if resource_lookup {
+                    let integral = crate::pairing::replay::integral;
+                    if alone && options.plan.is_none() && options.correspondence.is_none() && iff_pairs.is_empty() && flat_types.iter().all(integral)
+                        && integral(&before_descriptor.ret) && integral(&descriptor.ret)
+                        && method.is_public() && before_method.is_public()
+                        && class.access & crate::classfile::flags::PUBLIC != 0 && before_class.access & crate::classfile::flags::PUBLIC != 0 {
+                        let old = crate::jvm_witness::DirectCall { owner: before_class_internal.clone(), name: before_method_name.clone(),
+                                                                   descriptor: before_method.descriptor.clone(), ret: before_descriptor.ret.clone() };
+                        crate::jvm_witness::original_pair(&work.join("original-jvm-witness"), &flat_types, &slots, &found,
+                            [(&old, &versions.classpath), (&calls[1], &versions.current_classpath)],
+                            |a, b| crate::pairing::replay::regression_holds(&harness, &found, a, b))
+                    } else {
+                        Err("this resource-dependent witness needs original-graph replay for its caller and observation".into())
+                    }
+                } else {
+                    crate::jvm_witness::run(&work.join("jvm-witness"), harness::CLASS, &flat_types, &slots, &found, &calls, &entries)
+                };
+                match physical {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
                         let alone_words = "<not run alone on the JVM, which the harness's assertion fails on>".to_string();
                         // What the two differ in is the JVM's to say where it ran each version; otherwise it is
                         // unknown (the interpreter's replays, one unrun, differ in nothing).
-                        let (before, after, differs) = match run.calls.as_slice() {
+                        let (before, after, mut differs) = match run.calls.as_slice() {
                             [b, a] => (b.with_leftovers(params, &found), a.with_leftovers(params, &found), witness::differences(b, a, params, &found, &iff_pairs)),
                             _ => (if replays.before.starts_with("<could not replay") { alone_words.clone() } else { replays.before.clone() }, if replays.after.starts_with("<could not replay") { alone_words } else { replays.after.clone() }, replays.differs.clone()),
                         };
-                        replays = Replays { before, after, agree: false, relation_note: None, differs };
+                        let relation_note = if resource_lookup {
+                            results_agree_when.as_ref().map(|text| format!("the original results are not related by {text}"))
+                        } else { None };
+                        if relation_note.is_some() && !differs.iter().any(|d| d == "result") { differs.push("result".into()); }
+                        replays = Replays { before, after, agree: false, relation_note, differs };
                         on_jvm = Some(run.jdk);
                         unconfirmed = None;
                     }

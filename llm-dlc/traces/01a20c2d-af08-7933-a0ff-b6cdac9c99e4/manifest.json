@@ -12,42 +12,73 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-24T22:37:27.571Z",
-  "duration_seconds": 59197,
+  "ended": "2026-11-25T06:02:29.242Z",
+  "duration_seconds": 85898,
   "stats": {
-    "turns": 10,
-    "api_calls": 2743,
-    "tool_calls": 7094,
-    "tool_errors": 162,
-    "compactions": 9,
+    "turns": 14,
+    "api_calls": 3698,
+    "tool_calls": 9138,
+    "tool_errors": 193,
+    "compactions": 12,
     "peak_context_tokens": 550355,
     "usage": {
-      "input_tokens": 3688459,
-      "output_tokens": 1526917,
-      "cache_read_input_tokens": 770620544,
+      "input_tokens": 4355369,
+      "output_tokens": 2020873,
+      "cache_read_input_tokens": 1098757376,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 4106,
-    "exec": 2640,
-    "apply_patch": 263,
-    "wait": 44,
-    "sleep": 38,
-    "send_message_to_user_async": 3
+    "Bash": 5079,
+    "exec": 3530,
+    "apply_patch": 385,
+    "sleep": 72,
+    "wait": 67,
+    "send_message_to_user_async": 4,
+    "request_user_input_async": 1
   },
   "files_touched": [
+    "examples/tools/build.py",
+    "examples/tools/targets/change_evidence.py",
+    "examples/tools/targets/change_inventory.py",
+    "examples/tools/targets/change_plan.py",
+    "examples/tools/targets/java/ResourceObserver.java.template",
+    "examples/tools/targets/resource_workflows.py",
+    "examples/tools/targets/test_change_plan.py",
     "lib/benchmark/beyond-jbmc/README.md",
     "lib/benchmark/beyond-jbmc/additional_controls.py",
+    "lib/benchmark/beyond-jbmc/blind/LoaderObservations.java",
+    "lib/benchmark/beyond-jbmc/blind/OriginalObserver.java.txt",
     "lib/benchmark/beyond-jbmc/blind/ReplayReference.java",
+    "lib/benchmark/beyond-jbmc/blind/assisted_worker.py",
     "lib/benchmark/beyond-jbmc/blind/auto_upgrade.py",
     "lib/benchmark/beyond-jbmc/blind/calibration.py",
+    "lib/benchmark/beyond-jbmc/blind/continuation_audit.py",
     "lib/benchmark/beyond-jbmc/blind/evaluate_panel.py",
     "lib/benchmark/beyond-jbmc/blind/identity_followup.py",
     "lib/benchmark/beyond-jbmc/blind/identity_worker.py",
+    "lib/benchmark/beyond-jbmc/blind/integer_workflows.py",
+    "lib/benchmark/beyond-jbmc/blind/manifest_controls.py",
+    "lib/benchmark/beyond-jbmc/blind/matched_successor.py",
+    "lib/benchmark/beyond-jbmc/blind/matched_worker.py",
+    "lib/benchmark/beyond-jbmc/blind/native_resources.py",
+    "lib/benchmark/beyond-jbmc/blind/next_population.py",
+    "lib/benchmark/beyond-jbmc/blind/original_plans.py",
     "lib/benchmark/beyond-jbmc/blind/packets.py",
+    "lib/benchmark/beyond-jbmc/blind/public-entries.json",
     "lib/benchmark/beyond-jbmc/blind/reference_jvm.py",
     "lib/benchmark/beyond-jbmc/blind/references.py",
+    "lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py",
+    "lib/benchmark/beyond-jbmc/blind/repeat_locked.py",
+    "lib/benchmark/beyond-jbmc/blind/resource-native/PairResourceGate.java",
+    "lib/benchmark/beyond-jbmc/blind/resource_comparators.py",
+    "lib/benchmark/beyond-jbmc/blind/resource_postconditions.py",
+    "lib/benchmark/beyond-jbmc/blind/resource_transfer.py",
+    "lib/benchmark/beyond-jbmc/blind/scaffold_audit.py",
+    "lib/benchmark/beyond-jbmc/blind/scaffold_first.py",
+    "lib/benchmark/beyond-jbmc/blind/successor.py",
+    "lib/benchmark/beyond-jbmc/blind/successor_measure.py",
+    "lib/benchmark/beyond-jbmc/blind/successor_report.py",
     "lib/benchmark/beyond-jbmc/blind/tokenizer_followup.py",
     "lib/benchmark/beyond-jbmc/blind_report.py",
     "lib/benchmark/beyond-jbmc/casebook_pairs.py",
@@ -81,6 +112,7 @@
     "lib/benchmark/beyond-jbmc/text/JacksonRanges.java",
     "lib/benchmark/beyond-jbmc/text/MixedJackson.java",
     "lib/benchmark/beyond-jbmc/trim_assurance.py",
+    "lib/benchmark/beyond-jbmc/wire-more/OriginalGraph.java",
     "lib/benchmark/beyond-jbmc/wire_assurance.py",
     "lib/benchmark/beyond-jbmc/wire_campaign.py",
     "lib/benchmark/beyond-jbmc/zone_reuse.py",
@@ -126,15 +158,22 @@
     "lib/src/bmc/byte_views.rs",
     "lib/src/bmc/bytes.rs",
     "lib/src/bmc/generic_interfaces.rs",
+    "lib/src/bmc/jar_resources.rs",
+    "lib/src/bmc/mod.rs",
     "lib/src/bmc/reflection.rs",
     "lib/src/bmc/runtime.rs",
     "lib/src/classpath.rs",
     "lib/src/closure.rs",
     "lib/src/digest.rs",
+    "lib/src/equivalence.rs",
     "lib/src/impact.rs",
     "lib/src/interp/mod.rs",
     "lib/src/interp/natives.rs",
+    "lib/src/jvm_witness.rs",
+    "lib/src/pairing.rs",
+    "lib/src/pairing/replay.rs",
     "lib/src/proof_cache.rs",
+    "lib/src/property.rs",
     "lib/src/relocate.rs",
     "lib/src/reuse.rs",
     "lib/src/zip.rs",
@@ -145,6 +184,11 @@
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
     "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-results.md",
     "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-results.md",
+    "verification/beyond-jbmc/integer-codecs/RESULTS.md",
+    "verification/beyond-jbmc/resource-postconditions/RESULTS.md",
+    "verification/beyond-jbmc/scaffold-first/RESULTS.md",
+    "verification/beyond-jbmc/successor/RESULTS.md",
+    "verification/findings.md",
     "verification/product-behaviour/audit.py",
     "verification/product-behaviour/cases/J02/UpgradeProbe.java",
     "verification/product-behaviour/cases/J02/case.json",
@@ -167,6 +211,7 @@
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/upstream.json",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic-effort-report/collect_evidence.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic-effort-report/effort.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic20-publication-warnings.txt",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic4-src/CaseFrames.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic4-src/FrameValues.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic4-src/checked_cache.py",
@@ -368,24 +413,66 @@
     {
       "index": 9,
       "started": "2026-11-24T20:00:34.684Z",
-      "ended": "2026-11-24T22:37:27.571Z",
+      "ended": "2026-11-24T22:43:02.103Z",
       "turns": 2,
-      "api_calls": 247,
+      "api_calls": 253,
       "usage": {
-        "input_tokens": 241627,
-        "output_tokens": 176379,
-        "cache_read_input_tokens": 70448896,
+        "input_tokens": 242813,
+        "output_tokens": 182901,
+        "cache_read_input_tokens": 72935552,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 413473
+      "peak_context_tokens": 416383
+    },
+    {
+      "index": 10,
+      "started": "2026-11-24T22:43:02.114Z",
+      "ended": "2026-11-25T01:02:35.144Z",
+      "turns": 2,
+      "api_calls": 494,
+      "usage": {
+        "input_tokens": 329285,
+        "output_tokens": 246808,
+        "cache_read_input_tokens": 173232768,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 550112
+    },
+    {
+      "index": 11,
+      "started": "2026-11-25T01:02:35.150Z",
+      "ended": "2026-11-25T01:15:12.256Z",
+      "turns": 0,
+      "api_calls": 29,
+      "usage": {
+        "input_tokens": 42253,
+        "output_tokens": 10427,
+        "cache_read_input_tokens": 1457792,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 60814
+    },
+    {
+      "index": 12,
+      "started": "2026-11-25T01:15:12.261Z",
+      "ended": "2026-11-25T06:02:29.242Z",
+      "turns": 2,
+      "api_calls": 426,
+      "usage": {
+        "input_tokens": 294186,
+        "output_tokens": 230199,
+        "cache_read_input_tokens": 150959616,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 508514
     }
   ],
   "log": {
-    "sha256": "9852f498f792c90ce602851f41de4b74416c951b59b766095742d19904f556bc",
-    "bytes": 39925330,
-    "lines": 21882,
-    "gzip_bytes": 7113665,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/9852f498f792c90ce602851f41de4b74416c951b59b766095742d19904f556bc.jsonl.gz"
+    "sha256": "e66fbef3ff6567e624d0dc68c4966ed8721578f558ffd4a49f4810d5e2e70aec",
+    "bytes": 53408939,
+    "lines": 29053,
+    "gzip_bytes": 9594494,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/e66fbef3ff6567e624d0dc68c4966ed8721578f558ffd4a49f4810d5e2e70aec.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -951,147 +1038,275 @@
     },
     {
       "change_id": "uktymptmzmwvwvvyrokxrmntmkyoqtlo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d49ed585636faf5256eb3e083d068c11fa75521b",
+      "immutable": true,
       "summary": "Start the setup record for the twenty additional organic Java PRs",
       "body": "Fetched the 40 pinned upstream revisions of J01-J20 into shallow mirrors, made one worktree per revision outside the checkout, and recorded each commit's tree and parents. Every fix's first parent is the brief's parent and every PR's merge commit equals the brief's fix revision (checked with gh api). Builds, releases and landed tests follow.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "rqovmytvnyukmwxqyouwoyrtktsqtkku",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8b2c1e23f6a54067d98ae921c2de2ce373d71a89",
+      "immutable": true,
       "summary": "Queue the first upstream builds for the twenty-case setup (verification pending)",
       "body": "Four setup jobs build an upstream project at both pinned revisions of a case and run its landed test on the fix, on the parent, and transplanted onto the parent: Calcite core with CoreQuidemTest (J12, 20261124-203257-setup-build-apache-calcite-core-at-both), POI poi-ooxml with TestXSSFHyperlink (J05, 20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo), Eclipse Collections with the UnifiedMap tests of unit-tests-java8 (J17, 20261124-203508-setup-build-eclipse-collections-at-both), and Lucene core and join with the block-join tests (J14, 20261124-203513-setup-build-lucene-core-and-join-at-both). Each was too long to run inline. Their dependencies were resolved online in the setup cache first.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "urulzqpoksnvqyyylnvkvzmnqmwqqvmy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0ac7491d34e0f7b40a40dbfbff0f48e9c927742a",
+      "immutable": true,
       "summary": "Record the builds, overlays and landed tests of the twenty-case setup",
       "body": "The setup record now has, for each of J01-J20, the toolchain, the built or overlay jars with their sha256 and class digests, the release graph each overlay is compiled over (and which side of the PR that release already equals), the landed test run on the fix, on the parent and transplanted onto the parent, the setup probes of the brief's preflight observations, and the exact commands with their checked offline forms. Every landed test or probe that could run matched the brief. Four upstream builds (POI, Calcite, Eclipse Collections, Lucene) are queued jobs; five upstream builds cannot run (gone or credentialed repositories, a missing thrift binary) and the record says why. The PGP pass and the notes for the domain agent follow.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "qkrmwoottxrwmtvnvqlmlxmmmwrkrxuy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "28dcee96a8c0fc7a5fcf84b09289ea5367016ca5",
+      "immutable": true,
       "summary": "Finish the twenty-case setup record with signatures and notes for the domain agent",
       "body": "Every one of the 264 release jars the setup resolved matches Central's sha1; 256 carry a valid PGP signature checked in the setup's own keyring (19 by keys revoked after the release, among them Spring's buildmaster key, revoked in 2023 as a precaution) and 8 old ones have no signature on Central. The record ends with the Setup Agent Notes for the domain agent: where each case's built, overlay or release artifacts are, what was verified on a JVM, which release already equals which side of each PR, the substitutions and unbuildable upstreams, and what is left on purpose. Four upstream-build jobs (POI, Calcite, Eclipse Collections, Lucene) are still pending. Five false-positive findings from this session's logs (version numbers read as IP addresses, a long test name) are proposed for the allow list.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "rqnkoyuwzupuqvrklmspxpsryolpqnrn",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "faa9d87a5aafc093c726047bbef254558c2c6a54",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "tsytvytsoolszonyywmpnppsslopqqpk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1a9b954612cef12cfdb25e31fae721e5d21b85ea",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261124-203257-setup-build-apache-calcite-core-at-both: failed: 4 failed, 1 passed step(s) in 9.0s, peak 247.0 MiB (estimated 30m00s, 4.0 GiB) Collected by the watcher of the organic-pr-20-additional-cases-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "kryklsxnqwqxnrwmzknznskrrquxwrkz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "25427f7ef8b41448ab2393f384a59c980c6ff204",
+      "immutable": true,
       "summary": "Record verification results for 3 job(s)",
       "body": "Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261124-203508-setup-build-apache-poi-s-poi-ooxml-at-bo: passed: 5 passed step(s) in 2m28s, peak 3.8 GiB (estimated 25m00s, 6.0 GiB) 20261124-203508-setup-build-eclipse-collections-at-both: passed: 5 passed step(s) in 2m15s, peak 1.9 GiB (estimated 40m00s, 5.0 GiB) 20261124-203513-setup-build-lucene-core-and-join-at-both: passed: 4 passed step(s) in 56.1s, peak 1.3 GiB (estimated 20m00s, 6.0 GiB) Collected by the watcher of the organic-pr-20-additional-cases-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "nplrnusztmvoquytklypsuxvywsonnxs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "29440dd8bc7a52a367a696d3b9ca01e5172959b7",
+      "immutable": true,
       "summary": "Record the watcher's decisions on organic-pr-20-additional-cases-setup",
       "body": "The watcher's verdicts on the single-agent run organic-pr-20-additional-cases-setup (llm-dlc/decisions/single-organic-pr-20-additional-cases-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "lpvzruvmnwlmkpuwumwkvxtrqwpmqmkk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "fb837cf5186c8eb2d2e272a50ab88995a65f61a2",
+      "immutable": true,
       "summary": "Record the setup jobs and resubmit the Calcite build (verification pending)",
       "body": "Three upstream-build jobs of the twenty-case setup passed. POI poi-ooxml (J05): TestXSSFHyperlink 30/30 on the fix, 26/26 on the parent, 5 failures with the fix's test on the parent. Lucene core and join (J14): the landed tests 7/7 and 4/4. Eclipse Collections (J17): 960 map tests pass in all four runs, a preservation case. Their jars and digests are in the record. The Calcite job (J12) failed at once because git-commit-id-plugin cannot read a worktree of the shallow mirror; it is resubmitted as 20261124-210513-setup-build-apache-calcite-core-at-both with the generate-git-id profile switched off on the command line (the plugin only writes build metadata), checked inline to get past the root project.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "msrxknqmyplmrvuqtuntywpkosvoonpk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0987e628ee0242ffdc2e107c3f3b684dcf0c9467",
+      "immutable": true,
       "summary": "Merge the single-agent run organic-pr-20-additional-cases-setup into the line",
       "body": "The single-agent run organic-pr-20-additional-cases-setup (session 9c1d1c59-e947-449f-97e1-6ebf7cc523bb) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "oynuuuszsvnmmttxlxvxwkzsrykpsvuv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "791803024cec8ea68c3b9ba0271c89a62707a039",
+      "immutable": true,
       "summary": "Put the setup notes of organic-pr-20-additional-cases into its brief",
       "body": "The setup run organic-pr-20-additional-cases-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases.md and ~/code/scripts/analysis/organic-java-pr-product-behaviour-20-additional-cases.md, for the domain agent.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "slylyqsusuvwywmxwnkluwkvsmmkslvr",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4e08bdd4a570462d9c8370f5a56677dae7d33a25",
+      "immutable": true,
       "summary": "Register jsoup clone and DOM histories (verification pending)",
       "body": "Begin the twenty-product campaign with the frozen application verifier. Bind both complete jsoup 2423 source builds and their runtime companion, register source, callback, late and ordinary tags and inspect two DOMs from one clone. Ten fresh JVMs matched the predicted parent elements, text, tag flags and callback counts. Both original JAR digests matched the setup record, all four affected test groups passed, and the job schema validated.\n\nJob 20261124-212606-qualify-cloned-jsoup-tag-behavior-at-the measures cold, warm and independent clean claims, original method invocations and same-path replacement, preserving each public receipt.",
       "log_sha256": "d9d03d9956457ec19f0b67664995b549c2ce2be497ce5e7139415c305b4480c8"
     },
     {
       "change_id": "wwzkqqztsnrwsxpxvlnltlwmppqyxqvk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "dd90babf2b503c1fcbc20f1c4077080fbb181483",
+      "immutable": true,
       "summary": "Transfer archived, restarted and retained histories (verification pending)",
       "body": "On the frozen jsoup verifier register the Zip4j file and directory boundaries, Parquet page-reuse and closed two-row-group files, Spring Batch reopened HSQLDB checkpoints, and the Eclipse Collections preservation-only optimization. Thirty-four fresh JVM histories matched independent predictions. The Parquet parent reproduced the lower-level corruption but both files decoded correctly. The original Spring Batch repository resumed different actual reader offsets. Both map versions matched the JDK reference across all 127 subsets in both insertion orders. All eight affected tests and schema validation passed.\n\nJobs 20261124-213727-transfer-the-frozen-jsoup-plan-to-zip4j, 20261124-213728-verify-parquet-pages-and-independently-r, 20261124-213728-recover-spring-batch-reader-offsets-from and 20261124-213728-check-all-collision-subsets-on-the-two-o retain each initial public plan and test repeat and relevant provider replacement against clean execution.",
       "log_sha256": "0760133b10628372d290b03a1daaa0b749f58f38af0946808e5222db3919b99f"
     },
     {
       "change_id": "qsxwoknxxuykokmsptxutqonkzorlrqt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f56a45b1122a3327ad1c66d452925dc75668e145",
+      "immutable": true,
       "summary": "Register ten product change comparisons (verification pending)",
       "body": "Register independent observations for CommonMark, JFreeChart, ical4j, POI, Commons Compress, SQLite JDBC, Kryo, H2, Calcite and Maven. Seventy-eight fresh JVMs matched the declared results, including three spreadsheet reopenings, both Linux JNI images, all TAR entry and payload digests, SQL spill and case-sensitive controls, and both pinned Calcite modules. Preserve the original TAR fixture hash and the archived linq4j reactor artifact at its original classpath position. All four affected test groups and schema validation passed.\n\nVerification jobs in case order: J01 20261124-214638-check-accessible-names-after-editing-the, J03 20261124-214639-check-paired-chart-axes-against-independ, J04 20261124-214639-expand-the-same-biweekly-invitation-acro, J05 20261124-214639-reopen-moved-spreadsheet-hyperlinks-and, J07 20261124-214640-classify-and-read-every-original-distrib, J09 20261124-214640-verify-empty-blobs-against-the-actually, J10 20261124-214641-read-the-exact-class-token-sequence-from, J11 20261124-214641-reopen-h2-spelling-multisets-after-exter, J12 20261124-214642-execute-mixed-sql-accumulators-on-both-p, J13 20261124-214642-resolve-maven-ranges-in-every-repository. Each measures the first frozen application plan, exact reuse, clean reference and real dependency replacement.",
       "log_sha256": "829cba038409c1c63b70f9443b16b67954d1769ba6570d281e032892a24f88cd"
     },
     {
       "change_id": "nkmklpyxwnuqsxupzpvxstxmtzoynrwk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "3b726ea7a5f8906b79559940de4d965c6e0296d1",
+      "immutable": true,
       "summary": "Register search, cache and telemetry histories (verification pending)",
       "body": "Complete the twenty case registrations. On original Lucene builds retain the refuted filter prediction as its own question: the fixed comparator counts every child in the block although only matching children supply values. Record graph aliasing under both assertion profiles, expiry callbacks and size maintenance, listener counts after repeated commands, and the actual percentile labels and values received by a local SignalFx protobuf receiver. Forty-eight fresh JVM histories checked all observations. A separate cumulative timer with no SignalFx classes predicted both gauge values. The affected test tier and job schema passed.\n\nVerification jobs: J14 20261124-215955-reopen-join-sorted-lucene-keys-and-test, J16 20261124-215956-check-rejected-graph-updates-through-bot, J18 20261124-215957-verify-jcache-expiry-callbacks-and-indep, J19 20261124-215957-check-circuit-breaker-command-results-an, J20 20261124-215958-read-emitted-signalfx-percentile-gauges. Collect all original successes, refutations and open dependencies with their independent clean runs.",
       "log_sha256": "9e81406608dd906e5ea459311b2a2c72267e3cccf622f60c9807e057e50feebe"
     },
     {
       "change_id": "mvntlnlxnxqoottxmvqszzuzksqktusm",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9e8e7260ffd87f91dd33d7c525fb3929d86142c3",
+      "immutable": true,
       "summary": "Qualify all twenty public change plans (verification pending)",
       "body": "On the frozen application verifier every public observer ran on both deployments. Of 43 finite questions, 42 were established and one Lucene filter-preservation hypothesis was refuted. All 85 histories and 340 cold qualified entries agreed with physical JVM trials. Warm runs reused 65 of 86 sides. All independent clean and same-path JAR replacement results agreed. The audit reproduced all 344 public receipt references and verified the 40 collector outputs from twenty passing jobs.\n\nAdd case-specific bytecode and live frame checks for CommonMark's image visitor, jsoup's cloned tag classification and Zip4j's singleton rename map. A bounded probe on each original public path applied two, two and six checked results respectively. The six original method qualifiers, six selected tests and job schema passed. Jobs 20261124-220444-consume-the-proved-jsoup-void-predicate, 20261124-220445-consume-the-zip4j-entry-selection-in-the, 20261124-220445-check-the-live-commonmark-image-visitor check full reference and substituted repetitions and withheld or stale premises.",
       "log_sha256": "22900f8b2da2c71ed6a3e387ad7b3a731c5c3241ddc1ed94c7e7bf5a9228873f"
     },
     {
       "change_id": "uyyzrtrtwnoyqttnvmvzvxnptppltosl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "9b4f5e917ccd48ec8736b32c8d3b5bcb1246e40e",
+      "immutable": true,
       "summary": "Bind checked summaries and cross-project controls (verification pending)",
       "body": "Record 128 live helper applications in the same CommonMark, jsoup and Zip4j public histories, with withheld-application and stale-code refusals. Compare 48 independent and paired chart-axis transitions, three locale profiles, untouched-sheet cache reuse, eight real Kryo streams and six one-parent Lucene readbacks. An excluded child with a real sort value still produced a null parent key on the fix. The first campaign report covers all twenty original decisions, the receipt audit verified 43 collector outputs and 344 references, and all 63 local links resolved.\n\nBind the disclosed release graphs for SQLite and Calcite and the complete parsed Maven operands. A capped Maven probe observed 55 bound events in the repaired range history. Generated Calcite code on the parent added only to its ordered field; the fix populated both. All six affected tests, independent JVM controls and schema validation passed. Jobs 20261124-221934-bind-the-two-release-pairs-to-the-actual and 20261124-221934-use-checked-maven-comparison-returns-in qualify the release pairs, generated accumulators and Maven public consumers.",
       "log_sha256": "cae5cd96503ca6c481daffb1e8badc47df103c1ddee0c3ee89382d2309b795f8"
     },
     {
       "change_id": "rvlkszuzmqymqpwynzpnnmywvlpxymno",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "be6a32f8a868acdc2421fb90343addde1625667e",
+      "immutable": true,
       "summary": "Complete the twenty-case product behaviour campaign",
       "body": "All twenty public observers ran on both registered deployments. Nineteen PRs reproduced a difference and Eclipse Collections preserved all collision subsets. The 43 frozen questions yielded 42 establishments and the Lucene counterexample, with 65 of 86 warm claim sides reused. The final report links each result and records the seven overlay scopes, the separate original-client comparisons and the remaining transfer limits.\n\nRecord all four actually loaded SQLite JNI library digests and the 16 Calcite Java programs captured in the queries that returned the rows. Eight substituted Maven histories consumed 296 checked comparisons during construction and selection. The original axis bytecode made 44 of 48 single-axis transitions eligible, and twelve Kryo streams distinguished complete token positions, the enum value and the constant-specific class token.\n\nAll 25 official jobs passed. Rechecked 46 collected output hashes, 344 archived receipt references, 104 original-source registration digests, the helper substitutions and controls, 40 deployment manifests and all 68 report links. The job schema passed, the shared freeze still matched, the final changed-test selector reported no additional tests, and the verification queue was empty.",
       "log_sha256": "9852f498f792c90ce602851f41de4b74416c951b59b766095742d19904f556bc"
+    },
+    {
+      "change_id": "nrmownksxvvzqvqxvyynqokoxspwnymt",
+      "commit_id": "30fa78329b26a20dabe5535458698391d1ec0032",
+      "immutable": true,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "ef4f9102eabcad84e2a0e2193d69ae42d22b0ad84a4c948f5444e81b47ecf684"
+    },
+    {
+      "change_id": "sqpxkwrtvsrqyryywsklolznmrnmtmyl",
+      "commit_id": "5fa86fa629c0dff8384604022360220739453106",
+      "immutable": true,
+      "summary": "Record the watcher's decisions on beyond-jbmc-scaffold-first-setup",
+      "body": "The watcher's verdicts on the single-agent run beyond-jbmc-scaffold-first-setup (llm-dlc/decisions/single-beyond-jbmc-scaffold-first-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "ef4f9102eabcad84e2a0e2193d69ae42d22b0ad84a4c948f5444e81b47ecf684"
+    },
+    {
+      "change_id": "pyqrpoztlnmuqyqzpmlotmymrvqyyyqy",
+      "commit_id": "f952391ee05ee3f091934a3a1ce40c758cd07cde",
+      "immutable": true,
+      "summary": "Put the setup notes of beyond-jbmc-scaffold-first into its brief",
+      "body": "The setup run beyond-jbmc-scaffold-first-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/beyond-jbmc-java-change-verification-campaign.md and ~/code/in-the-loop/llm-dlc/loops/beyond-jbmc-java-change-verification-campaign.md, for the domain agent.",
+      "log_sha256": "ef4f9102eabcad84e2a0e2193d69ae42d22b0ad84a4c948f5444e81b47ecf684"
+    },
+    {
+      "change_id": "zqqqmzvmxwsuvwrylmrowwprlqnpwvym",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Register original-loader panel scaffolds (verification pending)",
+      "body": "All sixteen disclosed public callers were compiled to their locked class digest. Each of 54 input histories ran on each original deployment through the ordinary application loader and a separate resource-recording loader before solving. The receipts bind startup, class origins, resource lookups, ordered providers, expected results, controls and the point where the frozen automatic scaffolding stopped. Batik opened its parser properties and service registrations. The dom4j factory loaded in its original namespace. All 30 affected test groups passed.\n\nFive jobs remeasure the unchanged automatic selector with the successor checker and the original signed packets. Both calibration JARs were reconstructed byte for byte, all 64 frozen candidate records passed the comparator cross-check, and job schemas validated. Jobs 20261124-230538-remeasure-the-frozen-automatic-callers-0, 20261124-230549-05-08-repeat-of-the-frozen-automatic-cal, 20261124-230549-09-12-repeat-of-the-frozen-automatic-cal, 20261124-230549-13-16-repeat-of-the-frozen-automatic-cal and 20261124-230549-calibration-repeat-of-the-frozen-automat.",
+      "log_sha256": "ef4f9102eabcad84e2a0e2193d69ae42d22b0ad84a4c948f5444e81b47ecf684"
+    },
+    {
+      "change_id": "mxwvunkumqlotkxruyunsqwxystotyzn",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Bind local manifest lookups to public proofs (verification pending)",
+      "body": "Eleven of sixteen disclosed release pairs qualified both finite questions on the original application verifier. The remaining five reached the correct production methods but declared local manifest JARs that were absent. Bind those negative lookups to the selected launch and cache, defer cache writes until they are rechecked, and keep additional or reordered providers open. A signed declaration may revisit an already bound JAR or the immediate next explicit provider. Batik now qualifies all eight entries in its two-width gradient claim in a capped probe. All 49 affected test groups and the test inventory passed.\n\nRecheck cold, warm, clean and wrong expectations on the six original XML and manifest-bearing release pairs. Also insert a real resource at a formerly missing path, explicitly bind it, and restore the original graph. Jobs 20261124-232633-manifest-bound-public-entries-for-slot-0, 20261124-232649-04-manifest-bound-release-and-negative-c, 20261124-232650-08-manifest-bound-release-and-negative-c, 20261124-232650-10-manifest-bound-release-and-negative-c, 20261124-232650-13-manifest-bound-release-and-negative-c, 20261124-232650-16-manifest-bound-release-and-negative-c and 20261124-232650-appearance-manifest-bound-release-and-ne.",
+      "log_sha256": "fdab8911950fdb1c15bd5481964c4bbb9fcd18592fde8733990250e5a3a4c6b6"
+    },
+    {
+      "change_id": "rnnryovslwvzwwxuknoqmrmnrwtmxyny",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Discover public resource lookup workflows (verification pending)",
+      "body": "Give the generator two ordered release graphs and a JDK. It finds public methods that enumerate class-loader resources, derives the marker-specific keys from both original releases, registers line, type and duplicate expectations, and builds independent resource roots and controls. An isolated 16-packet pass found the previously unreachable annotation-index primary and a separate Batik service iterator. All 60 populated original JVM trials matched. The scoped method stops are recorded for the other fourteen projects. All 58 affected groups, compiling all four original comparator adapters, the inventory and job schema passed.\n\nSix original application plans now agree cold, warm and clean and reject the wrong primary. Together the 16 pairs establish all 32 registered finite observations at the declared sample bounds. The manifest appearance control went from 0 to 82, refused an unbound provider and refuted preservation once explicitly bound. An audit checked 72 collected file digests, 40 plans and the registered source. The successor selector and JDK are pinned. The displaced-candidate fallback was independently qualified in a neutral namespace.\n\nJobs 20261124-234006-04-qualify-generated-resource-workflows, 20261124-234007-15-qualify-generated-resource-workflows, 20261124-234007-04-old-compare-the-generated-resource-co, 20261124-234007-04-new-compare-the-generated-resource-co, 20261124-234007-15-old-compare-the-generated-resource-co and 20261124-234007-15-new-compare-the-generated-resource-co verify the generated histories and matched three-engine controls. Jobs 20261124-234007-01-04-remeasure-the-original-matched-nat, 20261124-234007-05-08-remeasure-the-original-matched-nat, 20261124-234007-09-12-remeasure-the-original-matched-nat and 20261124-234007-13-16-remeasure-the-original-matched-nat repeat the blind references with the fixed native checker. Job 20261124-232650-13-16-recover-all-original-selections-af preserves newly ranked candidates and replays each displaced original.",
+      "log_sha256": "c99b6404f763e01132d529e89ab424db35711d1c7eba1235cef7abaacd836d77"
+    },
+    {
+      "change_id": "mussvytpqsnnnzkypyqxkxlzpqsqpktm",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Isolate native resource proofs and JVM replays (verification pending)",
+      "body": "The previous checker proved a false equivalence for resource bytes 65 and 66. On an independently registered compensating reader it also reported and confirmed a false JVM counterexample of 66 versus 65 although both originals returned 65. Strict native now keeps release-owned loader identities, resolves nested keys on the ordered original graphs, binds virtual resource lookups into the cache, and replays public static integral differences on separate unmodified JVMs. An arbitrary paired-postcondition witness without an original replay remains open. The two original errors, bytecode, classes, JARs and ordinary JVM values are retained.\n\nThe corrected ordinary witness returned 65 and 66 and the compensating equality verified. The indexer transfer gave 112 and 113 and the public index consumer observed the expected class names. The JDK 21 cache regression accepted an unchanged hit and rejected an old proof after a same-path JAR changed. All 56 affected groups passed. Both selected JDK 21 regressions passed after correcting an obsolete nested-reflection expectation that the pre-repair binary already proved. The earlier finite measurement audit checked 204 collector outputs, 40 public plans, 68 original automatic or calibration candidates and all 16 full matched references.\n\nThe separate prospective pool comprises 85 pairs in 48 new projects. Keep the seed and private screening journal. Thirteen of 18 candidates had a common executable public API and all 26 corresponding signed JARs were verified. No fresh question has been scored. Also check lowercase manifest lookup and both original context-loader return orders. Job 20261124-235933-verify-alternate-manifest-spelling-on-re.\n\nNative jobs 20261125-002306-native-resource-plain-witnesses-on-unmod, 20261125-002306-native-resource-index-witnesses-on-unmod, 20261125-002306-plain-compare-original-scalar-resource-p, 20261125-002307-index-compare-original-scalar-resource-p and 20261125-002307-resource-repair-repeat-the-exact-187-nat cover physical witnesses, stock reach controls and the 187 historical rows. Matched and original automatic jobs 20261125-002307-01-04-native-resource-repair-matched-rel, 20261125-002307-01-04-native-resource-repair-frozen-auto, 20261125-002307-05-08-native-resource-repair-matched-rel, 20261125-002307-05-08-native-resource-repair-frozen-auto, 20261125-002308-09-12-native-resource-repair-matched-rel, 20261125-002308-09-12-native-resource-repair-frozen-auto, 20261125-002308-13-16-native-resource-repair-matched-rel and 20261125-002308-13-16-native-resource-repair-frozen-auto remeasure the panel and calibration on this binary.",
+      "log_sha256": "99fe0e2cdf3285edd3625adc9531fa1b3c7ffb2b9bf785e5ff05262a60062347"
+    },
+    {
+      "change_id": "szsmspqwxszxowtlkqwmpwtxmlmknmro",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Close the original resource namespace comparison",
+      "body": "The repaired native checker retained all 187 historical outcomes, with 94 proofs, 85 reproduced refutations, eight open claims and agreement on all 25 JVM references. Remeasurement covered four calibration witnesses, all 64 frozen generated candidates and the 16 supplied public questions. The false Sisu difference became equality. ISCWT and Cactoos closed on their full domains. The 32 finite primary and control decisions and the original 0/16 cold discovery rate are reported separately.\n\nOn eight scalar resource predicates, strict native qualified all eight, staged JBMC qualified four and stock JBMC qualified none. Separate original JVMs confirmed both opposed resource regressions and their annotation-indexer transfer. Cache controls cover cold, warm, clean, newly present, explicitly bound and restored providers. Arbitrary paired witness replay and prospective intake remain open. Job 20261125-002307-09-12-native-resource-repair-matched-rel reran the supplied release questions for slots 09–12.\n\nOf 43 registered jobs, 42 passed. The initial failed reranking has a passing replacement covering the exact original candidates. All 43 were collected. The audit recomputed 372 output digests and the recorded bytes matched their Git blobs. The pinned JDK 21 regressions, both inventories and all nine final affected-test groups passed, including 59 Rust test binaries.",
+      "log_sha256": "e8c0d66133dd6e87f006a7ac8e590704add4deda321d35cdf689626b100c3933"
+    },
+    {
+      "change_id": "kzrxvnmszurzpmsssqppxxlvnytyprrs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Seal the successor panel of sixteen new Java projects",
+      "body": "Resume the precommitted population, seed and selection policy. Of 21 screened release pairs, 16 across 16 projects passed binary inspection, four per stratum. Five lacked a common executable public API. Verify the 32 selected release JARs and the selection, screening, seed and population digests before recording any caller, solver result or project identity. Recover every frozen selector file from c7f217fe2b19 and match the exact original checker a03d514a66aa and the pinned JDK. The changed-test selector reports no applicable tests for the two evidence files.",
+      "log_sha256": "1cf619e4632afb711a8c764f797cfcd80daf43adb999388d0955d65a8267412f"
+    },
+    {
+      "change_id": "ryutqmumrrssrrpmnxrtxwonpzrmvopl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Register sixteen successor upgrade questions (verification pending)",
+      "body": "Recover all 32 signed upstream source archives and bind each consumer, expected result and unchanged control before proof. Thirteen of sixteen consumers reached both binary releases through the normal and recording loaders. Across 38 registered samples, eleven primary observations changed in eight projects and all controls held. Record the first compilation or startup stop and earlier attempts for each case. Three release graphs still need exact providers. The DSI numeric and JetBrains linkage controls also passed in the isolated matched harness including the inverse. All 59 selected Rust test binaries and 110 Python performance tests passed. The ten job specifications validated.\n\nArtifact-only and resource selectors use the previously frozen bytes and JDK. The matched jobs give the three engines the same original-deployment conjuncts. Jobs 20261125-035909-successor-automatic-java-upgrades-01-02, 20261125-035909-successor-automatic-java-upgrades-05-06, 20261125-035909-successor-automatic-java-upgrades-09-10, 20261125-035909-successor-automatic-java-upgrades-12-13, 20261125-035909-successor-automatic-java-upgrades-14-15, 20261125-035910-successor-matched-java-upgrades-01-02-04, 20261125-035910-successor-matched-java-upgrades-05-06-07, 20261125-035910-successor-matched-java-upgrades-09-10-11, 20261125-035910-successor-matched-java-upgrades-12-13 and 20261125-035910-successor-matched-java-upgrades-14-15 cover every caller that passed the original launch controls.",
+      "log_sha256": "68ff61f4ff7966d6f91506761ff8870245fbd6ba7eee84e6d89b926edf6389a0"
+    },
+    {
+      "change_id": "lxltskmmpmwlsokzryzqktvoovyosrqw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Start automatic comparisons in a new study (verification pending)",
+      "body": "Create the study directory hierarchy before taking the first-attempt lock. All five initial automatic submissions failed before inspecting any candidate. A local regression check started on an absent parent, returned the same report and archived output on resume, and launched the operator only once. The five replacement job schemas passed validation and retain every original input and bound.\n\nJobs 20261125-040903-start-frozen-successor-selectors-for-01, 20261125-040903-start-frozen-successor-selectors-for-05, 20261125-040903-start-frozen-successor-selectors-for-09, 20261125-040903-start-frozen-successor-selectors-for-12 and 20261125-040903-start-frozen-successor-selectors-for-14 cover the thirteen preregistered projects.",
+      "log_sha256": "db4754ce5f94fcc97e31fdf3d9073c484250de601c7fed7918e6b2c585e1ac52"
+    },
+    {
+      "change_id": "ssswtnxkxkpvyvrpzmkpkxmuwkmzpkwk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay scalar resource postconditions on originals (verification pending)",
+      "body": "Run both public static integral methods on their unmodified deployments. Check the stated assumption, intended-change guard and scalar result predicate on the concrete operands. A confirmed paired counterexample now reports both original typed calls and return values. A predicate the replay cannot evaluate stays open. Register six statements apiece on five deployments before solving, including the annotation-indexer consumer and an unchanged dom4j lookup.\n\nA capped annotation-indexer probe reproduced 112 versus 113 with the selected key. A separate scoped inequality refuted on minus one versus minus one, demonstrating why simple output inequality would give the wrong conclusion. The wide arithmetic and exclusion regression, cost inventory, all 31 affected test groups and 59 Rust test binaries passed. Jobs 20261125-041954-check-original-scalar-postconditions-on and 20261125-042009-replay-context-and-released-index-resour cover the 30 statements. Job 20261125-042009-refresh-187-claims-after-original-predic checks all 187 historical IDs.",
+      "log_sha256": "4705423316b90ccad9099f374d648481560c07077f85a8751a72e125121c6d73"
+    },
+    {
+      "change_id": "ulltmnvztptmnwkknkrwowpzmlpkmpot",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Recover signed integer codecs from JARs (verification pending)",
+      "body": "Complete the production discovery entry point introduced with the previous checker commit. Pair public int-to-int encoders and decoders by instruction boundaries without project or method names. Register the signed decoding oracle, unchanged inverse, full-bit hypothesis, exact bytecode and JVM profile before executing a populated caller. The selector found the DSI upgrade primary missed by the frozen workflow and transferred independently to Lucene and Protobuf. All six original deployments passed ten positive boundary samples each. The separate negative probes distinguished DSI arithmetic shift from unsigned shift. A broken encoder still decoded zero correctly and failed its round trip, so it received no solver run. All 31 discovery files matched an independent repeat, all 49 affected test groups passed, and the test inventory and job schemas validated.\n\nJobs 20261125-044013-dsi-utilities-old-generated-integer-code, 20261125-044014-dsi-utilities-new-generated-integer-code, 20261125-044014-lucene-bitutil-old-generated-integer-cod, 20261125-044014-lucene-bitutil-new-generated-integer-cod, 20261125-044014-protobuf-wire-old-generated-integer-code and 20261125-044014-protobuf-wire-new-generated-integer-code compare every generated predicate on the original classpaths across the three engines.",
+      "log_sha256": "28c47c8a04cba46e99bc32ccc65f1c5d9e5043fb55a447e3c204db5c671493c2"
+    },
+    {
+      "change_id": "sxxuozwnswykwwuowukmkmtvmuowzzun",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Measure the signed successor panel (verification pending)",
+      "body": "The frozen selectors tried 44 generated callers in 13 new projects. They reached a public operation in both originals in 11 projects, agreed on all 41 cold and warm judgments, and decided zero registered primaries. With the supplied callers native proved the DSI nonnegative decoding and the ISO Parser eight-bit field contracts. Stock JBMC qualified DSI alone and integrated JBMC qualified neither. Preserve all 143 output digests, individual solver and scaffolding stops, and the five superseded pre-launch failures. The original 16-project denominator remains visible.\n\nAll three remaining release pairs passed all four original JVM launches twice under the separately pinned Maven dependency graphs. Four source-bound jobs measure these alternatives without counting them in the signed-distribution score: 20261125-044522-maven-supplement-03-automatic-original-u, 20261125-044522-maven-supplement-03-matched-original-upg, 20261125-044522-maven-supplement-08-matched-original-upg and 20261125-044522-maven-supplement-16-matched-original-upg. The complete draw reproduced byte for byte offline from the committed seed, population and journal.\n\nThe repaired native binary proved 17 of the 30 registered scalar resource predicates and reproduced the 13 refutations on the original deployments. It preserved all 187 historical dispositions and agreed with all 25 independent JVM observations. The evidence audit recomputed the source bindings and 12 resource and historical outputs. All 16 final affected test groups and 59 Rust test binaries passed, and the job inventory validated.",
+      "log_sha256": "5470917d0419d8ba270b4289ce6a5e34549185ec51ffb62d260b95af0d5c152b"
+    },
+    {
+      "change_id": "qrqnsllttvsomnnpvuqpuqswlkpnvzsv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Qualify the generated signed integer comparisons",
+      "body": "Native and stock proved the generated alternating-sign decoder on all six original DSI, Lucene and Protobuf deployments. Native qualified 22 of the 24 primary, round-trip, inverse and full-bit statements, integrated JBMC 15 and stock 24. Both DSI releases refuted the full-bit hypothesis on a reproduced original input. Repeating the signed consumer in normal and recording JDK 21 loaders retained all observations and bound both public methods to the selected primary JAR. All six jobs passed and all 12 output digests and source registrations were checked.\n\nBoth native Protobuf round trips stopped during CodedOutputStream initialization. An independent original-JVM registration checked both complete release graphs, 22 boundary inputs and the W06 width oracles after initialization. Capped probes on the new round trip and the older unsigned-int sizing method identified the unobserved UnsafeUtil.UNSAFE dependency state. All 20 affected test groups passed. One JBMC process-exit stand-in failed once, passed the harness retry and passed three isolated repeats. The test inventory and whitespace checks passed.",
+      "log_sha256": "ef011116bfc665ea66f6aaf78850ac8a2607698fcfca9fcbca6067c15c381c7a"
+    },
+    {
+      "change_id": "nrkykyurvwnwnwrxwxmylmzokppzvvlq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Close the successor comparisons on all measured deployments",
+      "body": "All sixteen application pairs have source-backed questions and unchanged controls exercised on both original JARs. Thirteen used the recorded Ubuntu distribution providers. The other three used separately pinned Maven providers after the exact dependency acquisitions reached the task budget. Fifteen of 44 primary observations changed and all 44 controls held. On the additional three deployments the frozen automatic operators decided zero primaries, and each matched symbolic engine left all three open. Keep these results apart from the signed 0/13 automatic and 2/13 native matched scores. The twelve outstanding signed provider filenames, versions and digests are listed for the next intake.\n\nThe DSI and ISO Parser proofs remain the two supplied signed-distribution primaries. Stock JBMC qualified DSI alone. The final scorecard binds every measurement to its earlier public caller and original job, reports project-level uncertainty and retains the first failed submissions. All 28 campaign jobs were collected, 23 passed and the five pre-launch failures have passing replacements. The three audits checked 200 distinct output files and 154 local report links resolved.\n\nThe final changed-test selector passed 14 of its 15 groups on the first run, including all 59 Rust test binaries. The trace-span assertion failed in that combined run, passed individually, and its full 110-test file then passed in isolation. The previous nine-group selector passed, the pipeline and cost inventories validated, and whitespace checks passed.",
+      "log_sha256": "e66fbef3ff6567e624d0dc68c4966ed8721578f558ffd4a49f4810d5e2e70aec"
     }
   ],
   "logs": {
@@ -1137,6 +1352,12 @@
       "gzip_bytes": 4185696,
       "url": null
     },
+    "1cf619e4632afb711a8c764f797cfcd80daf43adb999388d0955d65a8267412f": {
+      "bytes": 49183236,
+      "lines": 26270,
+      "gzip_bytes": 8953030,
+      "url": null
+    },
     "2161ce8b68985f75848749d3b22059679a2359e55b3f481deac1507356d313fb": {
       "bytes": 33855933,
       "lines": 18667,
@@ -1153,6 +1374,12 @@
       "bytes": 23707952,
       "lines": 12958,
       "gzip_bytes": 4231245,
+      "url": null
+    },
+    "28c47c8a04cba46e99bc32ccc65f1c5d9e5043fb55a447e3c204db5c671493c2": {
+      "bytes": 51815026,
+      "lines": 27732,
+      "gzip_bytes": 9346426,
       "url": null
     },
     "2a59293ec3e1cc387bec5859b7d626891e17789604731507680f334f01f62716": {
@@ -1209,6 +1436,12 @@
       "gzip_bytes": 6167378,
       "url": null
     },
+    "4705423316b90ccad9099f374d648481560c07077f85a8751a72e125121c6d73": {
+      "bytes": 51305438,
+      "lines": 27376,
+      "gzip_bytes": 9274020,
+      "url": null
+    },
     "4781ad79d6234e37ad2e7fb125d5386a399482ac6e5e13eaf81aff4c42eac5c6": {
       "bytes": 4506926,
       "lines": 2066,
@@ -1239,6 +1472,12 @@
       "gzip_bytes": 6095260,
       "url": null
     },
+    "5470917d0419d8ba270b4289ce6a5e34549185ec51ffb62d260b95af0d5c152b": {
+      "bytes": 52048773,
+      "lines": 27886,
+      "gzip_bytes": 9383052,
+      "url": null
+    },
     "55f27a906af324f924cf3a5090fa0852dd3dbf1396e9b78c02110e65b036842f": {
       "bytes": 19327612,
       "lines": 10286,
@@ -1261,6 +1500,12 @@
       "bytes": 31421328,
       "lines": 17470,
       "gzip_bytes": 5576316,
+      "url": null
+    },
+    "68ff61f4ff7966d6f91506761ff8870245fbd6ba7eee84e6d89b926edf6389a0": {
+      "bytes": 49998203,
+      "lines": 26653,
+      "gzip_bytes": 9084192,
       "url": null
     },
     "6a30f77b02d19b3a8cff59ae96a281990dda9148ffc2f58418aeb65209aa0f8f": {
@@ -1341,6 +1586,12 @@
       "gzip_bytes": 827312,
       "url": null
     },
+    "99fe0e2cdf3285edd3625adc9531fa1b3c7ffb2b9bf785e5ff05262a60062347": {
+      "bytes": 46139562,
+      "lines": 25120,
+      "gzip_bytes": 8297890,
+      "url": null
+    },
     "9e81406608dd906e5ea459311b2a2c72267e3cccf622f60c9807e057e50feebe": {
       "bytes": 38764538,
       "lines": 21072,
@@ -1401,6 +1652,12 @@
       "gzip_bytes": 4131422,
       "url": null
     },
+    "c99b6404f763e01132d529e89ab424db35711d1c7eba1235cef7abaacd836d77": {
+      "bytes": 44157696,
+      "lines": 23884,
+      "gzip_bytes": 7961431,
+      "url": null
+    },
     "cae5cd96503ca6c481daffb1e8badc47df103c1ddee0c3ee89382d2309b795f8": {
       "bytes": 39537982,
       "lines": 21574,
@@ -1411,6 +1668,12 @@
       "bytes": 37321622,
       "lines": 20370,
       "gzip_bytes": 6708754,
+      "url": null
+    },
+    "db4754ce5f94fcc97e31fdf3d9073c484250de601c7fed7918e6b2c585e1ac52": {
+      "bytes": 50474375,
+      "lines": 26865,
+      "gzip_bytes": 9156732,
       "url": null
     },
     "de55f3820b1902e120fc50e0af2841d445e8295f295773289f0a94513154c348": {
@@ -1429,6 +1692,30 @@
       "bytes": 20059579,
       "lines": 10979,
       "gzip_bytes": 3573788,
+      "url": null
+    },
+    "e66fbef3ff6567e624d0dc68c4966ed8721578f558ffd4a49f4810d5e2e70aec": {
+      "bytes": 53408939,
+      "lines": 29053,
+      "gzip_bytes": 9594494,
+      "url": null
+    },
+    "e8c0d66133dd6e87f006a7ac8e590704add4deda321d35cdf689626b100c3933": {
+      "bytes": 47220528,
+      "lines": 25741,
+      "gzip_bytes": 8515751,
+      "url": null
+    },
+    "ef011116bfc665ea66f6aaf78850ac8a2607698fcfca9fcbca6067c15c381c7a": {
+      "bytes": 52717664,
+      "lines": 28409,
+      "gzip_bytes": 9480114,
+      "url": null
+    },
+    "ef4f9102eabcad84e2a0e2193d69ae42d22b0ad84a4c948f5444e81b47ecf684": {
+      "bytes": 42356763,
+      "lines": 22675,
+      "gzip_bytes": 7653977,
       "url": null
     },
     "f02a9f4cd9336044ed39ce730be5610c1ac5fbcac7787369ab404fa7dd4d6518": {
@@ -1453,6 +1740,12 @@
       "bytes": 24388795,
       "lines": 13426,
       "gzip_bytes": 4319907,
+      "url": null
+    },
+    "fdab8911950fdb1c15bd5481964c4bbb9fcd18592fde8733990250e5a3a4c6b6": {
+      "bytes": 43318098,
+      "lines": 23278,
+      "gzip_bytes": 7821271,
       "url": null
     },
     "fdde87d5460836cbbb965bbb33b041d722ff8196aaf9064acf30e3ddc5678a0f": {

@@ -143,6 +143,53 @@ fn a_cached_class_lookup_cannot_hide_a_newly_available_class() {
     }
 }
 
+#[test]
+fn original_loaders_keep_resource_bytes_and_cache_keys_separate() {
+    jvmcontract::tool_tier!();
+    // The local JAR handler contract is qualified on this exact image.
+    let version = Command::new("java").arg("-version").output().unwrap();
+    if !String::from_utf8_lossy(&version.stderr).contains("Temurin-21.0.13+9") { return; }
+    let source = r#"package loader;
+        public class Gate {
+            public static int read(boolean selected) throws Exception {
+                String key = selected ? "META-INF/services/paint$Marker" : "META-INF/absent";
+                var hits = Gate.class.getClassLoader().getResources(key);
+                if (!hits.hasMoreElements()) return -1;
+                try (var input = hits.nextElement().openStream()) { return input.read(); }
+            }
+            public static void main(String[] args) throws Exception {System.out.println(read(false) + "," + read(true));}
+        }"#;
+    let before = compile("original-loader-old", &[("loader/Gate.java", source.into())]);
+    let after = compile("original-loader-new", &[("loader/Gate.java", source.replace("return input.read();", "return input.read() & 255;"))]);
+    let resource = |classes: &Path, byte: u8| {
+        let root = classes.parent().unwrap();
+        let key = "META-INF/services/paint$Marker";
+        std::fs::create_dir_all(root.join("META-INF/services")).unwrap();
+        std::fs::write(root.join(key), [byte]).unwrap();
+        let jar = root.join("palette.jar");
+        assert!(Command::new("jar").arg("cf").arg(&jar).arg("-C").arg(root).arg(key).status().unwrap().success());
+        jar
+    };
+    let old_jar = resource(&before, 65);
+    let new_jar = resource(&after, 65);
+    let mut o = options("original-loader-resources", &before, &after, "loader.Gate#read");
+    o.before_classpath = Some(vec![old_jar.clone()]);
+    o.classpath = vec![new_jar.clone()];
+    o.cache = Some(before.parent().unwrap().join("proof-cache"));
+    assert_eq!(equivalence::run(&o).unwrap().verdict, Verdict::Verified);
+    assert!(matches!(equivalence::run(&o).unwrap().reuse, Some(Reuse::Exact { .. })));
+    resource(&after, 66);
+    let changed = equivalence::run(&o).unwrap();
+    assert_eq!(changed.verdict, Verdict::Violation, "{}", changed.output);
+    assert!(changed.reuse.is_none());
+    for (classes, jar, output) in [(&before, old_jar, "-1,65"), (&after, new_jar, "-1,66")] {
+        let cp = std::env::join_paths([classes.as_path(), jar.as_path()]).unwrap();
+        let jvm = Command::new("java").args(["-XX:-UsePerfData", "-cp"]).arg(cp).arg("loader.Gate").output().unwrap();
+        assert!(jvm.status.success());
+        assert_eq!(String::from_utf8(jvm.stdout).unwrap().trim(), output);
+    }
+}
+
 fn prove(name: &str, classes: &Path, target: &str, assume: Option<&str>, assert: &str) -> property::Outcome {
     let mut options = property::Options::new(&[classes.to_path_buf()], target);
     options.engine = jvmcontract::Engine::Native;

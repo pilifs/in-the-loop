@@ -1,0 +1,138 @@
+{
+ "slot": "14",
+ "artifact": "libauto64fto32f-java",
+ "callerJarSha256": "f6e39ccdfb88fe45de1888b3c6fd8312a63834e039e5c633f04cade5c10e5cf2",
+ "probeSha256": "c9392036660fca7cdc5071e2118c4915e69ea7b8992602dc4a5180afaedb4470",
+ "scaffoldSha256": "d8e8c2653ecba0ce001767c24f085f408d0db3c623a1cd5026e5e33eb7cb166e",
+ "referenceSha256": "4f37b9069898354d778f07ee717e206dfda8c35a254450bb3ba34677c64f0c12",
+ "deployments": {
+  "old": {
+   "releaseDebSha256": "a6c5c353497b60d66dbd16070d1986c6edc4e2db686752ca2929533f7f3b5022",
+   "sourceFiles": [
+    [
+     "e922829a4a94e3bb163ed9558c965aeeafb2e2f2597c1a44db07e9a8535236c7",
+     "2046",
+     "auto64fto32f_1.4+ds-2.dsc"
+    ],
+    [
+     "33a73205d6d7deccf53956f40ced8194023bd97d0f54ba7167172d762354bef7",
+     "7884",
+     "auto64fto32f_1.4+ds.orig.tar.xz"
+    ],
+    [
+     "dedf5ecce3c5ab742a6ccc7fa6be66cb979270545faaeb4522796fb638f2a505",
+     "2976",
+     "auto64fto32f_1.4+ds-2.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.peterabeles.auto64fto32f.ConvertFile32From64#process(Ljava/io/File;Ljava/io/File;)V": "c732ad4383717082285ced0ca9d084afe676254d12e2ac8e5ac70cde6a1594f4"
+   },
+   "orderedClasspathSha256": [
+    "786ca25b1a9f485d3b9b251796cc322bafbc522cc61b540c05a572e936337d21"
+   ]
+  },
+  "new": {
+   "releaseDebSha256": "2350798e9590242f48bbd2f41ff16568edf91d617c8caf810284aec4d745bea6",
+   "sourceFiles": [
+    [
+     "53a233b784e4e11d8d4f6dbd670c957c8e03f4db29f48fa85ca784b0d4ce33f6",
+     "2039",
+     "auto64fto32f_2.1+ds-1.dsc"
+    ],
+    [
+     "3e230842b4795369f6489285af3759c4af666c88fce974105239f86a3aab417a",
+     "10752",
+     "auto64fto32f_2.1+ds.orig.tar.xz"
+    ],
+    [
+     "66acc1fb43331ec24320497ed46da530231a8176fbee39b2c1183b2d1d79321e",
+     "2472",
+     "auto64fto32f_2.1+ds-1.debian.tar.xz"
+    ]
+   ],
+   "declaringClasses": {
+    "com.peterabeles.auto64fto32f.ConvertFile32From64#process(Ljava/io/File;Ljava/io/File;)V": "5abf60e415a369b1c94c557bd02fec9076a16b7bd9c8b4e670b166465abded63"
+   },
+   "orderedClasspathSha256": [
+    "90751df565627c95aa202b4a9c3e6288f04ee9f043b944404efd9b52a2172db9"
+   ]
+  }
+ },
+ "questions": [
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.peterabeles.auto64fto32f.ConvertFile32From64#process(Ljava/io/File;Ljava/io/File;)V",
+    "invocationVia": "ReferenceAPI#primary(I)J",
+    "observer": "Do the default 64-to-32 Java rewrites change a double declaration and decimal literal to a float while preserving an unrelated integer declaration?",
+    "basis": "Two valid source snippets with different decimal literals, processed as local temporary files in the isolated JVM.",
+    "cases": [
+     {
+      "args": [
+       "primary",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "primary",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  },
+  {
+   "scope": {
+    "probeClass": "UpgradeProbe",
+    "entry": "com.peterabeles.auto64fto32f.ConvertFile32From64#process(Ljava/io/File;Ljava/io/File;)V",
+    "invocationVia": "ReferenceAPI#control(I)J",
+    "observer": "The same converter keeps the input file byte-for-byte intact.",
+    "basis": "Two valid source snippets with different decimal literals, processed as local temporary files in the isolated JVM.",
+    "cases": [
+     {
+      "args": [
+       "control",
+       "0"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     },
+     {
+      "args": [
+       "control",
+       "1"
+      ],
+      "expected": {
+       "return": "1"
+      }
+     }
+    ]
+   },
+   "intent": "preserve"
+  }
+ ],
+ "oracle": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "domain": [
+  0,
+  1
+ ],
+ "inputs": [
+  0,
+  1
+ ],
+ "fullRegisteredDomain": true
+}

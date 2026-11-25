@@ -1,0 +1,176 @@
+{
+  "phase": "Before the native resource-namespace repair",
+  "checkerSha256": "a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46",
+  "registered": {
+    "old": {
+      "class": "9abdb280a8ffc1ca21b4d5ca379cd75892515d0be5b3b82f82dec98941bb620f",
+      "jar": "8b9b5e871dd0ba9fe0f9467b5b080e982ca0e09d4217b7cfc92f8fedaee3744b",
+      "original": "-1,65"
+    },
+    "new": {
+      "class": "513cf4b2777535b37457a9f7deb6e7ab632577eebcb59b1279c759cff7f20b50",
+      "jar": "29d9ead29e9bf2e75a40c8042929330e684f0c39408a5bbcc20b8b55df742d2c",
+      "original": "-1,66"
+    }
+  },
+  "result": {
+    "wire_version": 1,
+    "verdict": "verified",
+    "target": "PairResourceGate#read",
+    "domain": "select: boolean",
+    "counterexample": null,
+    "proof": "jvmcontract's own checker (CaDiCaL): 1 properties proved over select: boolean in 0.0 s; loops unwound 16 times with unwinding assertions",
+    "problem": null,
+    "statement": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/ordinary-resource-pair/probe/harness/EquivalenceHarness.java",
+    "findings": [],
+    "output": "\u2713 PairResourceGate#read behaves as before on every input (jvmcontract's own checker (CaDiCaL): 1 properties proved over select: boolean in 0.0 s; loops unwound 16 times with unwinding assertions)\n",
+    "work": "/home/filip/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/ordinary-resource-pair/probe",
+    "search": {
+      "engine": "native",
+      "checker": "jvmcontract's own checker (CaDiCaL)",
+      "seconds": 0.017118262,
+      "properties": 1,
+      "unwind": 16,
+      "max_array_length": 8,
+      "stage": null,
+      "native": {
+        "paths": 2,
+        "merges": 0,
+        "solver_calls": 1,
+        "solving_seconds": 2.0589e-05,
+        "gates_evaluated": 1,
+        "evaluating_seconds": 1.923e-06,
+        "divisions": 0,
+        "divisions_built": 0,
+        "multiplications": 0,
+        "multiplications_built": 0,
+        "variables": 2,
+        "clauses": 1,
+        "seconds": 0.015272392,
+        "loading_seconds": 0.00079441,
+        "decoding_seconds": 8.6051e-05,
+        "encoding_seconds": 5.081e-06,
+        "witness_seconds": 0.0,
+        "assumed": [
+          "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are []",
+          "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/paint resources (classpath index and entry SHA-256) are [3:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c]"
+        ]
+      },
+      "gap_mode": "strict",
+      "deadline_seconds": 120.0,
+      "runs": [
+        {
+          "checker": "native",
+          "purpose": "proof",
+          "stage": null,
+          "budget_seconds": 120.0,
+          "seconds": 0.015,
+          "ended": "verified",
+          "ending": "verified",
+          "phases": {
+            "loading": 0.001,
+            "lowering": 0.0,
+            "symbolic": 0.014,
+            "encoding": 0.0,
+            "solving": 0.0,
+            "trace": 0.0,
+            "other": 0.0
+          },
+          "formula": {
+            "variables": 2,
+            "clauses": 1
+          }
+        }
+      ],
+      "phases": {
+        "seconds": 0.045,
+        "setup": 0.001,
+        "harness": 0.0,
+        "gaps": 0.0,
+        "contracts": 0.0,
+        "runs": 0.015,
+        "replay": 0.0,
+        "jvm": 0.0,
+        "other": 0.029
+      }
+    },
+    "stated": {
+      "kind": "regression",
+      "domain": {
+        "parameters": [
+          {
+            "name": "select",
+            "type": "boolean",
+            "kind": "primitive",
+            "null": false
+          }
+        ],
+        "shared_arrays": false,
+        "text": "select: boolean"
+      },
+      "assumptions": [
+        {
+          "kind": "initialization",
+          "text": "every JDK class is initialized already, its static initializer having run and thrown nothing",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the classes of the check's class path are loaded by one class loader, which finds the classes of that class path and of the JDK and no other: a class neither has is not found (Class.forName throws ClassNotFoundException)",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/missing resources (classpath index and entry SHA-256) are []",
+          "basis": "engine"
+        },
+        {
+          "kind": "library",
+          "text": "the ordinary application loader reads fixed, valid local classpath entries with the stock JAR handler, no added or patched modules, boot append, instrumentation or security manager. The ordered META-INF/paint resources (classpath index and entry SHA-256) are [3:df7e70e5021544f4834bbee64a9e3789febc4be81470df629cad6ddb03320a5c]",
+          "basis": "engine"
+        }
+      ],
+      "observations": {
+        "result": "the result, equal in both versions",
+        "exceptions": "whether it throws, and which of 16 exception classes it throws (NumberFormatException, ArithmeticException, NullPointerException and the rest, then the checked exception either version declares, java.lang.Exception; another class counts as the first of them it is an instance of), the same in both versions; the message and the exception's state are not compared"
+      },
+      "bounds": {
+        "unwind": 16,
+        "max_array_length": null,
+        "complete": true
+      },
+      "models": {
+        "used": true,
+        "digest": "sha256:32ecc2a31f7ce10adeb9d983e1dda2ee42cf0ba9a71b03c61b91049a0f4a17ac",
+        "classes": 40,
+        "jdk": "21.0.13"
+      },
+      "checker": {
+        "engine": "native",
+        "name": "jvmcontract's own checker (CaDiCaL)",
+        "solver": "CaDiCaL 1.9.5 (bundled)",
+        "fallback": null,
+        "sat": {
+          "solver": "CaDiCaL",
+          "version": "1.9.5",
+          "source": "bundled by the Rust crate cadical 0.1.16",
+          "configuration": [
+            "CaDiCaL's default options",
+            "incremental: one solver per run of the checker takes the clauses as they are encoded, each query solved under assumptions",
+            "the run's deadline through CaDiCaL's terminate callback",
+            "a branch probe's budget in conflicts, counted as the clauses learned and stopped through the terminate callback"
+          ]
+        }
+      },
+      "gap_mode": "strict",
+      "confirmation": null,
+      "vacuity": {
+        "status": "non-vacuous",
+        "basis": "harness",
+        "text": "Nothing skips an input in the domain before the calls, so the verdict is about every one of them."
+      }
+    }
+  },
+  "inputsAndRawProofSha256": "394ed341b9ca8609062f3748a2c1482d398d77b7e40edad9707ce100fcf5925b"
+}

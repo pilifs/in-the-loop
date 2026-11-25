@@ -1,0 +1,33 @@
+{
+ "question": "Does merging component metadata deduplicate a matching role and preserve a differently named component?",
+ "control": "The merge returns the dominant document and preserves its original component.",
+ "domain": "Merge two in-memory JDOM component-set documents with equal or distinct role and the same role hint.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "1 + n",
+  "afterExpression": "1 + n",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "org.codehaus.plexus.metadata.merge.ComponentsXmlMerger#merge"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/ComponentsXmlMerger.java",
+   "text": "ComponentSetElement"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/ComponentsXmlMergerTest.java",
+   "text": "merger.merge( dDoc, rDoc )"
+  }
+ ]
+}

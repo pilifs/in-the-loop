@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import struct
 import subprocess
 import tempfile
@@ -34,6 +35,74 @@ def jdk_binding(jdk):
     return {"release": runtime_jdk.identity(jdk)["release"], "image": digest(contents)}
 
 
+def manifest_classpath(files, feature):
+    """A manifest may revisit a bound provider or introduce the very next declared one without changing search order."""
+    providers = []
+    missing = set()
+    bound = []
+    unresolved = []
+    positions = {f: i for i, f in reversed(list(enumerate(files)))}
+    for position, file in enumerate(files):
+        if file.is_dir():
+            continue
+        with zipfile.ZipFile(file) as archive:
+            members = archive.namelist()
+            if feature < 21 and any(name.upper() == "META-INF/INDEX.LIST" for name in members):
+                unresolved.append({"provider": position, "reason": "JAR index can name additional providers"})
+            manifests = [name for name in members if name.upper() == "META-INF/MANIFEST.MF"]
+            if not manifests:
+                continue
+            if len(manifests) != 1:
+                unresolved.append({"provider": position, "reason": "ambiguous manifest member"})
+                continue
+            data = archive.read(manifests[0])
+        # java.util.jar.Manifest joins continuation lines in the main section.
+        main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
+        declarations = [line.partition(b":")[2].strip(b" \t\f") for line in main.split(b"\n")
+                        if line.lower().startswith(b"class-path:")]
+        if not declarations:
+            continue
+        if len(declarations) != 1 or not re.fullmatch(rb"[\x20-\x7e\t\f]*", declarations[0]):
+            unresolved.append({"provider": position, "reason": "ambiguous or unsupported manifest Class-Path"})
+            continue
+        tokens = declarations[0].decode("ascii").split()
+        if not tokens:
+            continue
+        providers.append({"provider": position, "entries": tokens})
+        for token in tokens:
+            if (not re.fullmatch(r"/?(?:[A-Za-z0-9_+.-]+/)*[A-Za-z0-9_+.-]+\.jar", token)
+                    or any(part in (".", "..") for part in token.split("/"))):
+                unresolved.append({"provider": position, "entry": token, "reason": "unclassified manifest URL"})
+                continue
+            target = file.parent / token
+            try:
+                target.stat()
+            except (FileNotFoundError, NotADirectoryError):
+                missing.add(str(target))
+            except OSError:
+                unresolved.append({"provider": position, "entry": token, "reason": "cannot establish file absence"})
+            else:
+                index = positions.get(target)
+                if index is not None and index <= position + 1:
+                    bound.append({"provider": position, "entry": token, "classpathIndex": index})
+                else:
+                    reason = "present implicit provider" if index is None else "manifest can change declared search order"
+                    unresolved.append({"provider": position, "entry": token, "reason": reason})
+    return {"declarations": providers, "absent": sorted(missing), "bound": bound, "unresolved": unresolved}
+
+
+def absences_hold(paths):
+    for path in paths:
+        try:
+            os.stat(path)
+        except (FileNotFoundError, NotADirectoryError):
+            continue
+        except OSError:
+            pass
+        return False
+    return True
+
+
 def resolve(path, jdk, image, environment, *, kind):
     document = json.loads(path.read_text())
     files, entries = [], []
@@ -57,6 +126,9 @@ def resolve(path, jdk, image, environment, *, kind):
             raise ValueError(f"{kind} environment file differs at {file.name}")
         external.append({"file": str(file), "sha256": actual})
     binding = {"kind": kind, "jdk": image, "classpath": entries, "environment": environment}
+    manifest_paths = manifest_classpath(files, int(runtime_jdk.identity(jdk)["feature"]))
+    if manifest_paths["declarations"] or manifest_paths["unresolved"]:
+        binding["manifestClassPath"] = manifest_paths
     if external:
         binding["environmentFiles"] = external
     return files, {**binding, "key": digest(binding), "commit": document.get("commit"),
@@ -137,8 +209,8 @@ def deployment(files, jdk):
     for position, file in enumerate(files):
         for name, data in entries(file, feature):
             sha = hashlib.sha256(data).hexdigest()
-            if name == "META-INF/MANIFEST.MF":
-                main = data.replace(b"\r\n", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
+            if name.upper() == "META-INF/MANIFEST.MF" and not file.is_dir():
+                main = data.replace(b"\r\n", b"\n").replace(b"\r", b"\n").split(b"\n\n", 1)[0].replace(b"\n ", b"")
                 if any(line.lower().startswith(b"class-path:") and line.partition(b":")[2].strip()
                        for line in main.splitlines()):
                     implicit.append(file.name)

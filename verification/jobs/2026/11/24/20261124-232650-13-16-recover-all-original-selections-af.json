@@ -1,0 +1,46 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-232650-13-16-recover-all-original-selections-af",
+  "title": "13-16 recover all original selections after impact reranking",
+  "description": "Repeat the frozen artifact-only pipeline and preserve its successor ranking. Rerun any displaced original candidate under the same frozen driver, JVM and neutral ordered releases, then compare all four signed first-pass callers for each project.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:equivalence"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/repeat_locked.py"
+    ]
+  },
+  "expected": "Sixteen original candidates are compared with cold and warm results for each eligible check, alongside any changed selection.",
+  "submitted": {
+    "at": "2026-11-24T23:26:50+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "jvmcontract",
+    "bwrap",
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "3G",
+    "duration": "4m",
+    "timeout": "32m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurem",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/rename_remeasurement.py 13 14 15 16",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/remeasured/13",
+    "verification/beyond-jbmc/scaffold-first/remeasured/14",
+    "verification/beyond-jbmc/scaffold-first/remeasured/15",
+    "verification/beyond-jbmc/scaffold-first/remeasured/16"
+  ]
+}

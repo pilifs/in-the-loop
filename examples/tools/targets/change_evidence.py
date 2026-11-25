@@ -49,11 +49,12 @@ def outcome(trial, entry, client, required_helper=None):
 class SideCache:
     """Only deterministic, qualified, positive sides can bypass new original-entry replays."""
 
-    def __init__(self, directory, basis, images):
+    def __init__(self, directory, basis, images, *, defer_writes=False):
         self.directory = directory
         self.basis = basis
         self.images = images
         self.actions = {}
+        self.pending = {} if defer_writes else None
 
     def key(self, side, files, binding, report):
         return digest({"context": self.basis, "jdk": self.images[side], "files": list(map(str, files)),
@@ -90,8 +91,17 @@ class SideCache:
                    "loadedPerInput": {str(i): sorted(v) for i, v in loaded_per_input.items()}}
         if self.valid(payload, report["cases"], report["entry"], binding["classpath"][0], binding.get("requiredHelperProof")):
             key = self.actions[side]["key"]
-            write_json(self.directory / (key + ".json"),
-                       {"key": key, "evidenceSha256": digest(payload), "evidence": payload})
+            path = self.directory / (key + ".json")
+            record = {"key": key, "evidenceSha256": digest(payload), "evidence": payload}
+            if self.pending is None:
+                write_json(path, record)
+            else:
+                self.pending[path] = record
+
+    def publish_pending(self):
+        for path, record in self.pending.items():
+            write_json(path, record)
+        self.pending.clear()
 
 
 def compose(spec, report, intent="preserve"):

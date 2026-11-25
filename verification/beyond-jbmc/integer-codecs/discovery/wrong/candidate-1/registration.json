@@ -1,0 +1,86 @@
+{
+  "encoder": [
+    "fixture.Packed",
+    "toBits"
+  ],
+  "decoder": [
+    "fixture.Packed",
+    "fromBits"
+  ],
+  "descriptor": "(I)I",
+  "inputs": {
+    "old": [
+      "24be906189410de19ea4fa8b347d59ed62c511da871f9a4d55dd25ba15766eff"
+    ],
+    "new": [
+      "42f20c7ac1c83921ba9cd12b7f7c72b3aabd972814d55c513389563733a633ab"
+    ]
+  },
+  "callerSha256": "29103848ec959aeefa08780c46993b3d2147123786f94473c12927fa28fe6afb",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "primary": "Decode each nonnegative Java int by parity and half its magnitude.",
+  "unchangedControl": "Encode the decoded value and recover the input on the same domain.",
+  "rawBitHypothesis": "Decode all 32-bit inputs as unsigned zigzag bit patterns.",
+  "rawBitPredictions": [
+    [
+      -1,
+      -2147483648
+    ],
+    [
+      -2147483648,
+      1073741824
+    ]
+  ],
+  "expectedSamples": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      -1,
+      1
+    ],
+    [
+      2,
+      1,
+      2
+    ],
+    [
+      3,
+      -2,
+      3
+    ],
+    [
+      31,
+      -16,
+      31
+    ],
+    [
+      32,
+      16,
+      32
+    ],
+    [
+      127,
+      -64,
+      127
+    ],
+    [
+      128,
+      64,
+      128
+    ],
+    [
+      2147483646,
+      1073741823,
+      2147483646
+    ],
+    [
+      2147483647,
+      -1073741824,
+      2147483647
+    ]
+  ]
+}

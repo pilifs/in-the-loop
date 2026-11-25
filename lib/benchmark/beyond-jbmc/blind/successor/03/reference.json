@@ -1,0 +1,34 @@
+{
+ "question": "Does the configuration factory accept a null URI or reject it at construction?",
+ "control": "A valid supplied URI is returned by the resulting configuration.",
+ "domain": "The null URI and a named file URI. The configuration is constructed without opening that file.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "n",
+  "afterExpression": "(n == 0 ? -1 : 1)",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "org.wildfly.client.config.ClientConfiguration#getInstance",
+  "org.wildfly.client.config.ClientConfiguration#getConfigurationUri"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/ClientConfiguration.java",
+   "text": "return new ClientConfiguration(createXmlInputFactory(), configurationUri);"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/ClientConfiguration.java",
+   "text": "Assert.checkNotNullParam(\"configurationUri\", configurationUri);"
+  }
+ ]
+}

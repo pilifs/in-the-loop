@@ -37,14 +37,16 @@ def bridges(work, sources):
         for src in sources:
             owner=src.stem
             code = ["package before;" if side==0 else "", f"public final class {owner} {{"]
-            signature=r'public static ([\w\[\]]+) (\w+)\(([^()]*)\)( throws (?:java\.io\.)?IOException)?\s*\{'
+            signature=r'public static ([\w\[\]]+) (\w+)\(([^()]*)\)(?: throws ((?:java\.io\.)?IOException|Exception))?\s*\{'
             for ret, method, params, throws in re.findall(signature,src.read_text()):
                 pair=[p.strip().split() for p in params.split(",") if p.strip()]
                 types=", ".join(t+".class" for t,_ in pair)
                 args="".join(", "+n for _,n in pair)
                 boxed={"long":"Long","int":"Integer"}.get(ret,ret)
-                code += [f'    public static {ret} {method}({params})' + (" throws java.io.IOException" if throws else "") + ' {',
-                         f'        return ({boxed})witness.OriginalGraph.call({side}, "{owner}", "{method}", new Class<?>[]{{{types}}}{args});','    }']
+                declared = " throws " + ("Exception" if throws == "Exception" else "java.io.IOException") if throws else ""
+                observe = "" if ret == "void" else f"return ({boxed})"
+                code += [f'    public static {ret} {method}({params}){declared} {{',
+                         f'        {observe}witness.OriginalGraph.call({side}, "{owner}", "{method}", new Class<?>[]{{{types}}}{args});','    }']
             if len(code)==2: raise ValueError("no bridged methods in " + owner)
             f=folder/src.name
             f.write_text("\n".join([*code,"}"])+"\n")

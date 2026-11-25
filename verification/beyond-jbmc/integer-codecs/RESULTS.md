@@ -1,0 +1,23 @@
+# Artifact-only signed integer codec discovery
+
+Strict native and stock JBMC each proved the generated decoder question on all six original deployments. Integrated JBMC proved three. Native also proved the round trip on both DSI and both Lucene releases. Stock proved it on all six. All three engines refuted the full-bit hypothesis on both DSI versions, and the original JVMs reproduced the inputs. This recovery was measured after the successor panel had been disclosed. [Matched comparisons and controls](COMPARISON.md)
+
+The frozen successor operator selected DSI Utilities’ most-significant-bit method. Its registered question asks whether natural numbers decode to the alternating signed sequence, with re-encoding as a control. After disclosure, a new selector recovered the actual decoder and encoder from the two root JARs. Of the 16 successor packets, DSI was the only one containing a common pair of the supported shape. The other 15 have explicit discovery stops. [Successor DSI nomination](discovery/02/discovery.json) · [All packet results](discovery)
+
+The selector inspects public static `int(int)` methods with short, straight-line integer bytecode. It nominates encoder and decoder pairs within one package, registers an arithmetic oracle and an inverse control, compiles the caller on the older release, and checks both method owners' defining JARs and both releases' outputs. The positive domain comprises all 2³¹ nonnegative Java integers. The separate full-bit hypothesis interprets the input as unsigned before decoding. [Product entry point](../../../examples/tools/targets/integer_codecs.py)
+
+`python3 examples/tools/build.py --discover-integer-codecs --before BEFORE.json --after AFTER.json --jdk JDK --output DIR` takes the ordered deployment manifests and writes each generated Java caller, registration and original-JVM scaffold to the new directory.
+
+The same selector paired Lucene’s `BitUtil.zigZagEncode` and `zigZagDecode` and Protobuf’s `CodedOutputStream.encodeZigZag32` and `CodedInputStream.decodeZigZag32`. Ten positive boundary values on each of six deployments satisfied the primary and control. Two additional negative values per deployment distinguish the full-bit hypothesis. DSI decodes −1 to zero. Lucene and Protobuf decode it to the minimum Java int. Two independent discoveries produced byte-identical registrations and JVM receipts. [Lucene](discovery/lucene/candidate-1/scaffold.json) · [Protobuf](discovery/protobuf/candidate-1/scaffold.json)
+
+A constructed control retained the decoder and changed one bit in the new encoder. Zero still decoded to zero, then re-encoded to one. Qualification stopped on the new JVM before any solver ran. [Rejected control](discovery/wrong/candidate-1/scaffold.json) · [Matched verification jobs](jobs.json)
+
+An additional normal-loader and recording-loader pass, repeated on all six deployments, returned the same values for the same generated classfiles. Both nominated methods were defined by the selected root JAR in every run. No application resource lookup was recorded. Protobuf loaded 28 application classes including the caller in the old deployment and 27 in the new one. [Class origins and original rows](original-loaders)
+
+The two open native Protobuf round trips stop when `CodedOutputStream` initializes and calls `UnsafeUtil.getUnsafe`. Stock proved both. On both ordinary JVMs a second caller initialized `CodedOutputStream` first, then checked the round trip, the W06 unsigned 32- and 64-bit sizing oracles and an inverted sizing control on eleven boundary inputs. All physical observations matched. A capped native probe of Protobuf 4.33.0 with `--observed-initializer com.google.protobuf.CodedOutputStream` also stopped before solving. The observer could not establish the post-initialization state of the dependency's `UnsafeUtil.UNSAFE` field. The successful original launch and the symbolic startup condition have separate receipts. [Observed startup and boundary calls](startup/registration.json) · [Exact refusal](startup/probe.json)
+
+A second capped probe asked W06's unsigned 32-bit sizing question on Protobuf 3.25.5 with the same observed startup. It exited at the same field before invoking a solver. [Older-release width probe](startup/size32-probe.json)
+
+`python3 -B lib/benchmark/beyond-jbmc/blind/continuation_audit.py codecs` verifies the six source-bound comparisons and the rejected encoder. The `loaders` and `startup` actions of the campaign driver repeat the JVM observations. [Measurement driver](../../../lib/benchmark/beyond-jbmc/blind/integer_workflows.py)
+
+All 20 affected test groups passed. During that run the JBMC process-exit stand-in test failed once, passed the harness retry, and then passed three isolated repetitions.

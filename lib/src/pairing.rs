@@ -85,6 +85,7 @@ use crate::classfile::{ClassFile, Method, Type};
 use crate::equivalence::Options;
 
 pub(super) mod array_roots;
+pub(crate) mod replay;
 
 /// The generated class and its method.
 pub const CLASS: &str = "RegressionPair";
@@ -275,7 +276,10 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
     property.observed_initializers = observed.0;
     property.observed_runtime = options.observed_runtime.clone();
     property.previous = Some((previous, observed.1));
-    let mut outcome = crate::property::run(&property)?;
+    let mut original = if roots.is_none() {
+        replay::ScalarPair::for_method(class, method, options.unchanged_unless.as_deref())
+    } else { None };
+    let mut outcome = crate::property::run_with_pair(&property, original.as_mut())?;
     if let Some(profile) = roots {
         let mut target_statement = outcome.stated.clone();
         if let Some(stated) = &mut target_statement {
@@ -317,7 +321,8 @@ pub fn run(options: &Options, work: &Path, relocated_dir: &Path, class: &ClassFi
         statement.display(),
         target = options.target,
     );
-    Ok(Ok(Paired { outcome, statement, note, target_statement: None, target_witness: None }))
+    let target_witness = original.and_then(|r| r.witness).filter(|_| outcome.verdict == crate::Verdict::Violation);
+    Ok(Ok(Paired { outcome, statement, note, target_statement: None, target_witness }))
 }
 
 /// The binary names of the classes the previous version holds as copies whose every interface, through their

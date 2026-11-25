@@ -1,0 +1,35 @@
+{
+ "question": "Does the public CSS value parser retain a viewport dimension's spelling and numeric value?",
+ "control": "A pixel dimension has type CSS_PX and magnitude 17.",
+ "domain": "The CSS dimensions 17vw and 17vh through the CSS 2.1 parser shipped in both releases.",
+ "seeds": [
+  0,
+  1
+ ],
+ "bounds": [
+  0,
+  1
+ ],
+ "expected": {
+  "beforeExpression": "1",
+  "afterExpression": "1",
+  "controlExpression": "1"
+ },
+ "entries": [
+  "com.steadystate.css.parser.CSSOMParser#parsePropertyValue",
+  "com.steadystate.css.dom.CSSValueImpl#getCssText"
+ ],
+ "basis": [
+  {
+   "side": "old",
+   "memberSuffix": "/CSSValueImpl.java",
+   "text": "case LexicalUnit.SAC_DIMENSION:"
+  },
+  {
+   "side": "new",
+   "memberSuffix": "/SACParserCSS3Test.java",
+   "text": "dimension(\"17vw\")"
+  }
+ ],
+ "scopeNotes": "The older CSS 2.1 parser already represents unknown dimension units generically. The new CSS3 release note motivated this test. Both CSS 2.1 APIs retain the requested spelling, magnitude and type."
+}

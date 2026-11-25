@@ -1,0 +1,25 @@
+{
+ "case": "Protobuf 4.33.0 after normal CodedOutputStream initialization",
+ "registrationSha256": "6e60b13ac42d1a0115f1b6d7b022cde98d520fbb2128fc42e27aa07a1ad4d15c",
+ "checkerSha256": "0ff2ba8821339d856389eefe52c2525afc1c36c0924652c2cd21ae17c2153c70",
+ "entry": "PublishedWidths#roundTrip",
+ "options": [
+  "--engine",
+  "native",
+  "--gaps",
+  "strict",
+  "--assert",
+  "result",
+  "--unwind",
+  "16",
+  "--timeout",
+  "120",
+  "--observed-initializer",
+  "com.google.protobuf.CodedOutputStream"
+ ],
+ "memoryCap": "4G",
+ "wallCapSeconds": 300,
+ "stdout": "",
+ "stderr": "jvmcontract: --observed-initializer com.google.protobuf.CodedOutputStream: its initialization initialized com.google.protobuf.UnsafeUtil, whose field UNSAFE holds an object of sun.misc.Unsafe, which the observation neither holds nor describes (an object of sun.misc.Unsafe, a class of the JDK the observer does not describe), so whether the initialization wrote into it is not known, and the check cannot take it",
+ "status": "observed initialization refused before a solver verdict"
+}

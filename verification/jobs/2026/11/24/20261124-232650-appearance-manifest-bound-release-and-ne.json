@@ -1,0 +1,42 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261124-232650-appearance-manifest-bound-release-and-ne",
+  "title": "appearance manifest-bound release and negative controls",
+  "description": "On original JVMs let a previously absent manifest resource appear, bind its provider explicitly, compare with a clean run and then restore the original deployment. Require the measured byte and all six cache decisions.",
+  "kind": "library",
+  "capabilities": [
+    "jvmcontract:change-plan"
+  ],
+  "links": {
+    "paths": [
+      "lib/benchmark/beyond-jbmc/blind/manifest_controls.py"
+    ]
+  },
+  "expected": "Six comparisons match the independent byte expectations and cache actions.",
+  "submitted": {
+    "at": "2026-11-24T23:26:50+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "jvmcontract"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "2G",
+    "duration": "5m",
+    "timeout": "28m"
+  },
+  "steps": [
+    {
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/manifest_controls.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/beyond-jbmc/scaffold-first/manifest-controls"
+  ]
+}
