@@ -7,11 +7,11 @@
 | spring-projects/spring-framework#36480 | written | Read the landed resolver and reflection fixtures. The parent returns the resolved raw class in the variable branch. The reversed sibling lookups with no overrides remain unexecuted. |
 | spring-projects/spring-framework#36207 | written | Read both flattening hooks, the factory and the null/tilde regression. Empty maps use the selected value while the empty-collection branch still inserts a blank. Marker identity and the empty-sequence comparison remain predictions. |
 | spring-projects/spring-framework#21855 | written | Read the original truncation report, all three landed spelling assertions and the indexed bean fixture. The direct decoy/alternate-quoted readback remains unexecuted. |
-| spring-projects/spring-framework#37351 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#36626 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37596 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#1912 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37531 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#37351 | written | Read the reported phantom membership, both compute paths and the retry/null/eviction tests. The callback-argument and mixed-case removal sequence remains unexecuted. |
+| spring-projects/spring-framework#36626 | written | Read all four mutation regressions and compared virtual getter calls with the landed field reads. An overriding subclass may lose its exposed timestamp on both copy paths. That discrepancy is unexecuted. |
+| spring-projects/spring-framework#37596 | written | Read the PR's before/after shouldRetry example, the two-policy regression and RetryTemplate.execute. The isolated A/B call counts and thrown RetryException remain unexecuted. |
+| spring-projects/spring-framework#1912 | written | Read both MockHttpSession copies and the counters in MockHttpSessionTests. The public class calls oldValue.valueUnbound while the internal web-test copy calls the incoming object. Equal-but-distinct listeners and ordered event payloads are unexecuted. Checked the migrated report #21646. |
+| spring-projects/spring-framework#37531 | written | Read the synchronous converter, byte-array and file implementations, and the two-threshold regression. Interleaved stream cursors and replacement of a longer destination remain unexecuted. |
 | spring-projects/spring-framework#1532 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#37559 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#37202 | not yet | Awaiting source review and claims. |
