@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "413",
+  "title": "HikariCP restores the schema on the same PostgreSQL backend",
+  "summary": "Both borrows used the same PostgreSQL backend. After a nonexistent schema selection, the parent left its schema null and the marker lookup failed with SQLSTATE 42P01. The fix restored test and read exactly 37.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "HikariCP",
+    "symbol": "HikariDataSource.getConnection"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Both should return `test` then null on the first borrow. On the second, the parent is predicted to return null and the merge should return `test`."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/brettwooldridge/HikariCP",
+    "url": "https://github.com/brettwooldridge/HikariCP/pull/2346"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Each replay starts an isolated PostgreSQL 16 database. One application role owns its schema and marker.",
+    "Both borrows used the same PostgreSQL backend. After a nonexistent schema selection, the parent left its schema null and the marker lookup failed with SQLSTATE 42P01. The fix restored test and read exactly 37."
+  ]
+}

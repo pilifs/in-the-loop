@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "26077697e853a297c06f03c27a6ce03d6b0ce9c25b37f0b989135c7c49a4746a",
+  "runtimeSha256": "713f72c837ad97d58f161af00915cb5bb4d064154af0f34f8e7590f292957224",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "df4a19058577f24e622f2fb49d7dc33f73b42cd4a86460b7458766636067d37e"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller.class": "6992e82d5c07cdd2e17ec2bda3119ce0233fb2002146e59fadecf5a0c9100c13",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "brettwooldridge/HikariCP#2346.1",
+          "outcome": {
+            "return": "first=test, changed=null, second=null, sameBackend=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "brettwooldridge/HikariCP#2346.2",
+          "outcome": {
+            "return": "first=test, second=test, sameBackend=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "brettwooldridge/HikariCP#2346.3",
+          "outcome": {
+            "return": "first=test, changed=null, second=null, sameBackend=true; sql=null, SQLSTATE=42P01"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "brettwooldridge/HikariCP#2346.1",
+          "outcome": {
+            "return": "first=test, changed=null, second=test, sameBackend=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "brettwooldridge/HikariCP#2346.2",
+          "outcome": {
+            "return": "first=test, second=test, sameBackend=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "brettwooldridge/HikariCP#2346.3",
+          "outcome": {
+            "return": "first=test, changed=null, second=test, sameBackend=true; sql=test, rows=[37]"
+          },
+          "prediction": "matched"
+        }
+      ],
+      "postgresVersionNumber": 160016
+    }
+  }
+}

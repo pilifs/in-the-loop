@@ -97,6 +97,12 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
   3. **Check whether it's already known.** Look at Lucene's issue tracker and later commits on that class.
 - **Report**: a minimal public-API reproduction (two parent blocks, the filter, the expected and observed sort keys), for the user to file.
 
+**2. Apache Avro, PR #3709. Reading a scalar-first union's array default throws.** Confirmed on the merge, the 1.12.2 release and `main` at `a3355d0826fa`. With default `[1]` and field type `["int",{"type":"array","items":"int"}]`, schema parsing succeeds. Both `Field.defaultVal()` and `IdlUtils.writeIdlSchema` throw `AvroRuntimeException`. Exchanging the branches produces the typed list and IDL initializer. The user can attach the witness to resolved AVRO-4211 or file a linked issue. [Report, reproduction and related tickets](merged-pr-links/upstream/README.md#apache-avro--scalar-first-union-throws-when-reading-or-emitting-an-array-default) · [JVM observations](merged-pr-links/upstream/411.json)
+
+**3. ical4j, PR #931. Exchanging two distinct overrides drops a rescheduled occurrence.** Confirmed on the merge and `develop` at `2c5ff9f211a8`. A moves the July 15 occurrence onto B's original July 16 start. B moves the July 16 occurrence to 03:00. The two input orders return B alone and both A and B, respectively. Both replacement periods are inside the query window. Released 4.4.0 predates the fix and returns the master periods in either order. The user can file the development-branch reproduction. [Report, calendar and related tickets](merged-pr-links/upstream/README.md#ical4j--reordering-two-distinct-recurrence-overrides-drops-a-meeting) · [Typed periods and owners](merged-pr-links/upstream/412.json)
+
+**4. jOOλ, PR #418. Widening a full window changes the last value.** Confirmed for both `jool` and `jool-java-8` on the merge, released 0.9.16 and `main` at `9273e1f54356`. On the third row of [1,2,3], `window(-5,5)` gives endpoints (1,3). Raising the upper offset to `Long.MAX_VALUE - 1` gives (1,1). The ordinary and future-only controls agree. The user can file the three-row reproduction. [Report and related tickets](merged-pr-links/upstream/README.md#jooλ--widening-an-already-complete-window-changes-its-last-value) · [Both module receipts](merged-pr-links/upstream/419.json)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

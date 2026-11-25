@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "415",
+  "title": "RxJava detaches the stop subscription on disposal",
+  "summary": "Disposing the single detached the main on both pins. The fix also detached the stop subscriber immediately. With two Maybe sources the fixed cancellation counters changed from (1,0) to (1,1), and only the second observer completed.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "RxJava",
+    "symbol": "Single.takeUntil"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Before, main is predicted to detach while stop remains subscribed. On the merge both flags become false immediately, with no downstream value, completion or error."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/ReactiveX/RxJava",
+    "url": "https://github.com/ReactiveX/RxJava/pull/6019"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Disposing the single detached the main on both pins. The fix also detached the stop subscriber immediately. With two Maybe sources the fixed cancellation counters changed from (1,0) to (1,1), and only the second observer completed."
+  ]
+}

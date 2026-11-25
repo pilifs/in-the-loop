@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/locationtech/jts/pull/1179",
+  "revisions": {
+    "parent": "f1b596aabc664fd59d9028de10885e84b67febd8",
+    "fix": "ecb26e190e539ea1e4303d100f39f7f30ddeec3e"
+  },
+  "entry": "LineSegment.project",
+  "questions": [
+    {
+      "id": "locationtech/jts#1179.1",
+      "role": "Intent",
+      "args": [
+        "contact"
+      ],
+      "history": "Project the segment from (8,2) to (8,4).",
+      "prediction": "Reported null → a `LineSegment` with both endpoints at (8,0).",
+      "basis": "The closed target interval [0,8] contains 8. Issue #1178 reports the public call and the regression checks its coordinates.",
+      "expected": {
+        "parent": {
+          "return": "null"
+        },
+        "fix": {
+          "return": "(8,0) (8,0)"
+        }
+      }
+    },
+    {
+      "id": "locationtech/jts#1179.2",
+      "role": "Control",
+      "args": [
+        "inside-outside"
+      ],
+      "history": "Shift the source horizontally to x=1 and then to x=9, keeping its y coordinates.",
+      "prediction": "Both revisions should return (1,0) twice at x=1 and null at x=9.",
+      "basis": "The first projected point lies inside [0,8] and the second lies strictly outside.",
+      "expected": {
+        "parent": {
+          "return": "(1,0) (1,0); null"
+        },
+        "fix": {
+          "return": "(1,0) (1,0); null"
+        }
+      }
+    },
+    {
+      "id": "locationtech/jts#1179.3",
+      "role": "Challenge",
+      "args": [
+        "geometry"
+      ],
+      "history": "On the merge, use a `GeometryFactory` to represent the same target and the x=8 and x=9 sources as two-coordinate line strings. Call the new `LineSegmentFunctions.project(targetGeometry, sourceGeometry)` for each.",
+      "prediction": "Both results should be `LineString` objects of length zero. At x=8 the result should contain two coordinates at (8,0). At x=9 it should be empty.",
+      "basis": "An endpoint contact has one spatial location represented by coincident vertices. An empty projection has none. The app function exposes that distinction through geometry cardinality.",
+      "expected": {
+        "fix": {
+          "return": "LineString 0.0 [(8,0), (8,0)]; LineString 0.0 []"
+        }
+      }
+    }
+  ]
+}

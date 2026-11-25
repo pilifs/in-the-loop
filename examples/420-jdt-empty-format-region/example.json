@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "420",
+  "title": "Eclipse JDT formats a real region after an empty first line",
+  "summary": "The public formatter threw StringIndexOutOfBoundsException on the parent. The fixed edit produced the exact LF and CRLF texts, preserved the leading break and was idempotent on CRLF. Both single-region controls held.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Eclipse JDT",
+    "symbol": "ToolFactory.createCodeFormatter"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The PR traces the parent failure to an index of −1. On the merge expect exactly `\\nclass A {\\n\\tvoid foo() {\\n\\t\\tint x = 1;\\n\\t}\\n}\\n` using Java escapes."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/eclipse-jdt/eclipse.jdt.core",
+    "url": "https://github.com/eclipse-jdt/eclipse.jdt.core/pull/5380"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Each pin supplies its formatter overlay. The rest of its linewrap package comes from JDT Core 3.47.0. The other packages retain their release signatures so the public factory can load ECJ on a plain classpath.",
+    "The public formatter threw StringIndexOutOfBoundsException on the parent. The fixed edit produced the exact LF and CRLF texts, preserved the leading break and was idempotent on CRLF. Both single-region controls held."
+  ]
+}

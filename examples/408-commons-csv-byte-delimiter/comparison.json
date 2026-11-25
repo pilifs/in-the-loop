@@ -1,0 +1,64 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-csv/pull/613",
+  "revisions": {
+    "parent": "d8e12423b47109c76196bbae454726a114cf7c07",
+    "fix": "871f7457b9373c8668a2324f4d662b18e74d63d3"
+  },
+  "entry": "CSVRecord.getBytePosition",
+  "questions": [
+    {
+      "id": "apache/commons-csv#613.1",
+      "role": "Intent",
+      "args": [
+        "lf"
+      ],
+      "history": "Two LF-terminated records as above.",
+      "prediction": "CSV-329 reports a coding failure during the parent-era lookahead. On the merge expect exactly `[a,b]` at 0 and `[c,d]` at 8.",
+      "basis": "The bytes before the second row are three ASCII letters, one four-byte emoji and LF.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "CharacterCodingException=true"
+          ]
+        },
+        "fix": {
+          "return": "[a, b]@0; [c, d]@8"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-csv#613.2",
+      "role": "Control",
+      "args": [
+        "ascii"
+      ],
+      "history": "Replace every delimiter by ASCII `x` in both the input and the format.",
+      "prediction": "Both revisions return the same two pairs at positions 0 and 4.",
+      "basis": "The prefix is now the four bytes for `axb\\n`.",
+      "expected": {
+        "parent": {
+          "return": "[a, b]@0; [c, d]@4"
+        },
+        "fix": {
+          "return": "[a, b]@0; [c, d]@4"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-csv#613.3",
+      "role": "Challenge",
+      "args": [
+        "crlf"
+      ],
+      "history": "Keep the emoji delimiter, use CRLF for both record endings, and open a fresh parser on the original byte array sliced at the second reported offset.",
+      "prediction": "On the merge, the second offset is 9. The suffix parser starts with `[c,d]` at its local position 0, then reaches EOF.",
+      "basis": "Inserting CR before the first LF adds one byte before `c`. Independent suffix readback checks whether a consumer can use the checkpoint.",
+      "expected": {
+        "fix": {
+          "return": "[a, b]@0; [c, d]@9; suffix=[c, d]@0"
+        }
+      }
+    }
+  ]
+}

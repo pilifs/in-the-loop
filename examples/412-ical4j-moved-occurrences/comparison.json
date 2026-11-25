@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/ical4j/ical4j/pull/931",
+  "revisions": {
+    "parent": "a63eeb542d33dfd4302d6e169a0190cfa7da3f8e",
+    "fix": "ca6f39764affcc6cacb8845bb66054dee7c04c26"
+  },
+  "entry": "ComponentGroup.calculateRecurrenceSet",
+  "questions": [
+    {
+      "id": "ical4j/ical4j#931.1",
+      "role": "Intent",
+      "args": [
+        "all-day"
+      ],
+      "history": "July 15 moves to an all-day July 14, alongside July 14’s timed recurrence",
+      "prediction": "The PR reports three unmodified timed instances before. After, expect the 30-minute UTC masters on July 14 and 16 plus one LocalDate July 14 with a one-day duration from the override. No timed July 15 remains.",
+      "basis": "The recurrence ID selects July 15 for replacement. July 14’s separate master is still scheduled. The pinned test includes the July 16 boundary.",
+      "expected": {
+        "parent": {
+          "return": "UTC 07-14T00:00Z PT30M master; UTC 07-15T00:00Z PT30M master; UTC 07-16T00:00Z PT30M master"
+        },
+        "fix": {
+          "return": "DATE 07-14 P1D 20210715T000000Z; UTC 07-14T00:00Z PT30M master; UTC 07-16T00:00Z PT30M master"
+        }
+      }
+    },
+    {
+      "id": "ical4j/ical4j#931.2",
+      "role": "Control",
+      "args": [
+        "master"
+      ],
+      "history": "Omit the override but retain the master, UID and period",
+      "prediction": "Both should return exactly three 30-minute timed occurrences beginning at midnight UTC on July 14, 15 and 16.",
+      "basis": "Daily recurrence expands one instance per date in this tested window.",
+      "expected": {
+        "parent": {
+          "return": "UTC 07-14T00:00Z PT30M master; UTC 07-15T00:00Z PT30M master; UTC 07-16T00:00Z PT30M master"
+        },
+        "fix": {
+          "return": "UTC 07-14T00:00Z PT30M master; UTC 07-15T00:00Z PT30M master; UTC 07-16T00:00Z PT30M master"
+        }
+      }
+    },
+    {
+      "id": "ical4j/ical4j#931.3",
+      "role": "Challenge",
+      "args": [
+        "two-orders"
+      ],
+      "history": "In the same daily UTC series, give July 15 and 16 distinct overrides. A moves July 15 to July 16 at 00:00Z for 90 minutes. B moves July 16 to July 16 at 03:00Z for one hour. Use a July 14 12:00Z to July 16 12:00Z window and exchange the two override VEVENTs in the input.",
+      "prediction": "On the merge expect both typed replacements in either order of input, identified by the two different RECURRENCE-IDs, and neither original instance. Source inspection predicts a possible missing A if A is applied first.",
+      "basis": "Each override names a different original master occurrence. A shares B’s original start instant but still belongs to July 15.",
+      "expected": {
+        "fix": {
+          "return": "AB=UTC 07-16T00:00Z PT1H30M 20210715T000000Z; UTC 07-16T03:00Z PT1H 20210716T000000Z / BA=UTC 07-16T00:00Z PT1H30M 20210715T000000Z; UTC 07-16T03:00Z PT1H 20210716T000000Z"
+        }
+      }
+    }
+  ]
+}

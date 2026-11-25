@@ -1,0 +1,63 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/brettwooldridge/HikariCP/pull/2346",
+  "revisions": {
+    "parent": "ee5328d209e32d43365538db4d5a2f5ae1361967",
+    "fix": "b81bbc9d438ffac5ef7be4609121d76bb8a31564"
+  },
+  "entry": "HikariDataSource.getConnection",
+  "questions": [
+    {
+      "id": "brettwooldridge/HikariCP#2346.1",
+      "role": "Intent",
+      "args": [
+        "reset"
+      ],
+      "history": "One backend, invalid schema selected on the first borrow.",
+      "prediction": "Both should return `test` then null on the first borrow. On the second, the parent is predicted to return null and the merge should return `test`.",
+      "basis": "PostgreSQL's effective schema after the invalid selection is null in the landed regression. The pool's documented default applies again when it hands out the connection.",
+      "expected": {
+        "parent": {
+          "return": "first=test, changed=null, second=null, sameBackend=true"
+        },
+        "fix": {
+          "return": "first=test, changed=null, second=test, sameBackend=true"
+        }
+      }
+    },
+    {
+      "id": "brettwooldridge/HikariCP#2346.2",
+      "role": "Control",
+      "args": [
+        "clean"
+      ],
+      "history": "On a fresh pool, borrow and return the connection without calling a schema setter, then borrow it again.",
+      "prediction": "Both revisions should expose `test` on each borrow.",
+      "basis": "The configured initial schema exists and the caller made no change to the session.",
+      "expected": {
+        "parent": {
+          "return": "first=test, second=test, sameBackend=true"
+        },
+        "fix": {
+          "return": "first=test, second=test, sameBackend=true"
+        }
+      }
+    },
+    {
+      "id": "brettwooldridge/HikariCP#2346.3",
+      "role": "Challenge",
+      "args": [
+        "marker"
+      ],
+      "history": "Create `test.pool_marker` containing the integer 37, with no same-named table elsewhere. Repeat the invalid-selection history. On the second borrow run `SELECT current_schema()`, then `SELECT n FROM pool_marker` where `n` holds the marker.",
+      "prediction": "On the merge the server should report `test` and the unqualified query should yield exactly [37].",
+      "basis": "PostgreSQL resolves the unqualified table in the connection's effective search path. This independently tests the state a SQL consumer inherits.",
+      "expected": {
+        "fix": {
+          "return": "first=test, changed=null, second=test, sameBackend=true; sql=test, rows=[37]"
+        }
+      }
+    }
+  ],
+  "service": "disposable-postgres"
+}

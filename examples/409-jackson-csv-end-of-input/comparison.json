@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/jackson-dataformats-text/pull/625",
+  "revisions": {
+    "parent": "fa7e1968282c288589a10af35c45709b01c35421",
+    "fix": "1600e2068acdb983ace981ff943aa4cdd0a2ac81"
+  },
+  "entry": "MappingIterator.hasNextValue",
+  "questions": [
+    {
+      "id": "FasterXML/jackson-dataformats-text#625.1",
+      "role": "Intent",
+      "args": [
+        "single"
+      ],
+      "history": "Read the sole quoted cell, then look ahead twice",
+      "prediction": "The parent is reported to misdetect exhaustion after reading the first row. The merge should produce true, the one-element String[] {\"te,st\"}, false, false.",
+      "basis": "The comma is inside a quoted field and the closing quote is the last input character. The landed regression checks both lookahead methods.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "true [te,st]",
+            "eof=true"
+          ]
+        },
+        "fix": {
+          "return": "true [te,st]; eof=false,false"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-dataformats-text#625.2",
+      "role": "Control",
+      "args": [
+        "bean"
+      ],
+      "history": "Give the reader an explicit two-column schema for a bean with public int age and String name fields, in that order. Read `13,\"Joe\"` and consume the iterator.",
+      "prediction": "Both pins should yield exactly one bean with age 13 and name Joe followed by false.",
+      "basis": "The two named columns use the named-entry path. The upstream named-schema multiline test also checks exhaustion.",
+      "expected": {
+        "parent": {
+          "return": "13 Joe; eof=false"
+        },
+        "fix": {
+          "return": "13 Joe; eof=false"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-dataformats-text#625.3",
+      "role": "Challenge",
+      "args": [
+        "two"
+      ],
+      "history": "Keep the schema-less reader and first quoted cell. Append LF and `\"x\"\"y\"` with no final newline. Call hasNextValue() twice before consuming each row.",
+      "prediction": "On the merge both lookaheads are true for each real row. The decoded rows are [\"te,st\"] then [x\"y]. Both lookahead methods return false after the second row.",
+      "basis": "An unquoted LF separates records. Two double quotes inside a quoted field encode one quote. Lookahead on a Java iterator must preserve the next element.",
+      "expected": {
+        "fix": {
+          "return": "true,true [te,st]; true,true [x\"y]; eof=false,false"
+        }
+      }
+    }
+  ]
+}

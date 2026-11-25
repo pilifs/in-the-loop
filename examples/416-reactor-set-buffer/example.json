@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "416",
+  "title": "Reactor fills a set buffer under bounded demand",
+  "summary": "The duplicate made the parent time out with no emitted set. The fix completed with {1,2} on one request. Two requests returned two distinct sets and the discard hook saw the duplicate 1 exactly once.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "messaging",
+    "liveness",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Project Reactor",
+    "symbol": "Flux.buffer"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The report describes a stall with bounded demand. The merge should emit exactly {1,2} and complete without another downstream request."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/reactor/reactor-core",
+    "url": "https://github.com/reactor/reactor-core/pull/3822"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Both deployments use the same pin-built reactor-test subscriber. The reactor-core JAR changes with the revision.",
+    "The duplicate made the parent time out with no emitted set. The fix completed with {1,2} on one request. Two requests returned two distinct sets and the discard hook saw the duplicate 1 exactly once."
+  ]
+}

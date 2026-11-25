@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "403",
+  "title": "Lucene matches a numeric range on a sorted index",
+  "summary": "The parent threw ClassCastException from both hit enumeration and count. The fix returned only document B and counted one, including in reverse order. An independent point query agreed on every index.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "exceptions",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Lucene",
+    "symbol": "IndexSortSortedNumericDocValuesRangeQuery"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The parent is expected to throw ClassCastException on the affected path. The merge returns only B and counts 1."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/lucene",
+    "url": "https://github.com/apache/lucene/pull/14732"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The parent threw ClassCastException from both hit enumeration and count. The fix returned only document B and counted one, including in reverse order. An independent point query agreed on every index."
+  ]
+}

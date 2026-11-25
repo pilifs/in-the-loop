@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "414",
+  "title": "Commons Pool destroys an idle object when validation throws",
+  "summary": "Both pool variants rethrew the original exception object. The parent stranded A and exhausted its single slot. The fix destroyed A once, created a distinct B and accepted its return with one idle and zero active.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resilience",
+    "exceptions",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Pool",
+    "symbol": "GenericObjectPool.evict"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Before, expect the exception with A still counted idle and no destruction callback. On the merge, expect the same exception instance, A destroyed once and counts (idle, active) = (0, 0) in both pools."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-pool",
+    "url": "https://github.com/apache/commons-pool/pull/85"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Both pool variants rethrew the original exception object. The parent stranded A and exhausted its single slot. The fix destroyed A once, created a distinct B and accepted its return with one idle and zero active."
+  ]
+}

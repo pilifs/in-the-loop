@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "419",
+  "title": "jOOλ finds window endpoints at finite frame bounds",
+  "summary": "Both jOOλ modules repaired the ordinary wide window and preserved the future-only control. Widening the upper bound to Long.MAX_VALUE minus one changed the fixed third row’s last value from 3 to 1.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "integer-overflow",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "jOOλ",
+    "symbol": "Window.firstValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The reported example returned empty optionals throughout. The same is predicted for the parent. On the merge all three first values should be present 1, all three last values present 3."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/jOOQ/jOOL",
+    "url": "https://github.com/jOOQ/jOOL/pull/418"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The two published module variants run separately on the same JDK.",
+    "Both jOOλ modules repaired the ordinary wide window and preserved the future-only control. Widening the upper bound to Long.MAX_VALUE minus one changed the fixed third row’s last value from 3 to 1.",
+    "Both published 0.9.16 artifacts and both modules built from main at 9273e1f54356 gave last value 1 on the third row after widening. The correct last value for that partition is 3. VF-065 tracks the report and three-row reproduction."
+  ]
+}

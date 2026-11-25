@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/google/guava/pull/7784",
+  "revisions": {
+    "parent": "9eb72d3730bd10d92d062c912b673efed0ae2dc0",
+    "fix": "0232f388fbe4d45deea2f31a9c6e2f7283662fd5"
+  },
+  "entry": "Sets.difference",
+  "questions": [
+    {
+      "id": "google/guava#7784.1",
+      "role": "Intent",
+      "args": [
+        "traversal"
+      ],
+      "history": "Compare the difference {1,2,3} to the empty set as above.",
+      "prediction": "Both should return false. The parent implementation predicts at least one call to the wrapped set's iterator, the merge zero for this fixture.",
+      "basis": "Removing at most one of four members leaves at least three. The parent inherits `AbstractSet.equals` and counting the difference's exact size traverses the first backing set.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "false; iterated ("
+          ]
+        },
+        "fix": {
+          "return": "false; no iteration (0)"
+        }
+      }
+    },
+    {
+      "id": "google/guava#7784.2",
+      "role": "Control",
+      "args": [
+        "ordinary"
+      ],
+      "history": "Compare the same view to ordinary sets {3,2,1} and {1,2,9}, in each direction.",
+      "prediction": "Both revisions should return true for the first and false for the second, regardless of insertion order.",
+      "basis": "The two ordinary sets have equal size. Only the first contains precisely the three surviving members.",
+      "expected": {
+        "parent": {
+          "return": "true,true/false,false"
+        },
+        "fix": {
+          "return": "true,true/false,false"
+        }
+      }
+    },
+    {
+      "id": "google/guava#7784.3",
+      "role": "Challenge",
+      "args": [
+        "live"
+      ],
+      "history": "Construct two difference views over ordinary integer sets. Let L={1,2,3} minus {2,3}, R={1,2,3} minus mutable B={3,4}. Compare both ways. In B replace 4 with 2 and compare the *same* two views again.",
+      "prediction": "Both revisions should give false in both directions at first, then true in both directions.",
+      "basis": "R changes from {1,2} to {1} while L stays {1}. All backing-set sizes stay fixed, so cardinality bounds alone cannot distinguish the two states.",
+      "expected": {
+        "parent": {
+          "return": "false,false/true,true"
+        },
+        "fix": {
+          "return": "false,false/true,true"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "9e46121ecee5d7204e84bf14a87268015d105cf5f6345b606dea42e2413571a0",
+  "runtimeSha256": "e0c946962821fd7a2e711a5952063ae17a031949b2e6f98fc9c679f7337647c5",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "87cefc91ead75fc499f3c32dce9fce80843e14c30191e209f90809929b3480d5",
+    "caller/explicit/OuterA.java": "d40d4412a636edc4065886247363848e9412a43fe669d8e00d3d546049860117",
+    "caller/inner/OuterA.java": "b23d6b62bc6d999c917229891411a029a30578c8e0680b08722c8aceec78d8db",
+    "caller/inner/OuterB.java": "572d9c0fbe14776eee2a7949b656d5e0d98a9400b4efb5486ed3e1a9d978a679",
+    "caller/outer/OuterB.java": "11dcf249f3be9608dc3842d1667ef17167ed16db363c37598c4b385ef6ab0957"
+  },
+  "deployments": {
+    "pinned": {
+      "callerClasses": {
+        "PublicCaller.class": "7403797b34726f6c2f62a84ad95159bc2ae8be0f4541e54f9199cccc5730c875",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c",
+        "explicit/OuterA$Ready_state.class": "3fbda65b9b7bd90ae4889abc9f3e46b6efbaa8c5ec1ebf9e8807c999eea0d2ea",
+        "explicit/OuterA.class": "9d247755efb2be490086911369d3aac55503f6bd79a8d86fde7db932e219e9fb",
+        "inner/OuterA$Ready_state.class": "297fa7f91fb4eb515ab8ba6258469c7b1bcd44b2cbc79ed130132a38bfdb3e1b",
+        "inner/OuterA.class": "bf775f854a1adc1275d6c288e0a22ca16873c0b1534b674fe8ce2ddd9ab108f5",
+        "inner/OuterB$Ready_state.class": "b21f2271bc73206e56c4373f58f72baa59faf670883385cc49b8b5090740b520",
+        "inner/OuterB.class": "943916346ce39ae5c066de941dee63adf3444eced123d41074343531c13628b2",
+        "outer/OuterB$Ready_state.class": "7235723520403b31aa63ebd84d73b0dab7729856ad4b81cb021b27ea52ea8f6e",
+        "outer/OuterB.class": "7b453ef02e2413884d913e57613f15ee51cf3be88478ccc4605a65180b0eda94"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#2646.1",
+          "outcome": {
+            "return": "OuterA | OuterA$Ready state | OuterA$Ready state -> accepts input"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#2646.2",
+          "outcome": {
+            "return": "accepts the sample"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#2646.3",
+          "outcome": {
+            "return": "OuterB | OuterB$Ready state | OuterB$Ready state -> accepts input / OuterB | OuterB -> Ready state | OuterB -> Ready state -> accepts input"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#2646.1",
+          "outcome": {
+            "return": "OuterA | Ready state | Ready state -> accepts input"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#2646.2",
+          "outcome": {
+            "return": "accepts the sample"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#2646.3",
+          "outcome": {
+            "return": "OuterB | Ready state | Ready state -> accepts input / OuterB | OuterB -> Ready state | OuterB -> Ready state -> accepts input"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

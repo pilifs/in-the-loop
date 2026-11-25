@@ -1,0 +1,41 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-091819-replay-all-sixty-one-merged-java-public",
+  "title": "Replay all sixty-one merged Java public questions",
+  "description": "Rebuild the twenty public callers and compare all 143 fresh JVM observations with their registered source, runtime and receipt digests. The matrix includes H2, disposable PostgreSQL 16.16 and 18.1 servers, signed Eclipse support, both jOOλ modules and both Guava editions.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md"
+    ]
+  },
+  "expected": "The audit accounts for all 61 brief rows and each replay reproduces its typed observation, including the four falsified merged predictions.",
+  "submitted": {
+    "at": "2026-11-25T09:18:19+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 1.0,
+    "memory": "1G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "audit and replay",
+      "run": "python3 verification/merged-pr-links/audit.py --replay --output verification/merged-pr-links/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/repeated-audit.json"
+  ]
+}

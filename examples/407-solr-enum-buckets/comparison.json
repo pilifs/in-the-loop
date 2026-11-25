@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/solr/pull/3158",
+  "revisions": {
+    "parent": "c367cb75ac453bb3cd642c46649455e2b4b018b3",
+    "fix": "f66aa9ed07fa76b5db45186073a9b2ac20c01fd4"
+  },
+  "entry": "SolrClient.query",
+  "questions": [
+    {
+      "id": "apache/solr#3158.1",
+      "role": "Intent",
+      "args": [
+        "enum"
+      ],
+      "history": "Six documents as above, default terms sort.",
+      "prediction": "The issue reports empty facet results on affected releases. The merge should return total 6 and exactly Low=4, Medium=3, Not Available=3, High=2.",
+      "basis": "Count distinct IDs with each label. For example, Low occurs in IDs 1, 2, 5 and 6. The landed test expects all four named buckets.",
+      "expected": {
+        "parent": {
+          "return": "total=6 {}"
+        },
+        "fix": {
+          "return": "total=6 {High=2, Low=4, Medium=3, Not Available=3}"
+        }
+      }
+    },
+    {
+      "id": "apache/solr#3158.2",
+      "role": "Control",
+      "args": [
+        "string"
+      ],
+      "history": "Copy each document's labels into `labels_sds` and change only the facet field. This field uses the schema's multivalued string-with-doc-values pattern.",
+      "prediction": "Both revisions should return the same six matches and four label counts as the input tally.",
+      "basis": "String labels have the same membership sets as the enum labels.",
+      "expected": {
+        "parent": {
+          "return": "total=6 {High=2, Low=4, Medium=3, Not Available=3}"
+        },
+        "fix": {
+          "return": "total=6 {High=2, Low=4, Medium=3, Not Available=3}"
+        }
+      }
+    },
+    {
+      "id": "apache/solr#3158.3",
+      "role": "Challenge",
+      "args": [
+        "duplicate"
+      ],
+      "history": "On the merge, replace ID 1 with its original enum values plus a second Low entry. Commit and repeat the request.",
+      "prediction": "The total and all bucket counts should stay fixed, including Low=4.",
+      "basis": "A terms bucket counts documents. Repeating a value in one document leaves its membership and the set of matching IDs unchanged.",
+      "expected": {
+        "fix": {
+          "return": "total=6 {High=2, Low=4, Medium=3, Not Available=3}"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/jOOQ/jOOL/pull/418",
+  "revisions": {
+    "parent": "5ef86d6525374c6cc412a5a2d996d3d6457cb59c",
+    "fix": "d1e06969ff748049aa8d1a9bf5d7f96dee7dc201"
+  },
+  "entry": "Window.firstValue",
+  "questions": [
+    {
+      "id": "jOOQ/jOOL#418.1",
+      "role": "Intent",
+      "args": [
+        "wide"
+      ],
+      "history": "Use offsets −5 and +5 on [1,2,3].",
+      "prediction": "The reported example returned empty optionals throughout. The same is predicted for the parent. On the merge all three first values should be present 1, all three last values present 3.",
+      "basis": "Each interval from five preceding through five following includes indices 0, 1 and 2. The original report also found all three values via `window()`.",
+      "expected": {
+        "parent": {
+          "return": "[-:-, -:-, -:-]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]"
+        },
+        "fix": {
+          "return": "[1:3, 1:3, 1:3]; frames=[[1, 2, 3], [1, 2, 3], [1, 2, 3]]"
+        }
+      }
+    },
+    {
+      "id": "jOOQ/jOOL#418.2",
+      "role": "Control",
+      "args": [
+        "future"
+      ],
+      "history": "Use offsets +1 through +5 on the same rows.",
+      "prediction": "Both revisions should give (first,last) = (2,3), (3,3), then (empty,empty).",
+      "basis": "Enumerating valid future indices gives {1,2}, {2}, then the empty set.",
+      "expected": {
+        "parent": {
+          "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
+        },
+        "fix": {
+          "return": "[2:3, 3:3, -:-]; frames=[[2, 3], [3], []]"
+        }
+      }
+    },
+    {
+      "id": "jOOQ/jOOL#418.3",
+      "role": "Challenge",
+      "args": [
+        "overflow"
+      ],
+      "history": "Hold input and lower offset −5 fixed. Widen the upper offset from 5 to `Long.MAX_VALUE-1`. Check the last input row through both endpoint methods.",
+      "prediction": "On the merge, the endpoint pair should remain (1,3) for both bounds. Source inspection predicts the very large finite bound can yield (1,1).",
+      "basis": "Widening a frame already containing every row cannot remove row 3. At third-row index 2, adding the finite upper offset overflows a Java long to `Long.MIN_VALUE`, which the pinned upper-bound computation then narrows it to int zero.",
+      "expected": {
+        "fix": {
+          "return": "5=1:3; max-1=1:3"
+        }
+      }
+    }
+  ]
+}

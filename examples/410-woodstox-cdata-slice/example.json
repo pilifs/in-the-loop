@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "410",
+  "title": "Woodstox validates and repairs selected character slices",
+  "summary": "Both writers round-tripped the safe slice as OK. The fixed writer reported array index 5 in both rejection histories and round-tripped the selected text with two embedded delimiters when repair was enabled.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "buffer-bounds",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Woodstox",
+    "symbol": "XMLStreamWriter2.writeCData"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The old scan bounds predict that the call returns. The merge should throw `XMLStreamException` reporting index 5."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/woodstox",
+    "url": "https://github.com/FasterXML/woodstox/pull/335"
+  },
+  "verdictLabel": "4/4 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "The ordinary text slice runs on both writers. Delimiter recognition, repair and replacement diagnostics are measured on the corrected writer.",
+    "Both writers round-tripped the safe slice as OK. The fixed writer reported array index 5 in both rejection histories and round-tripped the selected text with two embedded delimiters when repair was enabled."
+  ]
+}

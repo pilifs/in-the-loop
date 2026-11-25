@@ -1,0 +1,52 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-095857-replay-three-upstream-defects-and-the-ja",
+  "title": "Replay three upstream defects and the Jackson CSV correction",
+  "description": "Build the four frozen upstream branches and run the exact historical public callers on those builds and the public release JARs. Confirm the two independent Jackson controls on the original pins as well. Repeat the original campaign after sharing its JVM launcher with these rechecks. The public setup caches on this host contain the locked inputs.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "paths": [
+      "verification/merged-pr-links/upstream/inputs.json",
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md"
+    ]
+  },
+  "expected": "All 34 release and development observations and four historical Jackson controls reproduce their checked-in receipts. The historical matrix reproduces 143 original observations across 24 deployment pairs and reports 57 matched merged-revision predictions of 61.",
+  "submitted": {
+    "at": "2026-11-25T09:58:57+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "4m",
+    "notes": "The previous 143-JVM run took 124 seconds at one CPU. The four new source builds and 38 JVMs are sequential in this job."
+  },
+  "steps": [
+    {
+      "name": "Release and development reproductions",
+      "run": "python3 verification/merged-pr-links/upstream/recheck.py 409 411 412 419",
+      "cwd": "."
+    },
+    {
+      "name": "Jackson controls on the original pins",
+      "run": "python3 verification/merged-pr-links/upstream/recheck.py 409 --original-wrapping",
+      "cwd": "."
+    },
+    {
+      "name": "All original public observations",
+      "run": "python3 verification/merged-pr-links/audit.py --replay",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

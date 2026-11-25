@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "407",
+  "title": "Solr counts documents in multivalued enum facets",
+  "summary": "The six-document enum facet changed from empty buckets to Low 4, Medium 3, Not Available 3 and High 2. Duplicating Low on one document preserved the counts. The string-field control returned all four buckets on both sides.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Solr",
+    "symbol": "SolrClient.query"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The issue reports empty facet results on affected releases. The merge should return total 6 and exactly Low=4, Medium=3, Not Available=3, High=2."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/solr",
+    "url": "https://github.com/apache/solr/pull/3158"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Both pins supply their changed facet classes over Solr 9.8.0 with identical core configuration. The full pin-built core could not start on the release SolrJ support graph.",
+    "The six-document enum facet changed from empty buckets to Low 4, Medium 3, Not Available 3 and High 2. Duplicating Low on one document preserved the counts. The string-field control returned all four buckets on both sides."
+  ]
+}

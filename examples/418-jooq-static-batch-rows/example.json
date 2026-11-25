@@ -1,0 +1,42 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "418",
+  "title": "jOOQ preserves row identity across static JDBC batches",
+  "summary": "The parent reported three stored rows but wrote Alice three times. H2, PostgreSQL 16.16 and the reported PostgreSQL 18.1 returned the three original ID/name pairs on the fix, including across a two-row batch and its one-row tail. Prepared statements preserved all rows on both pins.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "duplicate-delivery",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "jOOQ",
+    "symbol": "LoaderLoadStep.loadJSON"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The issue reports three copies of (1,Alice) on an affected release. The merge should store the three original pairs, each once, with no loader errors and counts 3/3."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/jOOQ/jOOQ",
+    "url": "https://github.com/jOOQ/jOOQ/pull/19875"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each history starts in a fresh JVM on each measured deployment and uses the same compiled caller on both revisions.",
+    "Each pin runs on H2 2.4.240 and on disposable PostgreSQL 16.16 and 18.1 servers. Both PostgreSQL versions are read back from the server. Every trial reads both result columns over JDBC.",
+    "The parent reported three stored rows but wrote Alice three times. H2, PostgreSQL 16.16 and the reported PostgreSQL 18.1 returned the three original ID/name pairs on the fix, including across a two-row batch and its one-row tail. Prepared statements preserved all rows on both pins.",
+    "The additional official PostgreSQL 18.1 image digest is in runtime.json. The example page gives its one-time pull command."
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schema": "llm-trace-manifest/v1",
   "session_id": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4",
-  "status": "ended",
+  "status": "open",
   "title": null,
   "first_prompt": "Review and implement `~/code/scripts/analysis/beyond-jbmc-java-change-verification-campaign.md`. The last few runs have gone quite well, so be aspirational with how you approach the work to maximize q",
   "client": {
@@ -12,39 +12,53 @@
     "gpt-6.2-astra"
   ],
   "started": "2026-11-24T06:10:50.814Z",
-  "ended": "2026-11-25T06:05:53.855Z",
-  "duration_seconds": 86103,
+  "ended": "2026-11-25T10:10:58.625Z",
+  "duration_seconds": 100808,
   "stats": {
-    "turns": 14,
-    "api_calls": 3706,
-    "tool_calls": 9152,
-    "tool_errors": 193,
-    "compactions": 12,
-    "peak_context_tokens": 550355,
+    "turns": 16,
+    "api_calls": 3981,
+    "tool_calls": 9981,
+    "tool_errors": 211,
+    "compactions": 14,
+    "peak_context_tokens": 550824,
     "usage": {
-      "input_tokens": 4357075,
-      "output_tokens": 2022933,
-      "cache_read_input_tokens": 1102832000,
+      "input_tokens": 5186432,
+      "output_tokens": 2173187,
+      "cache_read_input_tokens": 1149320448,
       "cache_creation_input_tokens": 0
     }
   },
   "tools": {
-    "Bash": 5086,
-    "exec": 3536,
-    "apply_patch": 385,
+    "Bash": 5582,
+    "exec": 3800,
+    "apply_patch": 446,
+    "wait": 75,
     "sleep": 73,
-    "wait": 67,
     "send_message_to_user_async": 4,
     "request_user_input_async": 1
   },
   "files_touched": [
+    "examples/403-lucene-sorted-range/caller/PublicCaller.java",
+    "examples/404-jts-endpoint-projection/caller/PublicCaller.java",
+    "examples/405-roaring-subtype-union/caller/PublicCaller.java",
+    "examples/406-datasketches-quantile-image/caller/PublicCaller.java",
+    "examples/409-jackson-csv-end-of-input/README.md",
+    "examples/411-avro-idl-union-default/README.md",
+    "examples/412-ical4j-moved-occurrences/README.md",
+    "examples/419-jool-window-endpoints/README.md",
+    "examples/419-jool-window-endpoints/caller/PublicCaller.java",
+    "examples/422-guava-live-set-equality/caller/PublicCaller.java",
+    "examples/schema/example.schema.json",
     "examples/tools/build.py",
     "examples/tools/targets/change_evidence.py",
     "examples/tools/targets/change_inventory.py",
     "examples/tools/targets/change_plan.py",
     "examples/tools/targets/java/ResourceObserver.java.template",
+    "examples/tools/targets/public_comparison.py",
+    "examples/tools/targets/public_postgres.py",
     "examples/tools/targets/resource_workflows.py",
     "examples/tools/targets/test_change_plan.py",
+    "examples/tools/validate_example.py",
     "lib/benchmark/beyond-jbmc/README.md",
     "lib/benchmark/beyond-jbmc/additional_controls.py",
     "lib/benchmark/beyond-jbmc/blind/LoaderObservations.java",
@@ -182,6 +196,7 @@
     "lib/tests/fixtures/claims/claims/Radix.java",
     "lib/tests/fixtures/claims/claims/Tokens.java",
     "llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md",
+    "llm-dlc/loops/organic-java-merged-pr-links-brief-results.md",
     "llm-dlc/loops/organic-java-pr-capability-composition-fast-follow-results.md",
     "llm-dlc/loops/organic-java-pr-product-behaviour-20-additional-cases-results.md",
     "verification/beyond-jbmc/integer-codecs/RESULTS.md",
@@ -189,6 +204,9 @@
     "verification/beyond-jbmc/scaffold-first/RESULTS.md",
     "verification/beyond-jbmc/successor/RESULTS.md",
     "verification/findings.md",
+    "verification/merged-pr-links/upstream/JacksonWrapping.java",
+    "verification/merged-pr-links/upstream/README.md",
+    "verification/merged-pr-links/upstream/recheck.py",
     "verification/product-behaviour/audit.py",
     "verification/product-behaviour/cases/J02/UpgradeProbe.java",
     "verification/product-behaviour/cases/J02/case.json",
@@ -198,7 +216,11 @@
     "verification/product-behaviour/qualify.py",
     "verification/product-behaviour/register.py",
     "verification/product-behaviour/transfer_controls.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/UpgradeProbe.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/campaign-audit.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/campaign-qualify.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/class-names-implementation-check.log",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/finish_merged.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/UpgradeProbe.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/WeekFrames.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/WeekReference.java",
@@ -209,6 +231,29 @@
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/replacement.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/startup.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/lang-weekdate-case/upstream.json",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-callers/10/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-callers/6/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-callers/7/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-callers/8/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-callers/9/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/407-solr-enum-buckets/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/407-solr-enum-buckets/fixtures/solr/fixture/conf/enumsConfig.xml",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/407-solr-enum-buckets/fixtures/solr/fixture/conf/schema.xml",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/407-solr-enum-buckets/fixtures/solr/fixture/conf/solrconfig.xml",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/407-solr-enum-buckets/fixtures/solr/fixture/core.properties",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/407-solr-enum-buckets/fixtures/solr/solr.xml",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/413-hikari-schema-reset/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/414-commons-pool-idle-validation/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/415-rxjava-stop-cancellation/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/416-reactor-set-buffer/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/417-logback-rotation-headers/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/418-jooq-static-batch-rows/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/420-jdt-empty-format-region/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/421-junit-nested-display-names/caller/PublicCaller.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/421-junit-nested-display-names/caller/explicit/OuterA.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/421-junit-nested-display-names/caller/inner/OuterA.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/421-junit-nested-display-names/caller/inner/OuterB.java",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/merged-staged/421-junit-nested-display-names/caller/outer/OuterB.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic-effort-report/collect_evidence.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic-effort-report/effort.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic20-publication-warnings.txt",
@@ -226,6 +271,7 @@
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic4-src/log4j/update_replay.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic4-src/replacement.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/organic4-src/summary.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/predictions.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-cases/J01/UpgradeProbe.java",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-cases/J01/case.json",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-cases/J03/UpgradeProbe.java",
@@ -281,7 +327,10 @@
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-support/predicate_proof.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-support/release_pairs.py",
     "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-support/results-base.md",
-    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-support/transfer_controls.py"
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/product-support/transfer_controls.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/register_merged.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/submit_merged.py",
+    "~/.cache/in-the-loop/agent-tmp/c3caedf3-7925-4cdf-aaa2-f3c5885dabb1/write_report.py"
   ],
   "context_windows": [
     {
@@ -455,24 +504,52 @@
     {
       "index": 12,
       "started": "2026-11-25T01:15:12.261Z",
-      "ended": "2026-11-25T06:05:53.855Z",
-      "turns": 2,
-      "api_calls": 434,
+      "ended": "2026-11-25T08:33:50.405Z",
+      "turns": 3,
+      "api_calls": 441,
       "usage": {
-        "input_tokens": 295892,
-        "output_tokens": 232259,
-        "cache_read_input_tokens": 155034240,
+        "input_tokens": 832215,
+        "output_tokens": 238073,
+        "cache_read_input_tokens": 158256384,
         "cache_creation_input_tokens": 0
       },
-      "peak_context_tokens": 510999
+      "peak_context_tokens": 550824
+    },
+    {
+      "index": 13,
+      "started": "2026-11-25T08:33:50.411Z",
+      "ended": "2026-11-25T09:33:34.357Z",
+      "turns": 0,
+      "api_calls": 160,
+      "usage": {
+        "input_tokens": 133385,
+        "output_tokens": 87965,
+        "cache_read_input_tokens": 25412096,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 221703
+    },
+    {
+      "index": 14,
+      "started": "2026-11-25T09:33:34.362Z",
+      "ended": "2026-11-25T10:10:58.625Z",
+      "turns": 1,
+      "api_calls": 108,
+      "usage": {
+        "input_tokens": 159649,
+        "output_tokens": 56475,
+        "cache_read_input_tokens": 17854208,
+        "cache_creation_input_tokens": 0
+      },
+      "peak_context_tokens": 221920
     }
   ],
   "log": {
-    "sha256": "f39b6d4f883a2f9c80e48bfd63e399b68851ba2c4d758ee385dd28725461c966",
-    "bytes": 53528015,
-    "lines": 29109,
-    "gzip_bytes": 9614812,
-    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/f39b6d4f883a2f9c80e48bfd63e399b68851ba2c4d758ee385dd28725461c966.jsonl.gz"
+    "sha256": "9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996",
+    "bytes": 58503991,
+    "lines": 31375,
+    "gzip_bytes": 10617295,
+    "path": "llm-dlc/traces/01a20c2d-af08-7933-a0ff-b6cdac9c99e4/logs/9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996.jsonl.gz"
   },
   "subagents": [],
   "commits": [
@@ -1307,6 +1384,158 @@
       "summary": "Close the successor comparisons on all measured deployments",
       "body": "All sixteen application pairs have source-backed questions and unchanged controls exercised on both original JARs. Thirteen used the recorded Ubuntu distribution providers. The other three used separately pinned Maven providers after the exact dependency acquisitions reached the task budget. Fifteen of 44 primary observations changed and all 44 controls held. On the additional three deployments the frozen automatic operators decided zero primaries, and each matched symbolic engine left all three open. Keep these results apart from the signed 0/13 automatic and 2/13 native matched scores. The twelve outstanding signed provider filenames, versions and digests are listed for the next intake.\n\nThe DSI and ISO Parser proofs remain the two supplied signed-distribution primaries. Stock JBMC qualified DSI alone. The final scorecard binds every measurement to its earlier public caller and original job, reports project-level uncertainty and retains the first failed submissions. All 28 campaign jobs were collected, 23 passed and the five pre-launch failures have passing replacements. The three audits checked 200 distinct output files and 154 local report links resolved.\n\nThe final changed-test selector passed 14 of its 15 groups on the first run, including all 59 Rust test binaries. The trace-span assertion failed in that combined run, passed individually, and its full 110-test file then passed in isolation. The previous nine-group selector passed, the pipeline and cost inventories validated, and whitespace checks passed.",
       "log_sha256": "e66fbef3ff6567e624d0dc68c4966ed8721578f558ffd4a49f4810d5e2e70aec"
+    },
+    {
+      "change_id": "qmtzywmqtquysmvqolrkmoquuksykrsz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Start the setup record for the merged Java PR links brief",
+      "body": "Setup agent for llm-dlc/loops/organic-java-merged-pr-links-brief.md: all 41 pinned revisions of the 20 cases fetched into shallow bare mirrors with a worktree each, every PR's merge SHA and first parent checked against the brief, and six Gradle distributions checked against services.gradle.org. Per-case builds follow.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "ulxnwtzsswoymsmysxopxplspvzspknv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue the setup builds of the merged Java PR links brief (verification pending)",
+      "body": "Upstream builds and landed-test runs that take over a minute, for llm-dlc/loops/organic-java-merged-pr-links-brief.md: Lucene core (#14732) on JDK 24, Solr core with TestJsonFacets (#3158), jOOQ with the reporter's H2 loader test (#19875), Guava JRE and Android with SetViewTest (#7784), HikariCP's PostgresTest in Docker (#2346), JUnit's DisplayNameGenerationTests (#2646) and RoaringBitmap's FastAggregation tests (#914). Each runs the fix, the parent and where it compiles the fix's test on the parent, mostly offline after an online first step, in worktrees under ~/.cache/in-the-loop/merged-pr-links.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "rqqurvolzzrznqrnlsvlyronpronlwvy",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the setup of the merged Java PR links brief",
+      "body": "The setup record for llm-dlc/loops/organic-java-merged-pr-links-brief.md now covers all 20 cases: per-case pins, build facts, online and offline commands, built or overlay jars of both sides with full sha256 and changed-class digests, release sets and which side each equals, landed-test runs, signatures, and Setup Agent Notes for the domain agent. Landed tests were run on a JVM inline for 16 cases (each passes on the fix and fails when moved onto the parent, M16 by the reporter's H2 test); M20's landed test cannot separate the sides; M03, M05 and M19 wait on jobs. Gaps recorded: M07's SNAPSHOT inputs are gone (built over released Jackson 3.2.0), RxJava's signing key is revoked, Solr 9.8.0 is signed by an expired key, M11 needs -Dapi.version=1.44 for Testcontainers on Docker 29. No claims, examples or probes of the brief's scenarios.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "lprplvpzoyzlktqxovwuupovvqolkqty",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose eight false positives from the merged-pr-links setup for the allow list",
+      "body": "Setup session f1c44a2e's logs raised long-token and public-ip warnings that are jar file names (M19-junit-framework-*), a public OpenPGP key fingerprint used as a file name, a JDK 21 version string and a four-part Maven version. Proposed only; a person approves.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "xuysovwpmrqruxovmsyzmpmowslxplmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the seven setup job results of the merged Java PR links brief",
+      "body": "All seven setup jobs passed (results recorded by the pipeline on the default line). Lucene #14732, Solr #3158, jOOQ #19875 and Guava #7784 now also have jars built from the pins themselves, with full sha256 and the digests of the changed classes. Their landed or reporter regressions agree with the overlay runs: the fix passes, the parent fails, offline included. HikariCP's whole PostgresTest gives 7/7 on the fix and 6/6 on the parent; with the fix's class moved onto the parent, only testSchema fails. RoaringBitmap #914 and JUnit #2646, whose landed tests had not run before, separate the sides: ArrayStoreException in both new tests, and indicativeSentencesGeneratorOnNestedClass fails on the parent. So the regression separates the sides in 19 of 20 cases; for Guava, the fix's test does not compile on the parent. Noted: the jOOQ jar is not byte-reproducible between builds of one pin. The Setup Agent Notes now say setup is complete.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "tqtysowzwprsnymszukxyunzwypnwprs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "ruyozwpyrzkzskosksyrmzuztluvpzrv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-072322-setup-run-roaringbitmap-914-s-landed-fas: passed: 5 passed step(s) in 1m11s, peak 710.0 MiB (estimated 5m00s, 4.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "mynnkymuytlpqvotusuxvupquwumrnnp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 3 job(s)",
+      "body": "Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261125-071414-setup-build-lucene-core-at-both-14732-re: passed: 5 passed step(s) in 3m55s, peak 1.6 GiB (estimated 25m00s, 5.0 GiB) 20261125-071415-setup-build-jooq-at-both-19875-revisions: passed: 4 passed step(s) in 2m41s, peak 1.2 GiB (estimated 30m00s, 5.0 GiB) 20261125-072322-setup-run-junit-2646-s-landed-displaynam: passed: 5 passed step(s) in 3m50s, peak 2.2 GiB (estimated 15m00s, 4.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "ttuwqwvpporssurvupkyrwvptukttorw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 2 job(s)",
+      "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261125-071415-setup-build-solr-core-at-both-3158-revis: passed: 5 passed step(s) in 7m16s, peak 3.8 GiB (estimated 1h00m, 8.0 GiB) 20261125-071708-setup-run-hikaricp-s-landed-postgrestest: passed: 3 passed step(s) in 7m02s, peak 723.7 MiB (estimated 10m00s, 3.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "omvqzwuyylslluyrwpmnyvplqlztozxw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record verification results for 1 job(s)",
+      "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-071415-setup-build-guava-jre-and-android-at-bot: passed: 6 passed step(s) in 7m27s, peak 1.8 GiB (estimated 45m00s, 5.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "vvplkvnomyqrplzyxwqxvoqyqqmswxtw",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a brief to be generated from 20 pull requests: organic-java-merged-pr-links-l01-l20",
+      "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-l01-l20.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-l01-l20.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "vluwvlyxknmwszzpytpsrzoouwwsyvzl",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a brief to be generated from 10 pull requests: organic-java-merged-pr-links-m01-m10",
+      "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-m01-m10.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-m01-m10.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "umqvqqmlozwkkllqosqwmxznrztopoup",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a brief to be generated from 5 pull requests: organic-java-merged-pr-links-n01-n05",
+      "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-n01-n05.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-n01-n05.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "mlwnltyluvkkussxpznytopwzplvslmv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the watcher's decisions on organic-java-merged-pr-links-brief-setup",
+      "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "yqwxtnwplkwuwovvvlsxmnuytzzzwups",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Merge the single-agent run organic-java-merged-pr-links-brief-setup into the line",
+      "body": "The single-agent run organic-java-merged-pr-links-brief-setup (session f1c44a2e-caec-48a3-9996-4d22d22c89b4) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "zkryyrotzqtwlvxnsoptpomtpynxywuk",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Put the setup notes of organic-java-merged-pr-links-brief into its brief",
+      "body": "The setup run organic-java-merged-pr-links-brief-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/organic-java-merged-pr-links-brief.md and ~/code/scripts/analysis/organic-java-merged-pr-links-brief.md, for the domain agent.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "zzsmtppzmkmkmqtmolkqrvrpornlxrpp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Replay pinned public Java callers and compare six merged changes",
+      "body": "Add a finite public-API comparison to the example router. Each history gets the same compiled caller in a fresh JVM with a checked JDK, ordered JAR digests and observed class providers. Examples 403–406, 419 and 422 cover Lucene, JTS, RoaringBitmap, DataSketches, both jOOλ modules and both Guava editions.\n\nEight deployment pairs ran 48 physical trials and reproduced their receipts through the ordinary example command. Both jOOλ variants refuted the wide-bound prediction; Guava supplied the iterator-count difference its upstream tests missed. All six example validations and all 57 repository-selected test suites passed.",
+      "log_sha256": "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62"
+    },
+    {
+      "change_id": "urtzsomwsynnnvkvzttwxpoxwrnmnnqo",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Complete the merged Java public API campaign (verification pending)",
+      "body": "Add the other fourteen public callers, the campaign audit and the twenty-case report. All 20 merged intent predictions and 20 unchanged controls held. Jackson CSV, Avro, ical4j and both jOOλ modules refuted four challenge predictions. Preserve the original expectations, typed outcomes, runtime digests and overlay boundaries. The H2 and PostgreSQL 16.16 and 18.1 jOOQ histories reproduce both the counting discrepancy and the repair.\n\nAll 143 physical observations across 24 deployment pairs were reproduced through the normal example route. All fourteen new example validations and the 56 selected test suites passed. The audit checks 61 original claim rows and the retained Avro receipt confirms four original-method entries. Adding a missing observation, wrong result or reversed source pins to the audit's inputs was checked to fail.\n\nIndependent full replay job 20261125-091819-replay-all-sixty-one-merged-java-public. Original-method control and challenge jobs 20261125-091819-qualify-avro-merged-challenge-and-contro, 20261125-091819-qualify-ical4j-merged-challenge-and-cont, 20261125-091819-qualify-jackson-csv-merged-challenge-and and 20261125-091819-qualify-joo-merged-challenge-and-control.",
+      "log_sha256": "8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693"
+    },
+    {
+      "change_id": "ysxolvkmqrrnowulmkyrrtmtppmurzvs",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Classify four merged Java challenges (verification pending)",
+      "body": "Replayed the four disputed public callers on the current Maven releases and frozen upstream development commits. The same caller bytecode confirmed the Avro array-default and jOOλ window defects on release and development builds, and the ical4j override-order defect on its development branch. Three public reproductions and related tracker checks are ready for the user in VF-065. Jackson's documented wrapping and the independent token reader both preserved both rows on all four tested deployments, correcting the brief's two-row configuration assumption.\n\nAll 34 release and development observations and four historical Jackson controls reproduced in clean JVMs. The standalone report instructions reproduced the release behavior for every affected module. The four changed examples plus HikariCP and JDT passed their normal replay validators, incorrect artifact digests and class providers were rejected, the pipeline layout validated, and all 54 selected test suites passed. The five previous campaign jobs passed. Job 20261125-095857-replay-three-upstream-defects-and-the-ja independently repeats these 38 observations and the original 143-JVM campaign.",
+      "log_sha256": "9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996"
     }
   ],
   "logs": {
@@ -1562,6 +1791,18 @@
       "gzip_bytes": 6897725,
       "url": null
     },
+    "8b677d26673de01eb4939859f7a54f32036ce9bb3a547fcc7c981257f9d8f693": {
+      "bytes": 56288965,
+      "lines": 30358,
+      "gzip_bytes": 10166053,
+      "url": null
+    },
+    "8f6b94656354e069e4d8dafc5eb768c7b6ed2deb82c9554232039069dfe26d62": {
+      "bytes": 56064038,
+      "lines": 30127,
+      "gzip_bytes": 10136707,
+      "url": null
+    },
     "9278a44e60ada940b28c2ac23607237bf4e34c925dc6c6b9a81364e73bff91ed": {
       "bytes": 31797440,
       "lines": 17876,
@@ -1596,6 +1837,12 @@
       "bytes": 38764538,
       "lines": 21072,
       "gzip_bytes": 6941786,
+      "url": null
+    },
+    "9ec83a0eddd7d0af22528800d8a6b20720f4d3bf66f2a3f9ade9462771aa3996": {
+      "bytes": 58503991,
+      "lines": 31375,
+      "gzip_bytes": 10617295,
       "url": null
     },
     "a073e9a82ba03c7d7480d9ab16ea02a91a68d8b97cc601683e6cfc70d60bb222": {
@@ -1728,12 +1975,6 @@
       "bytes": 26776406,
       "lines": 14876,
       "gzip_bytes": 4780123,
-      "url": null
-    },
-    "f39b6d4f883a2f9c80e48bfd63e399b68851ba2c4d758ee385dd28725461c966": {
-      "bytes": 53528015,
-      "lines": 29109,
-      "gzip_bytes": 9614812,
       "url": null
     },
     "f41e194be85edbcc56a9f53c358aa2110725c9a7cd9a794333c756ba7a086131": {

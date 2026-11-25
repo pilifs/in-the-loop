@@ -1,0 +1,62 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/avro/pull/3709",
+  "revisions": {
+    "parent": "d28279dace6ffd2deaf6a66e5e82f81a582c3252",
+    "fix": "4c29cfb234c6ca0d9df8a572ca04b65ccc7c21e4"
+  },
+  "entry": "Schema.Field.defaultVal",
+  "questions": [
+    {
+      "id": "apache/avro#3709.1",
+      "role": "Intent",
+      "args": [
+        "null-first"
+      ],
+      "history": "Integer default 1, union `[\"null\",\"int\"]`.",
+      "prediction": "Both pins should report a present default. Before, expect Java null and an IDL null initializer as reported for the generator. After, expect `Integer(1)` and an unquoted integer literal 1.",
+      "basis": "The JSON token is an integer, and int is its only matching branch. Avro 1.12.0 permits a default to match a later branch.",
+      "expected": {
+        "parent": {
+          "return": "present=true; value=null; idl=null"
+        },
+        "fix": {
+          "return": "present=true; value=Integer(1); idl=1"
+        }
+      }
+    },
+    {
+      "id": "apache/avro#3709.2",
+      "role": "Control",
+      "args": [
+        "int-first"
+      ],
+      "history": "Keep default 1 and reverse the branch order to `[\"int\",\"null\"]`.",
+      "prediction": "Both pins should expose the same integer and emit the same initializer as the merged intent case.",
+      "basis": "The first branch already accepts the integer.",
+      "expected": {
+        "parent": {
+          "return": "present=true; value=Integer(1); idl=1"
+        },
+        "fix": {
+          "return": "present=true; value=Integer(1); idl=1"
+        }
+      }
+    },
+    {
+      "id": "apache/avro#3709.3",
+      "role": "Challenge",
+      "args": [
+        "array-orders"
+      ],
+      "history": "Set the default to `[1]` and field type to `[{\"type\":\"array\",\"items\":\"int\"},\"int\"]`. Then put the unrelated int branch first, retaining exactly the same array and items schema.",
+      "prediction": "On the merge the contract predicts a one-element Java list containing `Integer(1)` and an IDL array initializer `[1]` in both orders. Source inspection predicts the int-first variant can refute this.",
+      "basis": "The array has exactly one matching branch in either order. A nonmatching primitive cannot contribute an element type.",
+      "expected": {
+        "fix": {
+          "return": "present=true; value=[Integer(1)]; idl=[1] / present=true; value=[Integer(1)]; idl=[1]"
+        }
+      }
+    }
+  ]
+}

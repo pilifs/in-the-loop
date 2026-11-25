@@ -52,13 +52,13 @@ Usage: python3 examples/tools/build.py [ID ...]          run constructed example
        python3 examples/tools/build.py ID --finite-domain  exhaust the certified integer inputs to each supported task on a JVM
        python3 examples/tools/build.py ID --native-selectors TASK[,TASK...]  prove constant calls covering a frozen signed-int selector
 
-A real-world example (origin "real-world") is not run, and naming one is a failure: its report is its README.md, and its example.json is what the
-router knows of it. The exception is one with a target sidecar (target.json, llm-dlc/loops/example-targets.md), whose
-tasks are planned and run one at a time with --task, through examples/tools/targets/; without --task it is not run
-either. Every example's tags must come from examples/tags.json.
+Real-world examples have hand-written reports. A target sidecar (target.json, llm-dlc/loops/example-targets.md)
+runs one task at a time with --task. A publicComparison sidecar replays the named example's finite histories on
+both prepared JVM deployments with build.py ID. Other real-world examples have a report only.
+Every example's tags must come from examples/tags.json.
 Needs Java 25 on PATH or JAVA_HOME; JBMC for B9 and B11; TLC (tla2tools.jar in ~/tools, or TLA2TOOLS_JAR) for D1;
 cargo (or a built lib/target/release/jvmcontract, or JVMCONTRACT pointing at one) for the javac apps; the Python
-module jsonschema, without which no result is published. No Docker.
+module jsonschema, without which no result is published. A public PostgreSQL comparison also uses Docker.
 """
 
 import atexit
@@ -364,12 +364,18 @@ def main(argv):
             return 1
         return 0
     failures, unexecuted = [], []
+    replayed_comparisons = set()
     for folder in folders:
         if wanted and folder.name[:3] not in wanted:
             continue
         example = load_example(folder)
         if (example["origin"] != "constructed" or example.get("target")) and not wanted:
             continue  # running every example means every constructed one
+        if example.get("publicComparison"):
+            from targets import public_comparison
+            public_comparison.replay(folder)
+            replayed_comparisons.add(example["id"])
+            continue
         reason = not_executable(example)
         if reason:
             # Nothing ran, so nothing is written: an earlier result.json stays the record of its own run.
@@ -393,7 +399,8 @@ def main(argv):
             print(f"{folder.name}: {result['verdict']} ({'as expected' if result['matchesExpected'] else expected})")
         if not result["matchesExpected"]:
             failures.append(folder.name)
-    render_index(folders)
+    if not wanted or replayed_comparisons != wanted:
+        render_index(folders)
     if failures:
         print("Verdicts differ from expectations: " + ", ".join(failures))
     if unexecuted:
@@ -547,6 +554,9 @@ def plan(example):
     specification, its configurations and the generated operators; `outputs`, the files the run writes into the
     example's folder (`maybe`: only when the run produces them)."""
     approach = example["approach"]["id"]
+    if example.get("publicComparison"):
+        from targets import public_comparison
+        return public_comparison.comparison_plan(next(EXAMPLES.glob(f"{example['id']}-*")))
     reason = not_executable(example)
     p = {"example": example["id"], "approach": approach, "executable": reason is None, "notExecuted": reason}
     if reason and example.get("target"):
