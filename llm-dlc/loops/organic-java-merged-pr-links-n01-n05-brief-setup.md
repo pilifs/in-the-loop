@@ -66,7 +66,8 @@ equal to services.gradle.org's published `gradle-9.8.0-wrapper.jar.sha256` (`$O/
 Caches and files this work owns:
 - `$O/m2` (Maven local repository, 281 MB), `$O/gradle-home` (`GRADLE_USER_HOME`, 946 MB), `$O/maven-settings.xml`, `$O/toolchains.xml` (JDKs 8, 11, 17, 21, 25).
 - `$O/artifacts/CASE-ROLE/`: built jars, `SHA256SUMS` (jar + every class of each changed production source file), `runtime-classpath.txt`,
-  `test-classpath.txt` (Maven cases; `:`-joined, paths into `$O/m2`). N05's arrive from the job (below).
+  `test-classpath.txt` (Maven cases; `:`-joined, paths into `$O/m2`). N05's are `runtimeClasspath.txt` and `testRuntimeClasspath.txt` (`:`-joined; the Spring project jars copied under
+  `$O/artifacts/N05-ROLE/tree/`, the rest in `$O/gradle-home`), from the job (below).
 - `$O/releases/A-V/`: released artifacts from Maven Central with their `.sha1` (and `.sha256`/`.sha512` where published) checked and `.asc` beside them.
 - `$O/logs/`: every build and test log (`TAG.log`) with a summary (`TAG.junit.txt`); `$O/logs/surefire/CASE-parent-landed/` keeps the surefire
   reports of the landed tests on the parent. `$O/upstream/prs/`: each PR's `gh api` record and changed files.
@@ -75,6 +76,7 @@ Caches and files this work owns:
   `keep_mvn.sh` (artifacts and classpaths), `junit_summary.py`, `gradle_case.sh` (one Gradle 9.8.0 run, see N05), `resolve-all.init.gradle`
   (adds tasks `setupResolveAll`, `setupWriteClasspath`; changes no upstream file), `cp_localize.py`, `N05_job.sh`, `central_get.sh`, `smoke/MySqlSmoke.java`.
 - Build trees of N01–N04 were deleted once their digests were recorded (`git clean -fdx` in the worktrees); the offline commands below rebuild in seconds.
+  N05's build copies and build outputs were removed by the job's last step (`N05_job.sh clean`).
 
 `mvn_case.sh DIR TAG JDK [online] ARGS...` runs `systemd-run --user --scope -q -p MemoryMax=4G -p MemorySwapMax=0 choom -n 500 -- $MVN [-o] ARGS`
 in DIR with `JAVA_HOME=JDK`, `MAVEN_OPTS=-Xmx1g`. The commands below are its ARGS.
@@ -89,7 +91,7 @@ in DIR with `JAVA_HOME=JDK`, `MAVEN_OPTS=-Xmx1g`. The commands below are its ARG
 | N02 HdrHistogram #145 | Maven, JDK 8, full `package` at both pins (150 / 149 pass) | 2.1.10 lacks the fix; 2.1.11 has all 14 lines the fix added (not byte-equal) | `HistogramAutosizingTest` 16/16, 15/15, **1 error** (`ArrayIndexOutOfBoundsException: 54272`) | inline |
 | N03 threeten-extra #463 | Maven, JDK 17, full `package` at both pins (13857 / 13787 pass) | latest release 1.11.0 predates the fix; no release with it | `TestBritishCutoverChronology`+`TestJulianChronology` 1668/1668, 1598/1598, **51 fail** (49 + 2) | inline |
 | N04 geometry-api-java #329 | Maven, JDK 8, full `package` at both pins (506 / 505 pass) | 2.2.4 (last on Central) `TopologicalOperations.java` = parent byte for byte; **2.3.0 is not on Maven Central** | `TestDifference` 5/5, 4/4, **1 error** (`GeometryException: internal error`) | inline |
-| N05 spring-framework #37322 | Gradle 9.8.0, JDK 25 + toolchains 17/25, dependencies resolved inline; build and tests by job | 7.0.9 lacks the line; 7.0.10 `MySQLMaxValueIncrementer.java` = fix byte for byte | by job | job `20261125-225459-setup-build-spring-jdbc-at-both-37322-re` (pending) |
+| N05 spring-framework #37322 | Gradle 9.8.0, JDK 25 + toolchains 17/25, offline `:spring-jdbc:jar :spring-jdbc:test` at both pins (972 / 971 pass, 6 skipped each) | 7.0.9 lacks the line; 7.0.10 `MySQLMaxValueIncrementer.java` = fix byte for byte | `DataFieldMaxValueIncrementerTests` 12/12, 11/11, **1 fail** (`mySQLMaxValueIncrementerWithCommitFailure`) | job `20261125-225459-setup-build-spring-jdbc-at-both-37322-re` (passed) |
 
 ## Cases
 
@@ -226,9 +228,28 @@ driver is on any spring-jdbc classpath** (see MySQL below).
 **Job** `20261125-225459-setup-build-spring-jdbc-at-both-37322-re` (`$O/scripts/N05_job.sh fix|parent|transplant|clean`): builds and tests at
 both pins offline, keeps `$O/artifacts/N05-ROLE/` (spring-jdbc jar, `SHA256SUMS` with the `MySQLMaxValueIncrementer` class digest,
 `runtimeClasspath.txt` and `testRuntimeClasspath.txt` with the project outputs copied under `tree/`), runs the fix's
-`DataFieldMaxValueIncrementerTests` on a copy of the parent (expected to fail), and removes the build trees. Pending at the time of writing.
+`DataFieldMaxValueIncrementerTests` on a copy of the parent (expected to fail), and removes the build trees.
+
+**Job result: passed** (all 4 steps, 3m44s wall, collected 2026-11-25T23:08:55Z; result in
+`verification/results/2026/11/25/20261125-225459-setup-build-spring-jdbc-at-both-37322-re/`, recorded by the runner in commit
+`b3390c67f58f80e874a730080a36fba5b4bfe7c5` on the default line, not on this record's line):
+- fix: `--offline :spring-jdbc:jar :spring-jdbc:test` BUILD SUCCESSFUL in 58 s; 972 tests, 0 failures, 0 errors, 6 skipped;
+  `DataFieldMaxValueIncrementerTests` 12/12. Classpaths written offline: runtime 22 entries, test runtime 56 entries.
+- parent: the same, BUILD SUCCESSFUL in 1 m 6 s; 971 tests, 0 failures, 0 errors, 6 skipped; `DataFieldMaxValueIncrementerTests` 11/11.
+  Classpaths: runtime 22 entries, test runtime 56 entries (the same entries as the fix's, with `N05-parent` for `N05-fix`).
+- fix's test class on a copy of the parent (`git archive` of the parent into `$O/build/N05-parent-landed` plus the fix's
+  `DataFieldMaxValueIncrementerTests.java`): 12 tests, **1 failure**, `mySQLMaxValueIncrementerWithCommitFailure()`:
+  `org.opentest4j.AssertionFailedError at DataFieldMaxValueIncrementerTests.java:258`, the first `assertThat(incrementer.nextLongValue()).isEqualTo(1)`
+  after the expected `DataAccessResourceFailureException`. The other 11 pass. Printed `TRANSPLANT-FAILS-AS-EXPECTED`.
+- clean: `cleaned`.
+Logs: `$O/logs/N05-{fix,parent,parent-landed}.test.offline.{log,junit.txt,class.txt}` and `$O/logs/N05-{fix,parent}.cp-*.log`. The JUnit XML of
+the transplant was in the removed build copy; the Gradle log keeps the failing line.
 
 **Release side.** spring-jdbc 7.0.10's `MySQLMaxValueIncrementer.java` equals the fix's byte for byte; 7.0.9's lacks the added line.
+After the job: `org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.class` in the fix's built jar
+(`dba95d593f6d207bbeb3dd74d3faf0f709047daa389b3cbac0d61f7fdfd83e56`) equals the class in the released `spring-jdbc-7.0.10.jar` byte for byte;
+the parent's (`61041df1599b74cf598a5dc7dfde2811bcd4df3fd7c04f84d2db075ad2d64233`) differs from 7.0.9's
+(`94cb3c12a5aea677b23e9fdc90166ccb455f856690e63dc9a05e91ceab072f4c`), which was built from an earlier tree.
 
 **MySQL.** The PR reports MySQL 9.1.0. Pulled `mysql:9.1.0` = `mysql@sha256:0255b469f0135a0236d672d60e3154ae2f4538b146744966d96440318cc822c6`
 and MySQL Connector/J 9.1.0 from Central (`$O/releases/mysql-connector-j-9.1.0/`, sha1 checked, good signature by Oracle Maven Release Key 3,
@@ -240,7 +261,7 @@ $O/scripts/smoke/MySqlSmoke.java jdbc:mysql://127.0.0.1:33061/setup root …` pr
 `driver=mysql-connector-j-9.1.0 (Revision: cf2917ea44ae2e43a4514a33771035aa99de73bf) server=9.1.0 engine=InnoDB isolation=REPEATABLE-READ autocommit=1`.
 Note the image's entrypoint first runs a socket-only temporary server; wait for a TCP ping before connecting.
 
-## Digests of the built artifacts (N01–N04)
+## Digests of the built artifacts (N01–N05)
 
 Class digests are of the classes in these jars; jar digests are of this build. `$O/artifacts/CASE-ROLE/SHA256SUMS` holds the same.
 
@@ -296,6 +317,43 @@ Class digests are of the classes in these jars; jar digests are of this build. `
 | N04 | fix | `esri-geometry-api-2.3.0.jar` | `bf4180c492babbb86fbe28cf53a00ee1df0251c4117480885ff0a30ac2dd48fa` |
 | N04 | fix | `com/esri/core/geometry/TopologicalOperations$CompareCuts.class` | `e8c94123fb786f3f3f97a48421570a557888569c7cc24b2353cc122dca8764b3` |
 | N04 | fix | `com/esri/core/geometry/TopologicalOperations.class` | `437f25efdaef62604dad8570dfa7fcc257a1dcc6e31a0d32b6a0500619de5680` |
+| N05 | parent | `spring-jdbc-7.0.10-SNAPSHOT.jar` | `cf8f597b258ae68e0e898c44df0f2095edbd15e497c674f3f92aa4c220f7adb4` |
+| N05 | parent | `tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT.jar` | `0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7` |
+| N05 | parent | `tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT.jar` | `52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8` |
+| N05 | parent | `tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT-test-fixtures.jar` | `7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903` |
+| N05 | parent | `tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT.jar` | `367ff7947943f73452c34399bac30500f03c7d7e2309f1d50af445d6d37c544c` |
+| N05 | parent | `tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar` | `a2b1e4efba11de5116b4937783bfeda2574261c11947a03da65dc751d69f9905` |
+| N05 | parent | `tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar` | `ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2` |
+| N05 | parent | `tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar` | `44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd` |
+| N05 | parent | `tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar` | `066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3` |
+| N05 | parent | `tree/spring-expression/build/libs/spring-expression-7.0.10-SNAPSHOT.jar` | `79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8` |
+| N05 | parent | `tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT.jar` | `cf8f597b258ae68e0e898c44df0f2095edbd15e497c674f3f92aa4c220f7adb4` |
+| N05 | parent | `tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT-test-fixtures.jar` | `c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3` |
+| N05 | parent | `tree/spring-tx/build/libs/spring-tx-7.0.10-SNAPSHOT.jar` | `b5413dd4d2490f3e21d73fbcb1c2113ad1c1bde563d95a135e0a48245f8e4406` |
+| N05 | parent | `org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.class` | `61041df1599b74cf598a5dc7dfde2811bcd4df3fd7c04f84d2db075ad2d64233` |
+| N05 | fix | `spring-jdbc-7.0.10-SNAPSHOT.jar` | `1dec37927a52af49674ff1c5d96322ae0efbc3c779371598bf7c821bd22ea96b` |
+| N05 | fix | `tree/spring-aop/build/libs/spring-aop-7.0.10-SNAPSHOT.jar` | `0ce2d2d008306c61bf665d40010b94e69ac134e5c50ceecd0fa1da8afe7970d7` |
+| N05 | fix | `tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT.jar` | `52037fa238e705c81e6581774cf475024e7ff2e1624a3dc98553045d34d5a7e8` |
+| N05 | fix | `tree/spring-beans/build/libs/spring-beans-7.0.10-SNAPSHOT-test-fixtures.jar` | `7c1189776729b5f94d765f9f7dcb25e901a5da54d4f85b1e2e60b1ea95005903` |
+| N05 | fix | `tree/spring-context/build/libs/spring-context-7.0.10-SNAPSHOT.jar` | `367ff7947943f73452c34399bac30500f03c7d7e2309f1d50af445d6d37c544c` |
+| N05 | fix | `tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT.jar` | `a2b1e4efba11de5116b4937783bfeda2574261c11947a03da65dc751d69f9905` |
+| N05 | fix | `tree/spring-core/build/libs/spring-core-7.0.10-SNAPSHOT-test-fixtures.jar` | `ece723e252c2cf414c45345dc6227f93ff838925b7946df023619d991ec263d2` |
+| N05 | fix | `tree/spring-core/build/libs/spring-javapoet-repack-0.10.0.jar` | `44f626eed79def0bc72ef00c3844d05f80755a83f29afdefd68665f6f69a13fd` |
+| N05 | fix | `tree/spring-core/build/libs/spring-objenesis-repack-3.5.jar` | `066f61072767a9f18192c16fc7a6981508daafc04c1c52ee16ba9d9e49b2c4b3` |
+| N05 | fix | `tree/spring-expression/build/libs/spring-expression-7.0.10-SNAPSHOT.jar` | `79544fbebdd8c00b4d4fcc5f774f7e2cd82bbbbce1bb474c33616f8811b60bb8` |
+| N05 | fix | `tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT.jar` | `1dec37927a52af49674ff1c5d96322ae0efbc3c779371598bf7c821bd22ea96b` |
+| N05 | fix | `tree/spring-jdbc/build/libs/spring-jdbc-7.0.10-SNAPSHOT-test-fixtures.jar` | `c6deada2fac53b8ea6523dbda77597b128006674616f140f04df23264c6d1aa3` |
+| N05 | fix | `tree/spring-tx/build/libs/spring-tx-7.0.10-SNAPSHOT.jar` | `b5413dd4d2490f3e21d73fbcb1c2113ad1c1bde563d95a135e0a48245f8e4406` |
+| N05 | fix | `org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.class` | `dba95d593f6d207bbeb3dd74d3faf0f709047daa389b3cbac0d61f7fdfd83e56` |
+
+For N05, `SHA256SUMS` lists the spring-jdbc jar, every Spring project jar on the test runtime classpath (the copies under `tree/`) and the
+`MySQLMaxValueIncrementer.class` digest; the class is the entry inside the spring-jdbc jar, not a file beside it, so `sha256sum -c` reports that
+one line as missing (check it with `unzip -p JAR org/springframework/jdbc/support/incrementer/MySQLMaxValueIncrementer.class | sha256sum`).
+Only spring-jdbc's own jar differs between the pins; the other twelve project jars are identical. Digests of the classpath files themselves:
+`N05-fix/runtimeClasspath.txt` `acb1493c7349978828b983ae2318224a83468d8247c92cf0b690fec9b338cce2`,
+`N05-parent/runtimeClasspath.txt` `6ef9c67042619cfdf5defd44cccac415b47c5a82646cde4cf9e800ee168ca732`,
+`N05-fix/testRuntimeClasspath.txt` `0ebbb69fa27b07a0579d5456ebb3ddda9019ba4acbcb1afcecc2479597591771`,
+`N05-parent/testRuntimeClasspath.txt` `52f04cbbe4dad676cd7b91bc3d4698c510b7af10684f61f1947903df17984397`.
 
 ## Released artifacts and signatures
 
@@ -329,6 +387,7 @@ None of these is named by the brief; they say which side a release is on and giv
 - Esri 2.3.0 is not on Maven Central; nothing substituted.
 - No upstream build file was changed and nothing was substituted. Nothing was refused.
 - Not run on purpose: the brief's scenarios and claims, the N04 backward subtractor on the parent (the brief leaves it open), anything against MySQL beyond the connection smoke.
+- N05's job result commit is on the default line, not this record's line: setup did not merge it (the run's merge brings it in).
 
 ## Setup Agent Notes
 
@@ -339,13 +398,15 @@ None of these is named by the brief; they say which side a release is on and giv
 - Worktrees at both pins of every case: `$W/N01-commons-cli-{parent,fix}`, `$W/N02-HdrHistogram-{parent,fix}`, `$W/N03-threeten-extra-{parent,fix}`,
   `$W/N04-geometry-api-java-{parent,fix}`, `$W/N05-spring-framework-{parent,fix}`; full commit ids in [Upstream revisions](#upstream-revisions).
 - Built jars, digests and classpaths: `$O/artifacts/CASE-ROLE/` (`SHA256SUMS`, `runtime-classpath.txt`, `test-classpath.txt`); full digests in
-  [Digests of the built artifacts](#digests-of-the-built-artifacts-n01n04). N01 and N02 have no runtime dependencies (the jar alone);
+  [Digests of the built artifacts](#digests-of-the-built-artifacts-n01n05). N01 and N02 have no runtime dependencies (the jar alone);
   N03 needs `jspecify-1.0.1.jar` and `joda-convert-2.2.4.jar` only as optional deps; N04 needs `jackson-core-2.9.6.jar` (paths in `runtime-classpath.txt`).
 - Offline Maven commands per case (each a few seconds) in the case sections: N01 and N03 on `$J17`, N02 and N04 on `$J8` (their bytecode
   targets are 1.6 and 1.7). Everything they need is in `$O/m2`.
 - N05: Gradle 9.8.0 at `$O/tools/gradle-9.8.0`, run through `$O/scripts/gradle_case.sh` (JDK 25 launcher, toolchains 17/25, no build cache, no scan);
-  dependencies are in `$O/gradle-home`. Jars and classpaths arrive in `$O/artifacts/N05-{fix,parent}/` from job
-  `20261125-225459-setup-build-spring-jdbc-at-both-37322-re`.
+  dependencies are in `$O/gradle-home`. Built by job `20261125-225459-setup-build-spring-jdbc-at-both-37322-re` (passed):
+  `$O/artifacts/N05-{fix,parent}/spring-jdbc-7.0.10-SNAPSHOT.jar`, `runtimeClasspath.txt` (22 entries) and `testRuntimeClasspath.txt` (56 entries),
+  `:`-joined absolute paths that all exist (Spring project jars copied under `tree/`, third-party jars in `$O/gradle-home`), and `SHA256SUMS`.
+  The worktrees are clean again; a rebuild is the offline command in the N05 section.
 - For N05's durable claims: Docker image `mysql@sha256:0255b469f0135a0236d672d60e3154ae2f4538b146744966d96440318cc822c6` (`mysql:9.1.0`, the version the PR
   tested), Connector/J `$O/releases/mysql-connector-j-9.1.0/mysql-connector-j-9.1.0.jar` (sha256 in [Released artifacts](#released-artifacts-and-signatures));
   a connection smoke worked (InnoDB default, REPEATABLE-READ, autocommit on). Command in the N05 section.
@@ -361,8 +422,13 @@ None of these is named by the brief; they say which side a release is on and giv
     `test_until_Period_plusIsInverse`, `test_until_CLD_backwardAcrossCutover`, …).
   - N04: `testIssue328` errors on the parent with `GeometryException: internal error` in `TopologicalOperations.restorePolylineParts_`, on the
     **forward** (A–T) call; the backward call is never reached on the parent.
+  - N05: `mySQLMaxValueIncrementerWithCommitFailure()` fails on the parent with `AssertionFailedError` at `DataFieldMaxValueIncrementerTests.java:258`,
+    the first `nextLongValue()` after the failed commit not returning 1; the other 11 tests of the class pass there (job
+    `20261125-225459-setup-build-spring-jdbc-at-both-37322-re`). This is the landed Mockito regression only; nothing ran against MySQL beyond
+    the connection smoke.
 - Each Maven case's full upstream `package` passes at both pins (N01 998/995, N02 150/149, N03 13857/13787, N04 506/505 tests).
-- N05: pending in the job above (spring-jdbc tests at both pins, and the landed `DataFieldMaxValueIncrementerTests` on the parent).
+- N05's spring-jdbc test task passes at both pins, offline (972 / 971 tests, 6 skipped each).
+- N05's built `MySQLMaxValueIncrementer.class` at the fix equals the one in released spring-jdbc 7.0.10 byte for byte.
 
 ### What to know before starting
 
@@ -376,6 +442,10 @@ None of these is named by the brief; they say which side a release is on and giv
   `gradle_case.sh` does) so nothing is uploaded or fetched from ge.spring.io. The version is `7.0.10-SNAPSHOT`, so the build also lists
   repo.spring.io's milestone and snapshot repositories; none of the resolved artifacts came from them.
 - HdrHistogram 2.1.10's signature could not be checked (signing key on no keyserver tried); its sha1 matched Central.
+- N05 rebuilds take about a minute per pin offline (58 s and 66 s in the job, the whole spring-jdbc test task included), at the limit above
+  which this repository queues a build as a verification job. `N05_job.sh` and `gradle_case.sh` are the commands to queue.
+- N05's `SHA256SUMS` line for `MySQLMaxValueIncrementer.class` is the entry inside the jar: `sha256sum -c` reports it missing (see the digests section).
+- N05's job result was recorded by the runner on the default line (commit `b3390c67f58f80e874a730080a36fba5b4bfe7c5`), not on this record's line; the merge brings it in.
 
 ### What is left for the domain work on purpose
 
