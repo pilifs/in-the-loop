@@ -403,3 +403,103 @@ Determine what each merged change lets a Java caller observe, which results shou
 **Technical notes.** The root Maven module supplies CSVParser, CSVPrinter, CSVFormat and the changed Lexer. This describes the named preset at the pinned revisions, with empty string distinct from null.
 
 **Sources.** [Lexer.java](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/src/main/java/org/apache/commons/csv/Lexer.java) · [CSVParserTest.java](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/src/test/java/org/apache/commons/csv/CSVParserTest.java) · [CSVFormat.java](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/src/main/java/org/apache/commons/csv/CSVFormat.java) · [pom.xml](https://github.com/apache/commons-csv/blob/5770cc07e351cc124d34a6049c59e9aea8885675/pom.xml).
+
+## square/javapoet#994 · Reflected long annotation members compile in generated Java
+
+**Change and revisions.** [Merged PR #994](https://github.com/square/javapoet/pull/994). JavaPoet appends a long literal suffix when serializing a reflected annotation member of type long. Before `aaebc488320bd11aab1a6248d6b8058a255c92df`, after `c9925e48577e3e74b91eb737b2c2b3c22109cde8`. [Landed comparison](https://github.com/square/javapoet/compare/aaebc488320bd11aab1a6248d6b8058a255c92df...c9925e48577e3e74b91eb737b2c2b3c22109cde8).
+
+**Public scenario.** Define a public runtime-retained annotation with long value() and annotate a source class with 12345678910L. Obtain it with Class.getAnnotation, pass it to AnnotationSpec.get, add the returned spec to a TypeSpec, and have JavaFile emit a new class in an accessible package.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| square/javapoet#994.1 · Intent | Generate the annotation use with value 12345678910L. Compile the new class with the annotation declaration on the compiler classpath. | Issue #993 reports a compiler complaint about an oversized integer literal before. After, expect decimal text 12345678910L and successful compilation. | The decimal number exceeds Integer.MAX_VALUE and fits in long. An unsuffixed positive decimal integer literal of that magnitude is invalid here. | The literal lacks a long suffix or javac rejects the generated member value on the merge. |
+| square/javapoet#994.2 · Control | Repeat with an annotation member of type int set to 7. | Both should emit an int-compatible literal and compile to a class whose reflected member equals 7. | Integer constants already fit the declared type. | The generator adds a long suffix that makes the int member uncompilable, or reflection reads another value. |
+| square/javapoet#994.3 · Challenge | Use a long[] member containing 7L and −2147483649L. Compile, load the generated class, retrieve its annotation and read the array. | On the merge the recovered array must contain those two longs in order, including the negative value. | Reflecting on the compiled consumer checks the literal type, element order and sign independently of source formatting. | Generated code fails to compile or runtime reflection gives an incorrect element, length or order. |
+
+**Evidence and limits.** The upstream test renders a reflected annotation with defaults and compares its text to a golden source string containing 12345678910L. The issue documents the compiler failure. Compilation and reflective array readback are proposed extra observations.
+
+**Technical notes.** JavaPoet’s Maven module has the annotation builder and regression in com.squareup.javapoet. The compile/readback fixture needs a JDK compiler and a public annotation with RUNTIME retention. Include the annotation’s package on both compiler and class-loader paths.
+
+**Sources.** [AnnotationSpec.java](https://github.com/square/javapoet/blob/c9925e48577e3e74b91eb737b2c2b3c22109cde8/src/main/java/com/squareup/javapoet/AnnotationSpec.java) · [AnnotationSpecTest.java](https://github.com/square/javapoet/blob/c9925e48577e3e74b91eb737b2c2b3c22109cde8/src/test/java/com/squareup/javapoet/AnnotationSpecTest.java) · [pom.xml](https://github.com/square/javapoet/blob/c9925e48577e3e74b91eb737b2c2b3c22109cde8/pom.xml) · [Issue #993](https://github.com/square/javapoet/issues/993).
+
+## square/javapoet#986 · Box and unbox annotated primitive type names
+
+**Change and revisions.** [Merged PR #986](https://github.com/square/javapoet/pull/986). Match primitives and wrappers by their unannotated type, then carry the annotation list to the converted type. Before `0d55218ae3b8c8d6fe84132b7867d8c12698ce5e`, after `d682f2013751d25725349d79b449870d0e77354c`. [Landed comparison](https://github.com/square/javapoet/compare/0d55218ae3b8c8d6fe84132b7867d8c12698ce5e...d682f2013751d25725349d79b449870d0e77354c).
+
+**Public scenario.** Build two distinct AnnotationSpec values A and B for type-use annotations with public class names. Start from TypeName.BOOLEAN.annotated(A). Call box(), inspect the annotations and withoutAnnotations(), then unbox the result.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| square/javapoet#986.1 · Intent | Box annotated boolean, inspect isBoxedPrimitive(), then unbox it. | The PR reports that boxing an annotated primitive failed on the parent and annotated wrappers failed recognition. On the merge the wrapper is annotated java.lang.Boolean, isBoxedPrimitive() is true and unbox() equals the initial annotated boolean. | A type-use annotation changes neither the Java primitive nor its wrapper counterpart. The pinned tests assert boxing and unboxing from independently constructed inputs. | An exception, a false classification of annotated Boolean, or loss of A at either boundary. |
+| square/javapoet#986.2 · Control | Box canonical TypeName.BOOLEAN and unbox that wrapper. | Both should identify java.lang.Boolean and return the canonical TypeName.BOOLEAN object on unbox, with empty annotation lists. | The unannotated control uses the pre-existing primitive constants and mappings. | A different primitive, unexpected annotations or a noncanonical unboxed result. |
+| square/javapoet#986.3 · Challenge | Start from an independently built ClassName.get("java.lang","Integer") annotated with A and B in that order. Unbox and box it. Inspect the annotations after each conversion. | On the merge the intermediate type is int and the final type is Integer, with [A,B] in order at both boundaries. Stripping the annotations should recover the corresponding plain type. | The two distinct annotations reveal duplication, reversal or loss. Starting with a separately constructed wrapper exercises equality across instances. | The first annotation alone survives, their order changes, or round-trip equality fails. |
+
+**Evidence and limits.** The PR reports the added tests fail without the change. They assert a single annotation using an AnnotationSpec fixture. Comparing only rendered unannotated names would miss dropped annotations. The two-annotation sequence remains a prediction.
+
+**Technical notes.** Use the Maven JavaPoet module's TypeName, ClassName and AnnotationSpec APIs. This case checks the type-name model. Rendering a Java source file is unnecessary to observe the annotation list.
+
+**Sources.** [TypeName.java](https://github.com/square/javapoet/blob/d682f2013751d25725349d79b449870d0e77354c/src/main/java/com/squareup/javapoet/TypeName.java) · [TypeNameTest.java](https://github.com/square/javapoet/blob/d682f2013751d25725349d79b449870d0e77354c/src/test/java/com/squareup/javapoet/TypeNameTest.java) · [pom.xml](https://github.com/square/javapoet/blob/d682f2013751d25725349d79b449870d0e77354c/pom.xml).
+
+## javaparser/javaparser#5176 · Typed literal edits reach the lexical printer
+
+**Change and revisions.** [Merged PR #5176](https://github.com/javaparser/javaparser/pull/5176). Typed literal setters now report value changes to observers. A lexical-preserving source edit should reflect the new value while retaining surrounding text. Before `a322c502cfac7d97495fc3f41c6b74a06924267f`, after `c9c78dd4c965646dd97bbf3108ff1faefa1ae198`. [Landed comparison](https://github.com/javaparser/javaparser/compare/a322c502cfac7d97495fc3f41c6b74a06924267f...c9c78dd4c965646dd97bbf3108ff1faefa1ae198).
+
+**Public scenario.** Parse a one-field class containing the string literal a with StaticJavaParser.parse. Pass its compilation unit to LexicalPreservingPrinter.setup before finding the StringLiteralExpr and calling setString. Read the node via asString(), print the unit, and parse the printed source again to observe the value a downstream compiler would see.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| javaparser/javaparser#5176.1 · Intent | Change a to b with setString. | The PR reports old lexical text and an updated pretty-printed value on the parent. On the merge the lexical text must contain the b literal in place of a, and parsing it must yield b. | Only this node was edited. A fresh parse observes what was actually emitted, independent of the in-memory node. | The node returns b while the emitted unit still parses to a or fails to parse. |
+| javaparser/javaparser#5176.2 · Control | Start with a and call setString with a again. Preserve unusual spaces around the assignment. | Expect unchanged lexical text on both revisions. The merged same-value path must leave the spelling in place. | An idempotent edit changes no token. A byte-for-byte copy of the original source supplies the comparison. | Formatting or literal spelling changes despite an unchanged value. |
+| javaparser/javaparser#5176.3 · Challenge | Use a new string whose decoded characters are b, LF and double quote. Place a neighboring comment containing a in the source before setup. | On the merge the printed text must be parseable, with exactly that three-character string and the unchanged neighboring comment. The node and the newly parsed literal must agree. | A Java string literal cannot contain an unescaped physical line break. A consumer must recover the logical characters regardless of how the printer escapes them. | A double escape changes the decoded value, the print no longer parses, or the untouched comment changes. |
+
+**Evidence and limits.** The issue-free PR gives the old lexical/pretty printer disagreement. Pinned tests exercise notifications, unchanged values and lexical output, including an escaped LF. Checking only node.getValue() or counting property callbacks misses stale or incorrectly escaped output.
+
+**Technical notes.** The javaparser-core setters also change char, double and deprecated int/long methods. The PR documents separate null-handling changes. These claims use non-null strings and the lexical-preservation fixtures in the testing module.
+
+**Sources.** [StringLiteralExpr.java](https://github.com/javaparser/javaparser/blob/c9c78dd4c965646dd97bbf3108ff1faefa1ae198/javaparser-core/src/main/java/com/github/javaparser/ast/expr/StringLiteralExpr.java) · [LiteralStringValueExprTest.java](https://github.com/javaparser/javaparser/blob/c9c78dd4c965646dd97bbf3108ff1faefa1ae198/javaparser-core-testing/src/test/java/com/github/javaparser/ast/expr/LiteralStringValueExprTest.java) · [LiteralValueSettersTest.java](https://github.com/javaparser/javaparser/blob/c9c78dd4c965646dd97bbf3108ff1faefa1ae198/javaparser-core-testing/src/test/java/com/github/javaparser/printer/lexicalpreservation/LiteralValueSettersTest.java) · [pom.xml](https://github.com/javaparser/javaparser/blob/c9c78dd4c965646dd97bbf3108ff1faefa1ae198/javaparser-core/pom.xml) · [Related issue #4791](https://github.com/javaparser/javaparser/issues/4791) · [Related issue #5193](https://github.com/javaparser/javaparser/issues/5193).
+
+## javaparser/javaparser#5207 · Lexical printing preserves array brackets after a renamed identifier
+
+**Change and revisions.** [Merged PR #5207](https://github.com/javaparser/javaparser/pull/5207). The lexical printer distinguishes brackets belonging to an element type from brackets written after a parameter or variable name. The landed range includes the separate varargs-test change. Before `7bb33415ec75aa3fe01c1b3741cbe9ee48413739`, after `ae2e9400810933b1523f3182acc69bf8998e26ca`. [Landed comparison](https://github.com/javaparser/javaparser/compare/7bb33415ec75aa3fe01c1b3741cbe9ee48413739...ae2e9400810933b1523f3182acc69bf8998e26ca). The range includes 2 consecutive landed commits.
+
+**Public scenario.** Parse `class A { void m(String[] a[]) {} }` with StaticJavaParser.parse. Set up LexicalPreservingPrinter on the compilation unit. Find the parameter, call setName(new SimpleName("b")), then call LexicalPreservingPrinter.print(unit). Reparse that output to recover the declared name and array rank.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| javaparser/javaparser#5207.1 · Intent | Rename only a to b in the mixed declaration. | The PR reports malformed output or lost brackets for C-style edits before. After, the emitted parameter must be `String[] b[]` with the surrounding text unchanged. Reparsing must find name b and two dimensions. | Each bracket pair contributes one dimension. A name edit changes only the identifier’s token. | Printing fails, moves a bracket pair, or produces a parameter whose reparsed type has rank one. |
+| javaparser/javaparser#5207.2 · Control | Rename the parameter in `void m(String[][] a)` using the same path. | Both revisions should keep the complete type before b and preserve the surrounding declaration. | Both dimensions were attached to the type and the edit touches only the name. | The emitted form changes rank or relocates brackets on either revision. |
+| javaparser/javaparser#5207.3 · Challenge | Parse `class A { int a[], keep; }`. Rename a to b, print, reparse and inspect both field declarators separately. | The merge should print `class A { int b[], keep; }`. B has one array dimension and keep remains scalar int. | Comma-separated declarators share a base type while brackets after one name affect only that variable. | The text parses and b is an array, but keep also acquires a dimension, disappears, or changes name. |
+
+**Evidence and limits.** The landed tests compare exact strings after name-node edits and type replacement, including mixed dimensions. A pretty-print or AST-only check could succeed while the token-preserving rewrite emits different Java. The sibling readback checks the printed artifact.
+
+**Technical notes.** The printer is in javaparser-core, with regressions in javaparser-core-testing. Set up lexical preservation before editing. The first landed commit’s ArrayTypeTest concerns annotated varargs. It does not establish the sibling field result.
+
+**Sources.** [LexicalPreservingPrinter.java](https://github.com/javaparser/javaparser/blob/ae2e9400810933b1523f3182acc69bf8998e26ca/javaparser-core/src/main/java/com/github/javaparser/printer/lexicalpreservation/LexicalPreservingPrinter.java) · [CsmArrayBrackets.java](https://github.com/javaparser/javaparser/blob/ae2e9400810933b1523f3182acc69bf8998e26ca/javaparser-core/src/main/java/com/github/javaparser/printer/concretesyntaxmodel/CsmArrayBrackets.java) · [CStyleArrayDeclarationTest.java](https://github.com/javaparser/javaparser/blob/ae2e9400810933b1523f3182acc69bf8998e26ca/javaparser-core-testing/src/test/java/com/github/javaparser/printer/lexicalpreservation/CStyleArrayDeclarationTest.java) · [ArrayTypeTest.java](https://github.com/javaparser/javaparser/blob/ae2e9400810933b1523f3182acc69bf8998e26ca/javaparser-core-testing/src/test/java/com/github/javaparser/ast/type/ArrayTypeTest.java) · [pom.xml](https://github.com/javaparser/javaparser/blob/ae2e9400810933b1523f3182acc69bf8998e26ca/javaparser-core/pom.xml) · [Related issue #2310](https://github.com/javaparser/javaparser/issues/2310) · [Related PR #5181](https://github.com/javaparser/javaparser/pull/5181).
+
+## square/moshi#1442 · Resolve nested record component types before choosing a JSON adapter
+
+**Change and revisions.** [Merged PR #1442](https://github.com/square/moshi/pull/1442). Resolve each record component in its enclosing parameterized type so list and map adapters receive the concrete type argument. Before `751e8219e992a9aecd286aac830fef81da790baa`, after `cdcf0da4ee260b72d7e1ea2be691a568e03720b3`. [Landed comparison](https://github.com/square/moshi/compare/751e8219e992a9aecd286aac830fef81da790baa...cdcf0da4ee260b72d7e1ea2be691a568e03720b3).
+
+**Public scenario.** Use Moshi.Builder().build() with Java records and request an adapter for HasIndirectGenerics, a record wrapping IndirectGenerics<Long>. Give the inner record components T single, List<T> list and Map<String,T> map. Decode values 1, [2,3,4] and {"five":5}, inspect each Java value, then encode and decode again.
+
+### Claims
+
+| ID and role | Input or history | Expected before → after, or relation on both | Independent basis | What would refute it |
+|---|---|---|---|---|
+| square/moshi#1442.1 · Intent | Look up the outer adapter and decode the three component shapes into the Long binding. | The PR reports IllegalArgumentException for unresolved T on the parent. The merge should yield Long values 1, [2,3,4] and 5 for key five. | The declaration fixes T at Long at every position. The pinned regression checks the complete record in both directions. | An adapter lookup error on the merge, an element of another numeric type or a lost binding. |
+| square/moshi#1442.2 · Control | Request an adapter for the nested GenericRecord<String> using Types.newParameterizedTypeWithOwner(RecordsTest.class, GenericRecord.class, String.class) and decode a single string component. | Both revisions should return a record whose value equals the input string. | The direct generic record test predates the nested-record change. | Adapter creation fails or the plain string changes. |
+| square/moshi#1442.3 · Challenge | Use a second wrapper binding the same IndirectGenerics<T> to String. Request Long, then String, then Long adapters from one Moshi instance. Round-trip values with distinct strings and numbers. | On the merge each decoded component retains the type of its enclosing wrapper on all three lookups. No record from the String history introduces a String into the Long result. | Identical raw component declarations can represent different parameterized types. Reusing the same adapter cache exercises that distinction. | The second lookup inherits a Long adapter, the repeated lookup reads strings as numbers, or any nested list/map element has the wrong type. |
+
+**Evidence and limits.** The PR supplies the parent lookup stack and the pinned test compares both serialized JSON and decoded record equality. A scalar-only test bypasses the List<T> lookup where the failure was reported. Alternating two concrete bindings is open.
+
+**Technical notes.** The records adapter lies under moshi/src/main/java16. The Gradle records-tests module exercises a record-capable JVM. Use reflective record adapters and the matching Moshi artifact.
+
+**Sources.** [RecordJsonAdapter.java](https://github.com/square/moshi/blob/cdcf0da4ee260b72d7e1ea2be691a568e03720b3/moshi/src/main/java16/com/squareup/moshi/RecordJsonAdapter.java) · [RecordsTest.java](https://github.com/square/moshi/blob/cdcf0da4ee260b72d7e1ea2be691a568e03720b3/moshi/records-tests/src/test/java/com/squareup/moshi/records/RecordsTest.java) · [build.gradle.kts](https://github.com/square/moshi/blob/cdcf0da4ee260b72d7e1ea2be691a568e03720b3/moshi/records-tests/build.gradle.kts).

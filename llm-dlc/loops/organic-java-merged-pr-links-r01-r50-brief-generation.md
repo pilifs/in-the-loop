@@ -22,11 +22,11 @@
 | FasterXML/jackson-core#1716 | written | Read issue #1713, the changed saved-surrogate assignment, and the BE/LE parser sweep at 3995–4001. The external-whitespace and UTF-8 controls have not been executed. |
 | locationtech/jts#1092 | written | Read #733 and the fixed-byte XYM and four-ordinate XYZM tests. Two XYM points require 57 no-SRID bytes. Both-endian measured readback remains open. |
 | apache/commons-csv#412 | written | Read the quote/escape branch order and preset round-trip regression on [a,b] and [empty,x]. Its parser entry is nextRecord(). Public iteration and quoted punctuation in the adjacent field remain unexecuted. The pinned preset Javadoc explicitly says parsing is unsupported. The expected scope is the particular PR examples and proposed extension. |
-| square/javapoet#994 | not yet |  |
-| square/javapoet#986 | not yet |  |
-| javaparser/javaparser#5176 | not yet |  |
-| javaparser/javaparser#5207 | not yet |  |
-| square/moshi#1442 | not yet |  |
+| square/javapoet#994 | written | Read issue #993, the boxed Long emission branch and the golden annotation with 12345678910L. Compiling generated output and reflecting a two-element long array remain unexecuted. |
+| square/javapoet#986 | written | Read the keyword/equality matching branches and single-annotation regressions. Both conversion paths copy annotations and retain the unannotated fast path. Two-annotation order remains open. |
+| javaparser/javaparser#5176 | written | Compared setString/setEscapedValue with the pinned observer and lexical printer assertions. The test records an LF as escaped source. Re-parsing combined LF/quote content next to an untouched comment remains open. |
+| javaparser/javaparser#5207 | written | Read both landed changes, mixed array parameter regressions, declarator token handling and the separate annotated-varargs test. Reparsing the field with an unchanged scalar sibling remains open. |
+| square/moshi#1442 | written | Read the indirect Long record's exact three shapes and the adapter's generic component resolution. Alternating Long and String wrappers in one Moshi remains unexecuted. |
 | google/gson#2998 | not yet |  |
 | FasterXML/jackson-core#1816 | not yet |  |
 | FasterXML/jackson-databind#6407 | not yet |  |
