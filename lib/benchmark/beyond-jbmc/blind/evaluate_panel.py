@@ -45,7 +45,7 @@ def automatic(slot):
 
 def measure_automatic(slot, checker, lock, ref, pair, out, store, docket):
     out.mkdir(parents=True,exist_ok=True)
-    store.mkdir(exist_ok=True)
+    store.mkdir(parents=True,exist_ok=True)
     with (store/"first-run.lock").open("a") as guard:
         fcntl.flock(guard,fcntl.LOCK_EX)
         fixed=store/"report.json.gz"

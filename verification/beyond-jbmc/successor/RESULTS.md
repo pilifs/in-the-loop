@@ -28,3 +28,5 @@ Thirteen callers passed on both releases. Eleven of their 38 sampled primary obs
 Only callers passing all four original JVM launches enter verification. The automatic operators receive only the neutral binary deployment, the JDK and their frozen implementation. The matched comparison gives all engines the same old and new original-deployment predicates. Their conjunction is the registered pair question. Each side has an inverse and stock JBMC has its post-call false control. A draw with outstanding jobs or scaffolding stops retains the full denominator.
 
 Ten jobs cover the thirteen qualified callers in both lanes. [Submitted jobs](jobs.json)
+
+All five initial automatic submissions stopped while opening the new study directory. Neither selector had started. Five replacements preserve the same registered questions and neutral packets. A local first-launch and restart check returned identical stored evidence and called the operator once.
