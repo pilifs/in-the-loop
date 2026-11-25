@@ -12,11 +12,11 @@
 | spring-projects/spring-framework#37596 | written | Read the PR's before/after shouldRetry example, the two-policy regression and RetryTemplate.execute. The isolated A/B call counts and thrown RetryException remain unexecuted. |
 | spring-projects/spring-framework#1912 | written | Read both MockHttpSession copies and the counters in MockHttpSessionTests. The public class calls oldValue.valueUnbound while the internal web-test copy calls the incoming object. Equal-but-distinct listeners and ordered event payloads are unexecuted. Checked the migrated report #21646. |
 | spring-projects/spring-framework#37531 | written | Read the synchronous converter, byte-array and file implementations, and the two-threshold regression. Interleaved stream cursors and replacement of a longer destination remain unexecuted. |
-| spring-projects/spring-framework#1532 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37559 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37202 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37059 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37159 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#1532 | written | Read migrated issue #20538 (empty JSON on 5.0 RC4), the converter’s classpath priority, writer flush, binary headers and two provider-specific test assertions. Public construction with Google alone and the long Unicode suffix remain unexecuted. |
+| spring-projects/spring-framework#37559 | written | Read MIME selection and both encoding routes. Upstream assertions use a compact JsonFormat.Printer. The public default constructor does not. Physical-line parseability for nested messages with the default printer is open. |
+| spring-projects/spring-framework#37202 | written | Read #37200, both landed commits and both CRLF fixtures. The tests use key membership and anyMatch. Exact multiplicity and ordering for repeated field names remain predictions. |
+| spring-projects/spring-framework#37059 | written | Checked both encoder cleanup paths and the Jackson 3 counting-pool test. It balances a combined count after completion and error without capturing JSON bytes. Repeated NDJSON byte readback and per-call balances remain open. The caller fixture uses a record because the encoder declines String as the element type. |
+| spring-projects/spring-framework#37159 | written | Read the two stream implementations, public DataBufferUtils factory and the landed web tests. The public offset-one read, sentinel bytes and upstream cancellation remain unexecuted. |
 | spring-projects/spring-framework#22392 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#37014 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#25305 | not yet | Awaiting source review and claims. |
