@@ -1,0 +1,193 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261124-234007-15-qualify-generated-resource-workflows",
+  "title": "15 qualify generated resource workflows",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 3m23s, peak 148.4 MiB (estimated 5m00s, 3.0 GiB); 2 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/24/20261124-234007-15-qualify-generated-resource-workflows.json",
+    "sha256": "c7f0c25330a90a5f29646e5652422dd515e0b845a2a7c6358cd4ec451d384a48",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261124-234007-15-qualify-generated-resource-workflows",
+      "title": "15 qualify generated resource workflows",
+      "description": "The JAR-only generator registered the key, the visible resource lines, root order and unrelated marker before inspecting populated observations. Run both generated calls through original public entry breakpoints. Require matching cold, warm and clean and reject the false expectation.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:change-plan"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/resource_transfer.py"
+        ]
+      },
+      "expected": "Four full sets of plans and finite receipts, with both real predictions qualified and the false primary refuted.",
+      "submitted": {
+        "at": "2026-11-24T23:40:07+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "5m",
+        "timeout": "30m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_transfer",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_transfer.py solve 15",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/scaffold-first/resource-plans/15"
+      ]
+    }
+  },
+  "sourceCommit": "c7f217fe2b19d15b10adbca32d6f983dc2eb568d",
+  "startedAt": "2026-11-25T00:04:03+00:00",
+  "finishedAt": "2026-11-25T00:07:41+00:00",
+  "wallSeconds": 218.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3533539,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1800.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 300.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 155631616,
+    "wallSeconds": 203.7,
+    "cpuSeconds": 215.7,
+    "memoryOfEstimate": 0.05,
+    "durationOfEstimate": 0.68
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_transfer",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/resource_transfer.py solve 15",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1800.0,
+      "cancelled": false,
+      "wallSeconds": 203.699,
+      "cpuSeconds": 215.664,
+      "cpuThrottledSeconds": 35.519,
+      "peakMemoryBytes": 155631616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 8,
+        "bytes": 568,
+        "sha256": "dc3ae93e5994219efb9339e266d7051a495288c804e351b63dfbeaf28f1127d9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/generated-resource-plans-_ni974p3/cold.json",
+        "15 cold ['established', 'established']",
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/generated-resource-plans-_ni974p3/warm.json",
+        "15 warm ['established', 'established']",
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/generated-resource-plans-_ni974p3/clean.json",
+        "15 clean ['established', 'established']",
+        "2 claims in /home/filip/.cache/in-the-loop/beyond-jbmc/tmp/generated-resource-plans-_ni974p3/wrong.json",
+        "15 wrong ['refuted', 'established']"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/resource-plans/15/candidate-1/plans.zip",
+      "change": "added",
+      "bytes": 72044,
+      "sha256": "a2ea937cdc659861e6481249851c95f41989e3eff949d64de3535727b3ba4e24",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/resource-plans/15/candidate-1/summary.json",
+      "change": "added",
+      "bytes": 5258,
+      "sha256": "e7dd3f5b5ece10b98099671eb528b12033d8596ff3a8092cd1ba691325c2994e",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T00:09:47+00:00",
+    "applied": [
+      "verification/beyond-jbmc/scaffold-first/resource-plans/15/candidate-1/plans.zip",
+      "verification/beyond-jbmc/scaffold-first/resource-plans/15/candidate-1/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "7b3d4ce6fa5567ca394c0c975629e083aab5ae25",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/7b3d4ce6fa5567ca394c0c975629e083aab5ae25/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T000741Z-423113dd6005941a",
+      "outputs": "20261125T000741Z-4461782af6a410d6",
+      "diff": "20261125T000741Z-465010442806e380"
+    }
+  }
+}
