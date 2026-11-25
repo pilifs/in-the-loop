@@ -1,0 +1,1085 @@
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/01/comparison/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/01/comparison/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/01/physical.stdout
+@@ -0,0 +1,2 @@
++BOUND 0 1 1 1 1 true true false
++BOUND 1 1 1 1 1 true true false
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/01/process.log
+@@ -0,0 +1 @@
++blind 6 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/01/summary.json
+@@ -0,0 +1,98 @@
++{
++ "job": "20261125-002307-01-04-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original matched two-copy caller",
++ "physicalRegistration": "ab3211354e76b09944452d8fe7e178cb1e7204b8988abf2601edcf5da7b51430",
++ "rows": [
++  {
++   "deployment": "comparison",
++   "method": "primary",
++   "scope": "Two distinct public ExplicitVertexID keys; remove either the first or last then reinsert it. Both histories are included.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.ArrayList.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.ArrayList.equals(java.lang.Object) at before.ReferenceAPI.primary:22). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.024,
++    "peakMB": 26.2,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.ArrayList.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.ArrayList.equals(java.lang.Object) at before.ReferenceAPI.primary:22). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.024,
++    "peakMB": 26.1,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "control",
++   "scope": "Two distinct public ExplicitVertexID keys; remove either the first or last then reinsert it. Both histories are included.",
++   "old": {
++    "verdict": "verified",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.031,
++    "cpuSeconds": 0.031,
++    "peakMB": 30.6,
++    "exit": 0,
++    "killed": false
++   },
++   "new": {
++    "verdict": "verified",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.02,
++    "cpuSeconds": 0.017,
++    "peakMB": 26.1,
++    "exit": 0,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "inverse",
++   "scope": "Two distinct public ExplicitVertexID keys; remove either the first or last then reinsert it. Both histories are included.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.ArrayList.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.ArrayList.equals(java.lang.Object) at before.ReferenceAPI.primary:22). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.023,
++    "peakMB": 30.6,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:java.util.ArrayList.equals(Ljava/lang/Object;)Z@jdk-21.0.13 (java.util.ArrayList.equals(java.lang.Object) at before.ReferenceAPI.primary:22). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.023,
++    "peakMB": 26.1,
++    "exit": 1,
++    "killed": false
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/01/worker.json
+@@ -0,0 +1,77 @@
++{
++ "status": "measured",
++ "inputPacket": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "bb4e5c127d9667b2f61eb9e7021f96458f665dc1ecf17ca41ae6ec081be72862"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "ed5f56cc155c729f2c166fee42c9e853da146f304a00f27df8dd45b1b55f6cb2"
++   }
++  ]
++ },
++ "specSha256": "20502082bb6fb21cfa1a01ebc199b39130e5c044ce348d06e8cf89228405bfad",
++ "originalJvm": {
++  "rows": [
++   {
++    "n": 0,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 1,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   }
++  ],
++  "exit": 0,
++  "argv": [
++   "/guest/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++   "-Xmx512m",
++   "-XX:-UsePerfData",
++   "-ea",
++   "-cp",
++   "/guest/.cache/in-the-loop/tmp/original/physical",
++   "OriginalTable",
++   "0",
++   "1"
++  ],
++  "callerSha256": "62c1342dc9a537c702944f8f9ec618a870b97d135a83dab239b3503767abf0f5",
++  "accepted": true
++ },
++ "twoCopy": {
++  "old": {
++   "000.jar": "bb4e5c127d9667b2f61eb9e7021f96458f665dc1ecf17ca41ae6ec081be72862"
++  },
++  "new": {
++   "000.jar": "ed5f56cc155c729f2c166fee42c9e853da146f304a00f27df8dd45b1b55f6cb2"
++  },
++  "thinCallers": {
++   "ReferenceAPI$Key.class": "da349752076184ace71b24187d9045283aee9492f263c794456a4f15edb119ae",
++   "ReferenceAPI.class": "62c1342dc9a537c702944f8f9ec618a870b97d135a83dab239b3503767abf0f5"
++  },
++  "symbolicClaimClasses": {
++   "ReferencePair.class": "f35b5ec8ac5a9e84c3c4678279904333d95948e56f8a3068bfc1e85d53a3f24d"
++  },
++  "oldEntryMapSha256": "6be3f205405c330076bc04de67e19e51943beb8e38d66bfbbeaf2cbc7f40c614",
++  "shadowedOldClasses": [],
++  "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++ }
++}
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/02/comparison/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/02/comparison/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/02/physical.stdout
+@@ -0,0 +1,3 @@
++BOUND 0 1 1 1 1 true true false
++BOUND 1 0 1 1 1 true true false
++BOUND 2 0 1 1 1 true true false
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/02/process.log
+@@ -0,0 +1 @@
++blind 9 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/02/summary.json
+@@ -0,0 +1,102 @@
++{
++ "job": "20261125-002307-01-04-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original matched two-copy caller",
++ "physicalRegistration": "f81944cc1900c57289ab3bedff78c79617ffdef7bb9727b105dfb919e5948bd5",
++ "rows": [
++  {
++   "deployment": "comparison",
++   "method": "primary",
++   "scope": "The upstream U+1B0BD test value 110781, a second supplementary value U+1F642, and the BMP letter A.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:before.com.google.re2j.Parser$Stack.size()I@jdk-21.0.13 (before.com.google.re2j.Parser$Stack.size() at before.com.google.re2j.Parser.maybeConcat:155). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.027,
++    "peakMB": 26.6,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:before.com.google.re2j.Parser$Stack.size()I@jdk-21.0.13 (before.com.google.re2j.Parser$Stack.size() at before.com.google.re2j.Parser.maybeConcat:155). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.021,
++    "cpuSeconds": 0.019,
++    "peakMB": 26.1,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "control",
++   "scope": "The upstream U+1B0BD test value 110781, a second supplementary value U+1F642, and the BMP letter A.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:before.com.google.re2j.Parser$Stack.size()I@jdk-21.0.13 (before.com.google.re2j.Parser$Stack.size() at before.com.google.re2j.Parser.maybeConcat:155). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.027,
++    "peakMB": 26.6,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:before.com.google.re2j.Parser$Stack.size()I@jdk-21.0.13 (before.com.google.re2j.Parser$Stack.size() at before.com.google.re2j.Parser.maybeConcat:155). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.024,
++    "peakMB": 26.1,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "inverse",
++   "scope": "The upstream U+1B0BD test value 110781, a second supplementary value U+1F642, and the BMP letter A.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:before.com.google.re2j.Parser$Stack.size()I@jdk-21.0.13 (before.com.google.re2j.Parser$Stack.size() at before.com.google.re2j.Parser.maybeConcat:155). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.025,
++    "peakMB": 26.6,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-primitive-method:before.com.google.re2j.Parser$Stack.size()I@jdk-21.0.13 (before.com.google.re2j.Parser$Stack.size() at before.com.google.re2j.Parser.maybeConcat:155). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.023,
++    "peakMB": 26.1,
++    "exit": 1,
++    "killed": false
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/02/worker.json
+@@ -0,0 +1,97 @@
++{
++ "status": "measured",
++ "inputPacket": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "bbc68c720d32210173b176529e9e48063cbc2efeff9d3342e8404d2a3c2ce19d"
++   },
++   {
++    "path": "old/001.jar",
++    "sha256": "4edad3e363be0e6dfd4a1e1b4e9d1768fa136c7b7ab0f315957c5302d97da748"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "bfa343de3c11b2169b02ef984efcd47ef3467342237533a4323df4d22a183c2b"
++   },
++   {
++    "path": "new/001.jar",
++    "sha256": "aaf586874933cdf0b786c59bdf02cdff8c6d25c25fabeca2c2c381634f1e7dff"
++   }
++  ]
++ },
++ "specSha256": "f69a3c116356b725f046d4c25b01a166a33704647237d5237f34c6070ae3c542",
++ "originalJvm": {
++  "rows": [
++   {
++    "n": 0,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 1,
++    "old": 0,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 2,
++    "old": 0,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   }
++  ],
++  "exit": 0,
++  "argv": [
++   "/guest/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++   "-Xmx512m",
++   "-XX:-UsePerfData",
++   "-ea",
++   "-cp",
++   "/guest/.cache/in-the-loop/tmp/original/physical",
++   "OriginalTable",
++   "0",
++   "1",
++   "2"
++  ],
++  "callerSha256": "eada9fb1947f4afa2786e4f8031c3f57fec637d312b15b30eb35d92239fd827b",
++  "accepted": true
++ },
++ "twoCopy": {
++  "old": {
++   "000.jar": "bbc68c720d32210173b176529e9e48063cbc2efeff9d3342e8404d2a3c2ce19d",
++   "001.jar": "4edad3e363be0e6dfd4a1e1b4e9d1768fa136c7b7ab0f315957c5302d97da748"
++  },
++  "new": {
++   "000.jar": "bfa343de3c11b2169b02ef984efcd47ef3467342237533a4323df4d22a183c2b",
++   "001.jar": "aaf586874933cdf0b786c59bdf02cdff8c6d25c25fabeca2c2c381634f1e7dff"
++  },
++  "thinCallers": {
++   "ReferenceAPI.class": "eada9fb1947f4afa2786e4f8031c3f57fec637d312b15b30eb35d92239fd827b"
++  },
++  "symbolicClaimClasses": {
++   "ReferencePair.class": "20ff5738d3a4f03e0f7cecc037c4fcfb6e6a6494131b18d01974d36317512022"
++  },
++  "oldEntryMapSha256": "2947a65c21a836e6c96d1fd35f756af0169781dad89c865101d1267b654dc407",
++  "shadowedOldClasses": [],
++  "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++ }
++}
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/03/comparison/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/03/comparison/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/03/physical.stdout
+@@ -0,0 +1,2 @@
++BOUND 0 1 1 1 1 true true false
++BOUND 1 1 1 1 1 true true false
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/03/process.log
+@@ -0,0 +1 @@
++blind 6 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/03/summary.json
+@@ -0,0 +1,102 @@
++{
++ "job": "20261125-002307-01-04-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original matched two-copy caller",
++ "physicalRegistration": "9ac4f64a389f57edde1c0f20a2e438ea054392b2f09c4e3c3608d4d7fc899470",
++ "rows": [
++  {
++   "deployment": "comparison",
++   "method": "primary",
++   "scope": "Two real runtime annotations, an empty hint and a named hint.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;@jdk-21.0.13 (java.lang.Class.getAnnotation(java.lang.Class) at before.ReferenceAPI.read:6). With --gaps assume it assumes instead that java.lang.Class.getAnnotation(java.lang.Class) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "seconds": 0.042,
++    "cpuSeconds": 0.033,
++    "peakMB": 26.6,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;@jdk-21.0.13 (java.lang.Class.getAnnotation(java.lang.Class) at before.ReferenceAPI.read:6). With --gaps assume it assumes instead that java.lang.Class.getAnnotation(java.lang.Class) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "seconds": 0.021,
++    "cpuSeconds": 0.019,
++    "peakMB": 26.6,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "control",
++   "scope": "Two real runtime annotations, an empty hint and a named hint.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;@jdk-21.0.13 (java.lang.Class.getAnnotation(java.lang.Class) at before.ReferenceAPI.read:6). With --gaps assume it assumes instead that java.lang.Class.getAnnotation(java.lang.Class) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "seconds": 0.031,
++    "cpuSeconds": 0.023,
++    "peakMB": 28.4,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;@jdk-21.0.13 (java.lang.Class.getAnnotation(java.lang.Class) at before.ReferenceAPI.read:6). With --gaps assume it assumes instead that java.lang.Class.getAnnotation(java.lang.Class) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "seconds": 0.031,
++    "cpuSeconds": 0.024,
++    "peakMB": 26.6,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "inverse",
++   "scope": "Two real runtime annotations, an empty hint and a named hint.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;@jdk-21.0.13 (java.lang.Class.getAnnotation(java.lang.Class) at before.ReferenceAPI.read:6). With --gaps assume it assumes instead that java.lang.Class.getAnnotation(java.lang.Class) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "seconds": 0.061,
++    "cpuSeconds": 0.04,
++    "peakMB": 28.4,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-reference-method:java.lang.Class.getAnnotation(Ljava/lang/Class;)Ljava/lang/annotation/Annotation;@jdk-21.0.13 (java.lang.Class.getAnnotation(java.lang.Class) at before.ReferenceAPI.read:6). With --gaps assume it assumes instead that java.lang.Class.getAnnotation(java.lang.Class) returns a new object, never null: it throws nothing and changes neither its receiver nor its arguments, and the verdict names the assumption",
++    "seconds": 0.031,
++    "cpuSeconds": 0.028,
++    "peakMB": 26.6,
++    "exit": 1,
++    "killed": false
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/03/worker.json
+@@ -0,0 +1,324 @@
++{
++ "status": "measured",
++ "inputPacket": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "2b49db9d9de0fa6833af8a9d2fe6d694c45ca63a7c575337ede2e6e93613603c"
++   },
++   {
++    "path": "old/001.jar",
++    "sha256": "5de54ff4e19b9e26f54122b887d733e5a29b1294ebc3e4b70b38e16e3ff5580a"
++   },
++   {
++    "path": "old/002.jar",
++    "sha256": "a5aa798f59e7625776d968e5ac800cfdadf48fa0a5989f8a4ca938cc1b754a29"
++   },
++   {
++    "path": "old/003.jar",
++    "sha256": "4015c9238cf2b197da1e5ca0dc5a590df9ff4aa864faa824342d2b07ea56e424"
++   },
++   {
++    "path": "old/004.jar",
++    "sha256": "95c5c5575866f2cbd6dca47a5557ec2129c8610fc733a6a77d23ba415321769a"
++   },
++   {
++    "path": "old/005.jar",
++    "sha256": "3d7284faab52e1f3cfdac90f7df3503d4ce0bc7c82e645e08e18a231f25f37d0"
++   },
++   {
++    "path": "old/006.jar",
++    "sha256": "25f4534e9316a29853a6bdd76cde72bc2a99c5023a6f4a6c0fb01ec26ebe9cff"
++   },
++   {
++    "path": "old/007.jar",
++    "sha256": "f3fd6d3f93407eb610be2b409382517526bfccecad2b7fba22a05bc3a2d6cacc"
++   },
++   {
++    "path": "old/008.jar",
++    "sha256": "dc15fa7e4d0b89ca7b47ff90435a9e2943fb125ef92085cf45808f5866e8d03f"
++   },
++   {
++    "path": "old/009.jar",
++    "sha256": "d708597f4182cdd4062ba62856f5bbc2cbc87382ca9b4fa7ff33356b578c2820"
++   },
++   {
++    "path": "old/010.jar",
++    "sha256": "b33941c7b2f6f70d6927aa1afb389a805c4352db7df3d470f2dd71fb38d6cb7f"
++   },
++   {
++    "path": "old/011.jar",
++    "sha256": "fae654728d48ce2f7ba1fded13f736d1256a76b526a02d8aa81d63219d6f352f"
++   },
++   {
++    "path": "old/012.jar",
++    "sha256": "56e282b3c99c142c52b43b19e70ccbce83114a9fe05fe798e703b8353d06eb5f"
++   },
++   {
++    "path": "old/013.jar",
++    "sha256": "fcb3ac21e4c74a1dea60284da53030ac29d6ca77666de8649b544917059b5db9"
++   },
++   {
++    "path": "old/014.jar",
++    "sha256": "2bb94646735372da8c8a277b1307a747fa76473f1a85b60511a9c3be597df4de"
++   },
++   {
++    "path": "old/015.jar",
++    "sha256": "4db8eb147b8527bf3f19ab76c0a5a6793936761aabd799f817fcdbbb7f15d6d0"
++   },
++   {
++    "path": "old/016.jar",
++    "sha256": "81f714728bcce8a73820f35bc9ea68de48fa0d20c1dc9a23095f8519a10b88af"
++   },
++   {
++    "path": "old/017.jar",
++    "sha256": "8c4633e2eafa8dd675ea86ec2070611685e7b3228121356b3f15b8c6b417460f"
++   },
++   {
++    "path": "old/018.jar",
++    "sha256": "8b643d64c42d4ee0f3f4556bbc74709aefddcbf5e2f5abfafc158f205fa80419"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "87c878170206362efe2f076b4b7162073f285bab5c776fdc8a0ab2a69a842cd5"
++   },
++   {
++    "path": "new/001.jar",
++    "sha256": "10ba7512df602c5dea13d4562dc3aa9f1e8bc77ac6ec7a4edeb1a68610b4c3df"
++   },
++   {
++    "path": "new/002.jar",
++    "sha256": "53eb5b1898ef50a14623b4f0d7286270521f75a6b9b231f8ca3175fd966da1c0"
++   },
++   {
++    "path": "new/003.jar",
++    "sha256": "638103c03ef68e9d0a732840e19e60edb8d46f174edce7a6b2eddbec27437116"
++   },
++   {
++    "path": "new/004.jar",
++    "sha256": "1eaf2c23be45bc3dc1b3a83c674dd23a968fe611686b2405e5028bbe6f1bc3bd"
++   },
++   {
++    "path": "new/005.jar",
++    "sha256": "600691a93acdfbc0f248f754330b188a7e1136e377f03fe17dcfc199a3997b20"
++   },
++   {
++    "path": "new/006.jar",
++    "sha256": "488d7f2c91d74e6202e5395a9a53580a0418cbfd7a407f209e9045a66f6a6a0c"
++   },
++   {
++    "path": "new/007.jar",
++    "sha256": "c9eed04e9b7596bcfd5883f494c84913a83957259355e10b533118d90b9017b4"
++   },
++   {
++    "path": "new/008.jar",
++    "sha256": "f4a62bf7b372b30d408da010470a37d465d964c1807f058c3d942b99f0acab5e"
++   },
++   {
++    "path": "new/009.jar",
++    "sha256": "d75cda726e133194ccecce7d323976a9a3d3600d33dacd83dcbac93c7271cc1b"
++   },
++   {
++    "path": "new/010.jar",
++    "sha256": "70bf6d47e7d30edb5e08300f990afc89999cf84a61a6a92aa3da0f335cfb07b3"
++   },
++   {
++    "path": "new/011.jar",
++    "sha256": "2fe88c9c57100e8374481f828b7552489e43e6864d254ef21f4c8f3270dbaf71"
++   },
++   {
++    "path": "new/012.jar",
++    "sha256": "128903fc9e71ea547de0868ff931ab44f5e8c33c8f2218d6be321f08498f4895"
++   },
++   {
++    "path": "new/013.jar",
++    "sha256": "88593e079e952f27d562fd743623c11755251f879ed73a5bfc4c586f6ae3567e"
++   },
++   {
++    "path": "new/014.jar",
++    "sha256": "df2f8e3263b0579cdfb106cd59c050dbb583df101f89e0d9b3469d120285de38"
++   },
++   {
++    "path": "new/015.jar",
++    "sha256": "22b42f8df34977b91dc152bbbad11e0e034da715bec42a7b5b7ac0be61513661"
++   },
++   {
++    "path": "new/016.jar",
++    "sha256": "07a63339e20d7b1650a51ef66171e90164740bc2fecbd0459dd578086a112e1f"
++   },
++   {
++    "path": "new/017.jar",
++    "sha256": "a41054409a6b9875835e9ffc78b52143d3224ac3d4083f599acd98165f8cdce6"
++   },
++   {
++    "path": "new/018.jar",
++    "sha256": "374d5cf0c54a224c1d75b3771bda62c1b5fa4f266aa003e6ac22bcc7c2787864"
++   },
++   {
++    "path": "new/019.jar",
++    "sha256": "cac20d68f3b9c7775b978c9621d7d5ec36b303f66ebe426e688ef3b0ef0cc340"
++   }
++  ]
++ },
++ "specSha256": "dad5575a3c4cef69ebd6ba17d9f0f7cd98921c156609e70a1e97b3ff3cb9ff22",
++ "originalJvm": {
++  "rows": [
++   {
++    "n": 0,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 1,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   }
++  ],
++  "exit": 0,
++  "argv": [
++   "/guest/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++   "-Xmx512m",
++   "-XX:-UsePerfData",
++   "-ea",
++   "-cp",
++   "/guest/.cache/in-the-loop/tmp/original/physical",
++   "OriginalTable",
++   "0",
++   "1"
++  ],
++  "callerSha256": "fe3143d6f29ea12b105a524a30091b3d098af7fb31d34a1656736d609e02fbb5",
++  "accepted": true
++ },
++ "twoCopy": {
++  "old": {
++   "000.jar": "2b49db9d9de0fa6833af8a9d2fe6d694c45ca63a7c575337ede2e6e93613603c",
++   "001.jar": "5de54ff4e19b9e26f54122b887d733e5a29b1294ebc3e4b70b38e16e3ff5580a",
++   "002.jar": "a5aa798f59e7625776d968e5ac800cfdadf48fa0a5989f8a4ca938cc1b754a29",
++   "003.jar": "4015c9238cf2b197da1e5ca0dc5a590df9ff4aa864faa824342d2b07ea56e424",
++   "004.jar": "95c5c5575866f2cbd6dca47a5557ec2129c8610fc733a6a77d23ba415321769a",
++   "005.jar": "3d7284faab52e1f3cfdac90f7df3503d4ce0bc7c82e645e08e18a231f25f37d0",
++   "006.jar": "25f4534e9316a29853a6bdd76cde72bc2a99c5023a6f4a6c0fb01ec26ebe9cff",
++   "007.jar": "f3fd6d3f93407eb610be2b409382517526bfccecad2b7fba22a05bc3a2d6cacc",
++   "008.jar": "dc15fa7e4d0b89ca7b47ff90435a9e2943fb125ef92085cf45808f5866e8d03f",
++   "009.jar": "d708597f4182cdd4062ba62856f5bbc2cbc87382ca9b4fa7ff33356b578c2820",
++   "010.jar": "b33941c7b2f6f70d6927aa1afb389a805c4352db7df3d470f2dd71fb38d6cb7f",
++   "011.jar": "fae654728d48ce2f7ba1fded13f736d1256a76b526a02d8aa81d63219d6f352f",
++   "012.jar": "56e282b3c99c142c52b43b19e70ccbce83114a9fe05fe798e703b8353d06eb5f",
++   "013.jar": "fcb3ac21e4c74a1dea60284da53030ac29d6ca77666de8649b544917059b5db9",
++   "014.jar": "2bb94646735372da8c8a277b1307a747fa76473f1a85b60511a9c3be597df4de",
++   "015.jar": "4db8eb147b8527bf3f19ab76c0a5a6793936761aabd799f817fcdbbb7f15d6d0",
++   "016.jar": "81f714728bcce8a73820f35bc9ea68de48fa0d20c1dc9a23095f8519a10b88af",
++   "017.jar": "8c4633e2eafa8dd675ea86ec2070611685e7b3228121356b3f15b8c6b417460f",
++   "018.jar": "8b643d64c42d4ee0f3f4556bbc74709aefddcbf5e2f5abfafc158f205fa80419"
++  },
++  "new": {
++   "000.jar": "87c878170206362efe2f076b4b7162073f285bab5c776fdc8a0ab2a69a842cd5",
++   "001.jar": "10ba7512df602c5dea13d4562dc3aa9f1e8bc77ac6ec7a4edeb1a68610b4c3df",
++   "002.jar": "53eb5b1898ef50a14623b4f0d7286270521f75a6b9b231f8ca3175fd966da1c0",
++   "003.jar": "638103c03ef68e9d0a732840e19e60edb8d46f174edce7a6b2eddbec27437116",
++   "004.jar": "1eaf2c23be45bc3dc1b3a83c674dd23a968fe611686b2405e5028bbe6f1bc3bd",
++   "005.jar": "600691a93acdfbc0f248f754330b188a7e1136e377f03fe17dcfc199a3997b20",
++   "006.jar": "488d7f2c91d74e6202e5395a9a53580a0418cbfd7a407f209e9045a66f6a6a0c",
++   "007.jar": "c9eed04e9b7596bcfd5883f494c84913a83957259355e10b533118d90b9017b4",
++   "008.jar": "f4a62bf7b372b30d408da010470a37d465d964c1807f058c3d942b99f0acab5e",
++   "009.jar": "d75cda726e133194ccecce7d323976a9a3d3600d33dacd83dcbac93c7271cc1b",
++   "010.jar": "70bf6d47e7d30edb5e08300f990afc89999cf84a61a6a92aa3da0f335cfb07b3",
++   "011.jar": "2fe88c9c57100e8374481f828b7552489e43e6864d254ef21f4c8f3270dbaf71",
++   "012.jar": "128903fc9e71ea547de0868ff931ab44f5e8c33c8f2218d6be321f08498f4895",
++   "013.jar": "88593e079e952f27d562fd743623c11755251f879ed73a5bfc4c586f6ae3567e",
++   "014.jar": "df2f8e3263b0579cdfb106cd59c050dbb583df101f89e0d9b3469d120285de38",
++   "015.jar": "22b42f8df34977b91dc152bbbad11e0e034da715bec42a7b5b7ac0be61513661",
++   "016.jar": "07a63339e20d7b1650a51ef66171e90164740bc2fecbd0459dd578086a112e1f",
++   "017.jar": "a41054409a6b9875835e9ffc78b52143d3224ac3d4083f599acd98165f8cdce6",
++   "018.jar": "374d5cf0c54a224c1d75b3771bda62c1b5fa4f266aa003e6ac22bcc7c2787864",
++   "019.jar": "cac20d68f3b9c7775b978c9621d7d5ec36b303f66ebe426e688ef3b0ef0cc340"
++  },
++  "thinCallers": {
++   "ReferenceAPI$Named.class": "c9c2dd8212eb6df0b548c9c9199012c6be3d07671d882e998af06bc2ec9b9d40",
++   "ReferenceAPI$Default.class": "6101224cf7db91e6cca51b8b2266dedecdc23feb34109d859de5d4a0c1e7bfe3",
++   "ReferenceAPI.class": "fe3143d6f29ea12b105a524a30091b3d098af7fb31d34a1656736d609e02fbb5"
++  },
++  "symbolicClaimClasses": {
++   "ReferencePair.class": "f35b5ec8ac5a9e84c3c4678279904333d95948e56f8a3068bfc1e85d53a3f24d"
++  },
++  "oldEntryMapSha256": "3625588523cc4e9f6c17719bc2840065eb41842661c61444afb4bd314b007787",
++  "shadowedOldClasses": [
++   [
++    "org/slf4j/impl/StaticLoggerBinder.class",
++    "014.jar",
++    "org/slf4j/impl/StaticLoggerBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMDCBinder.class",
++    "014.jar",
++    "org/slf4j/impl/StaticMDCBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMarkerBinder.class",
++    "014.jar",
++    "org/slf4j/impl/StaticMarkerBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticLoggerBinder.class",
++    "015.jar",
++    "org/slf4j/impl/StaticLoggerBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMDCBinder.class",
++    "015.jar",
++    "org/slf4j/impl/StaticMDCBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMarkerBinder.class",
++    "015.jar",
++    "org/slf4j/impl/StaticMarkerBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticLoggerBinder.class",
++    "017.jar",
++    "org/slf4j/impl/StaticLoggerBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMDCBinder.class",
++    "017.jar",
++    "org/slf4j/impl/StaticMDCBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMarkerBinder.class",
++    "017.jar",
++    "org/slf4j/impl/StaticMarkerBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticLoggerBinder.class",
++    "018.jar",
++    "org/slf4j/impl/StaticLoggerBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMDCBinder.class",
++    "018.jar",
++    "org/slf4j/impl/StaticMDCBinder.class"
++   ],
++   [
++    "org/slf4j/impl/StaticMarkerBinder.class",
++    "018.jar",
++    "org/slf4j/impl/StaticMarkerBinder.class"
++   ]
++  ],
++  "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++ }
++}
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/04/new/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/04/new/results.json.gz changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/04/old/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/04/old/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/04/process.log
+@@ -0,0 +1,2 @@
++old 6 original checks passed
++new 6 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/04/summary.json
+@@ -0,0 +1,195 @@
++{
++ "job": "20261125-002307-01-04-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original release conjuncts",
++ "physicalRegistration": "9ec792cd4abb236149850390420fe01861c46cd541d54a858b3d5213ac061a4a",
++ "rows": [
++  {
++   "deployment": "old",
++   "method": "primary",
++   "scope": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.072,
++    "cpuSeconds": 0.066,
++    "peakMB": 93.6,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.082,
++    "cpuSeconds": 0.077,
++    "peakMB": 92.7,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "old",
++   "method": "control",
++   "scope": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.072,
++    "cpuSeconds": 0.063,
++    "peakMB": 93.1,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.081,
++    "cpuSeconds": 0.075,
++    "peakMB": 92.6,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "old",
++   "method": "inverse",
++   "scope": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.071,
++    "cpuSeconds": 0.067,
++    "peakMB": 92.8,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.081,
++    "cpuSeconds": 0.077,
++    "peakMB": 92.7,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "new",
++   "method": "primary",
++   "scope": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.051,
++    "cpuSeconds": 0.041,
++    "peakMB": 52.6,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.071,
++    "cpuSeconds": 0.064,
++    "peakMB": 52.4,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "new",
++   "method": "control",
++   "scope": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.061,
++    "cpuSeconds": 0.052,
++    "peakMB": 51.4,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.071,
++    "cpuSeconds": 0.063,
++    "peakMB": 52.4,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "new",
++   "method": "inverse",
++   "scope": "Two in-memory SVG images, 8 or 16 pixels wide and 8 pixels tall; no external references.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.051,
++    "cpuSeconds": 0.043,
++    "peakMB": 51.4,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.071,
++    "cpuSeconds": 0.048,
++    "peakMB": 52.3,
++    "exit": 1,
++    "killed": false
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/04/worker.json
+@@ -0,0 +1,23 @@
++{
++ "status": "measured",
++ "scope": "separate original-release conjuncts of the same frozen primary and control",
++ "assistance": "measurement harness changed after the blind first pass",
++ "sides": {
++  "old": {
++   "rows": 3,
++   "original": {
++    "checks": 6,
++    "sourceSha256": "12e408d91346f112281e8e7dcfc91c997724ac2ceb1d2e9b59510b4f9a551c62",
++    "stdout": "6 original checks passed"
++   }
++  },
++  "new": {
++   "rows": 3,
++   "original": {
++    "checks": 6,
++    "sourceSha256": "12e408d91346f112281e8e7dcfc91c997724ac2ceb1d2e9b59510b4f9a551c62",
++    "stdout": "6 original checks passed"
++   }
++  }
++ }
++}

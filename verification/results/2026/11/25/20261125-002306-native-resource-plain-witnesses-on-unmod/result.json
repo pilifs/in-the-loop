@@ -1,0 +1,222 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-002306-native-resource-plain-witnesses-on-unmod",
+  "title": "Native resource plain witnesses on unmodified JVMs",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 7.6s, peak 95.5 MiB (estimated 3m00s, 3.0 GiB); 6 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-002306-native-resource-plain-witnesses-on-unmod.json",
+    "sha256": "31eb6ea83276a1775513e972ca444d30b1510f2ddfb7bf50591db9eed2273d1f",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-002306-native-resource-plain-witnesses-on-unmod",
+      "title": "Native resource plain witnesses on unmodified JVMs",
+      "description": "A former universal proof saw only the new resource. Recheck the bytes each original loader opens, the unchanged missing key, ordinary and paired witnesses, and same-path mutation against clean. The case definitions and independent original JVM returns were registered before solving.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/native_resources.py"
+        ]
+      },
+      "expected": "Retain the full native calls and original witnesses. Reject a false proof or a refutation that disagrees with either original deployment.",
+      "submitted": {
+        "at": "2026-11-25T00:23:06+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.py plain compensating context",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/scaffold-first/native-resource/plain",
+        "verification/beyond-jbmc/scaffold-first/native-resource/compensating",
+        "verification/beyond-jbmc/scaffold-first/native-resource/context"
+      ]
+    }
+  },
+  "sourceCommit": "689388178a8d91956be51af424f473d0271795a8",
+  "startedAt": "2026-11-25T00:43:53+00:00",
+  "finishedAt": "2026-11-25T00:47:23+00:00",
+  "wallSeconds": 210.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4174191,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 100102144,
+    "wallSeconds": 7.6,
+    "cpuSeconds": 11.2,
+    "memoryOfEstimate": 0.03,
+    "durationOfEstimate": 0.04
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/native_resources.py plain compensating context",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 7.608,
+      "cpuSeconds": 11.245,
+      "cpuThrottledSeconds": 0.673,
+      "peakMemoryBytes": 100102144,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 418,
+        "sha256": "d2cfb290917e52a8875ac935762dffd8e84e881343e37d609e70799746507dd0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "plain [('cold', 'violation'), ('warm', 'violation'), ('clean', 'violation'), ('paired', 'unverifiable'), ('equal-replacement', 'verified'), ('equal-warm', 'verified'), ('changed-replacement', 'violation')]",
+        "compensating [('cold', 'verified'), ('warm', 'verified'), ('clean', 'verified'), ('paired', 'verified')]",
+        "context [('cold', 'violation'), ('warm', 'violation'), ('clean', 'violation'), ('paired', 'unverifiable')]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/plain/executions.zip",
+      "change": "added",
+      "bytes": 24080,
+      "sha256": "ea88d6bbd8eb6ceeb3c1ac47ec5f7846bf961ea3d625426707a937c98a8ceeb6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/plain/summary.json",
+      "change": "added",
+      "bytes": 24206,
+      "sha256": "500cfea8c31fd306ff50e3fd8c947defd1124f14f41525e25abdf7d534f271bc",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/compensating/executions.zip",
+      "change": "added",
+      "bytes": 13165,
+      "sha256": "24821d6eb0f9df8a06e396ae342dda668e16169711643ddf77bd82ba90f11203",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/compensating/summary.json",
+      "change": "added",
+      "bytes": 11739,
+      "sha256": "a58bcbb1cb3098b9226818e1860edb03ad2e1c045fd57d1517285280573c5628",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/context/executions.zip",
+      "change": "added",
+      "bytes": 14805,
+      "sha256": "1cb86b92d5d3629b8fb00844b038086f089b1108503ca1731bb2e31493f7ce38",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/context/summary.json",
+      "change": "added",
+      "bytes": 15834,
+      "sha256": "b4a0c23d858c8dfe62564cb45b5e713d9b36a7b5b311a7c1e4711419a9ad83fc",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T00:47:56+00:00",
+    "applied": [
+      "verification/beyond-jbmc/scaffold-first/native-resource/plain/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/plain/summary.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/compensating/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/compensating/summary.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/context/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/context/summary.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9071c5486aa86db6e22c4ea65d9dd330447ab181",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9071c5486aa86db6e22c4ea65d9dd330447ab181/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T004723Z-301378702ca9d10b",
+      "outputs": "20261125T004723Z-337374755c6e2807",
+      "diff": "20261125T004723Z-365356f53fe32be3"
+    }
+  }
+}
