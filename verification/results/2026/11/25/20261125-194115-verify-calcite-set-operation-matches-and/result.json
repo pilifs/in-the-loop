@@ -1,0 +1,223 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-194115-verify-calcite-set-operation-matches-and",
+  "title": "Verify Calcite set-operation matches and the UNION ALL control",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 37.7s, peak 208.9 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-194115-verify-calcite-set-operation-matches-and.json",
+    "sha256": "6683809ce26776478166f0223b072d699dc6c72a81b625f8576256bd9e165e7b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-194115-verify-calcite-set-operation-matches-and",
+      "title": "Verify Calcite set-operation matches and the UNION ALL control",
+      "description": "Repeat the eight original-method debugger trials for the EXCEPT ALL and INTERSECT ALL intent and duplicate-input histories. Independently repeat all three JDBC histories with Calcite's public planner listener. Follow the converted and trimmed relational trees, count attempts and successful project transpositions, and verify the returned rows. The UNION ALL projection disappears during field trimming before the registered rule can match.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry",
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "examples": [
+          "432"
+        ]
+      },
+      "expected": "Both revisions attempt the changed rule on the difference and intersection queries. Only the parent produces those transforms. Both trim the outer UNION ALL projection and return two tens with zero attempts of the registered rule. All twelve listener JVMs and eight debugger trials match.",
+      "submitted": {
+        "at": "2026-11-25T19:41:15+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m",
+        "timeout": "8m"
+      },
+      "steps": [
+        {
+          "name": "Reach the original rule on the intent and duplicate inputs",
+          "run": "python3 -B verification/merged-pr-links/qualify.py 432 --only Intent --only Challenge --gzip --output verification/merged-pr-links/l01-l20/qualified",
+          "cwd": "."
+        },
+        {
+          "name": "Compare all returned rows, planner shapes and rule events",
+          "run": "python3 -B examples/432-calcite-set-multiplicities/controls/planner.py",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/qualified/432-pins.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "e19caf533aa552edc17867cc283af697c8cd903f",
+  "startedAt": "2026-11-25T20:01:35+00:00",
+  "finishedAt": "2026-11-25T20:02:21+00:00",
+  "wallSeconds": 46.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 3281148,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 219099136,
+    "wallSeconds": 37.7,
+    "cpuSeconds": 66.1,
+    "memoryOfEstimate": 0.2,
+    "durationOfEstimate": 0.31
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Reach the original rule on the intent and duplicate inputs",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 432 --only Intent --only Challenge --gzip --output verification/merged-pr-links/l01-l20/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 21.044,
+      "cpuSeconds": 36.045,
+      "cpuThrottledSeconds": 9.335,
+      "peakMemoryBytes": 219099136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-reach-the-original-rule-on-the.log",
+        "lines": 1,
+        "bytes": 138,
+        "sha256": "4d3d38548bbc4a94144c03f1a32fd255ce52a123f1c3c55a71842b9a8398224b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "432 pins org.apache.calcite.rel.rules.ProjectSetOpTransposeRule#onMatch(Lorg/apache/calcite/plan/RelOptRuleCall;)V 8 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Compare all returned rows, planner shapes and rule events",
+      "run": "python3 -B examples/432-calcite-set-multiplicities/controls/planner.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 16.64,
+      "cpuSeconds": 30.046,
+      "cpuThrottledSeconds": 1.945,
+      "peakMemoryBytes": 150679552,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-all-returned-rows-plan.log",
+        "lines": 6,
+        "bytes": 679,
+        "sha256": "69e220f0dd76b8540aeda47e75be2a828f606acb13d29cbdd6b7341fc30e5f34",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "parent apache/calcite#5378.1 rule=true rows=[]/[10] attempts {'EXCEPT': 1, 'INTERSECT': 1} productions {'EXCEPT': 1, 'INTERSECT': 1}",
+        "parent apache/calcite#5378.2 rule=true rows=[10, 10] attempts {} productions {}",
+        "parent apache/calcite#5378.3 rule=true rows=[]/[10, 10, 10] | []/[10, 10, 10] attempts {'EXCEPT': 2, 'INTERSECT': 2} productions {'EXCEPT': 2, 'INTERSECT': 2}",
+        "fix apache/calcite#5378.1 rule=true rows=[10]/[] attempts {'EXCEPT': 1, 'INTERSECT': 1} productions {}",
+        "fix apache/calcite#5378.2 rule=true rows=[10, 10] attempts {} productions {}",
+        "fix apache/calcite#5378.3 rule=true rows=[10, 10]/[10] | []/[10, 10, 10] attempts {'EXCEPT': 2, 'INTERSECT': 2} productions {}"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/432-pins.json.gz",
+      "change": "added",
+      "bytes": 34410,
+      "sha256": "ab4be0353d4c141a94c63179b431be95f2052de145105db35b63b7f392c2bd5b",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T20:02:46+00:00",
+    "applied": [
+      "verification/merged-pr-links/l01-l20/qualified/432-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T200221Z-7340830e3059f60f",
+      "outputs": "20261125T200221Z-752610c3faf2e894",
+      "diff": "20261125T200221Z-76762137ac87b2b9"
+    }
+  }
+}

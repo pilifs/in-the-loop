@@ -1,0 +1,6 @@
+parent apache/calcite#5378.1 rule=true rows=[]/[10] attempts {'EXCEPT': 1, 'INTERSECT': 1} productions {'EXCEPT': 1, 'INTERSECT': 1}
+parent apache/calcite#5378.2 rule=true rows=[10, 10] attempts {} productions {}
+parent apache/calcite#5378.3 rule=true rows=[]/[10, 10, 10] | []/[10, 10, 10] attempts {'EXCEPT': 2, 'INTERSECT': 2} productions {'EXCEPT': 2, 'INTERSECT': 2}
+fix apache/calcite#5378.1 rule=true rows=[10]/[] attempts {'EXCEPT': 1, 'INTERSECT': 1} productions {}
+fix apache/calcite#5378.2 rule=true rows=[10, 10] attempts {} productions {}
+fix apache/calcite#5378.3 rule=true rows=[10, 10]/[10] | []/[10, 10, 10] attempts {'EXCEPT': 2, 'INTERSECT': 2} productions {}
