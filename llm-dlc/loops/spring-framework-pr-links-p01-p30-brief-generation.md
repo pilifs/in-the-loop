@@ -27,10 +27,20 @@
 | spring-projects/spring-framework#22260 | written | Read the SPI overloads, both lifecycle options, prototype XML and integration assertions. The absent-name request in the presence of a same-type Spring decoy remains unexecuted. |
 | spring-projects/spring-framework#34723 | written | Read the named-level annotation and hierarchy docs, parent/child caller and mock cache regressions, and the related reload/spy reports. The no-selector control and paired-client identity check remain unexecuted. |
 | spring-projects/spring-framework#32469 | written | Read the PR’s separate caller/advice observations and new JDK/CGLIB test matrix. The two modules relocate wrapping to the generated class. Recovery by a typed advice catch remains unexecuted. |
-| spring-projects/spring-framework#28322 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#30020 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#33470 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#36556 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#36865 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#28322 | written | Read #28283, the self-injection/AOP fixtures and the single published-event count. Matching advice, a distinct second listener and repeated publication remain unexecuted. |
+| spring-projects/spring-framework#30020 | written | Read #29827, child-thread tests and the EngineTestKit container failure. The guard reads annotation values without consulting the global parallel switch. Shared two-child event readback and rejection with global parallelism disabled remain unexecuted. |
+| spring-projects/spring-framework#33470 | written | Read the factory, its class-versus-method registration assertions and the three linked propagation issues. The admitted before case and the context-level NOT_SUPPORTED override with fallback publication remain unexecuted. |
+| spring-projects/spring-framework#36556 | written | Read the registrar overload, size-only London test, CronTask and CronTrigger clock selection. July 08:00Z and January 09:00Z are expected from 09:00 London. The explicit-zone/clock-zone experiment remains unexecuted. |
+| spring-projects/spring-framework#36865 | written | Read both landed commits, the #36859 recorded sequence, the Cairo public test and the New York hour-field test. UTC instants follow from the listed offsets. Repeated next calls at the public boundary remain unexecuted. |
 
 Authoring evidence consists of the saved PR metadata and revision-pinned source reads. Runtime results attributed to the PR or issue are upstream observations. The proposed controls and challenges have not been executed here.
+
+## Final check
+
+All 30 PRs were accessible. Each appears once in input order. The 94 claims identify the public call or registration, an independently observable result, its basis, and an outcome that would refute it. Cases involving an added or removed API specify which revision can express the call. Historical failures are attributed to the upstream PR, issue or regression. Predictions about additional callers, providers, encoders and time zones remain open.
+
+Checked the 140 revision-pinned Spring file links against the cached trees. The 460 complete Spring source reads matched their Git blob IDs and byte lengths (302 distinct objects). All 140 changed paths matched the submitted additions and deletions. The before pin precedes both landed commits for #37202, #37159, #28322 and #36865. The #1532 range starts at the merge’s first parent. The #34723 comparison includes both renamed tests. Eight files across #36480, #21855, #23562, #32469 and #28322 contained other target-branch edits. Comparing the lines added and removed confirmed the submitted edits on all eight.
+
+The 2026-11-25 source receipts, PR and issue metadata, diffs, and comparison checks are in `~/.cache/in-the-loop/agent-tmp/ea63c5f6-1929-4c3f-9921-139ac43a8b86/p-brief/`, grouped by PR number. Source reads and expected-value calculations were the authoring checks. No Spring build, runtime probe, database run or verification job was performed.
+
+The first commit check found four missing historical trace snapshots inherited from queue revision `1ec17d5a420a`. The repository’s `adopt-logs` command recovered three from the default workspace. The remaining snapshot, `051225123e0e` for session `e61d882b-5ef7-428e-90df-ffe709ac6962`, had no stored copy in any registered workspace at authoring time.
