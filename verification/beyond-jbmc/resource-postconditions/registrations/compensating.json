@@ -1,0 +1,195 @@
+{
+ "original": {
+  "case": "compensating",
+  "target": "PairResourceGate#read",
+  "inputs": [
+   false,
+   true
+  ],
+  "entry": "ClassLoader.getResources, first URL and first original stream byte",
+  "selected": "META-INF/paint",
+  "control": "META-INF/missing",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "sides": {
+   "old": {
+    "observations": [
+     -1,
+     65
+    ],
+    "sourceSha256": "7ee0e64f365db1ef6a2aff7f1346a4434f5d150e64a540ba2fb1e96938c608e8",
+    "classSha256": "5c1014e1d104f4b12a0b2ab0b273d8cd3f0dbce4c63b63ab56ea782fe3fdaefc",
+    "orderedJarDigests": [
+     "18fedcbcf72552a2b6c713c4b57aba22d253e66711f9f166f8d3957cf98a1705"
+    ]
+   },
+   "new": {
+    "observations": [
+     -1,
+     65
+    ],
+    "sourceSha256": "51a8a76fa7ef19292087c4e4a4fb70515dbc5c23f3f6146edadbb7e031f4537a",
+    "classSha256": "249943bb6d0893654133b712acee5ad4dcf9c61ac9632d9becb65de47c553b61",
+    "orderedJarDigests": [
+     "016aa4263a9d3e528f2f968ed6a8f9daf26427af8d85b7fdb59510f2dd70d949"
+    ]
+   }
+  }
+ },
+ "independentOracle": "55414ba4504b055bdc1cb8cad329e5d853328fdad8db0a31d8b96edc90c9f103",
+ "claims": [
+  {
+   "name": "paired",
+   "arguments": [
+    "--assume",
+    "true"
+   ],
+   "domain": "true",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": 65,
+     "new": 65,
+     "admitted": true,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "selected",
+   "arguments": [
+    "--assume",
+    "selected"
+   ],
+   "domain": "selected",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": false,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": 65,
+     "new": 65,
+     "admitted": true,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "missing",
+   "arguments": [
+    "--assume",
+    "!selected"
+   ],
+   "domain": "!selected",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": 65,
+     "new": 65,
+     "admitted": false,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "allowed",
+   "arguments": [
+    "--assume",
+    "true",
+    "--unchanged-unless",
+    "selected"
+   ],
+   "domain": "!selected",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": 65,
+     "new": 65,
+     "admitted": false,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "offset",
+   "arguments": [
+    "--results-agree-when",
+    "(!selected && previous == result) || (selected && previous + 1 == result)"
+   ],
+   "domain": "true",
+   "relation": "(!selected && previous == result) || (selected && previous + 1 == result)",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": 65,
+     "new": 65,
+     "admitted": true,
+     "relation": false
+    }
+   ]
+  },
+  {
+   "name": "different-missing",
+   "arguments": [
+    "--unchanged-unless",
+    "selected",
+    "--results-agree-when",
+    "previous != result"
+   ],
+   "domain": "!selected",
+   "relation": "previous != result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": false
+    },
+    {
+     "selected": true,
+     "old": 65,
+     "new": 65,
+     "admitted": false,
+     "relation": false
+    }
+   ]
+  }
+ ]
+}

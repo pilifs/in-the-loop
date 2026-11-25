@@ -284,6 +284,10 @@ pub const WIDENED_DOMAIN: &str = "widened-domain";
 
 /// Runs the property proof.
 pub fn run(options: &Options) -> Result<Outcome, Error> {
+    run_with_pair(options, None)
+}
+
+pub(crate) fn run_with_pair(options: &Options, original_pair: Option<&mut crate::pairing::replay::ScalarPair<'_>>) -> Result<Outcome, Error> {
     if options.search_startup_witness && (options.engine != crate::Engine::Native || options.gaps != crate::bmc::gaps::GapMode::Strict) {
         return Err(Error::new("--search-startup-witness requires --engine native --gaps strict"));
     }
@@ -324,7 +328,7 @@ pub fn run(options: &Options) -> Result<Outcome, Error> {
             Ok(None) => {}
         }
     }
-    let mut outcome = run_check(options);
+    let mut outcome = run_check(options, original_pair);
     if let (Some(_), Ok(o)) = (&options.cache, &mut outcome) {
         if matches!(o.verdict, crate::Verdict::Verified | crate::Verdict::Violation) {
             crate::reuse::property_store(options, o).map_err(|u| Error::new(u.to_string()))?;
@@ -392,7 +396,7 @@ fn thrown_name(i: usize) -> String {
     format!("thrown{i}")
 }
 
-fn run_check(options: &Options) -> Result<Outcome, Error> {
+fn run_check(options: &Options, original_pair: Option<&mut crate::pairing::replay::ScalarPair<'_>>) -> Result<Outcome, Error> {
     let work = match &options.work {
         Some(w) => w.clone(),
         None => crate::tla::tempfile_path("jvmcontract-property"),
@@ -779,7 +783,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                     ..options.clone()
                 };
                 let started = std::time::Instant::now();
-                let proved = run_check(&contract)?;
+                let proved = run_check(&contract, None)?;
                 let seconds = started.elapsed().as_secs_f64();
                 for said in proved.output.lines() {
                     let _ = writeln!(out, "effect: {said}");
@@ -820,7 +824,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 ..options.clone()
             };
             let started = std::time::Instant::now();
-            let proved = run_check(&lemma)?;
+            let proved = run_check(&lemma, None)?;
             let seconds = started.elapsed().as_secs_f64();
             for said in proved.output.lines() {
                 let _ = writeln!(out, "lemma: {said}");
@@ -1406,16 +1410,23 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
             let through_contracts = unreplayed.as_deref().and_then(|t| crate::equivalence::unconfirmed_through_contracts(&last, &render(&found).0, t));
             let contracted = through_contracts.is_some();
             let mut unconfirmed = through_contracts.or_else(|| unreplayed.as_deref().map(|t| crate::equivalence::unreplayed(&last, &render(&found).0, t, "the method")));
-            if previous.is_some() && last.native.as_ref().is_some_and(crate::bmc::Stats::reads_jar_resources) {
+            let resource_pair = previous.as_deref().filter(|_| last.native.as_ref().is_some_and(crate::bmc::Stats::reads_jar_resources));
+            if resource_pair.is_some() {
                 unconfirmed = Some("a witness to this paired property reads an original release's resources and needs the complete postcondition replayed on separate original classpaths".into());
-            } else if let Some(p) = &unconfirmed {
+            }
+            if let Some(p) = &unconfirmed {
                 let mut entries = vec![harness_dir.clone()];
                 entries.extend(options.classes.iter().cloned());
                 entries.extend(options.classpath.iter().cloned());
                 // Over objects the JVM runs the harness alone, which makes them: a direct call takes flat values.
                 let calls = if over_objects { Vec::new() } else { vec![crate::jvm_witness::DirectCall { owner: class_internal.clone(), name: method_name.clone(), descriptor: method.descriptor.clone(), ret: descriptor.ret.clone() }] };
                 let rendered = render(&found).0;
-                match crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &found, &calls, &entries) {
+                let physical = match resource_pair {
+                    Some(versions) => original_pair.ok_or_else(|| "this paired observation needs an original-graph witness".to_string())
+                        .and_then(|pair| pair.replay(&work.join("original-jvm-witness"), versions, &layout, &harness, &found)),
+                    None => crate::jvm_witness::run(&work.join("jvm-witness"), harness::PROPERTY_CLASS, &entry_types, &entry_slots, &found, &calls, &entries),
+                };
+                match physical {
                     Ok(run) if run.check == crate::jvm_witness::Check::Refuted => {
                         if let Some(call) = run.calls.into_iter().next() {
                             replayed = call;

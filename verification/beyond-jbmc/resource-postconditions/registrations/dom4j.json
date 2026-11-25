@@ -1,0 +1,197 @@
+{
+ "original": {
+  "case": "dom4j",
+  "target": "PairResourceGate#read",
+  "inputs": [
+   false,
+   true
+  ],
+  "entry": "ClassLoader.getResources, first URL and first original stream byte",
+  "selected": "META-INF/services/javax.xml.parsers.SAXParserFactory",
+  "control": "META-INF/missing",
+  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
+  "sides": {
+   "old": {
+    "observations": [
+     -1,
+     -1
+    ],
+    "sourceSha256": "f3b7a8e47d03177c350d6a0e6ff4dda2b00a0a083f286e89305ab777582d9f65",
+    "classSha256": "2387dcf8b857829a58fcd150ee2c8cbc9b08e90af11c16d37083ab2fd1dc8052",
+    "orderedJarDigests": [
+     "c2a0989a0920f081acbe7d4bfe564727ea7117b3d29f0d1aface918236d64855",
+     "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
+    ]
+   },
+   "new": {
+    "observations": [
+     -1,
+     -1
+    ],
+    "sourceSha256": "3db1beee94524aeef1b4897cdb315d61a95abac5aa891ca0d50e9888f28d008c",
+    "classSha256": "f0de371cc2aadadf67f0085a45fb85571dd6d28bc2bc65f1ea5d681fe7267946",
+    "orderedJarDigests": [
+     "d688f0b9bb2ff89dd623198018c2898e487f2e9fccc6c9b6b02890ef00714293",
+     "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
+    ]
+   }
+  }
+ },
+ "independentOracle": "55414ba4504b055bdc1cb8cad329e5d853328fdad8db0a31d8b96edc90c9f103",
+ "claims": [
+  {
+   "name": "paired",
+   "arguments": [
+    "--assume",
+    "true"
+   ],
+   "domain": "true",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "selected",
+   "arguments": [
+    "--assume",
+    "selected"
+   ],
+   "domain": "selected",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": false,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "missing",
+   "arguments": [
+    "--assume",
+    "!selected"
+   ],
+   "domain": "!selected",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": -1,
+     "new": -1,
+     "admitted": false,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "allowed",
+   "arguments": [
+    "--assume",
+    "true",
+    "--unchanged-unless",
+    "selected"
+   ],
+   "domain": "!selected",
+   "relation": "previous == result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": -1,
+     "new": -1,
+     "admitted": false,
+     "relation": true
+    }
+   ]
+  },
+  {
+   "name": "offset",
+   "arguments": [
+    "--results-agree-when",
+    "(!selected && previous == result) || (selected && previous + 1 == result)"
+   ],
+   "domain": "true",
+   "relation": "(!selected && previous == result) || (selected && previous + 1 == result)",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": true
+    },
+    {
+     "selected": true,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": false
+    }
+   ]
+  },
+  {
+   "name": "different-missing",
+   "arguments": [
+    "--unchanged-unless",
+    "selected",
+    "--results-agree-when",
+    "previous != result"
+   ],
+   "domain": "!selected",
+   "relation": "previous != result",
+   "rows": [
+    {
+     "selected": false,
+     "old": -1,
+     "new": -1,
+     "admitted": true,
+     "relation": false
+    },
+    {
+     "selected": true,
+     "old": -1,
+     "new": -1,
+     "admitted": false,
+     "relation": false
+    }
+   ]
+  }
+ ]
+}

@@ -1218,7 +1218,7 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
         }
         out.push_str(&p.output);
         let domain = paired.target_statement.as_ref().map(|s| s.domain.text.clone()).or_else(|| p.domain.clone());
-        let replay = paired.target_statement.as_ref().and_then(|_| p.replay.clone());
+        let replay = if paired.target_statement.is_some() || paired.target_witness.is_some() { p.replay.clone() } else { None };
         let stated = paired.target_statement.or_else(|| p.stated.clone());
         return Ok(Outcome { verdict: p.verdict, target: options.target.clone(), domain, counterexample: paired.target_witness, proof: p.proof.clone(), problem: p.problem.clone(), statement: Some(paired.statement), findings: p.findings.clone(), output: out, work, shared: Vec::new(), helpers: Vec::new(), previous: None, relation: None, vacuous: p.vacuous.clone(), search: p.search.clone(), replay, stated, advice: None, reuse: None, pair: Some(Box::new(p)) });
     }
@@ -2570,16 +2570,16 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                 let slots: Vec<u16> = layout.params.iter().map(|p| p.slot).collect();
                 let rendered = witness::call_in(&method_name, &layout, &found).0;
                 let physical = if resource_lookup {
-                    let integral = |t: &Type| matches!(t, Type::Boolean | Type::Byte | Type::Char | Type::Short | Type::Int | Type::Long);
-                    if alone && results_agree_when.is_none() && options.correspondence.is_none() && iff_pairs.is_empty() && flat_types.iter().all(integral)
-                        && descriptor.ret == before_descriptor.ret && integral(&descriptor.ret)
+                    let integral = crate::pairing::replay::integral;
+                    if alone && options.plan.is_none() && options.correspondence.is_none() && iff_pairs.is_empty() && flat_types.iter().all(integral)
+                        && integral(&before_descriptor.ret) && integral(&descriptor.ret)
                         && method.is_public() && before_method.is_public()
                         && class.access & crate::classfile::flags::PUBLIC != 0 && before_class.access & crate::classfile::flags::PUBLIC != 0 {
                         let old = crate::jvm_witness::DirectCall { owner: before_class_internal.clone(), name: before_method_name.clone(),
                                                                    descriptor: before_method.descriptor.clone(), ret: before_descriptor.ret.clone() };
                         crate::jvm_witness::original_pair(&work.join("original-jvm-witness"), &flat_types, &slots, &found,
                             [(&old, &versions.classpath), (&calls[1], &versions.current_classpath)],
-                            |a, b| Some(a.returned.as_ref()? == b.returned.as_ref()?))
+                            |a, b| crate::pairing::replay::regression_holds(&harness, &found, a, b))
                     } else {
                         Err("this resource-dependent witness needs original-graph replay for its caller and observation".into())
                     }
@@ -2591,11 +2591,15 @@ fn run_check(options: &Options) -> Result<Outcome, Error> {
                         let alone_words = "<not run alone on the JVM, which the harness's assertion fails on>".to_string();
                         // What the two differ in is the JVM's to say where it ran each version; otherwise it is
                         // unknown (the interpreter's replays, one unrun, differ in nothing).
-                        let (before, after, differs) = match run.calls.as_slice() {
+                        let (before, after, mut differs) = match run.calls.as_slice() {
                             [b, a] => (b.with_leftovers(params, &found), a.with_leftovers(params, &found), witness::differences(b, a, params, &found, &iff_pairs)),
                             _ => (if replays.before.starts_with("<could not replay") { alone_words.clone() } else { replays.before.clone() }, if replays.after.starts_with("<could not replay") { alone_words } else { replays.after.clone() }, replays.differs.clone()),
                         };
-                        replays = Replays { before, after, agree: false, relation_note: None, differs };
+                        let relation_note = if resource_lookup {
+                            results_agree_when.as_ref().map(|text| format!("the original results are not related by {text}"))
+                        } else { None };
+                        if relation_note.is_some() && !differs.iter().any(|d| d == "result") { differs.push("result".into()); }
+                        replays = Replays { before, after, agree: false, relation_note, differs };
                         on_jvm = Some(run.jdk);
                         unconfirmed = None;
                     }
