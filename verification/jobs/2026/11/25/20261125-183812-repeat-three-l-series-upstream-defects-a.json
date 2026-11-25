@@ -1,0 +1,44 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-183812-repeat-three-l-series-upstream-defects-a",
+  "title": "Repeat three L-series upstream defects and the SQL grammar control",
+  "description": "Rebuild the three development modules at frozen commits and compare the identical public callers on releases and development branches. Independently compare the JSqlParser grammar with a disposable PostgreSQL 16 server.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md"
+    ]
+  },
+  "expected": "The eighteen release and development histories reproduce their recorded returns. PostgreSQL rejects the TYPE/USING CASCADE tail with SQLSTATE 42601 and stores 103 after the query without the tail.",
+  "submitted": {
+    "at": "2026-11-25T18:38:12+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "docker"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Release and development reproductions",
+      "run": "python3 verification/merged-pr-links/upstream/recheck.py --campaign l01-l20 425 429 430",
+      "cwd": "."
+    },
+    {
+      "name": "PostgreSQL grammar",
+      "run": "python3 examples/442-jsqlparser-active-alter/controls/grammar.py",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

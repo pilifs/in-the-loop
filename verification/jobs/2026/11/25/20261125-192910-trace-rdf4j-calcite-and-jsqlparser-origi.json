@@ -1,0 +1,56 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-192910-trace-rdf4j-calcite-and-jsqlparser-origi",
+  "title": "Trace RDF4J, Calcite and JSqlParser original SQL and query methods",
+  "description": "Follow each registered public query or SQL visitor through the original RDF4J grouping implementation, Calcite projection rule or JSqlParser ALTER dispatch. Both original JVMs repeat the intent, unchanged control and challenge twice; preserve the complete debugger outputs.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "examples": [
+      "431",
+      "432",
+      "442"
+    ]
+  },
+  "expected": "All 36 fresh debugger trials bind the requested method, input, code provider, caller call site and public outcome. Each compressed receipt can be re-audited offline.",
+  "submitted": {
+    "at": "2026-11-25T19:29:10+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1500M",
+    "duration": "6m"
+  },
+  "steps": [
+    {
+      "name": "Check original method and public readback for 431",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 431 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": "."
+    },
+    {
+      "name": "Check original method and public readback for 432",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 432 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": "."
+    },
+    {
+      "name": "Check original method and public readback for 442",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 442 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/merged-pr-links/l01-l20/qualified/431-pins.json.gz",
+    "verification/merged-pr-links/l01-l20/qualified/432-pins.json.gz",
+    "verification/merged-pr-links/l01-l20/qualified/442-pins.json.gz"
+  ]
+}

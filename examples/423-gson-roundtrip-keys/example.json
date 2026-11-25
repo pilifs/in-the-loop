@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "423",
+  "title": "Gson finds parsed numeric keys in a map",
+  "summary": "Equal boxed and parsed numbers missed a HashMap lookup on the parent and retrieved the saved value on the merge. Signed-zero replacement and removal used a single entry.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "agreement",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Gson",
+    "symbol": "JsonParser.parseString"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Gson makes equal numeric primitives backed by different Java number types hash consistently."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/google/gson",
+    "url": "https://github.com/google/gson/pull/3059"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

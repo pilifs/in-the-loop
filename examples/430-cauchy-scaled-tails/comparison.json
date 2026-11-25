@@ -1,0 +1,71 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-statistics/pull/140",
+  "revisions": {
+    "parent": "bfcc6e62e2960512ff699809434d5d7774bf16dd",
+    "fix": "2535c20ad85ce756c0d396151d83e7fc4e2c904c"
+  },
+  "entry": "CauchyDistribution.inverseCumulativeProbability",
+  "questions": [
+    {
+      "id": "apache/commons-statistics#140.1",
+      "role": "Intent",
+      "args": [
+        "tails"
+      ],
+      "history": "Use p=1e-20 and p=1e-300 on the same distribution.",
+      "prediction": "The PR reports the same lower quantile near −3.26625×10¹⁶ for both on the parent. The merge should give approximately −6.366197723675814×10¹⁹ and −6.366197723675814×10²⁹⁹ respectively, with the corresponding positive upper quantiles (relative tolerance 1e−15).",
+      "basis": "The pinned test attributes its numerical references to SciPy. Independently, for these p, the tail displacement is asymptotic to 2/(πp) with relative correction of order p².",
+      "refutation": "A nonfinite value, a shared plateau, a wrong sign or a value outside tolerance on the merge.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "within=false"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "within=true"
+          ]
+        }
+      }
+    },
+    {
+      "id": "apache/commons-statistics#140.2",
+      "role": "Control",
+      "args": [
+        "endpoints"
+      ],
+      "history": "Use p=0, 0.5, 1 in increasing order.",
+      "prediction": "Both revisions should yield [−∞,0.5,+∞] for the lower inverse and [+∞,0.5,−∞] for the survival inverse.",
+      "basis": "The support is the whole real line and the distribution is symmetric about 0.5. The parent median expression in source evaluates tan(0).",
+      "refutation": "A wrong infinity, NaN or a median different from 0.5 on either revision.",
+      "expected": {
+        "parent": {
+          "return": "[-Infinity/Infinity, 0.5/0.5, Infinity/-Infinity]"
+        },
+        "fix": {
+          "return": "[-Infinity/Infinity, 0.5/0.5, Infinity/-Infinity]"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-statistics#140.3",
+      "role": "Challenge",
+      "args": [
+        "scaled"
+      ],
+      "history": "On the merge use of(0, 2⁻¹⁰⁰) with the exactly representable positive p=2⁻¹⁰⁵⁰. Observe both public inverse methods.",
+      "prediction": "Both real quantiles are inside binary64 range. Expect finite outputs within 1% of −2⁹⁵⁰/π and +2⁹⁵⁰/π. Source inspection predicts this property may fail on the merge.",
+      "basis": "Scale divided by p is exactly 2⁹⁵⁰. The relative correction from tan(πp)/(πp) is negligible. Computing the unscaled cotangent first can overflow before the small scale is applied.",
+      "refutation": "An infinity or NaN despite the representable scaled answers, or either magnitude outside the stated band.",
+      "expected": {
+        "fix": {
+          "contains": [
+            "within=true"
+          ]
+        }
+      }
+    }
+  ]
+}

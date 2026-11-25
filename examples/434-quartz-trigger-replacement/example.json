@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "434",
+  "title": "Quartz reloads a replaced schedule and its extension rows",
+  "summary": "On Derby and PostgreSQL the parent persisted CRON with one simple row and zero cron rows, then failed to reload the trigger. The fixed scheduler and fresh JDBC reads agreed after both replacements. The second group kept its own schedule.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "transactions",
+    "stale-messages",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Quartz",
+    "symbol": "Scheduler.getTrigger"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The standard JDBC delegate replaces type-specific state when an existing trigger changes type."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/quartz-scheduler/quartz",
+    "url": "https://github.com/quartz-scheduler/quartz/pull/1496"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "The Derby driver uses a new in-memory database in every process. PostgreSQL 16.16 uses one private schema per history on a disposable loopback server.",
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

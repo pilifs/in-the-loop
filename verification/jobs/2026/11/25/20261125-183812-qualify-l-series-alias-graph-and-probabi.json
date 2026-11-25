@@ -1,0 +1,40 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-183812-qualify-l-series-alias-graph-and-probabi",
+  "title": "Qualify L-series alias, graph and probability observations",
+  "description": "Bind each counterexample and its unchanged control to the original Java method at both pinned revisions. Use two fresh debugger executions per side, per question for picocli, JGraphT and Commons Statistics.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md"
+    ]
+  },
+  "expected": "Each of the 24 debugger trials reaches the original method and matches the complete corresponding physical observation.",
+  "submitted": {
+    "at": "2026-11-25T18:38:12+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "3m"
+  },
+  "steps": [
+    {
+      "name": "Reach three original methods",
+      "run": "python3 verification/merged-pr-links/qualify.py 425 429 430 --output verification/merged-pr-links/l01-l20/qualified",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/l01-l20/qualified"
+  ]
+}

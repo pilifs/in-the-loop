@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-190630-build-gradle-l15-with-three-verified-his",
+  "title": "Build Gradle L15 with three verified historical dependencies",
+  "description": "Build and install the complete binary distribution from both exact Gradle PR 21084 revisions. Resolve all three retired build inputs offline under each original verification policy first, including signed HTTP Builder 0.11.1 from JCenter. Replay the three public incremental-build histories on each installation and check the executing class, task outcome and stamp bytes.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "examples": [
+      "437"
+    ],
+    "paths": [
+      "examples/437-gradle-named-actions/setup/full.py"
+    ]
+  },
+  "expected": "Both installations complete with the original dependency policies. All six public histories use the installed AbstractTask and equal the registered filesystem observations. A failed build retains the side and stage reached.",
+  "submitted": {
+    "at": "2026-11-25T19:06:30+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git",
+    "gpg",
+    "gpgv"
+  ],
+  "resources": {
+    "cpus": 6.0,
+    "memory": "10G",
+    "duration": "60m",
+    "memoryLimit": "16G",
+    "timeout": "180m"
+  },
+  "steps": [
+    {
+      "name": "Build both pins and replay all six histories",
+      "run": "python3 -B examples/437-gradle-named-actions/setup/full.py --fetch --output verification/merged-pr-links/l01-l20/full-gradle.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/l01-l20/full-gradle.json"
+  ]
+}

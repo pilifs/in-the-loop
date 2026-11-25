@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "aa87c0fe82edb5f4584f0531e4028dfd43135808e6ec0dd3b15249cb44a8a15b",
+  "runtimeSha256": "bf4ab07d72bf2667dcde71e7bd8018f298e3ec8ce41ac3e7d0ff96efd453df20",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "55e2e0a984e523f4dc5ff309e1737325557d1897dc890f2395df6aa8d4de9dc8"
+  },
+  "deployments": {
+    "pin-goal": {
+      "callerClasses": {
+        "PublicCaller.class": "d41f34bac303bc320c3a27d1a306156e55cbb32e89d101d45dc476b1df3fd45e",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/maven-shade-plugin#150.1",
+          "outcome": {
+            "return": "duplicate descriptor"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/maven-shade-plugin#150.2",
+          "outcome": {
+            "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First] [borg.foo.First/true]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/maven-shade-plugin#150.3",
+          "outcome": {
+            "return": "duplicate descriptor | duplicate descriptor"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/maven-shade-plugin#150.1",
+          "outcome": {
+            "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First, borg.foo.Second] [borg.foo.First/true, borg.foo.Second/true]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/maven-shade-plugin#150.2",
+          "outcome": {
+            "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First] [borg.foo.First/true]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/maven-shade-plugin#150.3",
+          "outcome": {
+            "return": "[META-INF/services/borg.foo.Svc] [borg.foo.First, borg.foo.Second] [borg.foo.First/true, borg.foo.Second/true] | [META-INF/services/borg.foo.Svc] [borg.foo.First, borg.foo.Second] [borg.foo.First/true, borg.foo.Second/true]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

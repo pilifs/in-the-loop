@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/java-diff-utils/java-diff-utils/pull/233",
+  "revisions": {
+    "parent": "eb188a96eacff8e80877714d42fa9e2fd4fec32a",
+    "fix": "6e0ec1e22d31013eedda0ca8a72d3d77d1abf98b"
+  },
+  "entry": "DiffRowGenerator.generateDiffRows",
+  "questions": [
+    {
+      "id": "java-diff-utils/java-diff-utils#233.1",
+      "role": "Intent",
+      "args": [
+        "explicit"
+      ],
+      "history": "Render the two-line fixture with explicit equal parts and inline markup disabled.",
+      "prediction": "The PR reports CHANGE for the first row on the parent. On the merge expect (EQUAL,same,same), (CHANGE,before,after), in order.",
+      "basis": "Compare the input strings at the same positions. The pinned test asserts the two tags and the first old cell.",
+      "refutation": "A tag, cell, row count or order differs on the merge.",
+      "expected": {
+        "parent": {
+          "return": "[CHANGE/same/same, CHANGE/before/after]"
+        },
+        "fix": {
+          "return": "[EQUAL/same/same, CHANGE/before/after]"
+        }
+      }
+    },
+    {
+      "id": "java-diff-utils/java-diff-utils#233.2",
+      "role": "Control",
+      "args": [
+        "implicit"
+      ],
+      "history": "Generate the patch with equal parts omitted, leaving the visible documents and renderer fixed.",
+      "prediction": "Both revisions should produce those same two rows.",
+      "basis": "The renderer copies the unmodified prefix before the first edit. Omitting redundant patch content leaves the original and revised documents identical to the intent fixture.",
+      "refutation": "Either revision loses the first row, tags it CHANGE, or changes the displayed cells.",
+      "expected": {
+        "parent": {
+          "return": "[EQUAL/same/same, CHANGE/before/after]"
+        },
+        "fix": {
+          "return": "[EQUAL/same/same, CHANGE/before/after]"
+        }
+      }
+    },
+    {
+      "id": "java-diff-utils/java-diff-utils#233.3",
+      "role": "Challenge",
+      "args": [
+        "decorated"
+      ],
+      "history": "Put an unchanged tail after the changed pair. Set the public builder’s equality processor to prefix each unchanged line with `EQ-`. Render both explicit and implicit equal parts on the merge.",
+      "prediction": "The entire ordered sequence must agree across representations. In both columns the first cell is EQ-same and the last is EQ-tail, each decorated once. The middle remains (CHANGE,before,after).",
+      "basis": "A caller-selected pure formatter and literal input give the exact expected text. Equal lines at opposite ends exercise both sides of the change.",
+      "refutation": "Tags agree but either equal cell is raw, decorated twice or missing, or representation changes the middle row.",
+      "expected": {
+        "fix": {
+          "return": "[EQUAL/EQ-same/EQ-same, CHANGE/before/after, EQUAL/EQ-tail/EQ-tail] | [EQUAL/EQ-same/EQ-same, CHANGE/before/after, EQUAL/EQ-tail/EQ-tail]"
+        }
+      }
+    }
+  ]
+}

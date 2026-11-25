@@ -1,0 +1,75 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/junit-team/junit-framework/pull/6104",
+  "revisions": {
+    "parent": "bbeb7900fa76b6fc00e36e0bea05747066b4a2ec",
+    "fix": "2b484caa962ad9b0d9a6af5d2c25100b6a8f4ef6"
+  },
+  "entry": "Launcher.execute",
+  "questions": [
+    {
+      "id": "junit-team/junit-framework#6104.1",
+      "role": "Intent",
+      "args": [
+        "sub"
+      ],
+      "history": "Class-select Sub with both nested classes present.",
+      "prediction": "The PR reports that the parent runs only Sub.A. The merge should discover two distinct test leaves and finish both successfully, recording base and sub once each, in either order.",
+      "basis": "The two declarations are in different Java classes. Both are annotated. The release note expressly includes same-name inherited classes.",
+      "refutation": "Only one marker appears, a marker appears twice, the IDs coincide, or discovery and execution disagree.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "leaves=1 owners=[sub] run=[sub]/1/0"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "leaves=2 owners=[base, sub] run=[base, sub]/2/0"
+          ]
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#6104.2",
+      "role": "Control",
+      "args": [
+        "base"
+      ],
+      "history": "Select Base itself without changing the class files.",
+      "prediction": "Both revisions should discover and execute just its one A.check, recording base once.",
+      "basis": "Selecting Base does not traverse its subclasses. Its nested test is directly declared and has no name collision.",
+      "refutation": "A missing base marker or an extra sub marker on either revision.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "leaves=1 owners=[base] run=[base]/1/0"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "leaves=1 owners=[base] run=[base]/1/0"
+          ]
+        }
+      }
+    },
+    {
+      "id": "junit-team/junit-framework#6104.3",
+      "role": "Challenge",
+      "args": [
+        "reselect"
+      ],
+      "history": "On the merge save both leaf IDs from Sub’s TestPlan. For each ID create a fresh launcher request using `selectUniqueId(id)`, reset the markers, then execute only that request.",
+      "prediction": "Each selection should record the marker for its saved declaring class and no other marker. The two separate runs should partition the class run into one base and one sub.",
+      "basis": "A test runner uses unique IDs to rerun a previously discovered test. Identical simple class and method names make the marker an independent check of identity.",
+      "refutation": "Both IDs rerun the same declaration, either ID runs both or neither, or success counts conceal a swapped marker.",
+      "expected": {
+        "fix": {
+          "contains": [
+            "leaves=2 owners=[base, sub] run=[base, sub]/2/0 reruns=[base=[base]/1/0, sub=[sub]/1/0]"
+          ]
+        }
+      }
+    }
+  ]
+}

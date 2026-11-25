@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "436",
+  "title": "Iceberg reads binary equality deletes and snapshots a nested byte slice",
+  "summary": "A real Parquet equality delete left IDs 200 and 201 alongside 203 on the parent. The merged table scan returned only 203. A copied nested binary slice also retained AB after a source mutation and preserved the source position.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Iceberg",
+    "symbol": "IcebergGenerics.read"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The generic reader can reuse storage while reading successive delete keys."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/iceberg",
+    "url": "https://github.com/apache/iceberg/pull/12855"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "The table format is v2, the physical data and delete files are Parquet, and the scan projects only the integer ID.",
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

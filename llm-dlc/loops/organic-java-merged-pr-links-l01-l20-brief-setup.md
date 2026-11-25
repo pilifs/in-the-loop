@@ -5,6 +5,8 @@ Mechanical setup for [`organic-java-merged-pr-links-l01-l20-brief.md`](organic-j
 no claims, examples, sidecars, adapters or checker code, allocates no example ids, and runs neither the project
 verifier nor JBMC. Everything fetched or built is outside the checkout.
 
+The later campaign ran the 60 public questions and completed the L15 source builds. Its results include the final deployment choices and the evidence for each case. [Campaign results](organic-java-merged-pr-links-l01-l20-brief-results.md)
+
 `$O` below is `~/.cache/in-the-loop/merged-pr-links-l01-l20`, and `$M` is `~/.cache/in-the-loop/git-mirrors`.
 `source $O/scripts/env.sh` defines `$O`, `$M`, `$W` (= `$O/worktrees`), `TMPDIR`, `GRADLE_USER_HOME` (= `$O/gradle-home`),
 the JDK homes `$J8` `$J11` `$J17` `$J21` `$J25` (Temurin, under `~/.sdkman/candidates/java/`) and `$MVN`
@@ -1369,11 +1371,11 @@ in Gradle's published list of wrapper checksums (`wrapper-checksums.json`, sha25
 cleanup step passed). Logs: `$O/logs/attempt-1/`, `$O/logs/attempt-2/`, and the third's in `$O/logs/L15-*`. Not resubmitted.
 
 **For the domain agent**
-- **No pin distribution exists.** The brief's scenario runs a Gradle distribution; the pins' own build stops on `grolifant` (above). What is
+- **Subsequent L15 build on 2026-11-25.** The domain run recovered the original grolifant JAR and signed HTTP Builder 0.11.1. Both pins built their complete binary distributions with strict dependency verification. Each installation embedded its original Git revision, and all six named-action histories reproduced. [Strict resolution and reproductions](../../examples/437-gradle-named-actions/README.md)
+- The brief's scenario runs a Gradle distribution; the pins' own build stopped on `grolifant` during setup (above). What was
   ready: both pins' sources (worktrees), the released 7.5.1 (no fix) and 7.6 (fix plus later changes) distributions, which are only
   approximate sides, and `$O/gradle-home-L15` with everything resolved up to `build-logic`.
-- To build the pins anyway, someone must first decide to accept Central's `grolifant-0.16.1.jar` in place of the pinned one, e.g. the job's
-  commands (`submit_D.py l15`) with `--dependency-verification lenient` added, which reports the mismatch and carries on. Setup did not.
+- Setup left the later Central JAR unused. The domain run’s checksum-matching JCenter copy preserves strict dependency verification.
 - If they are built, they are built by Gradle 7.5.1, not the gone nightly, from the pins' sources.
 - Use a fresh project dir and `--no-build-cache` per the brief; the daemon of each distribution keeps its own state under the `GRADLE_USER_HOME` you choose.
 

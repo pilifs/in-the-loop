@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/quartz-scheduler/quartz/pull/1496",
+  "revisions": {
+    "parent": "dccb522cd8675894996a0dc206461a08f8cf9eaf",
+    "fix": "adeae66354ff66cc4c716dd3aaac09e1571f64fa"
+  },
+  "entry": "Scheduler.getTrigger",
+  "questions": [
+    {
+      "id": "quartz-scheduler/quartz#1496.1",
+      "role": "Intent",
+      "args": [
+        "cron"
+      ],
+      "history": "Replace the original simple schedule by cron.",
+      "prediction": "Issue #920 reports a successful replacement followed by unreadable trigger state on Quartz 2.3.2 with PostgreSQL. On the merge getTrigger returns a CronTrigger with the same key, job key, UTC zone and noon expression.",
+      "basis": "The supplied cron schedule is the only schedule submitted for that key after replacement. The landed job-store test checks the reloaded type and expression.",
+      "refutation": "A successful schedule call followed by null, a read exception, an old trigger type or a different schedule.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "g.t/g.job/-1/400000 -> org.quartz."
+          ]
+        },
+        "fix": {
+          "return": "g.t/g.job/-1/400000 -> g.t/g.job/0 0 12 * * ?/UTC"
+        }
+      }
+    },
+    {
+      "id": "quartz-scheduler/quartz#1496.2",
+      "role": "Control",
+      "args": [
+        "simple"
+      ],
+      "history": "On a fresh copy of the original fixture replace SIMPLE by SIMPLE under the same key, using repeat count 3 and interval 60,000 ms.",
+      "prediction": "Both revisions should reload a SimpleTrigger with count 3, interval 60,000 ms and the original key and job association.",
+      "basis": "In a same-type replacement the extension row already exists. The submitted schedule specifies both stored fields.",
+      "refutation": "An unreadable key, the original indefinite repeat, an interval of 400,000 ms, or a changed job association.",
+      "expected": {
+        "parent": {
+          "return": "g.t/g.job/-1/400000 -> g.t/g.job/3/60000"
+        },
+        "fix": {
+          "return": "g.t/g.job/-1/400000 -> g.t/g.job/3/60000"
+        }
+      }
+    },
+    {
+      "id": "quartz-scheduler/quartz#1496.3",
+      "role": "Challenge",
+      "args": [
+        "two"
+      ],
+      "history": "Add an independent SIMPLE trigger named t in group other for a second job. Perform SIMPLE→CRON→SIMPLE on g/t. After each committed replacement inspect the affected and control keys through a fresh JDBC connection as well as getTrigger.",
+      "prediction": "On the merge the main row for g/t and its SIMPLE/CRON extension counts should read (CRON,0,1), then (SIMPLE,1,0). For other/t they stay (SIMPLE,1,0) with its original schedule. The last g/t schedule has count 3 and interval 60,000 ms.",
+      "basis": "Each type has a distinct extension table. A row selected by the current discriminator could decode even if stale state is left in the other table. The group is part of the identity.",
+      "refutation": "A missing or orphaned extension row, a read inconsistent with the stored discriminator, or removal of the similarly named trigger’s state.",
+      "expected": {
+        "fix": {
+          "return": "g.t/g.job/-1/400000 -> g.t/g.job/0 0 12 * * ?/UTC CRON,0,1 | other.t/other.job/-1/400000 SIMPLE,1,0 -> g.t/g.job/3/60000 SIMPLE,1,0 | other.t/other.job/-1/400000 SIMPLE,1,0"
+        }
+      }
+    }
+  ]
+}

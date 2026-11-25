@@ -1,0 +1,71 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "ae99cac92218af8120f63cbbc006ef85bc83771162dfd6de2d5c880e7061f638",
+  "runtimeSha256": "ec240321e0e3cefbaa3927ccf1bf2364a69604324091a6184b4b32292f44043c",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "34fb8ddd57cc1097fe648db80b337b0d8831afb7f00292301a6329064ce9c810"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller$Base$A.class": "e12bc1b43cbc5a6d3580a02b6e9bcf11e83b3de9ae7e198e61ca421f8fd0a127",
+        "PublicCaller$Base.class": "49cba9739ea7ebd2d9ab281d708755582d995218e708fc53af1d0032eca0a343",
+        "PublicCaller$Sub$A.class": "683070165d7e18d8145bf3b151d98a5422df945604e5c40fde3b67d983624c7b",
+        "PublicCaller$Sub.class": "b76df9088d2d715e9df8f5bc7f3ec04d9b9f7bf5750b4ba568b5ab860ad2db37",
+        "PublicCaller.class": "a217108430fdb0a950593bf6575ea2ebdc894f5fd116f017af99abf8505a45a5",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#6104.1",
+          "outcome": {
+            "return": "leaves=1 owners=[sub] run=[sub]/1/0 reruns=[] ids=[[engine:junit-jupiter]/[class:PublicCaller$Sub]/[nested-class:A]/[method:check()]]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#6104.2",
+          "outcome": {
+            "return": "leaves=1 owners=[base] run=[base]/1/0 reruns=[] ids=[[engine:junit-jupiter]/[class:PublicCaller$Base]/[nested-class:A]/[method:check()]]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "junit-team/junit-framework#6104.3",
+          "outcome": {
+            "return": "leaves=1 owners=[sub] run=[sub]/1/0 reruns=[sub=[sub]/1/0] ids=[[engine:junit-jupiter]/[class:PublicCaller$Sub]/[nested-class:A]/[method:check()]]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#6104.1",
+          "outcome": {
+            "return": "leaves=2 owners=[base, sub] run=[base, sub]/2/0 reruns=[] ids=[[engine:junit-jupiter]/[class:PublicCaller$Sub]/[fq-nested-class:PublicCaller$Base$A]/[method:check()], [engine:junit-jupiter]/[class:PublicCaller$Sub]/[nested-class:A]/[method:check()]]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#6104.2",
+          "outcome": {
+            "return": "leaves=1 owners=[base] run=[base]/1/0 reruns=[] ids=[[engine:junit-jupiter]/[class:PublicCaller$Base]/[nested-class:A]/[method:check()]]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "junit-team/junit-framework#6104.3",
+          "outcome": {
+            "return": "leaves=2 owners=[base, sub] run=[base, sub]/2/0 reruns=[base=[base]/1/0, sub=[sub]/1/0] ids=[[engine:junit-jupiter]/[class:PublicCaller$Sub]/[fq-nested-class:PublicCaller$Base$A]/[method:check()], [engine:junit-jupiter]/[class:PublicCaller$Sub]/[nested-class:A]/[method:check()]]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

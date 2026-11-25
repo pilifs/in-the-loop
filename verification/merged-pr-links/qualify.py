@@ -1,5 +1,6 @@
-"""Qualify control and counterexample observations at original JVM method entries."""
+"""Cross-check finite public histories at original JVM method entries."""
 import argparse
+import gzip
 import hashlib
 import json
 import os
@@ -20,15 +21,80 @@ ENTRIES = {
             "org.apache.avro.idl.IdlUtils#writeIdlSchema(Ljava/io/Writer;Lorg/apache/avro/Schema;)V"),
     "412": ("M10-ical4j", "src/main/java",
             "net.fortuna.ical4j.model.ComponentGroup#calculateRecurrenceSet(Lnet/fortuna/ical4j/model/Period;)Ljava/util/List;"),
-    "419": ("M17-jOOL", "jOOL/src/main/java", "org.jooq.lambda.WindowImpl#lastValue()Ljava/util/Optional;"),
+    "419": ("M17-jOOL", {"jool": "jOOL/src/main/java", "jool-java-8": "jOOL-java-8/src/main/java"}, "org.jooq.lambda.WindowImpl#lastValue()Ljava/util/Optional;"),
+    "425": ("L03-picocli", "src/main/java",
+            "picocli.CommandLine$Model$CommandSpec#aliases([Ljava/lang/String;)Lpicocli/CommandLine$Model$CommandSpec;"),
+    "429": ("L07-jgrapht", "jgrapht-core/src/main/java",
+            "org.jgrapht.alg.shortestpath.BaseKDisjointShortestPathsAlgorithm#getPaths(Ljava/lang/Object;Ljava/lang/Object;I)Ljava/util/List;"),
+    "430": ("L08-commons-statistics", "commons-statistics-distribution/src/main/java",
+            "org.apache.commons.statistics.distribution.CauchyDistribution#inverseCumulativeProbability(D)D"),
+    "431": ("L09-rdf4j", "core/queryalgebra/evaluation/src/main/java",
+            "org.eclipse.rdf4j.query.algebra.evaluation.iterator.GroupIterator#buildEntries()Ljava/util/Collection;"),
+    "432": ("L10-calcite", "core/src/main/java",
+            "org.apache.calcite.rel.rules.ProjectSetOpTransposeRule#onMatch(Lorg/apache/calcite/plan/RelOptRuleCall;)V"),
+    "436": ("L14-iceberg", "core/src/main/java",
+            "org.apache.iceberg.data.GenericRecord#<init>(Lorg/apache/iceberg/data/GenericRecord;)V"),
+    "438": ("L16-guava", {"jre": "guava/src", "android": "android/guava/src"},
+            "com.google.common.util.concurrent.AggregateFuture#init()V"),
+    "440": ("L18-RxJava", "src/main/java",
+            "io.reactivex.rxjava3.internal.operators.flowable.FlowableGroupBy$State#cancel()V"),
+    "442": ("L20-JSqlParser", "src/main/java",
+            "net.sf.jsqlparser.util.deparser.AlterDeParser#deParseAction(Lnet/sf/jsqlparser/statement/alter/AlterExpression;)V"),
 }
 
 
 def write(path, obj):
-    path.write_text(json.dumps(obj, indent=2) + "\n")
+    data = json.dumps(obj, indent=2) + "\n"
+    if path.suffix == ".gz":
+        path.write_bytes(gzip.compress(data.encode(), mtime=0))
+    else:
+        path.write_text(data)
 
 
-def qualify(number, output, only=None):
+VIA = "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
+
+
+def check_receipt(entry, questions, pins, runtime, variant, physical, report):
+    """Bind a saved debugger report to the entire requested domain and the measured caller."""
+    recorded = physical["deployments"][variant]
+    deployment = runtime["deployments"][variant]
+    outcomes = {(r["side"], r["id"]): r["outcome"] for r in recorded["observations"]}
+    cases = [{"args": q["args"], "expected": outcomes["parent", q["id"]]} for q in questions]
+    if report["cases"] != cases or report["entry"] != entry or report.get("originalInvocation") != entry:
+        raise ValueError(f"{variant}: different method, question arguments or parent observations")
+    sources = {"probeSha256": Path(__file__).with_name("UpgradeProbe.java"), "launcherSha256": upgrade_replay.LAUNCHER,
+               "tracerSha256": upgrade_replay.TRACER, "lookupSha256": upgrade_replay.LOOKUP}
+    if any(report[key] != upgrade_replay.sha(path) for key, path in sources.items()):
+        raise ValueError(f"{variant}: changed debugger or launcher")
+    source = {"kind": "java", "class": "PublicCaller", "file": "PublicCaller.java",
+              "sha256": physical["inputs"]["caller/PublicCaller.java"]}
+    if report["originalFixtures"] != [source]:
+        raise ValueError(f"{variant}: different public caller source")
+    if any(report["probeClasses"].get(name.removesuffix(".class")) != digest
+           for name, digest in recorded["callerClasses"].items()):
+        raise ValueError(f"{variant}: debugger and physical caller bytecode differ")
+    caller = report["observerInvocation"]
+    if report["invocationVia"] != VIA or caller["declaration"] != VIA or not caller["codeIndices"]:
+        raise ValueError(f"{variant}: different public observer")
+    differences = [i for i, q in enumerate(questions) if outcomes["parent", q["id"]] != outcomes["fix", q["id"]]]
+    decision = "changed" if differences else "preserved"
+    if report["status"] != decision or report["differences"] != differences or report["oldOracleDisagreements"]:
+        raise ValueError(f"{variant}: debugger verdict disagrees with public observations")
+    for side, label in (("parent", "old"), ("fix", "new")):
+        measured = report["sides"][label]
+        classpath = [runtime["sha256"][f] for f in deployment["classpath"][side]]
+        if (measured["commit"] != pins[side] or measured["classpath"] != classpath
+                or measured["dependency"] != classpath[0] or entry.split("#")[0] not in measured["loadedDependencyClasses"]):
+            raise ValueError(f"{variant} {side}: different revision, classpath or loaded class")
+        for index, (q, trial) in enumerate(zip(questions, measured["trials"], strict=True)):
+            calls = trial["entryInvocations"]
+            if (trial["input"] != index or trial["qualifiedMethodEntries"] != 2 or trial["loadedUpgradeOnEachReplay"] is not True
+                    or trial["observations"] != [outcomes[side, q["id"]]] * 2 or len(calls) != 2
+                    or any(c["dispatchedTo"] != VIA or c["observerCodeIndex"] not in caller["codeIndices"] for c in calls)):
+                raise ValueError(f"{variant} {side}: entry, call site or return differs for {q['id']}")
+
+
+def qualify(number, output, only=None, check_only=False, compressed=False):
     folder, = (ROOT / "examples").glob(number + "-*")
     spec = public_comparison.read(folder / "comparison.json")
     runtime = public_comparison.read(folder / "runtime.json")
@@ -40,24 +106,35 @@ def qualify(number, output, only=None):
         raise ValueError("physical receipt differs from the registered caller or deployment")
     cache = Path(os.environ.get("PUBLIC_COMPARISON_CACHE", Path.home() / ".cache/in-the-loop" / runtime["cache"]))
     jdk = Path(os.environ.get("PUBLIC_COMPARISON_JDK", Path.home() / ".sdkman/candidates/java" / runtime["jdk"]))
-    if upgrade_replay.sha(jdk / "release") != runtime["jdkReleaseSha256"]:
+    if not check_only and upgrade_replay.sha(jdk / "release") != runtime["jdkReleaseSha256"]:
         raise ValueError("registered JVM differs")
     project, roots, entry = ENTRIES[number]
-    output.mkdir(parents=True, exist_ok=True)
+    roles = (only,) if isinstance(only, str) else (only or ("Control", "Challenge"))
+    if not check_only:
+        output.mkdir(parents=True, exist_ok=True)
     for variant, deployment in runtime["deployments"].items():
         measured = {(r["side"], r["id"]): r["outcome"] for r in physical["deployments"][variant]["observations"]}
-        questions = [r for r in spec["questions"] if r["role"] in ("Control", "Challenge")
-                     and (only is None or r["role"] == only)]
+        questions = [r for r in spec["questions"] if r["role"] in roles]
+        if set(roles) != {q["role"] for q in questions} or any(q.get("omit") for q in questions):
+            raise ValueError(f"{number}: qualification requires paired histories for every selected role")
+        file = output / (number + "-" + variant + (".json.gz" if compressed else ".json"))
+        if check_only:
+            data = gzip.decompress(file.read_bytes()) if compressed else file.read_bytes()
+            check_receipt(entry, questions, spec["revisions"], runtime, variant, physical, json.loads(data))
+            print(number, variant, entry, len(questions) * 4, "verified saved JVM trials", flush=True)
+            continue
         with tempfile.TemporaryDirectory(prefix="qualified-public-") as t:
             work = Path(t)
             manifests, deps = [], []
             for side in public_comparison.SIDES:
                 pin = spec["revisions"][side]
                 checkout = cache / "worktrees" / (project + "-" + side)
-                source_path = "jOOL-java-8/src/main/java" if variant == "jool-java-8" else roots
+                source_path = roots[variant] if isinstance(roots, dict) else roots
                 tree = subprocess.check_output(["git", "-C", checkout, "ls-tree", "-rz", pin, "--", source_path])
-                if not tree:
-                    raise ValueError("missing original sources at " + pin)
+                owner = entry.split("#")[0].split("$")[0].replace(".", "/")
+                original_source = (Path(source_path) / (owner + ".java")).as_posix().encode()
+                if not any(row.endswith(b"\t" + original_source) for row in tree.split(b"\0")):
+                    raise ValueError(f"{number} {variant}: missing source for {entry} at {pin}")
                 cp = [{"file": str(cache / name), "sha256": runtime["sha256"][name]}
                       for name in deployment["classpath"][side]]
                 manifest = work / (side + ".json")
@@ -65,7 +142,7 @@ def qualify(number, output, only=None):
                 manifests.append(manifest)
                 deps.append(cp[0]["sha256"])
             scope = {"entry": entry, "probeClass": "UpgradeProbe",
-                     "invocationVia": "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;",
+                     "invocationVia": VIA,
                      "observer": "Same public observer as the physical receipt, with an original-method breakpoint.",
                      "basis": "Cross-check the previously measured typed returns on both revisions against two independent debugger trials.",
                      "fixtures": [{"kind":"java", "class":"PublicCaller", "file":source.name, "sha256":upgrade_replay.sha(source)}],
@@ -74,14 +151,10 @@ def qualify(number, output, only=None):
             write(scope_path, scope)
             report = upgrade_replay.evaluate(scope_path, *manifests, Path(__file__).with_name("UpgradeProbe.java"),
                     jdk, deps, 180, fixtures=source.parent, application_change=True)
-            file = output / (number + "-" + variant + ".json")
             write(file, report)
             if report["status"] not in ("preserved", "changed"):
                 raise ValueError(f"{number} {variant}: {report.get('reason', 'qualified replay open')}")
-            for side, label in (("parent", "old"), ("fix", "new")):
-                for q, trial in zip(questions, report["sides"][label]["trials"], strict=True):
-                    if trial["qualifiedMethodEntries"] != 2 or trial["observations"] != [measured[side, q["id"]]] * 2:
-                        raise ValueError(f"{number} {side}: original entry or its observation differs for {q['id']}")
+            check_receipt(entry, questions, spec["revisions"], runtime, variant, physical, report)
             print(number, variant, entry, len(questions) * 4, "qualified JVM trials", flush=True)
 
 
@@ -89,7 +162,10 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("examples", nargs="+", choices=ENTRIES)
     parser.add_argument("--output", required=True, type=Path)
-    parser.add_argument("--only", choices=("Control", "Challenge"))
+    parser.add_argument("--check", action="store_true", help="audit saved trials offline without launching a JVM")
+    parser.add_argument("--gzip", action="store_true", help="store or check complete reports compressed as .json.gz")
+    parser.add_argument("--only", action="append", choices=("Intent", "Control", "Challenge"),
+                        help="include this role (repeatable; defaults to Control and Challenge)")
     args = parser.parse_args()
     for example in args.examples:
-        qualify(example, args.output, args.only)
+        qualify(example, args.output, args.only, args.check, args.gzip)

@@ -8,7 +8,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "examples/tools"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from targets import public_comparison as comparison
+from qualify import ENTRIES, check_receipt
 
 
 def require(condition, message):
@@ -16,8 +18,11 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def audit(replay=False):
-    brief = ROOT / "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+def audit(replay=False, campaign="original"):
+    series = {"original": ("organic-java-merged-pr-links-brief", "M"),
+              "l01-l20": ("organic-java-merged-pr-links-l01-l20-brief", "L")}
+    brief_name, case_prefix = series[campaign]
+    brief = ROOT / "llm-dlc/loops" / (brief_name + ".md")
     setup = brief.with_name(brief.stem + "-setup.md").read_text()
     references = {}
     for section in brief.read_text().split("\n## "):
@@ -28,12 +33,23 @@ def audit(replay=False):
         questions = {}
         for line in section.splitlines():
             if line.startswith("| ") and " · " in line:
-                label, history, prediction, basis, _ = [s.strip() for s in line.strip("|").split(" | ")]
+                label, history, prediction, basis, refutation = [s.strip() for s in line.strip("|").split(" | ")]
                 question, role = label.split(" · ")
+                require(question not in questions, f"duplicate brief question {question}")
                 questions[question] = (role, history, prediction, basis)
+                if campaign == "l01-l20":
+                    questions[question] += (refutation,)
         key = next(iter(questions)).rsplit(".", 1)[0]
         require(key not in references, f"duplicate case {key}")
         references[key] = ({"parent": parent, "fix": fix}, questions)
+    if campaign == "l01-l20":
+        require(len(references) == 20, "expected all twenty L-series comparisons")
+        for case, (_, rows) in references.items():
+            require([row[0] for row in rows.values()] == ["Intent", "Control", "Challenge"],
+                    f"{case}: incomplete or reordered L-series questions")
+    fields = ("role", "history", "prediction", "basis")
+    if campaign == "l01-l20":
+        fields += ("refutation",)
     folders = {}
     for folder in (ROOT / "examples").glob("[0-9][0-9][0-9]-*/comparison.json"):
         spec = comparison.read(folder)
@@ -66,7 +82,11 @@ def audit(replay=False):
         require(runtime["deployments"].keys() == recorded["deployments"].keys(), prefix + "deployment names")
         evidence = {q: {} for q in questions}
         used_files = set()
-        setup_section = setup.split(f"\n### M{number:02} · ", 1)[1].split("\n### M", 1)[0]
+        setup_section = setup.split(f"\n### {case_prefix}{number:02} · ", 1)[1].split("\n### " + case_prefix, 1)[0]
+        supplied = {}
+        inventory = folder / "setup/artifacts.sha256"
+        if inventory.is_file():
+            supplied = dict(line.split(None, 1)[::-1] for line in inventory.read_text().splitlines() if line.strip())
         for variant, deployment in runtime["deployments"].items():
             result_rows = recorded["deployments"][variant]
             require("PublicCaller.class" in result_rows["callerClasses"], prefix + "compiled caller absent")
@@ -77,8 +97,14 @@ def audit(replay=False):
                     digest = runtime["sha256"][f]
                     require(re.fullmatch("[0-9a-f]{64}", digest), prefix + "artifact digest")
                     if f.startswith("artifacts/"):
-                        require(digest in setup_section, prefix + f"{side} {f} absent from pin-build record")
-                require(any(files[i].startswith("artifacts/") for i in deployment["providers"].values()),
+                        if campaign == "l01-l20":
+                            label = re.match(rf"artifacts/L{number:02}[-/].*?\b(parent|fix)\b", f)
+                            require(label and label[1] == side, prefix + f"{f} belongs to a different revision")
+                        require(digest in setup_section or supplied.get(f) == digest,
+                                prefix + f"{side} {f} absent from pin-build record")
+                indices = [*deployment["providers"].values(), *deployment.get("childProviders", {}).values()]
+                require(all(type(i) is int and 0 <= i < len(files) for i in indices), prefix + "provider index")
+                require(any(files[i].startswith("artifacts/") for i in indices),
                         prefix + "no pin-built provider")
             expected_keys = [(s, q["id"]) for s in comparison.SIDES for q in spec["questions"]
                              if s not in q.get("omit", {})]
@@ -86,7 +112,8 @@ def audit(replay=False):
                     prefix + "missing, duplicated or extra observations")
             for q in spec["questions"]:
                 key = q["id"]
-                require(tuple(q[k] for k in ("role", "history", "prediction", "basis")) == questions[key], prefix + key)
+                require(tuple(q[k] for k in fields) == questions[key], prefix + key + " differs from the brief")
+                require("fix" in q["expected"], prefix + key + " has no merged prediction")
                 by_side = {}
                 for row in (r for r in result_rows["observations"] if r["id"] == key):
                     side, actual = row["side"], row["outcome"]
@@ -122,22 +149,11 @@ def audit(replay=False):
         for receipt in sorted(Path(__file__).with_name("entry-receipts").glob(ex["id"] + "-*.json")):
             qualified = comparison.read(receipt)
             variant = receipt.stem.split("-", 1)[1]
-            deployment = runtime["deployments"][variant]
-            classes = recorded["deployments"][variant]["callerClasses"]
-            require(qualified["probeSha256"] == comparison.upgrade_replay.sha(Path(__file__).with_name("UpgradeProbe.java"))
-                    and qualified["probeClasses"]["PublicCaller"] == classes["PublicCaller.class"], prefix + "qualified caller")
-            indexed = {tuple(q["args"]): q["id"] for q in spec["questions"]}
-            for side, label in (("parent", "old"), ("fix", "new")):
-                original = qualified["sides"][label]
-                require(original["commit"] == pins[side] and
-                        original["classpath"] == [runtime["sha256"][f] for f in deployment["classpath"][side]],
-                        prefix + "qualified deployment")
-                for case_input, trial in zip(qualified["cases"], original["trials"], strict=True):
-                    q = indexed[tuple(case_input["args"])]
-                    expected = evidence[q][variant][side]["outcome"]
-                    require(trial["qualifiedMethodEntries"] == 2 and trial["observations"] == [expected] * 2,
-                            prefix + "qualified entry or observation")
-                    counters["retainedMethodEntryTrials"] += 2
+            by_args = {tuple(q["args"]): q for q in spec["questions"]}
+            args = [tuple(case["args"]) for case in qualified["cases"]]
+            require(args and len(set(args)) == len(args) and set(args) <= by_args.keys(), prefix + "qualified inputs")
+            check_receipt(ENTRIES[ex["id"]][2], [by_args[a] for a in args], pins, runtime, variant, recorded, qualified)
+            counters["retainedMethodEntryTrials"] += 4 * len(args)
         if replay:
             comparison.replay(folder)
     result["totals"] = dict(counters)
@@ -146,10 +162,11 @@ def audit(replay=False):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--campaign", choices=("original", "l01-l20"), default="original")
     parser.add_argument("--replay", action="store_true", help="also rebuild every caller and repeat the physical trials")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
-    result = audit(args.replay)
+    result = audit(args.replay, args.campaign)
     if args.output:
         args.output.write_text(json.dumps(result, indent=2) + "\n")
     print(json.dumps(result["totals"], sort_keys=True))

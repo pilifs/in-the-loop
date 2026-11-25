@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "442",
+  "title": "JSqlParser visits only the active ALTER body and retains its tail",
+  "summary": "The fixed renderer ignored the inactive default and visited only the active operand in both TYPE fixtures. Both emitted a trailing CASCADE and both PostgreSQL reparses rejected it. The independent database check identifies the invalid grammar assumption.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JSqlParser",
+    "symbol": "Alter.accept"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The deparser now asks which ALTER body is active before dispatching to defaults or column definitions."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/JSQLParser/JSqlParser",
+    "url": "https://github.com/JSQLParser/JSqlParser/pull/2770"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched, 1 refuted",
+  "notes": [
+    "The selectable TYPE body, visitor trace and single tail satisfy the deparser expectation. PostgreSQL 16.16 returns SQLSTATE 42601 with that tail and writes 103 without it. The original falsified prediction is retained.",
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

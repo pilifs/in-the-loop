@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "427",
+  "title": "Jupiter reselects inherited nested tests by unique ID",
+  "summary": "Class selection now executed the two distinct bodies once. Separate public Launcher requests using the saved unique IDs reran exactly their respective declaring classes.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "jvm-internals",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JUnit Jupiter",
+    "symbol": "Launcher.execute"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Jupiter distinguishes a nested test declared in a superclass from one with the same simple name declared in the selected subclass."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/junit-team/junit-framework",
+    "url": "https://github.com/junit-team/junit-framework/pull/6104"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

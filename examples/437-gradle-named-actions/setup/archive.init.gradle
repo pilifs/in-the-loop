@@ -1,0 +1,35 @@
+import groovy.json.JsonSlurper
+
+def archive = new File(System.getProperty('l15.verified.repository')).toURI()
+def inputs = new JsonSlurper().parse(new File(System.getProperty('l15.archive.inputs')))
+def lockedVersions = { filter ->
+    inputs.keySet().each { coordinate ->
+        def (group, module, version) = coordinate.split(':')
+        filter.includeVersion(group, module, version)
+    }
+}
+def addArchive = { repos ->
+    repos.maven {
+        name = 'L15VerifiedInputs'
+        url = archive
+        metadataSources { mavenPom() }
+        content { lockedVersions(delegate) }
+    }
+}
+def useArchive = { repos ->
+    def local = addArchive(repos)
+    repos.exclusiveContent {
+        forRepositories(local)
+        filter { lockedVersions(delegate) }
+    }
+}
+
+beforeSettings { settings -> useArchive(settings.dependencyResolutionManagement.repositories) }
+allprojects { buildscript { useArchive(repositories) } }
+// Project plugins can bring the same coordinates onto the buildscript classpath.
+// Keep the build's own plugin repositories and its implicit portal in place.
+settingsEvaluated { settings ->
+    def repos = settings.pluginManagement.repositories
+    if (repos.empty) repos.gradlePluginPortal()
+    addArchive(repos)
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "429",
+  "title": "JGraphT reconstructs three edge-disjoint routes in the original graph",
+  "summary": "Both algorithms recovered the expected three vertex sequences and weights. Both returned a 3→7 edge object absent from the input graph. The single-route control used only the original edges.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "JGraphT",
+    "symbol": "SuurballeKDisjointShortestPaths.getPaths"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Both disjoint-path algorithms share the corrected reconstruction of routes after successive shortest-path searches."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/jgrapht/jgrapht",
+    "url": "https://github.com/jgrapht/jgrapht/pull/792"
+  },
+  "verdictLabel": "1/3 merged-revision predictions matched, 2 refuted",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs.",
+    "Both algorithms also returned a foreign 3→7 edge on release 1.5.3 and master at ee3a1084f737. Two debugger trials per side reached the registered original method and repeated the historical challenge."
+  ]
+}

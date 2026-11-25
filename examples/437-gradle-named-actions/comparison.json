@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/gradle/gradle/pull/21084",
+  "revisions": {
+    "parent": "fda88b3fb300707d2ec2d2839f94184dabf6852c",
+    "fix": "9e244e0ace2e7698374f5199570e09295950683a"
+  },
+  "entry": "Task.doLast",
+  "questions": [
+    {
+      "id": "gradle/gradle#21084.1",
+      "role": "Intent",
+      "args": [
+        "changed"
+      ],
+      "history": "Run A then B with the same action name, task path, declared output and local execution history.",
+      "prediction": "Both first runs should write A. The parent is predicted to skip the changed action and leave A. The merge should execute it and leave B.",
+      "basis": "An invocation of the edited action writes B. Issue #7923 reports named implementations escaping change tracking.",
+      "refutation": "On the merge the changed invocation is UP-TO-DATE, or the persisted file contains A.",
+      "expected": {
+        "parent": {
+          "return": "/A -> UP-TO-DATE/A"
+        },
+        "fix": {
+          "return": "/A -> /B"
+        }
+      }
+    },
+    {
+      "id": "gradle/gradle#21084.2",
+      "role": "Control",
+      "args": [
+        "unchanged"
+      ],
+      "history": "Immediately repeat the successful A build with exactly the same script, output file and settings.",
+      "prediction": "Both versions should report :stamp UP-TO-DATE and leave A.",
+      "basis": "There are no changed inputs, outputs or actions. The landed integration test checks the unchanged repeat.",
+      "refutation": "The task executes again, the output disappears, or the bytes change.",
+      "expected": {
+        "parent": {
+          "return": "/A -> UP-TO-DATE/A"
+        },
+        "fix": {
+          "return": "/A -> UP-TO-DATE/A"
+        }
+      }
+    },
+    {
+      "id": "gradle/gradle#21084.3",
+      "role": "Challenge",
+      "args": [
+        "clean"
+      ],
+      "history": "Use a single named doFirst action in an otherwise identical task. Compare the B output of the incremental A→B history against B built directly in an empty project with the same B script.",
+      "prediction": "On the merge both files should contain B and match byte for byte. Only the incremental build has an old A available to reuse.",
+      "basis": "A fresh execution gives an independent reference for the changed script. doFirst and doLast are both public ways to add the sole action.",
+      "refutation": "The clean build writes B while the incremental one serves A, or the two outputs differ.",
+      "expected": {
+        "fix": {
+          "return": "/A -> /B clean=/B"
+        }
+      }
+    }
+  ]
+}

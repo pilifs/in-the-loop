@@ -1,0 +1,69 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/JSQLParser/JSqlParser/pull/2770",
+  "revisions": {
+    "parent": "cf6c83ce8f3fac6393356c57baeb1a4a3dee7913",
+    "fix": "0a7436a10301e118802a4b7effba056de22ee7f8"
+  },
+  "entry": "Alter.accept",
+  "questions": [
+    {
+      "id": "JSQLParser/JSqlParser#2770.1",
+      "role": "Intent",
+      "args": [
+        "identity"
+      ],
+      "history": "Deparse the RESTART action containing the stale default for other.",
+      "prediction": "The PR reports that the parent’s toString selects RESTART while its StatementDeParser selects the default. On the merge both should produce `ALTER TABLE t ALTER COLUMN id RESTART`. The custom visitor should see no LongValue.",
+      "basis": "An identity restart takes no numeric argument. The stored default for another column belongs to a different operation.",
+      "refutation": "The merged text mentions other or DEFAULT, loses RESTART, or the visitor observes 1.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "toString=ALTER TABLE t ALTER COLUMN id RESTART",
+            "other",
+            "visits=[1]"
+          ]
+        },
+        "fix": {
+          "return": "toString=ALTER TABLE t ALTER COLUMN id RESTART stock=ALTER TABLE t ALTER COLUMN id RESTART custom=ALTER TABLE t ALTER COLUMN id RESTART visits=[]"
+        }
+      }
+    },
+    {
+      "id": "JSQLParser/JSqlParser#2770.2",
+      "role": "Control",
+      "args": [
+        "default"
+      ],
+      "history": "Parse `ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2)` with Dialect.POSTGRESQL and no stale metadata. Apply the same visitor.",
+      "prediction": "Both revisions should visit [1,2] once in order and emit `ALTER TABLE t ALTER COLUMN amount SET DEFAULT (101 + 102)`. Stock rendering should retain (1 + 2).",
+      "basis": "An active numeric default is part of the selected statement, and the declared visitor maps each literal to itself plus 100.",
+      "refutation": "A visit is missing or repeated, a different column is rendered, or custom deparsing changes subsequent stock output.",
+      "expected": {
+        "parent": {
+          "return": "toString=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) stock=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) custom=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (101 + 102) visits=[1, 2]"
+        },
+        "fix": {
+          "return": "toString=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) stock=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (1 + 2) custom=ALTER TABLE t ALTER COLUMN amount SET DEFAULT (101 + 102) visits=[1, 2]"
+        }
+      }
+    },
+    {
+      "id": "JSQLParser/JSqlParser#2770.3",
+      "role": "Challenge",
+      "args": [
+        "type"
+      ],
+      "history": "Use the landed TYPE fixture with active `id TYPE INT USING id + 2` and one CASCADE tail. In separate identical ASTs set the inactive default for other to 1 or 9. Custom-deparse each, reparse the resulting SQL under PostgreSQL and stock-render it.",
+      "prediction": "On the merge both traces should be [2] and both outputs should be `ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE`. Reparsing should retain the active expression and one CASCADE.",
+      "basis": "Changing an unreachable default cannot change the selected column, its visitor calls or the common tail. Reparsing asks a second public consumer what statement was emitted.",
+      "refutation": "Changing 1 to 9 changes SQL or visits, CASCADE disappears or repeats, or the resulting text fails to parse back with the same body and tail.",
+      "expected": {
+        "fix": {
+          "return": "toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE custom=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE visits=[2] parsed=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE | toString=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE stock=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 2 CASCADE custom=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE visits=[2] parsed=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102 CASCADE"
+        }
+      }
+    }
+  ]
+}

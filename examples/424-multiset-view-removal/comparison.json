@@ -1,0 +1,75 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-collections/pull/701",
+  "revisions": {
+    "parent": "a70ffd614602fa07d2429d76f77abcd1816d0be9",
+    "fix": "e218502f9f82237404bbce8e8ba5f81ffb467198"
+  },
+  "entry": "HashMultiSet.uniqueSet",
+  "questions": [
+    {
+      "id": "apache/commons-collections#701.1",
+      "role": "Intent",
+      "args": [
+        "views"
+      ],
+      "history": "Independently remove the first key through each view on a fresh fixture.",
+      "prediction": "The PR reports that the parent drops the key but leaves a stale size. On the merge the key count is zero, total size is five minus its old count, and the array contains precisely the surviving copies.",
+      "basis": "Sum the multiplicities in the input after deleting the observed key. The landed test exercises both views.",
+      "refutation": "The key disappears but size stays five, an extra null is exported, or a surviving occurrence is lost.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "uniqueCorrect=false",
+            "entriesCorrect=false"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "uniqueCorrect=true",
+            "entriesCorrect=true"
+          ]
+        }
+      }
+    },
+    {
+      "id": "apache/commons-collections#701.2",
+      "role": "Control",
+      "args": [
+        "occurrence"
+      ],
+      "history": "Use the ordinary occurrence iterator on the fresh multiset, call next and remove once.",
+      "prediction": "Both revisions should have total size four and exactly one fewer copy of that key. The other key retains its original count.",
+      "basis": "The occurrence iterator visits single elements, while the view iterators visit distinct entries.",
+      "refutation": "The whole key disappears, the count stays fixed, or total size differs from four.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "correct=true"
+          ]
+        },
+        "fix": {
+          "contains": [
+            "correct=true"
+          ]
+        }
+      }
+    },
+    {
+      "id": "apache/commons-collections#701.3",
+      "role": "Challenge",
+      "args": [
+        "reinsert"
+      ],
+      "history": "On the merge remove all three A through one view (advance until A), re-add A once, then remove B through a fresh iterator of the other view. Swap the view roles and repeat.",
+      "prediction": "In both histories the array must contain just A, both views have one member, and the sole entry has count one.",
+      "basis": "A fresh frequency count after delete, reinsert and delete has exactly one A. This crosses both live views and tests whether future additions inherit a stale size.",
+      "refutation": "Final counts appear correct through a view but array length, element, entry count or total size differs.",
+      "expected": {
+        "fix": {
+          "return": "1/1/0/[A]/[A]/[A=1] | 1/1/0/[A]/[A]/[A=1]"
+        }
+      }
+    }
+  ]
+}

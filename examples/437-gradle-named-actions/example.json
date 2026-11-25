@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "437",
+  "title": "Gradle fingerprints a named Groovy task action across incremental builds",
+  "summary": "Editing A to B left the named action up to date on the parent method. The merged method reran both action forms, and the incremental doFirst output matched a fresh B build. Both unchanged controls skipped correctly.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "caching",
+    "configuration-drift",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Gradle",
+    "symbol": "Task.doLast"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Gradle tracks the implementation of the closure supplied to a named task action when checking whether the task is up to date."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/gradle/gradle",
+    "url": "https://github.com/gradle/gradle/pull/21084"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "The registered replay runs each pin's named-action method on Gradle 7.6. A separate source build installed both complete original Gradle revisions. Each installation's embedded commit and 239 files were verified. Both complete distributions reproduced all three task and file histories, including the unchanged control.",
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}

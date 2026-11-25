@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "3d400b190c495a18d35cacd75e271cb7d7c9e60d48622fb604ab10c5322f0a9e",
+  "runtimeSha256": "723a19a3feb43815066bf60bf37cc9cd49770cce907760f13b3ffdc2a2087ecb",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "cfa691a049674face015966a44ef95e8520c3677802b9715ecfd5b11939dea63"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "86414a2f1205bfac3984a412a2b2fbcd836a467a5c424b0cb59cb166679d4b3f",
+        "UpgradeObservation.class": "d0fd2a503a3190073cb47a88a81a46ad56c5bd333e39833d0b3623d6644e3f9c"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/calcite#5378.1",
+          "outcome": {
+            "return": "rule=true rows=[]/[10]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/calcite#5378.2",
+          "outcome": {
+            "return": "rule=true rows=[10, 10]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/calcite#5378.3",
+          "outcome": {
+            "return": "rule=true rows=[]/[10, 10, 10] | []/[10, 10, 10]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/calcite#5378.1",
+          "outcome": {
+            "return": "rule=true rows=[10]/[]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/calcite#5378.2",
+          "outcome": {
+            "return": "rule=true rows=[10, 10]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/calcite#5378.3",
+          "outcome": {
+            "return": "rule=true rows=[10, 10]/[10] | []/[10, 10, 10]"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "426",
+  "title": "java-diff-utils renders explicit and implicit equal rows",
+  "summary": "Explicit equal lines changed from CHANGE to EQUAL. The customized prefix and suffix were each decorated once in both representations.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "text-encoding",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "java-diff-utils",
+    "symbol": "DiffRowGenerator.generateDiffRows"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "A renderer receiving explicit equal deltas should identify unchanged lines and apply the same equality formatting used for unchanged text between edits."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/java-diff-utils/java-diff-utils",
+    "url": "https://github.com/java-diff-utils/java-diff-utils/pull/233"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each deployment checks the JDK fingerprint, ordered artifact digests, caller classes and original class providers. The same compiled caller runs both sides in fresh JVMs."
+  ]
+}
