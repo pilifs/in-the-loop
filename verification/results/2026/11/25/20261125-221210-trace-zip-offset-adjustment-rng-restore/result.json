@@ -1,0 +1,279 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-221210-trace-zip-offset-adjustment-rng-restore",
+  "title": "Trace ZIP offset adjustment, RNG restore and Agrona entry copying",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 24.6s, peak 84.5 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-221210-trace-zip-offset-adjustment-rng-restore.json",
+    "sha256": "a15aafd8a803f4dad1cde334dc3866dc2a98c0bb0e374e7340d23ff1f256805b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-221210-trace-zip-offset-adjustment-rng-restore",
+      "title": "Trace ZIP offset adjustment, RNG restore and Agrona entry copying",
+      "description": "Independently stop at an original method in both revisions for every intent, neighboring control and challenge. Cross-check the full public returns, original class providers, caller bytecode, live call site and registered fixture bytes. Each role runs twice per revision.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-results.md"
+        ]
+      },
+      "expected": "Three saved reports pass their offline checks. All 36 fresh JVM trials enter the selected original members on the registered callers and reproduce their physical returns.",
+      "submitted": {
+        "at": "2026-11-25T22:12:10+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Check original invocation and return for 446",
+          "run": "python3 verification/merged-pr-links/qualify.py 446 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 446 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+          "cwd": "."
+        },
+        {
+          "name": "Check original invocation and return for 447",
+          "run": "python3 verification/merged-pr-links/qualify.py 447 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 447 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+          "cwd": "."
+        },
+        {
+          "name": "Check original invocation and return for 448",
+          "run": "python3 verification/merged-pr-links/qualify.py 448 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 448 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/m01-m10/qualified/446-pins.json.gz",
+        "verification/merged-pr-links/m01-m10/qualified/447-pins.json.gz",
+        "verification/merged-pr-links/m01-m10/qualified/448-pins.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "079ee8f8d8c62ecc530bbe10bbb462c0af97a102",
+  "startedAt": "2026-11-25T22:33:38+00:00",
+  "finishedAt": "2026-11-25T22:34:16+00:00",
+  "wallSeconds": 38.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 375368,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 88584192,
+    "wallSeconds": 24.6,
+    "cpuSeconds": 25.0,
+    "memoryOfEstimate": 0.08,
+    "durationOfEstimate": 0.21
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check original invocation and return for 446",
+      "run": "python3 verification/merged-pr-links/qualify.py 446 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 446 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 10.219,
+      "cpuSeconds": 12.514,
+      "cpuThrottledSeconds": 2.668,
+      "peakMemoryBytes": 88584192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-invocation-and.log",
+        "lines": 2,
+        "bytes": 235,
+        "sha256": "dda6b67ab677d413ef17600e055e762b26884f85c37d4d55fcdb2ab2fef221b2",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "446 pins org.apache.commons.compress.archivers.zip.ZipFile#positionAtCentralDirectory32()V 12 qualified JVM trials",
+        "446 pins org.apache.commons.compress.archivers.zip.ZipFile#positionAtCentralDirectory32()V 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check original invocation and return for 447",
+      "run": "python3 verification/merged-pr-links/qualify.py 447 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 447 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 7.614,
+      "cpuSeconds": 7.081,
+      "cpuThrottledSeconds": 0.871,
+      "peakMemoryBytes": 75309056,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-original-invocation-and.log",
+        "lines": 2,
+        "bytes": 209,
+        "sha256": "c123a7cb7d6a0a6c4cdc6ddccb6969fee75b9500533e7f06ba42327a55975a5a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "447 pins org.apache.commons.rng.core.source32.JDKRandom#setStateInternal([B)V 12 qualified JVM trials",
+        "447 pins org.apache.commons.rng.core.source32.JDKRandom#setStateInternal([B)V 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check original invocation and return for 448",
+      "run": "python3 verification/merged-pr-links/qualify.py 448 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 448 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 6.813,
+      "cpuSeconds": 5.411,
+      "cpuThrottledSeconds": 0.34,
+      "peakMemoryBytes": 73191424,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-original-invocation-and.log",
+        "lines": 2,
+        "bytes": 231,
+        "sha256": "fd28b789e56ba0d185162e9b529d2de95657964d235f86008f8e8cd279a11c74",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "448 pins org.agrona.collections.Int2IntHashMap$EntryIterator#next()Ljava/util/Map$Entry; 12 qualified JVM trials",
+        "448 pins org.agrona.collections.Int2IntHashMap$EntryIterator#next()Ljava/util/Map$Entry; 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/m01-m10/qualified/446-pins.json.gz",
+      "change": "added",
+      "bytes": 3119,
+      "sha256": "653cb7a06bb15a681a5e20a00a4fe5b085a64ef720151524a3c33f742c717d06",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/m01-m10/qualified/447-pins.json.gz",
+      "change": "added",
+      "bytes": 2349,
+      "sha256": "71d47f8fe0825785a50517c5ae1155c99c8bf5d81ae142379c6446890c5594ed",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/m01-m10/qualified/448-pins.json.gz",
+      "change": "added",
+      "bytes": 2187,
+      "sha256": "bcf4ec1aa2030061c91756b3ed4ef479b3d7c5d84241292cad4eda6e386fbab4",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T22:34:19+00:00",
+    "applied": [
+      "verification/merged-pr-links/m01-m10/qualified/446-pins.json.gz",
+      "verification/merged-pr-links/m01-m10/qualified/447-pins.json.gz",
+      "verification/merged-pr-links/m01-m10/qualified/448-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T223416Z-439426c0022e98de",
+      "outputs": "20261125T223416Z-473044664bd43b62",
+      "diff": "20261125T223416Z-487464a1b9f6b756"
+    }
+  }
+}

@@ -1,0 +1,279 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-221210-trace-bitmap-containment-jackson-alias-r",
+  "title": "Trace bitmap containment, Jackson alias routing and Vavr search",
+  "status": "passed",
+  "summary": "passed: 3 passed step(s) in 26.3s, peak 100.7 MiB (estimated 2m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-221210-trace-bitmap-containment-jackson-alias-r.json",
+    "sha256": "ad79f35eb66da482748cdbe5e1039c6df7fd0b982aca7f7d93627ebfecb58d51",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-221210-trace-bitmap-containment-jackson-alias-r",
+      "title": "Trace bitmap containment, Jackson alias routing and Vavr search",
+      "description": "Independently stop at an original method in both revisions for every intent, neighboring control and challenge. Cross-check the full public returns, original class providers, caller bytecode, live call site and registered fixture bytes. Each role runs twice per revision.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-results.md"
+        ]
+      },
+      "expected": "Three saved reports pass their offline checks. All 36 fresh JVM trials enter the selected original members on the registered callers and reproduce their physical returns.",
+      "submitted": {
+        "at": "2026-11-25T22:12:10+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "git"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Check original invocation and return for 443",
+          "run": "python3 verification/merged-pr-links/qualify.py 443 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 443 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+          "cwd": "."
+        },
+        {
+          "name": "Check original invocation and return for 444",
+          "run": "python3 verification/merged-pr-links/qualify.py 444 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 444 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+          "cwd": "."
+        },
+        {
+          "name": "Check original invocation and return for 445",
+          "run": "python3 verification/merged-pr-links/qualify.py 445 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 445 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": [
+        "verification/merged-pr-links/m01-m10/qualified/443-pins.json.gz",
+        "verification/merged-pr-links/m01-m10/qualified/444-pins.json.gz",
+        "verification/merged-pr-links/m01-m10/qualified/445-pins.json.gz"
+      ]
+    }
+  },
+  "sourceCommit": "079ee8f8d8c62ecc530bbe10bbb462c0af97a102",
+  "startedAt": "2026-11-25T22:33:38+00:00",
+  "finishedAt": "2026-11-25T22:34:18+00:00",
+  "wallSeconds": 40.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 375368,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 105582592,
+    "wallSeconds": 26.3,
+    "cpuSeconds": 28.0,
+    "memoryOfEstimate": 0.1,
+    "durationOfEstimate": 0.22
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Check original invocation and return for 443",
+      "run": "python3 verification/merged-pr-links/qualify.py 443 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 443 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 7.411,
+      "cpuSeconds": 6.934,
+      "cpuThrottledSeconds": 0.619,
+      "peakMemoryBytes": 103264256,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-check-original-invocation-and.log",
+        "lines": 2,
+        "bytes": 195,
+        "sha256": "839e202a63d73c12196012d2afed912c6016e5d7b84fe18afd667b5682589fc3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "443 pins org.roaringbitmap.buffer.ImmutableRoaringBitmap#contains(JJ)Z 12 qualified JVM trials",
+        "443 pins org.roaringbitmap.buffer.ImmutableRoaringBitmap#contains(JJ)Z 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Check original invocation and return for 444",
+      "run": "python3 verification/merged-pr-links/qualify.py 444 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 444 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 11.226,
+      "cpuSeconds": 13.973,
+      "cpuThrottledSeconds": 1.947,
+      "peakMemoryBytes": 105582592,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-check-original-invocation-and.log",
+        "lines": 2,
+        "bytes": 269,
+        "sha256": "752bfd0961a60eed5485a30f684e2692f6c9c5cef69acaab4717cda86049379c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "444 pins tools.jackson.databind.deser.bean.BeanDeserializerBase#collectAllPropertyNamesTo(Ljava/util/Set;)V 12 qualified JVM trials",
+        "444 pins tools.jackson.databind.deser.bean.BeanDeserializerBase#collectAllPropertyNamesTo(Ljava/util/Set;)V 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "Check original invocation and return for 445",
+      "run": "python3 verification/merged-pr-links/qualify.py 445 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 445 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 7.617,
+      "cpuSeconds": 7.064,
+      "cpuThrottledSeconds": 0.687,
+      "peakMemoryBytes": 94892032,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-check-original-invocation-and.log",
+        "lines": 2,
+        "bytes": 257,
+        "sha256": "4b95c7df530ebfb0a519a7f2f49d3b105bf8b300c7f40f17bb262def52c8a2ae",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "445 pins io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option; 12 qualified JVM trials",
+        "445 pins io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option; 12 verified saved JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/m01-m10/qualified/443-pins.json.gz",
+      "change": "added",
+      "bytes": 2177,
+      "sha256": "ed2479a576e01fbbcd34f64616e8837ff8f58235d9a98100add0176baba14cf0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/m01-m10/qualified/444-pins.json.gz",
+      "change": "added",
+      "bytes": 10057,
+      "sha256": "f98f166ca988418171c052ea014b81af5165c8a909026fdaf628b20c5f33b8e5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/m01-m10/qualified/445-pins.json.gz",
+      "change": "added",
+      "bytes": 2183,
+      "sha256": "a0af0df575da32285d8e4c62d2a93b009308728225c47da1c603f203121aaae0",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T22:34:19+00:00",
+    "applied": [
+      "verification/merged-pr-links/m01-m10/qualified/443-pins.json.gz",
+      "verification/merged-pr-links/m01-m10/qualified/444-pins.json.gz",
+      "verification/merged-pr-links/m01-m10/qualified/445-pins.json.gz"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T223418Z-068844d2d0986706",
+      "outputs": "20261125T223418Z-086369088b21dfb1",
+      "diff": "20261125T223418Z-104196d486035d02"
+    }
+  }
+}
