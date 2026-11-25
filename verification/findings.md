@@ -18,6 +18,37 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-067: three successor launches still need 12 signed Ubuntu packages; approved for a later beyond-jbmc follow-up
+
+- **Status**: open, deferred (the user, 2026-11-25). The user approves fetching the 12 packages, but **only as part of a future beyond-jbmc follow-up run**, not now and not as a run of its own. When that run is queued, its brief or continue message carries the approval explicitly. The finding closes when the three launches have run on signed providers and the panel is re-scored.
+- **Raised**: 2026-11-25 by the watcher, from the advisor's draft and account of `beyond-jbmc-scaffold-first` (Codex Astra 6.2 at max, session `c3caedf3`), at the user's request.
+- **What happened.**
+  - The successor study measures 16 library upgrades on Ubuntu's signed JARs. 13 launched entirely from signed Ubuntu packages.
+  - Three callers need dependency packages from the signed distribution for their original launches:
+    - slot 03, WildFly (JBoss Logging);
+    - slot 08, Jackson plus Joda-Time;
+    - slot 16, PDFBox.
+  - The run had already fetched 39 signed files. At 03:52 UTC it asked whether it might fetch 12 more, which was over the operating notes' "a few dozen requests at most for a task". Nobody answered, since the run was unattended.
+  - It fell back to dependencies from the local Maven cache, ran all three on their original application JARs, and recorded them as *alternative deployments*, not signed-distribution launches.
+- **The 12 packages**: `verification/beyond-jbmc/successor/needed-providers.json` lists each with its suite, version, archive path, expected sha256 and the deployment it completes.
+
+  | Slot | Side | Suite | Packages |
+  |---|---|---|---|
+  | 03 | new | focal | `libjboss-logging-java` 3.4.1-1 |
+  | 08 | old | focal | `libjackson2-core-java` 2.10.1-1, `libjackson2-annotations-java` 2.9.8-1, `libjackson2-databind-java` 2.10.2-1, `libjoda-time-java` 2.10.5-1 |
+  | 08 | new | jammy | `libjackson2-annotations-java` 2.13.0-1, `libjackson2-databind-java` 2.13.0-2, `libjoda-time-java` 2.10.10-1 |
+  | 16 | old | jammy | `libpdfbox2-java` 2.0.25-1, `libfontbox2-java` 2.0.25-1, `libcommons-logging-java` 1.2-2 |
+  | 16 | new | noble | `libpdfbox2-java` 2.0.29-1 |
+- **Why it is low priority.** The headline doesn't depend on it.
+  - The frozen operators decided 0/13 on the signed launches and 0/3 on the Maven alternatives.
+  - Even success on all three would give 3/16, below the brief's 8/16 target (`llm-dlc/loops/beyond-jbmc-java-change-verification-campaign-results.md`).
+  - What it adds is a complete signed panel (16/16 launches instead of 13/16), plus three more matched comparisons of native, stock JBMC and integrated JBMC with the callers supplied.
+- **How to do it, when the follow-up runs.**
+  - Fetch the 12 files from `archive.ubuntu.com`, one at a time, in plain requests (the operating notes' web rules otherwise unchanged), and check each against its recorded sha256 before use.
+  - Launch the three callers on the signed closures.
+  - Re-score `verification/beyond-jbmc/successor/SCORES.md`, keeping the Maven-alternative results beside the new ones.
+- **Not for this finding**: raising the general web-request budget. The approval covers these 12 files only.
+
 ### VF-066: a queued run that continues the previous run's session starts near its compaction limit
 
 - **Status**: open. Monitoring only (the user, 2026-11-25): no change for now, act later if the measurements below show a cost. The user is less concerned for the organic PR briefs, whose verification work is mostly mechanical: building pins, running landed tests and checking claims case by case.
