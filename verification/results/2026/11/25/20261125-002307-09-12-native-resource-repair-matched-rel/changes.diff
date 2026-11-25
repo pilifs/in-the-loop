@@ -1,0 +1,888 @@
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/09/comparison/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/09/comparison/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/09/physical.stdout
+@@ -0,0 +1,5 @@
++BOUND -2147483648 6442450945 6442450945 1 1 true true false
++BOUND -1 4294967296 4294967296 1 1 true true false
++BOUND 0 4294967297 4294967297 1 1 true true false
++BOUND 17 4294967314 4294967314 1 1 true true false
++BOUND 2147483647 6442450944 6442450944 1 1 true true false
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/09/process.log
+@@ -0,0 +1 @@
++blind 15 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/09/summary.json
+@@ -0,0 +1,116 @@
++{
++ "job": "20261125-002307-09-12-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original matched two-copy caller",
++ "physicalRegistration": "bdf074436abe87896dea499dabb58558988dfd287af1c03c4422a7d0f523ae0a",
++ "rows": [
++  {
++   "deployment": "comparison",
++   "method": "primary",
++   "scope": "Every Java int initial value. The result encodes origin invocation count and returned signed bits. The caller reads the same scalar three times.",
++   "old": {
++    "verdict": "verified",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.042,
++    "cpuSeconds": 0.037,
++    "peakMB": 26.4,
++    "exit": 0,
++    "killed": false
++   },
++   "new": {
++    "verdict": "verified",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.041,
++    "cpuSeconds": 0.021,
++    "peakMB": 26.1,
++    "exit": 0,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "control",
++   "scope": "Every Java int initial value. The result encodes origin invocation count and returned signed bits. The caller reads the same scalar three times.",
++   "old": {
++    "verdict": "verified",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.041,
++    "cpuSeconds": 0.031,
++    "peakMB": 32.1,
++    "exit": 0,
++    "killed": false
++   },
++   "new": {
++    "verdict": "verified",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.031,
++    "cpuSeconds": 0.026,
++    "peakMB": 26.1,
++    "exit": 0,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "inverse",
++   "scope": "Every Java int initial value. The result encodes origin invocation count and returned signed bits. The caller reads the same scalar three times.",
++   "old": {
++    "verdict": "violation",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.041,
++    "cpuSeconds": 0.04,
++    "peakMB": 32.6,
++    "exit": 1,
++    "killed": false,
++    "jvmReplay": {
++     "outcome": "refuted",
++     "inputs": [
++      {
++       "name": "n",
++       "type": "int",
++       "value": 0
++      }
++     ],
++     "sourceSha256": "4f7b6af1612521582e703822780daddbe8a134dc907596364801ad7aa2cbe7a9",
++     "exit": 0,
++     "diagnostic": ""
++    }
++   },
++   "new": {
++    "verdict": "violation",
++    "assumed": [],
++    "contracts": [],
++    "class": "correct",
++    "seconds": 0.041,
++    "cpuSeconds": 0.036,
++    "peakMB": 26.1,
++    "exit": 1,
++    "killed": false,
++    "jvmReplay": {
++     "outcome": "refuted",
++     "inputs": [
++      {
++       "name": "n",
++       "type": "int",
++       "value": 0
++      }
++     ],
++     "sourceSha256": "4f7b6af1612521582e703822780daddbe8a134dc907596364801ad7aa2cbe7a9",
++     "exit": 0,
++     "diagnostic": ""
++    }
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/09/worker.json
+@@ -0,0 +1,109 @@
++{
++ "status": "measured",
++ "inputPacket": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "564fefdb825a290a7c69bc317ea093966a34f323abcd9d85d4a4ebde4af626e6"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "7b7d02fa56329d0064051d1ed9331ab660a4a8f5cd9397e2fa75807857556a9d"
++   }
++  ]
++ },
++ "specSha256": "5cccc2a04814547537d25e369202e28bc0abdd2219c7fe3af119969188a1d44d",
++ "originalJvm": {
++  "rows": [
++   {
++    "n": -2147483648,
++    "old": 6442450945,
++    "new": 6442450945,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": -1,
++    "old": 4294967296,
++    "new": 4294967296,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 0,
++    "old": 4294967297,
++    "new": 4294967297,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 17,
++    "old": 4294967314,
++    "new": 4294967314,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 2147483647,
++    "old": 6442450944,
++    "new": 6442450944,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   }
++  ],
++  "exit": 0,
++  "argv": [
++   "/guest/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++   "-Xmx512m",
++   "-XX:-UsePerfData",
++   "-ea",
++   "-cp",
++   "/guest/.cache/in-the-loop/tmp/original/physical",
++   "OriginalTable",
++   "-2147483648",
++   "-1",
++   "0",
++   "17",
++   "2147483647"
++  ],
++  "callerSha256": "d211089a2cc808db2977e8a31db5f7794d3bebff1e888115534c31d05e9c66bb",
++  "accepted": true
++ },
++ "twoCopy": {
++  "old": {
++   "000.jar": "564fefdb825a290a7c69bc317ea093966a34f323abcd9d85d4a4ebde4af626e6"
++  },
++  "new": {
++   "000.jar": "7b7d02fa56329d0064051d1ed9331ab660a4a8f5cd9397e2fa75807857556a9d"
++  },
++  "thinCallers": {
++   "ReferenceAPI.class": "d211089a2cc808db2977e8a31db5f7794d3bebff1e888115534c31d05e9c66bb"
++  },
++  "symbolicClaimClasses": {
++   "ReferencePair.class": "388656aa7c0052d118d9c438ffaea06790964454c6f92304d836f742aa4075c3"
++  },
++  "oldEntryMapSha256": "eadd86470af24706cb4811d6fd1ed75f52e02be213f6ff5f4a90522c827559bc",
++  "shadowedOldClasses": [],
++  "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++ }
++}
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/10/comparison/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/10/comparison/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/10/physical.stdout
+@@ -0,0 +1,2 @@
++BOUND 0 0 1 1 1 true true false
++BOUND 1 0 1 1 1 true true false
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/10/process.log
+@@ -0,0 +1 @@
++blind 6 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/10/summary.json
+@@ -0,0 +1,102 @@
++{
++ "job": "20261125-002307-09-12-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original matched two-copy caller",
++ "physicalRegistration": "fa878feab0b7965dc40a8a544dff9dade941e5286f284406c4a78ba55503d5f1",
++ "rows": [
++  {
++   "deployment": "comparison",
++   "method": "primary",
++   "scope": "A valid HTML paragraph containing an inline SVG circle with radius 1 or 2.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.StringTokenizer.<init>(Ljava/lang/String;Ljava/lang/String;)V@jdk-21.0.13 (java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) at before.org.htmlcleaner.TagInfo.defineCloseBeforeCopyInsideTags:191). With --gaps assume it assumes instead that java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "seconds": 0.059,
++    "cpuSeconds": 0.04,
++    "peakMB": 26.7,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.041,
++    "cpuSeconds": 0.033,
++    "peakMB": 26.7,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "control",
++   "scope": "A valid HTML paragraph containing an inline SVG circle with radius 1 or 2.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.StringTokenizer.<init>(Ljava/lang/String;Ljava/lang/String;)V@jdk-21.0.13 (java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) at before.org.htmlcleaner.TagInfo.defineCloseBeforeCopyInsideTags:191). With --gaps assume it assumes instead that java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "seconds": 0.041,
++    "cpuSeconds": 0.031,
++    "peakMB": 30.7,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.041,
++    "cpuSeconds": 0.032,
++    "peakMB": 26.7,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "inverse",
++   "scope": "A valid HTML paragraph containing an inline SVG circle with radius 1 or 2.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-constructor:java.util.StringTokenizer.<init>(Ljava/lang/String;Ljava/lang/String;)V@jdk-21.0.13 (java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) at before.org.htmlcleaner.TagInfo.defineCloseBeforeCopyInsideTags:191). With --gaps assume it assumes instead that java.util.StringTokenizer.<init>(java.lang.String, java.lang.String) constructs the object and does nothing else: it throws nothing and keeps nothing of its arguments, and the verdict names the assumption",
++    "seconds": 0.041,
++    "cpuSeconds": 0.032,
++    "peakMB": 30.7,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "a loop was not fully unwound with --unwind 16 (java.util.HashMap.resize at pc 151; no invariant was found that covers its further iterations: an iteration changes a cell of a java.util.HashMap$Node[], which holds a reference)",
++    "seconds": 0.041,
++    "cpuSeconds": 0.031,
++    "peakMB": 26.7,
++    "exit": 1,
++    "killed": false
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/10/worker.json
+@@ -0,0 +1,96 @@
++{
++ "status": "measured",
++ "inputPacket": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "fe18e37af30938e4bf7908073355042d273a60b84e6fcf6bcc5da3cb25ec977f"
++   },
++   {
++    "path": "old/001.jar",
++    "sha256": "459a3b4eb8777f880471059956c51189dda7ae99dc01a46762cc3b30b108dfe2"
++   },
++   {
++    "path": "old/002.jar",
++    "sha256": "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "ea6dde2cb7335bef1483106d3ff4da9e2251010b60c5d0cf0223be9d1beae51e"
++   },
++   {
++    "path": "new/001.jar",
++    "sha256": "e986a68831d3de7fae12a4e5bbb06926d29146f3f48a0b8f7d139a06858d2cfc"
++   },
++   {
++    "path": "new/002.jar",
++    "sha256": "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
++   }
++  ]
++ },
++ "specSha256": "17519a523f618d848ea44ab62d4cd8d1fdd9a1c854434a366ad46b1f36dfdbb5",
++ "originalJvm": {
++  "rows": [
++   {
++    "n": 0,
++    "old": 0,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 1,
++    "old": 0,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   }
++  ],
++  "exit": 0,
++  "argv": [
++   "/guest/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++   "-Xmx512m",
++   "-XX:-UsePerfData",
++   "-ea",
++   "-cp",
++   "/guest/.cache/in-the-loop/tmp/original/physical",
++   "OriginalTable",
++   "0",
++   "1"
++  ],
++  "callerSha256": "c6e42e8622391fbb18a2c96736d7c2c067af5b0b91386a969f4bce3b315aea93",
++  "accepted": true
++ },
++ "twoCopy": {
++  "old": {
++   "000.jar": "fe18e37af30938e4bf7908073355042d273a60b84e6fcf6bcc5da3cb25ec977f",
++   "001.jar": "459a3b4eb8777f880471059956c51189dda7ae99dc01a46762cc3b30b108dfe2",
++   "002.jar": "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
++  },
++  "new": {
++   "000.jar": "ea6dde2cb7335bef1483106d3ff4da9e2251010b60c5d0cf0223be9d1beae51e",
++   "001.jar": "e986a68831d3de7fae12a4e5bbb06926d29146f3f48a0b8f7d139a06858d2cfc",
++   "002.jar": "b1cd48d0b55f5f3677c67ab84e14e25abaecc171f2172d674ef714df1cfd2e22"
++  },
++  "thinCallers": {
++   "ReferenceAPI.class": "c6e42e8622391fbb18a2c96736d7c2c067af5b0b91386a969f4bce3b315aea93"
++  },
++  "symbolicClaimClasses": {
++   "ReferencePair.class": "cfb07a3fbe3130ed4ffb83a15bbed5e11f5345e7c114857983e32364afb1a2ca"
++  },
++  "oldEntryMapSha256": "4512742c43a872a2e6d78dec459c2ddbb5659a7ede8162f3557c6fdbcec30edb",
++  "shadowedOldClasses": [],
++  "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++ }
++}
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/11/comparison/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/11/comparison/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/11/physical.stdout
+@@ -0,0 +1,4 @@
++BOUND 0 1 1 1 1 true true false
++BOUND 1 1 1 1 1 true true false
++BOUND 2 0 0 1 1 true true false
++BOUND 3 0 0 1 1 true true false
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/11/process.log
+@@ -0,0 +1 @@
++blind 12 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/11/summary.json
+@@ -0,0 +1,102 @@
++{
++ "job": "20261125-002307-09-12-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original matched two-copy caller",
++ "physicalRegistration": "00fdf49354b4fc4d4d2c74f57686aee494222b608ff29b1da0dd4226769e97d9",
++ "rows": [
++  {
++   "deployment": "comparison",
++   "method": "primary",
++   "scope": "The four original property states, restored on exit. Each JVM starts with both campaign property names unset.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at before.ReferenceAPI.primary:5). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.021,
++    "cpuSeconds": 0.02,
++    "peakMB": 26.3,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at before.ReferenceAPI.primary:5). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.021,
++    "peakMB": 26.2,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "control",
++   "scope": "The four original property states, restored on exit. Each JVM starts with both campaign property names unset.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at before.com.headius.options.Option.loadProperty:402). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.021,
++    "peakMB": 30.9,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at before.com.headius.options.Option.loadProperty:402). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.023,
++    "peakMB": 26.2,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "inverse",
++   "scope": "The four original property states, restored on exit. Each JVM starts with both campaign property names unset.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at before.ReferenceAPI.primary:5). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.022,
++    "peakMB": 30.9,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "gap",
++    "problem": "the tool's own checker met 1 gap, a construct it does not implement as the JVM does, and refused it (--gaps strict): jdk-static-method:java.lang.System.getProperty(Ljava/lang/String;)Ljava/lang/String;@jdk-21.0.13 (java.lang.System.getProperty(java.lang.String) at before.ReferenceAPI.primary:5). It has no approximation under --gaps assume, since its value could only be made up: only a contract closes it (--gaps advised)",
++    "seconds": 0.031,
++    "cpuSeconds": 0.028,
++    "peakMB": 26.2,
++    "exit": 1,
++    "killed": false
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/11/worker.json
+@@ -0,0 +1,99 @@
++{
++ "status": "measured",
++ "inputPacket": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "ff853f99c8b0a69d64305d1e5e38d7470ac586a13ebedc3ed56a4cb666ba2ee0"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "9478835771b37dea034510820eadf9c5bdd4f9c7a88539e8e2bf8414f6e9c094"
++   }
++  ]
++ },
++ "specSha256": "aabe09d6705d13bbe0153ac13013b600c3bd2bff07f70c9de2bbb07aa37a23bc",
++ "originalJvm": {
++  "rows": [
++   {
++    "n": 0,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 1,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 2,
++    "old": 0,
++    "new": 0,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 3,
++    "old": 0,
++    "new": 0,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   }
++  ],
++  "exit": 0,
++  "argv": [
++   "/guest/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++   "-Xmx512m",
++   "-XX:-UsePerfData",
++   "-ea",
++   "-cp",
++   "/guest/.cache/in-the-loop/tmp/original/physical",
++   "OriginalTable",
++   "0",
++   "1",
++   "2",
++   "3"
++  ],
++  "callerSha256": "4ad63d8a4dfaee9560e1e15a5bb45e858f4221b5198d9dafcb9165f941e29b50",
++  "accepted": true
++ },
++ "twoCopy": {
++  "old": {
++   "000.jar": "ff853f99c8b0a69d64305d1e5e38d7470ac586a13ebedc3ed56a4cb666ba2ee0"
++  },
++  "new": {
++   "000.jar": "9478835771b37dea034510820eadf9c5bdd4f9c7a88539e8e2bf8414f6e9c094"
++  },
++  "thinCallers": {
++   "ReferenceAPI$Group.class": "540e4697ba36a4cabdd886ddf6cd1b925d2952bc36fdaf10566f49fe9355d104",
++   "ReferenceAPI.class": "4ad63d8a4dfaee9560e1e15a5bb45e858f4221b5198d9dafcb9165f941e29b50"
++  },
++  "symbolicClaimClasses": {
++   "ReferencePair.class": "58e90bf8f14b1adcfa62975cc4d528b8b205defe2bd9a29b7327248353b5eb07"
++  },
++  "oldEntryMapSha256": "a1f6bc00c39acad6e9c1f39e53a72d7cdf2979aaeeedc46bdd2cc0ab5ad1d63f",
++  "shadowedOldClasses": [],
++  "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++ }
++}
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/12/comparison/executions.zip changed
+Binary file verification/beyond-jbmc/scaffold-first/native-resource/matched-native/12/comparison/results.json.gz changed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/12/physical.stdout
+@@ -0,0 +1,2 @@
++BOUND 0 1 1 1 1 true true false
++BOUND 1 2 1 1 1 true true false
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/12/process.log
+@@ -0,0 +1 @@
++blind 6 original checks passed
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/12/summary.json
+@@ -0,0 +1,102 @@
++{
++ "job": "20261125-002307-09-12-native-resource-repair-matched-rel",
++ "source": "689388178a8d91956be51af424f473d0271795a8",
++ "checkerSha256": "ddba0aa4cfbba896f5ba37dcb2ee1bd459e56dc018f3082e7611affdfed83b08",
++ "basis": "original matched two-copy caller",
++ "physicalRegistration": "84ca1003f0c6e59a9edd08e5874f7e9bc2e6d0d8ce0d48757de9f75e4798e40f",
++ "rows": [
++  {
++   "deployment": "comparison",
++   "method": "primary",
++   "scope": "Both constants of one public enum. The observed outputs are the exact JSON string name or a one-field JSON object containing the enum's declaring class name. Other JSON and mapping exceptions have separate codes.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "seconds": 0.051,
++    "cpuSeconds": 0.036,
++    "peakMB": 29.0,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "seconds": 0.051,
++    "cpuSeconds": 0.048,
++    "peakMB": 28.7,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "control",
++   "scope": "Both constants of one public enum. The observed outputs are the exact JSON string name or a one-field JSON object containing the enum's declaring class name. Other JSON and mapping exceptions have separate codes.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "seconds": 0.051,
++    "cpuSeconds": 0.044,
++    "peakMB": 58.2,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "seconds": 0.041,
++    "cpuSeconds": 0.04,
++    "peakMB": 28.7,
++    "exit": 1,
++    "killed": false
++   }
++  },
++  {
++   "deployment": "comparison",
++   "method": "inverse",
++   "scope": "Both constants of one public enum. The observed outputs are the exact JSON string name or a one-field JSON object containing the enum's declaring class name. Other JSON and mapping exceptions have separate codes.",
++   "old": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "seconds": 0.062,
++    "cpuSeconds": 0.053,
++    "peakMB": 59.2,
++    "exit": 1,
++    "killed": false
++   },
++   "new": {
++    "verdict": "unverifiable",
++    "assumed": [],
++    "contracts": [],
++    "class": "unsupported",
++    "reason": "refused",
++    "problem": "outside the fragment: arraycopy of summarized array cells",
++    "seconds": 0.051,
++    "cpuSeconds": 0.043,
++    "peakMB": 28.5,
++    "exit": 1,
++    "killed": false
++   }
++  }
++ ]
++}
+--- /dev/null
++++ b/verification/beyond-jbmc/scaffold-first/native-resource/matched-native/12/worker.json
+@@ -0,0 +1,89 @@
++{
++ "status": "measured",
++ "inputPacket": {
++  "old": [
++   {
++    "path": "old/000.jar",
++    "sha256": "329371f2c26ab6c3108fb8d70a68555693df73faa9fa973881908cfca0473e66"
++   },
++   {
++    "path": "old/001.jar",
++    "sha256": "f11c46228e32e4c1414023d01f5bfe06a998085bc3feadd1334124f68e8adc82"
++   }
++  ],
++  "new": [
++   {
++    "path": "new/000.jar",
++    "sha256": "b0093ba224fd88a046020159089a795d8224a0c63d1e7c9e4875b000682d0f1e"
++   },
++   {
++    "path": "new/001.jar",
++    "sha256": "49ea8baf09c5bd7d2268ea22976217f42fb2dc5919f874d6bb164be24b38519c"
++   }
++  ]
++ },
++ "specSha256": "f0c1f997750278600f9f53fc9f1b6dbe924abc24a67f6b1e38e5ed187baaf43f",
++ "originalJvm": {
++  "rows": [
++   {
++    "n": 0,
++    "old": 1,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   },
++   {
++    "n": 1,
++    "old": 2,
++    "new": 1,
++    "oldControl": 1,
++    "newControl": 1,
++    "primary": true,
++    "control": true,
++    "inverse": false
++   }
++  ],
++  "exit": 0,
++  "argv": [
++   "/guest/.sdkman/candidates/java/21.0.13.0+9-tem/bin/java",
++   "-Xmx512m",
++   "-XX:-UsePerfData",
++   "-ea",
++   "-cp",
++   "/guest/.cache/in-the-loop/tmp/original/physical",
++   "OriginalTable",
++   "0",
++   "1"
++  ],
++  "callerSha256": "7a21b61f82b3eb732c1961e4d9275cf30baf85685935c051c5195cfba4a7572b",
++  "accepted": true
++ },
++ "twoCopy": {
++  "old": {
++   "000.jar": "329371f2c26ab6c3108fb8d70a68555693df73faa9fa973881908cfca0473e66",
++   "001.jar": "f11c46228e32e4c1414023d01f5bfe06a998085bc3feadd1334124f68e8adc82"
++  },
++  "new": {
++   "000.jar": "b0093ba224fd88a046020159089a795d8224a0c63d1e7c9e4875b000682d0f1e",
++   "001.jar": "49ea8baf09c5bd7d2268ea22976217f42fb2dc5919f874d6bb164be24b38519c"
++  },
++  "thinCallers": {
++   "ReferenceAPI$Item.class": "e19f418dcdd926f2d337970f0dd425629176f406eded146df3718b93e7ab0eda",
++   "ReferenceAPI$Item$1.class": "5e8b1f9e3925e4bd6a6f480abbaa629bff69e8c7eec0394f8929f0bf56d1945a",
++   "ReferenceAPI$1.class": "b32832e668e20d480390f8baae83346efffdbcd265c51b74dfb82a65c2fecb2f",
++   "ReferenceAPI.class": "7a21b61f82b3eb732c1961e4d9275cf30baf85685935c051c5195cfba4a7572b"
++  },
++  "symbolicClaimClasses": {
++   "ReferencePair.class": "ef5570d9fb735f742ab43a9e91737f8c9d97a9f3c674e2df399cd0bf57b4f385"
++  },
++  "oldEntryMapSha256": "c2e3d26278ff885fe0e22fc15b1a11b5568be74e2793753fc3d4d59a92a655a6",
++  "shadowedOldClasses": [],
++  "relocatorSha256": "56085405a77437b515c93d7812728b41bd973bdfdb926799358b16b865608054",
++  "jdkModulesSha256": "a5fd7c311fbd96adcbd43757dbb94461e14df353b6ae9f5c029c45805a39782c",
++  "jbmcSha256": "200f4cbb273d94268cdf933ee1f7c5ea96c8abc95af83836c2ffc082a722ec35",
++  "coreModelsSha256": "a31ef93bfe898d373bb7eca6aef3b9ee2ebf05b0fe8efb305f86528396ea49df"
++ }
++}

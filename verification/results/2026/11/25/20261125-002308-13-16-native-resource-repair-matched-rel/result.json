@@ -1,0 +1,404 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-002308-13-16-native-resource-repair-matched-rel",
+  "title": "13-16 native resource repair matched release replay",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 26.8s, peak 709.0 MiB (estimated 3m00s, 3.0 GiB); 28 output file(s) changed",
+  "attention": [
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor) was held back 26.9s by its 2-CPU quota in 26.8s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-002308-13-16-native-resource-repair-matched-rel.json",
+    "sha256": "1f3080f757b93ec15a3458ed97dd03fdee3f510f51d9e4dfde00dc8856466b59",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-002308-13-16-native-resource-repair-matched-rel",
+      "title": "13-16 native resource repair matched release replay",
+      "description": "Measure the original supplied primary, control and inverse on the release-namespace repair. Preserve all previously exposed questions, original graph qualifications, and named refusals.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/matched_successor.py"
+        ]
+      },
+      "expected": "Measured primary, control and inverse on all specified original graphs, including the qualified original release conjuncts in the two XML cases.",
+      "submitted": {
+        "at": "2026-11-25T00:23:08+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "bwrap",
+        "jbmc"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "3m",
+        "timeout": "28m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor.py 13 14 15 16 --output verification/beyond-jbmc/scaffold-first/native-resource/matched-native",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13",
+        "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14",
+        "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15",
+        "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16"
+      ]
+    }
+  },
+  "sourceCommit": "689388178a8d91956be51af424f473d0271795a8",
+  "startedAt": "2026-11-25T00:47:30+00:00",
+  "finishedAt": "2026-11-25T00:48:18+00:00",
+  "wallSeconds": 48.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 4174191,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1680.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 743481344,
+    "wallSeconds": 26.8,
+    "cpuSeconds": 47.8,
+    "memoryOfEstimate": 0.23,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/matched_successor.py 13 14 15 16 --output verification/beyond-jbmc/scaffold-first/native-resource/matched-native",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1680.0,
+      "cancelled": false,
+      "wallSeconds": 26.758,
+      "cpuSeconds": 47.845,
+      "cpuThrottledSeconds": 26.914,
+      "peakMemoryBytes": 743481344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 4,
+        "bytes": 619,
+        "sha256": "84edbe9f529bb0ec80d301c0214fc174f08509460647bfdeb01811050013d9ef",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "13 [('comparison', 'primary', 'unverifiable'), ('comparison', 'control', 'unverifiable'), ('comparison', 'inverse', 'unverifiable')]",
+        "14 [('comparison', 'primary', 'unverifiable'), ('comparison', 'control', 'unverifiable'), ('comparison', 'inverse', 'unverifiable')]",
+        "15 [('comparison', 'primary', 'unverifiable'), ('comparison', 'control', 'unverifiable'), ('comparison', 'inverse', 'unverifiable')]",
+        "16 [('old', 'primary', 'unverifiable'), ('old', 'control', 'unverifiable'), ('old', 'inverse', 'unverifiable'), ('new', 'primary', 'unverifiable'), ('new', 'control', 'unverifiable'), ('new', 'inverse', 'unverifiable')]"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/comparison/executions.zip",
+      "change": "added",
+      "bytes": 8305,
+      "sha256": "f22c284027f1648d8c9166305971591abb1fd422bac7703b143ab55b28bc6994",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/comparison/results.json.gz",
+      "change": "added",
+      "bytes": 29269,
+      "sha256": "002ffd212aaecc9e45b805deba4a06dbfffddc310abbf61048e75aa93902bb77",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/physical.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/physical.stdout",
+      "change": "added",
+      "bytes": 147,
+      "sha256": "0a5a335807677e3a05fe939c2f6b11e4c835ffbe0ef39936058c9dcc71132c82",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/process.log",
+      "change": "added",
+      "bytes": 32,
+      "sha256": "f8bed4983378ddcd3814ed6051ada16bbbdc7c1748ff80a46871ce6b265e583c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/summary.json",
+      "change": "added",
+      "bytes": 4875,
+      "sha256": "abf1876c9e971bcce3c9ed6fa30c47678c8d4b7fbe74d514bf1e95d04e5c333e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/worker.json",
+      "change": "added",
+      "bytes": 255736,
+      "sha256": "2c5c9e0df4a33244fa503f1a513edfb21e90b01f242e14043375d7c8be70e6f2",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/comparison/executions.zip",
+      "change": "added",
+      "bytes": 7342,
+      "sha256": "e1d5fa7103f3fad60ca4e02a74b18ae2e128ff3c05da6250dc99379fcfdeeeef",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/comparison/results.json.gz",
+      "change": "added",
+      "bytes": 1373,
+      "sha256": "3c13a8cb817e32276c6555f882b720e00be8f66c260a4bba0d41157388866b44",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/physical.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/physical.stdout",
+      "change": "added",
+      "bytes": 64,
+      "sha256": "af002332496d26247baaba475bf673bc2e68b3582c0abc45be98303eced39182",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/process.log",
+      "change": "added",
+      "bytes": 31,
+      "sha256": "80aee38ed59d264da9f6ad7205ad307a4bbf35f610e38a0a6c266e83f79e9d14",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/summary.json",
+      "change": "added",
+      "bytes": 5233,
+      "sha256": "cbfe181d6bc6f7eb1390630f8aa3f26661f870204e02cc6b63d09d48d77d0cfe",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/worker.json",
+      "change": "added",
+      "bytes": 2017,
+      "sha256": "a39870cbeb495e564f9e3ec139ab330e5f7f1ecc7bd05dc69ff883ff8306b79f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/comparison/executions.zip",
+      "change": "added",
+      "bytes": 7341,
+      "sha256": "31ecb92814b9abd94acd5a0929f388948775cfe1aef0d03f73f73d9189a1a8e9",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/comparison/results.json.gz",
+      "change": "added",
+      "bytes": 1363,
+      "sha256": "71776eed6b758bfdba1fd8523b46ddd174c64ea2ad48297184f15226d448d0b1",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/physical.stderr",
+      "change": "added",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/physical.stdout",
+      "change": "added",
+      "bytes": 64,
+      "sha256": "af002332496d26247baaba475bf673bc2e68b3582c0abc45be98303eced39182",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/process.log",
+      "change": "added",
+      "bytes": 31,
+      "sha256": "80aee38ed59d264da9f6ad7205ad307a4bbf35f610e38a0a6c266e83f79e9d14",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/summary.json",
+      "change": "added",
+      "bytes": 5233,
+      "sha256": "cc2117fb65de76f8c4b1252cedbee61358a3e495da6163753a7710c1516bea0e",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/worker.json",
+      "change": "added",
+      "bytes": 2017,
+      "sha256": "c4db9483cf0a8f3089c97b2b44bc8bcbc3c4ce2d78b3f2f8af01cd3551679c35",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/new/executions.zip",
+      "change": "added",
+      "bytes": 7352,
+      "sha256": "a373e8d0bf031abfa45a870eda0caf1f2f92d6ba42134352eabf5f2e3f3f5d0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/new/results.json.gz",
+      "change": "added",
+      "bytes": 1088,
+      "sha256": "d7f26c9e4e4d25d687950ae4dc92f2c2d76a9a9c7f836f582ce89632a1c9c750",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/old/executions.zip",
+      "change": "added",
+      "bytes": 7348,
+      "sha256": "e2fc9d03a8b00bcc6200ba75cc363fa56b3d938aa4522c0b56569b25846c1ac0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/old/results.json.gz",
+      "change": "added",
+      "bytes": 1084,
+      "sha256": "a8d60bce3c20a4da59301ad022970d6627d0d9c44f391c8a5d7a1eedc0ce9406",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/process.log",
+      "change": "added",
+      "bytes": 58,
+      "sha256": "02875a1fd5b18f984c6759df4bef8d50b6f77defe441e439e77fab6f60eb7fe0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/summary.json",
+      "change": "added",
+      "bytes": 10269,
+      "sha256": "9aa652c98e9292a04c69c961004c530943bf7473c0045755723019b18e4f58c0",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/worker.json",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "0a4816077139519d8c267767c72db802bc382159d3db63d0694966fc247fe135",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T00:53:54+00:00",
+    "applied": [
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/comparison/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/comparison/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/physical.stderr",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/physical.stdout",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/process.log",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/summary.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/13/worker.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/comparison/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/comparison/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/physical.stderr",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/physical.stdout",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/process.log",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/summary.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/14/worker.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/comparison/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/comparison/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/physical.stderr",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/physical.stdout",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/process.log",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/summary.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/15/worker.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/new/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/new/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/old/executions.zip",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/old/results.json.gz",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/process.log",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/summary.json",
+      "verification/beyond-jbmc/scaffold-first/native-resource/matched-native/16/worker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "9071c5486aa86db6e22c4ea65d9dd330447ab181",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/9071c5486aa86db6e22c4ea65d9dd330447ab181/jvmcontract",
+    "built": false
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T004818Z-9146119739edde5d",
+      "outputs": "20261125T004818Z-94205418c9e0c1f6",
+      "diff": "20261125T004818Z-963257edc3be2525"
+    }
+  }
+}
