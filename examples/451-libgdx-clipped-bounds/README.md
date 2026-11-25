@@ -9,3 +9,5 @@
 The caller snapshots all four bound values before reuse and compares local coordinate pairs independently of cyclic vertex order. The fresh-output control uses the same two input polygons.
 
 Run `python3 examples/tools/build.py 451` with the prepared `merged-pr-links-m01-m10` cache. The same compiled caller runs in a fresh JVM for each revision and history. [Predictions and refutations](comparison.json) · [Runtime lock](runtime.json) · [Caller](caller/PublicCaller.java) · [Recorded returns](observations.json) · [Upstream change](https://github.com/libgdx/libgdx/pull/7278) · [Build provenance](../../llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-setup.md)
+
+The stale bounds reproduced on libGDX 1.13.0. After upstream repair #7522, libGDX 1.14.2 returned (1,2,2,3) for both output polygons. [Release evidence](../../verification/merged-pr-links/m01-m10/upstream.md)

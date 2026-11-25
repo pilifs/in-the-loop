@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-221211-repeat-three-historical-witnesses-on-six",
+  "title": "Repeat three historical witnesses on six released Java libraries",
+  "description": "Compile the historical public callers with their original JDKs and require identical class files. Replay all three questions per release, with pinned Maven artifacts and code origins, on Commons Compress 1.23.0 and 1.28.0, Agrona 1.4.0 and 2.7.2, and libGDX 1.13.0 and 1.14.2.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "paths": [
+      "verification/merged-pr-links/m01-m10/release-observations.json"
+    ]
+  },
+  "expected": "All 18 typed observations and the classpath digests reproduce. The current Commons Compress and Agrona releases retain the historical counterexample and libGDX 1.14.2 returns the fresh bounds.",
+  "submitted": {
+    "at": "2026-11-25T22:12:11+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "512M",
+    "duration": "1m"
+  },
+  "steps": [
+    {
+      "name": "Repeat all 18 released observations",
+      "run": "python3 verification/merged-pr-links/m01-m10/releases.py --fetch",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

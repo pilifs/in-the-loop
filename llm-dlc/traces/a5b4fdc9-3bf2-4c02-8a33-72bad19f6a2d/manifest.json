@@ -159,48 +159,48 @@
   "commits": [
     {
       "change_id": "uxxrqyvptzsmsrsxuywyloomqpsxorut",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "8c10159d335c2cd7efba013931f752dc12744d0f",
+      "immutable": true,
       "summary": "Start the M01-M10 setup record: pinned revisions fetched",
       "body": "Setup agent for the merged Java PR links M01-M10 brief: all 20 pinned revisions fetched by SHA into shallow mirrors, one worktree each under ~/.cache/in-the-loop/merged-pr-links-m01-m10. Every PR's merge SHA equals the brief's after pin, every after pin's first parent is the before pin, and each landed diff names exactly the PR's files. Builds follow.",
       "log_sha256": "558a5bfdd53cc8907131e4a60cded1e9496ff2e59e2e64268c1cd2cad91a8dae"
     },
     {
       "change_id": "sxkpqmwwmlkopllmstwwzknssswlxolo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4fc13f35e3f0a7b276b9125933cd08e0d0258e41",
+      "immutable": true,
       "summary": "Record the M01-M10 setup: eight cases built and checked, two jobs queued (verification pending)",
       "body": "Setup for the merged Java PR links M01-M10 brief, no claims. M01 RoaringBitmap, M02 jackson-databind, M03 vavr, M04 commons-compress, M05 commons-rng, M06 agrona, M07 spatial4j and M09 libgdx are built at both pins with their jars, class digests and runtime classpaths under ~/.cache/in-the-loop/merged-pr-links-m01-m10; for each the landed test passes on the fix and fails on the parent (M04's needs four fix-only accessor lines removed to compile there; M07 has no landed test, and issue #210's reproduction throws on the parent and succeeds on the fix). Offline builds checked. Released versions the brief names are resolved with strict checksums and signatures checked. M02's four 3.2.0/2.22 snapshot inputs are no longer served and were rebuilt from their own upstream commits before the parent pin.\n\nM08 Checkstyle and M10 TinkerPop build by job: 20261125-202838-setup-build-checkstyle-at-both-14128-rev (queued in the previous commit) and 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t.",
       "log_sha256": "3edc529a6c29b35451c55c5b0109d355a2132dddcb30e02d6ee9b9bd0078478d"
     },
     {
       "change_id": "nmvyrrtytovkvknzulwomwnnvsownmmy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "fb1477b920cb26c8fc1b8ece081d4bd8dd9a981d",
+      "immutable": true,
       "summary": "Record the M08 and M10 setup jobs' results in the M01-M10 setup record",
       "body": "Both setup jobs passed. Checkstyle #14128 (job 20261125-202838-setup-build-checkstyle-at-both-14128-rev): HiddenFieldCheckTest 19/19 on the fix online and offline, 17/17 on the parent, and the fix's test with its two new inputs fails twice on the parent; the CLI runs on both built jars. TinkerPop #3105 (job 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t): DedupGlobalStepTest and Dedup.feature pass at both pins, and the fix's versions fail once in each module on the parent. Jar and changed-class digests of both sides are now in the M08 and M10 sections and the Setup Agent Notes; setup is complete.",
       "log_sha256": "af1cfa1630c8d0413f1ee749ec7dfde8fd3cf2a12b4a61494ed6b3fc65189f4d"
     },
     {
       "change_id": "ztzuwsrwvwosrlzxwovnlykyxttokszt",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "2e11d5f0903de5d9d4db20ff9e3e51ae16b09e13",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-202838-setup-build-checkstyle-at-both-14128-rev: passed: 6 passed step(s) in 1m19s, peak 1.4 GiB (estimated 30m00s, 4.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-m01-m10-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "601478fdfac5afc2d2eceee3b90250ad1b1150652cf2d4089f063e3721476564"
     },
     {
       "change_id": "nytttuqoqropvskzmqwuuuwmmpoktplo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e942005d0cf871a726cc45f5f273fa8be3386c43",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-202839-setup-build-tinkerpop-gremlin-core-and-t: passed: 5 passed step(s) in 1m31s, peak 1.4 GiB (estimated 35m00s, 5.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-m01-m10-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "601478fdfac5afc2d2eceee3b90250ad1b1150652cf2d4089f063e3721476564"
     },
     {
       "change_id": "qtuvxxuwrlzyplooqqkxurquutwtzttp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ded2de23504dc9b494555f7a3d3550e2ecb91009",
+      "immutable": true,
       "summary": "Note that pgrep -f on a command's text never ends a wait",
       "body": "The L01-L20 and M01-M10 setup agents both waited for sync.py commit with an until ! pgrep -f loop. The loop's own command line matches the pattern, so it spun long after the commit landed (the M setup had four such loops, up to 40 minutes old). The note gives the waits that do end: foreground, wait PID, kill -0, or a bracketed pattern.",
       "log_sha256": "601478fdfac5afc2d2eceee3b90250ad1b1150652cf2d4089f063e3721476564"

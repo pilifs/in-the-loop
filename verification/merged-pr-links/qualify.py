@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -40,6 +41,28 @@ ENTRIES = {
             "io.reactivex.rxjava3.internal.operators.flowable.FlowableGroupBy$State#cancel()V"),
     "442": ("L20-JSqlParser", "src/main/java",
             "net.sf.jsqlparser.util.deparser.AlterDeParser#deParseAction(Lnet/sf/jsqlparser/statement/alter/AlterExpression;)V"),
+    "443": ("M01-RoaringBitmap", "roaringbitmap/src/main/java",
+            "org.roaringbitmap.buffer.ImmutableRoaringBitmap#contains(JJ)Z"),
+    "444": ("M02-jackson-databind", "src/main/java",
+            "tools.jackson.databind.deser.bean.BeanDeserializerBase#collectAllPropertyNamesTo(Ljava/util/Set;)V"),
+    "445": ("M03-vavr", "vavr/src/main/java",
+            "io.vavr.collection.Iterator#findLast(Ljava/util/function/Predicate;)Lio/vavr/control/Option;"),
+    "446": ("M04-commons-compress", "src/main/java",
+            "org.apache.commons.compress.archivers.zip.ZipFile#positionAtCentralDirectory32()V"),
+    "447": ("M05-commons-rng", "commons-rng-core/src/main/java",
+            "org.apache.commons.rng.core.source32.JDKRandom#setStateInternal([B)V"),
+    "448": ("M06-agrona", "agrona/src/main/java",
+            "org.agrona.collections.Int2IntHashMap$EntryIterator#next()Ljava/util/Map$Entry;"),
+    "449": ("M07-spatial4j", "src/main/java",
+            "org.locationtech.spatial4j.io.jackson.GeometryAsGeoJSONSerializer#serialize"
+            "(Lorg/locationtech/jts/geom/Geometry;Lcom/fasterxml/jackson/core/JsonGenerator;"
+            "Lcom/fasterxml/jackson/databind/SerializerProvider;)V"),
+    "451": ("M09-libgdx", "gdx/src",
+            "com.badlogic.gdx.math.Intersector#intersectPolygons"
+            "(Lcom/badlogic/gdx/math/Polygon;Lcom/badlogic/gdx/math/Polygon;Lcom/badlogic/gdx/math/Polygon;)Z"),
+    "452": ("M10-tinkerpop", "gremlin-core/src/main/java",
+            "org.apache.tinkerpop.gremlin.process.traversal.step.filter.DedupGlobalStep#modulateBy"
+            "(Lorg/apache/tinkerpop/gremlin/process/traversal/Traversal$Admin;)V"),
 }
 
 
@@ -54,6 +77,16 @@ def write(path, obj):
 VIA = "PublicCaller#observe([Ljava/lang/String;)Ljava/lang/String;"
 
 
+def registered_fixtures(physical):
+    """Describe the source and the files each fresh JVM receives under its fixtures directory."""
+    inputs = physical["inputs"]
+    caller = {"kind": "java", "class": "PublicCaller", "file": "PublicCaller.java",
+              "sha256": inputs["caller/PublicCaller.java"]}
+    resources = [{"kind": "resource", "file": path.removeprefix("fixtures/"), "sha256": inputs[path]}
+                 for path in sorted(inputs) if path.startswith("fixtures/")]
+    return [caller, *resources]
+
+
 def check_receipt(entry, questions, pins, runtime, variant, physical, report):
     """Bind a saved debugger report to the entire requested domain and the measured caller."""
     recorded = physical["deployments"][variant]
@@ -66,10 +99,8 @@ def check_receipt(entry, questions, pins, runtime, variant, physical, report):
                "tracerSha256": upgrade_replay.TRACER, "lookupSha256": upgrade_replay.LOOKUP}
     if any(report[key] != upgrade_replay.sha(path) for key, path in sources.items()):
         raise ValueError(f"{variant}: changed debugger or launcher")
-    source = {"kind": "java", "class": "PublicCaller", "file": "PublicCaller.java",
-              "sha256": physical["inputs"]["caller/PublicCaller.java"]}
-    if report["originalFixtures"] != [source]:
-        raise ValueError(f"{variant}: different public caller source")
+    if report["originalFixtures"] != registered_fixtures(physical):
+        raise ValueError(f"{variant}: different public caller source or fixture")
     if any(report["probeClasses"].get(name.removesuffix(".class")) != digest
            for name, digest in recorded["callerClasses"].items()):
         raise ValueError(f"{variant}: debugger and physical caller bytecode differ")
@@ -100,7 +131,8 @@ def qualify(number, output, only=None, check_only=False, compressed=False):
     runtime = public_comparison.read(folder / "runtime.json")
     physical = public_comparison.read(folder / "observations.json")
     source = folder / "caller/PublicCaller.java"
-    if (physical["inputs"]["caller/PublicCaller.java"] != upgrade_replay.sha(source)
+    resources = sorted(p for p in (folder / "fixtures").rglob("*") if p.is_file())
+    if (physical["inputs"] != {p.relative_to(folder).as_posix(): upgrade_replay.sha(p) for p in [source, *resources]}
             or physical["runtimeSha256"] != upgrade_replay.sha(folder / "runtime.json")
             or physical["comparisonSha256"] != upgrade_replay.sha(folder / "comparison.json")):
         raise ValueError("physical receipt differs from the registered caller or deployment")
@@ -141,16 +173,23 @@ def qualify(number, output, only=None, check_only=False, compressed=False):
                 write(manifest, {"commit": pin, "sourceSha256": hashlib.sha256(tree).hexdigest(), "classpath": cp})
                 manifests.append(manifest)
                 deps.append(cp[0]["sha256"])
+            fixture_dir = source.parent
+            if resources:
+                fixture_dir = work / "inputs"
+                shutil.copytree(folder / "fixtures", fixture_dir)
+                if (fixture_dir / source.name).exists():
+                    raise ValueError("resource path collides with the registered caller")
+                shutil.copyfile(source, fixture_dir / source.name)
             scope = {"entry": entry, "probeClass": "UpgradeProbe",
                      "invocationVia": VIA,
                      "observer": "Same public observer as the physical receipt, with an original-method breakpoint.",
                      "basis": "Cross-check the previously measured typed returns on both revisions against two independent debugger trials.",
-                     "fixtures": [{"kind":"java", "class":"PublicCaller", "file":source.name, "sha256":upgrade_replay.sha(source)}],
+                     "fixtures": registered_fixtures(physical),
                      "cases": [{"args": r["args"], "expected": measured["parent", r["id"]]} for r in questions]}
             scope_path = work / "scope.json"
             write(scope_path, scope)
             report = upgrade_replay.evaluate(scope_path, *manifests, Path(__file__).with_name("UpgradeProbe.java"),
-                    jdk, deps, 180, fixtures=source.parent, application_change=True)
+                    jdk, deps, 180, fixtures=fixture_dir, application_change=True)
             write(file, report)
             if report["status"] not in ("preserved", "changed"):
                 raise ValueError(f"{number} {variant}: {report.get('reason', 'qualified replay open')}")

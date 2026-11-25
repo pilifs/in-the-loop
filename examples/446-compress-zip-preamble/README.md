@@ -9,3 +9,5 @@
 The registered return explicitly marks the prefix API as unavailable on the parent. The physical offset of each generated ZIP32 file is measured independently from its byte array. The fixture digest matches the one recorded by setup.
 
 Run `python3 examples/tools/build.py 446` with the prepared `merged-pr-links-m01-m10` cache. The same compiled caller runs in a fresh JVM for each revision and history. [Predictions and refutations](comparison.json) · [Runtime lock](runtime.json) · [Caller](caller/PublicCaller.java) · [Recorded returns](observations.json) · [Upstream change](https://github.com/apache/commons-compress/pull/334) · [Build provenance](../../llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-setup.md)
+
+Both Commons Compress 1.23.0 and 1.28.0 retained the writer-produced zero offset and null prefix while returning the complete entry. [Release evidence](../../verification/merged-pr-links/m01-m10/upstream.md)

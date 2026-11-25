@@ -17,16 +17,24 @@ All ten changes produced the intended parent-to-merge contrast. Across the thirt
 
 ## Three refuted predictions
 
+Each of these challenges proposes a public consistency requirement and names a source-level reason it might fail. The score uses the stated requirement as the expected return. All three observed failures followed the suspected pattern.
+
 - **Commons Compress.** Both generated ZIP32 archives had their first local header at byte 15. Both returned the identical named payload. The reader reported offset 15 and the original prefix when the bytes were prepended after writing, but zero and a null prefix when `writePreamble` wrote the same bytes before the entry. [Both readbacks](../../examples/446-compress-zip-preamble/observations.json)
 - **Agrona.** Without changing the backing map, each copied entry compared equal to its JDK counterpart in both directions. All three copies hashed to 11. The JDK reference hashes were 11, 22 and 29, and the set lookup returned true, false and false. [Entries, hashes and lookups](../../examples/448-agrona-entry-arrays/observations.json)
 - **libGDX.** Pre-reading the output polygon’s bounds before reuse exposed stale transformed coordinates. With the same two input rectangles and a successful clip, the fresh bounds were (1,2,2,3) and the reused bounds were (−4,−4,2,2). The four local vertices agreed. This refuted the geometry consistency prediction on the parent as well as the merge. [Both geometries](../../examples/451-libgdx-clipped-bounds/observations.json)
 
 ## Deployment and replay
 
-Each of the 60 public histories starts a fresh caller JVM. Each pair uses the same compiled caller, the registered JDK, ordered dependency hashes and original class providers. Checkstyle also runs eight child CLI processes and checks the provider of its CLI and check in each child. The two JDK 8 cases use that VM’s class-loading records. Jackson’s two exact databind revisions share reconstructed core and annotation snapshots. Setup identifies their source commits and the unavailable historical inputs. [Artifact preparation](organic-java-merged-pr-links-m01-m10-brief-setup.md) · [Independent replay job](../../verification/jobs/2026/11/25/20261125-220316-replay-all-30-m01-m10-public-predictions.json)
+The independent pipeline replay passed in 15.6 seconds and returned a byte-identical campaign audit. Each of the 60 public histories starts a fresh caller JVM. Each pair uses the same compiled caller, the registered JDK, ordered dependency hashes and original class providers. Checkstyle also runs eight child CLI processes and checks the provider of its CLI and check in each child. The two JDK 8 cases use that VM’s class-loading records. Jackson’s two exact databind revisions share reconstructed core and annotation snapshots. Setup identifies their source commits and the unavailable historical inputs. [Artifact preparation](organic-java-merged-pr-links-m01-m10-brief-setup.md) · [Independent replay job](../../verification/jobs/2026/11/25/20261125-220316-replay-all-30-m01-m10-public-predictions.json)
 
 ```sh
 python3 verification/merged-pr-links/audit.py --campaign m01-m10
 python3 examples/tools/build.py --plan 446
 python3 examples/tools/build.py 446
 ```
+
+## Independent evidence
+
+Eighteen additional fresh JVM histories used the historical caller bytecode on six released libraries. The preamble discrepancy reproduced on Commons Compress 1.23.0 and 1.28.0. The entry hash discrepancy reproduced on Agrona 1.4.0 and 2.7.2. These two reports await a filing decision. The stale polygon bounds reproduced on libGDX 1.13.0, and 1.14.2 returned the correct bounds with the same caller after upstream repair #7522. [Reports and released observations](../../verification/merged-pr-links/m01-m10/upstream.md)
+
+Nine registered original methods cover all three roles in their respective examples. Each independent job repeats a history twice per revision and checks the resulting invocation sites and complete public returns. For Commons Compress the debugger also verifies the exact ZIP fixture bytes and copies them into each fresh trial. Four retained trials already reached its original ZIP32 offset calculation on the supplied fixture. Checkstyle runs its checker in a separate CLI process, where the public comparison verifies the loaded original check, exit status, and XML positions. [ZIP debugger receipt](../../verification/merged-pr-links/m01-m10/intent/446-pins.json.gz) · [Bitmap, Jackson and Vavr job](../../verification/jobs/2026/11/25/20261125-221210-trace-bitmap-containment-jackson-alias-r.json) · [ZIP, RNG and Agrona job](../../verification/jobs/2026/11/25/20261125-221210-trace-zip-offset-adjustment-rng-restore.json) · [Spatial4j, libGDX and TinkerPop job](../../verification/jobs/2026/11/25/20261125-221210-trace-geojson-writing-polygon-clipping-a.json)
