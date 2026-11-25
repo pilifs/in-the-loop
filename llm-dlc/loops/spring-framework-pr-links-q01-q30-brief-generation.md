@@ -22,11 +22,11 @@
 | spring-projects/spring-framework#1175 | written | Read all four landed commits, the migrated issue, ten-byte file, handler paths and single-/multi-range regressions. Parsing multipart bytes and matching independent GETs remains unexecuted. |
 | spring-projects/spring-framework#374 | written | Read migrated SPR-10789, the decision about literal question marks, and both stub and standalone tests. The single-star versus nested path and double-star control remains open. |
 | spring-projects/spring-framework#25656 | written | Compared clone and decorator composition with the amended test, which only executes the original. Actual requests through diverging builders, marker order and the second clone remain open. |
-| spring-projects/spring-framework#36602 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37096 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#37601 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#36162 | not yet | Awaiting source review and claims. |
-| spring-projects/spring-framework#23784 | not yet | Awaiting source review and claims. |
+| spring-projects/spring-framework#36602 | written | Compared the two version builders, MVC handler selection and WebFlux condition assertions. Parent duplicate registration and the cross-stack HTTP response bodies remain unexecuted. |
+| spring-projects/spring-framework#37096 | written | Read resolveApiVersion and the two gated TestPublisher tests. An empty-first fallback and the second publisher’s subscription count on error remain unexecuted. |
+| spring-projects/spring-framework#37601 | written | Read the copy at build(), factory client customization, and the test that installs both late hooks. An isolated processor’s transport header across three clients remains unexecuted. |
+| spring-projects/spring-framework#36162 | written | Checked the mock reply tests and the actual consumer-before-send order on the landed SHA against the later RabbitMQ report. Broker delivery and reuse of the caller-owned queue remain unexecuted. |
+| spring-projects/spring-framework#23784 | written | Read the null-returning @Bean, optional injection check and direct multicast regression. A second ordered subscriber and repeated context.publishEvent remain unexecuted. |
 | spring-projects/spring-framework#22881 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#37525 | not yet | Awaiting source review and claims. |
 | spring-projects/spring-framework#35140 | not yet | Awaiting source review and claims. |
