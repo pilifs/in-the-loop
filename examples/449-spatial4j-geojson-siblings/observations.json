@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "698c0504873419a8c6ef65ff8934ff71f15cb37ac75ae51e269e9a0f24cd7341",
+  "runtimeSha256": "4a040d9facbf507059be9b3c32b6cc656a2e1024225b731eaa8592bd2081293e",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "fef0ad6fdf4889eaff83b1066bf68cb1dc0af4d3137fd20cde25afc020a418f5"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "82a90b311195750f1c2574f92f32caa5bd02a92cacc127a213d7c5f5442d0079",
+        "UpgradeObservation.class": "dc29f2177cb30a1fb8ac4e0ad8ce33254b4386d4de8f4d31df7f074deb8aadab"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "locationtech/spatial4j#212.1",
+          "outcome": {
+            "return": "write=com.fasterxml.jackson.core.JsonGenerationException root=com.fasterxml.jackson.core.JsonGenerationException"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "locationtech/spatial4j#212.2",
+          "outcome": {
+            "return": "[{coordinates=[100, 100], type=\"Point\"}]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "locationtech/spatial4j#212.3",
+          "outcome": {
+            "return": "write=com.fasterxml.jackson.core.JsonGenerationException root=com.fasterxml.jackson.core.JsonGenerationException | write=com.fasterxml.jackson.core.JsonGenerationException root=com.fasterxml.jackson.core.JsonGenerationException"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "locationtech/spatial4j#212.1",
+          "outcome": {
+            "return": "[{coordinates=[[100, 100]], type=\"MultiPoint\"}]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "locationtech/spatial4j#212.2",
+          "outcome": {
+            "return": "[{coordinates=[100, 100], type=\"Point\"}]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "locationtech/spatial4j#212.3",
+          "outcome": {
+            "return": "{after=17, geometry={geometries=[{coordinates=[[100, 100]], type=\"MultiPoint\"}, {coordinates=[7, 9], type=\"Point\"}], type=\"GeometryCollection\"}} | {after=17, geometry={geometries=[{coordinates=[7, 9], type=\"Point\"}, {coordinates=[[100, 100]], type=\"MultiPoint\"}], type=\"GeometryCollection\"}}"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

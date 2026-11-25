@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "446",
+  "title": "Commons Compress reads entries and reports the ZIP preamble",
+  "summary": "The parent found zero entries in the prefixed fixture. The merge returned its named 50-byte body, offset 15 and the complete 15-byte prefix. Both generated files had a local header at byte 15 and yielded the complete body. The writer-produced file reported offset zero and a null prefix.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "resource-serving",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons Compress",
+    "symbol": "ZipFile.getEntries"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The reader adjusts ZIP32 offsets for a prefix and exposes the bytes before the first local header."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-compress",
+    "url": "https://github.com/apache/commons-compress/pull/334"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched",
+  "notes": [
+    "The registered return explicitly marks the prefix API as unavailable on the parent. The physical offset of each generated ZIP32 file is measured independently from its byte array. The fixture digest matches the one recorded by setup.",
+    "Both Commons Compress 1.23.0 and 1.28.0 retained the writer-produced zero offset and null prefix while returning the complete entry."
+  ]
+}

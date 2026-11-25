@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "1887de4d64ce8a5cd9d8fb5587738c6b15472d2e4fd5decf732d2aa5dceba2dc",
+  "runtimeSha256": "504ae878225b81fe94df992e91134f89077049f152cf79ce4de720617e9df264",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "d1ade00df64fd1055f7bd5ad2c385b93a1c2d023d3df91a5b5002be9d738b42e"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "ef71db4d56c2fd1e4973d0a7cb2cb272ac85914a93411bd0cc834de65ff5f632",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/commons-rng#65.1",
+          "outcome": {
+            "return": "IllegalStateException draws=[1627511304, 737562748, 1688161435, -1114690436, -121503281, -1679998147, 975530087, 1156761568, -1067069629, -138256339] donorOracle=true receiverMatchesDonor=false receiverMatchesOwn=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-rng#65.2",
+          "outcome": {
+            "return": "ok first=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] replay=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] oracle=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-rng#65.3",
+          "outcome": {
+            "return": "oracle=11010101010101001111101101111001011/-1705591924 donor=11010101010101001111101101111001011/-1705591924 at0=IllegalStateException/10001110011011101100111101101111001/-977404286 at19=IllegalStateException/10100001001111100100011111101011001/-1592183538"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-rng#65.1",
+          "outcome": {
+            "return": "ok draws=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] donorOracle=true receiverMatchesDonor=true receiverMatchesOwn=false"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-rng#65.2",
+          "outcome": {
+            "return": "ok first=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] replay=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] oracle=true"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-rng#65.3",
+          "outcome": {
+            "return": "oracle=11010101010101001111101101111001011/-1705591924 donor=11010101010101001111101101111001011/-1705591924 at0=ok/11010101010101001111101101111001011/-1705591924 at19=ok/11010101010101001111101101111001011/-1705591924"
+          },
+          "prediction": "matched"
+        }
+      ]
+    }
+  }
+}

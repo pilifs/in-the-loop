@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/vavr-io/vavr/pull/3272",
+  "revisions": {
+    "parent": "c6f0be585529bf16a4597b35f966439cffde894b",
+    "fix": "8bd9c6b92ac07259f82ce30a09d037dfc5c78d81"
+  },
+  "entry": "Iterator.findLast",
+  "questions": [
+    {
+      "id": "vavr-io/vavr#3272.1",
+      "role": "Intent",
+      "args": [
+        "null"
+      ],
+      "history": "`Iterator.<Integer>of(null,1,null)`, with `x -> x == null`.",
+      "prediction": "Parent None, yielding 99 with one supplier call. Merge Some(null), yielding null with zero calls.",
+      "basis": "Indices 0 and 2 match. The last one exists and stores null. The pinned Option documentation explicitly permits Some(null).",
+      "refutation": "The merge reports empty or invokes the fallback. A defined null on the parent refutes the predicted change.",
+      "expected": {
+        "parent": {
+          "return": "false/99/1"
+        },
+        "fix": {
+          "return": "true/null/0"
+        }
+      }
+    },
+    {
+      "id": "vavr-io/vavr#3272.2",
+      "role": "Control",
+      "args": [
+        "ordinary"
+      ],
+      "history": "Use [1,2,3] twice, first selecting values >5, then selecting odd values.",
+      "prediction": "Both revisions yield None (fallback 99, one call) and Some(3) (value 3, zero calls), respectively.",
+      "basis": "The qualifying positions are empty in the first search and 0,2 in the second.",
+      "refutation": "An absent match looks defined, the second search returns 1, or the supplier is invoked for 3.",
+      "expected": {
+        "parent": {
+          "return": "false/99/1,true/3/0"
+        },
+        "fix": {
+          "return": "false/99/1,true/3/0"
+        }
+      }
+    },
+    {
+      "id": "vavr-io/vavr#3272.3",
+      "role": "Challenge",
+      "args": [
+        "reorder"
+      ],
+      "history": "On the merge select null or 7. Compare [7,null,4] with [null,7,4]. Append a further rejected 4 to each and search again.",
+      "prediction": "With 7 before null, the result is a defined null for either suffix length. With null before 7, it is a defined 7. All four suppress the fallback.",
+      "basis": "The final accepted position moves between values while the rejected suffix cannot affect it. The supplier makes presence observable even when the stored value is null.",
+      "refutation": "The rejected suffix clears the result, reordering leaves the selected value unchanged, or a successful search invokes the fallback.",
+      "expected": {
+        "fix": {
+          "return": "true/null/0,true/7/0,true/null/0,true/7/0"
+        }
+      }
+    }
+  ]
+}

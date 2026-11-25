@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "449",
+  "title": "Spatial4j closes a MultiPoint before writing sibling values",
+  "summary": "Serializing a one-element MultiPoint list threw JsonGenerationException on the parent. The merge returned the expected array containing [[100,100]]. Both geometry orders survived the merge with their numeric coordinates, and the enclosing map retained the trailing sibling value 17.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "composition",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Spatial4j",
+    "symbol": "ObjectMapper.writeValueAsString"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The serializer closes a MultiPoint before returning to its enclosing object or array."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/locationtech/spatial4j",
+    "url": "https://github.com/locationtech/spatial4j/pull/212"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each successful write is parsed by a fresh mapper without the geometry module. The observation preserves all fields and array positions while normalizing equivalent numeric spellings."
+  ]
+}

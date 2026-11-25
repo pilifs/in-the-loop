@@ -24588,6 +24588,399 @@
       ],
       "source": "https://github.com/JSQLParser/JSqlParser/pull/2770",
       "target": null
+    },
+    {
+      "id": "443",
+      "path": "examples/443-roaring-unsigned-containment",
+      "title": "RoaringBitmap checks a missing block and the unsigned upper endpoint",
+      "summary": "All three readers switched from accepting the missing B to rejecting it, with and without the later block. All three began accepting the complete top block. The first immutable snapshot kept both members. Adding zero kept the live range complete, removing −2 broke it, and the final snapshot counted one member.",
+      "origin": "real-world",
+      "system": "RoaringBitmap",
+      "symbol": "RoaringBitmap.contains(long,long)",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each low-range triple gives heap, mutable buffer and independently serialized immutable results, in that order. B is 65,536 and the exclusive top endpoint is 2³²."
+      ],
+      "source": "https://github.com/RoaringBitmap/RoaringBitmap/pull/863",
+      "target": null
+    },
+    {
+      "id": "444",
+      "path": "examples/444-jackson-flattened-alias",
+      "title": "Jackson routes an alias into an unwrapped record",
+      "summary": "The parent created the inner record with a null component. The merge bound Hello and preserved the outer sibling World!. The merge emitted exactly the fields b and c, and the second record equalled the first.",
+      "origin": "real-world",
+      "system": "Jackson Databind",
+      "symbol": "JsonMapper.readValue",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Both databind JARs came from the exact source pins. The expired Jackson core, annotations and parent/BOM snapshot inputs were rebuilt from the last upstream branch commits preceding the parent. Both deployments used the same replacements."
+      ],
+      "source": "https://github.com/FasterXML/jackson-databind/pull/5913",
+      "target": null
+    },
+    {
+      "id": "445",
+      "path": "examples/445-vavr-matched-null",
+      "title": "Vavr distinguishes a matched null from an empty search",
+      "summary": "Selecting the last null changed from an empty option with one fallback call to a defined null with zero calls. Reordering null and 7 selected whichever came last. An additional rejected 4 left the choice and the zero callback count intact.",
+      "origin": "real-world",
+      "system": "Vavr",
+      "symbol": "Iterator.findLast",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "open-source-libraries"
+        ],
+        "defect": [
+          "special-values"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each search consumes a new iterator. The observation records presence, value and actual callback count."
+      ],
+      "source": "https://github.com/vavr-io/vavr/pull/3272",
+      "target": null
+    },
+    {
+      "id": "446",
+      "path": "examples/446-compress-zip-preamble",
+      "title": "Commons Compress reads entries and reports the ZIP preamble",
+      "summary": "The parent found zero entries in the prefixed fixture. The merge returned its named 50-byte body, offset 15 and the complete 15-byte prefix. Both generated files had a local header at byte 15 and yielded the complete body. The writer-produced file reported offset zero and a null prefix.",
+      "origin": "real-world",
+      "system": "Apache Commons Compress",
+      "symbol": "ZipFile.getEntries",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "resource-serving"
+        ],
+        "defect": [
+          "off-by-one"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The registered return explicitly marks the prefix API as unavailable on the parent. The physical offset of each generated ZIP32 file is measured independently from its byte array. The fixture digest matches the one recorded by setup.",
+        "Both Commons Compress 1.23.0 and 1.28.0 retained the writer-produced zero offset and null prefix while returning the complete entry."
+      ],
+      "source": "https://github.com/apache/commons-compress/pull/334",
+      "target": null
+    },
+    {
+      "id": "447",
+      "path": "examples/447-rng-cross-instance-state",
+      "title": "Commons RNG restores an integer sequence and its cached booleans",
+      "summary": "A never-saved recipient rejected the parent checkpoint and kept its original continuation. The merged recipient produced the donor’s next ten integers. After restoring the cached third-bit position, the fresh and 19-draw recipients matched all 35 booleans and the following integer (−1705591924).",
+      "origin": "real-world",
+      "system": "Apache Commons RNG",
+      "symbol": "JDKRandom.restoreState",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "crash-recovery"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The donor and recipient checkpoints belong to the same revision. The independent reference extracts low-order bits from java.util.Random.nextInt(). The historical JDK 8 supplies both the application and the class-loading records."
+      ],
+      "source": "https://github.com/apache/commons-rng/pull/65",
+      "target": null
+    },
+    {
+      "id": "448",
+      "path": "examples/448-agrona-entry-arrays",
+      "title": "Agrona copies cursor-backed map entries into arrays",
+      "summary": "Both array overloads returned one cursor three times on each of the four parent maps. Every merged array held all three original pairs as distinct entries of the requested array type. The three merged entries compared equal to their JDK counterparts but all hashed to 11. HashSet found 1=10 and missed 2=20 and 3=30.",
+      "origin": "real-world",
+      "system": "Agrona",
+      "symbol": "Int2IntHashMap.entrySet",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "array-utilities"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The backing map remains unchanged. Pair multisets are sorted only after the conversions finish. Reference hashes from SimpleImmutableEntry were 11, 22 and 29.",
+        "The same three-entry HashSet lookup missed keys 2 and 3 on Agrona 1.4.0 and 2.7.2. Each release used the historical caller bytecode on JDK 17."
+      ],
+      "source": "https://github.com/aeron-io/agrona/pull/202",
+      "target": null
+    },
+    {
+      "id": "449",
+      "path": "examples/449-spatial4j-geojson-siblings",
+      "title": "Spatial4j closes a MultiPoint before writing sibling values",
+      "summary": "Serializing a one-element MultiPoint list threw JsonGenerationException on the parent. The merge returned the expected array containing [[100,100]]. Both geometry orders survived the merge with their numeric coordinates, and the enclosing map retained the trailing sibling value 17.",
+      "origin": "real-world",
+      "system": "Spatial4j",
+      "symbol": "ObjectMapper.writeValueAsString",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "composition"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "Each successful write is parsed by a fresh mapper without the geometry module. The observation preserves all fields and array positions while normalizing equivalent numeric spellings."
+      ],
+      "source": "https://github.com/locationtech/spatial4j/pull/212",
+      "target": null
+    },
+    {
+      "id": "450",
+      "path": "examples/450-checkstyle-record-fields",
+      "title": "Checkstyle locates hidden fields across an implicit static record",
+      "summary": "The CLI’s one diagnostic on the record parameter quota disappeared on the merge. Implicit and explicitly static records each reported exactly the nested Reader parameter limit at line 6, column 32.",
+      "origin": "real-world",
+      "system": "Checkstyle",
+      "symbol": "Main.main",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "compilers"
+        ],
+        "defect": [
+          "dropped-case"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The observer launches Checkstyle’s CommandLine Main in a child JVM, checks the actual CLI and HiddenFieldCheck code sources, and reads identifiers from XML line and column positions. The return includes the child exit status."
+      ],
+      "source": "https://github.com/checkstyle/checkstyle/pull/14128",
+      "target": null
+    },
+    {
+      "id": "451",
+      "path": "examples/451-libgdx-clipped-bounds",
+      "title": "libGDX clips polygons into a fresh or reused output",
+      "summary": "For the stored float triangle, the parent threw with a fresh output and returned true with null. Both merged calls returned false and the output stayed empty. On both revisions, successful reuse wrote the four correct local vertices but the bounds reader still returned the previous square (−4,−4,2,2).",
+      "origin": "real-world",
+      "system": "libGDX",
+      "symbol": "Intersector.intersectPolygons",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "numeric-code"
+        ],
+        "defect": [
+          "aliasing"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "2/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The caller snapshots all four bound values before reuse and compares local coordinate pairs independently of cyclic vertex order. The fresh-output control uses the same two input polygons.",
+        "The stale bounds reproduced on libGDX 1.13.0. After upstream repair #7522, libGDX 1.14.2 returned (1,2,2,3) for both output polygons."
+      ],
+      "source": "https://github.com/libgdx/libgdx/pull/7278",
+      "target": null
+    },
+    {
+      "id": "452",
+      "path": "examples/452-tinkerpop-dedup-projections",
+      "title": "TinkerPop rejects a second projection on one dedup step",
+      "summary": "Two projections on one dedup step returned all six Modern graph names on the parent. The merge threw IllegalStateException during the second by() call. Putting the name projection on its own dedup step restored a valid traversal with the same four people on both revisions.",
+      "origin": "real-world",
+      "system": "Apache TinkerPop",
+      "symbol": "GraphTraversal.by",
+      "approach": "B8",
+      "approaches": [
+        "B8"
+      ],
+      "tags": {
+        "domain": [
+          "data-binding"
+        ],
+        "defect": [
+          "composition"
+        ],
+        "technique": [
+          "pull-request-review"
+        ]
+      },
+      "categories": [
+        "functional"
+      ],
+      "severity": "medium",
+      "changeKind": "bug-fix",
+      "verdict": null,
+      "verdictLabel": "3/3 merged-revision predictions matched",
+      "vacuous": false,
+      "snapshot": null,
+      "existingTestsPassed": null,
+      "notes": [
+        "The application uses the embedded TinkerGraph built at the same commit as gremlin-core. It sorts the returned name multiset after iteration and separately records the phase of an exception."
+      ],
+      "source": "https://github.com/apache/tinkerpop/pull/3105",
+      "target": null
     }
   ]
 }

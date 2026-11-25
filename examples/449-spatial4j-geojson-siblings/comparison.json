@@ -1,0 +1,67 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/locationtech/spatial4j/pull/212",
+  "revisions": {
+    "parent": "9180d076b6683b54a961b373419d3e4347ac0b35",
+    "fix": "81f473f4dc4ad0edc1fab12eb8908dadff69944a"
+  },
+  "entry": "ObjectMapper.writeValueAsString",
+  "questions": [
+    {
+      "id": "locationtech/spatial4j#212.1",
+      "role": "Intent",
+      "args": [
+        "list"
+      ],
+      "history": "Write the singleton list containing the one-point MultiPoint.",
+      "prediction": "Issue #210 reports a JsonGenerationException when Jackson tries to end the list with its generator still inside an object. The merge should emit a list of length one whose object has type MultiPoint and coordinates [[100,100]].",
+      "basis": "The issue supplies both JTS construction and the exception. A MultiPoint containing one position still has an array of positions.",
+      "refutation": "The merged write throws, or the parsed value loses the list, the point nesting, the type or either ordinate.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "root=com.fasterxml.jackson.core.JsonGenerationException"
+          ]
+        },
+        "fix": {
+          "return": "[{coordinates=[[100, 100]], type=\"MultiPoint\"}]"
+        }
+      }
+    },
+    {
+      "id": "locationtech/spatial4j#212.2",
+      "role": "Control",
+      "args": [
+        "point"
+      ],
+      "history": "Replace the MultiPoint by its constituent Point, keeping the same mapper and singleton list.",
+      "prediction": "Both revisions should emit one object of type Point with coordinates [100,100].",
+      "basis": "The issue displays the successful Point output and the two geometries share exactly the same input position.",
+      "refutation": "The Point write fails, produces an extra array level or changes either ordinate.",
+      "expected": {
+        "parent": {
+          "return": "[{coordinates=[100, 100], type=\"Point\"}]"
+        },
+        "fix": {
+          "return": "[{coordinates=[100, 100], type=\"Point\"}]"
+        }
+      }
+    },
+    {
+      "id": "locationtech/spatial4j#212.3",
+      "role": "Challenge",
+      "args": [
+        "nested"
+      ],
+      "history": "On the merge, keep the MultiPoint fixed. With GeometryFactory.createGeometryCollection, put it before a Point at (7,9), then reverse those two children in a second collection. Serialize a LinkedHashMap with the collection in the first field and integer 17 in the next field.",
+      "prediction": "Each parsed first field should have type GeometryCollection and exactly two elements in its geometries array, in supplied order. The MultiPoint and Point must have the same respective coordinate trees in both runs. The following field must still be a sibling with value 17.",
+      "basis": "JTS supplies an ordered Geometry array to the collection. The two fixtures give the exact expected children, and the enclosing map independently gives the sibling boundary. The serializer recursively handles collection members.",
+      "refutation": "A child migrates into the preceding object, a geometry or trailing field is lost, either write throws, or the shared MultiPoint changes when its sibling moves.",
+      "expected": {
+        "fix": {
+          "return": "{after=17, geometry={geometries=[{coordinates=[[100, 100]], type=\"MultiPoint\"}, {coordinates=[7, 9], type=\"Point\"}], type=\"GeometryCollection\"}} | {after=17, geometry={geometries=[{coordinates=[7, 9], type=\"Point\"}, {coordinates=[[100, 100]], type=\"MultiPoint\"}], type=\"GeometryCollection\"}}"
+        }
+      }
+    }
+  ]
+}

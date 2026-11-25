@@ -160,6 +160,12 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 **7. Commons Statistics, PR #140. A small Cauchy scale with a subnormal probability gives infinite quantiles despite finite answers.** For scale 2⁻¹⁰⁰ and probability 2⁻¹⁰⁵⁰ the expected magnitudes are approximately 2⁹⁵⁰/π. The merge and `master` at `8381f56aa3ec` returned infinities. Release 1.3 predates the fix and returned incorrect, small finite values. The user can attach the scaled case to #140 or open a linked issue. [Report and reproduction](merged-pr-links/l01-l20/upstream/README.md#commons-statistics-overflows-a-representable-scaled-cauchy-tail) · [Current JVM receipts](merged-pr-links/l01-l20/upstream/430.json)
 
+**8. Apache Commons Compress, PR #334. A writer-produced ZIP preamble is invisible to the prefix getters.** On the merge, 1.23.0 and 1.28.0, both files have their first local header at byte 15 and yield the complete payload. The writer-produced file reports offset zero and a null prefix. The user can file the paired reader/writer reproduction against 1.28.0. [Report and caller](merged-pr-links/m01-m10/upstream.md#commons-compress-returns-zero-for-a-writer-produced-preamble)
+
+**9. Agrona, PR #202. Copied primitive map entries violate the equals/hashCode contract.** On the merge, 1.4.0 and 2.7.2, three entries compare equal to their JDK counterparts, but all hash to 11. A JDK HashSet misses two of the inserted pairs. The user can file the unchanged-map reproduction against 2.7.2. [Report and caller](merged-pr-links/m01-m10/upstream.md#agrona-copied-entries-compare-equal-and-hash-differently)
+
+**10. libGDX, PR #7278. A reused output polygon returns stale bounds after successful clipping.** Resolved upstream by #7522. The witness reproduced on both original revisions and 1.13.0. On 1.14.2 the identical caller returned the correct vertices and bounds. [Release evidence and upstream repair](merged-pr-links/m01-m10/upstream.md#libgdx-repaired-the-reused-bounds)
+
 #### Candidates to sort
 
 - **Stock JBMC reports that do not reproduce on the JVM**, from the beyond-jbmc run:

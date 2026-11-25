@@ -11,7 +11,7 @@ import tempfile
 import zipfile
 from pathlib import Path
 
-from targets import upgrade_replay
+from targets import runtime_jdk, upgrade_replay
 
 EXAMPLES = Path(__file__).resolve().parents[2]
 SIDES = ("parent", "fix")
@@ -101,11 +101,14 @@ def observe(jdk, classpath, trial, caller, args, providers, *, label, service_en
     """Run one public history and check which artifact actually supplied each original class."""
     obs = trial / "observed"
     log = trial / "loaded"
+    # HotSpot 8 writes class origins to stdout. Unified class logging starts with JDK 9.
+    legacy = runtime_jdk.feature(runtime_jdk.release(jdk)["JAVA_VERSION"]) == "8"
+    class_log = "-verbose:class" if legacy else f"-Xlog:class+load=info:file={log}"
     encoded = [base64.b64encode(s.encode("utf-16-be")).decode() for s in args]
     cmd = [jdk / "bin/java", "-XX:-UsePerfData", "-Xmx256m",
            *(f"--add-opens={package}=ALL-UNNAMED" for package in open_modules), f"-Djava.io.tmpdir={trial}",
            f"-Duser.home={trial}", "-Duser.timezone=UTC", "-Dfile.encoding=UTF-8",
-           f"-Dupgrade.observation.file={obs}", f"-Xlog:class+load=info:file={log}",
+           f"-Dupgrade.observation.file={obs}", class_log,
            "-cp", classpath, "UpgradeObservation", caller, *encoded]
     env = {"PATH": str(jdk / "bin") + ":/usr/bin:/bin", "HOME": str(trial),
            "TMPDIR": str(trial), "TZ": "UTC", "LANG": "C.UTF-8", **(service_env or {})}
@@ -114,7 +117,7 @@ def observe(jdk, classpath, trial, caller, args, providers, *, label, service_en
         raise ValueError(f"{label} failed to run: {proc.stderr[-1200:]}")
     records = obs.read_text().splitlines()
     outcome = upgrade_replay.typed_outcome(records)
-    loaded = upgrade_replay.class_origins(log.read_text())
+    loaded = upgrade_replay.class_origins(proc.stdout if legacy else log.read_text())
     for cls, required in providers.items():
         if loaded.get(cls) != {required.resolve()}:
             details = next((s.split(" ", 1)[1] for s in records if s.startswith("UPGRADE-DETAIL ")), "")

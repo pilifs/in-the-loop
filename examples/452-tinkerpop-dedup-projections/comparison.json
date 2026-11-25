@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/tinkerpop/pull/3105",
+  "revisions": {
+    "parent": "007fd228a992f1dccba22e25a88e647168e5ba4f",
+    "fix": "a97db03618fa2fd7c17d24e331ff62adfe9c8df4"
+  },
+  "entry": "GraphTraversal.by",
+  "questions": [
+    {
+      "id": "apache/tinkerpop#3105.1",
+      "role": "Intent",
+      "args": [
+        "sameStep"
+      ],
+      "history": "Apply both projections to the same global dedup in the order age, name.",
+      "prediction": "Parent should accept the second call and yield all six names including lop and ripple. On the merge the second by() itself should throw IllegalStateException before iteration.",
+      "basis": "The issue records all six elements for the two-key spelling and for name alone. The pinned Java test expects rejection during composition with the keys in reverse order.",
+      "refutation": "The parent omits a name, the merged call returns normally, or the exception appears only when the embedded traversal is iterated.",
+      "expected": {
+        "parent": {
+          "return": "iterated [josh, lop, marko, peter, ripple, vadas]"
+        },
+        "fix": {
+          "return": "by threw java.lang.IllegalStateException"
+        }
+      }
+    },
+    {
+      "id": "apache/tinkerpop#3105.2",
+      "role": "Control",
+      "args": [
+        "age"
+      ],
+      "history": "Use just `g.V().dedup().by(\"age\").values(\"name\").toList()`.",
+      "prediction": "Both should yield each of marko, vadas, josh and peter exactly once.",
+      "basis": "An absent age gives no productive key. The fixture supplies four distinct ages and the issue’s single-projection run returns these four vertices.",
+      "refutation": "Either includes a software vertex, drops a named person or returns a duplicate.",
+      "expected": {
+        "parent": {
+          "return": "iterated [josh, marko, peter, vadas]"
+        },
+        "fix": {
+          "return": "iterated [josh, marko, peter, vadas]"
+        }
+      }
+    },
+    {
+      "id": "apache/tinkerpop#3105.3",
+      "role": "Challenge",
+      "args": [
+        "twoSteps"
+      ],
+      "history": "Hold both keys and the graph fixed. Insert a second dedup() immediately before the second by(\"name\"), giving each step one projection, then collect names.",
+      "prediction": "Both should accept the traversal and yield the same four people as the control. On the merge, moving the projection onto its own step should make the composition valid again.",
+      "basis": "The Java DSL applies by() to the preceding step. The first step admits four people with distinct ages. Their names are also distinct, so a second distinct-by-name operation preserves them.",
+      "refutation": "A legal second step throws, the two steps share a key, or the name multiset differs from the control.",
+      "expected": {
+        "parent": {
+          "return": "iterated [josh, marko, peter, vadas]"
+        },
+        "fix": {
+          "return": "iterated [josh, marko, peter, vadas]"
+        }
+      }
+    }
+  ]
+}

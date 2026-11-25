@@ -1,0 +1,54 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-221210-trace-zip-offset-adjustment-rng-restore",
+  "title": "Trace ZIP offset adjustment, RNG restore and Agrona entry copying",
+  "description": "Independently stop at an original method in both revisions for every intent, neighboring control and challenge. Cross-check the full public returns, original class providers, caller bytecode, live call site and registered fixture bytes. Each role runs twice per revision.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-results.md"
+    ]
+  },
+  "expected": "Three saved reports pass their offline checks. All 36 fresh JVM trials enter the selected original members on the registered callers and reproduce their physical returns.",
+  "submitted": {
+    "at": "2026-11-25T22:12:10+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Check original invocation and return for 446",
+      "run": "python3 verification/merged-pr-links/qualify.py 446 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 446 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": "."
+    },
+    {
+      "name": "Check original invocation and return for 447",
+      "run": "python3 verification/merged-pr-links/qualify.py 447 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 447 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": "."
+    },
+    {
+      "name": "Check original invocation and return for 448",
+      "run": "python3 verification/merged-pr-links/qualify.py 448 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified && python3 verification/merged-pr-links/qualify.py 448 --only Intent --only Control --only Challenge --gzip --output verification/merged-pr-links/m01-m10/qualified --check",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/merged-pr-links/m01-m10/qualified/446-pins.json.gz",
+    "verification/merged-pr-links/m01-m10/qualified/447-pins.json.gz",
+    "verification/merged-pr-links/m01-m10/qualified/448-pins.json.gz"
+  ]
+}

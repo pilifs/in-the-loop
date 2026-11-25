@@ -1,0 +1,70 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/aeron-io/agrona/pull/202",
+  "revisions": {
+    "parent": "45d86347910231d66e5f7270d3b03053a1f80b23",
+    "fix": "13a9083e32f886c652041a536d13980a1ff982e0"
+  },
+  "entry": "Int2IntHashMap.entrySet",
+  "questions": [
+    {
+      "id": "aeron-io/agrona#202.1",
+      "role": "Intent",
+      "args": [
+        "avoid"
+      ],
+      "history": "Convert the three-entry allocation-avoiding map using both array overloads.",
+      "prediction": "The parent is predicted to expose repeated references to one cursor, so the returned pairs do not cover the map. On the merge each array should contain the three inserted pairs exactly once. The respective runtime array types should be Object[] and Map.Entry[].",
+      "basis": "The inserted pairs give the expected contents independent of hash-table order. The overloads have different array component-type contracts.",
+      "refutation": "The merged array has length three but repeats a pair, loses an association or has the wrong runtime type.",
+      "expected": {
+        "parent": {
+          "contains": [
+            "int-int=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false",
+            "int-object=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false",
+            "object-int=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false",
+            "object-object=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false"
+          ]
+        },
+        "fix": {
+          "return": "int-int=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] int-object=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] object-int=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] object-object=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]"
+        }
+      }
+    },
+    {
+      "id": "aeron-io/agrona#202.2",
+      "role": "Control",
+      "args": [
+        "allocating"
+      ],
+      "history": "Change only the Int2IntHashMap constructor’s last argument to false. Repeat both conversions.",
+      "prediction": "Both revisions should return all three original key/value pairs once and preserve the requested array types.",
+      "basis": "With allocation avoidance disabled the parent iterator already returns a separate entry for each call to next().",
+      "refutation": "A returned key is associated with a different value, appears twice or is absent on either revision.",
+      "expected": {
+        "parent": {
+          "return": "[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]"
+        },
+        "fix": {
+          "return": "[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]"
+        }
+      }
+    },
+    {
+      "id": "aeron-io/agrona#202.3",
+      "role": "Challenge",
+      "args": [
+        "hash"
+      ],
+      "history": "On the merge, add the entries returned by the typed Int2IntHashMap conversion to a fresh HashSet. Probe it with new AbstractMap.SimpleImmutableEntry objects for each inserted pair, with no intervening map modification.",
+      "prediction": "All three probes should succeed. The entries’ respective hash codes should be 11, 22 and 29 for keys 1, 2 and 3. Source inspection predicts at least one failure despite correct getKey() and getValue() results.",
+      "basis": "Map.Entry defines the hash as key hash XOR value hash. The JDK reference entries compute this independently. The merged copy’s hashCode() calls primitive accessors on the enclosing iterator, whose cursor has moved.",
+      "refutation": "An entry equals its JDK counterpart but has a different hash, or the set reports that an inserted pair is absent.",
+      "expected": {
+        "fix": {
+          "return": "entry/actual/reference/equal=[1=10/11/11/true/true, 2=20/22/22/true/true, 3=30/29/29/true/true] hits=[true, true, true]"
+        }
+      }
+    }
+  ]
+}

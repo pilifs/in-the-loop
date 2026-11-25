@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "444",
+  "title": "Jackson routes an alias into an unwrapped record",
+  "summary": "The parent created the inner record with a null component. The merge bound Hello and preserved the outer sibling World!. The merge emitted exactly the fields b and c, and the second record equalled the first.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "data-binding",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Jackson Databind",
+    "symbol": "JsonMapper.readValue"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The outer deserializer recognizes aliases of an unwrapped child."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/FasterXML/jackson-databind",
+    "url": "https://github.com/FasterXML/jackson-databind/pull/5913"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Both databind JARs came from the exact source pins. The expired Jackson core, annotations and parent/BOM snapshot inputs were rebuilt from the last upstream branch commits preceding the parent. Both deployments used the same replacements."
+  ]
+}

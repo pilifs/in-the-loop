@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "445",
+  "title": "Vavr distinguishes a matched null from an empty search",
+  "summary": "Selecting the last null changed from an empty option with one fallback call to a defined null with zero calls. Reordering null and 7 selected whichever came last. An additional rejected 4 left the choice and the zero callback count intact.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "open-source-libraries",
+    "special-values",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Vavr",
+    "symbol": "Iterator.findLast"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The iterator remembers whether any match occurred independently of the selected value."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/vavr-io/vavr",
+    "url": "https://github.com/vavr-io/vavr/pull/3272"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each search consumes a new iterator. The observation records presence, value and actual callback count."
+  ]
+}

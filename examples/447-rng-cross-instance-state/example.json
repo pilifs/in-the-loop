@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "447",
+  "title": "Commons RNG restores an integer sequence and its cached booleans",
+  "summary": "A never-saved recipient rejected the parent checkpoint and kept its original continuation. The merged recipient produced the donor’s next ten integers. After restoring the cached third-bit position, the fresh and 19-draw recipients matched all 35 booleans and the following integer (−1705591924).",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "crash-recovery",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Apache Commons RNG",
+    "symbol": "JDKRandom.restoreState"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The checkpoint carries the length of its serialized delegate."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/apache/commons-rng",
+    "url": "https://github.com/apache/commons-rng/pull/65"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "The donor and recipient checkpoints belong to the same revision. The independent reference extracts low-order bits from java.util.Random.nextInt(). The historical JDK 8 supplies both the application and the class-loading records."
+  ]
+}
