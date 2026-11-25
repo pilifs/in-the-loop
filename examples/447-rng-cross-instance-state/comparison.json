@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-rng/pull/65",
+  "revisions": {
+    "parent": "9f30ec9c6dede48347c8939d18b1fd560b9229b8",
+    "fix": "592ad0be4fe4fa912b5cdaf5f83b006eb8a02f77"
+  },
+  "entry": "JDKRandom.restoreState",
+  "questions": [
+    {
+      "id": "apache/commons-rng#65.1",
+      "role": "Intent",
+      "args": [
+        "transfer"
+      ],
+      "history": "Restore the first instance’s checkpoint into the second, which has never called saveState().",
+      "prediction": "RNG-115 reports the parent cannot restore. Its source predicts IllegalStateException before the receiver’s delegate is replaced, so its next draw should still be draw 11 of its original seed. The merge should restore and return draws 11–20 of the donor seed.",
+      "basis": "JDKRandom documents java.util.Random.nextInt() as the underlying source. Two reference Random instances with the respective seeds give both continuations.",
+      "refutation": "The parent restores successfully, the failed restore moves its sequence, or the merged receiver throws or returns a different integer.",
+      "expected": {
+        "parent": {
+          "return": "IllegalStateException draws=[1627511304, 737562748, 1688161435, -1114690436, -121503281, -1679998147, 975530087, 1156761568, -1067069629, -138256339] donorOracle=true receiverMatchesDonor=false receiverMatchesOwn=true"
+        },
+        "fix": {
+          "return": "ok draws=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] donorOracle=true receiverMatchesDonor=true receiverMatchesOwn=false"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-rng#65.2",
+      "role": "Control",
+      "args": [
+        "self"
+      ],
+      "history": "After ten integer draws, save a generator, draw ten values, restore that same object and repeat.",
+      "prediction": "The ten values after restore should equal the saved continuation on both revisions, in order.",
+      "basis": "The restorable-provider contract includes same-object replay. Saving on the original object initialized its state length even on the parent.",
+      "refutation": "Restore throws or the replay differs in any position.",
+      "expected": {
+        "parent": {
+          "return": "ok first=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] replay=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] oracle=true"
+        },
+        "fix": {
+          "return": "ok first=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] replay=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] oracle=true"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-rng#65.3",
+      "role": "Challenge",
+      "args": [
+        "bits"
+      ],
+      "history": "On the merge, save a seeded donor immediately after three nextBoolean() calls. Prepare two differently seeded recipients, one with no draws and one with nineteen boolean draws. Restore each from the same checkpoint. On each take 35 booleans then one nextInt().",
+      "prediction": "Both recipients should reproduce the uninterrupted donor’s entire continuation, including the 29 booleans left in its first cached word, six booleans from the next word, and the following integer.",
+      "basis": "Use a java.util.Random with the donor seed. Read bits 3–31 of its first nextInt() and bits 0–5 of its second, least significant first. Its third nextInt() supplies the final integer. This also checks the inherited bit cache.",
+      "refutation": "The integer matches but a boolean differs, the two recipients disagree, or one receiver consumes an extra word at the boundary.",
+      "expected": {
+        "fix": {
+          "return": "oracle=11010101010101001111101101111001011/-1705591924 donor=11010101010101001111101101111001011/-1705591924 at0=ok/11010101010101001111101101111001011/-1705591924 at19=ok/11010101010101001111101101111001011/-1705591924"
+        }
+      }
+    }
+  ]
+}

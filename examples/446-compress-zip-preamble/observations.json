@@ -1,0 +1,68 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "d6369f38bf74c6df138339f9a7b8c03ca879f3e141d6c0ad0cf89798b019b68f",
+  "runtimeSha256": "7aca87831e57fc6cf4029c02ec919a78f86974b03e71444c54bbe18c3eb0e979",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "3c85e8c7429e49b06a4dec08ec7ea788f9209c90afed55ee61521a890c973972",
+    "fixtures/COMPRESS-621.zip": "198e954c1f2eaf9cf1cf8b7ce991d74ac3a0e2acfa7616dfbf7c8231ee6b20e0"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "4904fdc4b4e2d5ab7415620ee88b5a002439ce6a883ed8ef80949ecc748bc7d2",
+        "UpgradeObservation.class": "dc29f2177cb30a1fb8ac4e0ad8ce33254b4386d4de8f4d31df7f074deb8aadab"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "apache/commons-compress#334.1",
+          "outcome": {
+            "return": "names=[] entry=missing prefix=<unavailable>"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-compress#334.2",
+          "outcome": {
+            "return": "names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=<unavailable>"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "apache/commons-compress#334.3",
+          "outcome": {
+            "return": "prepended physical=15 names=[] entry=missing prefix=<unavailable> | writer physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=<unavailable>"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-compress#334.1",
+          "outcome": {
+            "return": "names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-compress#334.2",
+          "outcome": {
+            "return": "names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=0/<null>"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "apache/commons-compress#334.3",
+          "outcome": {
+            "return": "prepended physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file | writer physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=0/<null>"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

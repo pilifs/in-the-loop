@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "450",
+  "title": "Checkstyle locates hidden fields across an implicit static record",
+  "summary": "The CLI’s one diagnostic on the record parameter quota disappeared on the merge. Implicit and explicitly static records each reported exactly the nested Reader parameter limit at line 6, column 32.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "compilers",
+    "dropped-case",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "Checkstyle",
+    "symbol": "Main.main"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Field lookup recognizes the boundary between a member record and its enclosing instance."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/checkstyle/checkstyle",
+    "url": "https://github.com/checkstyle/checkstyle/pull/14128"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "The observer launches Checkstyle’s CommandLine Main in a child JVM, checks the actual CLI and HiddenFieldCheck code sources, and reads identifiers from XML line and column positions. The return includes the child exit status."
+  ]
+}

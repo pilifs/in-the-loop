@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/checkstyle/checkstyle/pull/14128",
+  "revisions": {
+    "parent": "d3f020a5c477edbb57afc0f3fa2d1fab0849d6fb",
+    "fix": "d150018d141294ac9bb02ae653d01072c5c4c4ae"
+  },
+  "entry": "Main.main",
+  "questions": [
+    {
+      "id": "checkstyle/checkstyle#14128.1",
+      "role": "Intent",
+      "args": [
+        "record"
+      ],
+      "history": "The parameter of `Entry.take` matches only the outer instance field.",
+      "prediction": "Parent source predicts one diagnostic on the parameter `quota`. The merge should produce zero.",
+      "basis": "A member record has no enclosing Sample instance. The issue shows the same false positive for a Clock parameter and reports that spelling out `static` clears it.",
+      "refutation": "A merged audit reports that parameter, or the parent already produces zero on this fixture.",
+      "expected": {
+        "parent": {
+          "return": "1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/quota@4:18]"
+        },
+        "fix": {
+          "return": "0/[]"
+        }
+      }
+    },
+    {
+      "id": "checkstyle/checkstyle#14128.2",
+      "role": "Control",
+      "args": [
+        "class"
+      ],
+      "history": "Replace `record Entry()` with the ordinary member declaration `class Entry`, leaving the outer field and method unchanged.",
+      "prediction": "Both revisions should report exactly one HiddenField diagnostic on the parameter.",
+      "basis": "The ordinary member class has an enclosing Sample instance. Its method parameter shadows the available field. The upstream comparison fixture includes this control.",
+      "refutation": "Either audit produces zero errors or identifies a different token.",
+      "expected": {
+        "parent": {
+          "return": "1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/quota@4:18]"
+        },
+        "fix": {
+          "return": "1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/quota@4:18]"
+        }
+      }
+    },
+    {
+      "id": "checkstyle/checkstyle#14128.3",
+      "role": "Challenge",
+      "args": [
+        "boundaries"
+      ],
+      "history": "On the merge, give Sample a second field `static int limit;`. Inside Entry add `class Reader { int cap(int limit) { return limit; } }`. Audit once as written, then spell Entry as `static record Entry()`.",
+      "prediction": "Each audit should report exactly the `limit` parameter inside Reader. The `quota` parameter in Entry stays clear. Compare the identified parameters across files, allowing positions to shift.",
+      "basis": "Nested types can still refer to the enclosing static field. The record boundary cuts access to the enclosing instance, and the redundant modifier changes neither name’s scope.",
+      "refutation": "The checker loses the `limit` finding across the record boundary, reports `quota`, or changes the selected identifiers when `static` is written.",
+      "expected": {
+        "fix": {
+          "return": "1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/limit@6:32] | 1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/limit@6:32]"
+        }
+      }
+    }
+  ]
+}

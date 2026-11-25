@@ -1,0 +1,67 @@
+{
+  "schema": "public-observations/v1",
+  "comparisonSha256": "c0d4fae4e3519289c6ed120a9a4fee6c06b3b75057247786db837c747c823fa2",
+  "runtimeSha256": "96333641baf69dfca60af028e20c70a633eeeba95ace1812af7dd459ce13b572",
+  "launcherSha256": "42c3694e8dd40d1b664cd73f5d4181525e686ffd35319ac78021bb60764c5946",
+  "inputs": {
+    "caller/PublicCaller.java": "5c7eddd90e1326850f7eead4ade172edaa5ab44ad6f8b568f0c7ff37c73bdfb7"
+  },
+  "deployments": {
+    "pins": {
+      "callerClasses": {
+        "PublicCaller.class": "b9d332738f68429443f5575c231a053a95e8115ff04b32f6865f7eefce40f647",
+        "UpgradeObservation.class": "ef23e90226d1d937b885b5c5e8e0029676e332539081ec864bdfd25811bb3d46"
+      },
+      "observations": [
+        {
+          "side": "parent",
+          "id": "aeron-io/agrona#202.1",
+          "outcome": {
+            "return": "int-int=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[1=10, 1=10, 1=10]/[1=10, 1=10, 1=10] int-object=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[3=30, 3=30, 3=30]/[3=30, 3=30, 3=30] object-int=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[1=10, 1=10, 1=10]/[1=10, 1=10, 1=10] object-object=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[1=10, 1=10, 1=10]/[1=10, 1=10, 1=10]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "aeron-io/agrona#202.2",
+          "outcome": {
+            "return": "[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "parent",
+          "id": "aeron-io/agrona#202.3",
+          "outcome": {
+            "return": "entry/actual/reference/equal=[1=10/11/11/true/true, 1=10/11/11/true/true, 1=10/11/11/true/true] hits=[true, false, false]"
+          },
+          "prediction": "observed only"
+        },
+        {
+          "side": "fix",
+          "id": "aeron-io/agrona#202.1",
+          "outcome": {
+            "return": "int-int=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] int-object=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] object-int=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] object-object=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "aeron-io/agrona#202.2",
+          "outcome": {
+            "return": "[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]"
+          },
+          "prediction": "matched"
+        },
+        {
+          "side": "fix",
+          "id": "aeron-io/agrona#202.3",
+          "outcome": {
+            "return": "entry/actual/reference/equal=[1=10/11/11/true/true, 2=20/11/22/true/true, 3=30/11/29/true/true] hits=[true, false, false]"
+          },
+          "prediction": "refuted"
+        }
+      ]
+    }
+  }
+}

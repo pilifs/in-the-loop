@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "451",
+  "title": "libGDX clips polygons into a fresh or reused output",
+  "summary": "For the stored float triangle, the parent threw with a fresh output and returned true with null. Both merged calls returned false and the output stayed empty. On both revisions, successful reuse wrote the four correct local vertices but the bounds reader still returned the previous square (−4,−4,2,2).",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "numeric-code",
+    "aliasing",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "libGDX",
+    "symbol": "Intersector.intersectPolygons"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "The polygon clipper requires at least three output vertices before it reports success."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/libgdx/libgdx",
+    "url": "https://github.com/libgdx/libgdx/pull/7278"
+  },
+  "verdictLabel": "2/3 merged-revision predictions matched",
+  "notes": [
+    "The caller snapshots all four bound values before reuse and compares local coordinate pairs independently of cyclic vertex order. The fresh-output control uses the same two input polygons."
+  ]
+}

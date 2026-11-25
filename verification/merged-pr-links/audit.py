@@ -19,9 +19,10 @@ def require(condition, message):
 
 
 def audit(replay=False, campaign="original"):
-    series = {"original": ("organic-java-merged-pr-links-brief", "M"),
-              "l01-l20": ("organic-java-merged-pr-links-l01-l20-brief", "L")}
-    brief_name, case_prefix = series[campaign]
+    series = {"original": ("organic-java-merged-pr-links-brief", "M", None),
+              "l01-l20": ("organic-java-merged-pr-links-l01-l20-brief", "L", 20),
+              "m01-m10": ("organic-java-merged-pr-links-m01-m10-brief", "M", 10)}
+    brief_name, case_prefix, case_count = series[campaign]
     brief = ROOT / "llm-dlc/loops" / (brief_name + ".md")
     setup = brief.with_name(brief.stem + "-setup.md").read_text()
     references = {}
@@ -37,18 +38,18 @@ def audit(replay=False, campaign="original"):
                 question, role = label.split(" · ")
                 require(question not in questions, f"duplicate brief question {question}")
                 questions[question] = (role, history, prediction, basis)
-                if campaign == "l01-l20":
+                if case_count:
                     questions[question] += (refutation,)
         key = next(iter(questions)).rsplit(".", 1)[0]
         require(key not in references, f"duplicate case {key}")
         references[key] = ({"parent": parent, "fix": fix}, questions)
-    if campaign == "l01-l20":
-        require(len(references) == 20, "expected all twenty L-series comparisons")
+    if case_count:
+        require(len(references) == case_count, f"expected all {case_count} comparisons in {campaign}")
         for case, (_, rows) in references.items():
             require([row[0] for row in rows.values()] == ["Intent", "Control", "Challenge"],
-                    f"{case}: incomplete or reordered L-series questions")
+                    f"{case}: incomplete or reordered questions")
     fields = ("role", "history", "prediction", "basis")
-    if campaign == "l01-l20":
+    if case_count:
         fields += ("refutation",)
     folders = {}
     for folder in (ROOT / "examples").glob("[0-9][0-9][0-9]-*/comparison.json"):
@@ -97,11 +98,18 @@ def audit(replay=False, campaign="original"):
                     digest = runtime["sha256"][f]
                     require(re.fullmatch("[0-9a-f]{64}", digest), prefix + "artifact digest")
                     if f.startswith("artifacts/"):
-                        if campaign == "l01-l20":
-                            label = re.match(rf"artifacts/L{number:02}[-/].*?\b(parent|fix)\b", f)
+                        if case_count:
+                            label = re.match(rf"artifacts/{case_prefix}{number:02}[-/].*?\b(parent|fix)\b", f)
                             require(label and label[1] == side, prefix + f"{f} belongs to a different revision")
                         require(digest in setup_section or supplied.get(f) == digest,
                                 prefix + f"{side} {f} absent from pin-build record")
+                        if campaign == "m01-m10":
+                            # Setup lists individual build JARs by name and reactor JARs in parent/fix columns.
+                            row, = (line for line in setup_section.splitlines()
+                                    if line.startswith(f"| `{Path(f).name}`"))
+                            columns = re.findall(r"`([0-9a-f]{64})`", row)
+                            require(len(columns) in (1, 2) and digest == columns[-1 if side == "fix" else 0],
+                                    prefix + f"{side} digest for {f} differs from the setup inventory")
                 indices = [*deployment["providers"].values(), *deployment.get("childProviders", {}).values()]
                 require(all(type(i) is int and 0 <= i < len(files) for i in indices), prefix + "provider index")
                 require(any(files[i].startswith("artifacts/") for i in indices),
@@ -146,6 +154,19 @@ def audit(replay=False, campaign="original"):
                         omittedParentHistories=sum("parent" in q.get("omit", {}) for q in spec["questions"]))
         result["cases"].append({"example": ex["id"], "case": case, "observationsSha256": comparison.upgrade_replay.sha(folder / "observations.json"),
                                 "deployments": list(runtime["deployments"]), "allHistoriesPaired": paired, "fixedRefutations": refuted})
+        if campaign == "m01-m10":
+            require(paired, prefix + "expected both original revisions for every history")
+            for key, desc in questions.items():
+                if desc[0] in ("Intent", "Control"):
+                    require(all(sides["parent"]["prediction"] != "observed only" for sides in evidence[key].values()),
+                            prefix + key + " missing parent prediction")
+            parent_refuted = [key for key, variants in evidence.items()
+                              if any(sides["parent"]["prediction"] == "refuted" for sides in variants.values())]
+            result["cases"][-1]["parentRefutations"] = parent_refuted
+            counters["parentRefutations"] += len(parent_refuted)
+            counters["controlsMatchedOnBoth"] += sum(all(
+                all(side["prediction"] == "matched" for side in sides.values()) for sides in evidence[key].values()
+            ) for key in controls)
         for receipt in sorted(Path(__file__).with_name("entry-receipts").glob(ex["id"] + "-*.json")):
             qualified = comparison.read(receipt)
             variant = receipt.stem.split("-", 1)[1]
@@ -162,7 +183,7 @@ def audit(replay=False, campaign="original"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--campaign", choices=("original", "l01-l20"), default="original")
+    parser.add_argument("--campaign", choices=("original", "l01-l20", "m01-m10"), default="original")
     parser.add_argument("--replay", action="store_true", help="also rebuild every caller and repeat the physical trials")
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()

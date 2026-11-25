@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/apache/commons-compress/pull/334",
+  "revisions": {
+    "parent": "755fad2347c4b9ea4b56c61209d8f1f387cd5a67",
+    "fix": "0bacf83eb0b3367cd5572ab27e42a444efbcd5f8"
+  },
+  "entry": "ZipFile.getEntries",
+  "questions": [
+    {
+      "id": "apache/commons-compress#334.1",
+      "role": "Intent",
+      "args": [
+        "fixture"
+      ],
+      "history": "Read the prefixed fixture through the common entry APIs, then through the new accessors on the merge.",
+      "prediction": "The parent is expected to enumerate zero entries, consistent with the issue report. The merge should find the named entry, return its exact bytes and byte length, report offset 15, and return exactly the 15 prefix bytes.",
+      "basis": "The landed regression gives the prefix, name and body independently of any directory-offset calculation. The issue reports the JDK reader found entries in its prefixed example.",
+      "refutation": "The merge opens the file but loses the entry, returns different body bytes, or reads any local-header byte as part of the prefix.",
+      "expected": {
+        "parent": {
+          "return": "names=[] entry=missing prefix=<unavailable>"
+        },
+        "fix": {
+          "return": "names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-compress#334.2",
+      "role": "Control",
+      "args": [
+        "stripped"
+      ],
+      "history": "Drop exactly the first 15 bytes of the fixture and open the remaining ZIP as a new file.",
+      "prediction": "Both revisions should read the same name and body. On the merge the offset should be zero and the prefix accessor should return null.",
+      "basis": "Removing the post-write prefix restores the coordinate system in which the ZIP offsets were recorded. The accessor documents the empty-prefix result.",
+      "refutation": "Either reader loses the body or the merged reader reports any prefix.",
+      "expected": {
+        "parent": {
+          "return": "names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=<unavailable>"
+        },
+        "fix": {
+          "return": "names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=0/<null>"
+        }
+      }
+    },
+    {
+      "id": "apache/commons-compress#334.3",
+      "role": "Challenge",
+      "args": [
+        "writers"
+      ],
+      "history": "On the merge, write the same prefix and named payload in two ways. First prepend the prefix to an ordinary finished ZIP. In the second file call `ZipArchiveOutputStream.writePreamble(prefix)` before `putArchiveEntry`, write the entry and finish the archive. Use ZIP32 in both.",
+      "prediction": "The merged reader on each file should recover the same payload. For each file the documented physical offset is 15 and the prefix stream should give the original 15 bytes. Source inspection predicts the accessor claim may fail for the writer-produced file.",
+      "basis": "The first local header physically follows the same 15 bytes in either file. The writer counts the preamble when recording offsets, making the reader’s inferred offset correction zero for that file.",
+      "refutation": "Both entry reads succeed but one getter gives 0 or one prefix stream is null for a file beginning with the supplied preamble.",
+      "expected": {
+        "fix": {
+          "return": "prepended physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file | writer physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/FasterXML/jackson-databind/pull/5913",
+  "revisions": {
+    "parent": "e14262e2b96abd0a5db9dcb8d2bc18550488b105",
+    "fix": "9a7d8eb3e6ae7adba3470ed15a4f1b2361558640"
+  },
+  "entry": "JsonMapper.readValue",
+  "questions": [
+    {
+      "id": "FasterXML/jackson-databind#5913.1",
+      "role": "Intent",
+      "args": [
+        "alias"
+      ],
+      "history": "Read the alias input with readValue(json, Outer.class).",
+      "prediction": "Parent is expected to miss the nested value or reject the input. Merge yields (\"Hello\",\"World!\") in the child and sibling respectively.",
+      "basis": "The alias designates c and @JsonUnwrapped places its input at the outer level. Issue #5911 reports the corresponding record assertion failing on 3.1.1 and 3.1.2.",
+      "refutation": "The merge throws or either binding is wrong. A correct pair on the pinned parent refutes the predicted revision contrast.",
+      "expected": {
+        "parent": {
+          "return": "child=null sibling=World!"
+        },
+        "fix": {
+          "return": "child=Hello sibling=World!"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-databind#5913.2",
+      "role": "Control",
+      "args": [
+        "canonical"
+      ],
+      "history": "Replace the key a with c, keeping both values and the same types.",
+      "prediction": "Both revisions yield the identical two strings.",
+      "basis": "The primary name is the declared component name. Its routing does not require any aliases. The upstream POJO control checks this route.",
+      "refutation": "Either reader loses the child or sibling, or changes a value.",
+      "expected": {
+        "parent": {
+          "return": "child=Hello sibling=World!"
+        },
+        "fix": {
+          "return": "child=Hello sibling=World!"
+        }
+      }
+    },
+    {
+      "id": "FasterXML/jackson-databind#5913.3",
+      "role": "Challenge",
+      "args": [
+        "roundtrip"
+      ],
+      "history": "On the merge read the alias form, call writeValueAsString on the resulting Outer, parse the emitted string with `readTree`, and read the emitted text again as Outer.",
+      "prediction": "The tree has exactly {\"c\":\"Hello\",\"b\":\"World!\"} in any field order. The second Outer equals the first.",
+      "basis": "An input alias gives an alternate spelling for a property. Unwrapping exposes its primary name on output. Reading the canonical representation separately checks the persistence boundary.",
+      "refutation": "A nested inner object or alias a leaks into the output, a value changes, or the second read differs.",
+      "expected": {
+        "fix": {
+          "return": "child=Hello sibling=World! object=true fields={b=\"World!\", c=\"Hello\"} reread=child=Hello sibling=World! equal=true"
+        }
+      }
+    }
+  ]
+}

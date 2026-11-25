@@ -1,0 +1,45 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-220316-replay-all-30-m01-m10-public-predictions",
+  "title": "Replay all 30 M01–M10 public predictions on both revisions",
+  "description": "Compile each historical caller and repeat its three registered histories in fresh JVMs on the exact parent and merge of ten upstream changes. Check all fixture and artifact digests, observed code providers, typed returns, refutations and unchanged behavior. The Checkstyle caller also checks its child CLI processes.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:public-caller-replay"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-results.md"
+    ]
+  },
+  "expected": "The independent audit reproduces all 60 caller returns, ten changed intents, ten matched controls and three merged challenge refutations. Its complete output equals the registered audit.",
+  "submitted": {
+    "at": "2026-11-25T22:03:16+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "2m"
+  },
+  "steps": [
+    {
+      "name": "Replay 60 public histories",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign m01-m10 --replay --output verification/merged-pr-links/m01-m10/repeated-audit.json",
+      "cwd": "."
+    },
+    {
+      "name": "Compare the full campaign audit",
+      "run": "cmp verification/merged-pr-links/m01-m10/audit.json verification/merged-pr-links/m01-m10/repeated-audit.json",
+      "cwd": "."
+    }
+  ],
+  "outputs": [
+    "verification/merged-pr-links/m01-m10/repeated-audit.json"
+  ]
+}

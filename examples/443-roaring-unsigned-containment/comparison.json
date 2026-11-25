@@ -1,0 +1,65 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/RoaringBitmap/RoaringBitmap/pull/863",
+  "revisions": {
+    "parent": "ffa685e6dbfb002c484f2bb5e0f3c5d6f5120088",
+    "fix": "baea79f84f78a8b697b10af5e3e0de034d6c66e8"
+  },
+  "entry": "RoaringBitmap.contains(long,long)",
+  "questions": [
+    {
+      "id": "RoaringBitmap/RoaringBitmap#863.1",
+      "role": "Intent",
+      "args": [
+        "boundaries"
+      ],
+      "history": "The low block before and after adding 3*B. Query [0,B+1). Also query [U−B,U) on the top block.",
+      "prediction": "Parent true → merge false for the low block in both histories. Parent false → merge true for the top block.",
+      "basis": "Integer B is absent in both low sets. The top set contains all B requested values. Issue #862 and the PR describe both boundary errors.",
+      "refutation": "A merged reader accepts the missing B or rejects the full top block, or the parent does not show the predicted contrast.",
+      "expected": {
+        "parent": {
+          "return": "low=true/true/true withLater=true/true/true top=false/false/false"
+        },
+        "fix": {
+          "return": "low=false/false/false withLater=false/false/false top=true/true/true"
+        }
+      }
+    },
+    {
+      "id": "RoaringBitmap/RoaringBitmap#863.2",
+      "role": "Control",
+      "args": [
+        "contained"
+      ],
+      "history": "On the low fixture query [0,B), before and after adding 3*B.",
+      "prediction": "True on both revisions for heap, mutable and serialized readers.",
+      "basis": "The range excludes B. Adding an outside value cannot remove any of the original B members.",
+      "refutation": "Any reader returns false in either history.",
+      "expected": {
+        "parent": {
+          "return": "low=true/true/true withLater=true/true/true"
+        },
+        "fix": {
+          "return": "low=true/true/true withLater=true/true/true"
+        }
+      }
+    },
+    {
+      "id": "RoaringBitmap/RoaringBitmap#863.3",
+      "role": "Challenge",
+      "args": [
+        "snapshot"
+      ],
+      "history": "On the merge hold [U−2,U) fixed. Start with just −2 and −1 as int members. Serialize to a fresh buffer, add 0 to the mutable bitmap, then remove −2 and serialize again. Retain the first immutable reader.",
+      "prediction": "First snapshot true throughout. Live answers true, true, false. The second snapshot returns false. Its rangeCardinality is 1, versus 2 in the first.",
+      "basis": "Unsigned −2 and −1 are exactly the two queried integers. Zero is outside the range. A snapshot over separate serialized bytes cannot track later mutations.",
+      "refutation": "The old snapshot changes, the query depends on zero, or a reader reports full coverage after one of the two members was removed.",
+      "expected": {
+        "fix": {
+          "return": "live/first=true/true,true/true,false/true second=false counts=2/1"
+        }
+      }
+    }
+  ]
+}

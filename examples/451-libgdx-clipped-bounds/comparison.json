@@ -1,0 +1,68 @@
+{
+  "schema": "public-comparison/v1",
+  "source": "https://github.com/libgdx/libgdx/pull/7278",
+  "revisions": {
+    "parent": "0de4d893abc4d02d8e1bf949edda4a9d5c547e18",
+    "fix": "7bed7d3666d3b343aebeb1c3f733eae63380dd10"
+  },
+  "entry": "Intersector.intersectPolygons",
+  "questions": [
+    {
+      "id": "libgdx/libgdx#7278.1",
+      "role": "Intent",
+      "args": [
+        "triangle"
+      ],
+      "history": "Use the regression pair with a fresh empty output. Repeat the same call with null output.",
+      "prediction": "The merge should return false in both calls and leave the fresh polygon empty. For the parent, the old nonempty-result branch predicts IllegalArgumentException with the fresh output and true with null if clipping retains one or two vertices.",
+      "basis": "Polygon requires three points to set its vertices. The pinned regression expects false and zero output vertices. Asking to discard the output should preserve the boolean decision.",
+      "refutation": "The merge throws, reports true for either call, or adds any vertex to the initially empty polygon. The two parent calls can also falsify the predicted branch.",
+      "expected": {
+        "parent": {
+          "return": "fresh=java.lang.IllegalArgumentException vertices=0 null=true"
+        },
+        "fix": {
+          "return": "fresh=false vertices=0 null=false"
+        }
+      }
+    },
+    {
+      "id": "libgdx/libgdx#7278.2",
+      "role": "Control",
+      "args": [
+        "inside"
+      ],
+      "history": "Clip rectangle [(1,2),(1,5),(3,5),(3,2)] against [0,10] × [0,10] in clockwise order. Supply a fresh output.",
+      "prediction": "Both should return true with four vertices and bounds (x=1, y=2, width=2, height=3). Cyclic vertex order may vary.",
+      "basis": "All four subject vertices are strictly inside the clip. The intersection equals the subject, and these small integers are exactly representable as floats.",
+      "refutation": "Either returns false or produces different bounds or a different vertex count.",
+      "expected": {
+        "parent": {
+          "return": "true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0"
+        },
+        "fix": {
+          "return": "true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0"
+        }
+      }
+    },
+    {
+      "id": "libgdx/libgdx#7278.3",
+      "role": "Challenge",
+      "args": [
+        "reuse"
+      ],
+      "history": "Keep the same rectangles. Initialize the output as the clockwise square [−4,−2] × [−4,−2] at identity transform. Read its bounds once, then pass it to the clipper. Compare the returned polygon’s local coordinates and post-call bounds with the fresh-output control.",
+      "prediction": "On both, the output should describe the subject after success. Source inspection predicts a discrepancy on both: the four local pairs can change while getBoundingRectangle() still returns the old square’s bounds.",
+      "basis": "The result polygon is an output parameter. Reading its bounds before reuse cannot change the geometry of the two inputs. Calling its public bounds reader after success tests whether a caller can consume the replacement.",
+      "refutation": "A successful call with new local coordinates and old bounds (−4,−4,2,2) refutes consistency. Fresh and reused outputs agreeing throughout would refute the predicted discrepancy.",
+      "expected": {
+        "parent": {
+          "return": "fresh=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0 before=-4.0,-4.0,2.0,2.0 reused=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0"
+        },
+        "fix": {
+          "return": "fresh=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0 before=-4.0,-4.0,2.0,2.0 reused=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0"
+        }
+      }
+    }
+  ]
+}

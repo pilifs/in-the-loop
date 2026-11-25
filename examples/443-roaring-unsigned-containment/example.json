@@ -1,0 +1,39 @@
+{
+  "$schema": "../schema/example.schema.json",
+  "id": "443",
+  "title": "RoaringBitmap checks a missing block and the unsigned upper endpoint",
+  "summary": "All three readers switched from accepting the missing B to rejecting it, with and without the later block. All three began accepting the complete top block. The first immutable snapshot kept both members. Adding zero kept the live range complete, removing −2 broke it, and the final snapshot counted one member.",
+  "origin": "real-world",
+  "categories": [
+    "functional"
+  ],
+  "severity": "medium",
+  "tags": [
+    "array-utilities",
+    "off-by-one",
+    "pull-request-review"
+  ],
+  "subject": {
+    "system": "RoaringBitmap",
+    "symbol": "RoaringBitmap.contains(long,long)"
+  },
+  "approach": {
+    "id": "B8",
+    "name": "Behavioural contracts",
+    "tool": "examples/tools/build.py"
+  },
+  "change": {
+    "kind": "bug-fix",
+    "description": "Missing final blocks and the exclusive upper bound now receive distinct handling."
+  },
+  "publicComparison": "comparison.json",
+  "source": {
+    "kind": "pull-request",
+    "repository": "https://github.com/RoaringBitmap/RoaringBitmap",
+    "url": "https://github.com/RoaringBitmap/RoaringBitmap/pull/863"
+  },
+  "verdictLabel": "3/3 merged-revision predictions matched",
+  "notes": [
+    "Each low-range triple gives heap, mutable buffer and independently serialized immutable results, in that order. B is 65,536 and the exclusive top endpoint is 2³²."
+  ]
+}
