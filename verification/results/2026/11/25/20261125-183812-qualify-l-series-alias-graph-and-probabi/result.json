@@ -1,0 +1,190 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-183812-qualify-l-series-alias-graph-and-probabi",
+  "title": "Qualify L-series alias, graph and probability observations",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 17.8s, peak 95.8 MiB (estimated 3m00s, 1.0 GiB); 3 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-183812-qualify-l-series-alias-graph-and-probabi.json",
+    "sha256": "44021eb83f53e308ed51c812b46acf098081a7f7cde5d987c1a8f06a680e8747",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-183812-qualify-l-series-alias-graph-and-probabi",
+      "title": "Qualify L-series alias, graph and probability observations",
+      "description": "Bind each counterexample and its unchanged control to the original Java method at both pinned revisions. Use two fresh debugger executions per side, per question for picocli, JGraphT and Commons Statistics.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:original-method-entry"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md"
+        ]
+      },
+      "expected": "Each of the 24 debugger trials reaches the original method and matches the complete corresponding physical observation.",
+      "submitted": {
+        "at": "2026-11-25T18:38:12+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "3m"
+      },
+      "steps": [
+        {
+          "name": "Reach three original methods",
+          "run": "python3 verification/merged-pr-links/qualify.py 425 429 430 --output verification/merged-pr-links/l01-l20/qualified",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/l01-l20/qualified"
+      ]
+    }
+  },
+  "sourceCommit": "4c7f797406396d90b82cb0525d985c724e32b2be",
+  "startedAt": "2026-11-25T18:52:49+00:00",
+  "finishedAt": "2026-11-25T18:53:20+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2686447,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 720.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 180.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 100483072,
+    "wallSeconds": 17.8,
+    "cpuSeconds": 20.0,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.1
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Reach three original methods",
+      "run": "python3 verification/merged-pr-links/qualify.py 425 429 430 --output verification/merged-pr-links/l01-l20/qualified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 720.0,
+      "cancelled": false,
+      "wallSeconds": 17.841,
+      "cpuSeconds": 20.045,
+      "cpuThrottledSeconds": 3.081,
+      "peakMemoryBytes": 100483072,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-reach-three-original-methods.log",
+        "lines": 3,
+        "bytes": 426,
+        "sha256": "d303603a2b8ac5b6c7004d3d50dd1a8e80a44832bd8ae6ff257e3d39dfed69a0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "425 pins picocli.CommandLine$Model$CommandSpec#aliases([Ljava/lang/String;)Lpicocli/CommandLine$Model$CommandSpec; 8 qualified JVM trials",
+        "429 pins org.jgrapht.alg.shortestpath.BaseKDisjointShortestPathsAlgorithm#getPaths(Ljava/lang/Object;Ljava/lang/Object;I)Ljava/util/List; 8 qualified JVM trials",
+        "430 pins org.apache.commons.statistics.distribution.CauchyDistribution#inverseCumulativeProbability(D)D 8 qualified JVM trials"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/425-pins.json",
+      "change": "added",
+      "bytes": 25221,
+      "sha256": "75a299404f688b86d3d42db93f4d9b0b91f9471cd65db36c535cd6716c60f2e4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/429-pins.json",
+      "change": "added",
+      "bytes": 12733,
+      "sha256": "2bb44fd64dc17b79c9803ca698d049000503f92bc6c49f8175855e33c6325b9d",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/merged-pr-links/l01-l20/qualified/430-pins.json",
+      "change": "added",
+      "bytes": 8599,
+      "sha256": "f492de76b9852ca8d1712ab986bd20d705c7bde122b20fe00b585568567a49ef",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T18:54:21+00:00",
+    "applied": [
+      "verification/merged-pr-links/l01-l20/qualified/425-pins.json",
+      "verification/merged-pr-links/l01-l20/qualified/429-pins.json",
+      "verification/merged-pr-links/l01-l20/qualified/430-pins.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T185320Z-5956108e93185d24",
+      "outputs": "20261125T185320Z-6289154224112986",
+      "diff": "20261125T185320Z-653348d661a8b60c"
+    }
+  }
+}

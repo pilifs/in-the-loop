@@ -1,0 +1,213 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-183812-repeat-three-l-series-upstream-defects-a",
+  "title": "Repeat three L-series upstream defects and the SQL grammar control",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 17.6s, peak 205.2 MiB (estimated 2m00s, 1.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-183812-repeat-three-l-series-upstream-defects-a.json",
+    "sha256": "9942b44800da960675ede431a92c3f05d6e1c771c2df5ef6dca4f2ec3e89dfcd",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-183812-repeat-three-l-series-upstream-defects-a",
+      "title": "Repeat three L-series upstream defects and the SQL grammar control",
+      "description": "Rebuild the three development modules at frozen commits and compare the identical public callers on releases and development branches. Independently compare the JSqlParser grammar with a disposable PostgreSQL 16 server.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-results.md"
+        ]
+      },
+      "expected": "The eighteen release and development histories reproduce their recorded returns. PostgreSQL rejects the TYPE/USING CASCADE tail with SQLSTATE 42601 and stores 103 after the query without the tail.",
+      "submitted": {
+        "at": "2026-11-25T18:38:12+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "docker"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Release and development reproductions",
+          "run": "python3 verification/merged-pr-links/upstream/recheck.py --campaign l01-l20 425 429 430",
+          "cwd": "."
+        },
+        {
+          "name": "PostgreSQL grammar",
+          "run": "python3 examples/442-jsqlparser-active-alter/controls/grammar.py",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "4c7f797406396d90b82cb0525d985c724e32b2be",
+  "startedAt": "2026-11-25T18:52:49+00:00",
+  "finishedAt": "2026-11-25T18:53:20+00:00",
+  "wallSeconds": 31.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 2686447,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 215121920,
+    "wallSeconds": 17.6,
+    "cpuSeconds": 24.5,
+    "memoryOfEstimate": 0.2,
+    "durationOfEstimate": 0.15
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Release and development reproductions",
+      "run": "python3 verification/merged-pr-links/upstream/recheck.py --campaign l01-l20 425 429 430",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 12.221,
+      "cpuSeconds": 22.37,
+      "cpuThrottledSeconds": 3.123,
+      "peakMemoryBytes": 215121920,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-release-and-development-reprod.log",
+        "lines": 14,
+        "bytes": 770,
+        "sha256": "bac5922e5a4758b37916f9fa423e10b48617f766d42ba232e3e235318d1109df",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "425 pins release: 3 public histories",
+        "425 pins development: 3 public histories",
+        "429 pins release: 3 public histories",
+        "429 pins development: 3 public histories",
+        "warning: [options] source value 8 is obsolete and will be removed in a future release",
+        "warning: [options] target value 8 is obsolete and will be removed in a future release",
+        "warning: [options] To suppress warnings about obsolete options, use -Xlint:-options.",
+        "3 warnings",
+        "430 pins release: 3 public histories",
+        "430 pins development: 3 public histories"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "PostgreSQL grammar",
+      "run": "python3 examples/442-jsqlparser-active-alter/controls/grammar.py",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 5.409,
+      "cpuSeconds": 2.083,
+      "cpuThrottledSeconds": 0.155,
+      "peakMemoryBytes": 87859200,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-postgresql-grammar.log",
+        "lines": 1,
+        "bytes": 125,
+        "sha256": "850cba86b502dbe24ccdfd5db60cf07540432bca793764b9032c3530c50f5c6c",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "with tail=JSQLParserException/42601 without tail=ALTER TABLE t ALTER COLUMN id TYPE INT USING id + 102/id=103 exhausted=true"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T18:54:21+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T185320Z-366637fe27c37c8d"
+    }
+  }
+}
