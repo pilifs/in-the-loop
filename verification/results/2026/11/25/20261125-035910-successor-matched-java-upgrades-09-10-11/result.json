@@ -1,0 +1,381 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-035910-successor-matched-java-upgrades-09-10-11",
+  "title": "Successor matched Java upgrades 09, 10, 11",
+  "status": "passed",
+  "summary": "passed: 1 passed step(s) in 22m47s, peak 3.2 GiB (estimated 12m00s, 3.0 GiB); 21 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-035910-successor-matched-java-upgrades-09-10-11.json",
+    "sha256": "dad003c49c8f68b7e413a6a163d25c917fc7743baf1ea05caf50420e2c0985e5",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-035910-successor-matched-java-upgrades-09-10-11",
+      "title": "Successor matched Java upgrades 09, 10, 11",
+      "description": "Compile the registered public consumer once on the old release. Measure the two conjuncts of each pair on their original classpaths with strict native, integrated JBMC and packaged stock JBMC, including physically checked primary, control, inverse and named post-call false assertions. Bind the result to the prior original-classloader scaffold and frozen tool.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:prove"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/successor_measure.py"
+        ]
+      },
+      "expected": "Every listed slot has a source-bound measurement with the exact earlier deployment, registered caller and frozen checker. Open proof outcomes retain their first blocker.",
+      "submitted": {
+        "at": "2026-11-25T03:59:10+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc",
+        "bwrap",
+        "dpkg-deb"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "12m",
+        "timeout": "75m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure.py matched 09 10 11",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/successor/matched/09",
+        "verification/beyond-jbmc/successor/matched/10",
+        "verification/beyond-jbmc/successor/matched/11"
+      ]
+    }
+  },
+  "sourceCommit": "efe4ca951fa5258267fc8a6281744eb9b4b8763b",
+  "startedAt": "2026-11-25T04:00:53+00:00",
+  "finishedAt": "2026-11-25T04:27:28+00:00",
+  "wallSeconds": 1595.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 272695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 4500.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 720.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3432972288,
+    "wallSeconds": 1367.4,
+    "cpuSeconds": 1384.2,
+    "memoryOfEstimate": 1.07,
+    "durationOfEstimate": 1.9
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 0,
+      "name": "build jvmcontract",
+      "run": "/home/filip/.local/bin/cargo build --release --manifest-path lib/Cargo.toml",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3600,
+      "cancelled": false,
+      "wallSeconds": 180.062,
+      "cpuSeconds": 179.876,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 2417176576,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/0-build-jvmcontract.log",
+        "lines": 2,
+        "bytes": 212,
+        "sha256": "21902aeac2234413afac59bcd091bfdee86bc9c35c7bc2f5fbbfc9feb7092f64",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "   Compiling jvmcontract v0.1.0 (/home/filip/code/in-the-loop/verification/.state/work/20261125-035910-successor-matched-java-upgrades-09-10-11/lib)",
+        "    Finished `release` profile [optimized] target(s) in 2m 59s"
+      ]
+    },
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure.py matched 09 10 11",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 4500.0,
+      "cancelled": false,
+      "wallSeconds": 1367.44,
+      "cpuSeconds": 1384.206,
+      "cpuThrottledSeconds": 8.245,
+      "peakMemoryBytes": 3432972288,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 3,
+        "bytes": 60,
+        "sha256": "3d25185f35a92cefb18229c059a5ddaacb4c32b74333f6d4fc89985235f01cf3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "09 matched recorded",
+        "10 matched recorded",
+        "11 matched recorded"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/beyond-jbmc/successor/matched/09/measurement.json",
+      "change": "added",
+      "bytes": 463,
+      "sha256": "7f4c36b7148665d33deab42123422476e74b9c000f3a7896a37bb39947aea8f8",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/09/new/executions.zip",
+      "change": "added",
+      "bytes": 103821,
+      "sha256": "f52d8134eb95311f8b7e7678e33462ebce8705a839829d888add4b3cd4c72ca4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/09/new/results.json.gz",
+      "change": "added",
+      "bytes": 1783,
+      "sha256": "f1bcec4ec8d68f743bac2f8b3d6ced6c62e26915dc1ed646159b6dc5389859ca",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/09/old/executions.zip",
+      "change": "added",
+      "bytes": 103823,
+      "sha256": "641b40cfce1b0a60896118c8f35604c9bcdf239604832ad2ff7a30f55bb5dc26",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/09/old/results.json.gz",
+      "change": "added",
+      "bytes": 1791,
+      "sha256": "f4025c25eff1cc4a9526c8303b0652777b668ecbfa24207eed2c6576d84d776c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/09/process.log",
+      "change": "added",
+      "bytes": 382,
+      "sha256": "c944d35123b06a755ed1d2cf4671c2bdb2f1a2cfb0b0f324b5d7a5076a6ec303",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/09/worker.json",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "0a4816077139519d8c267767c72db802bc382159d3db63d0694966fc247fe135",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/10/measurement.json",
+      "change": "added",
+      "bytes": 463,
+      "sha256": "b7e07603850adc725f8aaebbebb212e6a19f7c9c13ee29a5c77c0645e62f1222",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/10/new/executions.zip",
+      "change": "added",
+      "bytes": 1944473,
+      "sha256": "013b223485845cdef30cd7e0c3f99a61bfdfb65789b1d0a44b88f78294d78481",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/10/new/results.json.gz",
+      "change": "added",
+      "bytes": 2012,
+      "sha256": "8aa6ff76d8f1d6eb0d6b2d86fc1f2a0c1b868eabbdb30a3f85ec4dc766c8fa68",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/10/old/executions.zip",
+      "change": "added",
+      "bytes": 3272187,
+      "sha256": "f268151847d14eec122e1cb925151eb15c656eb9b1ff4564bfb6c326063b5df4",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/10/old/results.json.gz",
+      "change": "added",
+      "bytes": 2042,
+      "sha256": "c36f88daa577f32463bbbf905d358bf955d431b11dbdfc152ceea01df4ae7e6f",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/10/process.log",
+      "change": "added",
+      "bytes": 382,
+      "sha256": "63a33232498e39fcd26b648f65c0b8261534e3a7e150583ac207a358a7303954",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/10/worker.json",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "0a4816077139519d8c267767c72db802bc382159d3db63d0694966fc247fe135",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/11/measurement.json",
+      "change": "added",
+      "bytes": 463,
+      "sha256": "dad6732dfdd4652d03b7ab57e15696d8a870da0c76f58f45dae8c3747c6d333c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/11/new/executions.zip",
+      "change": "added",
+      "bytes": 73359,
+      "sha256": "104d46770cf09f8a57c4e0fce4e085e4dfb34d1b421f96fd1baf313a0113fe95",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/11/new/results.json.gz",
+      "change": "added",
+      "bytes": 2205,
+      "sha256": "8977393c1fa5acc184d63545f7f73ab21ed8c9cfdd01d4d9a3f332532596939c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/11/old/executions.zip",
+      "change": "added",
+      "bytes": 63889,
+      "sha256": "2e4246c91fdf513410c40a4ba5371c9f730ce5131ac4b0c681b5f9284cef2b0c",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/11/old/results.json.gz",
+      "change": "added",
+      "bytes": 2328,
+      "sha256": "d8c255ff620fccef5f9bcdad1a36b4a9184f757d479feb6b5e631e3070d42ec5",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/11/process.log",
+      "change": "added",
+      "bytes": 375,
+      "sha256": "9f99762fd78a381fb3314206305b51d024d70b2b3caadc425950109832d615a6",
+      "sourceSha256": null
+    },
+    {
+      "path": "verification/beyond-jbmc/successor/matched/11/worker.json",
+      "change": "added",
+      "bytes": 598,
+      "sha256": "d224e708c602b89a177b474afea758ed54cb61fd65f287fb300b57d2357fa714",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T04:28:04+00:00",
+    "applied": [
+      "verification/beyond-jbmc/successor/matched/09/measurement.json",
+      "verification/beyond-jbmc/successor/matched/09/new/executions.zip",
+      "verification/beyond-jbmc/successor/matched/09/new/results.json.gz",
+      "verification/beyond-jbmc/successor/matched/09/old/executions.zip",
+      "verification/beyond-jbmc/successor/matched/09/old/results.json.gz",
+      "verification/beyond-jbmc/successor/matched/09/process.log",
+      "verification/beyond-jbmc/successor/matched/09/worker.json",
+      "verification/beyond-jbmc/successor/matched/10/measurement.json",
+      "verification/beyond-jbmc/successor/matched/10/new/executions.zip",
+      "verification/beyond-jbmc/successor/matched/10/new/results.json.gz",
+      "verification/beyond-jbmc/successor/matched/10/old/executions.zip",
+      "verification/beyond-jbmc/successor/matched/10/old/results.json.gz",
+      "verification/beyond-jbmc/successor/matched/10/process.log",
+      "verification/beyond-jbmc/successor/matched/10/worker.json",
+      "verification/beyond-jbmc/successor/matched/11/measurement.json",
+      "verification/beyond-jbmc/successor/matched/11/new/executions.zip",
+      "verification/beyond-jbmc/successor/matched/11/new/results.json.gz",
+      "verification/beyond-jbmc/successor/matched/11/old/executions.zip",
+      "verification/beyond-jbmc/successor/matched/11/old/results.json.gz",
+      "verification/beyond-jbmc/successor/matched/11/process.log",
+      "verification/beyond-jbmc/successor/matched/11/worker.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "jvmcontract": {
+    "libTree": "ab5896d8bdc210ba5ce13c4fad2e898792b6ffc0",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab5896d8bdc210ba5ce13c4fad2e898792b6ffc0/jvmcontract",
+    "built": true
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T042728Z-9641635da391b940",
+      "outputs": "20261125T042729Z-015351d6cb0da11c",
+      "diff": "20261125T042729Z-036699a049e951cd"
+    }
+  }
+}
