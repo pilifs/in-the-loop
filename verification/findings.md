@@ -18,6 +18,33 @@ Each entry has an id (`VF-NNN`, never reused), and these fields:
 
 ## Open
 
+### VF-066: a queued run that continues the previous run's session starts near its compaction limit
+
+- **Status**: open. Monitoring only (the user, 2026-11-25): no change for now, act later if the measurements below show a cost. The user is less concerned for the organic PR briefs, whose verification work is mostly mechanical: building pins, running landed tests and checking claims case by case.
+- **Raised**: 2026-11-25 by the watcher, from the advisor's draft at the user's request, from queue entry 7 (`organic-java-merged-pr-links-brief`, its domain run on Codex Astra 6.2 at max effort).
+- **What happened.** The queue's default domain session is `previous` (`brief_queue.py`, DEFAULTS `"session": "previous"`), so each domain run resumes the last domain run's Codex session.
+  - Entry 7's domain run resumed `c3caedf3`, which still held about 555k tokens from `beyond-jbmc-scaffold-first`, an unrelated campaign.
+  - It started at 08:28:53 UTC and Codex auto-compacted at 08:33:58, about 5 minutes in, at 555,044 tokens with no commit yet. That's the global limit of about 550k, since the domain run sets no `compactAt`.
+  - The conductor judged it correctly, as inherited context, and said continue.
+- **Why it can matter.**
+  1. **The first compaction comes almost at once.** It summarises mostly the previous campaign's context, so the new brief's opening reading can be squeezed into the summary along with it.
+  2. **Each turn before it carries the inherited context,** so it costs more.
+  3. **A compaction with no commit asks for a verdict,** which takes the conductor's time and is one more chance for a wrong stop.
+  4. **It recurs:** every queued domain run inherits whatever the previous one left.
+  5. **The generation session behaves the same way.** `generateSession` is also `previous`, and six generation entries (8–13, 135 PRs) run in session `ea63c5f6` in a row. That's by the user's design (one persistent generation session), and its `compactAt` 600k is set explicitly.
+- **What to measure** (the watcher, per queued run, in its product notes):
+  - the tokens at the run's start (the inherited context) and the time to the first compaction;
+  - whether the first compaction came before the run's first commit;
+  - after that compaction, whether the agent re-read the brief and its setup notes, or repeated work it had already done;
+  - cycles and claims decided, compared across runs that began with little or much inherited context.
+- **When to act.** Act if a run, after an early compaction, repeats work, loses track of the brief's cases, or ends a cycle with a wrong verdict; or if early compactions measurably raise the cycles or cost per claim.
+- **Options, for later** (none chosen):
+  - `session=new` for briefs unrelated to the previous run (per entry, `brief_queue.py add --session new`, or `defaults` for a line of briefs);
+  - a compaction at the start of a run that continues an unrelated session;
+  - for generation, a new session when the PR list's projects don't overlap the previous list's.
+  The user's design for generation (one persistent session) stays unless the measurements argue otherwise.
+- **Evidence**: `llm-dlc/loop-summaries/single-organic-java-merged-pr-links-brief/events.jsonl` (event 2, `compaction`, tokens 555044, `commitSince` false) and `loop.log` (08:33:58–08:34:08, the conductor's continue).
+
 ### VF-065: real-world bugs the runs found in other projects, to confirm and report
 
 - **Status**: open: a register. The user asked on 2026-11-24 for every real-world bug a run finds in another project, a defect in released or merged upstream code shown by a replayed JVM witness, to be kept here until it is followed up. An entry is done when it has been confirmed and either reported upstream by the user or dismissed with a reason. The finding closes when every entry is done. Runs and watchers add new entries here, not elsewhere.
