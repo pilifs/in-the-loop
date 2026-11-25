@@ -1,0 +1,451 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-162622-setup-build-junit-6104-at-both-revisions",
+  "title": "Setup: build JUnit #6104 at both revisions and run its landed nested-class tests",
+  "status": "passed",
+  "summary": "passed: 6 passed step(s) in 5m49s, peak 3.6 GiB (estimated 30m00s, 6.0 GiB)",
+  "attention": [
+    "step 1 (L05 fix: jars, then jupiter-tests NestedTestClassesTests and ClassTemplateInvocationTests, online) was held back 2m39s by its 2-CPU quota in 1m51s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 2 (L05 fix: the same tests, offline) was held back 35.6s by its 2-CPU quota in 37.1s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 3 (L05 parent: jars and its own copies of the two test classes, offline) was held back 3m35s by its 2-CPU quota in 2m56s: it would run faster with more CPUs (a JVM needs 2)",
+    "step 4 (L05 parent with the fix's two test classes and JupiterUniqueIdBuilder transplanted, offline (expected to fail)) was held back 28.3s by its 2-CPU quota in 23.9s: it would run faster with more CPUs (a JVM needs 2)"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-162622-setup-build-junit-6104-at-both-revisions.json",
+    "sha256": "b036e4b8a96b4d89ab427351e4bf7f956e654207005ac228d5244744d167e8fe",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-162622-setup-build-junit-6104-at-both-revisions",
+      "title": "Setup: build JUnit #6104 at both revisions and run its landed nested-class tests",
+      "description": "Setup for case L05 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup checkouts under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L05-junit-framework-fix = 2b484caa962ad9b0d9a6af5d2c25100b6a8f4ef6, L05-junit-framework-parent = bbeb7900fa76b6fc00e36e0bea05747066b4a2ec; standalone depth-1 clones, because JUnit's build reads git metadata), runs the upstream Gradle build through $O/scripts/L05-gradle.sh: Gradle 9.8.0 (zip checked against services.gradle.org and the wrapper's distributionSha256Sum) on JDK 25.0.5, toolchains JDK 17, 21, 24.0.2 and 25 from the caches, --no-build-cache and --no-scan, retries 0 and predictive test selection off. It builds the platform and Jupiter jars and runs org.junit.jupiter.engine.NestedTestClassesTests and ClassTemplateInvocationTests in jupiter-tests: on the fix online (first resolution of the test dependencies) then offline, on the parent its own copies offline, then the fix's two test classes and the changed testFixtures JupiterUniqueIdBuilder transplanted onto the parent (expected to fail, or not to compile; the step says which). The fix's jars took 4m18s online inline, which is why this is a job. Jars to .../artifacts, JUnit summaries to .../logs, checkouts restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: the fix's tests pass online and offline, the parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE, and the jars of both sides are copied",
+      "submitted": {
+        "at": "2026-11-25T16:26:22+00:00",
+        "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+        "by": "setup agent (Claude Opus 5.5), fork C"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "6G",
+        "duration": "30m"
+      },
+      "steps": [
+        {
+          "name": "L05 fix: jars, then jupiter-tests NestedTestClassesTests and ClassTemplateInvocationTests, online",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-fix; echo worktree=L05-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh  -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-platform-commons:jar :junit-platform-engine:jar :junit-platform-launcher:jar :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-fix.test-online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-fix.test-online.junit.txt; cp junit-jupiter-api/build/libs/junit-jupiter-api-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-api.jar; cp junit-jupiter-engine/build/libs/junit-jupiter-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-engine.jar; cp junit-platform-commons/build/libs/junit-platform-commons-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-commons.jar; cp junit-platform-engine/build/libs/junit-platform-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-engine.jar; cp junit-platform-launcher/build/libs/junit-platform-launcher-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-launcher.jar; sha256sum $O/artifacts/L05-junit-framework-fix-*.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "L05 fix: the same tests, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-fix; echo worktree=L05-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false  :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-fix.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-fix.test-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L05 parent: jars and its own copies of the two test classes, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-parent; echo worktree=L05-junit-framework-parent commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-platform-commons:jar :junit-platform-engine:jar :junit-platform-launcher:jar :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-parent.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-parent.test-offline.junit.txt; cp junit-jupiter-api/build/libs/junit-jupiter-api-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-jupiter-api.jar; cp junit-jupiter-engine/build/libs/junit-jupiter-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-jupiter-engine.jar; cp junit-platform-commons/build/libs/junit-platform-commons-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-commons.jar; cp junit-platform-engine/build/libs/junit-platform-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-engine.jar; cp junit-platform-launcher/build/libs/junit-platform-launcher-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-launcher.jar; sha256sum $O/artifacts/L05-junit-framework-parent-*.jar; ",
+          "cwd": "."
+        },
+        {
+          "name": "L05 parent with the fix's two test classes and JupiterUniqueIdBuilder transplanted, offline (expected to fail)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-parent; echo worktree=L05-junit-framework-parent commit=$(git rev-parse HEAD); cp $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java; cp $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java; cp $W/L05-junit-framework-fix/junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java; git status --short; rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false  :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compile(Test|TestFixtures)(Java|Kotlin|Groovy) FAILED' $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+          "cwd": "."
+        },
+        {
+          "name": "L05: class digests that differ between the parent and fix jars",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-jupiter-engine.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-engine.jar | tee $O/logs/L05-classdiff-junit-jupiter-engine.md; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-platform-launcher.jar $O/artifacts/L05-junit-framework-fix-junit-platform-launcher.jar | tee $O/logs/L05-classdiff-junit-platform-launcher.md; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-jupiter-api.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-api.jar | tee $O/logs/L05-classdiff-junit-jupiter-api.md; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L05-junit-framework-fix checkout -- .; git -C $W/L05-junit-framework-fix clean -fdxq; git -C $W/L05-junit-framework-fix status --short; git -C $W/L05-junit-framework-parent checkout -- .; git -C $W/L05-junit-framework-parent clean -fdxq; git -C $W/L05-junit-framework-parent status --short; du -sh $W/L05-junit-framework-fix $W/L05-junit-framework-parent",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3037ff3919d78e3dea67e70d8ef9562ea1f53fa8",
+  "startedAt": "2026-11-25T16:34:18+00:00",
+  "finishedAt": "2026-11-25T16:40:19+00:00",
+  "wallSeconds": 361.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585564,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 7200.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 1800.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3865780224,
+    "wallSeconds": 349.8,
+    "cpuSeconds": 668.8,
+    "memoryOfEstimate": 0.6,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "L05 fix: jars, then jupiter-tests NestedTestClassesTests and ClassTemplateInvocationTests, online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-fix; echo worktree=L05-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh  -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-platform-commons:jar :junit-platform-engine:jar :junit-platform-launcher:jar :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-fix.test-online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-fix.test-online.junit.txt; cp junit-jupiter-api/build/libs/junit-jupiter-api-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-api.jar; cp junit-jupiter-engine/build/libs/junit-jupiter-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-engine.jar; cp junit-platform-commons/build/libs/junit-platform-commons-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-commons.jar; cp junit-platform-engine/build/libs/junit-platform-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-engine.jar; cp junit-platform-launcher/build/libs/junit-platform-launcher-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-fix-junit-platform-launcher.jar; sha256sum $O/artifacts/L05-junit-framework-fix-*.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 111.754,
+      "cpuSeconds": 202.431,
+      "cpuThrottledSeconds": 159.386,
+      "peakMemoryBytes": 3094884352,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-l05-fix-jars-then-jupiter-test.log",
+        "lines": 17,
+        "bytes": 1555,
+        "sha256": "3914f3bc0b9bd17ab990a108f950df8ecd199259a52d9ed12418343975d5b28b",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L05-junit-framework-fix commit=2b484caa962ad9b0d9a6af5d2c25100b6a8f4ef6",
+        "gradle-exit=0",
+        "",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.8.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 1m 51s",
+        "141 actionable tasks: 45 executed, 96 up-to-date",
+        "Configuration cache entry stored.",
+        "junit tests=56 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L05-fix.test-online.junit.txt",
+        "e192b4b1ec18760214b0a682b5893acb7549d86c191e5059d98d97e868a71e14  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-fix-junit-jupiter-api.jar",
+        "09b41b43a126f35e148b9c94b9db541235ecfaeac05dce548b344d84477a4761  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-fix-junit-jupiter-engine.jar",
+        "a263eba7f9bd390454153024a22365b59f9bc8cd2e741148cbc9bbaaa3af77bd  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-fix-junit-platform-commons.jar",
+        "d2ca8e2d38b691d7db449c61232d1c192415d5cb21ea3ca0379f9e402103c52d  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-fix-junit-platform-engine.jar",
+        "4ba3bd79072329d1b31e99d804b24f8fce836771cd7711ceaf20dbd80a1ecbd5  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-fix-junit-platform-launcher.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "L05 fix: the same tests, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-fix; echo worktree=L05-junit-framework-fix commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false  :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-fix.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-fix.test-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 37.127,
+      "cpuSeconds": 73.744,
+      "cpuThrottledSeconds": 35.607,
+      "peakMemoryBytes": 1549807616,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-l05-fix-the-same-tests-offline.log",
+        "lines": 12,
+        "bytes": 819,
+        "sha256": "1b1114bc02004c1defcd4ae69a7ff0f928ef4e685041aad0a91d253c76609e44",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L05-junit-framework-fix commit=2b484caa962ad9b0d9a6af5d2c25100b6a8f4ef6",
+        "gradle-exit=0",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.8.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 36s",
+        "141 actionable tasks: 24 executed, 117 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "Configuration cache entry stored.",
+        "junit tests=56 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L05-fix.test-offline.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "L05 parent: jars and its own copies of the two test classes, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-parent; echo worktree=L05-junit-framework-parent commit=$(git rev-parse HEAD); rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false :junit-jupiter-api:jar :junit-jupiter-engine:jar :junit-platform-commons:jar :junit-platform-engine:jar :junit-platform-launcher:jar :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-parent.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L05-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L05-parent.test-offline.junit.txt; cp junit-jupiter-api/build/libs/junit-jupiter-api-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-jupiter-api.jar; cp junit-jupiter-engine/build/libs/junit-jupiter-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-jupiter-engine.jar; cp junit-platform-commons/build/libs/junit-platform-commons-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-commons.jar; cp junit-platform-engine/build/libs/junit-platform-engine-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-engine.jar; cp junit-platform-launcher/build/libs/junit-platform-launcher-6.2.0-SNAPSHOT.jar $O/artifacts/L05-junit-framework-parent-junit-platform-launcher.jar; sha256sum $O/artifacts/L05-junit-framework-parent-*.jar; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 176.484,
+      "cpuSeconds": 345.069,
+      "cpuThrottledSeconds": 215.665,
+      "peakMemoryBytes": 3865780224,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-l05-parent-jars-and-its-own-co.log",
+        "lines": 17,
+        "bytes": 1745,
+        "sha256": "b8438ceab87daf1626389b6eb0374f6fd430940540c3c0937ca7b99e7145d341",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L05-junit-framework-parent commit=bbeb7900fa76b6fc00e36e0bea05747066b4a2ec",
+        "gradle-exit=0",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.8.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD SUCCESSFUL in 2m 55s",
+        "141 actionable tasks: 140 executed, 1 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "Configuration cache entry stored.",
+        "junit tests=53 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L05-parent.test-offline.junit.txt",
+        "f67bcbc098bd74ebd70f81ebf0e668c7aa0ec410e6bda49a3570a0082640f531  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-parent-junit-jupiter-api.jar",
+        "f3db9a9643296ec5a799c393a0bf0670b2648a6ac5214a45e58c19d372202362  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-parent-junit-jupiter-engine.jar",
+        "dbfd0588dfcac0d8820407ff2cf2f91f59d985038a4054c4ea02dbf086459f53  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-parent-junit-platform-commons.jar",
+        "f2d2161964e55fbcde6760aefa06e9011f4d46d59fb8e131e8c9824d0d7539d8  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-parent-junit-platform-engine.jar",
+        "0ac7c2939aa773ac1046fdf853f27476d616f862984d83ab795c51f292446640  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L05-junit-framework-parent-junit-platform-launcher.jar"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "L05 parent with the fix's two test classes and JupiterUniqueIdBuilder transplanted, offline (expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-parent; echo worktree=L05-junit-framework-parent commit=$(git rev-parse HEAD); cp $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java; cp $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java; cp $W/L05-junit-framework-fix/junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java; git status --short; rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false  :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compile(Test|TestFixtures)(Java|Kotlin|Groovy) FAILED' $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L05-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L05-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 23.852,
+      "cpuSeconds": 47.022,
+      "cpuThrottledSeconds": 28.264,
+      "peakMemoryBytes": 1136726016,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-l05-parent-with-the-fix-s-two.log",
+        "lines": 18,
+        "bytes": 1709,
+        "sha256": "dc13d571c9de4ca70e62b140520a987f0d3701d402acf47d559806314a17b095",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L05-junit-framework-parent commit=bbeb7900fa76b6fc00e36e0bea05747066b4a2ec",
+        " M junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java",
+        " M jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java",
+        " M jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java",
+        "gradle-exit=1",
+        "You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.",
+        "",
+        "For more on this, please refer to https://docs.gradle.org/9.8.0/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.",
+        "",
+        "BUILD FAILED in 23s",
+        "135 actionable tasks: 21 executed, 114 up-to-date",
+        "The build is running offline. A build scan will not be published at this time, but it can be published if you run the 'buildScanPublishPrevious' task in the next build.",
+        "Configuration cache entry stored.",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "TRANSPLANT-DOES-NOT-COMPILE",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-parent/junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java:40: error: cannot find symbol",
+        "/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-parent/junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java:41: error: cannot find symbol",
+        "  /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-parent/junit-jupiter-engine/src/testFixtures/java/org/junit/jupiter/engine/discovery/JupiterUniqueIdBuilder.java:40: error: cannot find symbol"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "L05: class digests that differ between the parent and fix jars",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-jupiter-engine.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-engine.jar | tee $O/logs/L05-classdiff-junit-jupiter-engine.md; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-platform-launcher.jar $O/artifacts/L05-junit-framework-fix-junit-platform-launcher.jar | tee $O/logs/L05-classdiff-junit-platform-launcher.md; python3 -I $O/scripts/classdiff_C.py $O/artifacts/L05-junit-framework-parent-junit-jupiter-api.jar $O/artifacts/L05-junit-framework-fix-junit-jupiter-api.jar | tee $O/logs/L05-classdiff-junit-jupiter-api.md; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.132,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 9617408,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-l05-class-digests-that-differ.log",
+        "lines": 14,
+        "bytes": 1340,
+        "sha256": "2c89c991dd4b03abb3bcfb76fac16ecb5382427c147d70106ecda860a982c3b0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "| Class | parent | fix |",
+        "|---|---|---|",
+        "| `org/junit/jupiter/engine/descriptor/ClassTemplateTestDescriptor$ClassTemplateExecutor.class` | `55e9c7b7ffb032139611a73da4830bda7d156dec7ed09a525d68e4fce107c249` | `8632569c63d2b1af9567a48b893a4d7c67d64a463cf60ae474a7e0a50e6665e6` |",
+        "| `org/junit/jupiter/engine/descriptor/ClassTemplateTestDescriptor.class` | `e54eb1c175ff35fd49a8dffe059cbae2c1ca630933313dbaa115663e2adbc4a7` | `4e6f8737782a4f6f81a92cf15578bad2dfc657102a03c03f6c0e581e60301a75` |",
+        "| `org/junit/jupiter/engine/descriptor/NestedClassTestDescriptor.class` | `db600175c4e97bd50e693595afd1e7a98a86919e0536f8441ce82583e9f4b1fc` | `2046517664586ee8b524ed409cc5b042cd5809f5a6a675333a295cb31b075e90` |",
+        "| `org/junit/jupiter/engine/discovery/ClassSelectorResolver$DummyClassTemplateInvocationContext.class` | `84aa265146b89300cd9eb75dd17af2e402cc0671c05d085b56e4b844586fef3d` | `cdfd9b7590e96f1eb1039a16c85fdde1f3c2ef5b3f8758f1bab19ab649bd3cbc` |",
+        "| `org/junit/jupiter/engine/discovery/ClassSelectorResolver.class` | `9e3ba7e79a3dc5e658691877ceacf4196a34ffa43429cb21663c3fdfd3d1861a` | `86c311162dadd5689ce841e656c8c5ad71cefe89c0b538801bdf52eb2ac526f5` |",
+        "<!-- 169 classes parent, 169 fix -->",
+        "| Class | parent | fix |",
+        "|---|---|---|",
+        "<!-- 153 classes parent, 153 fix -->",
+        "| Class | parent | fix |",
+        "|---|---|---|",
+        "<!-- 266 classes parent, 266 fix -->"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L05-junit-framework-fix checkout -- .; git -C $W/L05-junit-framework-fix clean -fdxq; git -C $W/L05-junit-framework-fix status --short; git -C $W/L05-junit-framework-parent checkout -- .; git -C $W/L05-junit-framework-parent clean -fdxq; git -C $W/L05-junit-framework-parent status --short; du -sh $W/L05-junit-framework-fix $W/L05-junit-framework-parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 7200.0,
+      "cancelled": false,
+      "wallSeconds": 0.401,
+      "cpuSeconds": 0.378,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 6504448,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-remove-the-build-trees.log",
+        "lines": 2,
+        "bytes": 189,
+        "sha256": "82cc51a71b02cab964bdb37b7083f64ac7c270e5424b446204faaa6cdc1b8b59",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "23M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-fix",
+        "23M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-parent"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T16:40:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T164019Z-621003cfd49a85af"
+    }
+  }
+}

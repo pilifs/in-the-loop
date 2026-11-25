@@ -1,0 +1,453 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-161916-setup-build-calcite-core-at-both-5378-re",
+  "title": "Setup: build Calcite core at both #5378 revisions and run CoreQuidemTest and RelOptRulesTest",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 8m36s, peak 4.7 GiB (estimated 45m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-161916-setup-build-calcite-core-at-both-5378-re.json",
+    "sha256": "f1b843bb4cb1cb9f4d5b94e03b4ed41794a7e12737f543ed500871fe7074f579",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-161916-setup-build-calcite-core-at-both-5378-re",
+      "title": "Setup: build Calcite core at both #5378 revisions and run CoreQuidemTest and RelOptRulesTest",
+      "description": "Setup for case L10 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L10-calcite-fix = 5f48eec8d5e3f25df641393c9440e086646868b7, L10-calcite-parent = b8ccec91b7670d8c62a5712e210bb25f396ade7e), runs the upstream Gradle build (Gradle 8.14.4, sha256 checked against services.gradle.org and the wrapper's distributionSha256Sum; Gradle on JDK 21.0.13, compile toolchain JDK 25.0.5 as the build asks; --no-scan; dependencies already resolved inline): :core:jar and :core:test for CoreQuidemTest (all Quidem files, planner.iq among them) and RelOptRulesTest, on the fix (first build may go online) then offline, on the parent offline, then the fix's planner.iq and RelOptRulesTest.xml transplanted onto the parent (planner.iq's CALCITE-7909 block and testMinusMergeRule are expected to fail). Copies the calcite-core jar of each side, its runtime classpath (linq4j copied too) and the digests of ProjectSetOpTransposeRule classes into ~/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts; JUnit summaries to .../logs; worktrees restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: fix tests pass online and offline, parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED; artifacts and classpath files written for both sides",
+      "submitted": {
+        "at": "2026-11-25T16:19:16+00:00",
+        "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+        "by": "setup agent (Claude Opus 5.5), fork D"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "6G",
+        "duration": "45m"
+      },
+      "steps": [
+        {
+          "name": "L10 fix: build and landed tests (first build; may resolve online)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-fix; echo worktree=L10-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --continue :core:jar :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-fix.test-online.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L10-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L10-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L10-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L10-fix.test-online.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L10 fix: jars, class digests and runtime classpaths, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-fix; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline -I $O/scripts/resolve-all.init.gradle :core:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L10-fix.core-runtime.raw.txt > $O/logs/L10-fix.export-core-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-fix.export-core-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L10-fix.core-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L10-fix.core-runtime.raw.txt $W/L10-calcite-fix L10-calcite-fix $O/artifacts/L10-calcite-fix.core-runtime-classpath.txt; for j in core/build/libs/calcite-core-*[0-9T].jar; do cp $j $O/artifacts/L10-calcite-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L10-calcite-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/calcite/rel/rules/ProjectSetOpTransposeRule | tee $O/artifacts/L10-calcite-fix-$(basename $j .jar).class-digests.txt; done; ",
+          "cwd": "."
+        },
+        {
+          "name": "L10 fix: the same tests again, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-fix; echo worktree=L10-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline --continue :core:jar :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-fix.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L10-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L10-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L10-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L10-fix.test-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L10 parent: build and its own copies of the tests, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-parent; echo worktree=L10-calcite-parent commit=$(git rev-parse HEAD); rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline --continue :core:jar :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-parent.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L10-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L10-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L10-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L10-parent.test-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L10 parent: jars, class digests and runtime classpaths, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-parent; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline -I $O/scripts/resolve-all.init.gradle :core:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L10-parent.core-runtime.raw.txt > $O/logs/L10-parent.export-core-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-parent.export-core-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L10-parent.core-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L10-parent.core-runtime.raw.txt $W/L10-calcite-parent L10-calcite-parent $O/artifacts/L10-calcite-parent.core-runtime-classpath.txt; for j in core/build/libs/calcite-core-*[0-9T].jar; do cp $j $O/artifacts/L10-calcite-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L10-calcite-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/calcite/rel/rules/ProjectSetOpTransposeRule | tee $O/artifacts/L10-calcite-parent-$(basename $j .jar).class-digests.txt; done; ",
+          "cwd": "."
+        },
+        {
+          "name": "L10 parent with the fix's test files transplanted, offline (landed tests expected to fail)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-parent; echo worktree=L10-calcite-parent commit=$(git rev-parse HEAD); cp $W/L10-calcite-fix/core/src/test/resources/sql/planner.iq core/src/test/resources/sql/planner.iq; cp $W/L10-calcite-fix/core/src/test/resources/org/apache/calcite/test/RelOptRulesTest.xml core/src/test/resources/org/apache/calcite/test/RelOptRulesTest.xml; git status --short; rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline --continue :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest[A-Za-z]* FAILED|compileIntegTest[A-Za-z]* FAILED' $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L10-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L10-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L10-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L10-calcite-fix checkout -- .; git -C $W/L10-calcite-fix clean -fdxq; git -C $W/L10-calcite-fix status --short; git -C $W/L10-calcite-parent checkout -- .; git -C $W/L10-calcite-parent clean -fdxq; git -C $W/L10-calcite-parent status --short; du -sh $W/L10-calcite-fix $W/L10-calcite-parent; du -sh $GRADLE_USER_HOME",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3037ff3919d78e3dea67e70d8ef9562ea1f53fa8",
+  "startedAt": "2026-11-25T16:31:06+00:00",
+  "finishedAt": "2026-11-25T16:40:05+00:00",
+  "wallSeconds": 539.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585564,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 2700.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 5025832960,
+    "wallSeconds": 516.1,
+    "cpuSeconds": 1203.9,
+    "memoryOfEstimate": 0.78,
+    "durationOfEstimate": 0.19
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "L10 fix: build and landed tests (first build; may resolve online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-fix; echo worktree=L10-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --continue :core:jar :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-fix.test-online.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L10-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L10-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L10-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L10-fix.test-online.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 187.533,
+      "cpuSeconds": 441.579,
+      "cpuThrottledSeconds": 44.404,
+      "peakMemoryBytes": 5025832960,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-l10-fix-build-and-landed-tests.log",
+        "lines": 5,
+        "bytes": 264,
+        "sha256": "c6eefb9767a44be44bd30bb0db377a31cd6f62a59c9a0d3f3977caebed214486",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L10-calcite-fix commit=5f48eec8d5e3f25df641393c9440e086646868b7",
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 3m 6s",
+        "junit tests=1006 failures=0 errors=0 skipped=4",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L10-fix.test-online.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "L10 fix: jars, class digests and runtime classpaths, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-fix; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline -I $O/scripts/resolve-all.init.gradle :core:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L10-fix.core-runtime.raw.txt > $O/logs/L10-fix.export-core-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-fix.export-core-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L10-fix.core-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L10-fix.core-runtime.raw.txt $W/L10-calcite-fix L10-calcite-fix $O/artifacts/L10-calcite-fix.core-runtime-classpath.txt; for j in core/build/libs/calcite-core-*[0-9T].jar; do cp $j $O/artifacts/L10-calcite-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L10-calcite-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/calcite/rel/rules/ProjectSetOpTransposeRule | tee $O/artifacts/L10-calcite-fix-$(basename $j .jar).class-digests.txt; done; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 55.392,
+      "cpuSeconds": 113.675,
+      "cpuThrottledSeconds": 2.696,
+      "peakMemoryBytes": 1292746752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-l10-fix-jars-class-digests-and.log",
+        "lines": 7,
+        "bytes": 727,
+        "sha256": "388fb9879357d678b5088816f4c7d727093e9d5d80e7fca1cd01a60a8324a026",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 54s",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L10-calcite-fix-calcite-linq4j-1.43.0-SNAPSHOT.jar a2e3947f948dc7e0084a2fb66023c3094779a4d90411209e7c271c96025d667a",
+        "wrote /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L10-calcite-fix.core-runtime-classpath.txt 45 entries",
+        "3a1461c8ff66e2aa831cfc71709de2021a3129c3a23c8d92e0db86099fd7e64d  L10-calcite-fix-calcite-core-1.43.0-SNAPSHOT.jar",
+        "bb11798036c8d4bdb0160d29ca13e775b5a2c1704578728a2478afc1289f2431  org/apache/calcite/rel/rules/ProjectSetOpTransposeRule$Config.class",
+        "f878674a9cf05906226813853aaf3f04c61a90040ba5318a4cea038231a58414  org/apache/calcite/rel/rules/ProjectSetOpTransposeRule.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "L10 fix: the same tests again, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-fix; echo worktree=L10-calcite-fix commit=$(git rev-parse HEAD); rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline --continue :core:jar :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-fix.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L10-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L10-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L10-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L10-fix.test-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 81.657,
+      "cpuSeconds": 193.771,
+      "cpuThrottledSeconds": 24.594,
+      "peakMemoryBytes": 2032967680,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-l10-fix-the-same-tests-again-o.log",
+        "lines": 5,
+        "bytes": 266,
+        "sha256": "8213656875759f2453e0b7cd90b5e8455764bf8798cd4363da82a7f8885a6f23",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L10-calcite-fix commit=5f48eec8d5e3f25df641393c9440e086646868b7",
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 1m 21s",
+        "junit tests=1006 failures=0 errors=0 skipped=4",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L10-fix.test-offline.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "L10 parent: build and its own copies of the tests, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-parent; echo worktree=L10-calcite-parent commit=$(git rev-parse HEAD); rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline --continue :core:jar :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-parent.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L10-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L10-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L10-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L10-parent.test-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 100.658,
+      "cpuSeconds": 240.594,
+      "cpuThrottledSeconds": 21.771,
+      "peakMemoryBytes": 3247841280,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-l10-parent-build-and-its-own-c.log",
+        "lines": 5,
+        "bytes": 272,
+        "sha256": "c6157b859156561127af3d58f08ce90e81c0c107b3caf5bcc24160ba811bc4c5",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L10-calcite-parent commit=b8ccec91b7670d8c62a5712e210bb25f396ade7e",
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 1m 40s",
+        "junit tests=1006 failures=0 errors=0 skipped=4",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L10-parent.test-offline.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "L10 parent: jars, class digests and runtime classpaths, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-parent; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline -I $O/scripts/resolve-all.init.gradle :core:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L10-parent.core-runtime.raw.txt > $O/logs/L10-parent.export-core-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-parent.export-core-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L10-parent.core-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L10-parent.core-runtime.raw.txt $W/L10-calcite-parent L10-calcite-parent $O/artifacts/L10-calcite-parent.core-runtime-classpath.txt; for j in core/build/libs/calcite-core-*[0-9T].jar; do cp $j $O/artifacts/L10-calcite-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L10-calcite-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/calcite/rel/rules/ProjectSetOpTransposeRule | tee $O/artifacts/L10-calcite-parent-$(basename $j .jar).class-digests.txt; done; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 13.626,
+      "cpuSeconds": 32.132,
+      "cpuThrottledSeconds": 1.594,
+      "peakMemoryBytes": 732327936,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-l10-parent-jars-class-digests.log",
+        "lines": 7,
+        "bytes": 736,
+        "sha256": "a221fe54ce978bc0a2c5a884edf2f571af454f858c6f2bf4f91adff69e769667",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 13s",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L10-calcite-parent-calcite-linq4j-1.43.0-SNAPSHOT.jar a2e3947f948dc7e0084a2fb66023c3094779a4d90411209e7c271c96025d667a",
+        "wrote /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L10-calcite-parent.core-runtime-classpath.txt 45 entries",
+        "8834c2d897b98a3c5840356f0ba35018568a6881be6a61277c951cd1aa733c52  L10-calcite-parent-calcite-core-1.43.0-SNAPSHOT.jar",
+        "7d891a15e799e58c3f591096208b3c5a3abf52591862b333d5c1f362be751e8e  org/apache/calcite/rel/rules/ProjectSetOpTransposeRule$Config.class",
+        "afb8d56a26f4fd6615ba1fd5fb0438762bc93b918350235866b1d2426ee6de39  org/apache/calcite/rel/rules/ProjectSetOpTransposeRule.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "L10 parent with the fix's test files transplanted, offline (landed tests expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L10-calcite-parent; echo worktree=L10-calcite-parent commit=$(git rev-parse HEAD); cp $W/L10-calcite-fix/core/src/test/resources/sql/planner.iq core/src/test/resources/sql/planner.iq; cp $W/L10-calcite-fix/core/src/test/resources/org/apache/calcite/test/RelOptRulesTest.xml core/src/test/resources/org/apache/calcite/test/RelOptRulesTest.xml; git status --short; rm -rf core/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-8.14.4/bin/gradle --no-daemon --no-scan --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -Porg.gradle.java.installations.auto-download=false -Porg.gradle.java.installations.paths=$J25,$J21 --offline --continue :core:test --tests org.apache.calcite.test.CoreQuidemTest --tests org.apache.calcite.test.RelOptRulesTest > $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py core/build/test-results/test | tee $O/logs/L10-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest[A-Za-z]* FAILED|compileIntegTest[A-Za-z]* FAILED' $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L10-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L10-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L10-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L10-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 76.613,
+      "cpuSeconds": 181.573,
+      "cpuThrottledSeconds": 19.166,
+      "peakMemoryBytes": 2073014272,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-l10-parent-with-the-fix-s-test.log",
+        "lines": 12,
+        "bytes": 487,
+        "sha256": "09b271f6043064c9aa26de1e7db71418abb700e6b00bedd96634222891bff9dc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L10-calcite-parent commit=b8ccec91b7670d8c62a5712e210bb25f396ade7e",
+        " M core/src/test/resources/org/apache/calcite/test/RelOptRulesTest.xml",
+        " M core/src/test/resources/sql/planner.iq",
+        "gradle-exit=1",
+        "> Task :core:test FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 1m 16s",
+        "junit tests=1007 failures=3 errors=0 skipped=4",
+        "junit failed CoreQuidemTest#[8] sql/planner.iq",
+        "junit failed RelOptRulesTest#testMinusMergeRule()",
+        "junit failed RelOptRulesTest#executionError",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L10-calcite-fix checkout -- .; git -C $W/L10-calcite-fix clean -fdxq; git -C $W/L10-calcite-fix status --short; git -C $W/L10-calcite-parent checkout -- .; git -C $W/L10-calcite-parent clean -fdxq; git -C $W/L10-calcite-parent status --short; du -sh $W/L10-calcite-fix $W/L10-calcite-parent; du -sh $GRADLE_USER_HOME",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 0.601,
+      "cpuSeconds": 0.563,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 8667136,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-remove-the-build-trees.log",
+        "lines": 3,
+        "bytes": 245,
+        "sha256": "3971f267244ce5249cbb91a9a6719aaa135bba328e3f30112cf581c2a096e008",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "45M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L10-calcite-fix",
+        "45M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L10-calcite-parent",
+        "3.9G\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/gradle-home"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T16:40:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T164005Z-55967393759ff457"
+    }
+  }
+}

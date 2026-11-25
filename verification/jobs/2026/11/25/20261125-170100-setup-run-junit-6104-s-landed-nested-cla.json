@@ -1,0 +1,49 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-170100-setup-run-junit-6104-s-landed-nested-cla",
+  "title": "Setup: run JUnit #6104's landed nested-class tests on the parent with constant names mapped",
+  "description": "Setup for case L05 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. Second L05 job: the first (20261125-162622-setup-build-junit-6104-at-both-revisions) passed, with the fix's NestedTestClassesTests and ClassTemplateInvocationTests passing on the fix and the parent's own passing, but the plain transplant did not compile on the parent, because the fix renames NestedClassTestDescriptor.SEGMENT_TYPE and ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE (to SIMPLE_NAME_SEGMENT_TYPE and SIMPLE_NESTED_CLASS_SEGMENT_TYPE, same values) and adds FULLY_QUALIFIED_NAME_SEGMENT_TYPE = \"fq-nested-class\" and FULLY_QUALIFIED_NESTED_CLASS_SEGMENT_TYPE = \"fq-nested-class-template\". In the setup clone ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L05-junit-framework-parent this copies the fix's two test classes onto the parent with only those four references mapped (to the parent's names, or to the same string values) and keeps the parent's JupiterUniqueIdBuilder and production code, then runs them offline with Gradle 9.8.0 (scripts/L05-gradle.sh, as in the first job). Expected: they compile, and some of the new same-name nested tests fail. The mapped copies and their diffs against the fix's files go to .../artifacts/L05-transplant-mapped/; the clone is restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: the mapped transplant compiles, prints production-and-fixtures-unchanged and TRANSPLANT-FAILS-AS-EXPECTED",
+  "submitted": {
+    "at": "2026-11-25T17:01:00+00:00",
+    "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "6G",
+    "duration": "15m"
+  },
+  "steps": [
+    {
+      "name": "L05 parent with the fix's two test classes, constant names mapped to the parent's, offline (expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L05-junit-framework-parent; echo worktree=L05-junit-framework-parent commit=$(git rev-parse HEAD) fix=$(git -C $W/L05-junit-framework-fix rev-parse HEAD); rm -rf $O/artifacts/L05-transplant-mapped; mkdir -p $O/artifacts/L05-transplant-mapped; sed -e 's/NestedClassTestDescriptor\\.SIMPLE_NAME_SEGMENT_TYPE/NestedClassTestDescriptor.SEGMENT_TYPE/g' -e 's/ClassTemplateTestDescriptor\\.SIMPLE_NESTED_CLASS_SEGMENT_TYPE/ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE/g' -e 's/NestedClassTestDescriptor\\.FULLY_QUALIFIED_NAME_SEGMENT_TYPE/\"fq-nested-class\"/g' -e 's/ClassTemplateTestDescriptor\\.FULLY_QUALIFIED_NESTED_CLASS_SEGMENT_TYPE/\"fq-nested-class-template\"/g' $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java > jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java; cp jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java $O/artifacts/L05-transplant-mapped/NestedTestClassesTests.java; (diff -u $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java || true) | tee $O/artifacts/L05-transplant-mapped/NestedTestClassesTests.java.mapping.diff; sed -e 's/NestedClassTestDescriptor\\.SIMPLE_NAME_SEGMENT_TYPE/NestedClassTestDescriptor.SEGMENT_TYPE/g' -e 's/ClassTemplateTestDescriptor\\.SIMPLE_NESTED_CLASS_SEGMENT_TYPE/ClassTemplateTestDescriptor.NESTED_CLASS_SEGMENT_TYPE/g' -e 's/NestedClassTestDescriptor\\.FULLY_QUALIFIED_NAME_SEGMENT_TYPE/\"fq-nested-class\"/g' -e 's/ClassTemplateTestDescriptor\\.FULLY_QUALIFIED_NESTED_CLASS_SEGMENT_TYPE/\"fq-nested-class-template\"/g' $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java > jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java; cp jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java $O/artifacts/L05-transplant-mapped/ClassTemplateInvocationTests.java; (diff -u $W/L05-junit-framework-fix/jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java || true) | tee $O/artifacts/L05-transplant-mapped/ClassTemplateInvocationTests.java.mapping.diff; ! grep -n -E 'SIMPLE_NAME_SEGMENT_TYPE|SIMPLE_NESTED_CLASS_SEGMENT_TYPE|FULLY_QUALIFIED_(NESTED_CLASS_|NAME_)SEGMENT_TYPE' jupiter-tests/src/test/java/org/junit/jupiter/engine/NestedTestClassesTests.java jupiter-tests/src/test/java/org/junit/jupiter/engine/ClassTemplateInvocationTests.java; git status --short; git diff --quiet -- junit-jupiter-engine/src && echo production-and-fixtures-unchanged; rm -rf jupiter-tests/build/test-results/test; set +e; $O/scripts/L05-gradle.sh --offline -Ptesting.retries=0 -Pjunit.develocity.predictiveTestSelection.enabled=false :jupiter-tests:cleanTest :jupiter-tests:test --tests org.junit.jupiter.engine.NestedTestClassesTests --tests org.junit.jupiter.engine.ClassTemplateInvocationTests > $O/logs/L05-parent.transplanted-mapped.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -8 $O/logs/L05-parent.transplanted-mapped.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py jupiter-tests/build/test-results/test | tee $O/logs/L05-parent.transplanted-mapped.test-offline.junit.txt; if grep -q -E 'Compilation failed|compile(Test|TestFixtures)(Java|Kotlin|Groovy) FAILED' $O/logs/L05-parent.transplanted-mapped.test-offline.gradle-log.txt; then echo MAPPED-TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:' $O/logs/L05-parent.transplanted-mapped.test-offline.gradle-log.txt | head -40; exit 1; fi; test $(grep -o 'tests=[0-9]*' $O/logs/L05-parent.transplanted-mapped.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L05-parent.transplanted-mapped.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L05-parent.transplanted-mapped.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; git checkout -- .; git status --short; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build tree",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L05-junit-framework-parent checkout -- .; git -C $W/L05-junit-framework-parent clean -fdxq; git -C $W/L05-junit-framework-parent status --short; du -sh $W/L05-junit-framework-parent",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

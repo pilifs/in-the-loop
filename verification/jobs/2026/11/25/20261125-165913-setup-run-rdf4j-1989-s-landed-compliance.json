@@ -1,0 +1,64 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-165913-setup-run-rdf4j-1989-s-landed-compliance",
+  "title": "Setup: run rdf4j #1989's landed compliance tests under failsafe at both revisions",
+  "description": "Setup for case L09 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. Second L09 job: the first (20261125-162448-setup-run-rdf4j-1989-s-landed-empty-grou) passed but never ran MemoryComplexSPARQLQueryTest or SPARQL12QueryTest, because compliance/sparql skips surefire and runs its *Test classes under failsafe 2.19.1 in integration-test/verify, and that job stopped at package. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L09-rdf4j-fix = 1767ceebe5d309238263bdca732b730cc47b3e45, L09-rdf4j-parent = c2c7a5265e6c40bc5dc2574260c96c3e10f9a87c), builds -pl compliance/sparql -am up to verify (JDK 8, Maven 3.9.9; scripts/rdf4j_verify.sh), with -Dit.test selecting the compliance classes and -Dtest=GroupIteratorTest. The first step is online so the failsafe plugin resolves; the rest run offline. Each step fails if a named class did not run. On the fix: MemoryComplexSPARQLQueryTest (gains six Max/Min/Sample empty-group tests), SPARQL12QueryTest (agg-empty-group-1/2) and GroupIteratorTest, online then offline; on the parent its own MemoryComplexSPARQLQueryTest and GroupIteratorTest; then the PR's test-side files on the parent, production code unchanged (expected: some new tests fail). Logs and JUnit summaries to ~/.cache/in-the-loop/merged-pr-links-l01-l20/logs (L09-*.verify-*); worktrees restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "maven"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: each named class runs; the fix's pass online and offline, the parent's own pass, the transplant prints production-unchanged and TRANSPLANT-FAILS-AS-EXPECTED",
+  "submitted": {
+    "at": "2026-11-25T16:59:13+00:00",
+    "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+    "by": "setup agent (Claude Opus 5.5)"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 3.0,
+    "memory": "5G",
+    "duration": "30m"
+  },
+  "steps": [
+    {
+      "name": "L09 fix: compliance/sparql -am to verify; failsafe MemoryComplexSPARQLQueryTest and SPARQL12QueryTest, surefire GroupIteratorTest; online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-fix; echo worktree=L09-rdf4j-fix commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_verify.sh L09-rdf4j-fix L09-fix.verify-online compliance/sparql GroupIteratorTest MemoryComplexSPARQLQueryTest,SPARQL12QueryTest online; set -e; ! grep -q 'class MemoryComplexSPARQLQueryTest: NOT RUN' $O/logs/L09-fix.verify-online.junit.txt; ! grep -q 'class SPARQL12QueryTest: NOT RUN' $O/logs/L09-fix.verify-online.junit.txt; ! grep -q 'class GroupIteratorTest: NOT RUN' $O/logs/L09-fix.verify-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L09-fix.verify-online.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-fix.verify-online.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-fix.verify-online.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-fix.verify-online.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "L09 fix: the same, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-fix; echo worktree=L09-rdf4j-fix commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_verify.sh L09-rdf4j-fix L09-fix.verify-offline compliance/sparql GroupIteratorTest MemoryComplexSPARQLQueryTest,SPARQL12QueryTest ; set -e; ! grep -q 'class MemoryComplexSPARQLQueryTest: NOT RUN' $O/logs/L09-fix.verify-offline.junit.txt; ! grep -q 'class SPARQL12QueryTest: NOT RUN' $O/logs/L09-fix.verify-offline.junit.txt; ! grep -q 'class GroupIteratorTest: NOT RUN' $O/logs/L09-fix.verify-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L09-fix.verify-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-fix.verify-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-fix.verify-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-fix.verify-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "L09 parent: its own MemoryComplexSPARQLQueryTest and GroupIteratorTest, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-parent; echo worktree=L09-rdf4j-parent commit=$(git rev-parse HEAD); set +e; XMX=-Xmx2g $O/scripts/rdf4j_verify.sh L09-rdf4j-parent L09-parent.verify-offline compliance/sparql GroupIteratorTest MemoryComplexSPARQLQueryTest ; set -e; ! grep -q 'class MemoryComplexSPARQLQueryTest: NOT RUN' $O/logs/L09-parent.verify-offline.junit.txt; ! grep -q 'class GroupIteratorTest: NOT RUN' $O/logs/L09-parent.verify-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L09-parent.verify-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L09-parent.verify-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L09-parent.verify-offline.junit.txt | head -1 | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L09-parent.verify-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "L09 parent with the PR's test-side files transplanted (production code unchanged), offline: new tests expected to fail",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L09-rdf4j-parent; echo worktree=L09-rdf4j-parent commit=$(git rev-parse HEAD); FIX=$(git -C $W/L09-rdf4j-fix rev-parse HEAD); git checkout $FIX -- compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL12QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/query/parser/sparql/manifest/W3CApprovedSPARQL11UpdateTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/federation/FederationSPARQL11QueryTest.java compliance/sparql/src/test/java/org/eclipse/rdf4j/sail/nativerdf/NativeSPARQLQueryTest.java core/queryalgebra/evaluation/src/test/java/org/eclipse/rdf4j/query/algebra/evaluation/iterator/GroupIteratorTest.java testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/ComplexSPARQLQueryTest.java testsuites/sparql/src/main/java/org/eclipse/rdf4j/query/parser/sparql/manifest/SPARQL11ManifestTest.java testsuites/sparql/src/main/resources/testcases-sparql-1.1-w3c/aggregates/manifest.ttl testsuites/sparql/src/main/resources/testcases-sparql-1.2; git status --short; git diff --cached --quiet -- core/queryalgebra/evaluation/src/main && echo production-unchanged; set +e; XMX=-Xmx2g $O/scripts/rdf4j_verify.sh L09-rdf4j-parent L09-parent.transplanted.verify-offline compliance/sparql GroupIteratorTest MemoryComplexSPARQLQueryTest,SPARQL12QueryTest ; set -e; ! grep -q 'class MemoryComplexSPARQLQueryTest: NOT RUN' $O/logs/L09-parent.transplanted.verify-offline.junit.txt; ! grep -q 'class SPARQL12QueryTest: NOT RUN' $O/logs/L09-parent.transplanted.verify-offline.junit.txt; ! grep -q 'class GroupIteratorTest: NOT RUN' $O/logs/L09-parent.transplanted.verify-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L09-parent.transplanted.verify-offline.junit.txt | head -1 | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L09-parent.transplanted.verify-offline.junit.txt | head -1 | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L09-parent.transplanted.verify-offline.junit.txt | head -1 | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; git reset -q; git checkout -- .; git clean -fdq; git status --short; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L09-rdf4j-fix checkout -- .; git -C $W/L09-rdf4j-fix clean -fdxq; git -C $W/L09-rdf4j-fix status --short; git -C $W/L09-rdf4j-parent checkout -- .; git -C $W/L09-rdf4j-parent clean -fdxq; git -C $W/L09-rdf4j-parent status --short; du -sh $W/L09-rdf4j-fix $W/L09-rdf4j-parent",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": []
+}

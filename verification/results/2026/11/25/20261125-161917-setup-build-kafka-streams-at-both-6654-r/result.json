@@ -1,0 +1,477 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-161917-setup-build-kafka-streams-at-both-6654-r",
+  "title": "Setup: build Kafka Streams at both #6654 revisions and run its three landed session/suppress test classes",
+  "status": "passed",
+  "summary": "passed: 7 passed step(s) in 4m04s, peak 3.0 GiB (estimated 45m00s, 6.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-161917-setup-build-kafka-streams-at-both-6654-r.json",
+    "sha256": "815bbfa3b6d8985a5fd44915f73694e2b148fe8269c053b81ec48e97bcba2912",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-161917-setup-build-kafka-streams-at-both-6654-r",
+      "title": "Setup: build Kafka Streams at both #6654 revisions and run its three landed session/suppress test classes",
+      "description": "Setup for case L19 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup checkouts under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees (L19-kafka-fix = eab855541a4b776b150a849cecda9c758598cdca, L19-kafka-parent = a4f7675db1a928e73c7a69eb906dd1e9ecd4a22a; standalone depth-1 clones, because the build's grgit reads the repository with JGit), runs the upstream Gradle build (Gradle 5.4.1, sha256 checked against services.gradle.org; JDK 8u512; one init script adding a file repository with the jcenter-only build-script module grgit-core 3.1.1, SHA-1 checked; dependencies already resolved inline): kafka-streams and streams-test-utils jars and :streams:test for KStreamSessionWindowAggregateProcessorTest, SuppressScenarioTest and GraphGraceSearchUtilTest (core's Scala test classes are compiled for them), on the fix (first build may go online) then offline, on the parent offline, then the fix's three test files transplanted onto the parent (expected to fail or not compile). Copies each side's kafka-streams jar, the test-utils runtime classpath (project jars copied) and the class digests of the two changed classes into ~/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts; JUnit summaries to .../logs; checkouts restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "gradle"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: fix tests pass online and offline, parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED or TRANSPLANT-DOES-NOT-COMPILE; artifacts and classpath files for both sides",
+      "submitted": {
+        "at": "2026-11-25T16:19:17+00:00",
+        "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+        "by": "setup agent (Claude Opus 5.5), fork D"
+      },
+      "requires": [
+        "java",
+        "git",
+        "python3",
+        "bash",
+        "unzip"
+      ],
+      "resources": {
+        "cpus": 3.0,
+        "memory": "6G",
+        "duration": "45m"
+      },
+      "steps": [
+        {
+          "name": "L19 fix: build and landed tests (first build; may resolve online)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-fix; echo worktree=L19-kafka-fix commit=$(git rev-parse HEAD); rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --continue :streams:jar :streams:test-utils:jar :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-fix.test-online.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L19-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L19-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L19-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L19-fix.test-online.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L19 fix: jars, class digests and runtime classpaths, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-fix; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline -I $O/scripts/resolve-all.init.gradle :streams:test-utils:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L19-fix.streams-test-utils-runtime.raw.txt > $O/logs/L19-fix.export-streams-test-utils-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-fix.export-streams-test-utils-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L19-fix.streams-test-utils-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L19-fix.streams-test-utils-runtime.raw.txt $W/L19-kafka-fix L19-kafka-fix $O/artifacts/L19-kafka-fix.streams-test-utils-runtime-classpath.txt; for j in streams/build/libs/kafka-streams-2.3.0-SNAPSHOT.jar; do cp $j $O/artifacts/L19-kafka-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L19-kafka-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtil | tee $O/artifacts/L19-kafka-fix-$(basename $j .jar).class-digests.txt; done; ",
+          "cwd": "."
+        },
+        {
+          "name": "L19 fix: the same tests again, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-fix; echo worktree=L19-kafka-fix commit=$(git rev-parse HEAD); rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline --continue :streams:jar :streams:test-utils:jar :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-fix.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L19-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L19-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L19-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L19-fix.test-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L19 parent: build and its own copies of the tests, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-parent; echo worktree=L19-kafka-parent commit=$(git rev-parse HEAD); rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline --continue :streams:jar :streams:test-utils:jar :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-parent.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L19-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L19-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L19-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L19-parent.test-offline.junit.txt; ",
+          "cwd": "."
+        },
+        {
+          "name": "L19 parent: jars, class digests and runtime classpaths, offline",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-parent; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline -I $O/scripts/resolve-all.init.gradle :streams:test-utils:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L19-parent.streams-test-utils-runtime.raw.txt > $O/logs/L19-parent.export-streams-test-utils-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-parent.export-streams-test-utils-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L19-parent.streams-test-utils-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L19-parent.streams-test-utils-runtime.raw.txt $W/L19-kafka-parent L19-kafka-parent $O/artifacts/L19-kafka-parent.streams-test-utils-runtime-classpath.txt; for j in streams/build/libs/kafka-streams-2.3.0-SNAPSHOT.jar; do cp $j $O/artifacts/L19-kafka-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L19-kafka-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtil | tee $O/artifacts/L19-kafka-parent-$(basename $j .jar).class-digests.txt; done; ",
+          "cwd": "."
+        },
+        {
+          "name": "L19 parent with the fix's test files transplanted, offline (landed tests expected to fail)",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-parent; echo worktree=L19-kafka-parent commit=$(git rev-parse HEAD); cp $W/L19-kafka-fix/streams/src/test/java/org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregateProcessorTest.java streams/src/test/java/org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregateProcessorTest.java; cp $W/L19-kafka-fix/streams/src/test/java/org/apache/kafka/streams/kstream/internals/SuppressScenarioTest.java streams/src/test/java/org/apache/kafka/streams/kstream/internals/SuppressScenarioTest.java; cp $W/L19-kafka-fix/streams/src/test/java/org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtilTest.java streams/src/test/java/org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtilTest.java; git status --short; rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline --continue :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest[A-Za-z]* FAILED|compileIntegTest[A-Za-z]* FAILED' $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+          "cwd": "."
+        },
+        {
+          "name": "remove the build trees",
+          "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L19-kafka-fix checkout -- .; git -C $W/L19-kafka-fix clean -fdxq; git -C $W/L19-kafka-fix status --short; git -C $W/L19-kafka-parent checkout -- .; git -C $W/L19-kafka-parent clean -fdxq; git -C $W/L19-kafka-parent status --short; du -sh $W/L19-kafka-fix $W/L19-kafka-parent; du -sh $GRADLE_USER_HOME",
+          "cwd": "."
+        }
+      ],
+      "stopOnFailure": false,
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3037ff3919d78e3dea67e70d8ef9562ea1f53fa8",
+  "startedAt": "2026-11-25T16:31:06+00:00",
+  "finishedAt": "2026-11-25T16:35:33+00:00",
+  "wallSeconds": 267.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585564,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 3.0,
+    "memoryLimitBytes": 9663676416,
+    "timeoutSeconds": 10800.0
+  },
+  "estimate": {
+    "cpus": 3.0,
+    "memoryBytes": 6442450944,
+    "durationSeconds": 2700.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 3183706112,
+    "wallSeconds": 244.3,
+    "cpuSeconds": 512.0,
+    "memoryOfEstimate": 0.49,
+    "durationOfEstimate": 0.09
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "L19 fix: build and landed tests (first build; may resolve online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-fix; echo worktree=L19-kafka-fix commit=$(git rev-parse HEAD); rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --continue :streams:jar :streams:test-utils:jar :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-fix.test-online.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L19-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L19-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L19-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L19-fix.test-online.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 109.521,
+      "cpuSeconds": 218.409,
+      "cpuThrottledSeconds": 0.77,
+      "peakMemoryBytes": 3183706112,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-l19-fix-build-and-landed-tests.log",
+        "lines": 6,
+        "bytes": 361,
+        "sha256": "3ab04daeadc8bb9c9da36bbd0c0792f081ea552346bf06da0dbc78408cc6d7b0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L19-kafka-fix commit=eab855541a4b776b150a849cecda9c758598cdca",
+        "gradle-exit=0",
+        "      new ListOffsetResponse.PartitionData(Errors.TOPIC_AUTHORIZATION_FAILED, List[JLong]().asJava)",
+        "BUILD SUCCESSFUL in 1m 48s",
+        "junit tests=26 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L19-fix.test-online.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "L19 fix: jars, class digests and runtime classpaths, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-fix; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline -I $O/scripts/resolve-all.init.gradle :streams:test-utils:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L19-fix.streams-test-utils-runtime.raw.txt > $O/logs/L19-fix.export-streams-test-utils-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-fix.export-streams-test-utils-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L19-fix.streams-test-utils-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L19-fix.streams-test-utils-runtime.raw.txt $W/L19-kafka-fix L19-kafka-fix $O/artifacts/L19-kafka-fix.streams-test-utils-runtime-classpath.txt; for j in streams/build/libs/kafka-streams-2.3.0-SNAPSHOT.jar; do cp $j $O/artifacts/L19-kafka-fix-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L19-kafka-fix-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtil | tee $O/artifacts/L19-kafka-fix-$(basename $j .jar).class-digests.txt; done; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 7.012,
+      "cpuSeconds": 14.537,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 705912832,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-l19-fix-jars-class-digests-and.log",
+        "lines": 13,
+        "bytes": 1814,
+        "sha256": "910fa4ec0dd320d914222d71d397144c39937e8a7acb13cad55e63a1945bab06",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 6s",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-fix-kafka-streams-2.3.0-SNAPSHOT.jar 2ddf98926010f6840cda988c5689989ab7cf224a373f53158bc6468082d96b71",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-fix-connect-json-2.3.0-SNAPSHOT.jar f7a1a2806156e34a3581f93a8e942a1d48e20c078e1a4762e4437d1860593664",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-fix-connect-api-2.3.0-SNAPSHOT.jar 5632a6a2a15a2a74c52299ad427c13902de3af8b8c317d28a21c457dee27d1a9",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-fix-kafka-clients-2.3.0-SNAPSHOT.jar 632f646fbdf922990b917a91cf1f30f42f73d35412691dec3250642607797882",
+        "wrote /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-fix.streams-test-utils-runtime-classpath.txt 13 entries",
+        "2ddf98926010f6840cda988c5689989ab7cf224a373f53158bc6468082d96b71  L19-kafka-fix-kafka-streams-2.3.0-SNAPSHOT.jar",
+        "6c979a3936f1dfdb72d053b0201b15dc20531750250cc6705c95882049dfad00  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate$1.class",
+        "f0bb49e0547b4442c5349bbc7c0868bb9b5fca3b8c037c0b6ce068e9934b52a2  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate.class",
+        "a7707c474e1d45cce8ee4111d581128acf6b95c4392ce253acfbd4b98ca7a566  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate$KTableSessionWindowValueGetter.class",
+        "aa4234bc78f8eacea65d09dbf6ef50babdec25a0571761ab851970f06607a4e0  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate$KStreamSessionWindowAggregateProcessor.class",
+        "d055a218166a90507d29a262a97dc8f2130a68a9212d3c81a734ce0041139d7d  org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtil.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "L19 fix: the same tests again, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-fix; echo worktree=L19-kafka-fix commit=$(git rev-parse HEAD); rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline --continue :streams:jar :streams:test-utils:jar :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-fix.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L19-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L19-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L19-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L19-fix.test-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 9.821,
+      "cpuSeconds": 20.383,
+      "cpuThrottledSeconds": 0.055,
+      "peakMemoryBytes": 872820736,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-l19-fix-the-same-tests-again-o.log",
+        "lines": 5,
+        "bytes": 258,
+        "sha256": "b3b71704724c10a9ecf4b7865f52c9c552164249fca31a25386702c12f32a8b0",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L19-kafka-fix commit=eab855541a4b776b150a849cecda9c758598cdca",
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 9s",
+        "junit tests=26 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L19-fix.test-offline.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "L19 parent: build and its own copies of the tests, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-parent; echo worktree=L19-kafka-parent commit=$(git rev-parse HEAD); rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline --continue :streams:jar :streams:test-utils:jar :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-parent.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/L19-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/L19-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/L19-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/L19-parent.test-offline.junit.txt; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 93.267,
+      "cpuSeconds": 207.68,
+      "cpuThrottledSeconds": 0.241,
+      "peakMemoryBytes": 2976567296,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-l19-parent-build-and-its-own-c.log",
+        "lines": 6,
+        "bytes": 368,
+        "sha256": "ff2a7779caec86aaf78b3f0ee5966b921ced536a2549a8c335ee5ea74f69f6ab",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L19-kafka-parent commit=a4f7675db1a928e73c7a69eb906dd1e9ecd4a22a",
+        "gradle-exit=0",
+        "      new ListOffsetResponse.PartitionData(Errors.TOPIC_AUTHORIZATION_FAILED, List[JLong]().asJava)",
+        "BUILD SUCCESSFUL in 1m 32s",
+        "junit tests=25 failures=0 errors=0 skipped=0",
+        "PASS-CHECK-OK /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/logs/L19-parent.test-offline.junit.txt"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 5,
+      "name": "L19 parent: jars, class digests and runtime classpaths, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-parent; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline -I $O/scripts/resolve-all.init.gradle :streams:test-utils:setupWriteClasspath -PsetupCpConf=runtimeClasspath -PsetupCpOut=$O/tmp/L19-parent.streams-test-utils-runtime.raw.txt > $O/logs/L19-parent.export-streams-test-utils-runtime.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-parent.export-streams-test-utils-runtime.gradle-log.txt | head -12 || true; test -s $O/tmp/L19-parent.streams-test-utils-runtime.raw.txt; python3 -I $O/scripts/cp_export_D.py $O/tmp/L19-parent.streams-test-utils-runtime.raw.txt $W/L19-kafka-parent L19-kafka-parent $O/artifacts/L19-kafka-parent.streams-test-utils-runtime-classpath.txt; for j in streams/build/libs/kafka-streams-2.3.0-SNAPSHOT.jar; do cp $j $O/artifacts/L19-kafka-parent-$(basename $j); echo \"$(sha256sum $j | cut -d' ' -f1)  L19-kafka-parent-$(basename $j)\"; $O/scripts/classdigests_D.sh $j org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtil | tee $O/artifacts/L19-kafka-parent-$(basename $j .jar).class-digests.txt; done; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 7.82,
+      "cpuSeconds": 15.365,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 669372416,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/5-l19-parent-jars-class-digests.log",
+        "lines": 13,
+        "bytes": 1832,
+        "sha256": "61c57bcdacf197d4ad605a257d6af9f1c96106e203f8f28f51ec193ade0652c9",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "gradle-exit=0",
+        "BUILD SUCCESSFUL in 7s",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-parent-kafka-streams-2.3.0-SNAPSHOT.jar 4d8ac54e9c5b4023b651ff0cf588d2226c5b3f802c00aa62e78b9dce3fcd089e",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-parent-connect-json-2.3.0-SNAPSHOT.jar d74d58a6cadb8c4d58e8dcb245184652ef3738ed76003215084274bb2e3f9da4",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-parent-connect-api-2.3.0-SNAPSHOT.jar b1aaf37685d9b740588bcc2e94e92fccea1ccb722d7ded29072f5c25cdd2bc22",
+        "copied /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-parent-kafka-clients-2.3.0-SNAPSHOT.jar 0d29a91e8c6dae9ba2c59a5e1b7bc032be0516ee74394da0fcac64e83fad6aa7",
+        "wrote /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/artifacts/L19-kafka-parent.streams-test-utils-runtime-classpath.txt 13 entries",
+        "4d8ac54e9c5b4023b651ff0cf588d2226c5b3f802c00aa62e78b9dce3fcd089e  L19-kafka-parent-kafka-streams-2.3.0-SNAPSHOT.jar",
+        "6c979a3936f1dfdb72d053b0201b15dc20531750250cc6705c95882049dfad00  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate$1.class",
+        "f0bb49e0547b4442c5349bbc7c0868bb9b5fca3b8c037c0b6ce068e9934b52a2  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate.class",
+        "a7707c474e1d45cce8ee4111d581128acf6b95c4392ce253acfbd4b98ca7a566  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate$KTableSessionWindowValueGetter.class",
+        "c98489333ee0ab987da6e3a5671728817a6ea2661aa823210d5aefa89bcfd548  org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregate$KStreamSessionWindowAggregateProcessor.class",
+        "72a1e7409417209f3822eba3770d7a343236e2adb4af4aa24efc02fe065beedf  org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtil.class"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 6,
+      "name": "L19 parent with the fix's test files transplanted, offline (landed tests expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/L19-kafka-parent; echo worktree=L19-kafka-parent commit=$(git rev-parse HEAD); cp $W/L19-kafka-fix/streams/src/test/java/org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregateProcessorTest.java streams/src/test/java/org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregateProcessorTest.java; cp $W/L19-kafka-fix/streams/src/test/java/org/apache/kafka/streams/kstream/internals/SuppressScenarioTest.java streams/src/test/java/org/apache/kafka/streams/kstream/internals/SuppressScenarioTest.java; cp $W/L19-kafka-fix/streams/src/test/java/org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtilTest.java streams/src/test/java/org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtilTest.java; git status --short; rm -rf streams/build/test-results/test; set +e; JAVA_HOME=$J8 choom -n 500 -- $O/tools/gradle-5.4.1/bin/gradle --no-daemon --console=plain --max-workers=3 -Dorg.gradle.jvmargs=-Xmx2g -PmaxParallelForks=1 -I $O/scripts/kafka-jcenter-substitute.init.gradle --offline --continue :streams:test --tests org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest --tests org.apache.kafka.streams.kstream.internals.SuppressScenarioTest --tests org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; grep -E '^BUILD|FAILED|What went wrong' $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt | head -12 || true; python3 -I $O/scripts/junit_summary.py streams/build/test-results/test | tee $O/logs/L19-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest[A-Za-z]* FAILED|compileIntegTest[A-Za-z]* FAILED' $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/L19-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/L19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/L19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/L19-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 16.253,
+      "cpuSeconds": 35.084,
+      "cpuThrottledSeconds": 0.747,
+      "peakMemoryBytes": 1209405440,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/6-l19-parent-with-the-fix-s-test.log",
+        "lines": 22,
+        "bytes": 1969,
+        "sha256": "7c439aa53f34fbf3877bd639d58a56b060ff4d856044c5b036839b58977cf380",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "worktree=L19-kafka-parent commit=a4f7675db1a928e73c7a69eb906dd1e9ecd4a22a",
+        " M streams/src/test/java/org/apache/kafka/streams/kstream/internals/KStreamSessionWindowAggregateProcessorTest.java",
+        " M streams/src/test/java/org/apache/kafka/streams/kstream/internals/SuppressScenarioTest.java",
+        " M streams/src/test/java/org/apache/kafka/streams/kstream/internals/graph/GraphGraceSearchUtilTest.java",
+        "gradle-exit=1",
+        "> Task :streams:test FAILED",
+        "org.apache.kafka.streams.kstream.internals.SuppressScenarioTest > shouldSupportFinalResultsForSessionWindows FAILED",
+        "org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > shouldExtractGraceFromSessionAncestorThroughStatefulParent FAILED",
+        "org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > shouldExtractGraceFromSessionAncestorThroughStatelessParent FAILED",
+        "org.apache.kafka.streams.kstream.internals.graph.GraphGraceSearchUtilTest > shouldExtractGraceFromKStreamSessionWindowAggregateNode FAILED",
+        "org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest > shouldLogAndMeterWhenSkippingLateRecordWithZeroGrace FAILED",
+        "org.apache.kafka.streams.kstream.internals.KStreamSessionWindowAggregateProcessorTest > shouldLogAndMeterWhenSkippingLateRecordWithNonzeroGrace FAILED",
+        "* What went wrong:",
+        "BUILD FAILED in 15s",
+        "junit tests=26 failures=6 errors=0 skipped=0",
+        "junit failed KStreamSessionWindowAggregateProcessorTest#shouldLogAndMeterWhenSkippingLateRecordWithZeroGrace",
+        "junit failed KStreamSessionWindowAggregateProcessorTest#shouldLogAndMeterWhenSkippingLateRecordWithNonzeroGrace",
+        "junit failed SuppressScenarioTest#shouldSupportFinalResultsForSessionWindows",
+        "junit failed GraphGraceSearchUtilTest#shouldExtractGraceFromSessionAncestorThroughStatefulParent",
+        "junit failed GraphGraceSearchUtilTest#shouldExtractGraceFromSessionAncestorThroughStatelessParent",
+        "junit failed GraphGraceSearchUtilTest#shouldExtractGraceFromKStreamSessionWindowAggregateNode",
+        "TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 7,
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/L19-kafka-fix checkout -- .; git -C $W/L19-kafka-fix clean -fdxq; git -C $W/L19-kafka-fix status --short; git -C $W/L19-kafka-parent checkout -- .; git -C $W/L19-kafka-parent clean -fdxq; git -C $W/L19-kafka-parent status --short; du -sh $W/L19-kafka-fix $W/L19-kafka-parent; du -sh $GRADLE_USER_HOME",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 10800.0,
+      "cancelled": false,
+      "wallSeconds": 0.602,
+      "cpuSeconds": 0.561,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 8409088,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/7-remove-the-build-trees.log",
+        "lines": 3,
+        "bytes": 241,
+        "sha256": "f951b651e8d9251d1c90c213f6d50d4a00160b496b7ffb68b214d77d003dd0cc",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "46M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L19-kafka-fix",
+        "46M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L19-kafka-parent",
+        "3.8G\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/gradle-home"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T16:40:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T163533Z-413559f5248073b4"
+    }
+  }
+}

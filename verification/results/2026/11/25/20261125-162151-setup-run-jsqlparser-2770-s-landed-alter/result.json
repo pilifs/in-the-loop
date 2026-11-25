@@ -1,0 +1,392 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-162151-setup-run-jsqlparser-2770-s-landed-alter",
+  "title": "Setup: run JSqlParser #2770's landed ALTER dispatch tests on the parent revision",
+  "status": "passed",
+  "summary": "passed: 4 passed step(s) in 5m12s, peak 2.1 GiB (estimated 8m00s, 3.0 GiB)",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-162151-setup-run-jsqlparser-2770-s-landed-alter.json",
+    "sha256": "942be26261a2ef0935b72bd63547a062f946373828f8c63ee6c9b12d5aaeaf70",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-162151-setup-run-jsqlparser-2770-s-landed-alter",
+      "title": "Setup: run JSqlParser #2770's landed ALTER dispatch tests on the parent revision",
+      "description": "Setup for case L20 of llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees, with the Maven cache resolved there already, JDK 17, offline: builds JSqlParser at the parent pin cf6c83ce8f3fac6393356c57baeb1a4a3dee7913 and runs its own TablesNamesFinderTest, keeps the parent jar and the class digests of both sides, then moves the fix's (0a7436a10301e118802a4b7effba056de22ee7f8) AlterRendererDispatchTest and TablesNamesFinderTest onto the parent, once as landed (they call a fix-only method, so are expected not to compile) and once with the six lines that call that method deleted, which should leave some dispatch tests failing on the parent. Each Maven build of JSqlParser takes about 80 s (JavaCC and 694 sources), so the runs are a job. The fix side ran inline: 128 tests, 0 failures, online and offline.",
+      "kind": "real-world",
+      "capabilities": [
+        "setup:upstream-build",
+        "maven"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md",
+          "llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md"
+        ]
+      },
+      "expected": "every step exits 0: the parent's own tests pass; the landed transplant prints TRANSPLANT-DOES-NOT-COMPILE (or compiles and some tests fail); the modified transplant prints MODIFIED-TRANSPLANT-FAILS-AS-EXPECTED; the trees are removed",
+      "submitted": {
+        "at": "2026-11-25T16:21:51+00:00",
+        "session": "e2f0a119-4519-41e4-95b9-ad93ae273162",
+        "by": "setup agent (Claude Opus 5.5), fork A"
+      },
+      "requires": [
+        "java",
+        "mvn",
+        "git",
+        "python3",
+        "bash"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "8m"
+      },
+      "steps": [
+        {
+          "name": "L20 parent: its own TablesNamesFinderTest offline, parent jar, classpaths and class digests",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh parent",
+          "cwd": "."
+        },
+        {
+          "name": "L20 parent with the fix's two landed test files (expected not to compile: hasActiveColumnDefinitions() is fix-only)",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh transplant",
+          "cwd": "."
+        },
+        {
+          "name": "L20 parent with a MODIFIED copy of the landed tests (the six hasActiveColumnDefinitions() lines deleted); some expected to fail",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh modified",
+          "cwd": "."
+        },
+        {
+          "name": "remove the L20 build trees",
+          "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh clean",
+          "cwd": "."
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "sourceCommit": "3037ff3919d78e3dea67e70d8ef9562ea1f53fa8",
+  "startedAt": "2026-11-25T16:31:06+00:00",
+  "finishedAt": "2026-11-25T16:36:41+00:00",
+  "wallSeconds": 335.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 1585564,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 1920.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 480.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 2274361344,
+    "wallSeconds": 312.5,
+    "cpuSeconds": 458.4,
+    "memoryOfEstimate": 0.71,
+    "durationOfEstimate": 0.65
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "L20 parent: its own TablesNamesFinderTest offline, parent jar, classpaths and class digests",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh parent",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 116.913,
+      "cpuSeconds": 179.811,
+      "cpuThrottledSeconds": 31.878,
+      "peakMemoryBytes": 2274361344,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-l20-parent-its-own-tablesnames.log",
+        "lines": 73,
+        "bytes": 10501,
+        "sha256": "b89e0dd3d47a740fda4ae325687b47dd0f3b34472a9f0c3905f2bd0e8aea9f6e",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionOrderBy.class` (parent) | `92f418012b31c3b48c07ea6b286aeb6f63ed74ecbba9408bc8502966d889293a` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionOrderBy.class` (fix) | `bc35235be5edcc83772ad367ed33b93bef9e372dcbe5033404e6bf0f8588686a` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$1.class` (parent) | `9f10bfa83ffd22d72c716f963fbfb2ae0a04bfe702e38526532fdcba97314a71` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$2.class` (parent) | `abf5294b99f05ef83d861fa1705640d99f7dc34594c41675bec24ec3b61c1510` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$DetachMode.class` (parent) | `2f59d8cd8ba89d80b4b8d02b0bf2add3ed56f136d4aa846ccabfdc31689ab4c7` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$ExchangeValidationMode.class` (parent) | `d58ebb7d0e7235316ba7579b3545391d5ec3260ae06a42092452ae54e9d76a7e` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition.class` (parent) | `ad93bf7e5bbc3fac2e2ee026309d45ab3dbf50b64215fda13468949573271f3e` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$1.class` (fix) | `9f10bfa83ffd22d72c716f963fbfb2ae0a04bfe702e38526532fdcba97314a71` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$2.class` (fix) | `d44b4cc37519dba5894b5b4bcd708c991cee969dcfeeecb08eb69c50b308d013` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$DetachMode.class` (fix) | `2f59d8cd8ba89d80b4b8d02b0bf2add3ed56f136d4aa846ccabfdc31689ab4c7` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition$ExchangeValidationMode.class` (fix) | `d58ebb7d0e7235316ba7579b3545391d5ec3260ae06a42092452ae54e9d76a7e` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPartition.class` (fix) | `a3f31184395fdf933c59365b1bd6d96c3422da8165a3ce3408747ab90522bc32` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPrimaryKey.class` (parent) | `f8c6678030c03a8006a6b89281267a5d234cfdb4e7c6e694d6aee16d77dd881b` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionPrimaryKey.class` (fix) | `5b5e8249ca1fd1fd40c9392c1cee90cdcb86d8dc84c9083f3d411917932ceeb0` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionRename$1.class` (parent) | `55f9684fe9416d341f93c31de90f2f70b6c0f960a786049912014b75ac6fa686` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionRename.class` (parent) | `d47e452b72d4b911ecd9f6c37109cde8f97475f52895fd73cfe268b6aaedf146` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionRename$1.class` (fix) | `e4e7f85e1062c9bfc1dc837f194918748b8de05c60f57d6693e4de267f116235` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionRename.class` (fix) | `d8c299d3030850018c93f3bb843bd1d5183e40e77d5a3df695012bce03bdabbd` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionTableOption$1.class` (parent) | `1b70d0e66f9ba2dad038e0abf7d6c5fa63ab05d6825a790538574886ebe00505` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionTableOption.class` (parent) | `d1984241a320ecdcb8eb8abe9595fcae3a960a0f6e55d096f6aa993ed1c37cc1` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionTableOption$1.class` (fix) | `3e3e9bcf51dcc16a090a7f7ac451a492b160c062699642bb71c6bb4a5d467485` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterExpressionTableOption.class` (fix) | `fb4a2576793d596e38530dd5433c49e4e5ab39ebbcfe26d48411b6393fdfb647` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterForeignDataOptions.class` (parent) | `51929a1d6c118aa9e4ccaf0c7a6fe037f334637680bf5ec5e1ee5c951d9b79fd` |",
+        "| `net/sf/jsqlparser/statement/alter/AlterForeignDataOptions.class` (fix) | `1d54775432d967f94e0f6123e1e7de662d772c9f68a66b4f211036903976e2dd` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$1.class` (parent) | `365b0ffbcbe9f4cd9b450f5b9db74036591bdf2b1c79f319c5f82224f130fd16` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$ColumnAction.class` (parent) | `faa6ac2b642a17a8c25426fa0f51fb5c24e83993350d7a082ec7768ebce0eb01` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$EnableState.class` (parent) | `a3b6997103f209362e3e87619418797ebfcb8609c4305da7418c34c9399da951` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$Kind.class` (parent) | `3148be08aed3da4cd197a882acf6ae46beccfe55552e58c307203acbf586ca56` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$ReplicaIdentity.class` (parent) | `f4adb11603e4eb305cae477915ac8fc6e8361e2143577290079e09822bffb4e8` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$TriggerTarget.class` (parent) | `3830a440a29484a5e59e0342785e50e4d38a1d9e6679a793bda9e01f18baf122` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction.class` (parent) | `a0f2f7465e22b9db5f7f40132a4b9eeb132c5e56970c6fc891fad76540ceb866` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$1.class` (fix) | `10fe6fe73c06f687707df85f8785894ec1932a39412679c43301f12f8786b632` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$ColumnAction.class` (fix) | `faa6ac2b642a17a8c25426fa0f51fb5c24e83993350d7a082ec7768ebce0eb01` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$EnableState.class` (fix) | `a3b6997103f209362e3e87619418797ebfcb8609c4305da7418c34c9399da951` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$Kind.class` (fix) | `3148be08aed3da4cd197a882acf6ae46beccfe55552e58c307203acbf586ca56` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$ReplicaIdentity.class` (fix) | `f4adb11603e4eb305cae477915ac8fc6e8361e2143577290079e09822bffb4e8` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction$TriggerTarget.class` (fix) | `3830a440a29484a5e59e0342785e50e4d38a1d9e6679a793bda9e01f18baf122` |",
+        "| `net/sf/jsqlparser/statement/alter/RelationAlterAction.class` (fix) | `822b77dcac73d78d5b2beadb57dfe38743fd8439ec38dc0bd5fad91f0da96b1c` |",
+        "| `net/sf/jsqlparser/util/deparser/AlterDeParser.class` (parent) | `96cb95e5926b4d3936e0daf763dd4a34462c00cf974d689cff6b9b9005bb7259` |",
+        "| `net/sf/jsqlparser/util/deparser/AlterDeParser.class` (fix) | `fc1a46bd97d40e72c7cf6b3d0e337d4adf7828b3c3e29030115be4f7bd3acd0f` |"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "L20 parent with the fix's two landed test files (expected not to compile: hasActiveColumnDefinitions() is fix-only)",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh transplant",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 98.294,
+      "cpuSeconds": 139.009,
+      "cpuThrottledSeconds": 12.941,
+      "peakMemoryBytes": 2062778368,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-l20-parent-with-the-fix-s-two.log",
+        "lines": 25,
+        "bytes": 2784,
+        "sha256": "c325bd51f068a899c6e19a32e0d32da999da0143d0d4042f76079370546a8c64",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        " M src/test/java/net/sf/jsqlparser/util/TablesNamesFinderTest.java",
+        "?? src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java",
+        "mvn-exit=1 seconds=98",
+        "junit tests=0 failures=0 errors=0 skipped=0",
+        "[ERROR] COMPILATION ERROR : ",
+        "[ERROR] /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-parent/src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[53,26] cannot find symbol",
+        "[ERROR] /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-parent/src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[76,25] cannot find symbol",
+        "[ERROR] /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-parent/src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[137,26] cannot find symbol",
+        "[ERROR] /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-parent/src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[147,26] cannot find symbol",
+        "[ERROR] /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-parent/src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[193,26] cannot find symbol",
+        "[ERROR] /home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-parent/src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[212,26] cannot find symbol",
+        "[ERROR] BUILD FAILURE",
+        "TRANSPLANT-DOES-NOT-COMPILE",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[53,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[76,25] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[137,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[147,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[193,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[212,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[53,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[76,25] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[137,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[147,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[193,26] cannot find symbol",
+        "src/test/java/net/sf/jsqlparser/statement/alter/AlterRendererDispatchTest.java:[212,26] cannot find symbol"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 3,
+      "name": "L20 parent with a MODIFIED copy of the landed tests (the six hasActiveColumnDefinitions() lines deleted); some expected to fail",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh modified",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 97.106,
+      "cpuSeconds": 139.471,
+      "cpuThrottledSeconds": 14.039,
+      "peakMemoryBytes": 2145288192,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/3-l20-parent-with-a-modified-cop.log",
+        "lines": 48,
+        "bytes": 5656,
+        "sha256": "f6e4cb4f9ca670a8dcf4afdf1963b7c7709efdb46218cc8aa6742cc747e93c2f",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[3]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[4]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[5]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[6]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[7]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[9]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[1]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[2]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[3]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[4]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[5]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[6]",
+        "junit failed AlterRendererDispatchTest#dropFallbackKeepsIdentityBodyInsteadOfInactiveDefaultMetadata",
+        "[ERROR] Tests run: 21, Failures: 16, Errors: 0, Skipped: 0, Time elapsed: 0.321 s <<< FAILURE! -- in net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest",
+        "[ERROR] net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest.dropFallbackStillRewritesItsActiveColumnExpressionAndAppendsTailOnce -- Time elapsed: 0.122 s <<< FAILURE!",
+        "[ERROR] net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest.specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[1] -- Time elapsed: 0.003 s <<< FAILURE!",
+        "[ERROR] net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest.specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[2] -- Time elapsed: 0.003 s <<< FAILURE!",
+        "[ERROR] net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest.specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[3] -- Time elapsed: 0.003 s <<< FAILURE!",
+        "[ERROR] net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest.specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[4] -- Time elapsed: 0.002 s <<< FAILURE!",
+        "[ERROR] net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest.specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[5] -- Time elapsed: 0.005 s <<< FAILURE!",
+        "[ERROR] net.sf.jsqlparser.statement.alter.AlterRendererDispatchTest.specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[6] -- Time elapsed: 0.003 s <<< FAILURE!",
+        "mvn-exit=0 seconds=97",
+        "junit tests=128 failures=16 errors=0 skipped=0",
+        "junit failed AlterRendererDispatchTest#dropFallbackStillRewritesItsActiveColumnExpressionAndAppendsTailOnce",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[1]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[2]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[3]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[4]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[5]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[6]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[7]",
+        "junit failed AlterRendererDispatchTest#specializedBodiesIgnoreUnrelatedDefaultAndColumnMetadata(String, Dialect, Class)[9]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[1]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[2]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[3]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[4]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[5]",
+        "junit failed AlterRendererDispatchTest#baseBodyPrecedencePreventsInactiveColumnExpressionsFromBeingRendered(Consumer)[6]",
+        "junit failed AlterRendererDispatchTest#dropFallbackKeepsIdentityBodyInsteadOfInactiveDefaultMetadata",
+        "MODIFIED-TRANSPLANT-FAILS-AS-EXPECTED"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 4,
+      "name": "remove the L20 build trees",
+      "run": "bash $HOME/.cache/in-the-loop/merged-pr-links-l01-l20/scripts/L20_job.sh clean",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 1920.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.094,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 5238784,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/4-remove-the-l20-build-trees.log",
+        "lines": 2,
+        "bytes": 179,
+        "sha256": "86dc00f2c3b1bd0ec7a37f5aef35252589e76c569faa152e6762de89aef7764a",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "13M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-parent",
+        "13M\t/home/filip/.cache/in-the-loop/merged-pr-links-l01-l20/worktrees/L20-JSqlParser-fix"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T16:40:32+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T163642Z-0125995b5ed9196d"
+    }
+  }
+}
