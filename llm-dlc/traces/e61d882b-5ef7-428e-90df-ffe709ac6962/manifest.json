@@ -10641,242 +10641,250 @@
     },
     {
       "change_id": "qmtzywmqtquysmvqolrkmoquuksykrsz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0b672708af02ea32219f328e77e5077c0ef1d7fc",
+      "immutable": true,
       "summary": "Start the setup record for the merged Java PR links brief",
       "body": "Setup agent for llm-dlc/loops/organic-java-merged-pr-links-brief.md: all 41 pinned revisions of the 20 cases fetched into shallow bare mirrors with a worktree each, every PR's merge SHA and first parent checked against the brief, and six Gradle distributions checked against services.gradle.org. Per-case builds follow.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "ulxnwtzsswoymsmysxopxplspvzspknv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c4f20114aecae2c2aac6139da7a1fb1da82d23cc",
+      "immutable": true,
       "summary": "Queue the setup builds of the merged Java PR links brief (verification pending)",
       "body": "Upstream builds and landed-test runs that take over a minute, for llm-dlc/loops/organic-java-merged-pr-links-brief.md: Lucene core (#14732) on JDK 24, Solr core with TestJsonFacets (#3158), jOOQ with the reporter's H2 loader test (#19875), Guava JRE and Android with SetViewTest (#7784), HikariCP's PostgresTest in Docker (#2346), JUnit's DisplayNameGenerationTests (#2646) and RoaringBitmap's FastAggregation tests (#914). Each runs the fix, the parent and where it compiles the fix's test on the parent, mostly offline after an online first step, in worktrees under ~/.cache/in-the-loop/merged-pr-links.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "rqqurvolzzrznqrnlsvlyronpronlwvy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "de1334ae5b9259ac8d86ae04fdbc0151f8707264",
+      "immutable": true,
       "summary": "Record the setup of the merged Java PR links brief",
       "body": "The setup record for llm-dlc/loops/organic-java-merged-pr-links-brief.md now covers all 20 cases: per-case pins, build facts, online and offline commands, built or overlay jars of both sides with full sha256 and changed-class digests, release sets and which side each equals, landed-test runs, signatures, and Setup Agent Notes for the domain agent. Landed tests were run on a JVM inline for 16 cases (each passes on the fix and fails when moved onto the parent, M16 by the reporter's H2 test); M20's landed test cannot separate the sides; M03, M05 and M19 wait on jobs. Gaps recorded: M07's SNAPSHOT inputs are gone (built over released Jackson 3.2.0), RxJava's signing key is revoked, Solr 9.8.0 is signed by an expired key, M11 needs -Dapi.version=1.44 for Testcontainers on Docker 29. No claims, examples or probes of the brief's scenarios.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "lprplvpzoyzlktqxovwuupovvqolkqty",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "21ffc52fc225a3fc4f2c031890139b6fe9b85a49",
+      "immutable": true,
       "summary": "Propose eight false positives from the merged-pr-links setup for the allow list",
       "body": "Setup session f1c44a2e's logs raised long-token and public-ip warnings that are jar file names (M19-junit-framework-*), a public OpenPGP key fingerprint used as a file name, a JDK 21 version string and a four-part Maven version. Proposed only; a person approves.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "xuysovwpmrqruxovmsyzmpmowslxplmq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "d1297eed309600a9f6685e037f576c57a9d91efd",
+      "immutable": true,
       "summary": "Record the seven setup job results of the merged Java PR links brief",
       "body": "All seven setup jobs passed (results recorded by the pipeline on the default line). Lucene #14732, Solr #3158, jOOQ #19875 and Guava #7784 now also have jars built from the pins themselves, with full sha256 and the digests of the changed classes. Their landed or reporter regressions agree with the overlay runs: the fix passes, the parent fails, offline included. HikariCP's whole PostgresTest gives 7/7 on the fix and 6/6 on the parent; with the fix's class moved onto the parent, only testSchema fails. RoaringBitmap #914 and JUnit #2646, whose landed tests had not run before, separate the sides: ArrayStoreException in both new tests, and indicativeSentencesGeneratorOnNestedClass fails on the parent. So the regression separates the sides in 19 of 20 cases; for Guava, the fix's test does not compile on the parent. Noted: the jOOQ jar is not byte-reproducible between builds of one pin. The Setup Agent Notes now say setup is complete.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "tqtysowzwprsnymszukxyunzwypnwprs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c63f5128fdfd6e8b51d691fa4c37898237a0c630",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "52b1274e08cda47c85212d615479631edf7ec61ee39a220a03a09be6072c34d7"
     },
     {
       "change_id": "ruyozwpyrzkzskosksyrmzuztluvpzrv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e0ca3df789c07c140accac75c3b4f71be0df286c",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-072322-setup-run-roaringbitmap-914-s-landed-fas: passed: 5 passed step(s) in 1m11s, peak 710.0 MiB (estimated 5m00s, 4.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "52b1274e08cda47c85212d615479631edf7ec61ee39a220a03a09be6072c34d7"
     },
     {
       "change_id": "mynnkymuytlpqvotusuxvupquwumrnnp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f9535c675257b25afaf5f6a4e3b799b147f5d8d1",
+      "immutable": true,
       "summary": "Record verification results for 3 job(s)",
       "body": "Outputs applied for 0 of the 3 job(s); 3 declared or produced none. 20261125-071414-setup-build-lucene-core-at-both-14732-re: passed: 5 passed step(s) in 3m55s, peak 1.6 GiB (estimated 25m00s, 5.0 GiB) 20261125-071415-setup-build-jooq-at-both-19875-revisions: passed: 4 passed step(s) in 2m41s, peak 1.2 GiB (estimated 30m00s, 5.0 GiB) 20261125-072322-setup-run-junit-2646-s-landed-displaynam: passed: 5 passed step(s) in 3m50s, peak 2.2 GiB (estimated 15m00s, 4.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "52b1274e08cda47c85212d615479631edf7ec61ee39a220a03a09be6072c34d7"
     },
     {
       "change_id": "ttuwqwvpporssurvupkyrwvptukttorw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "ca5c7319f76acbe2d0966bcc89c679b6b90f1960",
+      "immutable": true,
       "summary": "Record verification results for 2 job(s)",
       "body": "Outputs applied for 0 of the 2 job(s); 2 declared or produced none. 20261125-071415-setup-build-solr-core-at-both-3158-revis: passed: 5 passed step(s) in 7m16s, peak 3.8 GiB (estimated 1h00m, 8.0 GiB) 20261125-071708-setup-run-hikaricp-s-landed-postgrestest: passed: 3 passed step(s) in 7m02s, peak 723.7 MiB (estimated 10m00s, 3.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "52b1274e08cda47c85212d615479631edf7ec61ee39a220a03a09be6072c34d7"
     },
     {
       "change_id": "omvqzwuyylslluyrwpmnyvplqlztozxw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "94f4d2b0b1c2e49dbc5efdeafd9d9c30131484d7",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-071415-setup-build-guava-jre-and-android-at-bot: passed: 6 passed step(s) in 7m27s, peak 1.8 GiB (estimated 45m00s, 5.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief-setup run, which keeps the queue while the run is under way.",
       "log_sha256": "52b1274e08cda47c85212d615479631edf7ec61ee39a220a03a09be6072c34d7"
     },
     {
       "change_id": "vvplkvnomyqrplzyxwqxvoqyqqmswxtw",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "84513f853784da01b028ce5cf3c5e69171d17e4d",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 20 pull requests: organic-java-merged-pr-links-l01-l20",
       "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-l01-l20.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-l01-l20.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
       "log_sha256": "f48a3bef447780e8efbf2aec7cba0a6945f994efdf35bffa346948eeff4adf64"
     },
     {
       "change_id": "vluwvlyxknmwszzpytpsrzoouwwsyvzl",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f8596ccb0817caedb56dbee06cedae5799b423f5",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 10 pull requests: organic-java-merged-pr-links-m01-m10",
       "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-m01-m10.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-m01-m10.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
       "log_sha256": "a1ba6ba789eaa00f0493eccc6ad138f0787d7a7e00e0615fc11f3a68ff40b58a"
     },
     {
       "change_id": "umqvqqmlozwkkllqosqwmxznrztopoup",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "4327d8156965d121dbb1a92ea963955391f372f0",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 5 pull requests: organic-java-merged-pr-links-n01-n05",
       "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-n01-n05.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-n01-n05.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-n01-n05-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
       "log_sha256": "f0435b99411c7f64d9d59bfeea1c53012d266765247c54939865d9db4ced3af7"
     },
     {
       "change_id": "mlwnltyluvkkussxpznytopwzplvslmv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "58f6bc0a5643187d00533c7549a2670ef40e2aaf",
+      "immutable": true,
       "summary": "Record the watcher's decisions on organic-java-merged-pr-links-brief-setup",
       "body": "The watcher's verdicts on the single-agent run organic-java-merged-pr-links-brief-setup (llm-dlc/decisions/single-organic-java-merged-pr-links-brief-setup.jsonl), committed before the run lands, with the brief queue's log.",
       "log_sha256": "5f74fdd9169302f86bffe9769784bff4a78fb537f3ae17cd06acc40ec5944e5f"
     },
     {
       "change_id": "yqwxtnwplkwuwovvvlsxmnuytzzzwups",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "900b0475a343ac2a22f5bb8a8319820244240505",
+      "immutable": true,
       "summary": "Merge the single-agent run organic-java-merged-pr-links-brief-setup into the line",
       "body": "The single-agent run organic-java-merged-pr-links-brief-setup (session f1c44a2e-caec-48a3-9996-4d22d22c89b4) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "zkryyrotzqtwlvxnsoptpomtpynxywuk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "e8c080828aa520b21945cbc39bca825ca942c90a",
+      "immutable": true,
       "summary": "Put the setup notes of organic-java-merged-pr-links-brief into its brief",
       "body": "The setup run organic-java-merged-pr-links-brief-setup ended its record with a 'Setup Agent Notes' section, and brief_queue.py put it into llm-dlc/loops/organic-java-merged-pr-links-brief.md and ~/code/scripts/analysis/organic-java-merged-pr-links-brief.md, for the domain agent.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "tnyryyksmnvynoyrrumnxykxklrvqnry",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "42494fd358d4bd958538c6fc246c8b098e846ebe",
+      "immutable": true,
       "summary": "Record the brief queue's handover",
       "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "vnptrrymlnwmmmpytppqrkmlzyvmkqkv",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "0ab38af68366f105da8a3c069ae0dfac1464be90",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 20 pull requests: spring-framework-pr-links-o01-o20",
       "body": "The list of pull requests ~/code/scripts/analysis/spring-framework-merged-pr-links-o01-o20.md is copied unchanged to llm-dlc/loops/spring-framework-merged-pr-links-o01-o20.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/spring-framework-pr-links-o01-o20-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
       "log_sha256": "fcb387e0dcd28e2501c0f49f36b3e1a8632dbc090eacf5f30d77573f8ef5881d"
     },
     {
       "change_id": "llxzyqkuvmpvvqmznwkqpuxlolpxkywy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "44585b97bbf5c752fb7e61809a86380c7ff16aa3",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 30 pull requests: spring-framework-pr-links-p01-p30",
       "body": "The list of pull requests ~/code/scripts/analysis/spring-framework-merged-pr-links-p01-p30.md is copied unchanged to llm-dlc/loops/spring-framework-merged-pr-links-p01-p30.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/spring-framework-pr-links-p01-p30-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
       "log_sha256": "f5d75d1e763e232f2309a6b9222d8a633b5c0de0f44ffdcc68fcfcade3dfa421"
     },
     {
       "change_id": "mkmxsyrxtnwkkorryrkprsnlxutqztns",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "cd8136251f407b960d08eafbded48472a3de44d5",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 30 pull requests: spring-framework-pr-links-q01-q30",
       "body": "The list of pull requests ~/code/scripts/analysis/spring-framework-merged-pr-links-q01-q30.md is copied unchanged to llm-dlc/loops/spring-framework-merged-pr-links-q01-q30.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/spring-framework-pr-links-q01-q30-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
       "log_sha256": "06eff4a6e18eae00b8d45375b7594b8688cbcccc803abd5d74adcab814eb2faf"
     },
     {
       "change_id": "uuxmqrkqvrtpvrsnqvppyoqosrkwxwsy",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "6e60b887bb571f9d01400ce659458cfc9c4978ad",
+      "immutable": true,
       "summary": "Record VF-066: a queued run that continues the previous session starts near its compaction limit",
       "body": "Entry 7's domain run (organic-java-merged-pr-links-brief) resumed Codex session c3caedf3 still holding about 555k tokens from beyond-jbmc-scaffold-first, and auto-compacted five minutes in, before any commit. The generation session ea63c5f6 will chain through queue entries 8-13 the same way, by the user's design. The user asked for this to be monitored only: the watcher measures inherited tokens, time to first compaction, re-reading or repeated work, cycles and claims decided per queued run, and the finding lists when to act and the options for later. Drafted by the advisor; numbered and placed by the watcher.",
       "log_sha256": "274df7edd25400a4c75e8810653923c6195a51cd81011e32c4f0ca435f928156"
     },
     {
       "change_id": "nrwsuzzmuxxoutknursvlyqxyxlnpmyx",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "dcd16ed43acbcc671cd332977d89125aa78f3641",
+      "immutable": true,
       "summary": "Record verification results for 4 job(s)",
       "body": "Outputs applied for 4 of the 4 job(s). 20261125-091819-qualify-avro-merged-challenge-and-contro: passed: 1 passed step(s) in 12.6s, peak 102.4 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261125-091819-qualify-ical4j-merged-challenge-and-cont: passed: 1 passed step(s) in 11.7s, peak 96.8 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261125-091819-qualify-jackson-csv-merged-challenge-and: passed: 1 passed step(s) in 11.8s, peak 97.7 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). 20261125-091819-qualify-joo-merged-challenge-and-control: passed: 1 passed step(s) in 16.0s, peak 96.0 MiB (estimated 2m00s, 1.0 GiB); 2 output file(s) changed Applied 2 output(s). Collected by the watcher of the organic-java-merged-pr-links-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "c4744bd65a581974fd5bd84323a5c516e30e42217bb18b3cc36e9967e515fdc6"
     },
     {
       "change_id": "kxpwqsqxplyxpmkzyqrpnxqwsqxkskur",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "c6cff7e63c0afe40f5dc8f95a9b519264a41b6db",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 1 of the 1 job(s). 20261125-091819-replay-all-sixty-one-merged-java-public: passed: 1 passed step(s) in 2m04s, peak 199.2 MiB (estimated 4m00s, 1.0 GiB); 1 output file(s) changed Applied 1 output(s). Collected by the watcher of the organic-java-merged-pr-links-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "c4744bd65a581974fd5bd84323a5c516e30e42217bb18b3cc36e9967e515fdc6"
     },
     {
       "change_id": "oyuysrovmvoktzywltyunklykxsxulus",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "bdf1f02ac812fa94a41d9e3fabac675b3daee7d6",
+      "immutable": true,
       "summary": "Queue a brief to be generated from 50 pull requests: organic-java-merged-pr-links-r01-r50",
       "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links-r01-r50.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links-r01-r50.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-r01-r50-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
       "log_sha256": "55d6110cadb19b498e284ee350803ace4a2c20eb376f6b6fa57b6a4afb874546"
     },
     {
       "change_id": "luouuxlukmqvuqpxzymyslozzuvytswk",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "1ef2a841a94228ba2cd05ee26948173b55b2d2bc",
+      "immutable": true,
       "summary": "Record verification results for 1 job(s)",
       "body": "Outputs applied for 0 of the 1 job(s); 1 declared or produced none. 20261125-095857-replay-three-upstream-defects-and-the-ja: passed: 3 passed step(s) in 1m34s, peak 219.8 MiB (estimated 4m00s, 1.0 GiB) Collected by the watcher of the organic-java-merged-pr-links-brief run, which keeps the queue while the run is under way.",
       "log_sha256": "55d6110cadb19b498e284ee350803ace4a2c20eb376f6b6fa57b6a4afb874546"
     },
     {
       "change_id": "vyvxuwysqqrxlpvppwlqutmlkzkroukz",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b465bf24207c9c1cc3460635167added5cda2e2a",
+      "immutable": true,
       "summary": "Record VF-067: the 12 signed Ubuntu packages the successor launches need, approved for a later follow-up",
       "body": "beyond-jbmc-scaffold-first ran three successor callers (WildFly, Jackson plus Joda-Time, PDFBox) on Maven-cache alternatives because their signed Ubuntu closures needed 12 more archive files than its request budget allowed (verification/beyond-jbmc/successor/needed-providers.json). The user approved fetching exactly those 12 files, but only within a future beyond-jbmc follow-up run whose brief or continue message carries the approval; nothing runs now. The finding lists the packages, why the headline does not depend on them, and how to do it then. Drafted by the advisor; numbered and placed by the watcher.",
       "log_sha256": "0efa253bcd877895bfb0b427d9200ecd118fa314e63711af652ea3f628f89f4d"
     },
     {
       "change_id": "zzsmtppzmkmkmqtmolkqrvrpornlxrpp",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "b930070c66f23866c94fef858cb981fb2fe39097",
+      "immutable": true,
       "summary": "Replay pinned public Java callers and compare six merged changes",
       "body": "Add a finite public-API comparison to the example router. Each history gets the same compiled caller in a fresh JVM with a checked JDK, ordered JAR digests and observed class providers. Examples 403–406, 419 and 422 cover Lucene, JTS, RoaringBitmap, DataSketches, both jOOλ modules and both Guava editions.\n\nEight deployment pairs ran 48 physical trials and reproduced their receipts through the ordinary example command. Both jOOλ variants refuted the wide-bound prediction; Guava supplied the iterator-count difference its upstream tests missed. All six example validations and all 57 repository-selected test suites passed.",
       "log_sha256": "8ecbe12780199d652392c289c828c7704254727d2a2d8ba67aa5d4190bf3e6eb"
     },
     {
       "change_id": "urtzsomwsynnnvkvzttwxpoxwrnmnnqo",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "f4205bdfeb7870f5992ef45700c64be7f9d1a664",
+      "immutable": true,
       "summary": "Complete the merged Java public API campaign (verification pending)",
       "body": "Add the other fourteen public callers, the campaign audit and the twenty-case report. All 20 merged intent predictions and 20 unchanged controls held. Jackson CSV, Avro, ical4j and both jOOλ modules refuted four challenge predictions. Preserve the original expectations, typed outcomes, runtime digests and overlay boundaries. The H2 and PostgreSQL 16.16 and 18.1 jOOQ histories reproduce both the counting discrepancy and the repair.\n\nAll 143 physical observations across 24 deployment pairs were reproduced through the normal example route. All fourteen new example validations and the 56 selected test suites passed. The audit checks 61 original claim rows and the retained Avro receipt confirms four original-method entries. Adding a missing observation, wrong result or reversed source pins to the audit's inputs was checked to fail.\n\nIndependent full replay job 20261125-091819-replay-all-sixty-one-merged-java-public. Original-method control and challenge jobs 20261125-091819-qualify-avro-merged-challenge-and-contro, 20261125-091819-qualify-ical4j-merged-challenge-and-cont, 20261125-091819-qualify-jackson-csv-merged-challenge-and and 20261125-091819-qualify-joo-merged-challenge-and-control.",
       "log_sha256": "8ecbe12780199d652392c289c828c7704254727d2a2d8ba67aa5d4190bf3e6eb"
     },
     {
       "change_id": "ysxolvkmqrrnowulmkyrrtmtppmurzvs",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "5fcacf0c1fe1812cdbfc15987fe818a161cfe4f7",
+      "immutable": true,
       "summary": "Classify four merged Java challenges (verification pending)",
       "body": "Replayed the four disputed public callers on the current Maven releases and frozen upstream development commits. The same caller bytecode confirmed the Avro array-default and jOOλ window defects on release and development builds, and the ical4j override-order defect on its development branch. Three public reproductions and related tracker checks are ready for the user in VF-065. Jackson's documented wrapping and the independent token reader both preserved both rows on all four tested deployments, correcting the brief's two-row configuration assumption.\n\nAll 34 release and development observations and four historical Jackson controls reproduced in clean JVMs. The standalone report instructions reproduced the release behavior for every affected module. The four changed examples plus HikariCP and JDT passed their normal replay validators, incorrect artifact digests and class providers were rejected, the pipeline layout validated, and all 54 selected test suites passed. The five previous campaign jobs passed. Job 20261125-095857-replay-three-upstream-defects-and-the-ja independently repeats these 38 observations and the original 143-JVM campaign.",
       "log_sha256": "8ecbe12780199d652392c289c828c7704254727d2a2d8ba67aa5d4190bf3e6eb"
     },
     {
       "change_id": "zwqxttxylnwnwlozurswvnyuzwmyprkq",
-      "commit_id": null,
-      "immutable": false,
+      "commit_id": "05375f7375af8118e4436f7821bc1de9bd99d967",
+      "immutable": true,
       "summary": "Merge the single-agent run organic-java-merged-pr-links-brief into the line",
       "body": "The single-agent run organic-java-merged-pr-links-brief (session c3caedf3-7925-4cdf-aaa2-f3c5885dabb1) worked in the workspace foundation-domain-streams while this line moved on, so its commits come in by a merge. Nothing but the generated trace files met; they were regenerated from the session files.",
+      "log_sha256": "8ecbe12780199d652392c289c828c7704254727d2a2d8ba67aa5d4190bf3e6eb"
+    },
+    {
+      "change_id": "llulpupwoovmukvvxmsonupwwywrrouz",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the brief queue's handover",
+      "body": "The brief queue's log (llm-dlc/loops/queue.jsonl) records what `brief_queue.py next` did: the steps it took, the runs it started, and the briefs it finished.",
       "log_sha256": "8ecbe12780199d652392c289c828c7704254727d2a2d8ba67aa5d4190bf3e6eb"
     }
   ],
