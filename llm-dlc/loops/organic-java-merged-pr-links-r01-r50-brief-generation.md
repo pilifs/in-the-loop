@@ -42,11 +42,11 @@
 | apache/avro#2520 | written | Read the two-reader regression, the three little-endian unsigned loads and TimePeriod’s unsigned range guard. The regression's random values stay below 1000; 4294967295 and its twelve-byte readback remain unexecuted. The pinned Avro specification confirms field order, width and unsigned representation. TimePeriod.of’s Javadoc prints one beyond the guard’s maximum. |
 | apache/parquet-java#3830 | written | Read issue #3828, the map/cache key change and the public file fixture. The regression decodes distinct sets from 100 alternating rows. Mutating just the nested values and reversing dictionary lookup order remain open. |
 | ThreeTen/threeten-extra#433 | written | Read the old floor-division normalization and the new differing-offset/extreme tests. For equal local dates five hours apart the complete-day count is zero. The asymmetric parent and extreme signed day/week results remain runtime predictions. |
-| ReactiveX/RxJava#5101 | not yet |  |
-| reactor/reactor-core#937 | not yet |  |
-| reactor/reactor-core#3783 | not yet |  |
-| ReactiveX/RxJava#6664 | not yet |  |
-| resilience4j/resilience4j#2067 | not yet |  |
+| ReactiveX/RxJava#5101 | written | Read the onNext cancellation rechecks and the firstElement counter tests. The PR reports that the parent can enter a second source then dispose it. An empty prefix with distinct counters across concat forms remains open. |
+| reactor/reactor-core#937 | written | Read #936 and the concatDelayError and concatMapDelayError tests. The issue records early error before 3. The landed expectations include 3 and 4. Comparing hidden/callable publishers under bounded demand remains open. |
+| reactor/reactor-core#3783 | written | Read issue #3777, the old shortcut and the merged StepVerifier fixture. The report saw a first where c was expected. The complete parent sequence and error identity/tail counter are predictions. |
+| ReactiveX/RxJava#6664 | written | Read the newly reordered first-item enqueue and Flowable’s new-group error branch. The two pinned error tests observe both subscribers but only assert the exception class. Delayed single-item readback and exception identity remain open. |
+| resilience4j/resilience4j#2067 | written | Read #1565, the exceptional retry regressions and AsyncContext.onResult. The latter still publishes a retry event for its returned negative interval. Its event/call-count pairing is a source prediction, unexecuted. |
 | resilience4j/resilience4j#1999 | not yet |  |
 | remkop/picocli#2036 | not yet |  |
 | assertj/assertj#3710 | not yet |  |
