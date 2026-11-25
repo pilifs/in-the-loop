@@ -1,0 +1,59 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-071415-setup-build-jooq-at-both-19875-revisions",
+  "title": "Setup: build jOOQ at both #19875 revisions and run the reporter's H2 loader test over each jar",
+  "description": "Setup for case M16 (jOOQ/jOOQ#19875) of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M16-jOOQ-fix = 1a3575be, M16-jOOQ-parent = fe798c2c; jOOQ 3.22.0-SNAPSHOT, Java 21) builds the jOOQ module with Maven 3.10.0 (-pl jOOQ -DskipTests, the cache's local repository) on JDK 21.0.13, then compiles the reporter's LoaderBatchStaticStatementTest (commit 5a98d74d, not part of the PR) against the built jar, its runtime classpath, H2 2.4.240 and JUnit 4.13.2, and runs it: the fix online, the parent offline (expected: testLoaderBatchAllWithStaticStatement fails, as in the setup's overlay run), the fix again offline. The upstream build files are left unchanged (the PR adds no test and the jOOQ module declares no H2 dependency, so the test runs outside Maven). Jars to .../artifacts with sha256, logs to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: the reporter's test passes 2/2 on the fix (online and offline) and fails 1 of 2 on the parent",
+  "submitted": {
+    "at": "2026-11-25T07:14:15+00:00",
+    "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+    "by": "setup agent (Claude Opus 5.5), fork D"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash",
+    "maven",
+    "javac"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "30m"
+  },
+  "steps": [
+    {
+      "name": "M16-jOOQ-fix: jOOQ module jar (online) and the reporter's LoaderBatchStaticStatementTest over it",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; cd $W/M16-jOOQ-fix; echo worktree=M16-jOOQ-fix commit=$(git rev-parse HEAD); set +e; $MVN -Daether.connector.basic.threads=1 -pl jOOQ -DskipTests -Dmaven.javadoc.skip=true package > $O/logs/M16-fix.online.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M16-fix.online.mvn-log.txt; test $rc -eq 0; J=$(ls jOOQ/target/jooq-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M16-jOOQ-fix-jooq.jar; echo built-jar=$J; sha256sum $O/artifacts/M16-jOOQ-fix-jooq.jar; $MVN -q -pl jOOQ dependency:build-classpath -Dmdep.includeScope=runtime -Dmdep.outputFile=$O/logs/M16-fix-runtime-classpath.txt; CP=$O/artifacts/M16-jOOQ-fix-jooq.jar:$(cat $O/logs/M16-fix-runtime-classpath.txt):$(cat $O/releases/M16-testdeps/classpath.txt); T=$O/tmp/M16-fix.online-test; rm -rf $T; mkdir -p $T; $J21/bin/javac -nowarn -encoding UTF-8 --release 21 -proc:none -cp $CP -d $T $W/M16-jOOQ-reporter-test/jOOQ/src/test/java/org/jooq/impl/LoaderBatchStaticStatementTest.java; set +e; $J21/bin/java -Xmx1g -cp $T:$CP org.junit.runner.JUnitCore org.jooq.impl.LoaderBatchStaticStatementTest > $O/logs/M16-fix.online.junit.txt 2>&1; rc=$?; set -e; grep -E '^(OK|Tests run|FAILURES)|^[0-9]+\\) |AssertionError' $O/logs/M16-fix.online.junit.txt; test $rc -eq 0; grep -q '^OK (2 tests)' $O/logs/M16-fix.online.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M16-jOOQ-parent: jOOQ module jar (offline) and the reporter's test over it: expected to fail the STATIC_STATEMENT case",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; cd $W/M16-jOOQ-parent; echo worktree=M16-jOOQ-parent commit=$(git rev-parse HEAD); set +e; $MVN -o -Daether.connector.basic.threads=1 -pl jOOQ -DskipTests -Dmaven.javadoc.skip=true package > $O/logs/M16-parent.offline.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M16-parent.offline.mvn-log.txt; test $rc -eq 0; J=$(ls jOOQ/target/jooq-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M16-jOOQ-parent-jooq.jar; echo built-jar=$J; sha256sum $O/artifacts/M16-jOOQ-parent-jooq.jar; $MVN -o -q -pl jOOQ dependency:build-classpath -Dmdep.includeScope=runtime -Dmdep.outputFile=$O/logs/M16-parent-runtime-classpath.txt; CP=$O/artifacts/M16-jOOQ-parent-jooq.jar:$(cat $O/logs/M16-parent-runtime-classpath.txt):$(cat $O/releases/M16-testdeps/classpath.txt); T=$O/tmp/M16-parent.offline-test; rm -rf $T; mkdir -p $T; $J21/bin/javac -nowarn -encoding UTF-8 --release 21 -proc:none -cp $CP -d $T $W/M16-jOOQ-reporter-test/jOOQ/src/test/java/org/jooq/impl/LoaderBatchStaticStatementTest.java; set +e; $J21/bin/java -Xmx1g -cp $T:$CP org.junit.runner.JUnitCore org.jooq.impl.LoaderBatchStaticStatementTest > $O/logs/M16-parent.offline.junit.txt 2>&1; rc=$?; set -e; grep -E '^(OK|Tests run|FAILURES)|^[0-9]+\\) |AssertionError' $O/logs/M16-parent.offline.junit.txt; test $rc -ne 0; grep -q '^1) testLoaderBatchAllWithStaticStatement' $O/logs/M16-parent.offline.junit.txt; grep -q 'Tests run: 2,  Failures: 1' $O/logs/M16-parent.offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M16-jOOQ-fix: jar again (offline) and the reporter's test",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx2g -Duser.home='$O/mvnhome; cd $W/M16-jOOQ-fix; echo worktree=M16-jOOQ-fix commit=$(git rev-parse HEAD); set +e; $MVN -o -Daether.connector.basic.threads=1 -pl jOOQ -DskipTests -Dmaven.javadoc.skip=true package > $O/logs/M16-fix.rerun.offline.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M16-fix.rerun.offline.mvn-log.txt; test $rc -eq 0; J=$(ls jOOQ/target/jooq-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M16-jOOQ-fix-jooq.jar; echo built-jar=$J; sha256sum $O/artifacts/M16-jOOQ-fix-jooq.jar; $MVN -o -q -pl jOOQ dependency:build-classpath -Dmdep.includeScope=runtime -Dmdep.outputFile=$O/logs/M16-fix-runtime-classpath.txt; CP=$O/artifacts/M16-jOOQ-fix-jooq.jar:$(cat $O/logs/M16-fix-runtime-classpath.txt):$(cat $O/releases/M16-testdeps/classpath.txt); T=$O/tmp/M16-fix.rerun.offline-test; rm -rf $T; mkdir -p $T; $J21/bin/javac -nowarn -encoding UTF-8 --release 21 -proc:none -cp $CP -d $T $W/M16-jOOQ-reporter-test/jOOQ/src/test/java/org/jooq/impl/LoaderBatchStaticStatementTest.java; set +e; $J21/bin/java -Xmx1g -cp $T:$CP org.junit.runner.JUnitCore org.jooq.impl.LoaderBatchStaticStatementTest > $O/logs/M16-fix.rerun.offline.junit.txt 2>&1; rc=$?; set -e; grep -E '^(OK|Tests run|FAILURES)|^[0-9]+\\) |AssertionError' $O/logs/M16-fix.rerun.offline.junit.txt; test $rc -eq 0; grep -q '^OK (2 tests)' $O/logs/M16-fix.rerun.offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M16-jOOQ-fix clean -fdxq; git -C $W/M16-jOOQ-fix checkout -q -- .; git -C $W/M16-jOOQ-fix status --short; git -C $W/M16-jOOQ-parent clean -fdxq; git -C $W/M16-jOOQ-parent checkout -q -- .; git -C $W/M16-jOOQ-parent status --short; du -sh $W/M16-jOOQ-fix $W/M16-jOOQ-parent",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

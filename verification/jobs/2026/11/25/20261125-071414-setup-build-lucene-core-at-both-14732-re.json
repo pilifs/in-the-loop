@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-071414-setup-build-lucene-core-at-both-14732-re",
+  "title": "Setup: build Lucene core at both #14732 revisions and run the landed index-sort range-query test",
+  "description": "Setup for case M01 (apache/lucene#14732) of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M01-lucene-fix = 5c886602, M01-lucene-parent = 36ddc378; Lucene 11.0.0-SNAPSHOT, minJava 24), runs the upstream ./gradlew (Gradle 8.14 and its wrapper jar checked against services.gradle.org by the setup session) on Temurin 24.0.2 (signature checked) with the cache's GRADLE_USER_HOME: builds lucene-core and runs TestIndexSortSortedNumericDocValuesRangeQuery with tests.seed=DEADBEEF, first on the fix online, then on the parent (its own copy) offline, then the parent with the fix's test class copied in (expected to fail testSameHitsAsPointRangeQueryIntSort, as the setup's overlay run did), then the fix again offline. Jars to .../artifacts with sha256, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: both sides' own tests pass, the transplant fails testSameHitsAsPointRangeQueryIntSort, the fix's offline rerun passes",
+  "submitted": {
+    "at": "2026-11-25T07:14:14+00:00",
+    "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+    "by": "setup agent (Claude Opus 5.5), fork D"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash",
+    "gradle"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "25m"
+  },
+  "steps": [
+    {
+      "name": "M01-lucene-fix: lucene-core jar and the landed TestIndexSortSortedNumericDocValuesRangeQuery (online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-fix; echo worktree=M01-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4  :lucene:core:jar :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-fix.online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-fix.online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-fix.online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-fix.online.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M01-lucene-fix-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M01-lucene-fix-core.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "M01-lucene-parent: jar and its own copy of the test class (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-parent; echo worktree=M01-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:jar :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-parent.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-parent.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-parent.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-parent.offline.junit.txt | cut -d= -f2) -eq 0; J=$(ls lucene/core/build/libs/lucene-core-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M01-lucene-parent-core.jar; echo built-jar=$J; sha256sum $O/artifacts/M01-lucene-parent-core.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "M01-lucene-parent with the fix's test class transplanted: expected to fail testSameHitsAsPointRangeQueryIntSort (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-parent; echo worktree=M01-lucene-parent commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); cp $W/M01-lucene-fix/lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; sha256sum lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-transplant.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-transplant.offline.gradle-log.txt; git checkout -- lucene/core/src/test/org/apache/lucene/search/TestIndexSortSortedNumericDocValuesRangeQuery.java; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-transplant.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/M01-transplant.offline.junit.txt | cut -d= -f2) )) -gt 0; grep -q 'junit failed .*testSameHitsAsPointRangeQueryIntSort' $O/logs/M01-transplant.offline.junit.txt; echo expected-failure-seen=testSameHitsAsPointRangeQueryIntSort; ",
+      "cwd": "."
+    },
+    {
+      "name": "M01-lucene-fix: the landed test again (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$O/tools/jdk-24.0.2+12; cd $W/M01-lucene-fix; echo worktree=M01-lucene-fix commit=$(git rev-parse HEAD); cp $O/dl/gradle/lucene-gradle-wrapper-8.14.0.jar gradle/wrapper/gradle-wrapper.jar; test $(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -c1-64) = $(cut -c1-64 gradle/wrapper/gradle-wrapper.jar.sha256); rm -rf lucene/core/build/test-results/test; set +e; ./gradlew --no-daemon --console=plain -Porg.gradle.java.installations.auto-download=false -Ptests.seed=DEADBEEF -Ptests.jvms=2 --max-workers=4 --offline :lucene:core:test --rerun --tests TestIndexSortSortedNumericDocValuesRangeQuery > $O/logs/M01-fix.rerun.offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M01-fix.rerun.offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py lucene/core/build/test-results/test | tee $O/logs/M01-fix.rerun.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M01-fix.rerun.offline.junit.txt | cut -d= -f2) -eq 0; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M01-lucene-fix clean -fdxq; git -C $W/M01-lucene-fix checkout -q -- .; git -C $W/M01-lucene-fix status --short; git -C $W/M01-lucene-parent clean -fdxq; git -C $W/M01-lucene-parent checkout -q -- .; git -C $W/M01-lucene-parent status --short; du -sh $W/M01-lucene-fix $W/M01-lucene-parent",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

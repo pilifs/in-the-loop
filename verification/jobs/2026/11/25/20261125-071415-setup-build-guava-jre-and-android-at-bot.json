@@ -1,0 +1,68 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-071415-setup-build-guava-jre-and-android-at-bot",
+  "title": "Setup: build Guava (JRE and Android) at both #7784 revisions and run the landed SetViewTest",
+  "description": "Setup for case M20 (google/guava#7784) of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M20-guava-fix = 0232f388, M20-guava-parent = 9eb72d37; 999.0.0-HEAD-SNAPSHOT) runs Maven 3.10.0 on JDK 21.0.13 with -Duser.home=~/.cache/in-the-loop/merged-pr-links/mvnhome, so Guava's toolchains plugin uses the JDK 24.0.2 and 21.0.13.1 the setup installed and checked there and never writes the user's ~/.m2 (each step checks). For each pin and flavour: -pl guava-tests -am package with -Dtest=SetViewTest (animal-sniffer and javadoc skipped). Fix online (JRE, Android), parent offline with its own SetViewTest (JRE, Android), fix JRE again offline. No transplant: the fix's SetViewTest calls SetView.minSize()/maxSize(), which only the fix has (it does not compile on the parent, as the setup's overlay run showed). Jars to .../artifacts with sha256, JUnit summaries to .../logs, build trees removed. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: SetViewTest passes at both pins in both flavours, online and offline",
+  "submitted": {
+    "at": "2026-11-25T07:14:15+00:00",
+    "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+    "by": "setup agent (Claude Opus 5.5), fork D"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash",
+    "maven"
+  ],
+  "resources": {
+    "cpus": 4.0,
+    "memory": "5G",
+    "duration": "45m"
+  },
+  "steps": [
+    {
+      "name": "M20-guava-fix (JRE): guava jar and the landed SetViewTest (online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx1g -Duser.home='$O/mvnhome; GMV=\"$MVN -t $O/mvnhome/.m2/toolchains.xml -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dtest=SetViewTest -Dsurefire.failIfNoSpecifiedTests=false\"; cd $W/M20-guava-fix/; echo worktree=M20-guava-fix flavour=jre commit=$(git rev-parse HEAD); test ! -e $HOME/.m2/jdks; rm -rf guava-tests/target/surefire-reports; set +e; $GMV  -pl guava-tests -am package > $O/logs/M20-fix.jre.online.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M20-fix.jre.online.mvn-log.txt; test ! -e $HOME/.m2/jdks; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee $O/logs/M20-fix.jre.online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M20-fix.jre.online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M20-fix.jre.online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M20-fix.jre.online.junit.txt | cut -d= -f2) -eq 0; test $rc -eq 0; J=$(ls guava/target/guava-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M20-guava-fix-guava.jar; echo built-jar=$J; sha256sum $O/artifacts/M20-guava-fix-guava.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "M20-guava-fix (Android flavour): guava jar and SetViewTest (online)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx1g -Duser.home='$O/mvnhome; GMV=\"$MVN -t $O/mvnhome/.m2/toolchains.xml -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dtest=SetViewTest -Dsurefire.failIfNoSpecifiedTests=false\"; cd $W/M20-guava-fix/android/; echo worktree=M20-guava-fix flavour=android commit=$(git rev-parse HEAD); test ! -e $HOME/.m2/jdks; rm -rf guava-tests/target/surefire-reports; set +e; $GMV  -pl guava-tests -am package > $O/logs/M20-fix.android.online.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M20-fix.android.online.mvn-log.txt; test ! -e $HOME/.m2/jdks; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee $O/logs/M20-fix.android.online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M20-fix.android.online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M20-fix.android.online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M20-fix.android.online.junit.txt | cut -d= -f2) -eq 0; test $rc -eq 0; J=$(ls guava/target/guava-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M20-guava-fix-android-guava.jar; echo built-jar=$J; sha256sum $O/artifacts/M20-guava-fix-android-guava.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "M20-guava-parent (JRE): guava jar and its own SetViewTest (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx1g -Duser.home='$O/mvnhome; GMV=\"$MVN -t $O/mvnhome/.m2/toolchains.xml -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dtest=SetViewTest -Dsurefire.failIfNoSpecifiedTests=false\"; cd $W/M20-guava-parent/; echo worktree=M20-guava-parent flavour=jre commit=$(git rev-parse HEAD); test ! -e $HOME/.m2/jdks; rm -rf guava-tests/target/surefire-reports; set +e; $GMV -o -pl guava-tests -am package > $O/logs/M20-parent.jre.offline.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M20-parent.jre.offline.mvn-log.txt; test ! -e $HOME/.m2/jdks; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee $O/logs/M20-parent.jre.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M20-parent.jre.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M20-parent.jre.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M20-parent.jre.offline.junit.txt | cut -d= -f2) -eq 0; test $rc -eq 0; J=$(ls guava/target/guava-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M20-guava-parent-guava.jar; echo built-jar=$J; sha256sum $O/artifacts/M20-guava-parent-guava.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "M20-guava-parent (Android flavour): its own SetViewTest (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx1g -Duser.home='$O/mvnhome; GMV=\"$MVN -t $O/mvnhome/.m2/toolchains.xml -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dtest=SetViewTest -Dsurefire.failIfNoSpecifiedTests=false\"; cd $W/M20-guava-parent/android/; echo worktree=M20-guava-parent flavour=android commit=$(git rev-parse HEAD); test ! -e $HOME/.m2/jdks; rm -rf guava-tests/target/surefire-reports; set +e; $GMV -o -pl guava-tests -am package > $O/logs/M20-parent.android.offline.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M20-parent.android.offline.mvn-log.txt; test ! -e $HOME/.m2/jdks; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee $O/logs/M20-parent.android.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M20-parent.android.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M20-parent.android.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M20-parent.android.offline.junit.txt | cut -d= -f2) -eq 0; test $rc -eq 0; J=$(ls guava/target/guava-*.jar | grep -v -E 'sources|javadoc|tests' | head -1); cp $J $O/artifacts/M20-guava-parent-android-guava.jar; echo built-jar=$J; sha256sum $O/artifacts/M20-guava-parent-android-guava.jar; ",
+      "cwd": "."
+    },
+    {
+      "name": "M20-guava-fix (JRE): SetViewTest again (offline)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; export JAVA_HOME=$J21 MAVEN_OPTS='-Xmx1g -Duser.home='$O/mvnhome; GMV=\"$MVN -t $O/mvnhome/.m2/toolchains.xml -Daether.connector.basic.threads=1 -Dmaven.javadoc.skip=true -Danimal.sniffer.skip=true -Dtest=SetViewTest -Dsurefire.failIfNoSpecifiedTests=false\"; cd $W/M20-guava-fix/; echo worktree=M20-guava-fix flavour=jre commit=$(git rev-parse HEAD); test ! -e $HOME/.m2/jdks; rm -rf guava-tests/target/surefire-reports; set +e; $GMV -o -pl guava-tests -am package > $O/logs/M20-fix.jre.rerun.offline.mvn-log.txt 2>&1; rc=$?; set -e; echo mvn-exit=$rc; tail -5 $O/logs/M20-fix.jre.rerun.offline.mvn-log.txt; test ! -e $HOME/.m2/jdks; python3 -I $O/scripts/junit_summary.py guava-tests/target/surefire-reports | tee $O/logs/M20-fix.jre.rerun.offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M20-fix.jre.rerun.offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M20-fix.jre.rerun.offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M20-fix.jre.rerun.offline.junit.txt | cut -d= -f2) -eq 0; test $rc -eq 0; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M20-guava-fix clean -fdxq; git -C $W/M20-guava-fix checkout -q -- .; git -C $W/M20-guava-fix status --short; git -C $W/M20-guava-parent clean -fdxq; git -C $W/M20-guava-parent checkout -q -- .; git -C $W/M20-guava-parent status --short; du -sh $W/M20-guava-fix $W/M20-guava-parent",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}

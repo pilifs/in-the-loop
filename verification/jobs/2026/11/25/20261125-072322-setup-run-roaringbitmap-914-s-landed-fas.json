@@ -1,0 +1,63 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-072322-setup-run-roaringbitmap-914-s-landed-fas",
+  "title": "Setup: run RoaringBitmap #914's landed FastAggregation tests at both revisions",
+  "description": "Setup for case M03 of llm-dlc/loops/organic-java-merged-pr-links-brief.md, no claims. In the setup worktrees under ~/.cache/in-the-loop/merged-pr-links/worktrees (M03-RoaringBitmap-fix = b4b0ba16e50d40688753a3cf057a47804773e233, M03-RoaringBitmap-parent = 49e120dad9c21349c44f3aa3edfc9a6601e7a7b0), runs the upstream Gradle build (Gradle 9.6.1 distribution checked against services.gradle.org, JDK 21.0.13, the cache's GRADLE_USER_HOME, already resolved and compiled inline by the setup) for org.roaringbitmap.TestFastAggregation and org.roaringbitmap.buffer.TestFastAggregation: on the fix online then offline, on the parent its own copies offline, then the fix's two test files transplanted onto the parent (the new subtype-array tests are expected to fail with ArrayStoreException; the build has failFast=true, so the run stops at the first failure). The build's test JVM has a fixed 2 GB heap, which is why this is a job. JUnit summaries to .../logs, worktrees restored and cleaned. Results go into llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md.",
+  "kind": "real-world",
+  "capabilities": [
+    "setup:upstream-build",
+    "gradle"
+  ],
+  "links": {
+    "paths": [
+      "llm-dlc/loops/organic-java-merged-pr-links-brief-setup.md",
+      "llm-dlc/loops/organic-java-merged-pr-links-brief.md"
+    ]
+  },
+  "expected": "every step exits 0: the fix's landed tests pass online and offline, the parent's own pass, the transplant prints TRANSPLANT-FAILS-AS-EXPECTED with at least one failure",
+  "submitted": {
+    "at": "2026-11-25T07:23:22+00:00",
+    "session": "f1c44a2e-caec-48a3-9996-4d22d22c89b4",
+    "by": "setup agent (Claude Opus 5.5), fork C"
+  },
+  "requires": [
+    "java",
+    "git",
+    "python3",
+    "bash"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "4G",
+    "duration": "5m"
+  },
+  "steps": [
+    {
+      "name": "M03 fix: landed TestFastAggregation (heap and buffer), online",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M03-RoaringBitmap-fix; echo worktree=M03-RoaringBitmap-fix commit=$(git rev-parse HEAD); rm -rf roaringbitmap/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-9.6.1/bin/gradle --no-daemon --console=plain --max-workers=2 -Dorg.gradle.jvmargs=-Xmx1536m -Porg.gradle.java.installations.auto-download=false   :roaringbitmap:cleanTest :roaringbitmap:test --tests org.roaringbitmap.TestFastAggregation --tests org.roaringbitmap.buffer.TestFastAggregation > $O/logs/M03-fix.test-online.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M03-fix.test-online.gradle-log.txt; python3 -I $O/scripts/junit_summary.py roaringbitmap/build/test-results/test | tee $O/logs/M03-fix.test-online.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M03-fix.test-online.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M03-fix.test-online.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M03-fix.test-online.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/M03-fix.test-online.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M03 fix: the same, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M03-RoaringBitmap-fix; echo worktree=M03-RoaringBitmap-fix commit=$(git rev-parse HEAD); rm -rf roaringbitmap/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-9.6.1/bin/gradle --no-daemon --console=plain --max-workers=2 -Dorg.gradle.jvmargs=-Xmx1536m -Porg.gradle.java.installations.auto-download=false  --offline :roaringbitmap:cleanTest :roaringbitmap:test --tests org.roaringbitmap.TestFastAggregation --tests org.roaringbitmap.buffer.TestFastAggregation > $O/logs/M03-fix.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M03-fix.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py roaringbitmap/build/test-results/test | tee $O/logs/M03-fix.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M03-fix.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M03-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M03-fix.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/M03-fix.test-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M03 parent: its own TestFastAggregation classes, offline",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M03-RoaringBitmap-parent; echo worktree=M03-RoaringBitmap-parent commit=$(git rev-parse HEAD); rm -rf roaringbitmap/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-9.6.1/bin/gradle --no-daemon --console=plain --max-workers=2 -Dorg.gradle.jvmargs=-Xmx1536m -Porg.gradle.java.installations.auto-download=false  --offline :roaringbitmap:cleanTest :roaringbitmap:test --tests org.roaringbitmap.TestFastAggregation --tests org.roaringbitmap.buffer.TestFastAggregation > $O/logs/M03-parent.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M03-parent.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py roaringbitmap/build/test-results/test | tee $O/logs/M03-parent.test-offline.junit.txt; test $(grep -o 'tests=[0-9]*' $O/logs/M03-parent.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(grep -o 'failures=[0-9]*' $O/logs/M03-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; test $(grep -o 'errors=[0-9]*' $O/logs/M03-parent.test-offline.junit.txt | cut -d= -f2) -eq 0; echo PASS-CHECK-OK $O/logs/M03-parent.test-offline.junit.txt; ",
+      "cwd": "."
+    },
+    {
+      "name": "M03 parent with the fix's two test files transplanted, offline (new tests expected to fail)",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; cd $W/M03-RoaringBitmap-parent; echo worktree=M03-RoaringBitmap-parent commit=$(git rev-parse HEAD); for f in org/roaringbitmap/TestFastAggregation.java org/roaringbitmap/buffer/TestFastAggregation.java; do cp $W/M03-RoaringBitmap-fix/roaringbitmap/src/test/java/$f roaringbitmap/src/test/java/$f; done; git status --short; rm -rf roaringbitmap/build/test-results/test; set +e; JAVA_HOME=$J21 choom -n 500 -- $O/tools/gradle-9.6.1/bin/gradle --no-daemon --console=plain --max-workers=2 -Dorg.gradle.jvmargs=-Xmx1536m -Porg.gradle.java.installations.auto-download=false  --offline :roaringbitmap:cleanTest :roaringbitmap:test --tests org.roaringbitmap.TestFastAggregation --tests org.roaringbitmap.buffer.TestFastAggregation > $O/logs/M03-parent.transplanted.test-offline.gradle-log.txt 2>&1; rc=$?; set -e; echo gradle-exit=$rc; tail -5 $O/logs/M03-parent.transplanted.test-offline.gradle-log.txt; python3 -I $O/scripts/junit_summary.py roaringbitmap/build/test-results/test | tee $O/logs/M03-parent.transplanted.test-offline.junit.txt; if grep -q -E 'Compilation failed|compileTest(Java|Kotlin|Groovy) FAILED' $O/logs/M03-parent.transplanted.test-offline.gradle-log.txt; then echo TRANSPLANT-DOES-NOT-COMPILE; grep -E 'error:|e: ' $O/logs/M03-parent.transplanted.test-offline.gradle-log.txt | head -40 || true; else test $(grep -o 'tests=[0-9]*' $O/logs/M03-parent.transplanted.test-offline.junit.txt | cut -d= -f2) -gt 0; test $(( $(grep -o 'failures=[0-9]*' $O/logs/M03-parent.transplanted.test-offline.junit.txt | cut -d= -f2) + $(grep -o 'errors=[0-9]*' $O/logs/M03-parent.transplanted.test-offline.junit.txt | cut -d= -f2) )) -gt 0; echo TRANSPLANT-FAILS-AS-EXPECTED; fi; git checkout -- .; git status --short; ",
+      "cwd": "."
+    },
+    {
+      "name": "remove the build trees",
+      "run": "set -euo pipefail; source $HOME/.cache/in-the-loop/merged-pr-links/scripts/env.sh; mkdir -p $O/tmp $O/logs $O/artifacts; git -C $W/M03-RoaringBitmap-fix checkout -- .; git -C $W/M03-RoaringBitmap-fix clean -fdxq; git -C $W/M03-RoaringBitmap-fix status --short; git -C $W/M03-RoaringBitmap-parent checkout -- .; git -C $W/M03-RoaringBitmap-parent clean -fdxq; git -C $W/M03-RoaringBitmap-parent status --short; du -sh $W/M03-RoaringBitmap-fix $W/M03-RoaringBitmap-parent",
+      "cwd": "."
+    }
+  ],
+  "outputs": []
+}
