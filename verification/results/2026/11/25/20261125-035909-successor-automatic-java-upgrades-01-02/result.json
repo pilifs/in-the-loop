@@ -1,0 +1,191 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-035909-successor-automatic-java-upgrades-01-02",
+  "title": "Successor automatic Java upgrades 01, 02, 04",
+  "status": "failed",
+  "summary": "failed: 1 failed step(s) in 0.4s, peak 25.0 MiB (estimated 9m00s, 3.0 GiB)",
+  "attention": [
+    "declared output verification/beyond-jbmc/successor/automatic/02 was not produced",
+    "declared output verification/beyond-jbmc/successor/automatic/04 was not produced",
+    "step 1 (python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure) exited 1, expected 0"
+  ],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-035909-successor-automatic-java-upgrades-01-02.json",
+    "sha256": "17374bf3d3eb64ea3391def57ff639c10da691cbc3d4bc1f72e5d11fa75cb483",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-035909-successor-automatic-java-upgrades-01-02",
+      "title": "Successor automatic Java upgrades 01, 02, 04",
+      "description": "Run the frozen artifact-only impact portfolio and the frozen resource enumerator in isolated networkless namespaces on the neutral signed release JARs. Each project already has an independent registered question, public consumer and control observed on both releases. Save the first selections, original JVMs, cold and warm judgments and every resource discovery stop.",
+      "kind": "library",
+      "capabilities": [
+        "jvmcontract:equivalence"
+      ],
+      "links": {
+        "paths": [
+          "lib/benchmark/beyond-jbmc/blind/successor_measure.py"
+        ]
+      },
+      "expected": "Every listed slot has a source-bound measurement with the exact earlier deployment, registered caller and frozen checker. Open proof outcomes retain their first blocker.",
+      "submitted": {
+        "at": "2026-11-25T03:59:09+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac",
+        "jvmcontract",
+        "jbmc",
+        "bwrap",
+        "dpkg-deb"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "3G",
+        "duration": "9m",
+        "timeout": "55m"
+      },
+      "steps": [
+        {
+          "name": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure",
+          "run": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure.py automatic 01 02 04",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/beyond-jbmc/successor/automatic/01",
+        "verification/beyond-jbmc/successor/automatic/02",
+        "verification/beyond-jbmc/successor/automatic/04"
+      ]
+    }
+  },
+  "sourceCommit": "efe4ca951fa5258267fc8a6281744eb9b4b8763b",
+  "startedAt": "2026-11-25T04:00:53+00:00",
+  "finishedAt": "2026-11-25T04:04:41+00:00",
+  "wallSeconds": 228.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 272695,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 4831838208,
+    "timeoutSeconds": 3300.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 3221225472,
+    "durationSeconds": 540.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 26238976,
+    "wallSeconds": 0.4,
+    "cpuSeconds": 0.3,
+    "memoryOfEstimate": 0.01,
+    "durationOfEstimate": 0.0
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure",
+      "run": "python3 -B lib/benchmark/beyond-jbmc/blind/successor_measure.py automatic 01 02 04",
+      "cwd": ".",
+      "status": "failed",
+      "exitCode": 1,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 3300.0,
+      "cancelled": false,
+      "wallSeconds": 0.39,
+      "cpuSeconds": 0.276,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 26238976,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-python3-b-lib-benchmark-beyond.log",
+        "lines": 14,
+        "bytes": 1302,
+        "sha256": "3580cd01dfecf2cd666711a17326e341b9194ee4409b8d738c5e5229f45abc33",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "Traceback (most recent call last):",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-035909-successor-automatic-java-upgrades-01-02/lib/benchmark/beyond-jbmc/blind/successor_measure.py\", line 127, in <module>",
+        "    run(args.lane, slot, exe, policy)",
+        "    ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-035909-successor-automatic-java-upgrades-01-02/lib/benchmark/beyond-jbmc/blind/successor_measure.py\", line 79, in run",
+        "    measure_automatic(slot, checker, lock, {\"packetSha256\": packet_hash}, inputs, out, store, docket)",
+        "    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"/home/filip/code/in-the-loop/verification/.state/work/20261125-035909-successor-automatic-java-upgrades-01-02/lib/benchmark/beyond-jbmc/blind/evaluate_panel.py\", line 48, in measure_automatic",
+        "    store.mkdir(exist_ok=True)",
+        "    ~~~~~~~~~~~^^^^^^^^^^^^^^^",
+        "  File \"/usr/lib/python3.14/pathlib/__init__.py\", line 1012, in mkdir",
+        "    os.mkdir(self, mode)",
+        "    ~~~~~~~~^^^^^^^^^^^^",
+        "FileNotFoundError: [Errno 2] No such file or directory: '/home/filip/.cache/in-the-loop/beyond-jbmc/scaffold-first-successor-panel/evaluation/01/automatic-a03d514a66aa6931f0c7770db673f24eb6b4f93ef592a48844d8637ef9eadf46'"
+      ],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [],
+  "collected": {
+    "at": "2026-11-25T04:05:46+00:00",
+    "applied": [],
+    "conflicts": [],
+    "kept": [],
+    "why": "not applied: the job failed"
+  },
+  "jvmcontract": {
+    "libTree": "ab5896d8bdc210ba5ce13c4fad2e898792b6ffc0",
+    "path": "/home/filip/code/in-the-loop/verification/.state/tools/jvmcontract/ab5896d8bdc210ba5ce13c4fad2e898792b6ffc0/jvmcontract",
+    "built": false
+  },
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T040441Z-7707866fe51b9c0c",
+      "outputs": "20261125T040441Z-79250471b2c81972",
+      "workdir": "20261125T040538Z-5875471555ed10de"
+    }
+  },
+  "workdir": "/home/filip/code/in-the-loop/verification/.state/work/20261125-035909-successor-automatic-java-upgrades-01-02"
+}

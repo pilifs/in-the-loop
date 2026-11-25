@@ -12,35 +12,36 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-17T12:37:43.460Z",
-  "ended": "2026-11-25T01:40:44.686Z",
-  "duration_seconds": 651781,
+  "ended": "2026-11-25T03:54:05.981Z",
+  "duration_seconds": 659783,
   "stats": {
-    "turns": 228,
-    "api_calls": 1904,
-    "tool_calls": 1748,
+    "turns": 231,
+    "api_calls": 1927,
+    "tool_calls": 1764,
     "tool_errors": 23,
     "compactions": 8,
-    "peak_context_tokens": 584394,
+    "peak_context_tokens": 614870,
     "usage": {
-      "input_tokens": 4570,
-      "output_tokens": 1308322,
-      "cache_read_input_tokens": 539205307,
-      "cache_creation_input_tokens": 5064993
+      "input_tokens": 4630,
+      "output_tokens": 1317997,
+      "cache_read_input_tokens": 552466549,
+      "cache_creation_input_tokens": 5656344
     }
   },
   "tools": {
-    "Bash": 1497,
+    "Bash": 1511,
     "Edit": 80,
     "Read": 54,
     "SendMessage": 51,
     "Write": 26,
-    "ToolSearch": 14,
+    "ToolSearch": 15,
     "ListAgents": 9,
     "CronCreate": 5,
     "CronDelete": 3,
     "AskUserQuestion": 2,
     "TaskStop": 2,
     "Agent": 1,
+    "CronList": 1,
     "PushNotification": 1,
     "Skill": 1,
     "WebFetch": 1,
@@ -212,24 +213,24 @@
     {
       "index": 8,
       "started": "2026-11-24T06:01:22.541Z",
-      "ended": "2026-11-25T01:40:44.686Z",
-      "turns": 24,
-      "api_calls": 314,
+      "ended": "2026-11-25T03:54:05.981Z",
+      "turns": 27,
+      "api_calls": 337,
       "usage": {
-        "input_tokens": 774,
-        "output_tokens": 236525,
-        "cache_read_input_tokens": 109042172,
-        "cache_creation_input_tokens": 531611
+        "input_tokens": 834,
+        "output_tokens": 246200,
+        "cache_read_input_tokens": 122303414,
+        "cache_creation_input_tokens": 1122962
       },
-      "peak_context_tokens": 584394
+      "peak_context_tokens": 614870
     }
   ],
   "log": {
-    "sha256": "7be304859405faf298192320c4307da2e79c6815c9419c1bd38c86a6c9347579",
-    "bytes": 34637126,
-    "lines": 14571,
-    "gzip_bytes": 6007635,
-    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/7be304859405faf298192320c4307da2e79c6815c9419c1bd38c86a6c9347579.jsonl.gz"
+    "sha256": "878cf5d3825cd431ca4a9994541e75d81cabf09ce5204e26fbb0d8bdee562730",
+    "bytes": 35353496,
+    "lines": 14790,
+    "gzip_bytes": 6199927,
+    "path": "llm-dlc/traces/e61d882b-5ef7-428e-90df-ffe709ac6962/logs/878cf5d3825cd431ca4a9994541e75d81cabf09ce5204e26fbb0d8bdee562730.jsonl.gz"
   },
   "subagents": [
     {
@@ -10372,6 +10373,14 @@
       "summary": "Put verification jobs first in the machine's kill order, keep 8G free, and say when a job died of the machine's memory",
       "body": "The user's rule (2026-11-24): should the machine run short of memory, no open tmux window, session, watcher or agent goes first; verification jobs do, and the agents then regroup. Every process had oom_score_adj 0, so a global OOM took the biggest process, whoever's (the watcher's window on 2026-11-22). An ordinary user can raise oom_score_adj but not lower it, and scopes refuse OOMScoreAdjust= on this systemd, so the order is made by raising: the step wrapper writes job_oom_score_adj (default 1000) to /proc/self/oom_score_adj, inherited by everything a step starts; test_costs.py run (and so default_run.py) joins at 500 (join_kill_order), as does the probe command in CLAUDE.md and the READMEs (choom -n 500); the rest keeps 0.\n\nThe runner also keeps memory_floor (default 8G, --memory-floor) free: no job starts that would take available memory under it, and when the machine falls under it anyway the runner SIGKILLs its newest job at once, one at a time. Such a job is cancelled (memoryStop in its result) and runs again when there is room; stopped a second time, counted across runners, it is out-of-memory for its submitter to regroup. A step's limitOoms (memory.events oom) tells a kill at the machine's end (0) from one at its own limit, and attention says which: more memory does not help the first. Documented in the result schema, verification/README.md, pipeline.toml, the run-verification skill and a new operating-notes section, The kill order when memory runs out, with how to regroup.",
       "log_sha256": "7be304859405faf298192320c4307da2e79c6815c9419c1bd38c86a6c9347579"
+    },
+    {
+      "change_id": "msxzyywxmzmkwqnslzlrprxuoxoszolv",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Queue a brief to be generated from 20 pull requests: organic-java-merged-pr-links",
+      "body": "The list of pull requests ~/code/scripts/analysis/organic-java-merged-pr-links.md is copied unchanged to llm-dlc/loops/organic-java-merged-pr-links.md and put on the brief queue (llm-dlc/tools/brief_queue.py), at the end. A brief author (gpt-6.2-astra) writes its brief into llm-dlc/loops/organic-java-merged-pr-links-brief.md, and that brief is then queued at the end, with a setup phase and a domain run as any other.",
+      "log_sha256": "878cf5d3825cd431ca4a9994541e75d81cabf09ce5204e26fbb0d8bdee562730"
     }
   ],
   "logs": {
@@ -11118,6 +11127,12 @@
       "lines": 5779,
       "gzip_bytes": 2884086,
       "url": "https://terminalvalue.net/raw-traces/e61d882b-5ef7-428e-90df-ffe709ac6962/874d8a02ff5e37a7dc49e19877a77926e44f84d0e4434bae0cde2c80e0f61094.jsonl.gz"
+    },
+    "878cf5d3825cd431ca4a9994541e75d81cabf09ce5204e26fbb0d8bdee562730": {
+      "bytes": 35353496,
+      "lines": 14790,
+      "gzip_bytes": 6199927,
+      "url": null
     },
     "87a113a72ce079ca144e4b2ae2d0e0e12846aee2c61211035da79dc302d0f3d8": {
       "bytes": 16984683,
