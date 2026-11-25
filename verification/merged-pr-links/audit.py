@@ -8,7 +8,9 @@ import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "examples/tools"))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 from targets import public_comparison as comparison
+from qualify import ENTRIES, check_receipt
 
 
 def require(condition, message):
@@ -31,12 +33,23 @@ def audit(replay=False, campaign="original"):
         questions = {}
         for line in section.splitlines():
             if line.startswith("| ") and " · " in line:
-                label, history, prediction, basis, _ = [s.strip() for s in line.strip("|").split(" | ")]
+                label, history, prediction, basis, refutation = [s.strip() for s in line.strip("|").split(" | ")]
                 question, role = label.split(" · ")
+                require(question not in questions, f"duplicate brief question {question}")
                 questions[question] = (role, history, prediction, basis)
+                if campaign == "l01-l20":
+                    questions[question] += (refutation,)
         key = next(iter(questions)).rsplit(".", 1)[0]
         require(key not in references, f"duplicate case {key}")
         references[key] = ({"parent": parent, "fix": fix}, questions)
+    if campaign == "l01-l20":
+        require(len(references) == 20, "expected all twenty L-series comparisons")
+        for case, (_, rows) in references.items():
+            require([row[0] for row in rows.values()] == ["Intent", "Control", "Challenge"],
+                    f"{case}: incomplete or reordered L-series questions")
+    fields = ("role", "history", "prediction", "basis")
+    if campaign == "l01-l20":
+        fields += ("refutation",)
     folders = {}
     for folder in (ROOT / "examples").glob("[0-9][0-9][0-9]-*/comparison.json"):
         spec = comparison.read(folder)
@@ -99,7 +112,8 @@ def audit(replay=False, campaign="original"):
                     prefix + "missing, duplicated or extra observations")
             for q in spec["questions"]:
                 key = q["id"]
-                require(tuple(q[k] for k in ("role", "history", "prediction", "basis")) == questions[key], prefix + key)
+                require(tuple(q[k] for k in fields) == questions[key], prefix + key + " differs from the brief")
+                require("fix" in q["expected"], prefix + key + " has no merged prediction")
                 by_side = {}
                 for row in (r for r in result_rows["observations"] if r["id"] == key):
                     side, actual = row["side"], row["outcome"]
@@ -135,22 +149,11 @@ def audit(replay=False, campaign="original"):
         for receipt in sorted(Path(__file__).with_name("entry-receipts").glob(ex["id"] + "-*.json")):
             qualified = comparison.read(receipt)
             variant = receipt.stem.split("-", 1)[1]
-            deployment = runtime["deployments"][variant]
-            classes = recorded["deployments"][variant]["callerClasses"]
-            require(qualified["probeSha256"] == comparison.upgrade_replay.sha(Path(__file__).with_name("UpgradeProbe.java"))
-                    and qualified["probeClasses"]["PublicCaller"] == classes["PublicCaller.class"], prefix + "qualified caller")
-            indexed = {tuple(q["args"]): q["id"] for q in spec["questions"]}
-            for side, label in (("parent", "old"), ("fix", "new")):
-                original = qualified["sides"][label]
-                require(original["commit"] == pins[side] and
-                        original["classpath"] == [runtime["sha256"][f] for f in deployment["classpath"][side]],
-                        prefix + "qualified deployment")
-                for case_input, trial in zip(qualified["cases"], original["trials"], strict=True):
-                    q = indexed[tuple(case_input["args"])]
-                    expected = evidence[q][variant][side]["outcome"]
-                    require(trial["qualifiedMethodEntries"] == 2 and trial["observations"] == [expected] * 2,
-                            prefix + "qualified entry or observation")
-                    counters["retainedMethodEntryTrials"] += 2
+            by_args = {tuple(q["args"]): q for q in spec["questions"]}
+            args = [tuple(case["args"]) for case in qualified["cases"]]
+            require(args and len(set(args)) == len(args) and set(args) <= by_args.keys(), prefix + "qualified inputs")
+            check_receipt(ENTRIES[ex["id"]][2], [by_args[a] for a in args], pins, runtime, variant, recorded, qualified)
+            counters["retainedMethodEntryTrials"] += 4 * len(args)
         if replay:
             comparison.replay(folder)
     result["totals"] = dict(counters)

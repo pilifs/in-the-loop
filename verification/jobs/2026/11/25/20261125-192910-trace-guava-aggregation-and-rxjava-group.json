@@ -1,0 +1,50 @@
+{
+  "$schema": "../../../../schema/job.schema.json",
+  "schema": "verification-job/v1",
+  "id": "20261125-192910-trace-guava-aggregation-and-rxjava-group",
+  "title": "Trace Guava aggregation and RxJava group cancellation on both pins",
+  "description": "Run all three public allAsList histories in the JRE and Android artifacts on the registered JDK, and both histories that cancel the stalled RxJava group. Verify the live AggregateFuture.init and group State.cancel invocations and every public return on both revisions.",
+  "kind": "real-world",
+  "capabilities": [
+    "java:original-method-entry"
+  ],
+  "links": {
+    "examples": [
+      "438",
+      "440"
+    ]
+  },
+  "expected": "All 32 fresh debugger trials bind the requested method, input, code provider, caller call site and public outcome. Each compressed receipt can be re-audited offline.",
+  "submitted": {
+    "at": "2026-11-25T19:29:10+00:00",
+    "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+  },
+  "requires": [
+    "java",
+    "javac",
+    "git"
+  ],
+  "resources": {
+    "cpus": 2.0,
+    "memory": "1G",
+    "duration": "4m"
+  },
+  "steps": [
+    {
+      "name": "Check original method and public readback for 438",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 438 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Control --only Challenge",
+      "cwd": "."
+    },
+    {
+      "name": "Check original method and public readback for 440",
+      "run": "python3 -B verification/merged-pr-links/qualify.py 440 --output verification/merged-pr-links/l01-l20/qualified --gzip --only Intent --only Challenge",
+      "cwd": "."
+    }
+  ],
+  "stopOnFailure": false,
+  "outputs": [
+    "verification/merged-pr-links/l01-l20/qualified/438-jre.json.gz",
+    "verification/merged-pr-links/l01-l20/qualified/438-android.json.gz",
+    "verification/merged-pr-links/l01-l20/qualified/440-pins.json.gz"
+  ]
+}
