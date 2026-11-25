@@ -146,7 +146,7 @@ Fork D's init scripts: `$O/scripts/resolve-all.init.gradle` (tasks `setupResolve
 ## Summary by case
 
 "Release side" says which side of the PR a published release's changed source equals. "Landed tests" is fix's tests on the fix /
-parent's own on the parent / fix's tests on the parent. "Pending" cells wait for the [jobs](#jobs).
+parent's own on the parent / fix's tests on the parent. L15 has no landed-test result: its build stopped before any test ([Jobs](#jobs)).
 
 | Case | Built | Release side | Landed tests | Upstream run |
 |---|---|---|---|---|
@@ -164,7 +164,7 @@ parent's own on the parent / fix's tests on the parent. "Pending" cells wait for
 | L12 Quartz #1496 | Gradle 8.5 on JDK 17, toolchain 11, :quartz jar at both pins | none has the fix; 2.5.2 = parent logic (one unrelated line differs) | 38 f0 e0 s2 / 36 f0 e0 s2 / FAILS 38 f1 e0 s2 (JdbcJobStoreTest.testStoreTriggerReplaceChangesTriggerType) | inline |
 | L13 | source build (JDK 11) | 3.4.0 = fix (all sources); 3.3.0 = parent except DefaultShader | 4/4 fix, 3/3 parent, transplant 1 error (ZipException duplicate entry) | inline |
 | L14 Iceberg #12855 | Gradle 8.14, JDK 17 (job) | 1.9.2 = parent, 1.10.0 = fix (GenericRecord) | junit tests=48 failures=0 errors=0 skipped=1 / junit tests=39 failures=0 errors=0 skipped=1 / junit tests=48 failures=9 errors=0 skipped=1 | job 20261125-165654-setup-build-iceberg-api-core-data-parque |
-| L15 Gradle #21084 | Gradle's build on Gradle 7.5.1 (pinned nightly gone), JDK 11; distributions installed (job) | none equal; 7.5.1 lacks fix, 7.6 has fix + later | pending (job) / pending (job) / pending (job) | job 20261125-172547-setup-build-gradle-distributions-at-both |
+| L15 Gradle #21084 | Gradle's build on Gradle 7.5.1 (pinned nightly gone), JDK 11; NOT built: pinned grolifant-0.16.1.jar gone, Central's fails the build's verification | none equal; 7.5.1 lacks fix, 7.6 has fix + later | **not run**: build failed first (':build-logic:cleanup:compileKotlin') / **not run**: build failed first (':build-logic:cleanup:compileKotlin') / **not run**: build failed first (':build-logic:binary-compatibility:compileGroovy') | job 20261125-172547-setup-build-gradle-distributions-at-both |
 | L16 | source build JRE + Android by job (JDK 21) | 33.3.0 has the fix's file; 33.2.1-jre = parent's file minus an annotation | no landed test; FuturesTest 160/160 at both pins, JRE and Android (job) | job 20261125-162448-setup-build-guava-7277-s-two-revisions-j |
 | L17 iCal4j #947 | Gradle 8.5, JDK 17, jar at both pins | none has the fix; 4.4.0 older than the parent, has its EXDATE line | 20 f0 e0 s0 / 19 f0 e0 s0 / FAILS 20 f1 e0 s0 (testCalculateRecurrenceSetWithUtcExDate) | inline |
 | L18 RxJava #6895 | Gradle 6.0.1, JDK 8, init script for 4 jcenter-only build-script modules | 3.0.0-RC8 = parent, 3.0.0-RC9 = fix (FlowableGroupBy.java) | 67 f0 e0 s1 / 66 f0 e0 s1 / FAILS 67 f1 e0 s1 (cancelledGroupResumesRequesting) | inline |
@@ -1301,6 +1301,18 @@ Changed production file: `subprojects/core/src/main/java/org/gradle/api/internal
   (`$O/dl/L15-junit-xml-parser-check/junit-xml-parser-1.0.0.jar`) has sha256 `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049`; the pins' `gradle/verification-metadata.xml` pin
   `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049` (parent) and `ef5da0d3135e27372039e8b0251b40b100c48b4f1308ab8cc43531b208620049` (fix), and Gradle's strict dependency verification checks it again in the build.
   The earlier attempts' logs are kept in `$O/logs/attempt-1/` and `$O/logs/attempt-2/` (with the second attempt's init script).
+- **Stopped: the pinned `org.ysb33r.gradle:grolifant:0.16.1` jar is not available.** With the extended init script the third job
+  (`20261125-172547-setup-build-gradle-distributions-at-both`) got past `junit-xml-parser` (every included build printed the script's line) and compiled `build-logic-settings` and
+  `build-logic-commons`, then every Gradle step failed in **Gradle's own strict dependency verification**: `grolifant-0.16.1.jar` "from
+  repository MavenRepo" failed verification (for `:build-logic:cleanup:compileClasspath` on the fix, and `kotlinCompilerClasspath` and
+  `:build-logic:binary-compatibility:compileClasspath` on the parent). Both pins' `gradle/verification-metadata.xml` pin
+  `362c450c9738834181fdfac1147fa11cf21cefd59d7a5368756e174f93567a43` (parent) and `362c450c9738834181fdfac1147fa11cf21cefd59d7a5368756e174f93567a43` (fix) for it, with origin "Artifact is not signed". The only copy served
+  today has sha256 `a867e911d060a240b8aa111896b7379282fe61940dfb949e72600f7ca67cb92f` (`$O/dl/L15-grolifant-check/grolifant-0.16.1.jar`): the Plugin Portal and jcenter both redirect to Maven
+  Central and gave byte-identical files, and `repo.gradle.org/gradle/public` answers 404 (`$O/dl/L15-grolifant-check/README.txt`). Central's
+  copy carries a signature made 2022-11-08 by key id `54AC8E2D98CFEAC6`, after both pins (June 2022), so it is a later publication of the
+  same coordinates, not the file the pins verified; its signature was not checked, as it would not change the mismatch. **Setup stops here
+  for L15:** building on would need `--dependency-verification lenient` (or `off`), or an edit to the pins' verification metadata, which
+  accepts a jar the upstream build rejects. That is a decision for a person or the domain work, not a setup step, and was not taken.
 - The build: version `7.6` (`version.txt`), `build-logic` in Kotlin, compile toolchain JDK 11, dependency verification `strict`
   (`gradle/verification-metadata.xml`), configuration cache on. Its settings apply `com.gradle.enterprise` 3.10.2 and the
   `gradle-enterprise-conventions-plugin` 0.7.6, which point build scans and a remote build cache at Gradle's servers: every run here uses
@@ -1318,16 +1330,16 @@ Changed production file: `subprojects/core/src/main/java/org/gradle/api/internal
 
 **Artifacts.** The job installs the two distributions at **`$O/tools/gradle-pin-L15-fix`** and **`$O/tools/gradle-pin-L15-parent`** (each
 `bin/gradle` runnable; they stay) and writes `$O/artifacts/L15-gradle-ROLE-AbstractTask.class-digests.txt`; the job log prints each
-`lib/gradle-core-7.6.jar` sha256. Pending: filled in from the job's result.
+`lib/gradle-core-7.6.jar` sha256. **Not built**: no job got past `build-logic` (see Stopped above); neither folder exists.
 
 **Landed tests.**
 
 | Run | Result |
 |---|---|
-| fix, landed tests (first build, online) | pending (job) |
-| fix, again offline | pending (job) |
-| parent, its own tests (offline) | pending (job) |
-| fix's test files on the parent (offline; expected to fail) | pending (job) |
+| fix, landed tests (first build, online) | **not run**: build failed first (':build-logic:cleanup:compileKotlin'); junit tests=0 failures=0 errors=0 skipped=0 |
+| fix, again offline | **not run**: build failed first (':build-logic:cleanup:compileKotlin'); junit tests=0 failures=0 errors=0 skipped=0 |
+| parent, its own tests (offline) | **not run**: build failed first (':build-logic:cleanup:compileKotlin'); junit tests=0 failures=0 errors=0 skipped=0 |
+| fix's test files on the parent (offline; expected to fail) | **not run**: build failed first (':build-logic:binary-compatibility:compileGroovy'); junit tests=0 failures=0 errors=0 skipped=0 |
 
 Run by job `20261125-172547-setup-build-gradle-distributions-at-both`; logs `$O/logs/L15-*.gradle-log.txt` and `*.junit.txt`.
 
@@ -1352,13 +1364,17 @@ the action to `ImplementationSnapshot.of`). Distributions fetched and checked (s
 **Signatures.** Gradle distributions are checked by sha256 only (no signatures). The pins' `gradle-wrapper.jar` (sha256 `b95314dbc8c92954d14d1b8e8c14eab50e7a599468fbb2e9fae81ec1f4fafc0a`) is not
 in Gradle's published list of wrapper checksums (`wrapper-checksums.json`, sha256 `c5deb57f25df459bdd954a08338c685caf08b05b302afcd1fefd21c77c70f927`; releases only) and was not used.
 
-**Jobs.** `20261125-172547-setup-build-gradle-distributions-at-both` (third attempt, with the extended init script; 4 CPUs, ~10 GB, estimated 2.5 h). The first, `20261125-161917-setup-build-gradle-distributions-at-both`,
-failed as above after 2m42s; the second, `20261125-165654-setup-build-gradle-distributions-at-both`, after 1m17s (every step exited 1 at configuration; no test ran).
+**Jobs.** Three attempts, all failed before any test ran: `20261125-161917-setup-build-gradle-distributions-at-both` after 2m42s and `20261125-165654-setup-build-gradle-distributions-at-both` after 1m17s (both on
+`junit-xml-parser`), and `20261125-172547-setup-build-gradle-distributions-at-both` (third, with the extended init script) after 1m43s on `grolifant` (4 Gradle steps exited 1; the
+cleanup step passed). Logs: `$O/logs/attempt-1/`, `$O/logs/attempt-2/`, and the third's in `$O/logs/L15-*`. Not resubmitted.
 
 **For the domain agent**
-- The brief's scenario runs a Gradle distribution: use `$O/tools/gradle-pin-L15-parent/bin/gradle` and `$O/tools/gradle-pin-L15-fix/bin/gradle`
-  once the job has passed (the job prints their `gradle --version`; it ran them on JDK 11). Releases 7.5.1 and 7.6 are only approximate sides.
-- The pin distributions were built by Gradle 7.5.1, not the gone nightly; they are built from the pins' sources.
+- **No pin distribution exists.** The brief's scenario runs a Gradle distribution; the pins' own build stops on `grolifant` (above). What is
+  ready: both pins' sources (worktrees), the released 7.5.1 (no fix) and 7.6 (fix plus later changes) distributions, which are only
+  approximate sides, and `$O/gradle-home-L15` with everything resolved up to `build-logic`.
+- To build the pins anyway, someone must first decide to accept Central's `grolifant-0.16.1.jar` in place of the pinned one, e.g. the job's
+  commands (`submit_D.py l15`) with `--dependency-verification lenient` added, which reports the mismatch and carries on. Setup did not.
+- If they are built, they are built by Gradle 7.5.1, not the gone nightly, from the pins' sources.
 - Use a fresh project dir and `--no-build-cache` per the brief; the daemon of each distribution keeps its own state under the `GRADLE_USER_HOME` you choose.
 
 ### L16 · Guava #7277 — allAsList reads a completed input without a listener (pinned source build, JRE and Android, by job)
@@ -1747,7 +1763,8 @@ when their results came back (`submit_D.py l14 l15` again, `submit_L09b.py`, `su
 (`submit_D.py l15`). Each resolves online first (one connector
 thread) and runs its later steps offline; each copies its jars, digests and classpaths to `$O/artifacts/` and ends by removing its build
 trees. A transplant step passes only when the named test fails (or, where noted, when the landed test does not compile). The first attempts'
-logs for L14 and L15 are kept in `$O/logs/attempt-1/`, the second L15 attempt's (with its init script) in `$O/logs/attempt-2/`.
+logs for L14 and L15 are kept in `$O/logs/attempt-1/`, the second L15 attempt's (with its init script) in `$O/logs/attempt-2/`; the third
+L15 attempt's are `$O/logs/L15-*`. L15 was not submitted a fourth time: see its row and [What to know](#what-to-know-before-starting).
 
 | Job | Case | What it runs | Estimate | Result |
 |---|---|---|---|---|
@@ -1763,7 +1780,7 @@ logs for L14 and L15 are kept in `$O/logs/attempt-1/`, the second L15 attempt's 
 | `20261125-165654-setup-build-gradle-distributions-at-both` | L15 | second attempt, with `$O/scripts/gradle-L15-openmbee-substitute.init.gradle` | 4 CPU, 10G, 150m | **failed** (1m17s): every Gradle step exited 1 configuring the root project; `junit-xml-parser` was still not found, now for `:build-logic:performance-testing:compileClasspath`, which resolves from `build-logic`'s settings repositories (the script reached build-script repositories only). No test ran. Rerun below |
 | `20261125-165913-setup-run-rdf4j-1989-s-landed-compliance` | L09 | the compliance build to `verify` (`$O/scripts/rdf4j_verify.sh`): failsafe `MemoryComplexSPARQLQueryTest`, `SPARQL12QueryTest`, surefire `GroupIteratorTest`, at both pins and the PR's test-side files on the parent; each step was meant to fail if a named class did not run | 3 CPU, 5G, 30m | **passed**: fix `MemoryComplexSPARQLQueryTest` 81/81, `SPARQL12QueryTest` 2/2, `GroupIteratorTest` 9/9, online and offline; parent's own 78/78 and 8/8; transplant 5 failures (`testMax/Min/SampleAggregateWithGroupEmptyResult`, `agg on empty set, explicit grouping`, `testMaxEmptySet_Grouped`). Its per-class lines wrongly said "NOT RUN" (a pattern fault in the setup's script, and the guard did not take effect); recomputed from its logs, as L09's section explains |
 | `20261125-170100-setup-run-junit-6104-s-landed-nested-cla` | L05 | the fix's two test classes on the parent with only four constant references mapped to the parent's names or the same string values; the parent's own fixture | 2 CPU, 6G, 15m | **passed** (2m52s): production code and fixtures unchanged; 56 run, 3 failures (`NestedTestClassesTests#nestedTestClassesWithSameNameAreCorrectlyDiscoveredAndExecuted()`, `NestedTestClassesTests#deeplyNestedInheritedMethodsAreExecutedWhenSelectedViaUniqueId()`, `ClassTemplateInvocationTests#nestedClassTemplateIsInherited()`) |
-| `20261125-172547-setup-build-gradle-distributions-at-both` | L15 | third attempt: the init script now also adds the repository to every build's settings repositories (`build-logic`'s resolution checked inline, 26 s) | 4 CPU, 10G, 150m | pending |
+| `20261125-172547-setup-build-gradle-distributions-at-both` | L15 | third attempt: the init script now also adds the repository to every build's settings repositories (`build-logic`'s resolution checked inline, 26 s) | 4 CPU, 10G, 150m | **failed** (1m43s, peak 3.5 GiB): past `junit-xml-parser` (the init script took effect in every included build), then every Gradle step stopped in Gradle's own strict dependency verification: `org.ysb33r.gradle:grolifant:0.16.1`'s jar from Maven Central does not match the sha256 both pins' `gradle/verification-metadata.xml` record, and the pinned jar is no longer served anywhere checked (L15's section has both digests). No test ran; the cleanup step passed. **Not resubmitted**: going on needs a decision to accept a different jar |
 
 ## Signatures
 
@@ -1781,13 +1798,16 @@ Each case's section has its own signature table. In short:
   the pins themselves (git commits fetched by SHA), and the jcenter-era build-script modules substituted for L18 (`build-info-extractor`,
   `-client`, `-api` 2.15.0 from JFrog's public jcenter mirror, `http-builder` 0.7.2) and L19 (`grgit-core` 3.1.1 from repo.grails.org), each
   by SHA-1 against the serving repository, with no second source.
+- **L15's `grolifant-0.16.1.jar`:** the copy served today (Maven Central; the Plugin Portal and jcenter redirect there) fails the sha256
+  both pins record, and was not used for anything. Its `.asc` names key id `54AC8E2D98CFEAC6` and a signing date of 2022-11-08, after
+  both pins; the signature was not checked (`$O/dl/L15-grolifant-check/README.txt`).
 - **L15's substitute library** `org.openmbee.junit:junit-xml-parser:1.0.0` (from `https://repo.gradle.org/gradle/public`, which the
   upstream `build-logic` declares): its sha256 equals the one both pins' `gradle/verification-metadata.xml` pin (L15's section has both), and
   Gradle's strict dependency verification checks it again in the build.
 
 ## Disk
 
-`$O` is 11 GB: `gradle-home` 3.9 GB, `gradle-home-L15` 0.7 GB, worktrees and clones 2.0 GB, tools (Gradle distributions, Maven 3.9.9) 1.2 GB,
+`$O` is 11 GB: `gradle-home` 3.9 GB, `gradle-home-L15` 0.9 GB, worktrees and clones 2.0 GB, tools (Gradle distributions, Maven 3.9.9) 1.2 GB,
 `dl` 1.1 GB, `m2` 1.2 GB, release sets 0.5 GB, artifacts 79 MB. Inline build trees were deleted after their jars and digests were recorded;
 the jobs remove theirs. The mirrors under `$M` hold only the pins (plus earlier setups' pins in the eight shared mirrors, and picocli's three
 landed commits).
@@ -1804,8 +1824,10 @@ landed commits).
 - Built jars of both sides in `$O/artifacts/`, named in each case's section with full sha256 and the digests of the changed classes, and
   runtime classpath files beside them: L01–L04, L06–L08, L11–L13, L17, L18 inline; L20 (fix inline, parent by job); L05, L10, L14, L16,
   L19 by job; L09's evaluation module inline, and every rdf4j module of both sides by job (`$O/artifacts/L09-rdf4j-ROLE-modules/`).
-  **Not yet:** L15's two pin distributions (`$O/tools/gradle-pin-L15-ROLE`); two attempts failed configuring Gradle's build, and the third
-  is queued (see [Jobs](#jobs)).
+  **Not built, and setup stopped there:** L15's two pin distributions (`$O/tools/gradle-pin-L15-ROLE`). Three jobs failed in Gradle's own
+  `build-logic`; the last on a pinned jar (`grolifant-0.16.1.jar`) that is gone, whose only public copy fails the build's verification (see
+  [What to know](#what-to-know-before-starting)). For L15, the pins' sources, the releases 7.5.1 and 7.6, and `$O/gradle-home-L15`
+  (resolved up to `build-logic`) are ready.
 - Release sets resolved with strict checksums in `$O/releases/`, and which side each equals: the "Release side" column of
   [Summary by case](#summary-by-case).
 - Dependencies are in `$O/m2` and `$O/gradle-home`; the offline form (`$MVN -o`, `--offline`) was checked for every case built inline, and
@@ -1829,7 +1851,8 @@ landed commits).
 - **L09:** besides `GroupIteratorTest#testMaxEmptySet_Grouped` (inline), the compliance classes ran under failsafe by job: on the fix
   `MemoryComplexSPARQLQueryTest` 81/81 and `SPARQL12QueryTest` 2/2; on the parent its own 78/78; with the PR's test-side files on the parent,
   the three `...AggregateWithGroupEmptyResult` tests and `agg on empty set, explicit grouping` fail.
-- Pending, by job: **L15** only (`20261125-172547-setup-build-gradle-distributions-at-both`, third attempt): no L15 build or test has run yet.
+- **L15: nothing verified on a JVM.** No pin build or landed test ran; the third job (`20261125-172547-setup-build-gradle-distributions-at-both`)
+  stopped on `grolifant` as described above. No job is pending.
 - **None of the brief's claim scenarios was run** in any case.
 
 ### What to know before starting
@@ -1856,6 +1879,13 @@ landed commits).
 - **L05, L14, L19:** `$W/L05-junit-framework-*`, `$W/L14-iceberg-*` and `$W/L19-kafka-*` are standalone depth-1 clones, not worktrees,
   because their builds read git through JGit (L14's `gradle-git-properties` failed in a worktree); build JUnit only through
   `$O/scripts/L05-gradle.sh`.
+- **L15 is blocked on `org.ysb33r.gradle:grolifant:0.16.1`.** Gradle's build verifies dependencies strictly, and both pins record a
+  sha256 for this jar (origin "Artifact is not signed") that no public copy has now: the Plugin Portal and jcenter redirect to Maven Central,
+  whose jar differs and was signed on 2022-11-08, after the pins, and `repo.gradle.org/gradle/public` answers 404. Digests and URLs:
+  L15's section and `$O/dl/L15-grolifant-check/`. Going on needs someone to decide to accept Central's jar, e.g. by adding
+  `--dependency-verification lenient` to the job's Gradle commands (`submit_D.py l15`), which reports the mismatch and carries on, or to
+  find the original jar elsewhere. Setup took neither step. Until then, the releases 7.5.1 and 7.6 are the only Gradle distributions here,
+  and neither equals a side.
 - **L15, second substitution:** `org.openmbee.junit:junit-xml-parser:1.0.0` is no longer on Central or the Plugin Portal, and Gradle's build
   needs it for the root build-script classpath and for `build-logic`'s compile classpath; `$O/scripts/gradle-L15-openmbee-substitute.init.gradle`
   adds `https://repo.gradle.org/gradle/public` (which `build-logic` already declares for another module) for that one group, to every
@@ -1871,5 +1901,7 @@ landed commits).
 - Every claim, example folder, example id, adapter, sidecar, observer and recipe; the brief's public scenarios and challenge histories
   (none was run or probed).
 - Choosing, per case, whether the built pins or a published release stand for each side.
+- L15: whether to build Gradle's pins with Central's `grolifant-0.16.1.jar` in place of the pinned one (lenient dependency verification),
+  or to work from the releases 7.5.1 and 7.6, which only approximate the sides.
 - L13's fixture JARs and the coordinates under which a parent-side shade plugin would be installed; L10's JDBC route to the rule set; the
   Quartz databases other than Derby (L12).
