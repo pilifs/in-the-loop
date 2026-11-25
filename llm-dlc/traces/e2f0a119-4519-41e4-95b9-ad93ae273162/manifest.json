@@ -12,24 +12,24 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-25T15:57:35.563Z",
-  "ended": "2026-11-25T17:28:45.790Z",
-  "duration_seconds": 5470,
+  "ended": "2026-11-25T17:31:45.141Z",
+  "duration_seconds": 5650,
   "stats": {
-    "turns": 12,
-    "api_calls": 233,
-    "tool_calls": 236,
+    "turns": 14,
+    "api_calls": 245,
+    "tool_calls": 245,
     "tool_errors": 2,
     "compactions": 2,
     "peak_context_tokens": 278088,
     "usage": {
-      "input_tokens": 478,
-      "output_tokens": 150786,
-      "cache_read_input_tokens": 36247202,
-      "cache_creation_input_tokens": 631633
+      "input_tokens": 508,
+      "output_tokens": 154063,
+      "cache_read_input_tokens": 38294154,
+      "cache_creation_input_tokens": 642412
     }
   },
   "tools": {
-    "Bash": 216,
+    "Bash": 225,
     "Read": 5,
     "TaskStop": 5,
     "Agent": 4,
@@ -72,24 +72,24 @@
     {
       "index": 2,
       "started": "2026-11-25T17:23:11.438Z",
-      "ended": "2026-11-25T17:28:45.790Z",
-      "turns": 4,
-      "api_calls": 49,
+      "ended": "2026-11-25T17:31:45.141Z",
+      "turns": 6,
+      "api_calls": 61,
       "usage": {
-        "input_tokens": 98,
-        "output_tokens": 29525,
-        "cache_read_input_tokens": 5922742,
-        "cache_creation_input_tokens": 151009
+        "input_tokens": 128,
+        "output_tokens": 32802,
+        "cache_read_input_tokens": 7969694,
+        "cache_creation_input_tokens": 161788
       },
-      "peak_context_tokens": 164662
+      "peak_context_tokens": 175441
     }
   ],
   "log": {
-    "sha256": "71d3b969c2bbd928b30a808a96e607f7ab7ee7157bc0dcdaf8f586210d5d7f1e",
-    "bytes": 5678281,
-    "lines": 2258,
-    "gzip_bytes": 1009386,
-    "path": "llm-dlc/traces/e2f0a119-4519-41e4-95b9-ad93ae273162/logs/71d3b969c2bbd928b30a808a96e607f7ab7ee7157bc0dcdaf8f586210d5d7f1e.jsonl.gz"
+    "sha256": "e2ed849b109f39d77913aa2ed6f8fc0e2fb081bfa722974699b071a786bc8430",
+    "bytes": 5804903,
+    "lines": 2352,
+    "gzip_bytes": 1022814,
+    "path": "llm-dlc/traces/e2f0a119-4519-41e4-95b9-ad93ae273162/logs/e2ed849b109f39d77913aa2ed6f8fc0e2fb081bfa722974699b071a786bc8430.jsonl.gz"
   },
   "subagents": [
     {
@@ -281,6 +281,14 @@
       "summary": "Record L14, L09 and L05 setup results and queue a third L15 attempt (verification pending)",
       "body": "Merges the verification results of the four follow-up setup jobs for the L01–L20 merged-PR brief and records them in llm-dlc/loops/organic-java-merged-pr-links-l01-l20-brief-setup.md. L14 (Iceberg #12855, on standalone clones) passed: the landed tests pass on the fix (48 run, 1 skipped) and the parent's own (39), and 9 of the fix's tests fail on the parent; both sides' jars, class digests and classpaths are copied. L09 (rdf4j #1989) ran its compliance classes under failsafe: MemoryComplexSPARQLQueryTest 81/81 and SPARQL12QueryTest 2/2 on the fix, 78/78 on the parent, and 5 failures with the PR's test-side files on the parent; the setup script's per-class summary lines had wrongly said NOT RUN (its class pattern missed the digit in rdf4j, and the step guard did not take effect), so they were recomputed from the job's own Maven logs and the as-run summaries kept. L05 (JUnit #6104) with four constant references mapped: 3 of 56 fail on the parent, labelled as a mapped transplant. Sixteen cases now have a landed regression that passes on the fix and fails on the parent.\n\nL15 (Gradle #21084) failed a second time at configuration: junit-xml-parser 1.0.0, gone from Central and the Plugin Portal, is needed both by the root build-script classpath (fixed by the second attempt) and by build-logic's compile classpath, which resolves from build-logic's settings repositories. The setup init script now adds https://repo.gradle.org/gradle/public, for the group org.openmbee.junit only, to every build's settings repositories as well; an inline run resolved build-logic's :performance-testing compileClasspath with it in 26 s. Upstream build files are unchanged and the jar's sha256 is the one the pins' verification metadata pin.\n\nJob queued: 20261125-172547-setup-build-gradle-distributions-at-both (L15, third attempt; 4 CPUs, 10 GB, about 2.5 h).",
       "log_sha256": "71d3b969c2bbd928b30a808a96e607f7ab7ee7157bc0dcdaf8f586210d5d7f1e"
+    },
+    {
+      "change_id": "lrqzslkxzzpnwuulukxsskzrlyozourp",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Propose eight false positives from the L01–L20 setup session's log",
+      "body": "Proposes allow-list entries for long-token findings ae3e2255, 966f8f7e, 4bb2b25d, 0f0c274c, 011f48de, 64ebb297, bcabb21d and 9894cbaa in the L01–L20 setup session's log. Each is the file name of an Iceberg jar the setup built for case L14 (L14-iceberg-{fix,parent}-MODULE-SHORTREV[-tests].jar), listed in the setup record's artifacts table; checked with masked output against the files' lengths and ends. They stay open until a person approves them.",
+      "log_sha256": "e2ed849b109f39d77913aa2ed6f8fc0e2fb081bfa722974699b071a786bc8430"
     }
   ],
   "logs": {
@@ -342,6 +350,12 @@
       "bytes": 2069918,
       "lines": 990,
       "gzip_bytes": 378883,
+      "url": null
+    },
+    "e2ed849b109f39d77913aa2ed6f8fc0e2fb081bfa722974699b071a786bc8430": {
+      "bytes": 5804903,
+      "lines": 2352,
+      "gzip_bytes": 1022814,
       "url": null
     }
   },
