@@ -129,26 +129,26 @@ parent's own on the parent / fix's tests on the parent. Overlay runs put a side'
 
 | Case | Built | Release side | Landed tests | Upstream run |
 |---|---|---|---|---|
-| M01 Lucene #14732 | overlay over lucene-core 10.3.0; pins need JDK 24 | 10.3.0 = **fix** | overlay: 22/22, 21/21, **1 fails** (`ClassCastException`) | job pending |
+| M01 Lucene #14732 | overlay over lucene-core 10.3.0; pins need JDK 24 | 10.3.0 = **fix** | overlay and pins alike: 22/22, 21/21, **1 fails** (`ClassCastException`) | job: passed |
 | M02 JTS #1179 | source build, core + app, JDK 17 | none (no release after 1.20.0) | 12/12, 10/10, **1 error** `testProjectSegment` | inline |
-| M03 RoaringBitmap #914 | source build, Gradle 9.6.1, JDK 21 | none (Central's 1.6.30 is an older tree) | job pending (tests use a fixed 2 GB heap) | job pending |
+| M03 RoaringBitmap #914 | source build, Gradle 9.6.1, JDK 21 | none (Central's 1.6.30 is an older tree) | 126/126, 124/124, **both new tests fail** (`ArrayStoreException`) | job: passed |
 | M04 DataSketches #767 | source build, JDK 25 | 9.0.0 = parent, 9.1.0 = fix (class-identical) | 6/6, 3/3, **3 fail** | inline |
-| M05 Solr #3158 | overlay over 9.8.0 | 9.8.0 = parent, 9.8.1 = fix | not run inline (pins' test config can't start a core on 9.8.0's test framework) | job pending |
+| M05 Solr #3158 | overlay over 9.8.0 | 9.8.0 = parent, 9.8.1 = fix | `TestJsonFacets` 30/30, 29/29, **1 fails** `testMultivalueEnumTypes` | job: passed |
 | M06 Commons CSV #613 | source build, JDK 17 | none (newest 1.14.1 predates) | 168 pass, 166 pass, **2 errors** (`CharacterCodingException`) | inline |
 | M07 Jackson CSV #625 | `javac` of each pin's csv sources over released jackson 3.2.0 (pinned SNAPSHOTs gone) | 3.1.1 = parent logic, 3.2.0 = fix logic + later | 5/5, 5/5, **2 fail** | not possible (SNAPSHOT parent gone) |
 | M08 Woodstox #335 | source build, JDK 17 | 7.2.2 = parent, 7.3.0 = fix (writer class) | 11/11, 10/10, **3 fail** | inline |
 | M09 Avro #3709 | source build avro + avro-idl, JDK 21 | 1.12.2 has the fix's file | 2/2, 2/2, **1 fails** `testToObject` | inline |
 | M10 iCal4j #931 | Gradle 8.5, JDK 17 | 4.4.0 = parent | 11/11, 5/5, **7 of 11 fail** | inline |
-| M11 HikariCP #2346 | source build, JDK 17, PostgreSQL 16 in Docker | 7.0.0 = parent, 7.0.1 = fix (source only) | `testSchema`: fix passes, **fails** on parent; whole class 7/7 on fix | job pending (whole class) |
+| M11 HikariCP #2346 | source build, JDK 17, PostgreSQL 16 in Docker | 7.0.0 = parent, 7.0.1 = fix (source only) | 7/7, 6/6, **1 of 7 fails** `testSchema` | inline + job: passed |
 | M12 Commons Pool #85 | source build, JDK 8 | none equal (2.10.0 before, 2.11.0 after) | 2/2, 16 `testEvict*` pass, **2 fail** | inline |
 | M13 RxJava #6019 | Gradle 4.2.1, JDK 8, init script | 2.1.14 = parent, 2.1.15 = fix | 108/108, 60/60, **4 fail** | inline |
 | M14 Reactor Core #3822 | Gradle 8.5, JDK 8 + toolchains 9, 21 | 3.6.10 has parent's `FluxBuffer`; 3.7.0 = fix | 84/84, 77/77, **3 fail** | inline |
 | M15 Logback #862 | source build logback-core, JDK 21 | 1.5.8 ≈ parent (comments); **1.5.9 is not the fix** | 14/14, 13/13, **1 fails** | inline |
-| M16 jOOQ #19875 | overlay over jooq 3.21.2 | 3.21.2 = parent, 3.21.3 = fix (comment aside) | reporter's H2 test: 2/2 fix, **1 of 2 fails** parent | job pending |
+| M16 jOOQ #19875 | overlay over jooq 3.21.2 | 3.21.2 = parent, 3.21.3 = fix (comment aside) | reporter's H2 test: 2/2 fix, **1 of 2 fails** parent (overlays and pin jars alike) | job: passed |
 | M17 jOOλ #418 | source build, both modules (JDK 17 / JDK 8) | none equal | 163/163, 162/162, **1 fails** (each module) | inline |
 | M18 JDT Core #5380 | overlay over org.eclipse.jdt.core 3.47.0 (unsigned copy) | 3.47.0 = parent | `FormatterRegionTests` 4/4 fix, **2 of 4 fail** parent | none (Tycho build not attempted) |
-| M19 JUnit #2646 | Gradle 7.1-rc-2, JDK 11 + 16, init script | 5.8.0-M1 = parent | job pending | job pending |
-| M20 Guava #7784 | overlay over 33.4.8-jre/-android | 33.4.8 = parent | `SetViewTest` 2736/2736 fix, 2724/2724 parent; **fix's test doesn't compile on the parent** | job pending |
+| M19 JUnit #2646 | Gradle 7.1-rc-2, JDK 11 + 16, init script | 5.8.0-M1 = parent | `DisplayNameGenerationTests` 10/10, 8/8, **1 fails** | job: passed |
+| M20 Guava #7784 | overlay over 33.4.8-jre/-android | 33.4.8 = parent | `SetViewTest` 2736/2736 fix, 2724/2724 parent (Android 2491/2491, 2479/2479); **fix's test doesn't compile on the parent** | job: passed |
 
 ## Cases
 
@@ -225,9 +225,34 @@ Since 10.3.0's file is the fix's, **lucene-core 10.3.0 alone is the fix side**, 
 | fix's test class on the parent overlay | **1 of 22 fails**: `testSameHitsAsPointRangeQueryIntSort`, `ClassCastException: Integer cannot be cast to Long` at `getDocIdSetIterator` (line 615) | `$O/logs/M01-overlaytest-fixtest-on-parent.log` |
 | parent's own test class on the parent overlay | 21/21 pass | `$O/logs/M01-overlaytest-parenttest-on-parent.log` |
 
-**Upstream build: job `20261125-071414-setup-build-lucene-core-at-both-14732-re`** (`$O/scripts/submit_D.py lucene`), pending: on JDK 24.0.2,
+**Upstream build: job `20261125-071414-setup-build-lucene-core-at-both-14732-re`** (`$O/scripts/submit_D.py lucene`): on JDK 24.0.2,
 lucene-core jar and the landed test class on the fix online, the parent's own offline, the parent with the fix's test transplanted (expected to fail
 `testSameHitsAsPointRangeQueryIntSort`) offline, the fix again offline; jars to `$O/artifacts/M01-lucene-{fix,parent}-core.jar`; build trees removed.
+**Passed** (5 steps, 3m55s, peak 1.6 GiB):
+
+| Run (pins, upstream Gradle) | Result | Summary |
+|---|---|---|
+| fix, online | 22/22 pass | `$O/logs/M01-fix.online.{junit,gradle-log}.txt` |
+| parent's own, offline | 21/21 pass | `$O/logs/M01-parent.offline.*` |
+| fix's test class on the parent, offline | **1 of 22 fails**: `testSameHitsAsPointRangeQueryIntSort`, `ClassCastException: class java.lang.Integer cannot be cast to class java.lang.Long` | `$O/logs/M01-transplant.offline.*` |
+| fix again, offline | 22/22 pass | `$O/logs/M01-fix.rerun.offline.*` |
+
+Jars built from the pins (`lucene-core-11.0.0-SNAPSHOT.jar`): `$O/artifacts/M01-lucene-fix-core.jar`
+`03a44560aea07027fb942544b3b824fab50703c3125ff517017a796850862e29`, `$O/artifacts/M01-lucene-parent-core.jar`
+`c2b1f411e2ed235fe82238ceba2994b28d650ac00a5de1ea165a0f8ea991440e`. lucene-core has no runtime dependencies. Changed classes in them
+(`$O/logs/M01-lucene-jobjar-classes.md`, written by `$O/scripts/class_table_jobjars.py`):
+
+| Class | parent jar | fix jar |
+|---|---|---|
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$1$1.class` | `8b6cbd7ae8b5fc8b1877bf7de87c31c4b162f12d74b1f8b0ef1afcd712a8873a` | the same |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$1.class` | `2d90b1798e3da00e39f37d8897449a209154da688038051494fba72b1ed09e35` | `56c395d5f19f48b0464321b021e31e31579a35ad8a38b2acc15f6c58966b8c86` |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$2.class` | `0546842c2fe8f170341fa33d0574a5b6ce170543f1f86e5f7e884ff6e83526bd` | `7c89e1f2105102c3f85ff1391028befae8e0d3bb5789290f7a1606dc2ec203b2` |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$3.class` | `ad68afa31a16da7724d4464c70406f530adab9ff39f529afb0651104f0960b92` | `055f1d1351a4901828af341dd38417219a28e8dd398ffa73c0a3ac5968a41f81` |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$BoundedDocIdSetIterator.class` | `f6e1abd4b9278438571b2d477e7f5b1a1c3f5fa6ff40662503614ea2f0d57172` | `0a5ab35b3e60bc7e69da856a14a7aaf03f229e3d12c682b7f0741d418b570fd9` |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$IteratorAndCount.class` | `7c795750b50b67a460be0d8cde0f76852090640945cde789f695b7f2ca4b2a5e` | `ffd2e680710dd089587d44823b7d0a0b4460a1cd31eebb67342994d7431f0a74` |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$ValueAndDoc.class` | `b6cc0af3b5403d0d8b2528f280f79534eef0ef8d153bce877563cb335318f7ae` | `e755d7429e818ec20afa23ece67747933df8ff78091ada15b0ac929ddb083c22` |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery$ValueComparator.class` | `bb9db7f93a0863069a25def55356d1aa34acc6a8c064f15a7faa055e662a87ac` | the same |
+| `org/apache/lucene/search/IndexSortSortedNumericDocValuesRangeQuery.class` | `a78fd619b54e0e4cff7b8eb40feb91d577dadd02e616aa1ec70fc08de67a26b8` | `eb35e64f3d99f746c287d6505683f58516408e6553a32e3508068d95593b4b15` |
 
 **Signatures.** lucene-core, lucene-codecs and lucene-test-framework 10.3.0: Central `.asc` good, key `ED32423E166C9E2CFE66977FAF511F754FB8850B`, in
 `https://downloads.apache.org/lucene/KEYS` (copy `$O/keys/lucene-KEYS`, sha256 `a789bed6c8dc675ca6f86c08bea3a2e2bb0b6a80651ef787ac283ea214ca2a32`), keyring `$O/gnupg-D`.
@@ -351,8 +376,14 @@ python3 -I $O/scripts/junit_summary.py roaringbitmap/build/test-results/test
 
 **Landed tests: job `20261125-072322-setup-run-roaringbitmap-914-s-landed-fas`** (`$O/scripts/submit_C.py m03`): both
 `TestFastAggregation` classes on the fix online then offline, the parent's own copies offline, and the fix's two test files transplanted onto
-the parent (new tests expected to fail; `failFast` stops the run at the first failure); then the build trees are removed. **Result pending.**
-Logs will be `$O/logs/M03-{fix.test-online,fix.test-offline,parent.test-offline,parent.transplanted.test-offline}.{junit.txt,gradle-log.txt}`.
+the parent (new tests expected to fail; `failFast` stops the run at the first failure); then the build trees are removed.
+**Passed** (5 steps, 1m11s, peak 710 MiB). Logs: `$O/logs/M03-{fix.test-online,fix.test-offline,parent.test-offline,parent.transplanted.test-offline}.{junit.txt,gradle-log.txt}`.
+
+| Run | Result |
+|---|---|
+| fix, online and again offline | 126/126 pass each time |
+| parent's own, offline | 124/124 pass |
+| fix's two test files on the parent, offline | **2 fail** (56 run, 2 skipped by `failFast`): `priorityQueueOrAcceptsSubtypeArray()` in the heap class (`ArrayStoreException: org.roaringbitmap.RoaringBitmap`) and in the buffer class (`ArrayStoreException: org.roaringbitmap.buffer.MutableRoaringBitmap`) |
 
 **Release.** `org.roaringbitmap:RoaringBitmap:1.6.30` on Central (metadata last updated 2026-11-14, before the merge on 2026-11-23;
 `$O/releases/roaringbitmap-1.6.30`, strict checksums, signature good): `RoaringBitmap-1.6.30.jar`
@@ -488,10 +519,35 @@ the core does not start: `SolrCoreInitializationException ... RAMDirectory can o
 `$O/logs/M05-overlaytest-fixtest-on-{fix,parent}.log`, `$O/logs/M05-overlaytest-fixtest-on-fix.try2.log`. Not pursued further (a 9.8.x test-files tree would
 need the release tag's sources).
 
-**Upstream build: job `20261125-071415-setup-build-solr-core-at-both-3158-revis`** (`$O/scripts/submit_D.py solr`), pending: JDK 21, the whole `TestJsonFacets`
+**Upstream build: job `20261125-071415-setup-build-solr-core-at-both-3158-revis`** (`$O/scripts/submit_D.py solr`): JDK 21, the whole `TestJsonFacets`
 class on the fix online (must include and pass `testMultivalueEnumTypes`), on the parent (own copy) offline, on the parent with the fix's
 `TestJsonFacets.java` and `schema_latest.xml` transplanted (expected to fail `testMultivalueEnumTypes`), the fix again offline; jars to
-`$O/artifacts/M05-solr-{fix,parent}-core.jar`. This job is the landed test's only run.
+`$O/artifacts/M05-solr-{fix,parent}-core.jar`. This job is the landed test's only run. **Passed** (5 steps, 7m16s, peak 3.8 GiB):
+
+| Run (pins, upstream Gradle) | Result | Summary |
+|---|---|---|
+| fix, online | 30/30 pass (incl. `testMultivalueEnumTypes`) | `$O/logs/M05-fix.online.{junit,gradle-log}.txt` |
+| parent's own, offline | 29/29 pass | `$O/logs/M05-parent.offline.*` |
+| fix's `TestJsonFacets.java` and `schema_latest.xml` on the parent, offline | **1 of 30 fails**: `testMultivalueEnumTypes {p0=STREAM}`, `RuntimeException: List size mismatch @ facets/f/buckets` | `$O/logs/M05-transplant.offline.*` |
+| fix again, offline | 30/30 pass | `$O/logs/M05-fix.rerun.offline.*` |
+
+Every run prints three `java.security.policy: error adding Permission, java.net.URLPermission` / `Locale provider adapter "CLDR" cannot be
+instantiated` warnings from the test security policy on JDK 21; they appear in passing runs too and do not fail anything.
+Jars built from the pins (`solr-core-10.0.0-SNAPSHOT.jar`): `$O/artifacts/M05-solr-fix-core.jar`
+`90b5fe4838cfe66cafab2876970b34ada9c1a433d53ecbe56ad202517afa319a`, `$O/artifacts/M05-solr-parent-core.jar`
+`c1f562d68829d915ec8d3a7f9fd2349dc68ff15866b777d33c2923d15c30d528`. Their Gradle runtime classpath was not exported (the overlays'
+9.8.0 classpath is above). Changed classes in them (`$O/logs/M05-solr-jobjar-classes.md`):
+
+| Class | parent jar | fix jar |
+|---|---|---|
+| `org/apache/solr/search/facet/FacetField$FacetMethod.class` | `c91de87ccb6d139064d8240b146c85c35128af87d93233e35b3b668d2b3861cc` | the same |
+| `org/apache/solr/search/facet/FacetField.class` | `988eca65f2a919e3d96b6fbedfa7596bc5765bbe1b3800b205ec2429846874ad` | `1a7a133a27a8add429acc4cdf3de1913637074621915102a2a51091049141aa7` |
+| `org/apache/solr/search/facet/FacetFieldProcessorByArrayDV.class` | `cb3db70c5c0b6d760899994ffd9860c3abca12bdd82c5c4c5d180e564419b397` | the same |
+| `org/apache/solr/search/facet/FieldUtil$DVOrdValues.class` | `838323a35b2691406824a0113d0c4708c8734de65e438ac4a26dc60acfbb2356` | `dc3829ac670e192eb199e31960e623e9dbaad78b464528dbd4866d6ff3bcbc6c` |
+| `org/apache/solr/search/facet/FieldUtil$FCOrdValues.class` | `00313bda80102005ec73fb93274f1aa3401abd848e086a4df6d55ba8c1b0500f` | `40c581d1095864e9436f0cdc31949e27f8294eef31820346d1086ffbc2e0e0d4` |
+| `org/apache/solr/search/facet/FieldUtil$OrdFunc.class` | `192db2420df4cf566aad71a5f8de6844aba906818992aa1624b1b58a395f879a` | the same |
+| `org/apache/solr/search/facet/FieldUtil$OrdValues.class` | `caf036378150ad0650021b9a65c11c7c0ab862e897798df76cafce76ab9a4a65` | `4fae31335d00e09ffc626675d90cd4f82fb3bfe4674c98f67fda943e27d5d02f` |
+| `org/apache/solr/search/facet/FieldUtil.class` | `a2dd1053dd03b069275920770424b1dcb5a6e4549f3c0bfa826de2fab689e02e` | `b9a75af5809045e73d767f404654d4d8a80b140887d103fa0fbc80901c230c4a` |
 
 **Signatures** (keyring `$O/gnupg-D`; `$O/keys/solr-KEYS` sha256 `ad17d9f81c5f63f1175af8e7d5451f8aed25aa2869543bfda3c01cc0f4930a69`, `$O/keys/lucene-KEYS`):
 - `solr-core-9.8.1.jar`: good, key `50E3EE1C91C7E0CB4DFB007B369424FC98F3F6EC`.
@@ -502,7 +558,7 @@ class on the fix online (must include and pass `testMultivalueEnumTypes`), on th
 **For the domain agent**
 - Release pair: **9.8.0 = parent side, 9.8.1 = fix side** for the changed files (pattern-variable spelling aside); the overlays put both pins' exact sources over 9.8.0.
 - The brief's schema fixture is the fix's `schema_latest.xml` (`severity_mv`); the parent pin has no such field, so a parent-side run needs it supplied.
-- No inline JVM run of the landed test exists yet; read the Solr job's result first.
+- The landed test discriminates the sides on the pins (job above); there is no overlay run of it (the pins' test config needs the 10.0 test framework).
 
 ### M06 · Apache Commons CSV #613 — byte positions after a supplementary-character delimiter (pinned source build)
 
@@ -892,13 +948,16 @@ graph for a fixture is `$O/releases/M11-postgres-testcontainers/classpath.txt` (
 | fix's whole `PostgresTest` on the fix (offline, with `api.version`) | 7/7 pass (122 s) |
 | fix's `testSchema` alone on the fix | 1/1 pass |
 | fix's `PostgresTest` + init script transplanted onto the parent, `testSchema` alone | **fails**: `PostgresTest.testSchema:162 expected:<test> but was:<null>` (the second borrow) |
-| parent's own `PostgresTest`, and the whole transplanted class | job `20261125-071708-setup-run-hikaricp-s-landed-postgrestest` (pending) |
+| parent's own `PostgresTest`, offline (job) | 6/6 pass |
+| fix's whole `PostgresTest` + init script on the parent, offline (job) | **1 of 7 fails**: `testSchema`, `expected:<test> but was:<null>` |
+| fix's whole `PostgresTest` on the fix again, offline (job) | 7/7 pass |
 
 Worktrees restored clean; build trees removed.
 
 **Job** `20261125-071708-setup-run-hikaricp-s-landed-postgrestest` (`verification/jobs/2026/11/25/20261125-071708-setup-run-hikaricp-s-landed-postgrestest.json`,
 written by `$O/scripts/submit_B.py`): offline, JDK 17, the whole `PostgresTest` on the fix (7/7 expected), the parent's own (6 tests), and transplanted onto
-the parent (only `testSchema` may fail); summaries `$O/logs/M11-{fix,parent,transplant}-PostgresTest.junit.txt`.
+the parent (only `testSchema` may fail); summaries `$O/logs/M11-{fix,parent,transplant}-PostgresTest.junit.txt`. **Passed** (3 steps, 7m02s,
+peak 724 MiB); every step used `postgres@sha256:07abc3f43c9395b0bdbbab36bc25ddb0e8d83cd4fcafb5fb7d6abe14ff156dd8`. Results in the table above.
 
 **Signatures.** None checked (HikariCP publishes no KEYS file to check a Central signature against); Central checksums were enforced (`--strict-checksums`).
 
@@ -1231,11 +1290,33 @@ Use: `java -cp $O/artifacts/M16-jOOQ-SIDE-overlay.jar:$(cat $O/releases/jooq-3.2
 | on the parent overlay | **1 of 2 fails**: `testLoaderBatchAllWithStaticStatement`, `AssertionError: Expected Bob, got: [Alice, Alice, Alice]`; the PREPARED_STATEMENT test passes | `$O/logs/M16-overlaytest-reportertest-on-parent.log` |
 | on jooq 3.21.2 alone (no overlay) | same as the parent overlay | `$O/logs/M16-overlaytest-reportertest-on-3.21.2.log` |
 
-**Upstream build: job `20261125-071415-setup-build-jooq-at-both-19875-revisions`** (`$O/scripts/submit_D.py jooq`), pending. Per pin, from the worktree on JDK 21 with
+**Upstream build: job `20261125-071415-setup-build-jooq-at-both-19875-revisions`** (`$O/scripts/submit_D.py jooq`). Per pin, from the worktree on JDK 21 with
 `MAVEN_OPTS='-Xmx2g -Duser.home=$O/mvnhome'`: `$MVN [-o] -Daether.connector.basic.threads=1 -pl jOOQ -DskipTests -Dmaven.javadoc.skip=true package`, then
 `$MVN [-o] -q -pl jOOQ dependency:build-classpath -Dmdep.includeScope=runtime -Dmdep.outputFile=…`, then the reporter's test compiled and run against
 `jOOQ/target/jooq-3.22.0-SNAPSHOT.jar` + that classpath + `M16-testdeps` (outside Maven, since the upstream POM has no H2 and is left unchanged). Fix online,
 parent offline (expected 1 failure), fix again offline; jars to `$O/artifacts/M16-jOOQ-{fix,parent}-jooq.jar`. Inline only `-pl jOOQ validate` ran (2 s, passed).
+**Passed** (4 steps, 2m41s, peak 1.2 GiB):
+
+| Run (pin jars) | Result | Summary |
+|---|---|---|
+| reporter's test over the fix jar, online build | 2/2 pass | `$O/logs/M16-fix.online.{junit,mvn-log}.txt` |
+| over the parent jar, offline build | **1 of 2 fails**: `testLoaderBatchAllWithStaticStatement`, `AssertionError: Expected Bob, got: [Alice, Alice, Alice]` | `$O/logs/M16-parent.offline.*` |
+| over the fix jar rebuilt offline | 2/2 pass | `$O/logs/M16-fix.rerun.offline.*` |
+
+Jars (`jooq-3.22.0-SNAPSHOT.jar`): `$O/artifacts/M16-jOOQ-parent-jooq.jar` `36675677bc26e1c638038c090d32f061bfe7b9107464afc219b77800318ff73d`,
+`$O/artifacts/M16-jOOQ-fix-jooq.jar` `a2b8068040468c84e5ddefe4057b62d793c943ca58bb2c656f77f9e54d8bc09a` (the offline rebuild, which
+replaced the online build's `41af58aa3104800426832508d586e184dd2508a9da19cf20a37c8d5aa5a0993a`: the jOOQ jar is **not byte-reproducible**
+between builds of one pin, so compare classes, not jars). Runtime classpath, identical for both pins:
+`$O/logs/M16-{fix,parent}-runtime-classpath.txt` (sha256 `7b92a648130e42b34080a0ba6e234ba6aebaf529cab97e50cf11a626f9f34ee0`), plus
+`M16-testdeps` for the test. Changed classes in the jars (`$O/logs/M16-jOOQ-jobjar-classes.md`):
+
+| Class | parent jar | fix jar |
+|---|---|---|
+| `org/jooq/impl/LoaderImpl$1.class` | `1fa8e9c3862d4f8cd1aca10d556cc62783342e53b38327756285994db87c409d` | the same |
+| `org/jooq/impl/LoaderImpl$CachedPS.class` | `691b014e04f32f570275761c44545ed468efa39aa6d8b5371df42361326d3fe1` | the same |
+| `org/jooq/impl/LoaderImpl$CachedPSListener.class` | `fc81364bf228fe77d4e5ac8e3089a7fd8ce06ddccc7bb9f6dcf0259d7902be7d` | the same |
+| `org/jooq/impl/LoaderImpl$DefaultLoaderContext.class` | `4f65eea46931bcb1b880ffb0f9d0f7883af08406c91945667530e59f5fc5e5df` | `6fb227c598979de41f53c650d46aea462f8fb3821b2da48edd39f8b3467b2d72` |
+| `org/jooq/impl/LoaderImpl.class` | `98491ac97202e70e1f0ceaa3acb10fdc46201d6edb83102aa1c3779b342069ee` | `2dd6d58e4e0fb09f373e3e6c425c8daee8c5981667261790964901d154102d8d` |
 
 **Signatures** (keyring `$O/gnupg-D`, keys from keyserver.ubuntu.com): `jooq-3.21.2.jar` good, key `7C7271B83AAE727A2941690666F8E4860BF74983` (datageekery);
 `h2-2.4.240.jar` good, `CF6FCDD747FD9C32304B180B58BD11D32974088F` (Thomas Mueller Graf); `junit-4.13.2.jar` good, `FF6E2C001948C5F2F38B0CC385911F425EC61B51` (Marc Philipp);
@@ -1445,8 +1526,14 @@ Only the two `junit-jupiter-api` files changed; the other jars differ by build t
 **Landed tests: job `20261125-072322-setup-run-junit-2646-s-landed-displaynam`** (`$O/scripts/submit_C.py m19`): compiles the
 `junit-jupiter-engine` tests and runs `DisplayNameGenerationTests` (`-Pretries=0`) on the fix online then offline, the parent's own copy offline,
 and the fix's test plus its two new fixture classes transplanted onto the parent (expected to fail, or not to compile; the step prints
-`TRANSPLANT-FAILS-AS-EXPECTED` or `TRANSPLANT-DOES-NOT-COMPILE`); then the checkouts are cleaned. **Result pending.**
-Logs will be `$O/logs/M19-{fix.test-online,fix.test-offline,parent.test-offline,parent.transplanted.test-offline}.{junit.txt,gradle-log.txt}`.
+`TRANSPLANT-FAILS-AS-EXPECTED` or `TRANSPLANT-DOES-NOT-COMPILE`); then the checkouts are cleaned.
+**Passed** (5 steps, 3m50s, peak 2.2 GiB). Logs: `$O/logs/M19-{fix.test-online,fix.test-offline,parent.test-offline,parent.transplanted.test-offline}.{junit.txt,gradle-log.txt}`.
+
+| Run | Result |
+|---|---|
+| fix, online and again offline | 10/10 pass each time |
+| parent's own, offline | 8/8 pass |
+| fix's test and two new fixtures on the parent, offline | compiles; **1 of 10 fails** (`TRANSPLANT-FAILS-AS-EXPECTED`): `indicativeSentencesGeneratorOnNestedClass()`, `AssertionFailedError: expected line #1 doesn't match actual line #1`, expected `CONTAINER: A year is a leap year` |
 
 **Releases** (`resolve.sh`, strict checksums, signatures good), compared on the three changed files:
 
@@ -1548,9 +1635,31 @@ JRE class digests (Android: `$O/overlays/M20/guava-android-{parent,fix}/class-sh
 
 So the landed test cannot show a difference on the parent; it checks the fix's new bounds and equality, and the parent's old behaviour stays green.
 
-**Upstream build: job `20261125-071415-setup-build-guava-jre-and-android-at-bot`** (`$O/scripts/submit_D.py guava`), pending: the command above for the fix
+**Upstream build: job `20261125-071415-setup-build-guava-jre-and-android-at-bot`** (`$O/scripts/submit_D.py guava`): the command above for the fix
 (JRE, Android) online, the parent's own `SetViewTest` (JRE, Android) offline, the fix JRE again offline; jars to `$O/artifacts/M20-guava-{fix,parent}[-android]-guava.jar`.
-No transplant (does not compile).
+No transplant (does not compile). **Passed** (6 steps, 7m27s, peak 1.8 GiB):
+
+| Run (pins, upstream Maven) | Result | Summary |
+|---|---|---|
+| fix JRE, online | `SetViewTest` 2736/2736 | `$O/logs/M20-fix.jre.online.{junit,mvn-log}.txt` |
+| fix Android, online | 2491/2491 | `$O/logs/M20-fix.android.online.*` |
+| parent JRE (own test), offline | 2724/2724 | `$O/logs/M20-parent.jre.offline.*` |
+| parent Android (own test), offline | 2479/2479 | `$O/logs/M20-parent.android.offline.*` |
+| fix JRE again, offline | 2736/2736 | `$O/logs/M20-fix.jre.rerun.offline.*` |
+
+Jars built from the pins: `$O/artifacts/M20-guava-fix-guava.jar` `614963be36b3cca413a3f42dc645f731d8d6e77a133ade6989965ea6cd5a9877`,
+`$O/artifacts/M20-guava-parent-guava.jar` `fcc220662fa8e0769d6d122d4b833c95d1875b025f801602c30c9eee27bf9368`,
+`$O/artifacts/M20-guava-fix-android-guava.jar` `dfe0725e0264b4f231111e39c5804cbdbfbbba7ff624a45c27677e1dce79da4a`,
+`$O/artifacts/M20-guava-parent-android-guava.jar` `9388dba11702489680e4be376899eab28f32004292427cf644de1216d5b5a4b7`
+(`guava-999.0.0-HEAD-{jre,android}-SNAPSHOT.jar`). Every `Sets*.class` differs between the sides; full tables in
+`$O/logs/M20-guava-jobjar-classes.md` and `$O/logs/M20-guava-android-jobjar-classes.md`. The two that carry the change:
+
+| Class | parent jar | fix jar |
+|---|---|---|
+| JRE `com/google/common/collect/Sets$SetView.class` | `a788db1ae4a8c775615e67d1838e01465efc691bf754cabcdb891915388525c6` | `51fd4c134b1436872d24b853e8db43443a173edaf1cc514457807b983991b3ad` |
+| JRE `com/google/common/collect/Sets.class` | `a00e8108611d7a1f62ca52fbd7473b93166f6216ce96f998d581be231285a7a3` | `0d8d378f44ed98aa3b6e11ec7b21d406bb7ce61b1b5233e9f9698abf7d18c364` |
+| Android `com/google/common/collect/Sets$SetView.class` | `6a0ceb37a12dca96772efed5d3bf2f8ce8e23df80bf8618e66578c413a15d83a` | `b4bcac1c619685416a54d3a43cb6fb5733625247b529deacdce46ac26a9bae58` |
+| Android `com/google/common/collect/Sets.class` | `8b65552fcc91a75aabb3e3ea46471445885d62a916aca8d71a76b387864c8dd4` | `e8e85cfa77f0d12671f4eba615c74276925068c3f4225b8166ce93e0f016a38d` |
 
 **Signatures** (keyring `$O/gnupg-D`, keys from keyserver.ubuntu.com): `guava-33.4.8-jre.jar`, `guava-33.4.8-android.jar`, `guava-testlib-33.4.8-jre.jar`, `truth-1.4.4.jar` good,
 key `BDB5FA4FE719D787FB3D3197F6D4A1D411E9D1AE` (Christopher Povirk); `junit-4.13.2.jar` good, `FF6E2C001948C5F2F38B0CC385911F425EC61B51`.
@@ -1564,17 +1673,19 @@ key `BDB5FA4FE719D787FB3D3197F6D4A1D411E9D1AE` (Christopher Povirk); `junit-4.13
 ## Jobs
 
 All seven were committed in `ulxnwtzsswoy` ("Queue the setup builds of the merged Java PR links brief (verification pending)") and
-were running when this record was written. Their results go here when they come back.
+all seven **passed**; their results were recorded by the pipeline on the default line (`verification/results/2026/11/25/`, collected in
+`ruyozwpyrzkz`, `mynnkymuytlp`, `ttuwqwvppors` and `omvqzwuyylsl`), and read from there for this record. "Passed" includes each expected-failure step: a transplant
+step passes only when the named test fails.
 
 | Job | Case | What it runs | Result |
 |---|---|---|---|
-| `20261125-071414-setup-build-lucene-core-at-both-14732-re` | M01 | JDK 24.0.2: lucene-core jar and `TestIndexSortSortedNumericDocValuesRangeQuery`, fix online, parent offline, fix's test on the parent offline (expected to fail `testSameHitsAsPointRangeQueryIntSort`), fix again offline | pending |
-| `20261125-071415-setup-build-solr-core-at-both-3158-revis` | M05 | solr-core and the whole `TestJsonFacets` at both pins, fix's test and schema on the parent (expected to fail `testMultivalueEnumTypes`), offline rerun | pending |
-| `20261125-071415-setup-build-jooq-at-both-19875-revisions` | M16 | `-pl jOOQ package` at both pins, then the reporter's H2 `LoaderBatchStaticStatementTest` over each built jar | pending |
-| `20261125-071415-setup-build-guava-jre-and-android-at-bot` | M20 | Guava JRE and Android, `SetViewTest` at both pins | pending |
-| `20261125-071708-setup-run-hikaricp-s-landed-postgrestest` | M11 | the whole `PostgresTest` on the fix, the parent's own on the parent, the fix's on the parent (only `testSchema` may fail) | pending |
-| `20261125-072322-setup-run-junit-2646-s-landed-displaynam` | M19 | `DisplayNameGenerationTests` at both pins and the fix's test on the parent | pending |
-| `20261125-072322-setup-run-roaringbitmap-914-s-landed-fas` | M03 | both `TestFastAggregation` classes at both pins and the fix's on the parent | pending |
+| `20261125-071414-setup-build-lucene-core-at-both-14732-re` | M01 | JDK 24.0.2: lucene-core jar and `TestIndexSortSortedNumericDocValuesRangeQuery`, fix online, parent offline, fix's test on the parent offline (expected to fail `testSameHitsAsPointRangeQueryIntSort`), fix again offline | passed, 3m55s: 22/22, 21/21, transplant **1 fails** (`ClassCastException`), offline rerun 22/22 |
+| `20261125-071415-setup-build-solr-core-at-both-3158-revis` | M05 | solr-core and the whole `TestJsonFacets` at both pins, fix's test and schema on the parent (expected to fail `testMultivalueEnumTypes`), offline rerun | passed, 7m16s: 30/30, 29/29, transplant **1 fails** `testMultivalueEnumTypes`, offline rerun 30/30 |
+| `20261125-071415-setup-build-jooq-at-both-19875-revisions` | M16 | `-pl jOOQ package` at both pins, then the reporter's H2 `LoaderBatchStaticStatementTest` over each built jar | passed, 2m41s: 2/2 fix, **1 of 2 fails** parent, offline rebuild 2/2 |
+| `20261125-071415-setup-build-guava-jre-and-android-at-bot` | M20 | Guava JRE and Android, `SetViewTest` at both pins | passed, 7m27s: JRE 2736/2736 and 2724/2724, Android 2491/2491 and 2479/2479, offline rerun 2736/2736 |
+| `20261125-071708-setup-run-hikaricp-s-landed-postgrestest` | M11 | the whole `PostgresTest` on the fix, the parent's own on the parent, the fix's on the parent (only `testSchema` may fail) | passed, 7m02s: 7/7, 6/6, transplant **1 of 7 fails** `testSchema` |
+| `20261125-072322-setup-run-junit-2646-s-landed-displaynam` | M19 | `DisplayNameGenerationTests` at both pins and the fix's test on the parent | passed, 3m50s: 10/10 online and offline, 8/8, transplant **1 of 10 fails** |
+| `20261125-072322-setup-run-roaringbitmap-914-s-landed-fas` | M03 | both `TestFastAggregation` classes at both pins and the fix's on the parent | passed, 1m11s: 126/126 online and offline, 124/124, transplant **2 fail** (`ArrayStoreException`) |
 
 ## Signatures
 
@@ -1618,7 +1729,7 @@ the serving repository's `.sha1`).
 
 `$O` is 11 GB: worktrees 2.4 GB, `gradle-home` 3.3 GB, tools (Gradle, JDKs 9, 16, 24) 1.8 GB, `dl` 1.5 GB, `m2` 0.9 GB, `mvnhome`
 (Guava's JDK downloads) 0.6 GB, release sets 0.5 GB, artifacts 61 MB. Build trees were deleted after their jars and digests were recorded,
-except where a pending job still uses the worktree. The mirrors under `$M` hold only the pins (plus earlier setups' pins in the four shared mirrors).
+including those of the seven jobs (each job removed its own at the end). The mirrors under `$M` hold only the pins (plus earlier setups' pins in the four shared mirrors).
 
 ## Setup Agent Notes
 
@@ -1636,7 +1747,8 @@ except where a pending job still uses the worktree. The mirrors under `$M` hold 
 - Release sets resolved with strict checksums in `$O/releases/`, and which side each equals: the "Release side" column of
   [Summary by case](#summary-by-case).
 - Dependencies for the builds are in `$O/m2` and `$O/gradle-home`; the offline form (`$MVN -o`, `--offline`) was checked for M02, M03, M04,
-  M06, M08, M09, M10, M11, M12, M13, M14, M15, M17 and M19, and is part of the jobs for M01, M05, M16 and M20. Exact commands are in each case's section.
+  M01, M03, M05, M06, M08, M09, M10, M11, M12, M13, M14, M15, M16, M17, M19 and M20 (for M01, M03, M05, M16, M19 and M20 by the
+jobs, which passed). Exact commands are in each case's section.
 
 ### What was verified on a JVM
 
@@ -1646,8 +1758,11 @@ except where a pending job still uses the worktree. The mirrors under `$M` hold 
   the fix overlay and fails on the parent's ("Expected Bob, got: [Alice, Alice, Alice]"). Counts per side are in the summary table.
 - M20: the landed `SetViewTest` passes at both pins, but the fix's copy does not compile on the parent (`minSize()`/`maxSize()` are
   fix-only), so no landed test separates the sides.
-- Pending as jobs (see [Jobs](#jobs)): M03 and M19 (their landed tests have not run yet), M05 (no JVM run of the landed test yet), and the
-  upstream builds of M01, M11 (whole class), M16 and M20.
+- By the seven jobs, all passed (see [Jobs](#jobs)): M03 (both `priorityQueueOrAcceptsSubtypeArray()` tests fail on the parent with
+  `ArrayStoreException`), M05 (`testMultivalueEnumTypes` fails on the parent: "List size mismatch @ facets/f/buckets"), M19
+  (`indicativeSentencesGeneratorOnNestedClass()` fails on the parent), and the upstream builds of M01, M16 and M20 and the whole M11
+  class, which agree with the overlay and inline runs above.
+- So the landed (or, for M16, the reporter's) regression separates the sides in **19 of 20 cases**; M20 is the exception.
 - **None of the brief's claim scenarios was run** in any case.
 
 ### What to know before starting
@@ -1669,7 +1784,10 @@ except where a pending job still uses the worktree. The mirrors under `$M` hold 
 - **M19:** `$W/M19-junit-framework-*` are standalone clones, not worktrees.
 - **Signatures:** RxJava 2.1.14/2.1.15 cannot be verified (signing key revoked as compromised); Solr 9.8.0 is signed by an expired key.
   Plugin modules substituted for M13 and M19 rest on SHA-1 checks. See [Signatures](#signatures).
-- Pending job results will be added here; until then, read `python3 verification/pipeline.py report` for the job ids in [Jobs](#jobs).
+- **M16:** the jOOQ jar is not byte-reproducible between two builds of one pin; compare the class digests in its section.
+- **M01, M05, M16, M20** have both overlay jars (over a release) and jars built from the pins in `$O/artifacts/`; the sections give both.
+  The Solr pin jars' runtime classpath was not exported.
+- The job results live on the default line (`verification/results/2026/11/25/`); this workspace's line does not contain them until it is merged.
 
 ### What is left for the domain work on purpose
 

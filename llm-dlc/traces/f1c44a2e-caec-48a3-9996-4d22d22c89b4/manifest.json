@@ -12,26 +12,26 @@
     "claude-opus-5-5"
   ],
   "started": "2026-11-25T06:46:04.541Z",
-  "ended": "2026-11-25T08:01:37.953Z",
-  "duration_seconds": 4533,
+  "ended": "2026-11-25T08:16:43.916Z",
+  "duration_seconds": 5439,
   "stats": {
-    "turns": 1,
-    "api_calls": 74,
-    "tool_calls": 78,
+    "turns": 5,
+    "api_calls": 102,
+    "tool_calls": 106,
     "tool_errors": 1,
-    "compactions": 0,
-    "peak_context_tokens": 217988,
+    "compactions": 1,
+    "peak_context_tokens": 219532,
     "usage": {
-      "input_tokens": 148,
-      "output_tokens": 57563,
-      "cache_read_input_tokens": 11145181,
-      "cache_creation_input_tokens": 206265
+      "input_tokens": 204,
+      "output_tokens": 78985,
+      "cache_read_input_tokens": 14234052,
+      "cache_creation_input_tokens": 347035
     }
   },
   "tools": {
-    "Bash": 71,
+    "Bash": 97,
     "Agent": 4,
-    "Read": 2,
+    "Read": 4,
     "Write": 1
   },
   "files_touched": [
@@ -41,24 +41,38 @@
     {
       "index": 0,
       "started": "2026-11-25T06:46:04.541Z",
-      "ended": "2026-11-25T08:01:37.953Z",
+      "ended": "2026-11-25T08:12:32.422Z",
       "turns": 1,
-      "api_calls": 74,
+      "api_calls": 76,
       "usage": {
-        "input_tokens": 148,
-        "output_tokens": 57563,
-        "cache_read_input_tokens": 11145181,
-        "cache_creation_input_tokens": 206265
+        "input_tokens": 152,
+        "output_tokens": 59441,
+        "cache_read_input_tokens": 11581887,
+        "cache_creation_input_tokens": 207809
       },
-      "peak_context_tokens": 217988
+      "peak_context_tokens": 219532
+    },
+    {
+      "index": 1,
+      "started": "2026-11-25T08:13:10.623Z",
+      "ended": "2026-11-25T08:16:43.916Z",
+      "turns": 4,
+      "api_calls": 26,
+      "usage": {
+        "input_tokens": 52,
+        "output_tokens": 19544,
+        "cache_read_input_tokens": 2652165,
+        "cache_creation_input_tokens": 139226
+      },
+      "peak_context_tokens": 150949
     }
   ],
   "log": {
-    "sha256": "33fc820e4bad5052ebc5306571ddd700a61daed3eb95fd4c136c57aa221d6f19",
-    "bytes": 1826194,
-    "lines": 923,
-    "gzip_bytes": 327846,
-    "path": "llm-dlc/traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/logs/33fc820e4bad5052ebc5306571ddd700a61daed3eb95fd4c136c57aa221d6f19.jsonl.gz"
+    "sha256": "aa0f0f101e8a757af9209ecf5bc6fd9c07b9668504c5db0fee3493b0478c792e",
+    "bytes": 3005684,
+    "lines": 1224,
+    "gzip_bytes": 592610,
+    "path": "llm-dlc/traces/f1c44a2e-caec-48a3-9996-4d22d22c89b4/logs/aa0f0f101e8a757af9209ecf5bc6fd9c07b9668504c5db0fee3493b0478c792e.jsonl.gz"
   },
   "subagents": [
     {
@@ -202,6 +216,14 @@
       "summary": "Propose eight false positives from the merged-pr-links setup for the allow list",
       "body": "Setup session f1c44a2e's logs raised long-token and public-ip warnings that are jar file names (M19-junit-framework-*), a public OpenPGP key fingerprint used as a file name, a JDK 21 version string and a four-part Maven version. Proposed only; a person approves.",
       "log_sha256": "33fc820e4bad5052ebc5306571ddd700a61daed3eb95fd4c136c57aa221d6f19"
+    },
+    {
+      "change_id": "xuysovwpmrqruxovmsyzmpmowslxplmq",
+      "commit_id": null,
+      "immutable": false,
+      "summary": "Record the seven setup job results of the merged Java PR links brief",
+      "body": "All seven setup jobs passed (results recorded by the pipeline on the default line). Lucene #14732, Solr #3158, jOOQ #19875 and Guava #7784 now also have jars built from the pins themselves, with full sha256 and the digests of the changed classes. Their landed or reporter regressions agree with the overlay runs: the fix passes, the parent fails, offline included. HikariCP's whole PostgresTest gives 7/7 on the fix and 6/6 on the parent; with the fix's class moved onto the parent, only testSchema fails. RoaringBitmap #914 and JUnit #2646, whose landed tests had not run before, separate the sides: ArrayStoreException in both new tests, and indicativeSentencesGeneratorOnNestedClass fails on the parent. So the regression separates the sides in 19 of 20 cases; for Guava, the fix's test does not compile on the parent. Noted: the jOOQ jar is not byte-reproducible between builds of one pin. The Setup Agent Notes now say setup is complete.",
+      "log_sha256": "aa0f0f101e8a757af9209ecf5bc6fd9c07b9668504c5db0fee3493b0478c792e"
     }
   ],
   "logs": {
@@ -239,6 +261,12 @@
       "bytes": 1684736,
       "lines": 826,
       "gzip_bytes": 312781,
+      "url": null
+    },
+    "aa0f0f101e8a757af9209ecf5bc6fd9c07b9668504c5db0fee3493b0478c792e": {
+      "bytes": 3005684,
+      "lines": 1224,
+      "gzip_bytes": 592610,
       "url": null
     },
     "c2826cb8010518fdb250fa1528fe9fe9f74ade34d9088bd13cd92f51d9a470e5": {
