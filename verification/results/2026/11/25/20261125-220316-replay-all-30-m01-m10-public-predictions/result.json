@@ -1,0 +1,251 @@
+{
+  "$schema": "../../../../../schema/result.schema.json",
+  "schema": "verification-result/v1",
+  "id": "20261125-220316-replay-all-30-m01-m10-public-predictions",
+  "title": "Replay all 30 M01–M10 public predictions on both revisions",
+  "status": "passed",
+  "summary": "passed: 2 passed step(s) in 15.6s, peak 94.0 MiB (estimated 2m00s, 1.0 GiB); 1 output file(s) changed",
+  "attention": [],
+  "job": {
+    "path": "verification/jobs/2026/11/25/20261125-220316-replay-all-30-m01-m10-public-predictions.json",
+    "sha256": "f1f8df5fc76f08fe89007577509f0db361393a61e1882a32d5b19774f486d89b",
+    "spec": {
+      "$schema": "../../../../schema/job.schema.json",
+      "schema": "verification-job/v1",
+      "id": "20261125-220316-replay-all-30-m01-m10-public-predictions",
+      "title": "Replay all 30 M01–M10 public predictions on both revisions",
+      "description": "Compile each historical caller and repeat its three registered histories in fresh JVMs on the exact parent and merge of ten upstream changes. Check all fixture and artifact digests, observed code providers, typed returns, refutations and unchanged behavior. The Checkstyle caller also checks its child CLI processes.",
+      "kind": "real-world",
+      "capabilities": [
+        "java:public-caller-replay"
+      ],
+      "links": {
+        "paths": [
+          "llm-dlc/loops/organic-java-merged-pr-links-m01-m10-brief-results.md"
+        ]
+      },
+      "expected": "The independent audit reproduces all 60 caller returns, ten changed intents, ten matched controls and three merged challenge refutations. Its complete output equals the registered audit.",
+      "submitted": {
+        "at": "2026-11-25T22:03:16+00:00",
+        "session": "01a20c2d-af08-7933-a0ff-b6cdac9c99e4"
+      },
+      "requires": [
+        "java",
+        "javac"
+      ],
+      "resources": {
+        "cpus": 2.0,
+        "memory": "1G",
+        "duration": "2m"
+      },
+      "steps": [
+        {
+          "name": "Replay 60 public histories",
+          "run": "python3 verification/merged-pr-links/audit.py --campaign m01-m10 --replay --output verification/merged-pr-links/m01-m10/repeated-audit.json",
+          "cwd": "."
+        },
+        {
+          "name": "Compare the full campaign audit",
+          "run": "cmp verification/merged-pr-links/m01-m10/audit.json verification/merged-pr-links/m01-m10/repeated-audit.json",
+          "cwd": "."
+        }
+      ],
+      "outputs": [
+        "verification/merged-pr-links/m01-m10/repeated-audit.json"
+      ]
+    }
+  },
+  "sourceCommit": "e2ce7289b3228b6d34f7ff02ac86dd61299ac86b",
+  "startedAt": "2026-11-25T22:27:23+00:00",
+  "finishedAt": "2026-11-25T22:27:47+00:00",
+  "wallSeconds": 24.0,
+  "runner": {
+    "backend": "local",
+    "isolation": "systemd",
+    "host": "vm-1",
+    "pid": 256515,
+    "workers": 13,
+    "cpus": 26.0,
+    "memoryBudgetBytes": 73014444032,
+    "maxTimeoutSeconds": 86400.0,
+    "stallWindowSeconds": 600.0
+  },
+  "limits": {
+    "cpus": 2.0,
+    "memoryLimitBytes": 1610612736,
+    "timeoutSeconds": 480.0
+  },
+  "estimate": {
+    "cpus": 2.0,
+    "memoryBytes": 1073741824,
+    "durationSeconds": 120.0,
+    "notes": null
+  },
+  "usage": {
+    "peakMemoryBytes": 98537472,
+    "wallSeconds": 15.6,
+    "cpuSeconds": 27.1,
+    "memoryOfEstimate": 0.09,
+    "durationOfEstimate": 0.13
+  },
+  "environment": {
+    "host": "vm-1",
+    "os": "Linux-7.0.0-43-generic-x86_64-with-glibc2.43",
+    "machine": "x86_64",
+    "cpuModel": "AMD RYZEN AI MAX+ 395 w/ Radeon 8060S",
+    "cpuCount": 30,
+    "memoryTotalBytes": 112792424448,
+    "python": "3.14.4",
+    "tools": {
+      "java": "openjdk version \"25.0.5\" 2026-10-20 LTS",
+      "javac": "javac 25.0.5",
+      "jbmc": "6.11.0 (cbmc-6.11.0)",
+      "tlc": "2.0 2024-08-08",
+      "tla2toolsJar": "/home/filip/tools/tla2tools.jar",
+      "cargo": "cargo 1.99.1 (5f94df478 2026-08-27)",
+      "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+      "systemd": "systemd 259 (259.9-0ubuntu0.1)",
+      "coreutils": "timeout (GNU coreutils) 9.7"
+    }
+  },
+  "steps": [
+    {
+      "index": 1,
+      "name": "Replay 60 public histories",
+      "run": "python3 verification/merged-pr-links/audit.py --campaign m01-m10 --replay --output verification/merged-pr-links/m01-m10/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 15.43,
+      "cpuSeconds": 27.098,
+      "cpuThrottledSeconds": 0.896,
+      "peakMemoryBytes": 98537472,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/1-replay-60-public-histories.log",
+        "lines": 61,
+        "bytes": 9991,
+        "sha256": "dc6b77be052b6d342c7a988ff435c1309873a54ecc929b7f73d069e2ab19f7c3",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [
+        "pins fix apache/commons-compress#334.1 {'return': 'names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file'}",
+        "pins fix apache/commons-compress#334.2 {'return': 'names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=0/<null>'}",
+        "pins fix apache/commons-compress#334.3 {'return': 'prepended physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=15/Before Zip file | writer physical=15 names=[COMPRESS-621.txt] entry=50/https://issues.apache.org/jira/browse/COMPRESS-621 prefix=0/<",
+        "pins parent apache/commons-rng#65.1 {'return': 'IllegalStateException draws=[1627511304, 737562748, 1688161435, -1114690436, -121503281, -1679998147, 975530087, 1156761568, -1067069629, -138256339] donorOracle=true receiverMatchesDonor=false receiverMatchesOwn=true'}",
+        "pins parent apache/commons-rng#65.2 {'return': 'ok first=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] replay=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077",
+        "pins parent apache/commons-rng#65.3 {'return': 'oracle=11010101010101001111101101111001011/-1705591924 donor=11010101010101001111101101111001011/-1705591924 at0=IllegalStateException/10001110011011101100111101101111001/-977404286 at19=IllegalStateException/10100001001111100100011111101011001/-159218",
+        "pins fix apache/commons-rng#65.1 {'return': 'ok draws=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] donorOracle=true receiverMatchesDonor=true receiverMatchesOwn=false'}",
+        "pins fix apache/commons-rng#65.2 {'return': 'ok first=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] replay=[-1262566975, 1167231157, -796544252, 832895563, 71667786, 161457073, 683419071, 1638362091, -1049172340, -1474466077] o",
+        "pins fix apache/commons-rng#65.3 {'return': 'oracle=11010101010101001111101101111001011/-1705591924 donor=11010101010101001111101101111001011/-1705591924 at0=ok/11010101010101001111101101111001011/-1705591924 at19=ok/11010101010101001111101101111001011/-1705591924'}",
+        "pins parent aeron-io/agrona#202.1 {'return': 'int-int=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[1=10, 1=10, 1=10]/[1=10, 1=10, 1=10] int-object=[Ljava.lang.Object;/3/1/false,[Ljava.util.Map$Entry;/3/1/false pairs=[3=30, 3=30, 3=30]/[3=30, 3=30, 3=30] object-int=[Ljava.lan",
+        "pins parent aeron-io/agrona#202.2 {'return': '[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]'}",
+        "pins parent aeron-io/agrona#202.3 {'return': 'entry/actual/reference/equal=[1=10/11/11/true/true, 1=10/11/11/true/true, 1=10/11/11/true/true] hits=[true, false, false]'}",
+        "pins fix aeron-io/agrona#202.1 {'return': 'int-int=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] int-object=[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30] object-int=[Ljava.lang.Objec",
+        "pins fix aeron-io/agrona#202.2 {'return': '[Ljava.lang.Object;/3/3/true,[Ljava.util.Map$Entry;/3/3/true pairs=[1=10, 2=20, 3=30]/[1=10, 2=20, 3=30]'}",
+        "pins fix aeron-io/agrona#202.3 {'return': 'entry/actual/reference/equal=[1=10/11/11/true/true, 2=20/11/22/true/true, 3=30/11/29/true/true] hits=[true, false, false]'}",
+        "pins parent locationtech/spatial4j#212.1 {'return': 'write=com.fasterxml.jackson.core.JsonGenerationException root=com.fasterxml.jackson.core.JsonGenerationException'}",
+        "pins parent locationtech/spatial4j#212.2 {'return': '[{coordinates=[100, 100], type=\"Point\"}]'}",
+        "pins parent locationtech/spatial4j#212.3 {'return': 'write=com.fasterxml.jackson.core.JsonGenerationException root=com.fasterxml.jackson.core.JsonGenerationException | write=com.fasterxml.jackson.core.JsonGenerationException root=com.fasterxml.jackson.core.JsonGenerationException'}",
+        "pins fix locationtech/spatial4j#212.1 {'return': '[{coordinates=[[100, 100]], type=\"MultiPoint\"}]'}",
+        "pins fix locationtech/spatial4j#212.2 {'return': '[{coordinates=[100, 100], type=\"Point\"}]'}",
+        "pins fix locationtech/spatial4j#212.3 {'return': '{after=17, geometry={geometries=[{coordinates=[[100, 100]], type=\"MultiPoint\"}, {coordinates=[7, 9], type=\"Point\"}], type=\"GeometryCollection\"}} | {after=17, geometry={geometries=[{coordinates=[7, 9], type=\"Point\"}, {coordinates=[[100, 100]], type=\"M",
+        "pins parent checkstyle/checkstyle#14128.1 {'return': '1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/quota@4:18]'}",
+        "pins parent checkstyle/checkstyle#14128.2 {'return': '1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/quota@4:18]'}",
+        "pins parent checkstyle/checkstyle#14128.3 {'return': '2/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/quota@5:18, com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/limit@6:32] | 1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/limit@6:32]'}",
+        "pins fix checkstyle/checkstyle#14128.1 {'return': '0/[]'}",
+        "pins fix checkstyle/checkstyle#14128.2 {'return': '1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/quota@4:18]'}",
+        "pins fix checkstyle/checkstyle#14128.3 {'return': '1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/limit@6:32] | 1/[com.puppycrawl.tools.checkstyle.checks.coding.HiddenFieldCheck/limit@6:32]'}",
+        "pins parent libgdx/libgdx#7278.1 {'return': 'fresh=java.lang.IllegalArgumentException vertices=0 null=true'}",
+        "pins parent libgdx/libgdx#7278.2 {'return': 'true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0'}",
+        "pins parent libgdx/libgdx#7278.3 {'return': 'fresh=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0 before=-4.0,-4.0,2.0,2.0 reused=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/-4.0,-4.0,2.0,2.0'}",
+        "pins fix libgdx/libgdx#7278.1 {'return': 'fresh=false vertices=0 null=false'}",
+        "pins fix libgdx/libgdx#7278.2 {'return': 'true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0'}",
+        "pins fix libgdx/libgdx#7278.3 {'return': 'fresh=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/1.0,2.0,2.0,3.0 before=-4.0,-4.0,2.0,2.0 reused=true/4/[1.0,2.0, 1.0,5.0, 3.0,2.0, 3.0,5.0]/-4.0,-4.0,2.0,2.0'}",
+        "pins parent apache/tinkerpop#3105.1 {'return': 'iterated [josh, lop, marko, peter, ripple, vadas]'}",
+        "pins parent apache/tinkerpop#3105.2 {'return': 'iterated [josh, marko, peter, vadas]'}",
+        "pins parent apache/tinkerpop#3105.3 {'return': 'iterated [josh, marko, peter, vadas]'}",
+        "pins fix apache/tinkerpop#3105.1 {'return': 'by threw java.lang.IllegalStateException'}",
+        "pins fix apache/tinkerpop#3105.2 {'return': 'iterated [josh, marko, peter, vadas]'}",
+        "pins fix apache/tinkerpop#3105.3 {'return': 'iterated [josh, marko, peter, vadas]'}",
+        "{\"cases\": 10, \"controlsMatchedOnBoth\": 10, \"deploymentPairs\": 10, \"fixedIntentsMatched\": 10, \"fixedPredictionsMatched\": 27, \"fixedRefutations\": 3, \"freshJvms\": 60, \"omittedParentHistories\": 0, \"pairedIntentChanges\": 10, \"parentRefutations\": 1, \"questions\": 30, \"unchangedControls\": 9}"
+      ],
+      "expectExit": [
+        0
+      ]
+    },
+    {
+      "index": 2,
+      "name": "Compare the full campaign audit",
+      "run": "cmp verification/merged-pr-links/m01-m10/audit.json verification/merged-pr-links/m01-m10/repeated-audit.json",
+      "cwd": ".",
+      "status": "passed",
+      "exitCode": 0,
+      "signal": null,
+      "timedOut": false,
+      "stoppedFor": null,
+      "overranTimeout": false,
+      "timeoutSeconds": 480.0,
+      "cancelled": false,
+      "wallSeconds": 0.201,
+      "cpuSeconds": 0.009,
+      "cpuThrottledSeconds": 0.0,
+      "peakMemoryBytes": 1994752,
+      "peakMemoryMeasure": "cgroup memory.peak",
+      "oomKills": 0,
+      "limitOoms": 0,
+      "memoryHighEvents": 0,
+      "log": {
+        "path": "logs/2-compare-the-full-campaign-audi.log",
+        "lines": 0,
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "truncated": false
+      },
+      "signalCounts": {},
+      "signals": [],
+      "tail": [],
+      "expectExit": [
+        0
+      ]
+    }
+  ],
+  "outputs": [
+    {
+      "path": "verification/merged-pr-links/m01-m10/repeated-audit.json",
+      "change": "added",
+      "bytes": 3690,
+      "sha256": "0200cf914daf2b0420a0305cc1f89fcb736a350d516f22fcf91efc4ae5d69cfd",
+      "sourceSha256": null
+    }
+  ],
+  "collected": {
+    "at": "2026-11-25T22:28:04+00:00",
+    "applied": [
+      "verification/merged-pr-links/m01-m10/repeated-audit.json"
+    ],
+    "conflicts": [],
+    "kept": [],
+    "why": null
+  },
+  "changesDiff": "changes.diff",
+  "originals": {
+    "attempt": 1,
+    "occurrences": {
+      "logs": "20261125T222747Z-379721d055b29659",
+      "outputs": "20261125T222747Z-400803eb196385a2",
+      "diff": "20261125T222747Z-418215aa5eeca794"
+    }
+  }
+}
