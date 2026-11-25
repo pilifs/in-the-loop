@@ -37,11 +37,11 @@
 | apache/calcite#5345 | written | Read CALCITE-7870 and cast.iq’s EMPNO 7369 transcript. It records 20.0 versus 20, fixed decimal scale, and the truncated 6.6 result. Separate-statement JDBC readback remains open. |
 | apache/calcite#4942 | written | Read the Jira report, TIME/TIMESTAMP casts at precision 1–9 and the custom factory's cap of 9. Reduced strings for inputs separated by one microsecond remain unexecuted. |
 | apache/arrow-java#1518 | written | Compared the holder template and vector reads with the signed scale-2 test at two nonzero byte offsets. The parent reads bytes at start already but passes native-order bytes directly to BigInteger. Cross-width neighbor perturbation remains open. |
-| apache/arrow-java#1342 | not yet |  |
-| apache/avro#2282 | not yet |  |
-| apache/avro#2520 | not yet |  |
-| apache/parquet-java#3830 | not yet |  |
-| ThreeTen/threeten-extra#433 | not yet |  |
+| apache/arrow-java#1342 | written | Read the strict/inclusive precision test in DecimalUtility and the 128/256-bit raw-buffer fixture for ±999.99 and 1000.00. Typed setter, reader and cross-width transfer histories remain unexecuted. |
+| apache/avro#2282 | written | Read AVRO-3779, the bytes logical-type specification, the round-trip and specific-record fixtures, and the merged decoder. It opens the backing array. The equal-visible-bytes slice and trailing-zero predictions remain unexecuted. |
+| apache/avro#2520 | written | Read the two-reader regression, the three little-endian unsigned loads and TimePeriod’s unsigned range guard. The regression's random values stay below 1000; 4294967295 and its twelve-byte readback remain unexecuted. The pinned Avro specification confirms field order, width and unsigned representation. TimePeriod.of’s Javadoc prints one beyond the guard’s maximum. |
+| apache/parquet-java#3830 | written | Read issue #3828, the map/cache key change and the public file fixture. The regression decodes distinct sets from 100 alternating rows. Mutating just the nested values and reversing dictionary lookup order remain open. |
+| ThreeTen/threeten-extra#433 | written | Read the old floor-division normalization and the new differing-offset/extreme tests. For equal local dates five hours apart the complete-day count is zero. The asymmetric parent and extreme signed day/week results remain runtime predictions. |
 | ReactiveX/RxJava#5101 | not yet |  |
 | reactor/reactor-core#937 | not yet |  |
 | reactor/reactor-core#3783 | not yet |  |
